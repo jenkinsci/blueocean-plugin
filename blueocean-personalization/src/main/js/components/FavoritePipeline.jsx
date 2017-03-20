@@ -7,6 +7,7 @@ import { createSelector } from 'reselect';
 import { List } from 'immutable';
 
 import { Favorite } from '@jenkins-cd/design-language';
+import { capable } from '@jenkins-cd/blueocean-core-js';
 
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
@@ -73,6 +74,11 @@ export class FavoritePipeline extends Component {
     }
 
     render() {
+        // TODO: this should probably key off a more generic capability like 'FavoritableItem'
+        if (capable(this.props.pipeline, 'hudson.matrix.MatrixProject')) {
+            return null;
+        }
+
         return (
             <FavoritesProvider store={this.props.store}>
                 <Favorite checked={this.state.favorite} className={this.props.className}

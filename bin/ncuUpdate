@@ -1,0 +1,7 @@
+#!/bin/bash
+home=`pwd`
+modules=('blueocean-dashboard' 'blueocean-personalization' 'blueocean-web')
+echo $home
+for i in "${modules[@]}"; do
+ cd $home/$i; ncu -a; rm -rf node_modules npm-shrinkwrap.json; npm i; npm shrinkwrap; cd $home
+done

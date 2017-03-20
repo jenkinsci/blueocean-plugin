@@ -5,22 +5,23 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>2.10</version>
+    <version>2.17</version>
   </parent>
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.0-alpha-10-SNAPSHOT</version>
+  <version>1.0.0-rc2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Blue Ocean UI Parent</name>
+  <name>Blue Ocean Parent</name>
 
   <properties>
     <java.level>7</java.level>
-    <jackson.version>2.2.3</jackson.version>
-    <jenkins.version>2.2</jenkins.version>
-    <node.version>5.8.0</node.version>
-    <npm.version>3.7.3</npm.version>
+    <jackson.version>2.8.7</jackson.version>
+    <jenkins.version>2.7.1</jenkins.version> <!-- Should be kept in sync with Dockerfile FROM statement-->
+    <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
+    <node.version>6.4.0</node.version>
+    <npm.version>3.10.3</npm.version>
   </properties>
 
   <scm>
@@ -97,6 +98,7 @@
 
   <modules>
     <module>blueocean-commons</module>
+    <module>blueocean-i18n</module>
     <module>blueocean-web</module>
     <module>blueocean-rest</module>
     <module>blueocean-rest-impl</module>
@@ -104,9 +106,11 @@
     <module>blueocean-events</module>
     <module>blueocean-dashboard</module>
     <module>blueocean-personalization</module>
-    <module>blueocean-plugin</module>
     <module>blueocean-config</module>
+    <module>blueocean</module>
     <module>blueocean-jwt</module>
+    <module>blueocean-github-pipeline</module>
+    <module>blueocean-git-pipeline</module>
   </modules>
 
   <repositories>
@@ -129,6 +133,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-commons</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-i18n</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -169,6 +179,12 @@
         </dependency>
 
         <dependency>
+            <groupId>io.jenkins.blueocean.rest.annotation</groupId>
+            <artifactId>capability-annotation</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-pipeline-api-impl</artifactId>
             <version>${project.version}</version>
@@ -182,7 +198,7 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-plugin</artifactId>
+            <artifactId>blueocean</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -192,78 +208,281 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>blueocean-autofavorite</artifactId>
+            <version>0.6</version>
+        </dependency>
 
-        <!-- 3rd party dependencies -->
+        <!-- TODO: should be moved out of blueocean repo as separate plugin -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-github-pipeline</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-git-pipeline</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
+        <!-- Pipeline -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>branch-api</artifactId>
+            <version>2.0.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkinsci.plugins</groupId>
+            <artifactId>pipeline-model-definition</artifactId>
+            <version>1.1.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-cps</artifactId>
+            <version>2.29</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-api</artifactId>
+            <version>2.12</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-job</artifactId>
+            <version>2.10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>pipeline-graph-analysis</artifactId>
+            <version>1.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>github-branch-source</artifactId>
+            <version>2.0.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-multibranch</artifactId>
+            <version>2.14</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-step-api</artifactId>
+            <version>2.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-durable-task-step</artifactId>
+            <version>2.10</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-support</artifactId>
+            <version>2.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-basic-steps</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-scm-step</artifactId>
+            <version>2.4</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>pipeline-stage-step</artifactId>
+            <version>2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>pipeline-input-step</artifactId>
+            <version>2.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>github-organization-folder</artifactId>
+            <version>1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>com.coravy.hudson.plugins.github</groupId>
+            <artifactId>github</artifactId>
+            <version>1.26.1</version>
+        </dependency>
+
+        <!-- Other -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>blueocean-display-url</artifactId>
+            <version>1.5.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>scm-api</artifactId>
+            <version>2.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>git</artifactId>
+            <version>3.1.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>credentials</artifactId>
+            <version>2.1.13</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>cloudbees-folder</artifactId>
+            <version>6.0.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.main</groupId>
+            <artifactId>maven-plugin</artifactId>
+            <version>2.15.1</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>matrix-project</artifactId>
+            <version>1.8</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.main</groupId>
+            <artifactId>jenkins-test-harness-tools</artifactId>
+            <version>2.0</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>structs</artifactId>
+            <version>1.6</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>pubsub-light</artifactId>
+            <version>1.7</version>
+        </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>sse-gateway</artifactId>
-            <version>1.8</version>
+            <version>1.15</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>metrics</artifactId>
+            <version>3.1.2.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>variant</artifactId>
+            <version>1.1</version>
+        </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
             <version>${jackson.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.72</version>
+            <version>1.85</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.oltu.oauth2</groupId>
-            <artifactId>org.apache.oltu.oauth2.client</artifactId>
-            <version>1.0.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jasypt</groupId>
-            <artifactId>jasypt</artifactId>
-            <version>1.9.2</version>
-        </dependency>
-
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.9</version>
+            <version>1.10</version>
         </dependency>
-
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
             <version>2.6</version>
         </dependency>
-
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>mailer</artifactId>
-            <version>1.13</version>
+            <version>1.19</version>
+        </dependency>
+        <dependency>
+            <groupId>org.bitbucket.b_c</groupId>
+            <artifactId>jose4j</artifactId>
+            <version>0.5.5</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jvnet.hudson.plugins</groupId>
+            <artifactId>favorite</artifactId>
+            <version>2.0.4</version>
+        </dependency>
+        <dependency>
+          <groupId>io.jenkins.blueocean</groupId>
+          <artifactId>blueocean-pipeline-editor</artifactId>        
+          <version>0.2-rc1</version>
+        </dependency>
+        
+
+        <!-- Needed for blueocean-display-url plugin -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>junit</artifactId>
+            <version>1.20</version>
         </dependency>
 
+
+        <!-- Test dependencies -->
         <dependency>
             <groupId>com.mashape.unirest</groupId>
             <artifactId>unirest-java</artifactId>
             <version>1.4.9</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>2.7.16</version>
+            <scope>test</scope>
         </dependency>
 
-      <dependency> <!-- TODO pending https://github.com/jenkinsci/jenkins-test-harness/pull/2 -->
-        <groupId>org.eclipse.sisu</groupId>
-        <artifactId>org.eclipse.sisu.plexus</artifactId>
-        <version>0.1.0</version>
-      </dependency>
+        <!-- github pulls token-macro 1.11 that doesn't get resolved -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>token-macro</artifactId>
+            <version>2.0</version>
+        </dependency>
+        <dependency>
+            <!--
+            jsoup HTML parser library @ http://jsoup.org/
+            Using this to get the raw/unprocessed HTML from Jenkins
+            -->
+            <groupId>org.jsoup</groupId>
+            <artifactId>jsoup</artifactId>
+            <version>1.10.2</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency> <!-- TODO pending https://github.com/jenkinsci/jenkins-test-harness/pull/2 -->
+            <groupId>org.eclipse.sisu</groupId>
+            <artifactId>org.eclipse.sisu.plexus</artifactId>
+            <version>0.1.0</version>
+        </dependency>
     </dependencies>
   </dependencyManagement>
 
   <build>
+      <pluginManagement>
+          <plugins>
+              <plugin>
+                  <groupId>org.apache.maven.plugins</groupId>
+                  <artifactId>maven-javadoc-plugin</artifactId>
+                  <version>2.10.4</version>
+              </plugin>
+          </plugins>
+      </pluginManagement>
     <plugins>
       <plugin>
         <!-- TODO: java8 signature doesn't exist yet -->
@@ -287,6 +506,28 @@
             <artifactId>maven-hpi-plugin</artifactId>
             <configuration>
                 <disabledTestInjection>true</disabledTestInjection>
+            </configuration>
+        </plugin>
+
+        <!--
+        TODO: Remove/review this as part of solving https://issues.jenkins-ci.org/browse/JENKINS-38888
+        See comment below on argLine config.
+        -->
+        <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+                <systemProperties>
+                    <property>
+                        <name>hudson.udp</name>
+                        <value>33849</value>
+                    </property>
+                </systemProperties>
+                <reuseForks>true</reuseForks>
+                <forkCount>${concurrency}</forkCount>
+                <!--
+                The following line is the one that's a must. Without it, with get jacoco complexity failures.
+                -->
+                <argLine>-Djava.awt.headless=true</argLine>
             </configuration>
         </plugin>
 

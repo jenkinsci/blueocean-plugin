@@ -19,6 +19,9 @@ export class ToastDrawer extends Component {
     }
 
     render() {
+        // need to reference observable prop in render to trigger subscription
+        toastService.count;
+
         return (
             <Toaster
                 toasts={toastService.toasts}

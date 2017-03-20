@@ -26,11 +26,4 @@ export const prepareMount = () => {
     global.navigator = {
         userAgent: 'node.js',
     };
-
-    // Extensions.Renderer will fail during Enzyme.mount without an
-    // 'extensionDataProvider' function being provided
-    // FIXME: there's probably a much cleaner way to do this.
-    ExtensionStore.init({
-        extensionDataProvider: () => undefined,
-    });
 };

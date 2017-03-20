@@ -1,132 +1,105 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import PullRequest from './PullRequest';
+import Markdown from 'react-remarkable';
 import { RunsRecord } from './records';
-import {
-    actions,
-    pullRequests as pullRequestSelector,
-    createSelector,
-    connect,
-} from '../redux';
+import { capable, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
+import { observer } from 'mobx-react';
+const { object, string, func } = PropTypes;
 
-const { func, object, array, string } = PropTypes;
-
-const EmptyState = ({ repoName }) => (
+const EmptyState = ({ repoName, t }) => (
     <main>
         <EmptyStateView iconName="goat">
-            <h1>Push me, pull you</h1>
-
-            <p>
-                When a Pull Request is opened on the repository <em>{repoName}</em>,
-                Jenkins will test it and report the status of
-                your changes back to the pull request on Github.
-            </p>
-
-            <button>Enable</button>
+            <Markdown>
+                {t('EmptyState.pr', {
+                    0: repoName,
+                    defaultValue: '# Push me, pull you\nWhen a Pull Request is opened on the repository _{0}_, Jenkins will test it and report the status of your changes back to the pull request on Github.',
+                })}
+            </Markdown>
+            <button>{t('Enable', { defaultValue: 'Enable' })}</button>
         </EmptyStateView>
     </main>
 );
 
-const NotSupported = () => (
+const NotSupported = ({ t }) => (
     <main>
         <EmptyStateView>
-            <h1>Pull Requests are unsupported</h1>
-            <p>
-            Validated pull request builds only work with the <i>Multibranch Pipeline</i> job type.
-            This is just one of the many reasons to switch to Jenkins Pipeline.
-            </p>
-            <a href="https://jenkins.io/doc/book/pipeline-as-code/" target="_blank">Learn more</a>
+            <Markdown>
+                {t('EmptyState.pr.notSupported', {
+                    defaultValue: '# Pull Requests are unsupported\nValidated pull requests only work with the _Multibranch Pipeline_ job type. This is just one of the many reasons to switch to Jenkins Pipeline.\n\n[Learn more](https://jenkins.io/doc/book/pipeline-as-code/)',
+                })}
+            </Markdown>
         </EmptyStateView>
     </main>
 );
 
 EmptyState.propTypes = {
     repoName: string,
+    t: func,
 };
 
+NotSupported.propTypes = {
+    t: func,
+};
+
+@observer
 export class PullRequests extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            unsupportedJob: false,
-        };
-    }
-
     componentWillMount() {
-        if (this.context.config && this.context.params) {
-            const {
-                config = {},
-                params: {
-                    pipeline: pipelineName,
-                },
-                pipeline,
-            } = this.context;
-
-            if (!pipeline.branchNames || !pipeline.branchNames.length) {
-                this.setState({
-                    unsupportedJob: true,
-                });
-                return;
-            }
-
-            config.pipeline = pipelineName;
-            this.props.fetchPullRequests({
-                organizationName: this.context.params.organization,
-                pipelineName: this.context.params.pipeline,
-            });
+        if (this.props.pipeline && this.props.params && capable(this.props.pipeline, MULTIBRANCH_PIPELINE)) {
+            this.pager = this.context.pipelineService.prPager(this.props.params.organization, this.props.params.pipeline);
         }
     }
+
 
     render() {
-        if (this.state.unsupportedJob) {
-            return (<NotSupported />);
-        }
+        const { t, locale, pipeline } = this.props;
 
-        const { pullRequests } = this.props;
-
-        // early out
-        if (!pullRequests) {
-            return null;
+        if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
+            return (<NotSupported t={t} />);
         }
-        
-        if (pullRequests.$pending) {
+        const pullRequests = this.pager.data;
+
+        if (this.pager.pending) {
             return null;
         }
 
-        if (!pullRequests.length) {
-            return (<EmptyState repoName={this.context.params.pipeline} />);
+        if (!this.pager.pending && !this.pager.data.length) {
+            return (<EmptyState t={t} repoName={this.context.params.pipeline} />);
         }
-        
-        if (pullRequests.$failed) {
-            return <div>Error: {pullRequests.$failed}</div>;
-        }
+
+        const head = 'pipelinedetail.pullrequests.header';
+        const status = t(`${head}.status`, { defaultValue: 'Status' });
+        const runHeader = t(`${head}.run`, { defaultValue: 'PR' });
+        const author = t(`${head}.author`, { defaultValue: 'Author' });
+        const summary = t(`${head}.summary`, { defaultValue: 'Summary' });
+        const completed = t(`${head}.completed`, { defaultValue: 'Completed' });
 
         const headers = [
-            'Status',
-            { label: 'Latest Build', className: 'build' },
-            { label: 'Summary', className: 'summary' },
-            'Author',
-            { label: 'Completed', className: 'completed' },
+            status,
+            { label: runHeader, className: 'run' },
+            { label: summary, className: 'summary' },
+            author,
+            { label: completed, className: 'completed' },
             { label: '', className: 'run' },
         ];
 
         return (
             <main>
                 <article>
-                    <Table className="pr-table fixed" headers={headers}>
-                        { pullRequests.map((run, index) => {
+                    <Table className="pr-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
+                        {pullRequests.map((run, index) => {
                             const result = new RunsRecord(run);
                             return (<PullRequest
+                              t={t}
+                              locale={locale}
+                              pipeline={pipeline}
                               key={index}
                               pr={result}
                             />);
                         })}
                     </Table>
-                    {pullRequests.$pager &&
-                        <button disabled={!pullRequests.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pullRequests.$pager.fetchMore()}>
-                            {pullRequests.$pending ? 'Loading...' : 'Show More'}
-                        </button>
-                    }
+                    <ShowMoreButton pager={this.pager} />
                 </article>
             </main>
         );
@@ -136,14 +109,14 @@ export class PullRequests extends Component {
 PullRequests.contextTypes = {
     config: object.isRequired,
     params: object.isRequired,
-    pipeline: object,
+    pipelineService: object.isRequired,
 };
 
 PullRequests.propTypes = {
-    pullRequests: array,
-    fetchPullRequests: func,
+    locale: string,
+    t: func,
+    pipeline: object,
+    params: object,
 };
 
-const selectors = createSelector([pullRequestSelector], (pullRequests) => ({ pullRequests }));
-
-export default connect(selectors, actions)(PullRequests);
+export default PullRequests;

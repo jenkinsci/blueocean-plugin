@@ -1,21 +1,21 @@
 import React from 'react';
-import {createRenderer} from 'react-addons-test-utils';
-import { assert} from 'chai';
-import sd from 'skin-deep';
-
+import { assert } from 'chai';
+import { shallow } from 'enzyme';
 import PipelineRowItem from '../../main/js/components/PipelineRowItem.jsx';
 import { PipelineRecord } from '../../main/js/components/records.jsx';
+import i18next from 'i18next';
 
-const
-  hack={
-    MultiBranch:()=>{},
-    Pr:()=>{},
-    Activity:()=>{},
-  } ,
-  pipelineMulti = {
+const hack = {
+    MultiBranch: () => {},
+    Pr: () => {},
+    Activity: () => {},
+};
+/* eslint-disable quote-props */
+const pipelineMulti = {
     'displayName': 'moreBeers',
     'name': 'morebeers',
     'fullName': 'beersland/morebeers',
+    'fullDisplayName': 'beersland/moreBeers',
     'organization': 'jenkins',
     'weatherScore': 0,
     'branchNames': ['master'],
@@ -24,12 +24,13 @@ const
     'numberOfSuccessfulBranches': 0,
     'numberOfSuccessfulPullRequests': 0,
     'totalNumberOfBranches': 1,
-    'totalNumberOfPullRequests': 0
-  },
-  pipelineMultiSuccess = {
+    'totalNumberOfPullRequests': 0,
+};
+const pipelineMultiSuccess = {
     'displayName': 'moreBeersSuccess',
     'name': 'morebeersSuccess',
     'fullName': 'morebeersSuccess',
+    'fullDisplayName': 'moreBeersSuccess',
     'organization': 'jenkins',
     'weatherScore': 0,
     'branchNames': ['master'],
@@ -38,116 +39,123 @@ const
     'numberOfSuccessfulBranches': 3,
     'numberOfSuccessfulPullRequests': 3,
     'totalNumberOfBranches': 3,
-    'totalNumberOfPullRequests': 3
-  },
-  pipelineSimple = {
+    'totalNumberOfPullRequests': 3,
+};
+const pipelineSimple = {
     'displayName': 'beers',
     'name': 'beers',
     'fullName': 'beers',
+    'fullDisplayName': 'beers',
     'organization': 'jenkins',
-    'weatherScore': 0
-  },
-  testElementSimple = (<PipelineRowItem
-      hack={hack}
-      pipeline={pipelineSimple}
-      simple={true}/>
-  ),
-  testElementMultiSuccess = (<PipelineRowItem
-      hack={hack}
-      pipeline={pipelineMultiSuccess}
-      />
-  ),
-  testElementMulti = (<PipelineRowItem
-      hack={hack}
-      pipeline={pipelineMulti}/>
-  );
+    'weatherScore': 0,
+};
+/* eslint-enable quote-props */
 
-describe("PipelineRecord can be created ", () => {
-    it("without error", () => {
-        const pipeRecord = new PipelineRecord(pipelineMultiSuccess);
-    })
+const TEST_LANG = 'en';
+const TEST_NS = 'translation';
+const i18nextInst = i18next.init({
+    lng: TEST_LANG,
+    // have a common namespace used around the full app
+    ns: [TEST_NS],
+    defaultNS: TEST_NS,
+    preload: [TEST_LANG],
+    keySeparator: false, // we do not have any nested keys in properties files
+    interpolation: {
+        prefix: '{',
+        suffix: '}',
+        escapeValue: false, // not needed for react!!
+    },
+    resources: {
+        en: {
+            translation: {
+                'home.pipelineslist.row.failing': '{0} failing',
+                'home.pipelineslist.row.passing': '{0} passing',
+            },
+        },
+    },
+});
+const t = i18nextInst.getFixedT(TEST_LANG, TEST_NS);
+
+describe('PipelineRecord', () => {
+    it('create without error', () => {
+        const pipelineRecord = new PipelineRecord(pipelineMultiSuccess);
+        assert.isOk(pipelineRecord);
+    });
 });
 
-describe("pipeline component simple rendering", () => {
-  const
-    renderer = createRenderer();
+describe('PipelineRowItem', () => {
+    it('simple pipeline', () => {
+        const wrapper = shallow(
+            <PipelineRowItem
+              t={t}
+              hack={hack}
+              pipeline={pipelineSimple}
+              simple
+            />
+        );
+        assert.equal(wrapper.find('tr').length, 1);
 
-  before('render element', () => renderer.render(testElementSimple));
+        const columns = wrapper.find('td');
 
-  it("renders a pipeline", () => {
-    const
-      result = renderer.getRenderOutput(),
-      children = result.props.children;
+        const nameCol = columns.at(0);
+        const path = nameCol.find('Link').shallow().find('ExpandablePath');
+        assert.equal(path.props().path, pipelineSimple.fullDisplayName);
 
-    assert.equal(result.type, 'tr');
-    assert.equal(children[0].props.children.props.children, pipelineSimple.fullName);
-    // simple element has no children
-    assert.equal(children[2].type, 'td');
-    assert.isObject(children[2].props);
-    assert.equal(children[2].props.children, ' - ');
-  });
-});
+        const weatherCol = columns.at(1);
+        assert.equal(weatherCol.text(), '<WeatherIcon />');
 
-describe("pipeline component multiBranch rendering", () => {
-  const
-    renderer = createRenderer();
+        const multibranchCol = columns.at(2);
+        assert.equal(multibranchCol.text(), ' - ');
 
-  before('render element', () => renderer.render(testElementMulti));
+        const pullRequestsCol = columns.at(3);
+        assert.equal(pullRequestsCol.text(), ' - ');
+    });
 
-  it("renders a pipeline with error branch", () => {
-    const
-      result = renderer.getRenderOutput(),
-      children = result.props.children;
+    describe('multiBranch', () => {
+        it('with failing items', () => {
+            const wrapper = shallow(
+                <PipelineRowItem
+                  t={t}
+                  hack={hack}
+                  pipeline={pipelineMulti}
+                />
+            );
+            assert.equal(wrapper.find('tr').length, 1);
 
-    assert.equal(result.type, 'tr');
-    assert.equal(children[0].props.children.props.children, pipelineMulti.fullName.split('/').join(' / '));
-    // simple element has no children
-    assert.equal(children[2].type, 'td');
-    assert.isObject(children[2].props);
-    // multiBranch has more information
-    assert.isDefined(children[2].props.children);
-    assert.equal(children[2].props.children.props.children[0], pipelineMulti.numberOfFailingBranches);
-  });
+            const columns = wrapper.find('td');
 
-});
+            const nameCol = columns.at(0);
+            const path = nameCol.find('Link').shallow().find('ExpandablePath');
+            assert.equal(path.props().path, pipelineMulti.fullDisplayName);
 
-describe("pipeline component multiBranch rendering - success", () => {
-  const
-    renderer = createRenderer();
+            const multibranchCol = columns.at(2).find('Link').shallow();
+            assert.equal(multibranchCol.text(), '1 failing');
 
-  before('render element', () => renderer.render(testElementMultiSuccess));
+            const pullRequestsCol = columns.at(3);
+            assert.equal(pullRequestsCol.text(), '');
+        });
 
-  it("renders a pipeline with success branch", () => {
-    const
-      result = renderer.getRenderOutput(),
-      children = result.props.children;
+        it('with success', () => {
+            const wrapper = shallow(
+                <PipelineRowItem
+                  t={t}
+                  hack={hack}
+                  pipeline={pipelineMultiSuccess}
+                />
+            );
+            assert.equal(wrapper.find('tr').length, 1);
 
-    assert.equal(result.type, 'tr');
-    assert.equal(children[0].props.children.props.children, pipelineMultiSuccess.fullName);
-    // simple element has no children
-    assert.equal(children[2].type, 'td');
-    assert.isObject(children[2].props);
-    // multiBranch has more information
-    assert.isDefined(children[2].props.children);
-    assert.equal(children[2].props.children.props.children[0], pipelineMultiSuccess.numberOfSuccessfulBranches);
-  });
+            const columns = wrapper.find('td');
 
-});
+            const nameCol = columns.at(0);
+            const path = nameCol.find('Link').shallow().find('ExpandablePath');
+            assert.equal(path.props().path, pipelineMultiSuccess.fullDisplayName);
 
-describe("weatherIcon pipeline component simple rendering", () => {
-  const
-    renderer = createRenderer();
+            const multibranchCol = columns.at(2).find('Link').shallow();
+            assert.equal(multibranchCol.text(), '3 passing');
 
-  before('render element', () => renderer.render(testElementSimple));
-
-  it("renders a weather-icon", () => {
-    const
-      result = renderer.getRenderOutput(),
-      children = result.props.children,
-      tree = sd.shallowRender(children[1].props.children),
-      vdom = tree.getRenderOutput();
-
-    assert.oneOf('weather-icon', vdom.props.className.split(' '));
-  });
-
+            const pullRequestsCol = columns.at(3).find('Link').shallow();
+            assert.equal(pullRequestsCol.text(), '3 passing');
+        });
+    });
 });

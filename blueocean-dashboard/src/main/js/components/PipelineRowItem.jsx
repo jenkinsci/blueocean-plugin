@@ -1,17 +1,40 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { WeatherIcon } from '@jenkins-cd/design-language';
+import { ExpandablePath, WeatherIcon } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import { buildPipelineUrl } from '../util/UrlUtils';
+import { capable, UrlConfig } from '@jenkins-cd/blueocean-core-js';
+import { MATRIX_PIPELINE } from '../Capabilities';
+import { Icon } from '@jenkins-cd/react-material-icons';
 
-export default class PipelineRowItem extends Component {
+function generateRedirectLink(pipeline) {
+    if (capable(pipeline, MATRIX_PIPELINE)) {
+        return (<a
+          className="pipelineRedirectLink"
+          href={`${UrlConfig.getJenkinsRootURL()}${pipeline._links.self.href}`}
+          target="_blank"
+        >
+            {pipeline.fullDisplayName}<Icon size={24} icon="exit_to_app" />
+        </a>);
+    }
+
+    return null;
+}
+export class PipelineRowItem extends Component {
 
     calculateResponse(passing, failing) {
+        const { t } = this.props;
         let response = '-';
         if (failing > 0) {
-            response = (`${failing} failing`);
+            response = t('home.pipelineslist.row.failing', {
+                0: failing,
+                defaultValue: '{0} failing',
+            });
         } else if (passing > 0) {
-            response = (`${passing} passing`);
+            response = t('home.pipelineslist.row.passing', {
+                0: passing,
+                defaultValue: '{0} passing',
+            });
         }
         return response;
     }
@@ -23,10 +46,12 @@ export default class PipelineRowItem extends Component {
         if (!pipeline) {
             return null;
         }
+        const { location = {} } = this.context;
         const simple = !pipeline.branchNames;
         const {
             name,
             fullName,
+            fullDisplayName,
             organization,
             weatherScore,
             numberOfSuccessfulBranches,
@@ -37,22 +62,13 @@ export default class PipelineRowItem extends Component {
 
         const hasPullRequests = !simple && (
             numberOfSuccessfulPullRequests || numberOfFailingPullRequests);
-
+        
         const baseUrl = buildPipelineUrl(organization, fullName);
         const multiBranchURL = `${baseUrl}/branches`;
         const pullRequestsURL = `${baseUrl}/pr`;
         const activitiesURL = `${baseUrl}/activity`;
 
-        const formattedName = fullName ? fullName.split('/').join(' / ') : '';
-        const nameLink = (
-            <Link to={activitiesURL}>
-                { showOrganization ?
-                    `${organization} / ${formattedName}` :
-                    formattedName
-                }
-            </Link>
-        );
-
+        const fullDisplayPath = showOrganization ? `${organization}/${fullDisplayName}` : fullDisplayName;
         let multiBranchLabel = ' - ';
         let multiPrLabel = ' - ';
         let multiBranchLink = null;
@@ -73,11 +89,17 @@ export default class PipelineRowItem extends Component {
             multiBranchLink = multiBranchLabel;
             pullRequestsLink = multiPrLabel;
         }
-
         // FIXME: Visual alignment of the last column
         return (
             <tr data-name={name} data-organization={organization}>
-                <td>{nameLink}</td>
+                <td>
+                    {
+                        generateRedirectLink(pipeline) ||
+                        <Link to={activitiesURL} query={location.query}>
+                            <ExpandablePath path={fullDisplayPath} />
+                        </Link>
+                    }
+                </td>
                 <td><WeatherIcon score={weatherScore} /></td>
                 {
                     // fixme refactor the next 2 lines and the prior logic
@@ -100,9 +122,12 @@ export default class PipelineRowItem extends Component {
 PipelineRowItem.propTypes = {
     pipeline: PropTypes.object.isRequired,
     showOrganization: PropTypes.bool,
+    t: PropTypes.func,
 };
 
 PipelineRowItem.contextTypes = {
     location: PropTypes.object,
     store: PropTypes.object,
 };
+
+export default PipelineRowItem;

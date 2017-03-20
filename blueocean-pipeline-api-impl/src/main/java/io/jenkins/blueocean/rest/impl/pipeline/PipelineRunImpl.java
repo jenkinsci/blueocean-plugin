@@ -10,6 +10,8 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.Branch;
+import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.PullRequest;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
@@ -24,21 +26,38 @@ import io.jenkins.blueocean.service.embedded.rest.QueueContainerImpl;
 import io.jenkins.blueocean.service.embedded.rest.StoppableRun;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.export.Exported;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.TimeoutException;
+
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_RUN;
 
 /**
  * Pipeline Run
  *
  * @author Vivek Pandey
  */
-@Capability("org.jenkinsci.plugins.workflow.job.WorkflowRun")
+@Capability(JENKINS_WORKFLOW_RUN)
 public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
+    private static final Logger logger = LoggerFactory.getLogger(PipelineRunImpl.class);
     public PipelineRunImpl(WorkflowRun run, Link parent) {
         super(run, parent);
+    }
+
+    @Exported(name = Branch.BRANCH, inline = true)
+    public Branch getBranch() {
+        return Branch.getBranch(run.getParent());
+    }
+
+    @Exported(name = PullRequest.PULL_REQUEST, inline = true)
+    public PullRequest getPullRequest() {
+        return PullRequest.get(run.getParent());
     }
 
     @Override
@@ -55,6 +74,20 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         }
         return Containers.fromResourceMap(getLink(),m);
     }
+
+    @Override
+    public BlueRunState getStateObj() {
+        InputAction inputAction = run.getAction(InputAction.class);
+        try {
+            if(inputAction != null && inputAction.getExecutions().size() > 0){
+                return BlueRunState.PAUSED;
+            }
+        } catch (InterruptedException | TimeoutException e) {
+            logger.error("Error getting StateObject from execution context: "+e.getMessage(), e);
+        }
+        return super.getStateObj();
+    }
+
     @Override
     public BlueQueueItem replay() {
         ReplayAction replayAction = run.getAction(ReplayAction.class);
@@ -83,7 +116,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
 
     @Override
     public BluePipelineStepContainer getSteps() {
-        return new PipelineStepContainerImpl(null, new PipelineNodeGraphBuilder(run), getLink());
+        return new PipelineStepContainerImpl(run, getLink());
     }
 
     @Override

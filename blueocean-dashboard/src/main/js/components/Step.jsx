@@ -1,26 +1,41 @@
 import React, { Component, PropTypes } from 'react';
-import { ResultItem } from '@jenkins-cd/design-language';
+import { ResultItem, TimeDuration } from '@jenkins-cd/design-language';
+import { logging, TimeManager } from '@jenkins-cd/blueocean-core-js';
 import { calculateFetchAll, calculateLogUrl } from '../util/UrlUtils';
 
 import LogConsole from './LogConsole';
+import InputStep from './InputStep';
 
-const { object, func, string, bool } = PropTypes;
-
+const logger = logging.logger('io.jenkins.blueocean.dashboard.Step');
+const timeManager = new TimeManager();
 export default class Node extends Component {
     constructor(props) {
         super(props);
         const node = this.expandAnchor(props);
         this.state = { isFocused: node.isFocused };
     }
-
     componentWillMount() {
         const { nodesBaseUrl, fetchLog } = this.props;
         const { config = {} } = this.context;
         const node = this.expandAnchor(this.props);
+        const {
+          durationInMillis,
+          state,
+          startTime,
+        } = node;
+        const { durationMillis } = this.durationHarmonize({
+            durationInMillis,
+            startTime,
+            isRunning: state === 'RUNNING' || state === 'PAUSED',
+        });
+        this.durationMillis = durationMillis;
+
         if (node && node.isFocused) {
             const fetchAll = node.fetchAll;
             const mergedConfig = { ...config, node, nodesBaseUrl, fetchAll };
-            fetchLog(mergedConfig);
+            if (!node.isInputStep) {
+                fetchLog(mergedConfig);
+            }
         }
     }
 
@@ -43,7 +58,7 @@ export default class Node extends Component {
                 // we may have a streaming log
                 const number = Number(log.newStart);
                 // in case we doing karaoke we want to see more logs
-                if (number > 0 && followAlong) {
+                if ((number > 0 || !log.logArray) && followAlong && !node.isInputStep) {
                     mergedConfig.newStart = log.newStart;
                     // kill current  timeout if any
                     this.clearThisTimeout();
@@ -65,31 +80,35 @@ export default class Node extends Component {
             clearTimeout(this.timeout);
         }
     }
+    durationHarmonize(node) {
+        const skewMillis = this.context.config ? this.context.config.getServerBrowserTimeSkewMillis() : 0;
+        // the time when we started the run harmonized with offset
+        return timeManager.harmonizeTimes({ ...node }, skewMillis);
+    }
     /*
      * Calculate whether we need to expand the step due to linking.
      * When we trigger a log-0 that means we want to see the full log
       */
     expandAnchor(props) {
         const { node, location: { hash: anchorName } } = props;
-        const isFocused = true;
+        const isFocused = this.state ? this.state.isFocused : node.isFocused;
         const fetchAll = calculateFetchAll(props);
-        const general = { ...node, fetchAll };
+        const isInputStep = node.input && node.input !== null;
+        const general = { ...node, fetchAll, isInputStep };
         // e.g. #step-10-log-1 or #step-10
         if (anchorName) {
             const stepReg = /step-([0-9]{1,})?($|-log-([0-9]{1,})$)/;
             const match = stepReg.exec(anchorName);
 
             if (match && match[1] && match[1] === node.id) {
-                return { ...general, isFocused };
+                return { ...general, isFocused: true };
             }
-        } else if (this.state && this.state.isFocused) {
-            return { ...general, isFocused };
         }
-        return general;
+        return { ...general, isFocused };
     }
 
     render() {
-        const { logs, nodesBaseUrl, fetchLog, followAlong } = this.props;
+        const { logs, nodesBaseUrl, fetchLog, followAlong, url, location, router, t, locale, classicInputUrl } = this.props;
         const node = this.expandAnchor(this.props);
         // Early out
         if (!node || !fetchLog) {
@@ -99,13 +118,15 @@ export default class Node extends Component {
         const {
           fetchAll,
           title,
-          durationInMillis,
           result,
           id,
           state,
+          durationInMillis,
+          endTime,
+          startTime,
+          isInputStep = false,
           isFocused = false,
         } = node;
-
         const resultRun = result === 'UNKNOWN' || !result ? state : result;
         const log = logs ? logs[calculateLogUrl({ ...config, node, nodesBaseUrl, fetchAll })] : null;
         const getLogForNode = () => {
@@ -115,12 +136,35 @@ export default class Node extends Component {
             }
             this.setState({ isFocused: true });
         };
-        const runResult = resultRun.toLowerCase();
+        const removeFocus = () => {
+            this.setState({ isFocused: false });
+            // we need to remove the hash on collapse otherwise the result item will not be collapsed
+            if (location.hash) {
+                delete location.hash;
+                router.push(location);
+            }
+        };
         const scrollToBottom =
-            resultRun.toLowerCase() === 'failure'
-            || (resultRun.toLowerCase() === 'running' && followAlong)
+            resultRun === 'FAILURE'
+            || (resultRun === 'RUNNING' && followAlong)
         ;
+        const isRunning = () => resultRun === 'RUNNING' || resultRun === 'PAUSED';
+        const { durationMillis } = this.durationHarmonize({
+            durationInMillis,
+            endTime,
+            startTime,
+            isRunning: isRunning(),
+        });
+        logger.debug('time:', {
+            responseDuration: durationMillis,
+            durationInMillis,
+            endTime,
+            startTime,
+            isRunning: isRunning(),
+        });
         const logProps = {
+            ...this.props,
+            url,
             scrollToBottom,
             key: id,
             prefix: `step-${id}-`,
@@ -139,28 +183,42 @@ export default class Node extends Component {
 
         const logConsoleClass = `logConsole step-${id}`;
         let children = null;
-        if (log) {
+        if (log && !isInputStep) {
             children = <LogConsole {...logProps} />;
+        } else if (isInputStep) {
+            children = <InputStep {...{ node, classicInputUrl }} />;
         } else if (!log && hasLogs) {
             children = <span>&nbsp;</span>;
         }
+        const time = (<TimeDuration
+          millis={isRunning() ? this.durationMillis : durationMillis }
+          liveUpdate={isRunning()}
+          updatePeriod={1000}
+          locale={locale}
+          displayFormat={t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' })}
+          liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
+          hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
+        />);
 
         return (<div className={logConsoleClass}>
-            <ResultItem
-              key={id}
-              result={runResult}
-              expanded={isFocused}
-              label={title}
-              onExpand={getLogForNode}
-              durationMillis={durationInMillis}
+            <ResultItem {...{
+                extraInfo: time,
+                key: id,
+                result: resultRun.toLowerCase(),
+                expanded: isFocused,
+                label: title,
+                onCollapse: removeFocus,
+                onExpand: getLogForNode,
+            }}
             >
                 {children}
-
             </ResultItem>
       </div>);
     }
+
 }
 
+const { object, func, string, bool, shape } = PropTypes;
 Node.propTypes = {
     node: object.isRequired,
     followAlong: bool,
@@ -168,4 +226,13 @@ Node.propTypes = {
     location: object,
     fetchLog: func,
     nodesBaseUrl: string,
+    router: shape,
+    url: string,
+    locale: object,
+    t: func,
+    classicInputUrl: object,
+};
+
+Node.contextTypes = {
+    config: object.isRequired,
 };

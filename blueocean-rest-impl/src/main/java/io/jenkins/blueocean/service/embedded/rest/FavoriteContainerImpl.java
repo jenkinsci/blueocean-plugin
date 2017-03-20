@@ -1,7 +1,8 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import hudson.model.Item;
-import hudson.plugins.favorite.user.FavoriteUserProperty;
+import hudson.plugins.favorite.Favorites;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
@@ -28,27 +29,23 @@ public class FavoriteContainerImpl extends BlueFavoriteContainer {
     @Override
     public BlueFavorite get(String name) {
         name = FavoriteUtil.decodeFullName(name);
-        if(user.isFavorite(name)){
-            Item item = Jenkins.getInstance().getItemByFullName(name);
-            if(item != null){
-                return FavoriteUtil.getFavorite(item, this);
-            }
+        Item item = Jenkins.getInstance().getItemByFullName(name);
+        if(item != null && Favorites.isFavorite(user.user, item)){
+            return FavoriteUtil.getFavorite(item, this);
         }
         return null;
     }
 
     @Override
     public Iterator<BlueFavorite> iterator() {
-        FavoriteUserProperty prop = user.getFavoriteProperty();
         List<BlueFavorite> favorites = new ArrayList<>();
         Jenkins j = Jenkins.getInstance();
 
-        for(final String favorite: prop.getFavorites()){
-            Item i = j.getItemByFullName(favorite, Item.class);
-            if(i == null){
+        for(final Item favorite: Favorites.getFavorites(user.user)){
+            if(favorite instanceof AbstractFolder) {
                 continue;
             }
-            BlueFavorite blueFavorite = FavoriteUtil.getFavorite(i);
+            BlueFavorite blueFavorite = FavoriteUtil.getFavorite(favorite);
             if(blueFavorite != null){
                 favorites.add(blueFavorite);
             }

@@ -1,35 +1,18 @@
 /**
  * Created by cmeyers on 7/6/16.
  */
+import { UrlConfig, Fetch } from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter as augmenter, ToastService, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 import { ACTION_TYPES } from './FavoritesStore';
-import { UrlConfig, Fetch } from '@jenkins-cd/blueocean-core-js';
 import { cleanSlashes } from '../util/UrlUtils';
 
+const translator = i18nTranslator('blueocean-personalization');
 const fetchFlags = {
-    [ACTION_TYPES.SET_USER]: false,
     [ACTION_TYPES.SET_FAVORITES]: false,
 };
 
 export const actions = {
-    fetchUser() {
-        return (dispatch) => {
-            const baseUrl = UrlConfig.getBlueOceanAppURL();
-            const url = cleanSlashes(`${baseUrl}/rest/organizations/jenkins/user/`);
-
-            if (fetchFlags[ACTION_TYPES.SET_USER]) {
-                return null;
-            }
-
-            fetchFlags[ACTION_TYPES.SET_USER] = true;
-
-            return dispatch(actions.generateData(
-                { url },
-                ACTION_TYPES.SET_USER
-            ));
-        };
-    },
-
     fetchFavorites(user) {
         return (dispatch) => {
             const baseUrl = UrlConfig.getBlueOceanAppURL();
@@ -49,6 +32,12 @@ export const actions = {
         };
     },
 
+    sortFavorites() {
+        return (dispatch) => (
+            dispatch({ type: ACTION_TYPES.SORT_FAVORITES })
+        );
+    },
+
     toggleFavorite(addFavorite, branch, favoriteToRemove) {
         return (dispatch) => {
             const baseUrl = UrlConfig.getJenkinsRootURL();
@@ -56,8 +45,8 @@ export const actions = {
                 `${baseUrl}${branch._links.self.href}/favorite` :
                 `${baseUrl}${favoriteToRemove._links.self.href}`
             );
-           
-         
+
+
             const fetchOptions = {
                 method: 'PUT',
                 headers: {
@@ -76,42 +65,6 @@ export const actions = {
         };
     },
 
-    runPipeline(pipeline) {
-        return () => {
-            const baseUrl = UrlConfig.getJenkinsRootURL();
-            const pipelineUrl = pipeline._links.self.href;
-            const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/runs/`);
-
-            const fetchOptions = {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            };
-
-            // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
-            Fetch.fetch(runPipelineUrl, { fetchOptions });
-        };
-    },
-
-    replayPipeline(pipeline) {
-        return () => {
-            const baseUrl = UrlConfig.getJenkinsRootURL();
-            const pipelineUrl = pipeline.latestRun._links.self.href;
-            const runPipelineUrl = cleanSlashes(`${baseUrl}/${pipelineUrl}/replay/`);
-
-            const fetchOptions = {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            };
-
-            // once job is queued, SSE will fire and trigger "updateRun" so no need to dispatch an action here
-            Fetch.fetch(runPipelineUrl, { fetchOptions });
-        };
-    },
-
     updateRun(jobRun) {
         return (dispatch) => {
             dispatch({
@@ -124,6 +77,7 @@ export const actions = {
     generateData(request, actionType, optional) {
         const { url, fetchOptions } = request;
         return (dispatch) => Fetch.fetchJSON(url, { fetchOptions })
+            .then(data => augmenter.augmentCapabilities(data))
             .then((json) => {
                 fetchFlags[actionType] = false;
                 return dispatch({
@@ -133,6 +87,15 @@ export const actions = {
                 });
             })
             .catch((error) => {
+                const responseBody = error.responseBody;
+                if (responseBody && responseBody.code && responseBody.message) {
+                    ToastService.newToast({
+                        style: 'error',
+                        caption: translator('Favoriting Error'),
+                        text: translator(responseBody.message),
+                    });
+                }
+
                 fetchFlags[actionType] = false;
                 console.error(error); // eslint-disable-line no-console
                 // call again with no payload so actions handle missing data

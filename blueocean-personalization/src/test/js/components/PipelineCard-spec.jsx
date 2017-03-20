@@ -7,69 +7,73 @@ import { shallow } from 'enzyme';
 
 import { PipelineCard } from '../../../main/js/components/PipelineCard';
 
+function clone(object) {
+    return JSON.parse(JSON.stringify(object));
+}
+
+const context = {
+    params: {},
+    config: {
+        getServerBrowserTimeSkewMillis: () => 0
+    },
+    activityService: {
+        activityPager() {
+            return {
+                data: data
+            }
+        }
+    }
+};
+
+// Dummy translation
+const t = (key, options) => options && options.defaultValue || key;
+t.lng = 'EN';
+
 describe('PipelineCard', () => {
-    const capabilities = [
-        'org.jenkinsci.plugins.workflow.job.WorkflowJob',
-    ];
+    let item;
+    let favorite;
+
+    function shallowRenderCard() {
+        return shallow(
+            <PipelineCard runnable={item} favorite={favorite} t={t}/>, {context}
+        );
+    }
+
+    beforeEach(() => {
+        const favorites = clone(require('../data/favorites.json'));
+
+        item = favorites[0].item;
+        item._capabilities = ['io.jenkins.blueocean.rest.model.BlueBranch'];
+        favorite = true;
+    });
 
     it('renders without error for empty props', () => {
         const wrapper = shallow(
-            <PipelineCard />
+            <PipelineCard t={t}/>, {context}
         );
 
         assert.isOk(wrapper);
     });
 
-    it('renders basic child elements', () => {
-        const status = 'SUCCESS';
-        const wrapper = shallow(
-            <PipelineCard capabilities={capabilities} status={status} organization="Jenkins" pipeline="blueocean"
-              branch="feature/JENKINS-123" commitId="447d8e1" favorite
-            />
-        );
+    it('renders with correct props', () => {
+        item.latestRun.result = 'SUCCESS';
+        const wrapper = shallowRenderCard();
 
-        assert.equal(wrapper.find('LiveStatusIndicator').length, 1);
-        assert.equal(wrapper.find('.name').length, 1);
-        assert.equal(wrapper.find('.name').text(), '<Link />');
-        assert.equal(wrapper.find('.branch').length, 1);
-        assert.equal(wrapper.find('.branchText').text(), 'feature/JENKINS-123');
-        assert.equal(wrapper.find('.commit').length, 1);
-        assert.equal(wrapper.find('.commitId').text(), '#447d8e1');
-        assert.equal(wrapper.find('Favorite').length, 1);
-    });
+        assert.equal(wrapper.find('PipelineCardRenderer').length, 1);
 
-    it('renders "rerun" button after failure', () => {
-        const status = 'FAILURE';
-        const wrapper = shallow(
-            <PipelineCard capabilities={capabilities} status={status} organization="Jenkins" pipeline="blueocean"
-              branch="feature/JENKINS-123" commitId="447d8e1" favorite
-            />
-        );
-
-        assert.equal(wrapper.find('.actions .rerun').length, 1);
-    });
-
-    it('renders no "rerun" button after success', () => {
-        const status = 'SUCCESS';
-        const wrapper = shallow(
-            <PipelineCard capabilities={capabilities} status={status} organization="Jenkins" pipeline="blueocean"
-              branch="feature/JENKINS-123" commitId="447d8e1" favorite
-            />
-        );
-
-        assert.equal(wrapper.find('.actions .rerun').length, 0);
-    });
-
-    it('escapes the branch name', () => {
-        const branchName = 'feature/JENKINS-667';
-        const wrapper = shallow(
-            <PipelineCard status="SUCCESS" organization="Jenkins" pipeline="blueocean"
-              branch={encodeURIComponent(branchName)} commitId="447d8e1"
-            />
-        );
-
-        const elements = wrapper.find('.branchText');
-        assert.equal(elements.length, 1);
-        assert.equal(elements.at(0).text(), branchName);
+        assert.equal(wrapper.prop('status'), 'SUCCESS');
+        assert.equal(wrapper.prop('startTime'), '2016-05-24T08:57:04.432-0400');
+        assert.equal(wrapper.prop('estimatedDuration'), 73248);
+        assert.equal(wrapper.prop('activityUrl'), '/organizations/jenkins/blueocean/activity');
+        assert.equal(wrapper.prop('displayPath'), 'blueocean');
+        assert.equal(wrapper.prop('branchText'), 'UX-301');
+        assert.equal(wrapper.prop('commitText'), 'cfca303');
+        assert.equal(wrapper.prop('favoriteChecked'), true);
+        assert.equal(typeof wrapper.prop('runnableItem'), 'object');
+        assert.equal(typeof wrapper.prop('latestRun'), 'object');
+        assert.equal(typeof wrapper.prop('timeText'), 'object');
+        assert.equal(typeof wrapper.prop('onFavoriteToggle'), 'function');
+        assert.equal(typeof wrapper.prop('onRunDetails'), 'function');
+        assert.equal(typeof wrapper.prop('onClickMain'), 'function');
     });
 });

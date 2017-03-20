@@ -1,8 +1,12 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import hudson.model.FreeStyleProject;
 import hudson.model.Label;
 import hudson.model.Queue;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.GitSampleRepoRule;
+import hudson.model.Run;
+import hudson.tasks.ArtifactArchiver;
+import hudson.tasks.Shell;
+import io.jenkins.blueocean.rest.model.scm.GitSampleRepoRule;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
@@ -66,7 +70,8 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         assertEquals(r.get("commitId"), new PipelineRunImpl(b2,null).getCommitId());
     }
 
-    @Test
+    // Disabled, see JENKINS-40084
+    // @Test
     public void replayRunTestMB() throws Exception {
         j.createOnlineSlave(Label.get("remote"));
 
@@ -111,5 +116,20 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
         Map r = request().get("/organizations/jenkins/pipelines/p/branches/master/runs/"+replayedRun.getNumber()+"/").build(Map.class);
         assertEquals(new PipelineRunImpl(b1,null).getCommitId(), r.get("commitId"));
+    }
+
+    @Test
+    public void testArtifactZipFileLink() throws Exception {
+        String JOB_NAME = "artifactTest";
+        FreeStyleProject p = j.createFreeStyleProject(JOB_NAME);
+        p.getBuildersList().add(new Shell("touch {{a..z},{A..Z},{0..99}}.txt"));
+        p.getPublishersList().add(new ArtifactArchiver("*"));
+        Run r = p.scheduleBuild2(0).waitForStart();
+
+        r = j.waitForCompletion(r);
+
+        Map m = request().get("/organizations/jenkins/pipelines/"+JOB_NAME+"/runs/"+r.getId()+"/").build(Map.class);
+
+        Assert.assertEquals(m.get("artifactsZipFile"), "/job/artifactTest/1/artifact/*zip*/archive.zip");
     }
 }

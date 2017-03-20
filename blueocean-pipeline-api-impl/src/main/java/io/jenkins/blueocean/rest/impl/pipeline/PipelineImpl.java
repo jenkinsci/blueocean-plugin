@@ -11,10 +11,12 @@ import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_JOB;
+
 /**
  * @author Kohsuke Kawaguchi
  */
-@Capability({"org.jenkinsci.plugins.workflow.job.WorkflowJob"})
+@Capability({JENKINS_WORKFLOW_JOB})
 public class PipelineImpl extends AbstractPipelineImpl {
     protected PipelineImpl(Job job) {
         super(job);
@@ -36,7 +38,7 @@ public class PipelineImpl extends AbstractPipelineImpl {
             if(context == target && target instanceof WorkflowJob) {
                 return getPipeline(target,parent);
             }
-            
+
             return null;
         }
     }

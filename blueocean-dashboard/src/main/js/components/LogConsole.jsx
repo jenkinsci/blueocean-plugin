@@ -1,11 +1,14 @@
 import React, { Component, PropTypes } from 'react';
 import { Progress } from '@jenkins-cd/design-language';
+import { logging } from '@jenkins-cd/blueocean-core-js';
+
 import { scrollHelper } from './ScrollHelper';
 
 const INITIAL_RENDER_CHUNK_SIZE = 100;
 const INITIAL_RENDER_DELAY = 300;
 const RENDER_CHUNK_SIZE = 500;
 const RERENDER_DELAY = 17;
+const logger = logging.logger('io.jenkins.blueocean.dashboard.LogConsole');
 
 
 export class LogConsole extends Component {
@@ -111,45 +114,62 @@ export class LogConsole extends Component {
             this.timeouts.scroll = this.props.scrollToAnchorTimeOut(RERENDER_DELAY + 1);
         }
     }
-
     render() {
         const { isLoading, lines } = this.state;
-        const { prefix = '', hasMore = false } = this.props; // if hasMore true then show link to full log
+        const { prefix = '', hasMore = false, router, location, t } = this.props; // if hasMore true then show link to full log
         if (!lines) {
             return null;
         }
+        // JENKINS-37925 - show more button should open log in new window
+        // const logUrl = url && url.includes(suffix) ? url : `${url}${suffix}`;
+        // JENKINS-41717 reverts above again
+        // fulllog within steps are triggered by
+        const logUrl = `#${prefix || ''}log-${0}`;
 
-        return (<div>
+        return (<div className="log-wrapper">
             { isLoading && <div className="loadingContainer" id={`${prefix}log-${0}`}>
                 <Progress />
             </div>}
 
-            { !isLoading && <code
-              className="block"
-            >
+
+            { !isLoading && <div className="log-body"><pre>
                 { hasMore && <div key={0} id={`${prefix}log-${0}`} className="fullLog">
                     <a
-                      className="btn-secondary inverse"
+                      className="btn-link inverse"
                       key={0}
-                      href={`?start=0#${prefix || ''}log-${0}`}
+                      onClick={() => {
+                          logger.debug('location', { location, logUrl });
+                          location.query.start = 0;
+                          location.hash = logUrl;
+                          router.push(location);
+                      }}
                     >
-                        Show complete log
+                        {t('Show.complete.logs')}
                     </a>
                 </div>}
-                { lines.map((line, index) => <p key={index + 1} id={`${prefix}log-${index + 1}`}>
-                    <a
-                      key={index + 1}
-                      href={`#${prefix || ''}log-${index + 1}`}
-                      name={`${prefix}log-${index + 1}`}
-                    >{line}
-                    </a>
-                </p>)}</code>
-            }
+                { !isLoading && lines.map((line, index) => <p key={index + 1} id={`${prefix}log-${index + 1}`}>
+                    <div className="log-boxes">
+                        <a
+                          className="linenumber"
+                          key={index + 1}
+                          href={`#${prefix || ''}log-${index + 1}`}
+                          name={`${prefix}log-${index + 1}`}
+                          onClick={() => {
+                              location.hash = `#${prefix || ''}log-${index + 1}`;
+                              router.push(location);
+                          }}
+                        >
+                        </a>
+                        <span className="line">{line}</span>
+                    </div>
+                </p>)}
+            </pre></div> }
+
         </div>);
     }
 }
 
-const { array, bool, string, func } = PropTypes;
+const { array, bool, string, func, shape } = PropTypes;
 LogConsole.propTypes = {
     scrollToBottom: bool, // in case of long logs you can scroll to the bottom
     logArray: array,
@@ -157,7 +177,10 @@ LogConsole.propTypes = {
     scrollBottom: func,
     prefix: string,
     hasMore: bool,
+    router: shape,
+    location: shape,
+    url: string,
+    t: func,
 };
 
 export default scrollHelper(LogConsole);
-

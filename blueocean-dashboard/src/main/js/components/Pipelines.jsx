@@ -1,90 +1,117 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import PipelineRowItem from './PipelineRowItem';
-import PageLoading from './PageLoading';
-
-import { Page, PageHeader, Table, Title } from '@jenkins-cd/design-language';
+import { Page, Table } from '@jenkins-cd/design-language';
+import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
+import { documentTitle } from './DocumentTitle';
+import CreatePipelineLink from './CreatePipelineLink';
+import PipelineRowItem from './PipelineRowItem';
+import { observer } from 'mobx-react';
 
-const { array } = PropTypes;
+const translate = i18nTranslator('blueocean-dashboard');
 
-export default class Pipelines extends Component {
+
+@observer
+export class Pipelines extends Component {
+    componentWillMount() {
+        this._initPager(this.props);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this._initPager(nextProps);
+    }
+
+    _initPager(props) {
+        const org = props.params.organization;
+        if (org) {
+            this.pager = this.context.pipelineService.organiztionPipelinesPager(org);
+        } else {
+            this.pager = this.context.pipelineService.allPipelinesPager();
+        }
+    }
 
     render() {
-        const { pipelines, config } = this.context;
-        const { organization } = this.context.params;
+        const pipelines = this.pager.data;
+        const { organization, location = { } } = this.context.params;
 
         const orgLink = organization ?
-            <Link to={`organizations/${organization}`} className="inverse">
-                {organization}
+            <Link
+                to={ `organizations/${organization}` }
+                query={ location.query }
+            >
+                { organization }
             </Link> : '';
 
         const headers = [
-            { label: 'Name', className: 'name' },
-            'Health',
-            'Branches',
-            'Pull Requests',
-            { label: '', className: 'favorite' },
+            { label: translate('home.pipelineslist.header.name', { defaultValue: 'Name' }), className: 'name-col' },
+            translate('home.pipelineslist.header.health', { defaultValue: 'Health' }),
+            translate('home.pipelineslist.header.branches', { defaultValue: 'Branches' }),
+            translate('home.pipelineslist.header.pullrequests', { defaultValue: 'PR' }),
+            { label: '', className: 'actions-col' },
         ];
-
-        const baseUrl = config.getRootURL();
-        const newJobUrl = `${baseUrl}/view/All/newJob`;
-
+        this.props.setTitle('Jenkins Blue Ocean');
         return (
             <Page>
-                <PageHeader>
-                    {!pipelines || pipelines.$pending && <PageLoading duration={2000} />}
-                    <Title>
+                <ContentPageHeader>
+                    <div className="u-flex-grow">
                         <h1>
-                            <Link to="/" className="inverse">Dashboard</Link>
+                            <Link to="/" query={ location.query }>
+                                { translate('home.header.dashboard', { defaultValue: 'Dashboard' }) }
+                            </Link>
                             { organization && ' / ' }
                             { organization && orgLink }
                         </h1>
-                        <a target="_blank" className="btn-secondary inverse" href={newJobUrl}>
-                            New Pipeline
-                        </a>
-                    </Title>
-                </PageHeader>
+                    </div>
+                    <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
+                        <CreatePipelineLink />
+                    </Extensions.Renderer>
+                </ContentPageHeader>
                 <main>
                     <article>
                         { /* TODO: need to adjust Extensions to make store available */ }
                         <Extensions.Renderer
-                          extensionPoint="jenkins.pipeline.list.top"
-                          store={this.context.store}
-                          router={this.context.router}
+                            extensionPoint="jenkins.pipeline.list.top"
+                            store={ this.context.store }
+                            router={ this.context.router }
                         />
                         <Table
-                          className="pipelines-table fixed"
-                          headers={headers}
+                            className="pipelines-table"
+                            headers={ headers }
                         >
                             { pipelines &&
-                                pipelines.map(pipeline => {
-                                    const key = pipeline._links.self.href;
-                                    return (
-                                        <PipelineRowItem
-                                          key={key} pipeline={pipeline}
-                                          showOrganization={!organization}
-                                        />
-                                    );
-                                })
+                            pipelines.map(pipeline => {
+                                const key = pipeline._links.self.href;
+                                return (
+                                    <PipelineRowItem
+                                        t={ translate }
+                                        key={ key } pipeline={ pipeline }
+                                        showOrganization={ AppConfig.showOrg() }
+                                    />
+                                );
+                            })
                             }
                         </Table>
-                        
-                        { pipelines && pipelines.$pager &&
-                            <button disabled={!pipelines.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pipelines.$pager.fetchMore()}>
-                                {pipelines.$pending ? 'Loading...' : 'Show More'}
-                            </button>
-                        }
+
+                        { pipelines && <ShowMoreButton pager={this.pager} /> }
                     </article>
                 </main>
             </Page>);
     }
 }
 
+const { func, object } = PropTypes;
+
 Pipelines.contextTypes = {
-    config: PropTypes.object,
-    params: PropTypes.object,
-    pipelines: array,
-    store: PropTypes.object,
-    router: PropTypes.object,
+    config: object,
+    params: object,
+    store: object,
+    router: object,
+    pipelineService: object,
+    location: object.isRequired, // From react-router
 };
+
+Pipelines.propTypes = {
+    setTitle: func,
+};
+
+export default documentTitle(Pipelines);

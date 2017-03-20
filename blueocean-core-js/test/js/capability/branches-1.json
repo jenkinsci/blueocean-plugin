@@ -1,0 +1,572 @@
+[{
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
+    "_links": {
+        "activities": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/activities/"
+        },
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/actions/"
+        },
+        "runs": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/runs/"
+        },
+        "queue": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/queue/"
+        }
+    },
+    "actions": [{
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/move/"
+            }
+        },
+        "_class": "com.cloudbees.hudson.plugins.folder.relocate.RelocationAction",
+        "urlName": "move"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/wfapi/"
+            }
+        },
+        "_class": "com.cloudbees.workflow.rest.endpoints.JobAPI",
+        "urlName": "wfapi"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/workflow-stage/"
+            }
+        },
+        "_class": "com.cloudbees.workflow.ui.view.WorkflowStageViewAction",
+        "urlName": "workflow-stage"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/pipeline-syntax/"
+            }
+        },
+        "_class": "org.jenkinsci.plugins.workflow.cps.Snippetizer$LocalAction",
+        "urlName": "pipeline-syntax"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/credentials/"
+            }
+        },
+        "_class": "com.cloudbees.plugins.credentials.ViewCredentialsAction",
+        "stores": {},
+        "urlName": "credentials"
+    }],
+    "displayName": "master",
+    "estimatedDurationInMillis": 100690,
+    "fullName": "multibranch/nested-folder/jenkinsfile-experiments/master",
+    "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/runs/97/",
+    "latestRun": {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
+        "_links": {
+            "nodes": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/runs/97/nodes/"
+            },
+            "log": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/runs/97/log/"
+            },
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/runs/97/"
+            },
+            "actions": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/runs/97/actions/"
+            },
+            "steps": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/runs/97/steps/"
+            }
+        },
+        "actions": [{
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": null
+            },
+            "_class": "org.jenkinsci.plugins.workflow.cps.replay.ReplayFlowFactoryAction",
+            "urlName": null
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/runs/97/cause/"
+                }
+            },
+            "_class": "hudson.model.CauseAction",
+            "causes": [{
+                "_class": "hudson.model.Cause$UserIdCause",
+                "shortDescription": "Started by user Cliff Meyers",
+                "userId": "cmeyers",
+                "userName": "Cliff Meyers"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.replay.ReplayCause",
+                "shortDescription": "Replayed #94"
+            }],
+            "urlName": "cause"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": null
+            },
+            "_class": "jenkins.scm.api.SCMRevisionAction",
+            "urlName": null
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/runs/97/timings/"
+                }
+            },
+            "_class": "jenkins.metrics.impl.TimeInQueueAction",
+            "queuingDurationMillis": 2,
+            "totalDurationMillis": 98186,
+            "urlName": "timings"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": null
+            },
+            "_class": "jenkins.scm.api.SCMRevisionAction",
+            "urlName": null
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/runs/97/wfapi/"
+                }
+            },
+            "_class": "com.cloudbees.workflow.rest.endpoints.RunAPI",
+            "urlName": "wfapi"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/runs/97/replay/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.cps.replay.ReplayAction",
+            "urlName": "replay"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/runs/97/flowGraph/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.job.views.FlowGraphAction",
+            "nodes": [{
+                "_class": "org.jenkinsci.plugins.workflow.graph.FlowStartNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.graph.FlowEndNode"
+            }],
+            "urlName": "flowGraph"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/runs/97/flowGraphTable/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.job.views.FlowGraphTableAction",
+            "urlName": "flowGraphTable"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/runs/97/graphViz/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.job.views.GraphVizAction",
+            "urlName": "graphViz"
+        }],
+        "artifacts": [{
+            "_class": "io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl$1",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/jenkins/job/multibranch/job/nested-folder/job/jenkinsfile-experiments/job/master/97/artifact/hey/"
+                }
+            },
+            "name": "hey",
+            "size": 4,
+            "url": "/jenkins/job/multibranch/job/nested-folder/job/jenkinsfile-experiments/job/master/97/artifact/hey"
+        }],
+        "changeSet": [],
+        "durationInMillis": 98184,
+        "enQueueTime": "2016-08-30T15:54:27.411-0400",
+        "endTime": "2016-08-30T15:56:05.596-0400",
+        "estimatedDurationInMillis": 100690,
+        "id": "97",
+        "organization": "jenkins",
+        "pipeline": "master",
+        "result": "SUCCESS",
+        "runSummary": "stable",
+        "startTime": "2016-08-30T15:54:27.412-0400",
+        "state": "FINISHED",
+        "type": "WorkflowRun",
+        "commitId": null
+    },
+    "name": "master",
+    "organization": "jenkins",
+    "permissions": {
+        "create": true,
+        "read": true,
+        "start": true,
+        "stop": true
+    },
+    "weatherScore": 100,
+    "pullRequest": null
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
+    "_links": {
+        "activities": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/activities/"
+        },
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/actions/"
+        },
+        "runs": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/runs/"
+        },
+        "queue": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/queue/"
+        }
+    },
+    "actions": [{
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/move/"
+            }
+        },
+        "_class": "com.cloudbees.hudson.plugins.folder.relocate.RelocationAction",
+        "urlName": "move"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/wfapi/"
+            }
+        },
+        "_class": "com.cloudbees.workflow.rest.endpoints.JobAPI",
+        "urlName": "wfapi"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/workflow-stage/"
+            }
+        },
+        "_class": "com.cloudbees.workflow.ui.view.WorkflowStageViewAction",
+        "urlName": "workflow-stage"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/pipeline-syntax/"
+            }
+        },
+        "_class": "org.jenkinsci.plugins.workflow.cps.Snippetizer$LocalAction",
+        "urlName": "pipeline-syntax"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/credentials/"
+            }
+        },
+        "_class": "com.cloudbees.plugins.credentials.ViewCredentialsAction",
+        "stores": {},
+        "urlName": "credentials"
+    }],
+    "displayName": "test-branch-1",
+    "estimatedDurationInMillis": 103741,
+    "fullName": "multibranch/nested-folder/jenkinsfile-experiments/test-branch-1",
+    "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/runs/54/",
+    "latestRun": {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
+        "_links": {
+            "nodes": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/runs/54/nodes/"
+            },
+            "log": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/runs/54/log/"
+            },
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/runs/54/"
+            },
+            "actions": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/runs/54/actions/"
+            },
+            "steps": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/runs/54/steps/"
+            }
+        },
+        "actions": [{
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/runs/54/cause/"
+                }
+            },
+            "_class": "hudson.model.CauseAction",
+            "causes": [{
+                "_class": "hudson.model.Cause$UserIdCause",
+                "shortDescription": "Started by user Cliff Meyers",
+                "userId": "cmeyers",
+                "userName": "Cliff Meyers"
+            }],
+            "urlName": "cause"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/runs/54/timings/"
+                }
+            },
+            "_class": "jenkins.metrics.impl.TimeInQueueAction",
+            "queuingDurationMillis": 2,
+            "totalDurationMillis": 98868,
+            "urlName": "timings"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": null
+            },
+            "_class": "jenkins.scm.api.SCMRevisionAction",
+            "urlName": null
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/runs/54/git/"
+                }
+            },
+            "_class": "hudson.plugins.git.util.BuildData",
+            "buildsByBranchName": {
+                "test-branch-1": {
+                    "_class": "hudson.plugins.git.util.Build",
+                    "buildNumber": 54,
+                    "buildResult": null,
+                    "marked": {
+                        "SHA1": "b899164aee309155703bdb576c82730ca5fe2eb8",
+                        "branch": [{
+                            "SHA1": "b899164aee309155703bdb576c82730ca5fe2eb8",
+                            "name": "test-branch-1"
+                        }]
+                    },
+                    "revision": {
+                        "SHA1": "b899164aee309155703bdb576c82730ca5fe2eb8",
+                        "branch": [{
+                            "SHA1": "b899164aee309155703bdb576c82730ca5fe2eb8",
+                            "name": "test-branch-1"
+                        }]
+                    }
+                }
+            },
+            "lastBuiltRevision": {
+                "SHA1": "b899164aee309155703bdb576c82730ca5fe2eb8",
+                "branch": [{
+                    "SHA1": "b899164aee309155703bdb576c82730ca5fe2eb8",
+                    "name": "test-branch-1"
+                }]
+            },
+            "remoteUrls": ["https://github.com/cliffmeyers/jenkinsfile-experiments.git"],
+            "scmName": "",
+            "urlName": "git"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/runs/54/tagBuild/"
+                }
+            },
+            "_class": "hudson.plugins.git.GitTagAction",
+            "tags": [],
+            "urlName": "tagBuild"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": null
+            },
+            "_class": "org.jenkinsci.plugins.workflow.steps.scm.MultiSCMRevisionState",
+            "urlName": null
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/runs/54/wfapi/"
+                }
+            },
+            "_class": "com.cloudbees.workflow.rest.endpoints.RunAPI",
+            "urlName": "wfapi"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/runs/54/replay/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.cps.replay.ReplayAction",
+            "urlName": "replay"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/runs/54/flowGraph/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.job.views.FlowGraphAction",
+            "nodes": [{
+                "_class": "org.jenkinsci.plugins.workflow.graph.FlowStartNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.graph.FlowEndNode"
+            }],
+            "urlName": "flowGraph"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/runs/54/flowGraphTable/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.job.views.FlowGraphTableAction",
+            "urlName": "flowGraphTable"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/runs/54/graphViz/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.job.views.GraphVizAction",
+            "urlName": "graphViz"
+        }],
+        "artifacts": [{
+            "_class": "io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl$1",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/jenkins/job/multibranch/job/nested-folder/job/jenkinsfile-experiments/job/test-branch-1/54/artifact/hey/"
+                }
+            },
+            "name": "hey",
+            "size": 4,
+            "url": "/jenkins/job/multibranch/job/nested-folder/job/jenkinsfile-experiments/job/test-branch-1/54/artifact/hey"
+        }],
+        "changeSet": [],
+        "durationInMillis": 98866,
+        "enQueueTime": "2016-08-31T20:10:22.406-0400",
+        "endTime": "2016-08-31T20:12:01.273-0400",
+        "estimatedDurationInMillis": 103741,
+        "id": "54",
+        "organization": "jenkins",
+        "pipeline": "test-branch-1",
+        "result": "SUCCESS",
+        "runSummary": "stable",
+        "startTime": "2016-08-31T20:10:22.407-0400",
+        "state": "FINISHED",
+        "type": "WorkflowRun",
+        "commitId": "b899164aee309155703bdb576c82730ca5fe2eb8"
+    },
+    "name": "test-branch-1",
+    "organization": "jenkins",
+    "permissions": {
+        "create": true,
+        "read": true,
+        "start": true,
+        "stop": true
+    },
+    "weatherScore": 100,
+    "pullRequest": null
+}]

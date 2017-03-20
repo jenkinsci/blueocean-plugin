@@ -1,8 +1,14 @@
 export const latestRuns = [{
     'latestRun': {
+        '_links': {
+            'self': {
+                'href': 'test'
+            }
+        },
         'artifacts':[
             {
                 'name':'hey',
+                'path': 'hey',
                 'size':4,
                 'url':'/jenkins/job/jenkinsfile-experiments/branch/master/1/artifact/hey'
             }

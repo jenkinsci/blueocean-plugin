@@ -1,0 +1,1622 @@
+[{
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineImpl",
+    "_links": {
+        "activities": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/activities/"
+        },
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/actions/"
+        },
+        "runs": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/runs/"
+        },
+        "queue": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/queue/"
+        }
+    },
+    "actions": [{
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/move/"
+            }
+        },
+        "_class": "com.cloudbees.hudson.plugins.folder.relocate.RelocationAction",
+        "urlName": "move"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/wfapi/"
+            }
+        },
+        "_class": "com.cloudbees.workflow.rest.endpoints.JobAPI",
+        "urlName": "wfapi"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/workflow-stage/"
+            }
+        },
+        "_class": "com.cloudbees.workflow.ui.view.WorkflowStageViewAction",
+        "urlName": "workflow-stage"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/https://github.com/kzantow/failure-project/master/"
+            }
+        },
+        "_class": "com.coravy.hudson.plugins.github.GithubLinkAction",
+        "urlName": "https://github.com/kzantow/failure-project/master/"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/pipeline-syntax/"
+            }
+        },
+        "_class": "org.jenkinsci.plugins.workflow.cps.Snippetizer$LocalAction",
+        "urlName": "pipeline-syntax"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/credentials/"
+            }
+        },
+        "_class": "com.cloudbees.plugins.credentials.ViewCredentialsAction",
+        "stores": {},
+        "urlName": "credentials"
+    }],
+    "displayName": "failure-project",
+    "estimatedDurationInMillis": 30,
+    "fullName": "failure-project",
+    "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/failure-project/runs/8/",
+    "latestRun": {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
+        "_links": {
+            "nodes": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/runs/8/nodes/"
+            },
+            "log": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/runs/8/log/"
+            },
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/runs/8/"
+            },
+            "actions": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/runs/8/actions/"
+            },
+            "steps": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/runs/8/steps/"
+            }
+        },
+        "actions": [{
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/runs/8/cause/"
+                }
+            },
+            "_class": "hudson.model.CauseAction",
+            "causes": [{
+                "_class": "hudson.model.Cause$UserIdCause",
+                "shortDescription": "Started by user Cliff Meyers",
+                "userId": "cmeyers",
+                "userName": "Cliff Meyers"
+            }],
+            "urlName": "cause"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/runs/8/timings/"
+                }
+            },
+            "_class": "jenkins.metrics.impl.TimeInQueueAction",
+            "queuingDurationMillis": 4,
+            "totalDurationMillis": 34,
+            "urlName": "timings"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/runs/8/wfapi/"
+                }
+            },
+            "_class": "com.cloudbees.workflow.rest.endpoints.RunAPI",
+            "urlName": "wfapi"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/runs/8/replay/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.cps.replay.ReplayAction",
+            "urlName": "replay"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/runs/8/flowGraph/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.job.views.FlowGraphAction",
+            "nodes": [{
+                "_class": "org.jenkinsci.plugins.workflow.graph.FlowStartNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.graph.FlowEndNode"
+            }],
+            "urlName": "flowGraph"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/runs/8/flowGraphTable/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.job.views.FlowGraphTableAction",
+            "urlName": "flowGraphTable"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/failure-project/runs/8/graphViz/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.job.views.GraphVizAction",
+            "urlName": "graphViz"
+        }],
+        "artifacts": [],
+        "changeSet": [],
+        "durationInMillis": 30,
+        "enQueueTime": "2016-08-11T12:58:52.857-0400",
+        "endTime": "2016-08-11T12:58:52.888-0400",
+        "estimatedDurationInMillis": 30,
+        "id": "8",
+        "organization": "jenkins",
+        "pipeline": "failure-project",
+        "result": "SUCCESS",
+        "runSummary": "stable",
+        "startTime": "2016-08-11T12:58:52.858-0400",
+        "state": "FINISHED",
+        "type": "WorkflowRun",
+        "commitId": null
+    },
+    "name": "failure-project",
+    "organization": "jenkins",
+    "permissions": {
+        "create": true,
+        "read": true,
+        "start": true,
+        "stop": true
+    },
+    "weatherScore": 100
+}, {
+    "_class": "io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl",
+    "_links": {
+        "activities": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-failure-1m/activities/"
+        },
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-failure-1m/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-failure-1m/actions/"
+        },
+        "runs": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-failure-1m/runs/"
+        },
+        "queue": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-failure-1m/queue/"
+        }
+    },
+    "actions": [{
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-failure-1m/http://localhost:8080/jenkins/plugin/favorite/toggleFavorite?job=freestyle-jobs%2Ffreestyle-failure-1m&userName=cmeyers&redirect=true/"
+            }
+        },
+        "_class": "hudson.plugins.favorite.project.FavoriteProjectAction",
+        "urlName": "http://localhost:8080/jenkins/plugin/favorite/toggleFavorite?job=freestyle-jobs%2Ffreestyle-failure-1m&userName=cmeyers&redirect=true"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-failure-1m/move/"
+            }
+        },
+        "_class": "com.cloudbees.hudson.plugins.folder.relocate.RelocationAction",
+        "urlName": "move"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-failure-1m/credentials/"
+            }
+        },
+        "_class": "com.cloudbees.plugins.credentials.ViewCredentialsAction",
+        "stores": {},
+        "urlName": "credentials"
+    }],
+    "displayName": "freestyle-failure-1m",
+    "estimatedDurationInMillis": 60046,
+    "fullName": "freestyle-jobs/freestyle-failure-1m",
+    "lastSuccessfulRun": null,
+    "latestRun": {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.FreeStyleRunImpl",
+        "_links": {
+            "nodes": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-failure-1m/runs/75/nodes/"
+            },
+            "log": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-failure-1m/runs/75/log/"
+            },
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-failure-1m/runs/75/"
+            },
+            "actions": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-failure-1m/runs/75/actions/"
+            },
+            "steps": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-failure-1m/runs/75/steps/"
+            }
+        },
+        "actions": [{
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-failure-1m/runs/75/cause/"
+                }
+            },
+            "_class": "hudson.model.CauseAction",
+            "causes": [{
+                "_class": "hudson.model.Cause$UserIdCause",
+                "shortDescription": "Started by user Cliff Meyers",
+                "userId": "cmeyers",
+                "userName": "Cliff Meyers"
+            }],
+            "urlName": "cause"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-failure-1m/runs/75/timings/"
+                }
+            },
+            "_class": "jenkins.metrics.impl.TimeInQueueAction",
+            "queuingDurationMillis": 4,
+            "totalDurationMillis": 60032,
+            "urlName": "timings"
+        }],
+        "artifacts": [],
+        "changeSet": [],
+        "durationInMillis": 60028,
+        "enQueueTime": "2016-09-07T11:48:31.257-0400",
+        "endTime": "2016-09-07T11:49:31.287-0400",
+        "estimatedDurationInMillis": 60046,
+        "id": "75",
+        "organization": "jenkins",
+        "pipeline": "freestyle-failure-1m",
+        "result": "FAILURE",
+        "runSummary": "broken since build #63",
+        "startTime": "2016-09-07T11:48:31.259-0400",
+        "state": "FINISHED",
+        "type": "FreeStyleBuild"
+    },
+    "name": "freestyle-failure-1m",
+    "organization": "jenkins",
+    "permissions": {
+        "create": true,
+        "read": true,
+        "start": true,
+        "stop": true
+    },
+    "weatherScore": 0
+}, {
+    "_class": "io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl",
+    "_links": {
+        "activities": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-10m/activities/"
+        },
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-10m/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-10m/actions/"
+        },
+        "runs": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-10m/runs/"
+        },
+        "queue": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-10m/queue/"
+        }
+    },
+    "actions": [{
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-10m/http://localhost:8080/jenkins/plugin/favorite/toggleFavorite?job=freestyle-jobs%2Ffreestyle-success-10m&userName=cmeyers&redirect=true/"
+            }
+        },
+        "_class": "hudson.plugins.favorite.project.FavoriteProjectAction",
+        "urlName": "http://localhost:8080/jenkins/plugin/favorite/toggleFavorite?job=freestyle-jobs%2Ffreestyle-success-10m&userName=cmeyers&redirect=true"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-10m/move/"
+            }
+        },
+        "_class": "com.cloudbees.hudson.plugins.folder.relocate.RelocationAction",
+        "urlName": "move"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-10m/credentials/"
+            }
+        },
+        "_class": "com.cloudbees.plugins.credentials.ViewCredentialsAction",
+        "stores": {},
+        "urlName": "credentials"
+    }],
+    "displayName": "freestyle-success-10m",
+    "estimatedDurationInMillis": 600010,
+    "fullName": "freestyle-jobs/freestyle-success-10m",
+    "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-10m/runs/31/",
+    "latestRun": {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.FreeStyleRunImpl",
+        "_links": {
+            "nodes": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-10m/runs/33/nodes/"
+            },
+            "log": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-10m/runs/33/log/"
+            },
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-10m/runs/33/"
+            },
+            "actions": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-10m/runs/33/actions/"
+            },
+            "steps": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-10m/runs/33/steps/"
+            }
+        },
+        "actions": [{
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-10m/runs/33/cause/"
+                }
+            },
+            "_class": "hudson.model.CauseAction",
+            "causes": [{
+                "_class": "hudson.model.Cause$UserIdCause",
+                "shortDescription": "Started by user Cliff Meyers",
+                "userId": "cmeyers",
+                "userName": "Cliff Meyers"
+            }],
+            "urlName": "cause"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-10m/runs/33/timings/"
+                }
+            },
+            "_class": "jenkins.metrics.impl.TimeInQueueAction",
+            "queuingDurationMillis": 10,
+            "totalDurationMillis": 72135,
+            "urlName": "timings"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": null
+            },
+            "_class": "jenkins.model.InterruptedBuildAction",
+            "causes": [{
+                "_class": "jenkins.model.CauseOfInterruption$UserInterruption"
+            }],
+            "urlName": null
+        }],
+        "artifacts": [],
+        "changeSet": [],
+        "durationInMillis": 72125,
+        "enQueueTime": "2016-09-07T10:55:40.065-0400",
+        "endTime": "2016-09-07T10:56:52.193-0400",
+        "estimatedDurationInMillis": 600010,
+        "id": "33",
+        "organization": "jenkins",
+        "pipeline": "freestyle-success-10m",
+        "result": "ABORTED",
+        "runSummary": "aborted",
+        "startTime": "2016-09-07T10:55:40.068-0400",
+        "state": "FINISHED",
+        "type": "FreeStyleBuild"
+    },
+    "name": "freestyle-success-10m",
+    "organization": "jenkins",
+    "permissions": {
+        "create": true,
+        "read": true,
+        "start": true,
+        "stop": true
+    },
+    "weatherScore": 100
+}, {
+    "_class": "io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl",
+    "_links": {
+        "activities": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-1m/activities/"
+        },
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-1m/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-1m/actions/"
+        },
+        "runs": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-1m/runs/"
+        },
+        "queue": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-1m/queue/"
+        }
+    },
+    "actions": [{
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-1m/http://localhost:8080/jenkins/plugin/favorite/toggleFavorite?job=freestyle-jobs%2Ffreestyle-success-1m&userName=cmeyers&redirect=true/"
+            }
+        },
+        "_class": "hudson.plugins.favorite.project.FavoriteProjectAction",
+        "urlName": "http://localhost:8080/jenkins/plugin/favorite/toggleFavorite?job=freestyle-jobs%2Ffreestyle-success-1m&userName=cmeyers&redirect=true"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-1m/move/"
+            }
+        },
+        "_class": "com.cloudbees.hudson.plugins.folder.relocate.RelocationAction",
+        "urlName": "move"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-1m/credentials/"
+            }
+        },
+        "_class": "com.cloudbees.plugins.credentials.ViewCredentialsAction",
+        "stores": {},
+        "urlName": "credentials"
+    }],
+    "displayName": "freestyle-success-1m",
+    "estimatedDurationInMillis": 60029,
+    "fullName": "freestyle-jobs/freestyle-success-1m",
+    "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-1m/runs/119/",
+    "latestRun": {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.FreeStyleRunImpl",
+        "_links": {
+            "nodes": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-1m/runs/119/nodes/"
+            },
+            "log": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-1m/runs/119/log/"
+            },
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-1m/runs/119/"
+            },
+            "actions": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-1m/runs/119/actions/"
+            },
+            "steps": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-1m/runs/119/steps/"
+            }
+        },
+        "actions": [{
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-1m/runs/119/cause/"
+                }
+            },
+            "_class": "hudson.model.CauseAction",
+            "causes": [{
+                "_class": "hudson.model.Cause$UserIdCause",
+                "shortDescription": "Started by user Cliff Meyers",
+                "userId": "cmeyers",
+                "userName": "Cliff Meyers"
+            }],
+            "urlName": "cause"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-1m/runs/119/timings/"
+                }
+            },
+            "_class": "jenkins.metrics.impl.TimeInQueueAction",
+            "queuingDurationMillis": 315626,
+            "totalDurationMillis": 375654,
+            "urlName": "timings"
+        }],
+        "artifacts": [],
+        "changeSet": [],
+        "durationInMillis": 60028,
+        "enQueueTime": "2016-09-07T10:28:25.248-0400",
+        "endTime": "2016-09-07T10:29:25.277-0400",
+        "estimatedDurationInMillis": 60029,
+        "id": "119",
+        "organization": "jenkins",
+        "pipeline": "freestyle-success-1m",
+        "result": "SUCCESS",
+        "runSummary": "stable",
+        "startTime": "2016-09-07T10:28:25.249-0400",
+        "state": "FINISHED",
+        "type": "FreeStyleBuild"
+    },
+    "name": "freestyle-success-1m",
+    "organization": "jenkins",
+    "permissions": {
+        "create": true,
+        "read": true,
+        "start": true,
+        "stop": true
+    },
+    "weatherScore": 100
+}, {
+    "_class": "io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl",
+    "_links": {
+        "activities": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-5m/activities/"
+        },
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-5m/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-5m/actions/"
+        },
+        "runs": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-5m/runs/"
+        },
+        "queue": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-5m/queue/"
+        }
+    },
+    "actions": [{
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-5m/http://localhost:8080/jenkins/plugin/favorite/toggleFavorite?job=freestyle-jobs%2Ffreestyle-success-5m&userName=cmeyers&redirect=true/"
+            }
+        },
+        "_class": "hudson.plugins.favorite.project.FavoriteProjectAction",
+        "urlName": "http://localhost:8080/jenkins/plugin/favorite/toggleFavorite?job=freestyle-jobs%2Ffreestyle-success-5m&userName=cmeyers&redirect=true"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-5m/move/"
+            }
+        },
+        "_class": "com.cloudbees.hudson.plugins.folder.relocate.RelocationAction",
+        "urlName": "move"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-5m/credentials/"
+            }
+        },
+        "_class": "com.cloudbees.plugins.credentials.ViewCredentialsAction",
+        "stores": {},
+        "urlName": "credentials"
+    }],
+    "displayName": "freestyle-success-5m",
+    "estimatedDurationInMillis": 240032,
+    "fullName": "freestyle-jobs/freestyle-success-5m",
+    "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-5m/runs/58/",
+    "latestRun": {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.FreeStyleRunImpl",
+        "_links": {
+            "nodes": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-5m/runs/58/nodes/"
+            },
+            "log": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-5m/runs/58/log/"
+            },
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-5m/runs/58/"
+            },
+            "actions": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-5m/runs/58/actions/"
+            },
+            "steps": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-5m/runs/58/steps/"
+            }
+        },
+        "actions": [{
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-5m/runs/58/cause/"
+                }
+            },
+            "_class": "hudson.model.CauseAction",
+            "causes": [{
+                "_class": "hudson.model.Cause$UserIdCause",
+                "shortDescription": "Started by user Cliff Meyers",
+                "userId": "cmeyers",
+                "userName": "Cliff Meyers"
+            }],
+            "urlName": "cause"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-5m/runs/58/timings/"
+                }
+            },
+            "_class": "jenkins.metrics.impl.TimeInQueueAction",
+            "queuingDurationMillis": 23036,
+            "totalDurationMillis": 323087,
+            "urlName": "timings"
+        }],
+        "artifacts": [],
+        "changeSet": [],
+        "durationInMillis": 300051,
+        "enQueueTime": "2016-09-07T10:23:25.192-0400",
+        "endTime": "2016-09-07T10:28:25.244-0400",
+        "estimatedDurationInMillis": 240032,
+        "id": "58",
+        "organization": "jenkins",
+        "pipeline": "freestyle-success-5m",
+        "result": "SUCCESS",
+        "runSummary": "stable",
+        "startTime": "2016-09-07T10:23:25.193-0400",
+        "state": "FINISHED",
+        "type": "FreeStyleBuild"
+    },
+    "name": "freestyle-success-5m",
+    "organization": "jenkins",
+    "permissions": {
+        "create": true,
+        "read": true,
+        "start": true,
+        "stop": true
+    },
+    "weatherScore": 100
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl",
+    "_links": {
+        "activities": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/jdl1/activities/"
+        },
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/jdl1/"
+        },
+        "branches": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/jdl1/branches/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/jdl1/actions/"
+        },
+        "runs": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/jdl1/runs/"
+        },
+        "queue": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/jdl1/queue/"
+        }
+    },
+    "actions": [{
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/jdl1/move/"
+            }
+        },
+        "_class": "com.cloudbees.hudson.plugins.folder.relocate.RelocationAction",
+        "urlName": "move"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/jdl1/pipeline-syntax/"
+            }
+        },
+        "_class": "org.jenkinsci.plugins.workflow.cps.Snippetizer$LocalAction",
+        "urlName": "pipeline-syntax"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/jdl1/credentials/"
+            }
+        },
+        "_class": "com.cloudbees.plugins.credentials.ViewCredentialsAction",
+        "stores": {
+            "folder": {
+                "_class": "com.cloudbees.hudson.plugins.folder.properties.FolderCredentialsProvider$FolderCredentialsProperty$CredentialsStoreActionImpl"
+            }
+        },
+        "urlName": "credentials"
+    }],
+    "displayName": "jdl1",
+    "fullName": "jdl1",
+    "name": "jdl1",
+    "organization": "jenkins",
+    "permissions": {
+        "create": true,
+        "read": true
+    },
+    "estimatedDurationInMillis": 976,
+    "numberOfFolders": 0,
+    "numberOfPipelines": 3,
+    "weatherScore": 0,
+    "branchNames": ["master", "docker-test", "experiment%2Fbuild-locally-docker"],
+    "numberOfFailingBranches": 1,
+    "numberOfFailingPullRequests": 0,
+    "numberOfSuccessfulBranches": 1,
+    "numberOfSuccessfulPullRequests": 0,
+    "totalNumberOfBranches": 3,
+    "totalNumberOfPullRequests": 0
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.MatrixProjectImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/job/matrix-1/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/job/matrix-1/actions/"
+        },
+        "runs": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/job/matrix-1/runs/"
+        },
+        "queue": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/job/matrix-1/queue/"
+        }
+    },
+    "actions": [],
+    "displayName": "matrix-1",
+    "fullName": "matrix-1",
+    "name": "matrix-1",
+    "organization": "jenkins",
+    "permissions": {
+        "create": true,
+        "read": true
+    },
+    "numberOfFolders": 0,
+    "numberOfPipelines": 0
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl",
+    "_links": {
+        "activities": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/blueocean-pr-testing/activities/"
+        },
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/blueocean-pr-testing/"
+        },
+        "branches": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/blueocean-pr-testing/branches/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/blueocean-pr-testing/actions/"
+        },
+        "runs": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/blueocean-pr-testing/runs/"
+        },
+        "queue": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/blueocean-pr-testing/queue/"
+        }
+    },
+    "actions": [{
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/blueocean-pr-testing/move/"
+            }
+        },
+        "_class": "com.cloudbees.hudson.plugins.folder.relocate.RelocationAction",
+        "urlName": "move"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/blueocean-pr-testing/pipeline-syntax/"
+            }
+        },
+        "_class": "org.jenkinsci.plugins.workflow.cps.Snippetizer$LocalAction",
+        "urlName": "pipeline-syntax"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/blueocean-pr-testing/credentials/"
+            }
+        },
+        "_class": "com.cloudbees.plugins.credentials.ViewCredentialsAction",
+        "stores": {
+            "folder": {
+                "_class": "com.cloudbees.hudson.plugins.folder.properties.FolderCredentialsProvider$FolderCredentialsProperty$CredentialsStoreActionImpl"
+            }
+        },
+        "urlName": "credentials"
+    }],
+    "displayName": "blueocean-pr-testing",
+    "fullName": "multibranch/blueocean-pr-testing",
+    "name": "blueocean-pr-testing",
+    "organization": "jenkins",
+    "permissions": {
+        "create": true,
+        "read": true
+    },
+    "estimatedDurationInMillis": 1152,
+    "numberOfFolders": 0,
+    "numberOfPipelines": 8,
+    "weatherScore": 100,
+    "branchNames": ["cliff-60s", "feature%2Fxxx", "feature%2Fcliff-2", "feature%2Fcliff-1", "feature%2Fyyy", "master", "cliff-120s", "develop"],
+    "numberOfFailingBranches": 1,
+    "numberOfFailingPullRequests": 0,
+    "numberOfSuccessfulBranches": 7,
+    "numberOfSuccessfulPullRequests": 0,
+    "totalNumberOfBranches": 8,
+    "totalNumberOfPullRequests": 0
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl",
+    "_links": {
+        "activities": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/activities/"
+        },
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/"
+        },
+        "branches": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/actions/"
+        },
+        "runs": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/runs/"
+        },
+        "queue": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/queue/"
+        }
+    },
+    "actions": [{
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/move/"
+            }
+        },
+        "_class": "com.cloudbees.hudson.plugins.folder.relocate.RelocationAction",
+        "urlName": "move"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/pipeline-syntax/"
+            }
+        },
+        "_class": "org.jenkinsci.plugins.workflow.cps.Snippetizer$LocalAction",
+        "urlName": "pipeline-syntax"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/credentials/"
+            }
+        },
+        "_class": "com.cloudbees.plugins.credentials.ViewCredentialsAction",
+        "stores": {
+            "folder": {
+                "_class": "com.cloudbees.hudson.plugins.folder.properties.FolderCredentialsProvider$FolderCredentialsProperty$CredentialsStoreActionImpl"
+            }
+        },
+        "urlName": "credentials"
+    }],
+    "displayName": "Jenkins Experiments!",
+    "fullName": "multibranch/nested-folder/jenkinsfile-experiments",
+    "name": "jenkinsfile-experiments",
+    "organization": "jenkins",
+    "permissions": {
+        "create": true,
+        "read": true
+    },
+    "estimatedDurationInMillis": 1422,
+    "numberOfFolders": 0,
+    "numberOfPipelines": 2,
+    "weatherScore": 100,
+    "branchNames": ["master", "test-branch-1", "PR-2"],
+    "numberOfFailingBranches": 0,
+    "numberOfFailingPullRequests": 0,
+    "numberOfSuccessfulBranches": 2,
+    "numberOfSuccessfulPullRequests": 1,
+    "totalNumberOfBranches": 2,
+    "totalNumberOfPullRequests": 1
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineImpl",
+    "_links": {
+        "activities": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/activities/"
+        },
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/actions/"
+        },
+        "runs": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/runs/"
+        },
+        "queue": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/queue/"
+        }
+    },
+    "actions": [{
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/move/"
+            }
+        },
+        "_class": "com.cloudbees.hudson.plugins.folder.relocate.RelocationAction",
+        "urlName": "move"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/wfapi/"
+            }
+        },
+        "_class": "com.cloudbees.workflow.rest.endpoints.JobAPI",
+        "urlName": "wfapi"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/workflow-stage/"
+            }
+        },
+        "_class": "com.cloudbees.workflow.ui.view.WorkflowStageViewAction",
+        "urlName": "workflow-stage"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/pipeline-syntax/"
+            }
+        },
+        "_class": "org.jenkinsci.plugins.workflow.cps.Snippetizer$LocalAction",
+        "urlName": "pipeline-syntax"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/credentials/"
+            }
+        },
+        "_class": "com.cloudbees.plugins.credentials.ViewCredentialsAction",
+        "stores": {},
+        "urlName": "credentials"
+    }],
+    "displayName": "pipeline-failure-1m",
+    "estimatedDurationInMillis": 40025,
+    "fullName": "simple-pipeline-jobs/pipeline-failure-1m",
+    "lastSuccessfulRun": null,
+    "latestRun": {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
+        "_links": {
+            "nodes": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/runs/10/nodes/"
+            },
+            "log": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/runs/10/log/"
+            },
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/runs/10/"
+            },
+            "actions": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/runs/10/actions/"
+            },
+            "steps": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/runs/10/steps/"
+            }
+        },
+        "actions": [{
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": null
+            },
+            "_class": "org.jenkinsci.plugins.workflow.cps.replay.ReplayFlowFactoryAction",
+            "urlName": null
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/runs/10/cause/"
+                }
+            },
+            "_class": "hudson.model.CauseAction",
+            "causes": [{
+                "_class": "hudson.model.Cause$UserIdCause",
+                "shortDescription": "Started by user Cliff Meyers",
+                "userId": "cmeyers",
+                "userName": "Cliff Meyers"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.replay.ReplayCause",
+                "shortDescription": "Replayed #9"
+            }],
+            "urlName": "cause"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/runs/10/timings/"
+                }
+            },
+            "_class": "jenkins.metrics.impl.TimeInQueueAction",
+            "queuingDurationMillis": 14,
+            "totalDurationMillis": 6840,
+            "urlName": "timings"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": null
+            },
+            "_class": "jenkins.model.InterruptedBuildAction",
+            "causes": [{
+                "_class": "jenkins.model.CauseOfInterruption$UserInterruption"
+            }],
+            "urlName": null
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": null
+            },
+            "_class": "jenkins.model.InterruptedBuildAction",
+            "causes": [],
+            "urlName": null
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/runs/10/wfapi/"
+                }
+            },
+            "_class": "com.cloudbees.workflow.rest.endpoints.RunAPI",
+            "urlName": "wfapi"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/runs/10/replay/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.cps.replay.ReplayAction",
+            "urlName": "replay"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/runs/10/flowGraph/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.job.views.FlowGraphAction",
+            "nodes": [{
+                "_class": "org.jenkinsci.plugins.workflow.graph.FlowStartNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.graph.FlowEndNode"
+            }],
+            "urlName": "flowGraph"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/runs/10/flowGraphTable/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.job.views.FlowGraphTableAction",
+            "urlName": "flowGraphTable"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-failure-1m/runs/10/graphViz/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.job.views.GraphVizAction",
+            "urlName": "graphViz"
+        }],
+        "artifacts": [],
+        "changeSet": [],
+        "durationInMillis": 6826,
+        "enQueueTime": "2016-09-07T12:14:06.174-0400",
+        "endTime": "2016-09-07T12:14:13.003-0400",
+        "estimatedDurationInMillis": 40025,
+        "id": "10",
+        "organization": "jenkins",
+        "pipeline": "pipeline-failure-1m",
+        "result": "ABORTED",
+        "runSummary": "aborted",
+        "startTime": "2016-09-07T12:14:06.177-0400",
+        "state": "FINISHED",
+        "type": "WorkflowRun",
+        "commitId": null
+    },
+    "name": "pipeline-failure-1m",
+    "organization": "jenkins",
+    "permissions": {
+        "create": true,
+        "read": true,
+        "start": true,
+        "stop": true
+    },
+    "weatherScore": 0
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineImpl",
+    "_links": {
+        "activities": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-never-run/activities/"
+        },
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-never-run/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-never-run/actions/"
+        },
+        "runs": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-never-run/runs/"
+        },
+        "queue": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-never-run/queue/"
+        }
+    },
+    "actions": [{
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-never-run/move/"
+            }
+        },
+        "_class": "com.cloudbees.hudson.plugins.folder.relocate.RelocationAction",
+        "urlName": "move"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-never-run/wfapi/"
+            }
+        },
+        "_class": "com.cloudbees.workflow.rest.endpoints.JobAPI",
+        "urlName": "wfapi"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-never-run/workflow-stage/"
+            }
+        },
+        "_class": "com.cloudbees.workflow.ui.view.WorkflowStageViewAction",
+        "urlName": "workflow-stage"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-never-run/pipeline-syntax/"
+            }
+        },
+        "_class": "org.jenkinsci.plugins.workflow.cps.Snippetizer$LocalAction",
+        "urlName": "pipeline-syntax"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-never-run/credentials/"
+            }
+        },
+        "_class": "com.cloudbees.plugins.credentials.ViewCredentialsAction",
+        "stores": {},
+        "urlName": "credentials"
+    }],
+    "displayName": "pipeline-never-run",
+    "estimatedDurationInMillis": -1,
+    "fullName": "simple-pipeline-jobs/pipeline-never-run",
+    "lastSuccessfulRun": null,
+    "latestRun": null,
+    "name": "pipeline-never-run",
+    "organization": "jenkins",
+    "permissions": {
+        "create": true,
+        "read": true,
+        "start": true,
+        "stop": true
+    },
+    "weatherScore": 100
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineImpl",
+    "_links": {
+        "activities": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/activities/"
+        },
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/actions/"
+        },
+        "runs": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/runs/"
+        },
+        "queue": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/queue/"
+        }
+    },
+    "actions": [{
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/move/"
+            }
+        },
+        "_class": "com.cloudbees.hudson.plugins.folder.relocate.RelocationAction",
+        "urlName": "move"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/wfapi/"
+            }
+        },
+        "_class": "com.cloudbees.workflow.rest.endpoints.JobAPI",
+        "urlName": "wfapi"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/workflow-stage/"
+            }
+        },
+        "_class": "com.cloudbees.workflow.ui.view.WorkflowStageViewAction",
+        "urlName": "workflow-stage"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/pipeline-syntax/"
+            }
+        },
+        "_class": "org.jenkinsci.plugins.workflow.cps.Snippetizer$LocalAction",
+        "urlName": "pipeline-syntax"
+    }, {
+        "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+        "_links": {
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/credentials/"
+            }
+        },
+        "_class": "com.cloudbees.plugins.credentials.ViewCredentialsAction",
+        "stores": {},
+        "urlName": "credentials"
+    }],
+    "displayName": "pipeline-success-1m",
+    "estimatedDurationInMillis": 68251,
+    "fullName": "simple-pipeline-jobs/pipeline-success-1m",
+    "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/runs/107/",
+    "latestRun": {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
+        "_links": {
+            "nodes": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/runs/107/nodes/"
+            },
+            "log": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/runs/107/log/"
+            },
+            "self": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/runs/107/"
+            },
+            "actions": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/runs/107/actions/"
+            },
+            "steps": {
+                "_class": "io.jenkins.blueocean.rest.hal.Link",
+                "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/runs/107/steps/"
+            }
+        },
+        "actions": [{
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/runs/107/cause/"
+                }
+            },
+            "_class": "hudson.model.CauseAction",
+            "causes": [{
+                "_class": "hudson.model.Cause$UserIdCause",
+                "shortDescription": "Started by user Cliff Meyers",
+                "userId": "cmeyers",
+                "userName": "Cliff Meyers"
+            }],
+            "urlName": "cause"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/runs/107/timings/"
+                }
+            },
+            "_class": "jenkins.metrics.impl.TimeInQueueAction",
+            "queuingDurationMillis": 2,
+            "totalDurationMillis": 68122,
+            "urlName": "timings"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/runs/107/wfapi/"
+                }
+            },
+            "_class": "com.cloudbees.workflow.rest.endpoints.RunAPI",
+            "urlName": "wfapi"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/runs/107/replay/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.cps.replay.ReplayAction",
+            "urlName": "replay"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/runs/107/flowGraph/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.job.views.FlowGraphAction",
+            "nodes": [{
+                "_class": "org.jenkinsci.plugins.workflow.graph.FlowStartNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode"
+            }, {
+                "_class": "org.jenkinsci.plugins.workflow.graph.FlowEndNode"
+            }],
+            "urlName": "flowGraph"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/runs/107/flowGraphTable/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.job.views.FlowGraphTableAction",
+            "urlName": "flowGraphTable"
+        }, {
+            "_class": "io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl",
+            "_links": {
+                "self": {
+                    "_class": "io.jenkins.blueocean.rest.hal.Link",
+                    "href": "/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/runs/107/graphViz/"
+                }
+            },
+            "_class": "org.jenkinsci.plugins.workflow.job.views.GraphVizAction",
+            "urlName": "graphViz"
+        }],
+        "artifacts": [],
+        "changeSet": [],
+        "durationInMillis": 68120,
+        "enQueueTime": "2016-09-06T17:16:07.627-0400",
+        "endTime": "2016-09-06T17:17:15.749-0400",
+        "estimatedDurationInMillis": 68251,
+        "id": "107",
+        "organization": "jenkins",
+        "pipeline": "pipeline-success-1m",
+        "result": "SUCCESS",
+        "runSummary": "stable",
+        "startTime": "2016-09-06T17:16:07.629-0400",
+        "state": "FINISHED",
+        "type": "WorkflowRun",
+        "commitId": null
+    },
+    "name": "pipeline-success-1m",
+    "organization": "jenkins",
+    "permissions": {
+        "create": true,
+        "read": true,
+        "start": true,
+        "stop": true
+    },
+    "weatherScore": 100
+}]

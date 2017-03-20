@@ -1,0 +1,46 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:x="jelly:xml">
+  <st:contentType value="text/html;charset=UTF-8"/>
+  <x:doctype name="html"/>
+  <html>
+    <j:new var="h" className="hudson.Functions"/><!-- instead of JSP functions -->
+    <j:invokeStatic var="j" className="jenkins.model.Jenkins" method="getActiveInstance"/>
+    ${h.initPageVariables(context)}
+
+    <head data-appurl="${rootURL}/${it.urlBase}">
+      <title>Jenkins Blue Ocean - Incompatible Internet Explorer</title>
+
+      <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
+      <meta name="viewport" content="width=device-width,minimum-scale=1,maximum-scale=1"></meta>
+      <script src="${resURL}/plugin/blueocean-web/scripts/html5shiv-printshiv.min.js"></script>
+      <script src="${resURL}/plugin/blueocean-web/scripts/ie-detect.js"></script>
+
+      <!-- Reset -->
+      <link href="${resURL}/plugin/blueocean-web/assets/css/normalize.css" rel="stylesheet"/>
+
+      <!-- Icons + Fonts -->
+      <link rel="stylesheet" href="${resURL}/plugin/blueocean-web/assets/css/latofonts.css" type="text/css"/>
+      <link rel="stylesheet" href="${resURL}/plugin/blueocean-web/assets/octicons/octicons.css" type="text/css"/>
+
+      <!-- Jenkins Design Language -->
+      <link rel="stylesheet" href="${resURL}/plugin/blueocean-web/assets/css/jenkins-design-language.css" type="text/css"/>
+      <link rel="stylesheet" href="${rootURL}/${j.getAdjuncts('').rootURL}/io/jenkins/blueocean/blueocean.css" type="text/css"/>
+      <link rel="stylesheet" href="${rootURL}/${j.getAdjuncts('').rootURL}/org/jenkins/ui/jsmodules/blueocean-dashboard/extensions.css" type="text/css"/>
+    </head>
+
+    <body>
+      <div class="container-fluid">
+        <div class="fullscreen not-found">
+          <div class="message-box">
+            <h3>Incompatible Internet Explorer</h3>
+            <div class="message">
+              Blue Ocean cannot run in your current Internet Explorer, either because it is older than version 11,
+              or is running in one of the "Compatibility" modes.
+            </div>
+          </div>
+        </div>
+      </div>
+    </body>
+
+  </html>
+</j:jelly>

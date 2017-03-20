@@ -29,19 +29,19 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
         this.self = parentLink.rel("nodes");
 
         WorkflowJob job = run.getParent();
-
-        PipelineNodeGraphBuilder graphBuilder = new PipelineNodeGraphBuilder(run);
+        NodeGraphBuilder graphBuilder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
 
         //If build either failed or is in progress then return union with last successful pipeline run
-        if(run.getResult() != Result.SUCCESS
+        if (run.getResult() != Result.SUCCESS
             && job.getLastSuccessfulBuild() != null
-            && Integer.valueOf(job.getLastSuccessfulBuild().getId()) < Integer.valueOf(run.getId())){
-            PipelineNodeGraphBuilder pastBuild = new PipelineNodeGraphBuilder(job.getLastSuccessfulBuild());
-            this.nodes = graphBuilder.union(pastBuild,getLink());
-        }else{
+            && Integer.valueOf(job.getLastSuccessfulBuild().getId()) < Integer.valueOf(run.getId())) {
+
+            NodeGraphBuilder pastBuildGraph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(job.getLastSuccessfulBuild());
+            this.nodes = graphBuilder.union(pastBuildGraph.getPipelineNodes(), getLink());
+        } else {
             this.nodes = graphBuilder.getPipelineNodes(getLink());
         }
-        for(BluePipelineNode node: nodes){
+        for (BluePipelineNode node : nodes) {
             nodeMap.put(node.getId(), node);
         }
     }

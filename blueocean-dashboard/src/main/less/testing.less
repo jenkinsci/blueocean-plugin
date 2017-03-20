@@ -7,9 +7,23 @@
     h4 {
       margin: 0 0 .4em 0;
     }
+    .result-item-children {
+      padding: 0;
+      border: 0;
+    }
   }
   .test-console {
-    padding: 1em;
+    padding: 1em 0;
+    font-size: 15px;
+    overflow-x: auto;
+    h4 {
+      font-size: 17px;
+      margin: .75em 0em .5em 3em;
+      &:first-child {
+        margin-top: 0;
+      }
+    }
+
   }
   .stack-trace {
     white-space: pre;
@@ -43,7 +57,7 @@
     margin: 1.5em auto 2.5em auto;
     display: table;
     position: relative;
-    
+
     > div {
       display: table-cell;
       text-align: center;
@@ -64,6 +78,37 @@
     }
     .skipped.count-0 {
       display: none;
+    }
+  }
+}
+
+.console-log {
+  &.insert-line-numbers {
+    counter-reset: log;
+    .line {
+      color: #eee;
+      display: block;
+      text-decoration: none;
+      white-space: pre;
+      font: 13px "Source Code Pro", Menlo, Monaco, Consolas, "Courier New", monospace;
+      margin: 0;
+      padding: 0px 0 0 3em;
+
+      &:hover, &:hover:before {
+        background: #444;
+        color: #fff;
+      }
+
+      &:before {
+        counter-increment: log;
+        content: counter(log);
+        min-width: 2em;
+        display: inline-block;
+        text-align: right;
+        padding: 0 1em;
+        margin-left: -3em;
+        color: #777
+      }
     }
   }
 }

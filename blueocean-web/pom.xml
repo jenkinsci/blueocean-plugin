@@ -5,26 +5,35 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.0-alpha-10-SNAPSHOT</version>
+        <version>1.0.0-rc2-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean-web</artifactId>
     <packaging>hpi</packaging>
 
-    <name>BlueOcean :: Web module</name>
+    <name>Web for Blue Ocean</name>
 
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
 
     <dependencies>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-commons</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>metrics</artifactId>
-            <version>3.0.9</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>variant</artifactId>
-            <version>1.0</version>
+        </dependency>
+
+        <!-- test scope deps -->
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
@@ -62,7 +71,7 @@
                                 <source>
                                     def plugins = new File(basedir, 'work/plugins');
                                     plugins.mkdirs();
-                                    def blueoceanPlugins = ["blueocean-commons","blueocean-rest","blueocean-plugin"]
+                                    def blueoceanPlugins = ["blueocean-commons","blueocean-rest","blueocean"]
                                     for (a in blueoceanPlugins) {
                                         def name = a + ".hpi";
                                         def p = new File(basedir, "../" + a + "/target/"+ name);

@@ -1,7 +1,7 @@
 /**
  * Created by cmeyers on 8/18/16.
  */
-import { observable, computed } from 'mobx';
+import { action, observable, computed } from 'mobx';
 
 /**
  * Holds one or more toasts in state for display in UI.
@@ -24,17 +24,23 @@ export class ToastService {
      * }
      * @returns {number} unique ID of toast
      */
+    @action
     newToast(toast) {
-        if (!toast.id) {
-            toast.id = Math.random() * Math.pow(10, 16);
+        // prevent duplicate toasts from appearing when multiple UI elements
+        // are listening for an event that triggers creation of a toast
+        if (this._hasDuplicate(toast)) {
+            return null;
         }
 
-        // TODO: determine why it's necessary to re-set the "toasts" field to trigger the UI update
-        const copy = this.toasts.slice();
-        copy.push(toast);
-        this.toasts = copy;
+        const newToast = toast;
 
-        return toast.id;
+        if (!newToast.id) {
+            newToast.id = Math.random() * Math.pow(10, 16);
+        }
+
+        this.toasts.push(newToast);
+
+        return newToast.id;
     }
 
     /**
@@ -42,15 +48,33 @@ export class ToastService {
      *
      * @param toast
      */
+    @action
     removeToast(toast) {
-        this.toasts = this.toasts.filter((item) => {
-            return toast.id !== item.id;
-        });
+        this.toasts = this.toasts.filter((item) =>
+            toast.id !== item.id
+        );
     }
 
     @computed
     get count() {
         return this.toasts ? this.toasts.length : 0;
+    }
+
+    /**
+     * Returns true if a toast with the same 'text' and 'action' already exists
+     * @param newToast
+     * @returns {boolean}
+     * @private
+     */
+    _hasDuplicate(newToast) {
+        for (const toast of this.toasts) {
+            if (toast.text === newToast.text &&
+                toast.action === newToast.action) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }

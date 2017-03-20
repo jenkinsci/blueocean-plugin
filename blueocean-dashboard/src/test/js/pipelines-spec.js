@@ -5,7 +5,7 @@ import React from 'react';
 import { assert } from 'chai';
 import { mount, shallow } from 'enzyme';
 
-import Pipelines from '../../main/js/components/Pipelines.jsx';
+import { Pipelines } from '../../main/js/components/Pipelines.jsx';
 import { pipelines } from './data/pipelines/pipelinesSingle';
 import { pipelinesDupName } from './data/pipelines/pipelinesTwoJobsSameName';
 
@@ -16,21 +16,32 @@ describe('Pipelines', () => {
         getRootURL: () => '/',
     };
 
-    const params = {};
+  //  const context = {
+   //     params: {},
+   ///     location: {},
+   ///     config,
+  //  };
 
     describe('basic table rendering', () => {
         let wrapper;
-        let context;
 
         beforeEach(() => {
-            context = {
-                pipelines,
-                params,
+
+            const context = {
+                params: {},
+                location: {},
                 config,
+                pipelineService: {
+                    allPipelinesPager() {
+                        return {
+                            data: pipelines,
+                        };
+                    },
+                },
             };
 
             wrapper = shallow(
-                <Pipelines />,
+                <Pipelines params={context.params} setTitle={()=>{}}/>,
                 {
                     context,
                 }
@@ -50,12 +61,21 @@ describe('Pipelines', () => {
         it('should render two rows when job names are duplicated across folders', () => {
             const context = {
                 config,
-                params,
-                pipelines: pipelinesDupName,
+                params: {
+                    organization:'jenkins',
+                },
+                pipelineService: {
+                    organiztionPipelinesPager() {
+                        return {
+                            data: pipelinesDupName,
+                        };
+                    },
+                },
             };
 
+
             const wrapper = mount(
-                <Pipelines />,
+                <Pipelines params={context.params} setTitle={()=>{}}/>,
                 { context },
             );
 

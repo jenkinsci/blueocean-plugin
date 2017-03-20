@@ -14,13 +14,8 @@ exports.bundle = function(extensionsJSON) {
             const cssBundle = __builder.bundle(extensionsLESSFile);
 
             cssBundle.bundleExportNamespace = artifactId;
-            extensionsJSON.extensionCSS = 'org/jenkins/ui/jsmodules/' + normalizeForJavaIdentifier(artifactId) + '/extensions.css';
+            extensionsJSON.extensionCSS = 'org/jenkins/ui/jsmodules/' + artifactId + '/extensions.css';
         }
     }
     return extensionsJSON;
 };
-
-function normalizeForJavaIdentifier(string) {
-    // Replace all non alphanumerics with an underscore.
-    return string.replace(/\W/g, '_');
-}

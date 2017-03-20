@@ -70,12 +70,15 @@ export const ACTION_TYPES = keymirror({
     SET_CURRENT_PULL_REQUEST_DATA: null,
     SET_CURRENT_BRANCHES_DATA: null,
     CLEAR_CURRENT_BRANCHES_DATA: null,
+    CLEAR_CURRENT_PULL_REQUEST_DATA: null,
     SET_TEST_RESULTS: null,
     SET_STEPS: null,
     SET_NODE: null,
     SET_NODES: null,
     SET_LOGS: null,
+    REMOVE_LOG: null,
     FIND_AND_UPDATE: null,
+    REMOVE_STEP: null,
 });
 
 export const actionHandlers = {
@@ -124,7 +127,10 @@ export const actionHandlers = {
             .set('currentRuns', runs[id]);
     },
     [ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA](state) {
-        return state.set('currentBranches', null);
+        return state.delete('currentBranches');
+    },
+    [ACTION_TYPES.CLEAR_CURRENT_PULL_REQUEST_DATA](state) {
+        return state.delete('pullRequests');
     },
     [ACTION_TYPES.SET_CURRENT_BRANCHES_DATA](state, { payload }): State {
         return state.set('currentBranches', payload);
@@ -140,10 +146,22 @@ export const actionHandlers = {
         steps[payload.nodesBaseUrl] = payload;
         return state.set('steps', steps);
     },
+    [ACTION_TYPES.REMOVE_STEP](state, { stepId }): State {
+        const steps = { ...state.steps } || {};
+        delete steps[stepId];
+        return state.set('steps', steps);
+    },
     [ACTION_TYPES.SET_LOGS](state, { payload }): State {
         const logs = { ...state.logs } || {};
         logs[payload.logUrl] = payload;
 
+        return state.set('logs', logs);
+    },
+    [ACTION_TYPES.REMOVE_LOG](state, { key }): State {
+        const logs = { ...state.logs } || {};
+        Object.keys(logs)
+            .filter((item) => item.indexOf(key) !== -1)
+            .map((item) => delete logs[item]);
         return state.set('logs', logs);
     },
     [ACTION_TYPES.FIND_AND_UPDATE](state, { payload }): State {
@@ -228,6 +246,35 @@ export const actions = {
     clearPipelineData() {
         return (dispatch) => dispatch({ type: ACTION_TYPES.CLEAR_PIPELINE_DATA });
     },
+    
+    /**
+     * Returns cached global pipeline list or causes a fetch
+     */
+    getAllPipelines() {
+        return (dispatch, getState) => {
+            if (!getState().adminStore.allPipelines) {
+                actions.fetchAllPipelines()(dispatch);
+            }
+        };
+    },
+
+    /**
+     * Returns cached organization pipelines or causes a fetch
+     * @param { organizationName } specific organization to fetch
+     */
+    getOrganizationPipelines({ organizationName }) {
+        return (dispatch, getState) => {
+            const orgPipelines = getState().adminStore.organizationPipelines;
+            if (!orgPipelines || !orgPipelines.length || !orgPipelines[0].organizationName === organizationName) {
+                // Doesn't match, clear existing set
+                dispatch({
+                    type: ACTION_TYPES.SET_ORG_PIPELINES_DATA,
+                    payload: null,
+                });
+                actions.fetchOrganizationPipelines({ organizationName })(dispatch);
+            }
+        };
+    },
 
     /**
      * Unconditionally fetch and update the pipelines list.
@@ -248,6 +295,18 @@ export const actions = {
                 });
             });
         };
+    },
+
+    clearBranchData() {
+        return (dispatch) => dispatch({
+            type: ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA,
+        });
+    },
+
+    clearPRData() {
+        return (dispatch) => dispatch({
+            type: ACTION_TYPES.CLEAR_CURRENT_PULL_REQUEST_DATA,
+        });
     },
 
     fetchOrganizationPipelines({ organizationName }) {
@@ -348,11 +407,24 @@ export const actions = {
                 // We keep the queueId so we can cross reference it with the actual
                 // run once it has been started.
                 newRun.job_run_queueId = event.job_run_queueId;
+                let queueUrl = event.blueocean_job_rest_url;
                 if (event.job_ismultibranch) {
                     newRun.pipeline = event.blueocean_job_branch_name;
+                    queueUrl += `/branches/${event.blueocean_job_branch_name}/queue/${event.job_run_queueId}`;
                 } else {
                     newRun.pipeline = event.blueocean_job_pipeline_name;
+                    queueUrl += `/queue/${event.job_run_queueId}`;
                 }
+
+                // attach the queue href via the _item prop; see _mapQueueToPsuedoRun
+                newRun._item = {
+                    _links: {
+                        self: {
+                            href: queueUrl,
+                        },
+                    },
+                };
+
                 newRun.state = 'QUEUED';
                 newRun.result = 'UNKNOWN';
 
@@ -368,6 +440,39 @@ export const actions = {
                     id,
                     type: ACTION_TYPES.SET_RUNS_DATA,
                 });
+            }
+        };
+    },
+
+    processJobLeftQueueEvent(event) {
+        return (dispatch, getState) => {
+            // only proceed with removal if the job was cancelled
+            if (event.job_run_status === 'CANCELLED') {
+                const id = event.blueocean_job_pipeline_name;
+                const runsByJobName = getState().adminStore && getState().adminStore.runs || {};
+                const eventJobRuns = runsByJobName[id];
+
+                // Only interested in the event if we have already loaded the runs for that job.
+                if (eventJobRuns && event.job_run_queueId) {
+                    const newRuns = clone(eventJobRuns);
+                    applyFetchMarkers(newRuns, eventJobRuns);
+
+                    const queueItemToRemove = newRuns.find((run) => (
+                        run.job_run_queueId === event.job_run_queueId
+                    ));
+
+                    newRuns.splice(newRuns.indexOf(queueItemToRemove), 1);
+
+                    if (event.blueocean_is_for_current_job) {
+                        // set current runs since we are ATM looking at it
+                        dispatch({ payload: newRuns, type: ACTION_TYPES.SET_CURRENT_RUN_DATA });
+                    }
+                    dispatch({
+                        payload: newRuns,
+                        id,
+                        type: ACTION_TYPES.SET_RUNS_DATA,
+                    });
+                }
             }
         };
     },
@@ -502,10 +607,15 @@ export const actions = {
             smartFetch(
                 getRestUrl(config),
                 data => {
-                    if (data.$failed) { // might be a queued item...
+                    if (data.$failed && runs) { // might be a queued item...
                         const found = runs.filter(r => r.id === config.runId)[0];
                         if (found) {
-                            found.$success = true;
+                            try {
+                                found.$success = true;
+                            } catch (e) {
+                                // Ignore, might be a real item
+                                console.log('amoc', e);
+                            }
                             dispatch({
                                 id: config.pipeline,
                                 type: ACTION_TYPES.SET_CURRENT_RUN,
@@ -520,7 +630,10 @@ export const actions = {
                         payload: tryToFixRunState(data, runs),
                     });
                 }
-            );
+            )
+            .catch(err => {
+                debugLog('Fetch error: ', err);
+            });
         };
     },
 
@@ -544,13 +657,18 @@ export const actions = {
                     if (focused) {
                         nodeModel = focused;
                     } else {
-                        nodeModel = (information.model[information.model.length - 1]);
+                        if (config.isPipelineQueued) {
+                            nodeModel = (information.model[0]);
+                        } else {
+                            nodeModel = (information.model[information.model.length - 1]);
+                        }
                     }
                     node = nodeModel ? nodeModel.id : null;
                 } else {
                     nodeModel = information.model.filter((item) => item.id === config.node)[0];
                     node = config.node;
                 }
+                // console.log('ACTION_TYPES.SET_NODE', nodeModel);
 
                 dispatch({
                     type: ACTION_TYPES.SET_NODE,
@@ -565,6 +683,7 @@ export const actions = {
                     .then((json) => {
                         const information = getNodesInformation(json);
                         information.nodesBaseUrl = nodesBaseUrl;
+                        // console.log('nodes fetch log', information, json);
                         dispatch({
                             type: ACTION_TYPES.SET_NODES,
                             payload: information,
@@ -613,6 +732,8 @@ export const actions = {
                     .then((json) => {
                         const information = getNodesInformation(json);
                         information.nodesBaseUrl = stepBaseUrl;
+                        // console.log('action fetch log', information, json);
+
                         return dispatch({
                             type: ACTION_TYPES.SET_STEPS,
                             payload: information,
@@ -622,13 +743,41 @@ export const actions = {
             return null;
         };
     },
-    /* l
+    /**
+     * Remove steps from cache
+     *
+     * @param id {String} the step we want to remove
+     * @returns {function(*)}
+     */
+    removeStep(id) {
+        return (dispatch) => dispatch({
+            type: ACTION_TYPES.REMOVE_STEP,
+            stepId: id,
+        });
+    },
+    /**
+     * Remove logs from cache
+     *
+     * @param id {String} the log we want to remove - we doing indexOf to remove all logs startingWith
+     * @returns {function(*)}
+     */
+    removeLogs(id) {
+        return (dispatch) => dispatch({
+            type: ACTION_TYPES.REMOVE_LOG,
+            key: id,
+        });
+    },
+    /*
      Get a specific log for a node, fetch it only if needed.
      key for cache: logUrl = calculateLogUrl
      */
-    fetchLog(config) {
+    fetchLog(cfg) {
         return (dispatch, getState) => {
             const data = getState().adminStore.logs;
+            let config = cfg;
+            if (!config.nodesBaseUrl) {
+                config = { ...config, nodeBaseUrl: calculateNodeBaseUrl(config) };
+            }
             const logUrl = calculateLogUrl(config);
             if (
                 config.fetchAll ||

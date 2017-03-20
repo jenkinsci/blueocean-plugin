@@ -28,7 +28,7 @@ export const actionHandlers = {
 
 export const actions = {
     clearLocationData() {
-        return (dispatch) => dispatch({type: ACTION_TYPES.CLEAR_PIPELINE_DATA});
+        return (dispatch) => dispatch({type: ACTION_TYPES.CLEAR_LOCATION_DATA});
     },
     setCurrentLocation(newLocation){
         return (dispatch, getState) => {

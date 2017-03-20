@@ -1,7 +1,7 @@
 var jsTest = require('@jenkins-cd/js-test');
 var expect = require('chai').expect;
 
-var ResourceLoadTracker = require('../dist/ResourceLoadTracker').instance;
+var ResourceLoadTracker = new (require('../dist/ResourceLoadTracker').default)();
 
 describe("ResourceLoadTracker.js", function () {
 
@@ -80,7 +80,7 @@ describe("ResourceLoadTracker.js", function () {
         });
     });
 
-    it("- test ep-1, ep-2 and ep-3 loads and unloads css in correct order", function (done) {
+    it("- test ep-1, ep-2 and ep-3 loads css in correct order", function (done) {
         jsTest.onPage(function() {
             var javaScriptExtensionInfo = require('./javaScriptExtensionInfo-02.json');
 
@@ -100,25 +100,6 @@ describe("ResourceLoadTracker.js", function () {
             expect(cssElements.length).to.equal(2);
             expect(cssElements[0].getAttribute('href')).to.equal('/jenkins/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
             expect(cssElements[1].getAttribute('href')).to.equal('/jenkins/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-2/extensions.css');
-
-            // Unmounting ep-1 should no change the page CSS because ep-2 and ep-3
-            // are still mounted.
-            ResourceLoadTracker.onUnmount('ep-1');
-            cssElements = document.getElementsByTagName('link');
-            expect(cssElements.length).to.equal(2);
-            expect(cssElements[0].getAttribute('href')).to.equal('/jenkins/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
-            expect(cssElements[1].getAttribute('href')).to.equal('/jenkins/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-2/extensions.css');
-
-            // Unmounting ep-3 should should result in plugin-2 CSS being unloaded from the page.
-            ResourceLoadTracker.onUnmount('ep-3');
-            cssElements = document.getElementsByTagName('link');
-            expect(cssElements.length).to.equal(1);
-            expect(cssElements[0].getAttribute('href')).to.equal('/jenkins/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
-
-            // Unmounting ep-2 should should result in no CSS being on the page
-            ResourceLoadTracker.onUnmount('ep-2');
-            cssElements = document.getElementsByTagName('link');
-            expect(cssElements.length).to.equal(0);
 
             done();
         });

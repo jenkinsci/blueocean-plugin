@@ -1,8 +1,13 @@
 package io.jenkins.blueocean;
 
 import hudson.ExtensionList;
+import hudson.Main;
+
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Root of Blue Ocean UI
@@ -14,6 +19,7 @@ public class BlueOceanUI {
 
     public BlueOceanUI(String rootPath) {
         this.urlBase = rootPath;
+        ResourceCacheControl.install();
     }
 
     /**
@@ -36,8 +42,36 @@ public class BlueOceanUI {
     public String getUrlBase() {
         return urlBase;
     }
+    
+    /**
+     * Have some slightly different behavior in development mode
+     */
+    public boolean isDevelopmentMode() {
+        return Main.isDevelopmentMode || System.getProperty("hudson.hpi.run") != null; // TODO why isDevelopmentMode == false
+    }
+
+    /**
+     * Get the language associated with the current page.
+     * @return The language string.
+     */
+    public String getLang() {
+        StaplerRequest currentRequest = Stapler.getCurrentRequest();
+
+        if (currentRequest != null) {
+            Locale locale = currentRequest.getLocale();
+            if (locale != null) {
+                return locale.toString();
+            }
+        }
+
+        return null;
+    }
 
     public List<BluePageDecorator> getPageDecorators(){
         return BluePageDecorator.all();
+    }
+
+    public long getNow() {
+         return System.currentTimeMillis();
     }
 }

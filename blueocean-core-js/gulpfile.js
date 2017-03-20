@@ -7,7 +7,10 @@ const gulp = require('gulp');
 const gutil = require('gulp-util');
 const sourcemaps = require('gulp-sourcemaps');
 const babel = require('gulp-babel');
-const clean = require('gulp-clean');
+const less = require('gulp-less');
+const rename = require('gulp-rename');
+const copy = require('gulp-copy');
+const del = require('del');
 const runSequence = require('run-sequence');
 const lint = require('gulp-eslint');
 const Karma = require('karma').Server;
@@ -16,11 +19,22 @@ const fs = require('fs');
 // Options, src/dest folders, etc
 
 const config = {
+    clean: ["dist", "licenses", "reports"],
     react: {
         sources: "src/**/*.{js,jsx}",
         dest: "dist"
     },
-    clean: ["dist", "licenses", "reports"],
+    less: {
+        sources: "src/less/core.less",
+        watch: 'src/less/**/*.{less,css}',
+        dest: "dist/assets/css",
+    },
+    copy: {
+        less_assets: {
+            sources: "src/less/**/*.svg",
+            dest: "dist/assets/css"
+        }
+    },
     test: {
         sources: "test/**/*-spec.{js,jsx}"
     }
@@ -29,7 +43,8 @@ const config = {
 // Watch all
 
 gulp.task("watch", ["clean-build"], () => {
-   gulp.watch(config.react.sources, ["compile-react"]);
+    gulp.watch(config.react.sources, ["compile-react"]);
+    gulp.watch(config.less.watch, ["less"]);
 });
 
 // Default to all
@@ -45,8 +60,7 @@ gulp.task("clean-build", () =>
 // Clean
 
 gulp.task("clean", () =>
-    gulp.src(config.clean, {read: false})
-        .pipe(clean()));
+    del(config.clean));
 
 // Testing
 
@@ -79,7 +93,7 @@ gulp.task("test-karma-debug", (done) => {
 
 // Build all
 
-gulp.task("build", ["compile-react"]);
+gulp.task("build", ["compile-react", "less", "copy"]);
 
 // Compile react sources
 
@@ -89,6 +103,20 @@ gulp.task("compile-react", () =>
         .pipe(babel(config.react.babel))
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest(config.react.dest)));
+
+gulp.task("less", () =>
+    gulp.src(config.less.sources)
+        .pipe(sourcemaps.init())
+        .pipe(less())
+        .pipe(rename("blueocean-core-js.css"))
+        .pipe(sourcemaps.write("."))
+        .pipe(gulp.dest(config.less.dest)));
+
+gulp.task("copy", ["copy-less-assets"]);
+
+gulp.task("copy-less-assets", () =>
+    gulp.src(config.copy.less_assets.sources)
+        .pipe(copy(config.copy.less_assets.dest, { prefix: 2 })));
 
 // Validate contents
 gulp.task("validate", () => {

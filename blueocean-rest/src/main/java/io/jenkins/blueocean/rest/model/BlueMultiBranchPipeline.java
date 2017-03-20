@@ -3,18 +3,21 @@ package io.jenkins.blueocean.rest.model;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.hal.Link;
+import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_MULTI_BRANCH_PIPELINE;
+
 /**
  * Multi-branch pipeline model
  *
  * @author Vivek Pandey
  */
-@Capability("io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline")
+@Capability(BLUE_MULTI_BRANCH_PIPELINE)
 public abstract class BlueMultiBranchPipeline extends BluePipelineFolder{
     public static final String TOTAL_NUMBER_OF_BRANCHES="totalNumberOfBranches";
     public static final String NUMBER_OF_FAILING_BRANCHES="numberOfFailingBranches";
@@ -71,6 +74,14 @@ public abstract class BlueMultiBranchPipeline extends BluePipelineFolder{
     public abstract Collection<String> getBranchNames();
 
     /**
+     * MultiBranch pipeline is computed folder, no sub-folders in it
+     */
+    @Override
+    public Iterable<String> getPipelineFolderNames() {
+        return Collections.emptyList();
+    }
+
+    /**
      * @return It gives no-op {@link BlueRunContainer} since Multi-branch is not a build item, does not build on its own
      *
      */
@@ -78,11 +89,6 @@ public abstract class BlueMultiBranchPipeline extends BluePipelineFolder{
         return new BlueRunContainer() {
             @Override
             public Link getLink() {
-                return null;
-            }
-
-            @Override
-            public BluePipeline getPipeline(String name) {
                 return null;
             }
 
@@ -98,7 +104,7 @@ public abstract class BlueMultiBranchPipeline extends BluePipelineFolder{
             }
 
             @Override
-            public BlueQueueItem create() {
+            public BlueQueueItem create(StaplerRequest request) {
                 throw new ServiceException.NotImplementedException("This action is not supported");
             }
         };

@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <groupId>io.jenkins.blueocean</groupId>
+    <artifactId>blueocean-plugin-fetch</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>pom</packaging>
+
+    <name>BlueOcean plugin fetcher</name>
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean</artifactId>
+            <version>${blueocean.version}</version>
+        </dependency>
+    </dependencies>
+
+    <repositories>
+      <repository>
+        <id>repo.jenkins-ci.org</id>
+        <url>https://repo.jenkins-ci.org/public/</url>
+      </repository>
+    </repositories>
+
+    <pluginRepositories>
+      <pluginRepository>
+        <id>repo.jenkins-ci.org</id>
+        <url>https://repo.jenkins-ci.org/public/</url>
+      </pluginRepository>
+    </pluginRepositories>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jenkins-ci.tools</groupId>
+                <artifactId>maven-hpi-plugin</artifactId>
+                <version>1.119</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>assemble-dependencies</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+</project>

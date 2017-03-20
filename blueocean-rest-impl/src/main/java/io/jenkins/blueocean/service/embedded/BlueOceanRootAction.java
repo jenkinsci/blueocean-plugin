@@ -1,11 +1,16 @@
 package io.jenkins.blueocean.service.embedded;
 
+import com.google.common.hash.HashCode;
+import com.google.common.hash.Hashing;
 import com.google.inject.Binder;
 import com.google.inject.Inject;
 import com.google.inject.Module;
 import hudson.Extension;
 import hudson.model.UnprotectedRootAction;
+import hudson.remoting.Base64;
 import io.jenkins.blueocean.BlueOceanUI;
+import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
+import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
@@ -14,14 +19,18 @@ import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Random;
+
 /**
  * @author Kohsuke Kawaguchi
  */
 @Extension
 public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy {
     private static final String URL_BASE="blue";
+    private static final Long randomBits = new Random().nextLong();
 
-    private final boolean disableJWT = Boolean.getBoolean("DISABLE_BLUEOCEAN_JWT_AUTHENTICATION");
+    private final boolean enableJWT = BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION;
 
     @Inject
     private BlueOceanUI app;
@@ -49,16 +58,33 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
 
         StaplerRequest request = Stapler.getCurrentRequest();
 
-        if(!disableJWT && request.getOriginalRestOfPath().startsWith("/rest/")) {
-            Authentication tokenAuthentication = JwtAuthenticationToken.create(request);
+        if(request.getOriginalRestOfPath().startsWith("/rest/")) {
+            if(enableJWT) {
+                Authentication tokenAuthentication = JwtAuthenticationToken.create(request);
 
-            //create a new context and set it to holder to not clobber existing context
-            SecurityContext securityContext = new SecurityContextImpl();
-            securityContext.setAuthentication(tokenAuthentication);
-            SecurityContextHolder.setContext(securityContext);
+                //create a new context and set it to holder to not clobber existing context
+                SecurityContext securityContext = new SecurityContextImpl();
+                securityContext.setAuthentication(tokenAuthentication);
+                SecurityContextHolder.setContext(securityContext);
 
-            //TODO: implement this as filter, see PluginServletFilter to clear the context
+                //TODO: implement this as filter, see PluginServletFilter to clear the context
+            } else {
+                HashCode hashCode = Hashing.sha1()
+                    .newHasher()
+                    .putString(Jenkins.getAuthentication().getName(), StandardCharsets.UTF_8)
+                    .putLong(randomBits)
+                    .hash();
+
+                // Base64 encode to ensure no non-ASCII characters get into the header
+                String refresherToken = Base64.encode(hashCode.asBytes());
+                Stapler.getCurrentResponse().setHeader("X-Blueocean-Refresher", refresherToken);
+            }
+        }else{
+            //If user doesn't have overall Jenkins read permission then return 403, which results in classic UI redirecting
+            // user to login page
+            Jenkins.getInstance().checkPermission(Jenkins.READ);
         }
+
         return app;
     }
 

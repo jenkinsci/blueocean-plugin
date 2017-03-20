@@ -5,6 +5,19 @@ const fetchJSON = Fetch.fetchJSON;
 const fetch = Fetch.fetch;
 
 export default {
+
+    /**
+     * Switches fetch functions with arbitrary replacements.
+     * Useful for test spies.
+     *
+     * @param _fetchJSON
+     * @param _fetch
+     */
+    patchFetch(_fetchJSON, _fetch) {
+        Fetch.fetchJSON = _fetchJSON;
+        Fetch.fetch = _fetch;
+    },
+
     /**
      * Switches fetch functions for ones that dont use JWT. Needed
      * for running tests.
@@ -36,9 +49,9 @@ export default {
     patchFetchWithData(dataFn) {
         Fetch.fetchJSON = Fetch.fetch = (url, options) => {
             const { onSuccess, onError } = options || {};
-       
+
             const data = Promise.resolve(dataFn(url, options));
-            
+
             if (onSuccess) {
                 return data.then(onSuccess).catch(FetchFunctions.onError(onError));
             }

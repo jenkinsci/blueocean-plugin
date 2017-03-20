@@ -13,12 +13,14 @@ import {
     steps as stepsSelector,
 } from '../../main/js/redux';
 
-import { runNodesSuccess, runNodesFail, runNodesRunning } from './runNodes';
-import { firstFinishedSecondRunning } from './runNodes-firstFinishedSecondRunning';
-import { firstRunning } from './runNodes-firstRunning';
-import { finishedMultipleFailure } from './runNodes-finishedMultipleFailure';
-import { queuedAborted } from './runNodes-QueuedAborted';
+import { runNodesSuccess, runNodesFail, runNodesRunning } from './data/runs/nodes/runNodes';
+import { firstFinishedSecondRunning } from './data/runs/nodes/runNodes-firstFinishedSecondRunning';
+import { firstRunning } from './data/runs/nodes/runNodes-firstRunning';
+import { finishedMultipleFailure } from './data/runs/nodes/runNodes-finishedMultipleFailure';
+import { queuedAborted } from './data/runs/nodes/runNodes-QueuedAborted';
 import { getNodesInformation } from './../../main/js/util/logDisplayHelper';
+import runningFailing from './data/steps/failingRunningSteps';
+import { poststagefail } from './data/runs/nodes/poststagefail';
 
 
 import Step from '../../main/js/components/Step';
@@ -35,6 +37,15 @@ const assertResult = (item, {finished = true, failed = false, errors = 0, runnin
 };
 
 describe("Logic test of different runs", () => {
+    it('running and failing', () => {
+       const stagesInformationRunningFailing = getNodesInformation(runningFailing);
+       assert.equal(stagesInformationRunningFailing.model[2].isFocused, true);
+    });
+    it('post error stage', () => {
+       const stagesInformationRunningFailing = getNodesInformation(poststagefail);
+       assert.equal(stagesInformationRunningFailing.model[0].isFocused, true);
+    });
+
     it("handles aborted job that only had been in queue but never build", () => {
         const stagesInformationQueuedAborted = getNodesInformation(queuedAborted);
         assert.equal(stagesInformationQueuedAborted.hasResultsForSteps, false);

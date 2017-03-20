@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/js-extensions",
-  "version": "0.0.23-unpublished",
+  "version": "0.0.35",
   "description": "Jenkins Extension Store",
   "main": "index.js",
   "files": [
@@ -10,36 +10,44 @@
     "README.md"
   ],
   "scripts": {
-    "build": "rm -rf dist && mkdir dist && npm install && babel --presets es2015,react src -d dist && npm run test",
+    "build": "rm -rf dist && mkdir dist && npm install && npm run compile && npm run test",
+    "compile": "babel --presets es2015,react src -d dist",
     "test": "gulp test",
+    "compile-test": "npm run compile && npm run test",
     "lint": "gulp lint"
   },
   "author": "Tom Fennelly <tom.fennelly@gmail.com> (https://github.com/tfennelly)",
   "license": "MIT",
-  "peerDependencies": {
-    "react": "^0.14.7 || ^15.0.0",
-    "@jenkins-cd/js-modules": "^0.0.6",
-    "react-dom": "^0.14.7 || ^15.0.0"
-  },
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.38",
-    "@jenkins-cd/js-modules": "0.0.6",
+    "@jenkins-cd/js-builder": "0.0.52",
+    "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/js-test": "1.2.3",
+    "@jenkins-cd/logging": "0.0.6",
     "babel-cli": "6.10.1",
     "babel-core": "^6.7.6",
     "babel-eslint": "^6.0.2",
     "babel-preset-es2015": "^6.6.0",
     "babel-preset-react": "^6.5.0",
     "babel-preset-stage-0": "^6.5.0",
+    "chai": "^3.5.0",
+    "enzyme": "^2.4.1",
     "eslint": "2.8.0",
     "eslint-plugin-react": "^5.0.1",
     "gulp": "^3.9.1",
     "gulp-mocha": "^2.2.0",
-    "chai": "^3.5.0"
+    "jsdom": "^9.5.0",
+    "react": "^0.14.7 || ^15.0.0",
+    "react-addons-test-utils": "^15.3.2",
+    "react-dom": "^0.14.7 || ^15.0.0"
   },
   "dependencies": {
-    "js-yaml": "^3.6.0",
-    "envify": "3.4.1"
+    "envify": "3.4.1",
+    "js-yaml": "^3.6.0"
+  },
+  "peerDependencies": {
+    "@jenkins-cd/logging": "0.0.6",
+    "react": "^0.14.7 || ^15.0.0",
+    "react-dom": "^0.14.7 || ^15.0.0"
   }
 }

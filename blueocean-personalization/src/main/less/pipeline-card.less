@@ -1,50 +1,80 @@
 .pipeline-card {
     display: flex;
     align-items: center;
-    border-radius: 4px;
+    border-radius: 3px;
     color: white;
     min-width: 400px;
-    padding: 15px;
     cursor: pointer;
+    height: 40px;
+    padding-left: 16px;
+    padding-right: 16px;
 
     a {
         color: white;
         cursor: pointer;
     }
 
-    .name, .branch, .commit {
+    //.svgResultStatus {
+    //    min-width: 20px;
+    //}
+
+    .name, .branch, .commit, .time {
         margin-left: 10px;
     }
 
-    .branch, .commit {
+    .branch, .commit, .time {
         display: flex;
         align-items: center;
+        flex-shrink: 0;
+        flex-grow: 0;
+    }
+
+    .commit, .time {
+        flex-basis: 150px;
+        width: 150px;
     }
 
     .name {
-        width: 55%;
+        flex-grow: 1;
+        flex-shrink: 1;
+        flex-basis: 40%;
+
+        overflow: hidden;
+        white-space: nowrap;
+
+        * {
+            //max-width:100%;
+            flex-wrap: nowrap;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
     }
 
     .branch {
-        width: 45%;
+        flex-basis: 200px;
+        width: 200px;
     }
 
     .commit {
         min-width: 100px;
     }
 
-    .name, .branchText, .commitId {
-        min-height: 18px;
-    }
-
-    .commitId {
+    .branchText, .commitId, .timeText {
         margin: 0 0 0 5px;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .actions {
+        display: flex;
         min-width: 95px;
         margin-left: 10px;
-        text-align: right;
+        justify-content: flex-end;
+        flex-direction: row;
+        align-items: center;
     }
 
     .action-item {
@@ -54,12 +84,17 @@
 
     .svg-icon {
         fill: white;
+        flex-shrink: 0;
     }
 
-    // remove empty space to attain centered vertical alignment
-    .run, .actions {
-        > * {
-            vertical-align: bottom;
+    .action-item.stop-button {
+        width: 20px;
+        height: 20px;
+        margin: 0 2px 2px 0;
+        background-image: url('./icons/stop-white.svg');
+
+        &.stopping {
+            opacity: 0.4;
         }
     }
 
@@ -78,7 +113,7 @@
 
     .progress-spinner.queued {
         circle {
-            stroke: #bcd8f1;
+            stroke: white;
         }
         circle.inner {
             stroke: white;
@@ -90,5 +125,32 @@
         circle {
             stroke: white;
         }
+    }
+
+    * > .Dialog {
+        color: black;
+        text-align: left;
+    }
+
+    .actions > *+* {
+        margin-left:8px;
+    }
+
+    /*
+        FIXME: The following are hacks around wrapper components in core-js that are screwing up sizing. See:
+         - blueocean-core-js/src/js/components/LiveStatusIndicator.jsx
+         - blueocean-core-js/src/js/parameter/ParametersRunButton.jsx
+    */
+
+    >*:first-child {
+        height: 20px;
+        width: 20px;
+        overflow: hidden;
+    }
+
+    .actions > * {
+        height: 24px;
+        width: 24px;
+        overflow: hidden;
     }
 }

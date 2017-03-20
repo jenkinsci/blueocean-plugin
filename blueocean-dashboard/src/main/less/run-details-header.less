@@ -1,0 +1,75 @@
+.RunDetailsHeader-title,
+.RunDetailsHeader-sources,
+.RunDetailsHeader-authors,
+.RunDetailsHeader-times {
+    a {
+        cursor: pointer;
+    }
+}
+
+.RunDetailsHeader-sources,
+.RunDetailsHeader-authors,
+.RunDetailsHeader-times
+{
+    height:100%;
+    padding-top: 2px;
+
+    div {
+        margin-top: 12px;
+        display: flex;
+        align-items: center;
+
+        svg+* {
+            margin-left: 8px;
+        }
+    }
+}
+
+.RunDetailsHeader-sources,
+.RunDetailsHeader-times {
+    flex-basis: 20%;
+    max-width: 20%;
+
+    .u-label-value {
+
+        label {
+            display: block;
+            width: 61px;
+            flex-shrink: 0;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        label.pullRequest {
+            display: block;
+            width: 85px;
+            flex-shrink: 0;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        span {
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            svg {
+                display: block;
+                fill: #ffffff;
+                opacity: 50%;
+                margin-left: 3px;
+            }
+        }
+
+
+    }
+}
+
+.RunDetailsHeader-authors {
+    flex-grow: 1;
+}
+
+.RunDetails-content {
+    margin: 21px 42px;
+}

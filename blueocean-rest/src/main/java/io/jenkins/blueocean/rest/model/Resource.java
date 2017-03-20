@@ -9,13 +9,15 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.GET;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.RESOURCE;
+
 /**
  * Stapler-bound object that defines REST endpoint.
  *
  * @author Kohsuke Kawaguchi
  */
 @ExportedBean
-@Capability("io.jenkins.blueocean.rest.model.Resource")
+@Capability(RESOURCE)
 public abstract class Resource implements Reachable{
     /**
      * Returns the DTO object that gets databound to Json/XML etc. for state transfer

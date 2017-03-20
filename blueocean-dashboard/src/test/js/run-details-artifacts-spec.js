@@ -1,65 +1,56 @@
 import { assert } from 'chai';
 import React from 'react';
-import sd from 'skin-deep';
+import { shallow, mount } from 'enzyme';
 
 import { latestRuns } from './data/runs/latestRuns';
 import RunDetailsArtifacts from '../../main/js/components/RunDetailsArtifacts';
 
+const runs = latestRuns.map(run => (run.latestRun));
+        
+
+const contextWithArtifacts = {
+    activityService: {
+        fetchArtifacts() {
+            return { value: runs[0].artifacts };
+        },
+    },
+};
+
+const contextNoData = {
+    activityService: {
+        fetchArtifacts() {
+            return { value: [] };
+        },
+    },
+};
+
+const t = () => {};
 describe('RunDetailsArtifacts', () => {
-    let component;
-    let tree;
-    let output;
-
     describe('bad data', () => {
-        before(() => {
-            component = (
-                <RunDetailsArtifacts />
-            );
-            tree = sd.shallowRender(component);
-            output = tree.getRenderOutput();
-        });
-
         it('renders nothing', () => {
-            assert.isNull(output);
+            const wrapper = shallow(<RunDetailsArtifacts t={t} />);
+            assert.isNull(wrapper.get(0));
         });
     });
 
-    describe('empty artifacts', () => {
-        before(() => {
-            component = (
-                <RunDetailsArtifacts
-                  result={{ artifacts: [] }}
-                />
-            );
-            tree = sd.shallowRender(component);
-            output = tree.getRenderOutput();
-        });
-
-        it('renders EmptyStateView', () => {
-            assert.equal(output.type.name, 'EmptyStateView');
-        });
-    });
-
-    describe('valid artifacts', () => {
-        before(() => {
-            const runs = latestRuns.map(run => (run.latestRun));
-            component = (
-                <RunDetailsArtifacts
-                  result={runs[0]}
-                />
-            );
-            tree = sd.shallowRender(component);
-            output = tree.getRenderOutput();
-        });
-
+ 
+    describe('valid artifacts', () => {     
         it('renders a Table with expected data', () => {
-            assert.equal(output.type.name, 'Table');
-            assert.equal(tree.everySubTree('tr').length, 1);
+            const wrapper = shallow(<RunDetailsArtifacts t={t} result={runs[0]} />, { context: contextWithArtifacts });
+            
+            assert.equal(wrapper.find('Table').length, 1);
+            assert.equal(wrapper.find('Table tr').length, 2);
 
-            const cols = tree.subTree('tr').everySubTree('td');
-            assert.equal(cols[0].text(), 'hey');
-            assert.equal(cols[1].text(), '<FileSize />');
-            assert.equal(cols[2].text(), '<Icon />');
+            const cols = wrapper.find('td');
+            assert.equal(cols.length, 7);
+
+            assert.equal(cols.at(0).text(), 'pipeline.log');
+            assert.equal(cols.at(1).text(), '-');
+            assert.equal(cols.at(2).text(), '<Icon />');
+     
+            assert.equal(cols.at(3).text(), 'hey');
+            assert.equal(cols.at(4).text(), '<FileSize />');
+            assert.equal(cols.at(5).text(), '<Icon />');
         });
     });
 });

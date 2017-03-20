@@ -1,0 +1,29 @@
+//
+// See https://philipwalton.github.io/solved-by-flexbox/
+//
+// Some of this stuff is also in JDL, which seems a bit
+// odd since it relates to overal page layout, and not
+// components/widgets.
+//
+
+html, body, div#root {
+    height: 100%;
+}
+
+.Site {
+  display: flex;
+  flex-direction: column;
+  height: 100%; /* 1, 3 */
+}
+.Site-header,
+.Site-footer {
+  flex: none; /* 2 */
+}
+.Site-content {
+  flex: 1 0 auto; /* 2 */
+}
+
+.global-header nav > div {
+    display: inline-block;
+}
+

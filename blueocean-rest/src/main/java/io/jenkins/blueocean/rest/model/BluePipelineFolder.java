@@ -3,6 +3,9 @@ package io.jenkins.blueocean.rest.model;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE_FOLDER;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_ABSTRACT_FOLDER;
+
 /**
  * Folder  has pipelines, could also hold another BluePipelineFolders.
  *
@@ -15,12 +18,13 @@ import org.kohsuke.stapler.export.Exported;
  *
  * @see BluePipelineContainer
  */
-@Capability({"io.jenkins.blueocean.rest.model.BluePipelineFolder","com.cloudbees.hudson.plugins.folder.AbstractFolder"})
+@Capability({BLUE_PIPELINE_FOLDER, JENKINS_ABSTRACT_FOLDER})
 public abstract class BluePipelineFolder extends BluePipeline {
 
     private static final String NUMBER_OF_PIPELINES = "numberOfPipelines";
-
     private static final String NUMBER_OF_FOLDERS = "numberOfFolders";
+    private static final String PIPELINE_NAMES = "pipelineNames";
+    private static final String PIPELINE_FOLDER_NAMES = "pipelineFolderNames" ;
 
     /**
      * @return Gives pipeline container
@@ -96,5 +100,12 @@ public abstract class BluePipelineFolder extends BluePipeline {
         return null;
     }
 
+    @Exported(skipNull = true)
+    public abstract BlueIcon getIcon();
 
+    /**
+     * Returns pipeline folder names present in this folder.
+     */
+    @Exported(name=PIPELINE_FOLDER_NAMES)
+    public abstract Iterable<String> getPipelineFolderNames();
 }

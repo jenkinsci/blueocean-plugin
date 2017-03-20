@@ -3,7 +3,8 @@ import { assert } from 'chai';
 import {
     buildOrganizationUrl, buildPipelineUrl, buildRunDetailsUrl,
     calculateRunLogURLObject, calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl,
-} from '../../main/js/util/UrlUtils';
+    buildClassicConfigUrl,
+} from '@jenkins-cd/blueocean-core-js';
 
 describe('UrlUtils', () => {
     describe('buildOrganizationUrl', () => {
@@ -122,6 +123,36 @@ describe('UrlUtils', () => {
                 `pipelines/${testData.name}/branches/${testData.branch}/runs/${testData.runId}/nodes/`);
         });
     });
+
+    describe('double encode branch name in nodeBaseUrl', () => {
+        const testData = {
+            _appURLBase: '/some/thing',
+            name: 'xxx',
+            branch: 'feature/test#1',
+            runId: 7,
+            isMultiBranch: true
+        };
+        it('should build the url multibranch', () => {
+            const url = calculateNodeBaseUrl(testData);
+
+            assert.equal(url, `${testData._appURLBase}/rest/organizations/jenkins/` +
+                `pipelines/${testData.name}/branches/feature%252Ftest%25231/runs/${testData.runId}/nodes/`);
+        });
+    });
+
+    describe('build classicConfigUrl', () => {
+
+        const testData = {
+            fullName : 'foldey/nesty/woozle%20wozzle/mazzig'
+        };
+
+        it('should build the url for classic config', () => {
+            const url = buildClassicConfigUrl(testData);
+            assert.equal(url, '/jenkins/job/foldey/job/nesty/job/woozle%20wozzle/job/mazzig/configure');
+        });
+
+    });
+
     describe('calculate calculateStepsBaseUrl', () => {
         const testData = {
             _appURLBase: '/some/thing',

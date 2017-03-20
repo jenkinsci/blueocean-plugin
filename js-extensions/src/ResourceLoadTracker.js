@@ -6,7 +6,7 @@ import jsModules from '@jenkins-cd/js-modules';
  * Keeps track of page CSS, adding and removing CSS as ExtensionPoint components are
  * mounted and unmounted.
  */
-export class ResourceLoadTracker {
+export default class ResourceLoadTracker {
     constructor() {
         // The CSS resources to be added for each Extension point.
         // Key:     Extension point name.
@@ -93,14 +93,10 @@ export class ResourceLoadTracker {
     }
 
     _requireCSS(url) {
-        var activeCount = this.activeCSSs[url];
-    
-        if (!activeCount) {
-            activeCount = 0;
+        if (!this.activeCSSs[url]) {
             this._addCSS(url);
+            this.activeCSSs[url] = true;
         }
-        activeCount++;
-        this.activeCSSs[url] = activeCount;
     }
 
     _unrequireCSS(url) {
@@ -139,6 +135,3 @@ export class ResourceLoadTracker {
         }
     }
 }
-
-// in lieu of DI
-export const instance = new ResourceLoadTracker();

@@ -15,6 +15,7 @@ module.exports = function (config) {
 
         // include only tests here; browserify will find the rest
         files: [
+            'test/js/test-entrypoint.js',
             'test/**/*-spec.+(js|jsx)'
         ],
 
@@ -22,6 +23,7 @@ module.exports = function (config) {
 
         // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
         preprocessors: {
+            'test/js/test-entrypoint.js': ['browserify'],
             'test/**/*-spec.+(js|jsx)': ['browserify']
         },
 

@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
@@ -17,28 +16,32 @@ import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
+import io.jenkins.blueocean.rest.model.BlueIcon;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
+import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.Container;
-import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
+import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
 import io.jenkins.blueocean.service.embedded.rest.BlueFavoriteResolver;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
-import jenkins.scm.api.SCMHead;
-import jenkins.scm.api.actions.ChangeRequestAction;
+
+import org.apache.commons.lang.StringUtils;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.json.JsonBody;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -46,12 +49,17 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static io.jenkins.blueocean.rest.impl.pipeline.PipelineJobFilters.isPullRequest;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_MULTI_BRANCH_PROJECT;
+
 /**
  * @author Vivek Pandey
  */
-@Capability({"jenkins.branch.MultiBranchProject"})
+@Capability({JENKINS_MULTI_BRANCH_PROJECT})
 public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     /*package*/ final MultiBranchProject mbp;
+
+    private static final int MAX_MBP_RUNS_ROWS = Integer.getInteger("MAX_MBP_RUNS_ROWS", 250);
 
     private final Link self;
     public MultiBranchPipelineImpl(MultiBranchProject mbp) {
@@ -70,22 +78,23 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         if(favoriteAction == null) {
             throw new ServiceException.BadRequestExpception("Must provide pipeline name");
         }
-
-        Job job = mbp.getItem("master");
-        if(job == null) {
-            throw new ServiceException.BadRequestExpception("no master branch to favorite");
+        Job job = PrimaryBranch.resolve(mbp);
+        if (job == null) {
+            throw new ServiceException.BadRequestExpception("no default branch to favorite");
         }
-
-        FavoriteUtil.favoriteJob(mbp.getFullName(), favoriteAction.isFavorite());
-
+        FavoriteUtil.toggle(favoriteAction, job);
         return new FavoriteImpl(new BranchImpl(job,getLink().rel("branches")), getLink().rel("favorite"));
     }
 
     @Override
     public Map<String, Boolean> getPermissions() {
-        return ImmutableMap.of(
-            BluePipeline.CREATE_PERMISSION, mbp.getACL().hasPermission(Item.CREATE),
-            BluePipeline.READ_PERMISSION, mbp.getACL().hasPermission(Item.READ));
+        return AbstractPipelineImpl.getPermissions(mbp);
+    }
+
+    @Navigable
+    @Override
+    public BluePipelineScm getScm() {
+        return new ScmResourceImpl(mbp, this);
     }
 
     @Override
@@ -101,6 +110,11 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     @Override
     public String getFullName() {
         return mbp.getFullName();
+    }
+
+    @Override
+    public String getFullDisplayName() {
+        return AbstractPipelineImpl.getFullDisplayName(mbp, null);
     }
 
     @Override
@@ -149,59 +163,9 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Integer getWeatherScore(){
-        /**
-         * TODO: this code need cleanup once MultiBranchProject exposes default branch. At present
-         *
-         * At present we look for master as primary branch, if not found we find the latest build across all branches and
-         * return its score.
-         *
-         * If there are no builds taken place 0 score is returned.
-         */
-
-        Job j = mbp.getItem("master");
-        if(j == null) {
-            j = mbp.getItem("production");
-            /**
-             * If there are no master or production branch then we return weather score of
-             *
-             * - Sort latest build of all branches in ascending order
-             * - Return the latest
-             *
-             */
-            if(j == null){
-                Collection<Job>  jbs = mbp.getAllJobs();
-                if(jbs.size() > 0){
-                    Job[] jobs = jbs.toArray(new Job[jbs.size()]);
-                    Arrays.sort(jobs, new Comparator<Job>() {
-                        @Override
-                        public int compare(Job o1, Job o2) {
-                            long t1 = 0;
-                            if(o1.getLastBuild() != null){
-                                t1 = o1.getLastBuild().getTimeInMillis() + o1.getLastBuild().getDuration();
-                            }
-
-                            long t2 = 0;
-                            if(o2.getLastBuild() != null){
-                                t2 = o2.getLastBuild().getTimeInMillis() + o2.getLastBuild().getDuration();
-                            }
-
-                            if(t1<2){
-                                return -1;
-                            }else if(t1 > t2){
-                                return 1;
-                            }else{
-                                return 0;
-                            }
-                        }
-                    });
-
-                    return jobs[jobs.length - 1].getBuildHealth().getScore();
-                }
-            }
-        }
-        return j == null ? 0 : j.getBuildHealth().getScore();
+        Job j = PrimaryBranch.resolve(mbp);
+        return j == null ? 100 : j.getBuildHealth().getScore();
     }
 
     @Override
@@ -263,10 +227,6 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
         return counter;
     }
-    private boolean isPullRequest(Job job) {
-        SCMHead head = SCMHead.HeadByItem.findHead(job);
-        return head != null && head.getAction(ChangeRequestAction.class) != null;
-    }
 
 
     @Override
@@ -277,10 +237,6 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                 return MultiBranchPipelineImpl.this.getLink().rel("runs");
             }
 
-            @Override
-            public BluePipeline getPipeline(String name) {
-                return null;
-            }
 
             @Override
             public BlueRun get(String name) {
@@ -289,12 +245,48 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
             @Override
             public Iterator<BlueRun> iterator() {
+                throw new ServiceException.NotImplementedException("Not implemented");
+            }
+
+            /**
+             * Fetches maximum up to  MAX_MBP_RUNS_ROWS rows from each branch and does pagination on that.
+             *
+             * JVM property MAX_MBP_RUNS_ROWS can be used to tune this value to optimize performance for given setup
+             */
+            @Override
+            public Iterator<BlueRun> iterator(int start, int limit) {
                 List<BlueRun> c = new ArrayList<>();
-                for(final BluePipeline b: getBranches()) {
-                    for(final BlueRun r: b.getRuns()) {
-                        c.add(r);
+
+                List<BluePipeline> branches;
+                
+                // Check for branch filter
+                StaplerRequest req = Stapler.getCurrentRequest();
+                String branchFilter = null;
+                if (req != null) {
+                    branchFilter = req.getParameter("branch");
+                }
+                
+                if (!StringUtils.isEmpty(branchFilter)) {
+                    BluePipeline pipeline = getBranches().get(branchFilter);
+                    if (pipeline != null) {
+                        branches = Collections.singletonList(pipeline);
+                    } else {
+                        branches = Collections.emptyList();
+                    }
+                } else {
+                    branches = Lists.newArrayList(getBranches().list());
+                    sortBranchesByLatestRun(branches);
+                }
+
+                for(final BluePipeline b: branches) {
+                    Iterator<BlueRun> it = b.getRuns().iterator(0,MAX_MBP_RUNS_ROWS);
+                    int count = 0;
+                    Iterators.skip(it, start);
+                    while(it.hasNext() && count++ < limit){
+                        c.add(it.next());
                     }
                 }
+
                 Collections.sort(c, new Comparator<BlueRun>() {
                     @Override
                     public int compare(BlueRun o1, BlueRun o2) {
@@ -305,16 +297,77 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                 return c.iterator();
             }
 
+            private boolean retry(boolean[] retries){
+                //if at least one of the branch needs retry we will retry it
+                for(boolean r: retries){
+                    if(r){
+                        return true;
+                    }
+                }
+                return false;
+            }
+
+            private int computeLimit(boolean[] retries, int limit){
+                //if at least one of the branch needs retry we will retry it
+                int count=0;
+                for(boolean r: retries){
+                    if(r){
+                        count++;
+                    }
+                }
+                if(count == 0){
+                    return 0;
+                }
+                return limit/count > 0 ? limit/count : 1;
+            }
+
+            private int collectRuns(List<BluePipeline> branches, List<BlueRun> runs,
+                                    boolean[] retries, int remainingCount, int[] startIndexes, int[] limits){
+                int count = 0;
+                for (int i=0; i < branches.size(); i++) {
+                    BluePipeline b = branches.get(i);
+                    if(!retries[i]){
+                        continue;
+                    }
+                    Iterator<BlueRun> it = b.getRuns().iterator(startIndexes[i], limits[i]);
+                    int lcount = 0;
+                    while (it.hasNext() && count < remainingCount) {
+                        lcount++;
+                        count++;
+                        runs.add(it.next());
+                    }
+                    if (lcount < limits[i]) { //if its less than l
+                        retries[i] = false; //iterator already exhausted so lets not retry next time
+                    }else{
+                        startIndexes[i] = startIndexes[i]+lcount; //set the new start index for next time
+                    }
+                }
+                return count;
+            }
+
+
             @Override
-            public BlueQueueItem create() {
+            public BlueQueueItem create(StaplerRequest request) {
                 throw new ServiceException.NotImplementedException("This action is not supported");
             }
         };
     }
 
+    static void sortBranchesByLatestRun(List<BluePipeline> branches){
+        Collections.sort(branches, new Comparator<BluePipeline>() {
+            @Override
+            public int compare(BluePipeline o1, BluePipeline o2) {
+                Long t1 = o1.getLatestRun() != null ? o1.getLatestRun().getStartTime().getTime() : 0;
+                Long t2 = o2.getLatestRun() != null ? o2.getLatestRun().getStartTime().getTime() : 0;
+
+                return t2.compareTo(t1);
+            }
+        });
+    }
+
     @Override
     public Collection<BlueActionProxy> getActions() {
-        return PipelineImpl.getActionProxies(mbp.getAllActions(), this);
+        return ActionProxiesImpl.getActionProxies(mbp.getAllActions(), this);
     }
 
     @Override
@@ -359,7 +412,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         public BlueFavorite resolve(Item item, Reachable parent) {
             if(item instanceof MultiBranchProject){
                 MultiBranchProject project = (MultiBranchProject) item;
-                Job job = project.getItem("master");
+                Job job = PrimaryBranch.resolve(project);
                 if(job != null){
                     Resource resource = BluePipelineFactory.resolve(job);
                     Link l = LinkResolver.resolveLink(project);
@@ -374,6 +427,37 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     @Navigable
     public Container<Resource> getActivities() {
-        return Containers.fromResource(getLink(), Lists.newArrayList(Iterators.concat(getQueue().iterator(), getRuns().iterator())));
+        return new Container<Resource>() {
+            @Override
+            public Resource get(String name) {
+                return null;
+            }
+
+            @Override
+            public Link getLink() {
+                return MultiBranchPipelineImpl.this.getLink().rel("activities");
+            }
+
+            @Override
+            public Iterator<Resource> iterator() {
+                throw new ServiceException.NotImplementedException("Not implemented");
+            }
+
+            @Override
+            public Iterator<Resource> iterator(int start, int limit) {
+                return AbstractPipelineImpl.activityIterator(getQueue(), getRuns(), start, limit);
+            }
+        };
+
+    }
+
+    @Override
+    public List<Object> getParameters() {
+        return null;
+    }
+
+    @Override
+    public BlueIcon getIcon() {
+        return null;
     }
 }

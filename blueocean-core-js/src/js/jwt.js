@@ -1,7 +1,7 @@
 import es6Promise from 'es6-promise'; es6Promise.polyfill();
 import fetch from 'isomorphic-fetch';
 import jwt from 'jsonwebtoken';
-import UrlUtils from './urlconfig';
+import { BlueUrl as UrlUtils } from './urlconfig';
 import { FetchFunctions } from './fetch';
 import { jwk2pem } from 'pem-jwk';
 let storedToken = null;

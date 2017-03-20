@@ -16,16 +16,33 @@ var jsExtensionsYAMLFile = findExtensionsYAMLFile();
 
 exports.bundle = function() {
     try {
+        paths.mkdirp('target/classes');
+
         if (jsExtensionsYAMLFile) {
             // Transform the jenkins-js-extensions.yaml file + enrich with some info
             var extensionsJSON = transformToJSON();
             // Generate a jenkins-js-extensions.jsx from the jenkins-js-extensions.yaml.
             var jsxFile = transformToJSX();
-            // Generate a bundle for the extensions.
-            createBundle(jsxFile);
-
-            return extensionsJSON;
+            if (jsxFile) {
+                // Generate a bundle for the extensions.
+                createBundle(jsxFile);
+            }
+        } else {
+            extensionsJSON = {};
         }
+
+        if (maven.isHPI()) {
+            extensionsJSON.hpiPluginId = maven.getArtifactId();
+        }
+
+        if (!extensionsJSON.i18nBundles) {
+            extensionsJSON.i18nBundles = findI18nBundles();
+        }
+        if (!extensionsJSON.extensions) {
+            extensionsJSON.extensions = [];
+        }
+
+        return extensionsJSON;
     } catch (e) {
         logger.logError(e);
     }
@@ -56,7 +73,7 @@ exports.yamlToJSON = function(sourceFile, targetFile, transformer) {
     if (transformer) {
         asJSON = transformer(asJSON);
     }
-    
+
     var parentDir = paths.parentDir(targetFile);
     if (!fs.existsSync(parentDir)) {
         paths.mkdirp(parentDir);
@@ -84,10 +101,11 @@ function findExtensionsYAMLFile() {
 function transformToJSON() {
     assertHasJenkinsJsExtensionsDependency('Your project defines a jenkins-js-extensions.yaml file\n\t- Path: ' + jsExtensionsYAMLFile);
 
-    paths.mkdirp('target/classes');
     return exports.yamlToJSON(jsExtensionsYAMLFile, jsonFile, function(json) {
-        if (maven.isHPI()) {
-            json.hpiPluginId = maven.getArtifactId();
+        if (!json) {
+            json = {
+                extensions: []
+            };
         }
         return json;
     });
@@ -131,12 +149,15 @@ function transformToJSX() {
         // Add the js-modules import of the extensions and add the code to register all
         // of the extensions in the shared store.
         var jsExtensionsModuleSpec = new ModuleSpec('@jenkins-cd/js-extensions@any');
-        jsxFileContent += "require('@jenkins-cd/js-modules').import('" + jsExtensionsModuleSpec.importAs() + "').onFulfilled(function(Extension) {\n";
+        jsxFileContent += "require('@jenkins-cd/js-modules').importModule('" + jsExtensionsModuleSpec.importAs() + "').onFulfilled(function(Extension) {\n";
         for (var i2 = 0; i2 < extensions.length; i2++) {
             var extension = extensions[i2];
 
             jsxFileContent += "    Extension.store._registerComponentInstance('" + extension.extensionPoint + "', '" + maven.getArtifactId() + "', '" + extension.component + "', " + extension.importAs + ");\n";
         }
+
+        jsxFileContent += "    Extension.store._onPluginComponentRegistrationComplete('" + maven.getArtifactId() + "');\n";
+
         jsxFileContent += "});";
 
         fs.writeFileSync(jsxFilePath, jsxFileContent);
@@ -150,6 +171,7 @@ function transformToJSX() {
 function createBundle(jsxFile) {
     __builder.bundle(jsxFile)
         .namespace(maven.getArtifactId())
+        .onStartup('@jenkins-cd/blueocean-core-js/dist/js/i18n/bundle-startup')
         .inDir('target/classes/org/jenkins/ui/jsmodules/' + maven.getArtifactId());
 }
 
@@ -161,4 +183,58 @@ function assertHasJenkinsJsExtensionsDependency(message) {
     if(!hasJenkinsJsExtensionsDep()) {
         dependencies.exitOnMissingDependency('@jenkins-cd/js-extensions', message);
     }
+}
+
+function findI18nBundles() {
+    var bundles = [];
+    var bundleFileDir = getPluginResourceBundleDir();
+
+    if (fs.existsSync(bundleFileDir)) {
+        var files = fs.readdirSync(bundleFileDir);
+        if (files) {
+            var cpPrefix = getPluginResourceBundleClasspath();
+            var propertiesFileMatcher = /\.properties$/; // endswith ".properties"
+            var everythingAfterFirstUnderscoreMatcher = /_.*$/;
+
+            for (var i = 0; i < files.length; i++) {
+                var file = files[i];
+                if (propertiesFileMatcher.test(file)) {
+                    // We're only interested in adding the "basename" for a given resource bundle.
+                    // So when we have a bundle with multiple variants (language, country etc) as
+                    // shown below, we are only interested in the name of the "base" bundle file i.e.
+                    // "Messages.properties" in the case of this example.
+                    //
+                    //  ├── Messages_de.properties
+                    //  ├── Messages_es.properties
+                    //  ├── Messages_fr.properties
+                    //  └── Messages.properties    (base)
+                    //
+                    // So, we strip off the different parts we don't want. It might be that
+                    // resource bundle basenames can have underscores in them according
+                    // to specs (I didn't find a ref one way or the other), but trying to match
+                    // language/country/variant codes exactly and strip them off is going to
+                    // make the code a pita to impl/understand, so lets just say we only detect
+                    // basenames that do NOT contain underscores. If someone insists on using
+                    // underscores they can manually define the bundles in the yaml file.
+                    file = file.replace(propertiesFileMatcher, '');
+                    file = file.replace(everythingAfterFirstUnderscoreMatcher, '');
+
+                    var resourceBundleBaseName = cpPrefix + '.' + file;
+                    if (bundles.indexOf(resourceBundleBaseName) === -1) {
+                        bundles.push(resourceBundleBaseName);
+                    }
+                }
+            }
+        }
+    }
+
+    return bundles;
+}
+
+function getPluginResourceBundleDir() {
+    return 'src/main/resources/jenkins/plugins/' + maven.getArtifactId().replace(/-/g, '/');
+}
+
+function getPluginResourceBundleClasspath() {
+    return 'jenkins.plugins.' + maven.getArtifactId().replace(/-/g, '.');
 }

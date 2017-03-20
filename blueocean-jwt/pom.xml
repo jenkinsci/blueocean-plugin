@@ -5,20 +5,19 @@
   <parent>
     <groupId>io.jenkins.blueocean</groupId>
     <artifactId>blueocean-parent</artifactId>
-    <version>1.0-alpha-10-SNAPSHOT</version>
+    <version>1.0.0-rc2-SNAPSHOT</version>
   </parent>
 
   <artifactId>blueocean-jwt</artifactId>
   <packaging>hpi</packaging>
 
-  <name>BlueOcean :: JWT module</name>
+  <name>JWT for Blue Ocean</name>
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
 
   <dependencies>
       <dependency>
           <groupId>org.bitbucket.b_c</groupId>
           <artifactId>jose4j</artifactId>
-          <version>0.5.1</version>
       </dependency>
       <dependency>
           <groupId>${project.groupId}</groupId>

@@ -3,11 +3,11 @@
     <parent>
         <artifactId>blueocean-parent</artifactId>
         <groupId>io.jenkins.blueocean</groupId>
-        <version>1.0-alpha-10-SNAPSHOT</version>
+        <version>1.0.0-rc2-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
-    <name>BlueOcean :: Personalization</name>
+    <name>Personalization for Blue Ocean</name>
     <artifactId>blueocean-personalization</artifactId>
     <packaging>hpi</packaging>
 

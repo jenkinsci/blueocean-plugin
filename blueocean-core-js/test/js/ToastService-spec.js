@@ -5,15 +5,14 @@ import { assert } from 'chai';
 
 import { ToastService } from '../../src/js/ToastService';
 
-describe("ToastService", () => {
-
+describe('ToastService', () => {
     let toastService;
 
     beforeEach(() => {
         toastService = new ToastService();
     });
 
-    it("adds a new toast and creates ID if necessary", () => {
+    it('adds a new toast and creates ID if necessary', () => {
         toastService.newToast({
             text: 'Hello World',
             action: 'Dismiss',
@@ -27,7 +26,7 @@ describe("ToastService", () => {
         assert.isOk(toast.id);
     });
 
-    it("adds a new toast and perserves ID if necessary", () => {
+    it('adds a new toast and perserves ID if necessary', () => {
         toastService.newToast({
             id: 12345,
             text: 'Hello World',
@@ -42,7 +41,7 @@ describe("ToastService", () => {
         assert.equal(toast.id, 12345);
     });
 
-    it("removes a toast", () => {
+    it('removes a toast', () => {
         toastService.newToast({
             id: 12345,
             text: 'Hello World',
@@ -50,7 +49,7 @@ describe("ToastService", () => {
         });
         toastService.newToast({
             id: 54321,
-            text: "Hello You",
+            text: 'Hello You',
             action: 'Dismiss',
         });
 
@@ -62,5 +61,4 @@ describe("ToastService", () => {
 
         assert.equal(toastService.count, 1);
     });
-
 });

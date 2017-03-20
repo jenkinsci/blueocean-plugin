@@ -37,8 +37,12 @@ import static io.jenkins.blueocean.auth.jwt.JwtToken.X_BLUEOCEAN_JWT;
 public abstract class BaseTest {
     private static  final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
 
+    public BaseTest() {
+        System.setProperty("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION", "true");
+        j = new JenkinsRule();
+    }
     @Rule
-    public JenkinsRule j = new JenkinsRule();
+    public JenkinsRule j;
 
     protected  String baseUrl;
 
@@ -296,7 +300,7 @@ public abstract class BaseTest {
     }
 
 
-    private String getBaseUrl(String path){
+    protected String getBaseUrl(String path){
         return baseUrl + path;
     }
 

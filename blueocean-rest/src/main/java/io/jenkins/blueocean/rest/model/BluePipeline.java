@@ -1,27 +1,36 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
+import net.sf.json.JSONObject;
+import org.apache.commons.io.IOUtils;
+import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.PUT;
 
+import java.io.IOException;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE;
 
 /**
  * Defines pipeline state and its routing
  *
  * @author Vivek Pandey
  */
-@Capability("io.jenkins.blueocean.rest.model.BluePipeline")
+@Capability(BLUE_PIPELINE)
 public abstract class BluePipeline extends Resource {
     public static final String ORGANIZATION="organization";
     public static final String NAME="name";
     public static final String DISPLAY_NAME="displayName";
     public static final String FULL_NAME="fullName";
+    public static final String FULL_DISPLAY_NAME="fullDisplayName";
     public static final String WEATHER_SCORE ="weatherScore";
     public static final String LATEST_RUN = "latestRun";
     public static final String ESTIMATED_DURATION = "estimatedDurationInMillis";
@@ -40,6 +49,12 @@ public abstract class BluePipeline extends Resource {
 
     /** stop pipeline run */
     public static final String STOP_PERMISSION = "stop";
+
+    /** configure pipeline permission */
+    public static final String CONFIGURE_PERMISSION = "configure";
+
+    /** build parameters */
+    private static final String PARAMETERS = "parameters";
 
     /**
      * @return name of the organization
@@ -60,10 +75,18 @@ public abstract class BluePipeline extends Resource {
     public abstract String getDisplayName();
 
     /**
-     * @return Includes parentLink folders if any. For example folder1/folder2/p1
+     * @return Includes parent folders names if any. For example folder1/folder2/p1
      */
     @Exported(name = FULL_NAME)
     public abstract String getFullName();
+
+
+    /**
+     * @return Includes display names of parent folders if any. For example folder1/myFolder2/p1
+     */
+    @Exported(name = FULL_DISPLAY_NAME)
+    public abstract String getFullDisplayName();
+
 
     /**
      * @return weather health score percentile
@@ -109,6 +132,18 @@ public abstract class BluePipeline extends Resource {
     @Navigable
     public abstract BlueQueueContainer getQueue();
 
+    /**
+     * @return Gives paginated concatenation of {#getQueue()} and {#getRuns()}, in that order
+     */
+    @Navigable
+    public abstract Container<Resource> getActivities();
+
+    /**
+     * List of build parameters
+     */
+    @Exported(name = PARAMETERS, inline = true)
+    public abstract List<Object> getParameters();
+
     @PUT
     @WebMethod(name="favorite")
     @TreeResponse
@@ -147,4 +182,31 @@ public abstract class BluePipeline extends Resource {
      */
     @Exported(name = PERMISSIONS)
     public abstract Map<String, Boolean> getPermissions();
+
+    /**
+     * Updates this pipeline using {@link BluePipelineUpdateRequest}
+     * @param staplerRequest stapler request
+     * @return Updated BluePipeline instance
+     * @throws IOException throws IOException in certain cases
+     */
+    @PUT
+    @WebMethod(name="")
+    @TreeResponse
+    public BluePipeline update(StaplerRequest staplerRequest) throws IOException {
+        JSONObject body = JSONObject.fromObject(IOUtils.toString(staplerRequest.getReader()));
+        if(body.get("$class") == null){
+            throw new ServiceException.BadRequestExpception("$class is required element");
+        }
+        BluePipelineUpdateRequest request = staplerRequest.bindJSON(BluePipelineUpdateRequest.class, body);
+        return update(request);
+    }
+
+    public BluePipeline update(BluePipelineUpdateRequest request) throws IOException {
+        return request.update(this);
+    }
+
+    /**
+     * @return Gives scm resource attached to this pipeline
+     */
+    public abstract BluePipelineScm getScm();
 }

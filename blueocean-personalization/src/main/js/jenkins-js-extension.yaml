@@ -12,3 +12,4 @@ extensions:
     extensionPoint: jenkins.pipeline.detail.header.action
   - component: components/FavoritePipeline
     extensionPoint: jenkins.pipeline.branches.list.action
+    ordinal: 100

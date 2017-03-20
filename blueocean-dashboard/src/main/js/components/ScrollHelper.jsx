@@ -1,18 +1,21 @@
 import React, { Component } from 'react';
 
-/*
+/**
  * Will inject the following functions as properties into the component which is using this.
  *
  *  * scrollBottom
  *  * scrollToAnchorTimeOut
  *  * scrollToAnchor
  *
- *  Sample usage: export default scrollHelper(LogConsole);
-  */
+ *  Sample usage:
+ * @example export default scrollHelper(LogConsole);
+ *
+ * @param ComposedComponent
+ */
 export const scrollHelper = ComposedComponent => class extends Component {
     // Find the modal view container and adopt the scrollTop to focus the end
     scrollBottom() {
-        const nodes = document.getElementsByClassName('content');
+        const nodes = document.getElementsByClassName('FullScreen-contents');
         const element = nodes[0];
         if (element) {
             element.scrollTop = element.scrollHeight - element.clientHeight;

@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>io.jenkins.blueocean</groupId>
+        <artifactId>blueocean-parent</artifactId>
+        <version>1.0.0-rc2-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>blueocean</artifactId>
+    <packaging>hpi</packaging>
+
+    <name>Blue Ocean</name>
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+    <description>Blue Ocean is a new project that rethinks the user experience of Jenkins. Designed from the ground up for Jenkins Pipeline and compatible with Freestyle jobs, Blue Ocean reduces clutter and increases clarity for every member of your team.</description>
+
+    <properties>
+        <jetty.contextPath>/jenkins</jetty.contextPath>
+    </properties>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-dashboard</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-personalization</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-rest</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-i18n</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-jwt</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-rest-impl</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-pipeline-api-impl</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-config</artifactId>
+        </dependency>
+
+
+        <!-- TODO: its here only for development, to be removed -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-github-pipeline</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-git-pipeline</artifactId>
+        </dependency>
+
+
+        <!-- Bundled plugins for improved out of the box experience -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>blueocean-display-url</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>blueocean-autofavorite</artifactId>
+        </dependency>
+
+        <dependency>
+          <groupId>io.jenkins.blueocean</groupId>
+          <artifactId>blueocean-pipeline-editor</artifactId>
+        </dependency>
+
+
+        <!-- Test deps -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-rest-impl</artifactId>
+            <version>${project.version}</version>
+            <type>test-jar</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>com.mashape.unirest</groupId>
+            <artifactId>unirest-java</artifactId>
+            <scope>test</scope>
+        </dependency>
+
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.gmaven</groupId>
+                <artifactId>groovy-maven-plugin</artifactId>
+                <version>2.0</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>execute</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <source>
+                        //
+                        // The following code makes HPI dev a bit easier in this multi-module project, as it
+                        // permits "linking" of the HPIs by copying of their "the.hpl" files into the work/plugins
+                        // dir of this plugin. So, when running this plugin using "mvn hpi:run", changes in the
+                        // "linked" plugins will also be automatically picked up.
+                        //
+                        // See the following closure and it's uses after.
+                        //
+                        def linkHPI = {String pluginId, String pluginDir = pluginId -&gt;
+
+                            def workPluginsDir = new File(basedir, 'work/plugins');
+                            def theHpl = new File(new File(basedir.parentFile, pluginDir), 'target/test-classes/the.hpl');
+
+                            if (theHpl.file) {
+                                workPluginsDir.mkdirs();
+                                ant.copy(file: theHpl, tofile: new File(workPluginsDir, pluginId + '.hpl'), overwrite: true, verbose: true);
+                            } else {
+                                println('Warning: no such file ' + theHpl);
+                            }
+                        };
+
+                        //
+                        // Link in other sub-modules. Add as needed.
+                        //
+                        linkHPI('blueocean-web');
+                        linkHPI('blueocean-dashboard');
+                        linkHPI('blueocean-personalization');
+                        linkHPI('blueocean-rest');
+                        linkHPI('blueocean-commons');
+                        linkHPI('blueocean-i18n');
+                        linkHPI('blueocean-jwt');
+                        linkHPI('blueocean-rest-impl');
+                        linkHPI('blueocean-pipeline-api-impl')
+                        linkHPI('blueocean-config')
+                        linkHPI('blueocean-github-pipeline')
+                        linkHPI('blueocean-git-pipeline')
+                    </source>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.jenkins-ci.tools</groupId>
+                <artifactId>maven-hpi-plugin</artifactId>
+                <version>1.119</version>
+                <executions>
+                    <execution>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>assemble-dependencies</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <webApp implementation="org.eclipse.jetty.maven.plugin.JettyWebAppContext">
+                        <contextPath>${jetty.contextPath}</contextPath>
+                    </webApp>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

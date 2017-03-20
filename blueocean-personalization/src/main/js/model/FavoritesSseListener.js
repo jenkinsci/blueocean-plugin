@@ -1,9 +1,7 @@
 /**
  * Created by cmeyers on 8/12/16.
  */
-import * as sse from '@jenkins-cd/sse-gateway';
-
-import { SseBus } from '../model/SseBus';
+import { SseBus as sseBus } from '@jenkins-cd/blueocean-core-js';
 import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';
 
 /**
@@ -14,17 +12,28 @@ import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';
 class FavoritesSseListener {
 
     initialize(store, jobListener) {
-        // prevent more than one registration
+        // prevent leaking by disposing of any prior listeners
         if (this.store && this.sseBus) {
-            return;
+            this.sseBus.dispose();
         }
 
         this.store = store;
-        this.sseBus = new SseBus(sse);
-        this.sseBus.subscribeToJob(
-            jobListener,
-            (event) => this._filterJobs(event)
-        );
+        this.sseBus = sseBus;
+        try {
+            this.sseBus.subscribeToJob(
+                jobListener,
+                (event) => this._filterJobs(event)
+            );
+        } catch (e) {
+            if (!this.sseBus.connection && (!global.window || !global.window.EventSource)) {
+                // This should only happen in tests i.e no browser/window, EventSource etc.
+                // Maybe we could add something to the SSE gateway API that auto enables the
+                // headless client in this situation.
+                console.warn('SSE connection failed. Push notifications to Favorites will not work.');
+            } else {
+                throw e;
+            }
+        }
     }
 
     _filterJobs(event) {

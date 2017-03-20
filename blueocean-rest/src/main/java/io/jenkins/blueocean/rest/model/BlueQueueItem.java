@@ -1,12 +1,15 @@
 package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.rest.annotation.Capability;
+import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.verb.DELETE;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static io.jenkins.blueocean.commons.JsonConverter.DATE_FORMAT_STRING;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_QUEUE_ITEM;
 
 
 /**
@@ -15,10 +18,11 @@ import static io.jenkins.blueocean.commons.JsonConverter.DATE_FORMAT_STRING;
  *
  * @author Ivan Meredith
  */
-@Capability("io.jenkins.blueocean.rest.model.BlueQueueItem")
+@Capability(BLUE_QUEUE_ITEM)
 public abstract class BlueQueueItem extends Resource {
 
     public static final String QUEUED_TIME = "queuedTime";
+    private static final String CAUSE_OF_BLOCKAGE = "causeOfBlockage";
 
     /**
      * @return Id of the item in the queue. Much be unique in the queue of a pipeline
@@ -51,4 +55,17 @@ public abstract class BlueQueueItem extends Resource {
      */
     @Exported
     public abstract int getExpectedBuildNumber();
+
+    /**
+     * Remove a queued item
+     */
+    @WebMethod(name="") @DELETE
+    public abstract void delete();
+
+    /**
+     * @return Gives reason of blockage if run is in QUEUED state
+     */
+    @Exported(name = CAUSE_OF_BLOCKAGE)
+    public abstract String getCauseOfBlockage();
+
 }

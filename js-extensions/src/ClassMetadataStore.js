@@ -2,7 +2,7 @@
  * ClassMetadataStore is responsible for maintaining extension metadata
  * including type/capability info
  */
-export class ClassMetadataStore {
+export default class ClassMetadataStore {
     init(classMetadataProvider) {
         /**
          * Type info cache
@@ -36,7 +36,7 @@ export class ClassMetadataStore {
             // This is the first request for this type. Initialise the
             // callback cache and then issue the request to
             // the classMetadataProvider.
-            callbacks = this.classMetadataOnloadCallbacks[type] = [];
+            callbacks = this.classMetadataOnloadCallbacks[type] = [onload];
             this.classMetadataProvider(type, (data) => {
                 classMeta = this.classMetadata[type] = JSON.parse(JSON.stringify(data));
                 classMeta.classes = classMeta.classes || [];
@@ -58,8 +58,8 @@ export class ClassMetadataStore {
         } else {
             // We already have an inflight request to get class metadata info about
             // the requested type, so nothing to do except store the onload callback.
+            callbacks.push(onload);
         }
-        callbacks.push(onload);
     }
 
     dataType(dataType) {
@@ -105,5 +105,3 @@ export class ClassMetadataStore {
         };
     }
 }
-
-export const instance = new ClassMetadataStore();
