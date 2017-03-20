@@ -150,7 +150,10 @@ export default class Pipeline extends Component {
             defaultValue: 'Steps ',
             0: this.pager.currentNode.displayName,
         }) : '';
-        logger.debug('displayName', this.pager.currentNode.displayName);
+        // JENKINS-40526
+        const logUrl = this.pager.nodes !== undefined ? `${this.pager.currentNode._links.self.href}log/` : augmenter.generalLogUrl;
+        const logFileName = this.pager.nodes !== undefined ? `${this.pager.currentNode.displayName}.log` : augmenter.generalLogUrl;
+        logger.debug('displayName', this.pager.currentNode.displayName, logUrl, augmenter.generalLogFileName);
         return (<div>
             { this.pager.nodes !== undefined &&
                 <Extensions.Renderer
@@ -166,8 +169,8 @@ export default class Pipeline extends Component {
                 />
             }
             <LogToolbar
-                fileName={augmenter.generalLogFileName}
-                url={augmenter.generalLogUrl}
+                fileName={logFileName}
+                url={logUrl}
                 title={title}
             />
             { this.pager.steps &&
