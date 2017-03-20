@@ -114,15 +114,6 @@ public final class JwtAuthenticationToken{
                     throw new ServiceException.UnauthorizedException("Invalid JWT token: expired");
                 }
 
-                //Check if this user is present
-                String subject = claims.getSubject();
-                if(!subject.equals("anonymous")) {
-                    User user = User.get(subject, false, Collections.emptyMap());
-                    if (user == null) {
-                        throw new ServiceException.UnauthorizedException("Invalid JWT token: subject " + subject + " not found");
-                    }
-                }
-
                 return claims;
             } catch (InvalidJwtException e) {
                 logger.error("Invalid JWT token: "+e.getMessage(), e);
