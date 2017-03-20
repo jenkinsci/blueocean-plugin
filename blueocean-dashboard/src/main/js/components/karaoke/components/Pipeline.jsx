@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { logging, sseConnection } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
-import debounce from 'lodash.debounce';
 import { QueuedState } from './QueuedState';
 import { KaraokeService } from '../index';
 import LogToolbar from './LogToolbar';
