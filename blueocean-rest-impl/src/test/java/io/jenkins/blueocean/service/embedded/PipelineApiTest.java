@@ -467,9 +467,11 @@ public class PipelineApiTest extends BaseTest {
         Jenkins.getInstance().getQueue().schedule(p1, 0, new ParametersAction(new StringParameterValue("test","test2")), new CauseAction(new Cause.UserIdCause()));
 
         List queue = request().get("/organizations/jenkins/pipelines/pipeline1/queue").build(List.class);
-        assertEquals(queue.size(),2);
-        assertEquals(((Map) queue.get(0)).get("expectedBuildNumber"), 4);
-        assertEquals(((Map) queue.get(1)).get("expectedBuildNumber"), 3);
+        Assert.assertEquals(2, queue.size());
+        Assert.assertEquals(4, ((Map) queue.get(0)).get("expectedBuildNumber"));
+        Assert.assertEquals(3, ((Map) queue.get(1)).get("expectedBuildNumber"));
+        Assert.assertEquals("Waiting for next available executor", ((Map) queue.get(0)).get("causeOfBlockage"));
+        Assert.assertEquals("Waiting for next available executor", ((Map) queue.get(1)).get("causeOfBlockage"));
     }
 
     @Test

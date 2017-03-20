@@ -166,7 +166,7 @@ export class ParametersRunButton extends Component {
                 />
             </Dialog>);
         }
-        return (<div>
+        return (<div className="ParametersRunButton">
             <RunButton {...runButtonProps} />
             { this.state.visible &&
                 <div className="inputParameters">

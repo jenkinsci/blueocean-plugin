@@ -53,6 +53,8 @@ export class DashboardCards extends Component {
             return null;
         }
 
+        const locale = t && t.lng;
+
         // empty array will be filled in the next method if any paused fav's exist
         const pausedCards = [];
         const favoriteCards = this.props.favorites
@@ -62,6 +64,8 @@ export class DashboardCards extends Component {
                   <PipelineCard
                     router={this.props.router}
                     runnable={pipeline}
+                    t={t}
+                    locale={locale}
                     favorite
                     onFavoriteToggle={(isFavorite) => this._onFavoriteToggle(isFavorite, favorite)}
                   />

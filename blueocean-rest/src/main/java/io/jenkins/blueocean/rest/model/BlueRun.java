@@ -37,8 +37,6 @@ public abstract class BlueRun extends Resource {
     public static final String RUN_SUMMARY = "runSummary";
     public static final String RESULT = "result";
     public static final String STATE = "state";
-    public static final String ARTIFACTS = "artifacts";
-    public static final String STEPS = "steps";
     public static final String ACTIONS = "actions";
 
     public static final int DEFAULT_BLOCKING_STOP_TIMEOUT_IN_SECS=10;

@@ -41,7 +41,14 @@
     }
 
     &.incomplete {
-        opacity: 0.4;
+        .step-progress, .step-content {
+            opacity: 0.4;
+        }
+
+        // ensure positioned elements earlier in the DOM
+        // sit on top of step content since opacity creates new stacking context
+        position: relative;
+        z-index: -1;
     }
 
     &.active {
@@ -63,7 +70,9 @@
         border: 0;
     }
 
-    &.first-step.active .step-stroke-bottom {
-        background: linear-gradient(@stroke-color, #fff);
+    &.first-step.active, &.first-step.error {
+        .step-stroke-bottom {
+            background: linear-gradient(@stroke-color, #fff);
+        }
     }
 }

@@ -2,7 +2,7 @@
   "name": "blueocean-personalization",
   "version": "0.0.2-unpublished",
   "scripts": {
-    "storybook": "start-storybook -p 9001 -s node_modules/@jenkins-cd/design-language/dist/assets/,target/classes/org/jenkins/ui/jsmodules/blueocean-personalization/",
+    "storybook": "start-storybook -p 9001 -s node_modules/@jenkins-cd/design-language/dist/assets/,target/classes/org/jenkins/ui/jsmodules/blueocean-personalization/,./node_modules/@jenkins-cd/blueocean-core-js/dist/assets/",
     "lint": "jjsbuilder --tasks lint",
     "lint:fix": "jjsbuilder --tasks lint --fixLint",
     "lint:watch": "jjsbuilder --tasks lint:watch --continueOnLint",
@@ -35,8 +35,8 @@
     "react-addons-test-utils": "15.3.2"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.88-reload1",
-    "@jenkins-cd/design-language": "0.0.123",
+    "@jenkins-cd/blueocean-core-js": "0.0.89",
+    "@jenkins-cd/design-language": "0.0.125",
     "@jenkins-cd/js-extensions": "0.0.33",
     "@jenkins-cd/js-modules": "0.0.8",
     "immutable": "3.8.1",

@@ -28,7 +28,8 @@ export default class LogToolbar extends Component {
                 >
                     <Icon size={24} {...{ style, icon: 'launch' }} />
                 </a>
-                <a {...{
+                <a
+                {...{
                     title: 'Download the log file',
                     href: `${logUrl}&download=true`,
                 }}
