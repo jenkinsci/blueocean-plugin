@@ -22,3 +22,5 @@ extensions:
 # TODO: Remove this bogus testing crap :D
   - component: components/TestComponent1
     extensionPoint: jenkins.pipeline.list.action
+  - component: components/TestComponent2
+    extensionPoint: jenkins.pipeline.list.action
