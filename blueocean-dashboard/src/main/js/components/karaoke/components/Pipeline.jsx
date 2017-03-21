@@ -72,12 +72,6 @@ export default class Pipeline extends Component {
             const jenkinsEvent = event.jenkins_event;
             const { run } = this.props;
             const runId = run.id;
-            const bounceNodes = debounce(() => {
-                this.pager.fetchNodes({});
-            }, 100);
-            const bounceSteps = debounce(() => {
-                this.pager.fetchCurrentStepUrl();
-            }, 100);
              // we get events from the pipeline and the job channel, they have different naming for the id
             //  && event.jenkins_object_id !== runId -> job
             if (event.pipeline_run_id !== runId) {
@@ -87,7 +81,11 @@ export default class Pipeline extends Component {
             switch (jenkinsEvent) {
             case 'pipeline_step': {
                 logger.warn('sse event step fetchCurrentSteps', jenkinsEvent);
-                bounceSteps();
+                debounce(() => {
+                    this.pager.fetchCurrentStepUrl();
+                }, 200)();
+                // prevent flashing of stages and nodes
+                this.showPending = false;
                 break;
             }
             case 'pipeline_end':
@@ -95,11 +93,15 @@ export default class Pipeline extends Component {
             case 'pipeline_block_end':
             case 'pipeline_stage': {
                 logger.warn('sse event block starts refetchNodes', jenkinsEvent);
-                bounceNodes({});
+                debounce(() => {
+                    this.pager.fetchNodes({});
+                }, 200)();
+                // prevent flashing of stages and nodes
+                this.showPending = false;
                 break;
             }
             default: {
-                logger.warn('ignoring event', jenkinsEvent);
+                logger.debug('ignoring event', jenkinsEvent);
             }
             }
         } catch (e) {
@@ -157,9 +159,9 @@ export default class Pipeline extends Component {
             0: this.pager.currentNode.displayName,
         }) : '';
         // JENKINS-40526
-        const logUrl = this.pager.nodes !== undefined ? `${this.pager.currentNode._links.self.href}log/` : augmenter.generalLogUrl;
-        const logFileName = this.pager.nodes !== undefined ? `${this.pager.currentNode.displayName}.log` : augmenter.generalLogUrl;
-        logger.debug('displayName', this.pager.currentNode.displayName, logUrl, augmenter.generalLogFileName);
+        const logUrl = this.pager.nodes !== undefined ? augmenter.getNodesLogUrl(this.pager.currentNode) : augmenter.generalLogUrl;
+        const logFileName = this.pager.nodes !== undefined ? augmenter.getNodesLogFileName(this.pager.currentNode) : augmenter.generalLogFileName;
+        logger.warn('displayName', this.pager.currentNode.displayName, logUrl, augmenter.generalLogFileName);
         return (<div>
             { this.pager.nodes !== undefined &&
                 <Extensions.Renderer

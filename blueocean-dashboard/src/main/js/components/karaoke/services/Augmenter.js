@@ -24,8 +24,8 @@ export class Augmenter {
         return prefixIfNeeded(this.run._links.log.href);
     }
     /**
-     * nodes ref or null
-     * @type {string | null}
+     * nodes ref or undefined
+     * @type {string | undefined}
      */
     @computed get nodesUrl() {
         if (this.run._links.nodes) {
@@ -33,11 +33,21 @@ export class Augmenter {
         } else if (this.run._links.self.href) {
             return `${prefixIfNeeded(this.run._links.self.href)}nodes/`;
         }
-        return null;
+        return undefined;
     }
     /**
-     * steps ref or null
-     * @type {string | null}
+     * calculate the logs url of the node
+     * @type {string | undefined}
+     */
+    getNodesLogUrl(currentNode) {
+        if (currentNode) {
+            return `${prefixIfNeeded(currentNode._links.self.href)}log/`;
+        }
+        return undefined;
+    }
+    /**
+     * steps ref or undefined
+     * @type {string | undefined}
      */
     @computed get stepsUrl() {
         if (this.run._links.steps) {
@@ -45,7 +55,7 @@ export class Augmenter {
         } else if (this.run._links.self.href) {
             return `${prefixIfNeeded(this.run._links.self.href)}steps/`;
         }
-        return null;
+        return undefined;
     }
     /**
      * Do we have a free style job?
@@ -68,12 +78,25 @@ export class Augmenter {
     @computed get isMultiBranchPipeline() {
         return capable(this.pipeline, MULTIBRANCH_PIPELINE);
     }
-
+    /**
+     * calculate the file name of the general log
+     * @type {string | undefined}
+     */
     @computed get generalLogFileName() {
         if (this.isMultiBranchPipeline) {
             return `${this.branch}-${this.run.id}.txt`;
         }
         return `${this.run.id}.txt`;
+    }
+    /**
+     * calculate the file name of the node based log
+     * @type {string | undefined}
+     */
+    getNodesLogFileName(currentNode) {
+        if (this.isMultiBranchPipeline) {
+            return `${this.branch}-${this.run.id}-${currentNode.displayName}.txt`;
+        }
+        return `${this.run.id}-${currentNode.displayName}.txt`;
     }
 
     @observable karaoke = false;

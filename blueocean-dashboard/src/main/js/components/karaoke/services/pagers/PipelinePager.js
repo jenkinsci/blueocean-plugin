@@ -81,9 +81,8 @@ export class PipelinePager {
         // get api data and further process it
         return KaraokeApi.getNodes(this.augmenter.nodesUrl)
             .then(action('Process node data', result => {
-                logger.warn('data dumb', result);
+                logger.warn('data dumb nodes', result);
                 if (result.model.length === 0) {
-                    this.pending = false;
                     logger.debug('Seems we do not have any nodes for this run.');
                     this.currentStepsUrl = this.augmenter.stepsUrl;
                     // we need now to fetch the steps
@@ -109,12 +108,12 @@ export class PipelinePager {
                 if (focused) {
                     this.currentNode = focused;
                 } else {
+                    // HERE see if running
                     const lastNode = (logData.data.model[logData.data.model.length - 1]);
                     this.currentNode = lastNode;
                 }
                 this.currentStepsUrl = prefixIfNeeded(this.currentNode._links.steps.href);
                 logger.debug('saved data', logData);
-                this.pending = false;
                 return this.fetchCurrentStepUrl();
             })).catch(err => {
                 logger.error('Error fetching page', err);
@@ -123,6 +122,7 @@ export class PipelinePager {
     }
     @action
     fetchCurrentStepUrl() {
+        this.pending = true;
         logger.debug('Fetching now current step url and further process it');
         clearTimeout(this.timeout);
         // log is text and not json, further it does not has _link in the response
@@ -143,6 +143,7 @@ export class PipelinePager {
                     this.bunker.setItem(logData);
                     logger.debug('saved data');
                 }
+                this.pending = false;
                 // we need to get more input from the log stream
                 if (this.polling) {
                     logger.debug('follow along polling mode');
