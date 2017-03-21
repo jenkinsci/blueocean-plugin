@@ -1,6 +1,7 @@
 import i18next from 'i18next';
 import LngDetector from 'i18next-browser-languagedetector';
 import { store } from '@jenkins-cd/js-extensions';
+import XHR from 'i18next-xhr-backend';
 
 import urlConfig from '../urlconfig';
 import logging from '../logging';
@@ -33,18 +34,42 @@ function newPluginXHR(pluginName, onLoad) {
     pluginVersion = encodeURIComponent(pluginVersion);
 
     const loadPath = `${prefix}/blue/rest/i18n/${pluginName}/${pluginVersion}/{ns}/{lng}`;
-
-    // TODO: Doesn't work, we need it to work with JWT, Thor needs to take a look
-    return Fetch.fetch(loadPath).then((data) => {
-        // we need to parse the response and then extract the data since the rest is garbage for us
-        const response = JSON.parse(data);
-        if (logger.isDebugEnabled()) {
-            logger.debug('Received i18n resource bundle for plugin "%s".', pluginName, response.data);
-        }
-        if (typeof onLoad === 'function') {
-            onLoad();
-        }
-        return response.data;
+    return new XHR(null, {
+        loadPath,
+        allowMultiLoading: false,
+        ajax: (url, options, callback) => {
+            if (logger.isDebugEnabled()) {
+                logger.debug('loading data for', url);
+            }
+            let status;
+            return Fetch.fetch(url)
+                .then(response => {
+                    // i18n xhr-backend needs the status
+                    status = response.status;
+                    // now return the raw data
+                    return response.text();
+                })
+                .then((data) => {
+                    if (callback) {
+                        const xhr = { status };
+                        if (logger.isDebugEnabled()) {
+                            logger.debug('calling now callback with xhr and data', xhr, data);
+                        }
+                        callback(data, xhr);
+                    }
+                });
+        },
+        parse: (data) => {
+            // we need to parse the response and then extract the data since the rest is garbage for us
+            const response = JSON.parse(data);
+            if (logger.isDebugEnabled()) {
+                logger.debug('Received i18n resource bundle for plugin "%s".', pluginName, response.data);
+            }
+            if (typeof onLoad === 'function') {
+                onLoad();
+            }
+            return response.data;
+        },
     });
 }
 
