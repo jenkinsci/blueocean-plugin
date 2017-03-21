@@ -12,35 +12,4 @@
     <packaging>hpi</packaging>
 
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
-
-    <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-events</artifactId>
-        </dependency>
-
-        <!-- Test deps -->
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-rest-impl</artifactId>
-            <version>${project.version}</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.mashape.unirest</groupId>
-            <artifactId>unirest-java</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <!--
-            jsoup HTML parser library @ http://jsoup.org/
-            Using this to get the raw/unprocessed HTML from Jenkins
-            -->
-            <groupId>org.jsoup</groupId>
-            <artifactId>jsoup</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
-
 </project>
