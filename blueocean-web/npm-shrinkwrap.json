@@ -11,6 +11,11 @@
           "version": "0.0.124",
           "from": "@jenkins-cd/design-language@0.0.124",
           "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.124.tgz"
+        },
+        "@jenkins-cd/js-extensions": {
+          "version": "0.0.33",
+          "from": "@jenkins-cd/js-extensions@0.0.33",
+          "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.33.tgz"
         }
       }
     },
@@ -32,9 +37,9 @@
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.33",
-      "from": "@jenkins-cd/js-extensions@0.0.33",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.33.tgz"
+      "version": "0.0.35",
+      "from": "@jenkins-cd/js-extensions@0.0.35",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.35.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",
@@ -250,9 +255,9 @@
       "optional": true
     },
     "ast-types": {
-      "version": "0.9.4",
-      "from": "ast-types@0.9.4",
-      "resolved": "https://registry.npmjs.org/ast-types/-/ast-types-0.9.4.tgz"
+      "version": "0.9.6",
+      "from": "ast-types@0.9.6",
+      "resolved": "https://registry.npmjs.org/ast-types/-/ast-types-0.9.6.tgz"
     },
     "astw": {
       "version": "2.0.0",
@@ -4387,9 +4392,9 @@
       "dev": true
     },
     "recast": {
-      "version": "0.11.20",
+      "version": "0.11.23",
       "from": "recast@>=0.11.17 <0.12.0",
-      "resolved": "https://registry.npmjs.org/recast/-/recast-0.11.20.tgz",
+      "resolved": "https://registry.npmjs.org/recast/-/recast-0.11.23.tgz",
       "dependencies": {
         "esprima": {
           "version": "3.1.3",
