@@ -14,13 +14,12 @@ export default class FreeStyle extends Component {
             this.fetchData(this.props);
         }
     }
-
     componentWillReceiveProps(nextProps) {
         logger.debug('newProps mate');
         if (!nextProps.augmenter.karaoke) {
             this.stopKaraoke();
         }
-        if (nextProps.run.isCompleted() && !nextProps.augmenter.run.isCompleted()) {
+        if (nextProps.run.isCompleted() && !this.props.run.isCompleted()) {
             logger.debug('re-fetching since result changed and we want to display the full log');
             this.pager.fetchGeneralLog({ });
         }

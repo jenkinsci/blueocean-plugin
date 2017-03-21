@@ -105,7 +105,7 @@ export const getNodesInformation = (nodes) => {
     });
     // in case we have all null we will focuse the first node since we assume that this would
     // be the next node to be started
-    if(queuedNodes.length === nodes.length && !wasFocused && model[0]) {
+    if (queuedNodes.length === nodes.length && !wasFocused && model[0]) {
         model[0].isFocused = true;
     }
     // creating the response object

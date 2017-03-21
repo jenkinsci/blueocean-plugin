@@ -17,6 +17,7 @@ export default class Pipeline extends Component {
         this.listener = {};
         this.sseEventHandler = this.sseEventHandler.bind(this);
         this.showPending = true; // Configure flag to show pending or not
+        this.karaoke = props.augmenter.karaoke;
     }
     componentWillMount() {
         if (this.props.augmenter) {
@@ -30,6 +31,8 @@ export default class Pipeline extends Component {
         if (!nextProps.augmenter.karaoke) {
             logger.debug('stopping karaoke mode.');
             this.stopKaraoke();
+        } else if (nextProps.augmenter.karaoke) {
+            this.karaoke = true;
         }
         if ((nextProps.run.isCompleted() && !nextProps.augmenter.run.isCompleted()) || (nextProps.run !== this.props.run)) {
             logger.debug('re-fetching since result changed and we want to display the full log and correct result states');
@@ -39,7 +42,10 @@ export default class Pipeline extends Component {
                 logger.debug('Need to set new Run. Happens when e.g. re-run.');
                 nextProps.augmenter.setRun(nextProps.run);
             }
-            this.pager.fetchNodes({});
+            debounce(() => {
+                this.karaoke = true;
+                this.pager.fetchNodes({});
+            }, 200)();
         }
         if (nextProps.params.node !== this.props.params.node) {
             logger.debug('Need to fetch new nodes.');
@@ -61,6 +67,7 @@ export default class Pipeline extends Component {
     stopKaraoke() {
         logger.debug('stopping karaoke mode, by removing the timeouts on the pager.');
         this.pager.clear();
+        this.karaoke = false;
     }
 
     /**
@@ -84,7 +91,10 @@ export default class Pipeline extends Component {
             case 'pipeline_step': {
                 logger.warn('sse event step fetchCurrentSteps', jenkinsEvent);
                 debounce(() => {
-                    this.pager.fetchCurrentStepUrl();
+                    logger.warn('should i fetch it or not?', this.karaoke);
+                    if (this.karaoke) {
+                        this.pager.fetchCurrentStepUrl();
+                    }
                 }, 200)();
                 // prevent flashing of stages and nodes
                 this.showPending = false;
@@ -96,7 +106,10 @@ export default class Pipeline extends Component {
             case 'pipeline_stage': {
                 logger.warn('sse event block starts refetchNodes', jenkinsEvent);
                 debounce(() => {
-                    this.pager.fetchNodes({});
+                    logger.warn('should i fetch it or not?', this.karaoke);
+                    if (this.karaoke) {
+                        this.pager.fetchNodes({});
+                    }
                 }, 200)();
                 // prevent flashing of stages and nodes
                 this.showPending = false;
@@ -126,17 +139,17 @@ export default class Pipeline extends Component {
             return <QueuedState message={queuedMessage} />;
         }
         // here we decide what to do next if somebody clicks on a flowNode
+        // Underlying tasks are fetching nodes information for the selected node
         const afterClick = (id) => {
             logger.warn('clicked on node with id:', id);
-            this.showPending = false; // Configure flag to not show pending anymore
+            this.showPending = false; // Configure flag to not show pending anymore -> reduce flicker
             const nextNode = this.pager.nodes.data.model.filter((item) => item.id === id)[0];
             // remove trailing /
             const pathname = location.pathname.replace(/\/$/, '');
             let nextPath;
-
             if (pathname.endsWith('pipeline')) {
                 nextPath = `${pathname}/${id}`;
-            } else {
+            } else { // means we are in a node url
                 // remove last bits
                 const pathArray = pathname.split('/');
                 pathArray.pop();
@@ -149,9 +162,11 @@ export default class Pipeline extends Component {
             logger.debug('redirecting now to:', location.pathname);
             // see whether we need to update the state
             if ((nextNode.state === 'FINISHED') && this.props.augmenter.karaoke) {
+                logger.debug('turning off karaoke since we do not need it anymore because focus is on a finished node.');
                 this.props.augmenter.setKaraoke(false);
             }
             if (nextNode.state !== 'FINISHED' && !this.props.augmenter.karaoke) {
+                logger.debug('turning on karaoke since we need it because we are focusing on a new node.');
                 this.props.augmenter.setKaraoke(true);
             }
             router.push(location);
@@ -160,7 +175,7 @@ export default class Pipeline extends Component {
             defaultValue: 'Steps ',
             0: this.pager.currentNode.displayName,
         }) : '';
-        // JENKINS-40526
+        // JENKINS-40526 node can provide logs only related to that node
         const logUrl = this.pager.nodes !== undefined ? augmenter.getNodesLogUrl(this.pager.currentNode) : augmenter.generalLogUrl;
         const logFileName = this.pager.nodes !== undefined ? augmenter.getNodesLogFileName(this.pager.currentNode) : augmenter.generalLogFileName;
         logger.warn('displayName', this.pager.currentNode.displayName, logUrl, augmenter.generalLogFileName);
