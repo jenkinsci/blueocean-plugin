@@ -36,6 +36,10 @@
       <artifactId>github-branch-source</artifactId>
     </dependency>
 
+    <dependency>
+        <groupId>org.jenkins-ci.plugins</groupId>
+        <artifactId>pubsub-light</artifactId>
+    </dependency>
 
     <!-- test dependencies -->
     <dependency>

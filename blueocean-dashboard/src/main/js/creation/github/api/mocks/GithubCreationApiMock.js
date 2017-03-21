@@ -2,7 +2,6 @@ import { Utils } from '@jenkins-cd/blueocean-core-js';
 import { ApiMock } from './ApiMock';
 
 import creationCreateSuccess from './creation-create-onerepo-success';
-import creationUpdateSuccess from './creation-update-onerepo-success';
 import organizations from './organizations';
 import orgfolderSuccess from './orgfolder-success';
 import repos1 from './repos-1';
@@ -75,11 +74,6 @@ export class GithubCreationApi extends ApiMock {
     createOrgFolder(credentialId, organization, repoNames = []) {
         console.log('createOrgFolder called with', ...arguments);
         return this._delayedResolve(creationCreateSuccess);
-    }
-
-    updateOrgFolder(credentialId, orgFolder, repoNames = []) {
-        console.log('updateOrgFolder called with', ...arguments);
-        return this._delayedResolve(creationUpdateSuccess);
     }
 
 }
