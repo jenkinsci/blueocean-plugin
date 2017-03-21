@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.90-SNAPSHOT",
+  "version": "0.0.90-BSPOC1",
   "dependencies": {
     "@jenkins-cd/design-language": {
       "version": "0.0.125",
