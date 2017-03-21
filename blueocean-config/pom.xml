@@ -21,7 +21,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>blueocean-rest-impl</artifactId>
+      <artifactId>blueocean-rest</artifactId>
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
