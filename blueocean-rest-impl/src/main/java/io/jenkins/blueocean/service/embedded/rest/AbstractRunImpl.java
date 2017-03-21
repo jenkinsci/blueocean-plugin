@@ -144,6 +144,11 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
+    public boolean isReplayable() {
+        return false;
+    }
+
+    @Override
     public BlueArtifactContainer getArtifacts() {
        return new ArtifactContainerImpl(run, this);
     }
