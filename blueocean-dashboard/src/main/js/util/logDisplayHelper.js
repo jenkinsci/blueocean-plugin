@@ -63,7 +63,7 @@ export const getNodesInformation = (nodes) => {
             .filter(action => capable(action, 'org.jenkinsci.plugins.workflow.actions.LogAction')) : [];
         const hasLogs = logActions.length > 0;
         const isCompleted = item.result !== 'UNKNOWN' && item.result !== null;
-        const computedResult = isCompleted ? item.result : item.state === null ? undefined : item.state;
+        const computedResult = isCompleted ? item.result : item.state;
         const isInputStep = item.input && item.input !== null;
         const key = index + isRunning + computedResult;
         const modelItem = {
