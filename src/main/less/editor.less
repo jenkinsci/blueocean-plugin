@@ -687,10 +687,6 @@
         }
     }
 
-    .editor-text-area textarea {
-        font: 13px monospace;
-    }
-
     .editor-config-panel h5 {
         margin: .2em 0 .8em 0;
         border-bottom: 1px solid rgba(204, 215, 227, 0.5);
@@ -792,4 +788,18 @@ td .pipeline-editor-link .svg-icon:hover path {
 
 .Header-topNav .pipeline-editor-link .svg-icon:hover path {
     fill: #ccc;
+}
+
+.pipeline-page {
+    .editor-pipeline-dialog {
+        min-width: 80%;
+        max-width: 50em;
+    }
+
+    .editor-text-area {
+        min-width: 20em;
+        textarea {
+            font: 13px monospace;
+        }
+    }
 }

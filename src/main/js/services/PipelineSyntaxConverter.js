@@ -356,7 +356,7 @@ export function convertJsonToPipeline(json: string, handler: Function) {
         fetch('/pipeline-model-converter/toJenkinsfile',
             'json=' + encodeURIComponent(json), data => {
                 if (data.errors) {
-                    if (window.isDevelopmentMode) onsole.error(data);
+                    if (window.isDevelopmentMode) console.error(data);
                 }
                 handler(data.jenkinsfile, data.errors);
             });

@@ -3,7 +3,7 @@ import { Link } from 'react-router';
 import Extensions from '@jenkins-cd/js-extensions';
 import {
         Fetch, getRestUrl, buildPipelineUrl, locationService,
-        ContentPageHeader, pipelineService, Paths, RunApi, ToastService,
+        ContentPageHeader, pipelineService, Paths, RunApi,
     } from '@jenkins-cd/blueocean-core-js';
 import {
     Dialog,
@@ -19,7 +19,8 @@ import pipelineStore from './services/PipelineStore';
 import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
 import saveApi from './SaveApi';
-import { EditorMain } from './components/editor/EditorMain.jsx';
+import { EditorMain } from './components/editor/EditorMain';
+import { CopyPastePipelineDialog } from './components/editor/CopyPastePipelineDialog';
 
 const Base64 = { encode: (data) => btoa(data), decode: (str) => atob(str) };
 
@@ -50,10 +51,9 @@ class SaveDialog extends React.Component {
     showError(err, saveRequest) {
         const { functions } = this.props;
         let errorMessage = err.message ? err.message : (err.errors ? err.errors.map(e => <div>{e.error}</div>) : err);
-        if (err.responseBody && err.responseBody.message) { 
-            errorMessage = err.responseBody.message;    
+        if (err.responseBody && err.responseBody.message) { // GH JSON is dumped as a string in err.responseBody.message
             // error: 409.
-            if (errorMessage.indexOf('error: 409.') >= 0) {
+            if (err.responseBody.message.indexOf('error: 409.') >= 0) {
                 if (this.props.branch !== saveRequest.content.branch) {
                     errorMessage = ['The branch ', <i>{saveRequest.content.branch}</i>, ' already exists'];
                     this.setState({ branchError: errorMessage });
@@ -124,11 +124,18 @@ class PipelineLoader extends React.Component {
         this.priorUnload = window.onbeforeunload;
         window.onbeforeunload = e => this.routerWillLeave(e);
         pipelineStore.addListener(this.pipelineUpdated = p => this.checkForModification());
+        document.addEventListener("keydown", this.openPipelineScriptDialog = e => {
+            if (e.keyCode == 83 && (e.metaKey || e.ctrlKey)) {
+              e.preventDefault();
+              this.showPipelineScript();
+            }
+          }, false);
     }
 
     componentWillUnmount() {
         window.onbeforeunload = this.priorUnload;
         pipelineStore.removeListener(this.pipelineUpdated);
+        document.removeEventListener('keypress', this.openPipelineScriptDialog);
     }
 
     routerWillLeave(e) {
@@ -155,6 +162,37 @@ class PipelineLoader extends React.Component {
         const { organization, pipeline, branch } = this.props.params;
         this.opener = locationService.previous;
         
+        const makeEmptyPipeline = () => {
+            // maybe show a dialog the user can choose
+            // empty or template
+            pipelineStore.setPipeline({
+                agent: { type: 'any' },
+                children: [],
+            });
+        };
+
+        if (!pipeline) {
+            makeEmptyPipeline();
+            return; // no pipeline to load
+        }
+
+        const showLoadingError = err => {
+            this.showErrorDialog(
+                <div className="errors">
+                    <div>
+                        There was an error loading the pipeline from the Jenkinsfile in this repository.
+                        Correct the error by editing the Jenkinsfile using the declarative syntax then commit it back to the repository.
+                    </div>
+                    <div>&nbsp;</div>
+                    <div><i>{this.extractErrorMessage(err)}</i></div>
+                </div>
+                , {
+                    buttonRow: <button className="btn-primary" onClick={() => this.cancel()}>Go Back</button>,
+                    onClose: () => this.cancel(),
+                    title: 'Error loading Pipeline',
+                });
+        };
+        
         Fetch.fetchJSON(`${getRestUrl(this.props.params)}scm/content/?branch=${encodeURIComponent(branch)}&path=Jenkinsfile`)
         .then( ({ content }) => {
             const pipelineScript = Base64.decode(content.base64Data);
@@ -169,15 +207,7 @@ class PipelineLoader extends React.Component {
                         this.forceUpdate();
                     }
                 } else {
-                    this.showErrorDialog(
-                        <div className="errors">
-                            <div>There was an error loading the pipeline</div>
-                            <div>{err.map(e => <div>{e.error}</div>)}</div>
-                        </div>
-                        , {
-                            buttonRow: <button className="btn-primary" onClick={() => this.cancel()}>Go Back</button>,
-                            onClose: () => this.cancel()
-                        });
+                    showLoadingError(err);
                     if(err[0].location) {
                         // revalidate in case something missed it (e.g. create an empty stage then load/save)
                         pipelineValidator.validate();
@@ -187,20 +217,9 @@ class PipelineLoader extends React.Component {
         })
         .catch(err => {
             if (err.response.status != 404) {
-                this.showErrorDialog(err);
+                showLoadingError(err);
             } else {
-                // maybe show a dialog the user can choose
-                // empty or template
-                pipelineStore.setPipeline({
-                    agent: { type: 'any' },
-                    children: [],
-                });
-                
-                ToastService.newToast({
-                    style: 'info',
-                    caption: "No pipeline found",
-                    text: "Creating a blank pipeline",
-                });
+                makeEmptyPipeline();
             }
         });
         
@@ -234,6 +253,10 @@ class PipelineLoader extends React.Component {
         });
     }
 
+    showPipelineScript() {
+        this.setState({ dialog: <CopyPastePipelineDialog onClose={() => this.closeDialog()} />});
+    }
+
     cancel() {
         const { organization, pipeline, branch } = this.props.params;
         const { router } = this.context;
@@ -259,10 +282,13 @@ class PipelineLoader extends React.Component {
         this.setState({ dialog: null });
     }
     
-    showErrorDialog(err, { saveRequest, buttonRow, onClose } = {}) {
+    extractErrorMessage(err) {
         let errorMessage = err;
         if (err instanceof String || typeof err === 'string') {
             errorMessage = err;
+        }
+        else if (err instanceof Array || typeof err === 'array') {
+            errorMessage = err.map(e => <div>{e.error}</div>);
         }
         else if (err.responseBody && err.responseBody.message) {
             // Github error
@@ -280,21 +306,20 @@ class PipelineLoader extends React.Component {
         else if (err.message) {
             errorMessage = err.message;
         }
+        return errorMessage;
+    }
+    
+    showErrorDialog(err, { saveRequest, buttonRow, onClose, title } = {}) {
         const buttons = buttonRow || [
             <button className="btn-primary" onClick={() => this.closeDialog()}>Ok</button>,
         ];
         
-//        this.setState({
-//            showSaveDialog: false,
-//            dialog: <Alerts type="Error" title="Error" message={errorMessage} />
-//        });
-        
         this.setState({
             showSaveDialog: false,
             dialog: (
-            <Dialog onDismiss={() => onClose ? onClose() : this.closeDialog()} title="Error" className="Dialog--error" buttons={buttons}>
+            <Dialog onDismiss={() => onClose ? onClose() : this.closeDialog()} title={title || 'Error'} className="Dialog--error" buttons={buttons}>
                 <div style={{width: '28em'}}>
-                    {errorMessage}
+                    {this.extractErrorMessage(err)}
                 </div>
             </Dialog>
         )});
@@ -342,7 +367,7 @@ class PipelineLoader extends React.Component {
                     this.lastPipeline = JSON.stringify(convertInternalModelToJson(pipelineStore.pipeline));
                     // If this is a save on the same branch that already has a Jenkinsfile, just re-run it
                     if (this.state.sha && branch === body.content.branch) {
-                        RunApi.startRun({ _links: { self: { href: this.href + 'branches/' + branch + '/' }}})
+                        RunApi.startRun({ _links: { self: { href: this.href + 'branches/' + encodeURIComponent(branch) + '/' }}})
                             .then(() => this.goToActivity())
                             .catch(err => errorHandler(err, body));//this.showErrorDialog(err));
                     } else {
@@ -361,10 +386,10 @@ class PipelineLoader extends React.Component {
     }
 
     render() {
-        const { branch } = this.props.params;
+        const { pipeline: pipelineName, branch } = this.props.params;
         const { pipelineScript } = this.state;
         const pipeline = pipelineService.getPipeline(this.href);
-        const repo = this.props.params.pipeline.split('/')[1];
+        const repo = pipelineName && pipelineName.split('/')[1];
         return (<div className="pipeline-page">
             <Extensions.Renderer extensionPoint="pipeline.editor.css"/>
             <ContentPageHeader>
@@ -375,7 +400,7 @@ class PipelineLoader extends React.Component {
                 </div>
                 <div className="editor-page-header-controls">
                     <button className="btn-link inverse" onClick={() => this.cancel()}>Cancel</button>
-                    <button className="btn-primary inverse" onClick={() => this.showSaveDialog()}>Save</button>
+                    {pipelineName && <button className="btn-primary inverse" onClick={() => this.showSaveDialog()}>Save</button>}
                 </div>
             </ContentPageHeader>
             {pipelineStore.pipeline &&
