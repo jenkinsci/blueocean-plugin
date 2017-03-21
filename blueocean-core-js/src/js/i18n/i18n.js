@@ -1,10 +1,10 @@
 import i18next from 'i18next';
 import LngDetector from 'i18next-browser-languagedetector';
-import XHR from 'i18next-xhr-backend';
 import { store } from '@jenkins-cd/js-extensions';
 
 import urlConfig from '../urlconfig';
 import logging from '../logging';
+import { Fetch } from '../fetch';
 
 const logger = logging.logger('io.jenkins.blueocean.i18n');
 
@@ -33,20 +33,18 @@ function newPluginXHR(pluginName, onLoad) {
     pluginVersion = encodeURIComponent(pluginVersion);
 
     const loadPath = `${prefix}/blue/rest/i18n/${pluginName}/${pluginVersion}/{ns}/{lng}`;
-    return new XHR(null, {
-        loadPath,
-        allowMultiLoading: false,
-        parse: (data) => {
-            // we need to parse the response and then extract the data since the rest is garbage for us
-            const response = JSON.parse(data);
-            if (logger.isDebugEnabled()) {
-                logger.debug('Received i18n resource bundle for plugin "%s".', pluginName, response.data);
-            }
-            if (typeof onLoad === 'function') {
-                onLoad();
-            }
-            return response.data;
-        },
+
+    // TODO: Doesn't work, we need it to work with JWT, Thor needs to take a look
+    return Fetch.fetch(loadPath).then((data) => {
+        // we need to parse the response and then extract the data since the rest is garbage for us
+        const response = JSON.parse(data);
+        if (logger.isDebugEnabled()) {
+            logger.debug('Received i18n resource bundle for plugin "%s".', pluginName, response.data);
+        }
+        if (typeof onLoad === 'function') {
+            onLoad();
+        }
+        return response.data;
     });
 }
 
