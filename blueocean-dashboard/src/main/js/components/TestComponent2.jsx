@@ -5,4 +5,4 @@ import { Icon } from '@jenkins-cd/react-material-icons';
 
 const TestComponent2 = (props) => <Icon icon="file_download" size={24} />;
 
-export default TestComponent1;
+export default TestComponent2;
