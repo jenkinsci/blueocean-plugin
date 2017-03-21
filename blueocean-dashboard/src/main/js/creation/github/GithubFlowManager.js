@@ -348,19 +348,7 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     saveSingleRepo() {
-        const repoNames = this._getFullRepoNameList();
-        this._saveOrgFolder(repoNames);
-    }
-
-    /**
-     * Get the full list of repo names for the org folder based on those already being scanned, and the user's selection.
-     *
-     * @returns {Array}
-     * @private
-     */
-    _getFullRepoNameList() {
-        const existingPipelines = this.existingOrgFolder && this.existingOrgFolder.pipelineFolderNames || [];
-        return existingPipelines.concat(this.selectedRepository.name);
+        this._saveOrgFolder([this.selectedRepository.name]);
     }
 
     /**
@@ -385,11 +373,7 @@ export default class GithubFlowManager extends FlowManager {
 
         this._initListeners();
 
-        const promise = !this.existingOrgFolder ?
-            this._creationApi.createOrgFolder(this.credentialId, this.selectedOrganization, repoNames) :
-            this._creationApi.updateOrgFolder(this.credentialId, this.existingOrgFolder, repoNames);
-
-        promise
+        this._creationApi.createOrgFolder(this.credentialId, this.selectedOrganization, repoNames)
             .then(waitAtLeast(MIN_DELAY * 2))
             .then(r => this._saveOrgFolderSuccess(r), e => this._saveOrgFolderFailure(e));
     }
