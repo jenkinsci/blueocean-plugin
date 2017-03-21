@@ -205,7 +205,48 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
     }
 
     private void _sendOrganizationScanCompleteEvent(Item item, OrganizationFolder orgFolder) {
+//        Queue.WaitingItem waitingItem = new Queue.WaitingItem(Calendar.getInstance(), orgFolder, Collections.<Action>emptyList());
+//        Queue.BuildableItem buildableItem = new Queue.BuildableItem(waitingItem);
+//        WorkUnitContext workUnitContext = new WorkUnitContext(buildableItem);
+//        WorkUnit u = workUnitContext.createWorkUnit(orgFolder);
+//        OrganizationFolder.OrganizationScan orgScan = new OrganizationFolder.OrganizationScan(orgFolder, null) {
+//            @Override
+//            public Result getResult() {
+//                return Result.fromString("SUCCESS");
+//            }
+//        };
+//        u.setExecutable(orgScan);
+//        Queue.LeftItem leftItem = new Queue.LeftItem(workUnitContext);
+//        QueueTaskMessage queueTaskMessage = new QueueTaskMessage(leftItem, item);
+//        try {
+//            PubsubBus.getBus().publish(
+//                queueTaskMessage
+//                .setEventName(Events.JobChannel.job_run_queue_task_complete)
+//                .set(EventProps.Job.job_run_queueId, Long.toString(1))
+//                .set(EventProps.Job.job_run_status, "ALLOCATED")
+//            );
+//        } catch (MessageException e) {
+//            throw new RuntimeException(e);
+//        }
+
         try {
+            /*
+            {"jenkins_object_type":"jenkins.branch.OrganizationFolder",
+            "jenkins_event_uuid":"b9a4fe1c-aa0b-4ce0-9381-bff15af50191",
+            "job_run_status":"ALLOCATED",
+            "job_name":"kzantow",
+            "jenkins_org":"jenkins",
+            "job_orgfolder_indexing_status":"COMPLETE",
+            "job_run_queueId":"1",
+            "jenkins_object_name":"kzantow",
+            "blueocean_job_rest_url":"/blue/rest/organizations/jenkins/pipelines/kzantow/",
+            "jenkins_event":"job_run_queue_task_complete",
+            "job_orgfolder_indexing_result":"SUCCESS",
+            "blueocean_job_pipeline_name":"kzantow",
+            "jenkins_object_url":"job/kzantow/",
+            "jenkins_channel":"job"}
+            */
+
             org.jenkinsci.plugins.pubsub.SimpleMessage msg = new org.jenkinsci.plugins.pubsub.SimpleMessage();
             msg.set("jenkins_object_type","jenkins.branch.OrganizationFolder");
             msg.set("job_run_status","ALLOCATED");
@@ -245,7 +286,52 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
             sendMultibranchIndexingCompleteEvent(item, orgFolder, name, iterations - 1);
             return;
         }
+//        Queue.WaitingItem waitingItem = new Queue.WaitingItem(Calendar.getInstance(), mbp, Collections.<Action>emptyList());
+//        Queue.BuildableItem buildableItem = new Queue.BuildableItem(waitingItem);
+//        WorkUnitContext workUnitContext = new WorkUnitContext(buildableItem);
+//        WorkUnit u = workUnitContext.createWorkUnit(mbp);
+//        MultiBranchProject.BranchIndexing orgScan = new MultiBranchProject.BranchIndexing(mbp, null) {
+//            @Override
+//            public Result getResult() {
+//                return Result.fromString("SUCCESS");
+//            }
+//        };
+//        u.setExecutable(orgScan);
+//        Queue.LeftItem leftItem = new Queue.LeftItem(workUnitContext);
+//        QueueTaskMessage queueTaskMessage = new QueueTaskMessage(leftItem, item);
+//        try {
+//            PubsubBus.getBus().publish(
+//                queueTaskMessage
+//                .setEventName(Events.JobChannel.job_run_queue_task_complete)
+//                .set(EventProps.Job.job_run_queueId, Long.toString(1))
+//                .set(EventProps.Job.job_run_status, "ALLOCATED")
+//            );
+//        } catch (MessageException e) {
+//            throw new RuntimeException(e);
+//        }
+
         try {
+            /*
+            {
+            "jenkins_object_type":"org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject",
+            "jenkins_event_uuid":"c1279334-c339-4d3c-8d9c-e762bf410d67",
+            "sse_subs_dispatcher_inst":"1687793323",
+            "job_run_status":"QUEUED",
+            "job_name":"kzantow/dumb-test-repo",
+            "jenkins_org":"jenkins",
+            "job_run_queueId":"11",
+            "job_ismultibranch":"true",
+            "jenkins_object_name":"kzantow/dumb-test-repo",
+            "blueocean_job_rest_url":"/blue/rest/organizations/jenkins/pipelines/kzantow/pipelines/dumb-test-repo/",
+            "job_multibranch_indexing_status":"INDEXING",
+            "jenkins_event":"job_run_queue_enter",
+            "sse_subs_dispatcher":"jenkins-blueocean-core-js-1489546593249-ye9htbxi8yyad9wtrzfr",
+            "blueocean_job_pipeline_name":"kzantow/dumb-test-repo",
+            "jenkins_object_url":"job/kzantow/job/dumb-test-repo/",
+            "jenkins_channel":"job"
+            }
+            */
+
             String jobName = orgFolder.getName() + "/" + mbp.getName();
             org.jenkinsci.plugins.pubsub.SimpleMessage msg = new org.jenkinsci.plugins.pubsub.SimpleMessage();
             msg.set("jenkins_object_type","org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject");
