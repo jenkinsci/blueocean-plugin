@@ -27,6 +27,9 @@ export const getNodesInformation = (nodes) => {
     const errorNodes = nodes
         .filter((item) => item.result === RESULTS.FAILURE)
         .map((item) => item.id);
+    const queuedNodes = nodes
+        .filter((item) => item.state === null && item.result === null)
+        .map((item) => item.id);
     // nodes without information
     const hasResultsForSteps = nodes
             .filter((item) => item.state === null && item.result === null).length !== nodes.length;
@@ -34,9 +37,9 @@ export const getNodesInformation = (nodes) => {
     let wasFocused = false; // we only want one node to be focused if any
     let parallelNodes = [];
     let parent;
-    // FIXME: this assumption is not 100% correct since a job that is in queue would be marked as finished since
-    // there will be no running nodes yet!
-    const finished = runningNodes.length === 0;
+    // a job that is in queue would be marked as finished since
+    // there will be no running nodes yet, that is why we check for that
+    const finished = runningNodes.length === 0 && queuedNodes.length !== nodes.length;
     const error = !(errorNodes.length === 0);
     const model = nodes.map((item, index) => {
         const hasFailingNode = item.edges && item.edges.length >= 2 ? item.edges
@@ -59,20 +62,21 @@ export const getNodesInformation = (nodes) => {
         const logActions = item.actions ? item.actions
             .filter(action => capable(action, 'org.jenkinsci.plugins.workflow.actions.LogAction')) : [];
         const hasLogs = logActions.length > 0;
-        const isCompleted = item.result !== 'UNKNOWN';
-        const computedResult = isCompleted ? item.result : item.state;
+        const isCompleted = item.result !== 'UNKNOWN' && item.result !== null;
+        const computedResult = isCompleted ? item.result : item.state === null ? undefined : item.state;
         const isInputStep = item.input && item.input !== null;
+        const key = index + isRunning + computedResult;
         const modelItem = {
             _links: item._links,
-            key: index + isRunning + computedResult,
+            key: key || undefined,
             id: item.id,
             edges: item.edges,
             displayName: item.displayName,
             title: item.displayName || `runId: ${item.id}`,
-            durationInMillis: item.durationInMillis,
-            startTime: item.startTime,
-            result: item.result,
-            state: item.state,
+            durationInMillis: item.durationInMillis || undefined,
+            startTime: item.startTime || undefined,
+            result: item.result || undefined,
+            state: item.state || undefined,
             hasLogs,
             logUrl: hasLogs ? logActions[0]._links.self.href : undefined,
             isParallel,
@@ -99,7 +103,11 @@ export const getNodesInformation = (nodes) => {
         }
         return modelItem;
     });
-
+    // in case we have all null we will focuse the first node since we assume that this would
+    // be the next node to be started
+    if(queuedNodes.length === nodes.length && !wasFocused && model[0]) {
+        model[0].isFocused = true;
+    }
     // creating the response object
     const information = {
         isFinished: finished,

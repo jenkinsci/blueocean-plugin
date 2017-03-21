@@ -33,6 +33,8 @@ export default class Pipeline extends Component {
         }
         if ((nextProps.run.isCompleted() && !nextProps.augmenter.run.isCompleted()) || (nextProps.run !== this.props.run)) {
             logger.debug('re-fetching since result changed and we want to display the full log and correct result states');
+            // remove all timeouts
+            this.stopKaraoke();
             if (nextProps.run !== this.props.run) {
                 logger.debug('Need to set new Run. Happens when e.g. re-run.');
                 nextProps.augmenter.setRun(nextProps.run);

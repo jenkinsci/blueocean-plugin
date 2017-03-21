@@ -3,15 +3,8 @@ import { assert } from 'chai';
 import { shallow } from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import nock from 'nock';
 import { TestUtils } from '@jenkins-cd/blueocean-core-js';
 TestUtils.patchFetchNoJWT();
-
-import {
-    actions,
-    ACTION_TYPES,
-    steps as stepsSelector,
-} from '../../main/js/redux';
 
 import { runNodesSuccess, runNodesFail, runNodesRunning } from './data/runs/nodes/runNodes';
 import { firstFinishedSecondRunning } from './data/runs/nodes/runNodes-firstFinishedSecondRunning';
@@ -21,6 +14,7 @@ import { queuedAborted } from './data/runs/nodes/runNodes-QueuedAborted';
 import { getNodesInformation } from './../../main/js/util/logDisplayHelper';
 import runningFailing from './data/steps/failingRunningSteps';
 import { poststagefail } from './data/runs/nodes/poststagefail';
+import { nullNodes } from './data/runs/nodes/nodesAllNull';
 
 
 import Step from '../../main/js/components/karaoke/components/Step';
@@ -70,6 +64,16 @@ describe("Logic test of different runs", () => {
                 getNodesInformation(item),
                 {finished: false, failed: null, running: index === 2 ? 3 : 1}
             ));
+    });
+    it("handles all null", () => {
+        const stagesInfo = getNodesInformation(nullNodes);
+        assertResult(stagesInfo, {
+            finished: false,
+            failed: null,
+            running: 0,
+            errors: 0,
+        });
+       assert.equal(stagesInfo.model[0].isFocused, true);
     });
 });
 

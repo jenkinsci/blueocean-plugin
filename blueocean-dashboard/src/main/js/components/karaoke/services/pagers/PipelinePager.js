@@ -103,12 +103,12 @@ export class PipelinePager {
                     }
                     return item.isFocused;
                 })[0];
-
                 // set either the focused node determined by the script or the last node
                 if (focused) {
                     this.currentNode = focused;
                 } else {
-                    // HERE see if running
+                    // Actually we should only come here on a not running job
+                    logger.debug('Actually we should only come here on a not running job')
                     const lastNode = (logData.data.model[logData.data.model.length - 1]);
                     this.currentNode = lastNode;
                 }
