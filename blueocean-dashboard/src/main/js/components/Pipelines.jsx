@@ -13,12 +13,31 @@ const translate = i18nTranslator('blueocean-dashboard');
 
 @observer
 export class Pipelines extends Component {
+
+    state = {
+        actionExtensionCount: 0
+    };
+
     componentWillMount() {
         this._initPager(this.props);
+        this._countExtensions();
     }
 
     componentWillReceiveProps(nextProps) {
         this._initPager(nextProps);
+    }
+
+    // Figure out how many extensions we have for the action buttons column so we can size it appropriately
+    _countExtensions() {
+        console.log('_countExtensions'); // TODO:RM
+        Extensions.store.getExtensions('jenkins.pipeline.list.action', extensions => {
+            console.log('_countExtensions found', extensions); // TODO:RM
+            const count = extensions && typeof(extensions.length) === 'number' ? extensions.length : 0;
+            if (count !== this.state.actionExtensionCount) {
+                this.setState({ actionExtensionCount: count });
+            }
+        });
+        console.log('_countExtensions done'); // TODO:RM
     }
 
     _initPager(props) {
@@ -31,8 +50,10 @@ export class Pipelines extends Component {
     }
 
     render() {
+        console.log('Pipelines.render()'); // TODO: RM
         const pipelines = this.pager.data;
         const { organization, location = { } } = this.context.params;
+        const { actionExtensionCount } = this.state;
 
         const orgLink = organization ?
             <Link
@@ -52,7 +73,7 @@ export class Pipelines extends Component {
             JTable.column(70, labelHealth),
             JTable.column(70, labelBranches),
             JTable.column(70, labelPullReqs),
-            JTable.column(50, ''),
+            JTable.column(actionExtensionCount * 24, ''),
         ];
 
         const pipelineRows = pipelines && pipelines.map(pipeline => {

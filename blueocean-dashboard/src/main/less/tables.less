@@ -12,3 +12,15 @@
 .TableCell--actions {
     justify-content: flex-end;
 }
+
+.ExtensionPoint.jenkins-pipeline-list-action {
+    display: flex;
+    flex-wrap: nowrap;
+
+    // Constrain the children in size, there should only be icons here.
+    div {
+        width:24px;
+        height:24px;
+        overflow: hidden;
+    }
+}
