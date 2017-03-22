@@ -10,6 +10,9 @@ const LOGGER = logging.logger('io.jenkins.blueocean.create-pipeline');
  * Must provide an initial step, and has methods for pushing or replacing steps on stack.
  */
 export default class FlowManager {
+    get redirectTimeout() {
+        return 2000;
+    }
 
     @computed
     get activeIndex() {

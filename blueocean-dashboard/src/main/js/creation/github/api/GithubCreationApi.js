@@ -131,7 +131,7 @@ export class GithubCreationApi {
         const createUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/pipelines/`);
 
         const requestBody = this._buildRequestBody(
-            true, credentialId, organization.name, organization.name, repoNames,
+            credentialId, organization.name, organization.name, repoNames,
         );
 
         const fetchOptions = {
@@ -146,35 +146,10 @@ export class GithubCreationApi {
             .then(pipeline => capabilityAugmenter.augmentCapabilities(pipeline));
     }
 
-    updateOrgFolder(credentialId, orgFolder, repoNames = []) {
-        const path = UrlConfig.getJenkinsRootURL();
-        const { href } = orgFolder._links.self;
-        const updateUrl = Utils.cleanSlashes(`${path}/${href}`);
-
-        const requestBody = this._buildRequestBody(
-            false, credentialId, orgFolder.name, orgFolder.name, repoNames,
-        );
-
-        const fetchOptions = {
-            method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody),
-        };
-
-        return this._fetch(updateUrl, { fetchOptions })
-            .then(pipeline => capabilityAugmenter.augmentCapabilities(pipeline));
-    }
-
-    _buildRequestBody(create, credentialId, itemName, organizationName, repoNames) {
-        const className = create ?
-            'GithubPipelineCreateRequest' :
-            'GithubPipelineUpdateRequest';
-
+    _buildRequestBody(credentialId, itemName, organizationName, repoNames) {
         return {
             name: itemName,
-            $class: `io.jenkins.blueocean.blueocean_github_pipeline.${className}`,
+            $class: 'io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest',
             scmConfig: {
                 credentialId,
                 uri: 'https://api.github.com', // optional for github! required for enterprise where it should be http://ghe.acme.com/api/v3
