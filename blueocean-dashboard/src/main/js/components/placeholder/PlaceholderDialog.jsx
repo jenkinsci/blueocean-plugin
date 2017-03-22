@@ -11,16 +11,17 @@ function createContent(content) {
         return null;
     }
 
-    const { icon, title, message, linkText, linkHref } = content;
+    const { icon, title, message, linkElement, linkText, linkHref } = content;
+    // use 'linkElement' as is, or build a link if the text and href were supplied
+    const link = linkElement || (linkText && linkHref && <a className="btn" target="_blank" href={linkHref}>{linkText}</a>);
 
     return [
         icon && React.cloneElement(icon, { className: 'icon' }),
         <h1 className="title">{title}</h1>,
         <p className="message">{message}</p>,
-        <a className="btn" target="_blank" href={linkHref}>{linkText}</a>,
+        link,
     ];
 }
-// TODO: support React Router 'Link' for clean navigation between views
 
 
 /**
