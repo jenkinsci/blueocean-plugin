@@ -70,7 +70,7 @@ export class Step extends Component {
             logger.debug('pending returning null');
             return null;
         }
-        const { step, augmenter, locale, router, location, t, scrollToBottom } = this.props;
+        const { step, locale, router, location, t, scrollToBottom } = this.props;
         if (step === undefined || !step) {
             return null;
         }
