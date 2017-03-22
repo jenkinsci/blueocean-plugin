@@ -3,6 +3,7 @@ import { PlaceholderTable } from '@jenkins-cd/design-language';
 
 import { PlaceholderContent } from './PlaceholderContent';
 import { PlaceholderDialog } from './PlaceholderDialog';
+import Icon from './Icon';
 
 
 export function NoBranchesPlaceholder(props) {
@@ -19,24 +20,18 @@ export function NoBranchesPlaceholder(props) {
         { width: 50, head: {}, cell: { icon: 20 } },
     ];
 
+    const content = {
+        icon: Icon.PULL_REQUEST,
+        title: t('pipelinedetail.placeholder.nobranches.title'),
+        message: t('pipelinedetail.placeholder.nobranches.message'),
+        linkText: t('pipelinedetail.placeholder.nobranches.linktext'),
+        linkHref: t('pipelinedetail.placeholder.nobranches.linkhref'),
+    };
+
     return (
         <PlaceholderContent>
             <PlaceholderTable columns={columns} rowCount={15} />
-            <PlaceholderDialog width={375} content={{
-                icon: <svg className="icon" />,
-                title: t('pipelinedetail.placeholder.nobranches.title'),
-                message: t('pipelinedetail.placeholder.nobranches.message'),
-                linkText: t('pipelinedetail.placeholder.nobranches.linktext'),
-                linkHref: t('pipelinedetail.placeholder.nobranches.linkhref'),
-            }}
-            >
-                {/*
-                 <svg className="icon" />
-                 <h1 className="title">You don't have any branches that contain a Jenkinsfile</h1>
-                 <p className="message">A Jenkinsfile is defined in your repository and describes how your pipeline will work.</p>
-                 <a className="btn">Learn more</a>
-                 */ }
-            </PlaceholderDialog>
+            <PlaceholderDialog width={375} content={content} />
         </PlaceholderContent>
     );
 }
