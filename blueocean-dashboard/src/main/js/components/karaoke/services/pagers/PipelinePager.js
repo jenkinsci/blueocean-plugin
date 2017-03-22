@@ -99,6 +99,7 @@ export class PipelinePager {
                 }
                 const focused = logData.data.model.filter((item) => {
                     if (node) {
+                        logger.warn('check whether the node we are requesting is same', node, item);
                         return item.id === node;
                     }
                     return item.isFocused;

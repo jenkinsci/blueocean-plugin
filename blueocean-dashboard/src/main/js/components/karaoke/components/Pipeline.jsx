@@ -190,7 +190,7 @@ export default class Pipeline extends Component {
         // JENKINS-40526 node can provide logs only related to that node
         const logUrl = this.pager.nodes !== undefined ? augmenter.getNodesLogUrl(this.pager.currentNode) : augmenter.generalLogUrl;
         const logFileName = this.pager.nodes !== undefined ? augmenter.getNodesLogFileName(this.pager.currentNode) : augmenter.generalLogFileName;
-        logger.warn('displayName', this.pager.currentNode.displayName, logUrl, augmenter.generalLogFileName);
+        logger.warn('displayName', this.pager.currentNode.displayName, logUrl, logFileName);
         return (<div>
             { this.pager.nodes !== undefined &&
                 <Extensions.Renderer

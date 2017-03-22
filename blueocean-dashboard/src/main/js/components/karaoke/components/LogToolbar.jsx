@@ -1,10 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-
 import { Icon } from '@jenkins-cd/react-material-icons';
 import { fetchAllSuffix as suffix } from '../../../util/UrlUtils';
 
 const { string } = PropTypes;
-
 
 export default class LogToolbar extends Component {
     render() {

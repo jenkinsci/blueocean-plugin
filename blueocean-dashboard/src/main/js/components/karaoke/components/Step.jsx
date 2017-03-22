@@ -15,18 +15,49 @@ export class Step extends Component {
         super(props);
         const { augmenter, step } = props;
         this.pager = KaraokeService.logPager(augmenter, step);
-        logger.log('isFocused', step.isFocused);
+        const focused = this.isFocused(props);
+        logger.debug('isFocused initial', focused);
         this.state = {
-            expanded: step.isFocused !== undefined && step.isFocused,
+            expanded: focused,
         };
     }
 
     componentWillMount() {
+        const { step } = this.props;
         // needed for running steps as reference
-        this.durationMillis = (this.durationHarmonize(this.props.step)).durationMillis;
+        this.durationMillis = (this.durationHarmonize(step)).durationMillis;
         logger.debug('durationMillis mounting', this.durationMillis);
+        const isFocused = this.isFocused(this.props);
+        if ((!step.isInputStep && isFocused) &&
+            (this.pager.log === undefined || (this.pager.log && !this.pager.log.data))){
+            const cfg = { url: step.logUrl };
+            logger.debug('getLogForStep called will fetch now with cfg.', cfg);
+            this.pager.fetchLog(cfg);
+        }
+    }
+    /*
+     * Calculate whether we need to expand the step due to linking.
+     * When we trigger a log-0 that means we want to see the full log
+     */
+    isFocused(props) {
+        const { step, location: { hash: anchorName } } = props;
+        const stepFocus = step.isFocused !== undefined && step.isFocused;
+        const stateFocus = this.state ? this.state.expanded : undefined;
+        let isFocused = stateFocus !== undefined ? stateFocus : stepFocus;
+        // e.g. #step-10-log-1 or #step-10
+        if (anchorName) {
+            logger.debug('expandAnchor', anchorName);
+            const stepReg = /step-([0-9]{1,})?($|-log-([0-9]{1,})$)/;
+            const match = stepReg.exec(anchorName);
+
+            if (match && match[1] && match[1] === step.id) {
+                isFocused= true;
+            }
+        }
+        return isFocused || false;
     }
 
+    // needed to calculated running times
     durationHarmonize(step) {
         const skewMillis = AppConfig.getServerBrowserTimeSkewMillis();
         // the time when we started the run harmonized with offset
@@ -44,6 +75,7 @@ export class Step extends Component {
             return null;
         }
         const { durationMillis } = this.durationHarmonize(step);
+        const isFocused = this.isFocused(this.props);
         const { data: logArray, hasMore } = this.pager.log || {};
         let children = null;
         if (logArray && !step.isInputStep) {
@@ -56,6 +88,7 @@ export class Step extends Component {
                 scrollToBottom,
                 logArray,
                 key: step.logUrl,
+                prefix: `step-${step.id}-`,
             }}
             />);
         } else if (step.isInputStep) {
@@ -64,8 +97,8 @@ export class Step extends Component {
             children = <span key={'span'}>&nbsp;</span>;
         }
         const getLogForNode = () => {
-            if (!this.pager.logArray) {
-                const cfg = { followAlong: augmenter.karaoke, url: step.logUrl };
+            if (this.pager.log === undefined || (this.pager.log && !this.pager.log.data)) {
+                const cfg = { url: step.logUrl };
                 logger.debug('getLogForNode called will fetch now with cfg.', cfg);
                 this.pager.fetchLog(cfg);
                 // we are now want to expand the result item
@@ -73,6 +106,7 @@ export class Step extends Component {
             }
         };
         const removeFocus = () => {
+            this.setState({ expanded: false });
             // we need to remove the hash on collapse otherwise the result item will not be collapsed
             if (location.hash) {
                 delete location.hash;
@@ -98,7 +132,7 @@ export class Step extends Component {
                 extraInfo: time,
                 key: step.key,
                 result: step.computedResult.toLowerCase(),
-                expanded: this.state.expanded,
+                expanded: isFocused,
                 label: step.title,
                 onCollapse: removeFocus,
                 onExpand: getLogForNode,

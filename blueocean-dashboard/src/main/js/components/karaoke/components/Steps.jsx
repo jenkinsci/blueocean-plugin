@@ -1,12 +1,15 @@
 import React, { Component, PropTypes } from 'react';
+import { QueuedState } from './QueuedState';
 import { Step } from './Step';
 
 export default class Steps extends Component {
     render() {
-        const { nodeInformation } = this.props;
+        const { t, nodeInformation } = this.props;
         // Early out
         if (!nodeInformation) {
-            return null;
+            const queuedMessage = t('rundetail.pipeline.pending.message',
+                { defaultValue: 'Waiting for backend to response' });
+            return <QueuedState message={queuedMessage} />;
         }
         const { model } = nodeInformation;
         return (<div>
@@ -24,5 +27,6 @@ export default class Steps extends Component {
 
 Steps.propTypes = {
     nodeInformation: PropTypes.object.isRequired,
+    t: PropTypes.func,
 };
 
