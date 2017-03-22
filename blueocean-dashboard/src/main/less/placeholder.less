@@ -26,18 +26,19 @@
     }
 
     .icon, .title, .message {
-        margin-top: 0;
+        margin: 0;
     }
 
-    .icon {
-        margin-bottom: 20px;
-    }
-
-    .title {
-        margin-bottom: 10px;
+    .icon + .title {
+        margin-top: 20px;
     }
 
     .message {
-        margin-bottom: 25px;
+        margin-top: 10px;
+    }
+
+    // for button
+    .message + * {
+        margin-top: 25px;
     }
 }
