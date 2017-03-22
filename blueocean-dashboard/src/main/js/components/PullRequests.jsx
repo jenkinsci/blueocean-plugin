@@ -1,11 +1,14 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
-import PullRequest from './PullRequest';
-import Markdown from 'react-remarkable';
-import { RunsRecord } from './records';
 import { capable, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
-import { MULTIBRANCH_PIPELINE } from '../Capabilities';
+import Markdown from 'react-remarkable';
 import { observer } from 'mobx-react';
+
+import PullRequest from './PullRequest';
+import { RunsRecord } from './records';
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
+import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
+
 const { object, string, func } = PropTypes;
 
 const EmptyState = ({ repoName, t }) => (
@@ -65,7 +68,7 @@ export class PullRequests extends Component {
         }
 
         if (!this.pager.pending && !this.pager.data.length) {
-            return (<EmptyState t={t} repoName={this.context.params.pipeline} />);
+            return <NoBranchesPlaceholder t={t} />;
         }
 
         const head = 'pipelinedetail.pullrequests.header';

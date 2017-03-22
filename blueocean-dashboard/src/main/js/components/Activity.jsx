@@ -1,16 +1,15 @@
 import React, { Component, PropTypes } from 'react';
-import {
-  EmptyStateView,
-  Table,
-} from '@jenkins-cd/design-language';
+import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import Markdown from 'react-remarkable';
 import { observer } from 'mobx-react';
+
 import Runs from './Runs';
 import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { buildPipelineUrl } from '../util/UrlUtils';
 import { ColumnFilter } from './ColumnFilter';
+import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
 
 const { object, array, func, string, bool } = PropTypes;
 
@@ -42,6 +41,8 @@ EmptyState.propTypes = {
     onNavigation: func,
     t: func,
 };
+
+
 @observer
 export class Activity extends Component {
 
@@ -53,7 +54,7 @@ export class Activity extends Component {
             this.pager = this.context.activityService.activityPager(organization, pipeline, branch);
         }
     }
-    
+
     componentWillReceiveProps(newProps) {
         if (this.props.params && this.props.params.branch !== newProps.params.branch) {
             const organization = newProps.params.organization;
@@ -62,7 +63,7 @@ export class Activity extends Component {
             this.pager = this.context.activityService.activityPager(organization, pipeline, branch);
         }
     }
-    
+
     navigateToBranch(branch) {
         const organization = this.context.params.organization;
         const pipeline = this.context.params.pipeline;
@@ -73,7 +74,7 @@ export class Activity extends Component {
         }
         this.context.router.push(activitiesURL);
     }
-    
+
     render() {
         const { pipeline, t, locale } = this.props;
         const runs = this.pager.data;
@@ -82,14 +83,21 @@ export class Activity extends Component {
         }
         const { branch } = this.context.params;
         const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
+        const hasBranches = pipeline.branchNames && pipeline.branchNames.length;
 
         // Only show the Run button for non multi-branch pipelines.
         // Multi-branch pipelines have the Run/play button beside them on
         // the Branches/PRs tab.
         const showRunButton = !isMultiBranchPipeline;
 
-        if (!this.pager.pending && (!runs || !runs.length)) {
-            return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} t={t} />);
+        if (!this.pager.pending) {
+            if (isMultiBranchPipeline && !hasBranches) {
+                return <NoBranchesPlaceholder t={t} />;
+            }
+            if (!runs || !runs.length) {
+                return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton}
+                                    pipeline={pipeline} t={t} />);
+            }
         }
 
         const onNavigation = (url) => {
@@ -107,12 +115,12 @@ export class Activity extends Component {
         const duration = t(`${head}.duration`, { defaultValue: 'Duration' });
         const completed = t(`${head}.completed`, { defaultValue: 'Completed' });
         const branchText = t(`${head}.branch`, { defaultValue: 'Branch' });
-        
+
         const branchFilter = isMultiBranchPipeline && (<ColumnFilter placeholder={branchText} value={branch}
             onChange={b => this.navigateToBranch(b)}
             options={pipeline.branchNames.map(b => decodeURIComponent(b))}
         />);
-       
+
         const headers = isMultiBranchPipeline ? [
             status,
             runHeader,

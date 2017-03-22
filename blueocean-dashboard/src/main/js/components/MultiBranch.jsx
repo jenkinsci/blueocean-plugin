@@ -1,10 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
-import Markdown from 'react-remarkable';
-import Branches from './Branches';
-
 import { capable, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+import Markdown from 'react-remarkable';
 import { observer } from 'mobx-react';
+
+import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
+import Branches from './Branches';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 
 const { object, string, any, func } = PropTypes;
@@ -53,7 +54,7 @@ export class MultiBranch extends Component {
 
     render() {
         const { t, locale, pipeline } = this.props;
-        
+
         if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
             return (<NotSupported t={t} />);
         }
@@ -61,7 +62,7 @@ export class MultiBranch extends Component {
         const branches = this.pager.data;
 
         if (!this.pager.pending && !branches.length) {
-            return (<EmptyState t={t} repoName={this.context.params.pipeline} />);
+            return <NoBranchesPlaceholder t={t} />;
         }
 
         const head = 'pipelinedetail.branches.header';

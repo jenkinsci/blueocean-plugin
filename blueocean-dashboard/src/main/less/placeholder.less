@@ -1,0 +1,49 @@
+.PlaceholderContent {
+    position: relative;
+
+    .PlaceholderDialog {
+        position: absolute;
+        top: 130px;
+        left: 50%;
+    }
+}
+
+.PlaceholderDialog {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px 40px;
+    background-color: #fff;
+    box-shadow: 0 2px 8px 0 rgba(0, 0, 0, 0.15);
+
+    .icon {
+        display: block;
+        height: 35px;
+    }
+
+    .title, .message {
+        text-align: center;
+    }
+
+    .icon, .title, .message {
+        margin-top: 0;
+    }
+
+    .icon {
+        margin-bottom: 20px;
+    }
+
+    .title {
+        margin-bottom: 15px;
+    }
+
+    .message {
+        margin-bottom: 25px;
+    }
+
+    // TOOD: remove this temporary stuff once real icons are in
+    .icon {
+        width: 35px;
+        border: 1px solid black;
+    }
+}
