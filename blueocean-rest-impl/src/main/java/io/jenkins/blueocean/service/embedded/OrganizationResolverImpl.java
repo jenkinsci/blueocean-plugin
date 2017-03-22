@@ -19,7 +19,15 @@ public class OrganizationResolverImpl extends OrganizationResolver {
     /**
      * In embedded mode, there's only one organization
      */
-    private final OrganizationImpl instance = new OrganizationImpl("jenkins", Jenkins.getInstance());
+    private final OrganizationImpl instance;
+
+    public OrganizationResolverImpl() {
+        this("jenkins");
+    }
+
+    public OrganizationResolverImpl(String name) {
+        this.instance = new OrganizationImpl(name, Jenkins.getInstance());
+    }
 
     @Override
     public OrganizationImpl get(String name) {
