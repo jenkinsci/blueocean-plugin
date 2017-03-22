@@ -29,6 +29,7 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.service.embedded.OrganizationResolver;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
@@ -54,14 +55,16 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_JOB;
 @Capability(JENKINS_JOB)
 public class AbstractPipelineImpl extends BluePipeline {
     private final Job job;
+    protected final OrganizationImpl org;
 
     protected AbstractPipelineImpl(Job job) {
         this.job = job;
+        this.org = OrganizationResolver.getInstance().getContainingOrg(job);
     }
 
     @Override
     public String getOrganization() {
-        return OrganizationImpl.INSTANCE.getName();
+        return org.getName();
     }
 
     @Override
@@ -174,7 +177,7 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     @Override
     public Link getLink() {
-        return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(getRecursivePathFromFullName(this));
+        return org.getLink().rel("pipelines").rel(getRecursivePathFromFullName(this));
     }
 
     public static String getRecursivePathFromFullName(BluePipeline pipeline){

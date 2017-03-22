@@ -1,11 +1,13 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import hudson.model.Item;
 import hudson.model.Queue;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
+import io.jenkins.blueocean.service.embedded.OrganizationResolver;
 import jenkins.model.Jenkins;
 
 import java.util.Date;
@@ -42,7 +44,12 @@ public class QueueItemImpl extends BlueQueueItem {
 
     @Override
     public String getOrganization() {
-        return OrganizationImpl.INSTANCE.getName();
+        if (item.task instanceof Item) {
+            Item i = (Item) item.task;
+            return OrganizationResolver.getInstance().getContainingOrg(i).getName();
+        } else {
+            return null;
+        }
     }
 
     @Override

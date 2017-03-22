@@ -32,8 +32,8 @@ import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.service.embedded.OrganizationResolver;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
-import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.Ancestor;
@@ -122,18 +122,24 @@ public class BlueOceanWebURLBuilder {
             // encoded and re-encode to do the full monty. Nasty :)
             return pipelineModelMapping.blueUiUrl + "/detail/" + encodeURIComponent(decodeURIComponent(job.getName())) + "/" + encodeURIComponent(run.getId());
         } else if (classicModelObject instanceof Item) {
-            Resource blueResource = BluePipelineFactory.resolve((Item) classicModelObject);
+            Item item = (Item) classicModelObject;
+            Resource blueResource = BluePipelineFactory.resolve(item);
             if (blueResource instanceof BlueMultiBranchPipeline) {
-                return getOrgPrefix() + "/" + encodeURIComponent(((BluePipeline) blueResource).getFullName()) + "/branches";
+                return getOrgPrefix(item) + "/" + encodeURIComponent(((BluePipeline) blueResource).getFullName()) + "/branches";
             }
         }
 
         return null;
     }
 
-    private static String getOrgPrefix() {
-        return getBlueHome() + "/organizations/" + OrganizationImpl.INSTANCE.getName();
+    private static String getOrgPrefix(Item i) {
+        return getBlueHome() + "/organizations/" + OrganizationResolver.getInstance().getContainingOrg(i).getName();
     }
+
+    private static String getOrgPrefix(ItemGroup i) {
+        return getBlueHome() + "/organizations/" + OrganizationResolver.getInstance().getContainingOrg(i).getName();
+    }
+
 
     private static String getBlueHome() {
         return "blue";
@@ -149,13 +155,13 @@ public class BlueOceanWebURLBuilder {
             return new BlueOceanModelMapping(
                 multibranchJob,
                 multibranchJobResource,
-                getOrgPrefix() + "/" + encodeURIComponent(multibranchJobResource.getFullName())
+                getOrgPrefix(multibranchJob) + "/" + encodeURIComponent(multibranchJobResource.getFullName())
             );
         } else {
             return new BlueOceanModelMapping(
                 job,
                 blueResource,
-                getOrgPrefix() + "/" + encodeURIComponent(blueResource.getFullName())
+                getOrgPrefix(job) + "/" + encodeURIComponent(blueResource.getFullName())
             );
         }
     }

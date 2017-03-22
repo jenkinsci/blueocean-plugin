@@ -10,6 +10,7 @@ import io.jenkins.blueocean.rest.Query;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
+import io.jenkins.blueocean.service.embedded.OrganizationResolver;
 import jenkins.model.Jenkins;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,12 +53,8 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
     @Override
     public Pageable<BluePipeline> search(Query q) {
         String s = q.param(EXCLUDED_FROM_FLATTENING_PARAM);
-        String org = q.param(ORGANIZATION_PARAM);
+        ItemGroup org = org(q);
 
-        if(org!=null && !OrganizationImpl.INSTANCE.getName().equals(org)){
-            throw new ServiceException.BadRequestExpception(
-                String.format("Organization %s not found. Query parameter %s value: %s is invalid. ", org,ORGANIZATION_PARAM,org));
-        }
         List<Class> excludeList=new ArrayList<>();
         if(s!=null){
             for(String s1:s.split(",")){
@@ -87,13 +84,13 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
 
         Collection<Item> items = new ArrayList<>();
         if(!excludeList.isEmpty()) {
-            for (Item item : Jenkins.getActiveInstance().getAllItems(Item.class)) {
+            for (Item item : getAllItems(org)) {
                 if (!exclude(item.getParent(), excludeList)) {
                     items.add(item);
                 }
             }
         }else{
-            items = Jenkins.getActiveInstance().getAllItems(Item.class);
+            items = getAllItems(org);
         }
         items = ContainerFilter.filter(items);
         final Iterator<BluePipeline> pipelineIterator = new PipelineContainerImpl()
@@ -117,6 +114,38 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
             }
             return Pageables.wrap(pipelines);
         }
+    }
+
+    private List<Item> getAllItems(ItemGroup org) {
+        List<Item> r = new ArrayList<>();
+        getAllItems(org,r);
+        return r;
+    }
+
+    private void getAllItems(ItemGroup<?> org, List<Item> r) {
+        for (Item i : org.getItems()) {
+            r.add(i);
+            if (i instanceof ItemGroup) {
+                getAllItems((ItemGroup)i,r);
+            }
+        }
+    }
+
+    /**
+     * If the search restricts the scope to a specific org (aka ItemGroup), return that, or else
+     * the default scope, which is {@link Jenkins}.
+     */
+    private ItemGroup org(Query q) {
+        String org = q.param(ORGANIZATION_PARAM);
+        if (org==null)  return Jenkins.getInstance();
+
+        OrganizationImpl o = OrganizationResolver.getInstance().get(org);
+        if (o==null) {
+            throw new ServiceException.BadRequestExpception(
+                String.format("Organization %s not found. Query parameter %s value: %s is invalid. ", org,ORGANIZATION_PARAM,org));
+        }
+
+        return o.getGroup();
     }
 
     private boolean exclude(ItemGroup item, List<Class> excludeList){
