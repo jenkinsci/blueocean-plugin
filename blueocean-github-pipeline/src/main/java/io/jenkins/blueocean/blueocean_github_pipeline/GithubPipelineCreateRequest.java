@@ -136,6 +136,9 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
 
                 StringBuilder sb = new StringBuilder();
                 if (gitHubSCMNavigator != null) {
+                    // currently, we are setting a series of regular expressions to match the repositories
+                    // so we need to extract the current set for incoming create requests to keep them
+                    // see a few lines below for the pattern being used
                     Matcher matcher = Pattern.compile("\\((.*?)\\\\b\\)\\?").matcher(gitHubSCMNavigator.getPattern());
 
                     while (matcher.find()) {
