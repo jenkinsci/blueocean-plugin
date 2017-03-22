@@ -19,6 +19,7 @@ import io.jenkins.blueocean.rest.model.BluePipelineFolder;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.service.embedded.OrganizationResolver;
 import org.kohsuke.stapler.json.JsonBody;
 
 import javax.annotation.Nullable;
@@ -31,18 +32,19 @@ import java.util.Map;
  * @author Vivek Pandey
  */
 public class PipelineFolderImpl extends BluePipelineFolder {
-
+    protected final OrganizationImpl org;
     private final ItemGroup folder;
     protected final Link parent;
 
     public PipelineFolderImpl(ItemGroup folder, Link parent) {
+        this.org = OrganizationResolver.getInstance().getContainingOrg(folder);
         this.folder = folder;
         this.parent = parent;
     }
 
     @Override
     public String getOrganization() {
-        return OrganizationImpl.INSTANCE.getName();
+        return org.getName();
     }
 
     @Override
@@ -134,7 +136,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public Link getLink() {
-        return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(AbstractPipelineImpl.getRecursivePathFromFullName(this));
+        return org.getLink().rel("pipelines").rel(AbstractPipelineImpl.getRecursivePathFromFullName(this));
     }
 
     @Extension(ordinal = -10)

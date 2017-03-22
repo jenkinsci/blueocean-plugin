@@ -16,6 +16,7 @@ import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.GenericResource;
+import io.jenkins.blueocean.service.embedded.OrganizationResolver;
 import org.kohsuke.stapler.QueryParameter;
 
 import java.util.Collection;
@@ -28,11 +29,13 @@ import java.util.Date;
  */
 public class AbstractRunImpl<T extends Run> extends BlueRun {
     protected final T run;
+    protected final OrganizationImpl org;
 
     private final Link parent;
     public AbstractRunImpl(T run, Link parent) {
         this.run = run;
         this.parent = parent;
+        this.org = OrganizationResolver.getInstance().getContainingOrg(run);
     }
 
     //TODO: It serializes jenkins Run model children, enable this code after fixing it
@@ -53,7 +56,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public String getOrganization() {
-        return OrganizationImpl.INSTANCE.getName();
+        return org.getName();
     }
 
     @Override
@@ -222,7 +225,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public Link getLink() {
         if(parent == null){
-            return OrganizationImpl.INSTANCE.getLink().rel(String.format("pipelines/%s/runs/%s", run.getParent().getName(), getId()));
+            return org.getLink().rel(String.format("pipelines/%s/runs/%s", run.getParent().getName(), getId()));
         }
         return parent.rel("runs/"+getId());
     }
