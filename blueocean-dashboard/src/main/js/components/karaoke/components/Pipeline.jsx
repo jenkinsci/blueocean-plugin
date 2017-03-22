@@ -3,7 +3,7 @@ import { logging, sseConnection } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
-import { QueuedState } from './QueuedState';
+import { QueuedState, NoSteps } from './QueuedState';
 import { KaraokeService } from '../index';
 import LogToolbar from './LogToolbar';
 import Steps from './Steps';
@@ -16,27 +16,33 @@ export default class Pipeline extends Component {
         super(props);
         this.listener = {};
         this.sseEventHandler = this.sseEventHandler.bind(this);
+        // the following should go into  a config object and then read out from it
         this.showPending = true; // Configure flag to show pending or not
-        this.karaoke = props.augmenter.karaoke;
+        this.karaoke = props.augmenter.karaoke; // initial karaoke state
+        this.updateOnFinish = false;
     }
     componentWillMount() {
+        // starting pipeline service when we have an augmenter
         if (this.props.augmenter) {
             const { augmenter, params: { node } } = this.props;
             this.pager = KaraokeService.pipelinePager(augmenter, { node });
         }
+        // get sse listener to react on the different in sse events
         this.listener.ssePipeline = sseConnection.subscribe('pipeline', this.sseEventHandler);
         this.listener.sseJob = sseConnection.subscribe('job', this.sseEventHandler);
     }
     componentWillReceiveProps(nextProps) {
+        // karaoke has changed state?
         if (!nextProps.augmenter.karaoke) {
             logger.debug('stopping karaoke mode.');
             this.stopKaraoke();
         } else if (nextProps.augmenter.karaoke) {
             this.karaoke = true;
         }
-        if ((nextProps.run.isCompleted() && !nextProps.augmenter.run.isCompleted()) || (nextProps.run !== this.props.run)) {
+        // update on finish, you can de-activate it by setting updateOnFinish to false
+        if (this.updateOnFinish && nextProps.run.isCompleted() && !this.props.run.isCompleted()) {
             logger.debug('re-fetching since result changed and we want to display the full log and correct result states');
-            // remove all timeouts
+            // remove all timeouts in the backend
             this.stopKaraoke();
             if (nextProps.run !== this.props.run) {
                 logger.debug('Need to set new Run. Happens when e.g. re-run.');
@@ -44,9 +50,10 @@ export default class Pipeline extends Component {
             }
             debounce(() => {
                 this.karaoke = true;
-                this.pager.fetchNodes({});
+                this.pager.fetchNodes({ node: nextProps.params.node });
             }, 200)();
         }
+        // switches from the url which node to focus
         if (nextProps.params.node !== this.props.params.node) {
             logger.debug('Need to fetch new nodes.');
             this.pager.fetchNodes({ node: nextProps.params.node });
@@ -91,7 +98,7 @@ export default class Pipeline extends Component {
             case 'pipeline_step': {
                 logger.warn('sse event step fetchCurrentSteps', jenkinsEvent);
                 debounce(() => {
-                    logger.warn('should i fetch it or not?', this.karaoke);
+                    logger.warn('should i sse fetch it or not?', this.karaoke);
                     if (this.karaoke) {
                         this.pager.fetchCurrentStepUrl();
                     }
@@ -106,7 +113,7 @@ export default class Pipeline extends Component {
             case 'pipeline_stage': {
                 logger.warn('sse event block starts refetchNodes', jenkinsEvent);
                 debounce(() => {
-                    logger.warn('should i fetch it or not?', this.karaoke);
+                    logger.warn('should i sse fetch it or not?', this.karaoke);
                     if (this.karaoke) {
                         this.pager.fetchNodes({});
                     }
@@ -129,7 +136,12 @@ export default class Pipeline extends Component {
 
     render() {
         const { t, run, augmenter, branch, pipeline, router, scrollToBottom, location } = this.props;
-        if (run.isQueued()) {
+        // do we have something to display?
+        const noResultsToDisplay = this.pager.nodes === undefined && this.pager.steps && !this.pager.steps.data.hasResultsForSteps;
+        // Queue magic since a pipeline is only showing queued state a short time even if still waiting for executors
+        const isQueued = run.isQueued() || ((run.isRunning() && noResultsToDisplay));
+        if (isQueued) {
+            logger.debug('abort due to run queued.');
             const queuedMessage = t('rundetail.pipeline.queued.message', { defaultValue: 'Waiting for run to start' });
             return <QueuedState message={queuedMessage} />;
         }
@@ -198,7 +210,7 @@ export default class Pipeline extends Component {
                 url={logUrl}
                 title={title}
             />
-            { this.pager.steps &&
+            { this.pager.steps && !noResultsToDisplay &&
                 <Steps
                     {...{
                         key: this.pager.currentStepsUrl,
@@ -212,6 +224,9 @@ export default class Pipeline extends Component {
                     }}
                 />
             }
+            { noResultsToDisplay && <NoSteps message={t('rundetail.pipeline.nosteps',
+                { defaultValue: 'There are no logsrrr' })}
+            />}
         </div>);
     }
 }
