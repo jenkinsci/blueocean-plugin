@@ -10,6 +10,8 @@ import hudson.model.UnprotectedRootAction;
 import hudson.remoting.Base64;
 import io.jenkins.blueocean.BlueOceanUI;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
+import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.JwtTokenVerifier;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;
@@ -60,7 +62,17 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
 
         if(request.getOriginalRestOfPath().startsWith("/rest/")) {
             if(enableJWT) {
-                Authentication tokenAuthentication = JwtAuthenticationToken.create(request);
+                Authentication tokenAuthentication = null;
+                for(JwtTokenVerifier verifier: JwtTokenVerifier.all()){
+                    tokenAuthentication = verifier.verify(request);
+                    if(tokenAuthentication != null){
+                        break;
+                    }
+                }
+
+                if(tokenAuthentication == null){
+                    throw new ServiceException.UnauthorizedException("Unauthorized: Jwt token verification failed, no valid authentication instance found");
+                }
 
                 //create a new context and set it to holder to not clobber existing context
                 SecurityContext securityContext = new SecurityContextImpl();

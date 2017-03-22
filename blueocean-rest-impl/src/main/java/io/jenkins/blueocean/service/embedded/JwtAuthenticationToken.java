@@ -1,11 +1,12 @@
 package io.jenkins.blueocean.service.embedded;
 
-import hudson.model.User;
+import hudson.Extension;
 import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStore;
 import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStoreFactory;
 import io.jenkins.blueocean.auth.jwt.JwtToken;
 import io.jenkins.blueocean.auth.jwt.impl.SimpleJwtAuthenticationStore;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.JwtTokenVerifier;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import org.jose4j.jwt.JwtClaims;
@@ -22,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Collections;
 import java.util.Map;
 
 import static org.jose4j.jws.AlgorithmIdentifiers.RSA_USING_SHA256;
@@ -30,11 +30,13 @@ import static org.jose4j.jws.AlgorithmIdentifiers.RSA_USING_SHA256;
 /**
  * @author Kohsuke Kawaguchi
  */
-public final class JwtAuthenticationToken{
+@Extension(ordinal = -9999)
+public final class JwtAuthenticationToken extends JwtTokenVerifier{
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationToken.class);
 
-    public static Authentication create(StaplerRequest request){
+    @Override
+    public Authentication verify(StaplerRequest request) {
         JwtClaims claims = validate(request);
         try {
             String subject = claims.getSubject();
@@ -44,28 +46,16 @@ public final class JwtAuthenticationToken{
             }else{
 
                 JwtAuthenticationStore authenticationStore = getJwtStore(claims.getClaimsMap());
-                Authentication authentication = authenticationStore.getAuthentication(claims.getClaimsMap());
-                if(authentication == null){
-                    throw new ServiceException.UnauthorizedException("Unauthorized: No valid authentication instance found");
-                }
-                return authentication;
+                return authenticationStore.getAuthentication(claims.getClaimsMap());
             }
         } catch (MalformedClaimException e) {
             logger.error(String.format("Error reading sub header for token %s",claims.getRawJson()),e);
             throw new ServiceException.UnauthorizedException("Invalid JWT token: malformed claim");
         }
+
     }
 
-
-    public JwtAuthenticationToken(JwtClaims claims) throws MalformedClaimException {
-        String subject = claims.getSubject();
-        User user = User.get(subject, false, Collections.emptyMap());
-        if (user == null) {
-            throw new ServiceException.UnauthorizedException("Invalid JWT token: subject " + subject + " not found");
-        }
-    }
-
-    private  static JwtClaims validate(StaplerRequest request) {
+    private  JwtClaims validate(StaplerRequest request) {
         String authHeader = request.getHeader("Authorization");
         if(authHeader == null || !authHeader.startsWith("Bearer ")){
             throw new ServiceException.UnauthorizedException("JWT token not found");
@@ -144,5 +134,4 @@ public final class JwtAuthenticationToken{
         //none found, lets use SimpleJwtAuthenticationStore
         return jwtAuthenticationStore;
     }
-
 }
