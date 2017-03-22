@@ -29,8 +29,8 @@ export function NoBranchesPlaceholder(props) {
     };
 
     return (
-        <PlaceholderContent>
-            <PlaceholderTable columns={columns} rowCount={15} />
+        <PlaceholderContent className="u-fill u-fade-bottom" style={{ top: 72 }}>
+            <PlaceholderTable columns={columns} rowCount={20} />
             <PlaceholderDialog width={375} content={content} />
         </PlaceholderContent>
     );

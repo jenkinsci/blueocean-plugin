@@ -8,10 +8,13 @@ import React, { PropTypes } from 'react';
  * @constructor
  */
 export function PlaceholderContent(props) {
+    const { children, className, style } = props;
+    const classString = `PlaceholderContent ${className}`;
+
     return (
-        <main className="PlaceholderContent">
+        <main className={classString} style={style}>
             <article>
-                {props.children}
+                {children}
             </article>
         </main>
     );
@@ -19,4 +22,10 @@ export function PlaceholderContent(props) {
 
 PlaceholderContent.propTypes = {
     children: PropTypes.element,
+    className: PropTypes.element,
+    style: PropTypes.style,
+};
+
+PlaceholderContent.defaultProps = {
+    className: '',
 };
