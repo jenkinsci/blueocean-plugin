@@ -1,15 +1,17 @@
 import React from 'react';
+import { FormElement } from '@jenkins-cd/design-language';
 
 export default class IntegerPropertyInput extends React.Component {
     render() {
+        const { type: p, step } = this.props;
         return (
-            <div>
-                <label className="form-label">{this.props.type.capitalizedName + (this.props.type.isRequired ? '*' : '')}</label>
+            <FormElement title={p.capitalizedName + (p.isRequired ? '*' : '')}
+                errorMessage={!step.pristine && p.isRequired && !step.data[p.name] && (p.capitalizedName + ' is required')}>
                 <div className="TextInput">
                     <input type="number" className="TextInput-control" defaultValue={this.props.step.data[this.props.propName]}
-                        onChange={e => { this.props.step.data[this.props.propName] = parseInt(e.target.value); this.props.onChange(this.props.step); }}/>
+                        onChange={e => { step.data[this.props.propName] = parseInt(e.target.value); this.props.onChange(step); }}/>
                 </div>
-            </div>
+            </FormElement>
         );
     }
 }
