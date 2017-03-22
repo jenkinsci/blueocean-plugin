@@ -33,6 +33,7 @@ const SSE_TIMEOUT_DELAY = 1000 * 60;
 export default class GithubFlowManager extends FlowManager {
 
     accessTokenManager = null;
+    queuedIndexAllocations = 0;
 
     get credentialId() {
         return this.accessTokenManager && this.accessTokenManager.credentialId;
@@ -428,6 +429,14 @@ export default class GithubFlowManager extends FlowManager {
             this._logEvent(event);
         }
 
+        if (event.job_multibranch_indexing_status === 'INDEXING' && event.job_run_status === 'QUEUED') {
+            this.queuedIndexAllocations++;
+        }
+
+        if (event.job_multibranch_indexing_result) {
+            this.queuedIndexAllocations--;
+        }
+
         if (event.job_orgfolder_indexing_result === 'FAILURE') {
             this._finishListening(STATE.STEP_COMPLETE_EVENT_ERROR);
         }
@@ -437,7 +446,18 @@ export default class GithubFlowManager extends FlowManager {
         }
 
         if (this.selectedAutoDiscover && event.job_orgfolder_indexing_result === 'SUCCESS') {
-            this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+            // when the org folder indexing is complete, mbp indexing might still be running
+            if (this.queuedIndexAllocations <= 0) {
+                this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+            }
+        }
+
+        if (this.selectedAutoDiscover && event.job_multibranch_indexing_result === 'SUCCESS') {
+            this._checkForSingleRepoCreation(event.blueocean_job_pipeline_name, false, ({ isFound }) => {
+                if (isFound || this.queuedIndexAllocations <= 0) {
+                    this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+                }
+            });
         }
 
         if (!this.selectedAutoDiscover) {
@@ -447,8 +467,13 @@ export default class GithubFlowManager extends FlowManager {
                     event.blueocean_job_pipeline_name === pipelineFullName;
 
             if (orgIndexingComplete || multiBranchIndexingComplete) {
-                this._checkForSingleRepoCreation(pipelineFullName, multiBranchIndexingComplete);
-                this._cleanupListeners();
+                this._checkForSingleRepoCreation(pipelineFullName, multiBranchIndexingComplete, ({ isFound, pipeline }) => {
+                    if (isFound) {
+                        this._completeSingleRepo(pipeline);
+                    } else {
+                        this._finishListening(STATE.STEP_COMPLETE_MISSING_JENKINSFILE);
+                    }
+                });
             }
         }
     }
@@ -472,11 +497,11 @@ export default class GithubFlowManager extends FlowManager {
      * @param {boolean} multiBranchIndexingComplete
      * @private
      */
-    _checkForSingleRepoCreation(pipelineName, multiBranchIndexingComplete) {
+    _checkForSingleRepoCreation(pipelineName, multiBranchIndexingComplete, onComplete) {
         // if the multibranch pipeline has finished indexing,
         // we can aggressively check for the pipeline's existence to complete creation
         // if org indexing finished, be more conservative in the delay
-        const delay = multiBranchIndexingComplete ? 100 : 5000;
+        const delay = multiBranchIndexingComplete ? 500 : 5000;
 
         if (multiBranchIndexingComplete) {
             LOGGER.debug(`multibranch indexing for ${pipelineName} completed`);
@@ -488,18 +513,11 @@ export default class GithubFlowManager extends FlowManager {
 
         setTimeout(() => {
             this._creationApi.findExistingOrgFolderPipeline(pipelineName)
-                .then(data => this._checkForSingleRepoCreationComplete(data));
+                .then(data => {
+                    LOGGER.debug(`check for pipeline complete. created? ${data.isFound}`);
+                    onComplete(data);
+                });
         }, delay);
-    }
-
-    _checkForSingleRepoCreationComplete({ isFound, pipeline }) {
-        LOGGER.debug(`check for pipeline complete. created? ${isFound}`);
-
-        if (isFound) {
-            this._completeSingleRepo(pipeline);
-        } else {
-            this._finishListening(STATE.STEP_COMPLETE_MISSING_JENKINSFILE);
-        }
     }
 
     _finishListening(stateId) {
@@ -507,7 +525,6 @@ export default class GithubFlowManager extends FlowManager {
         this.changeState(stateId);
         this._cleanupListeners();
     }
-
 
     @action
     _incrementPipelineCount() {
