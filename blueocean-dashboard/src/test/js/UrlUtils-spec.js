@@ -108,6 +108,7 @@ describe('UrlUtils', () => {
             name: 'xxx',
             branch: 'karaoke',
             runId: 7,
+            organization: 'jenkins',
         };
         it('should build the url no multibranch', () => {
             const url = calculateNodeBaseUrl(testData);
@@ -130,7 +131,8 @@ describe('UrlUtils', () => {
             name: 'xxx',
             branch: 'feature/test#1',
             runId: 7,
-            isMultiBranch: true
+            isMultiBranch: true,
+            organization: 'jenkins',
         };
         it('should build the url multibranch', () => {
             const url = calculateNodeBaseUrl(testData);
@@ -159,6 +161,7 @@ describe('UrlUtils', () => {
             name: 'xxx',
             branch: 'karaoke',
             runId: 7,
+            organization: 'jenkins',
         };
         it('should build the url with node', () => {
             const node = 15;
@@ -180,6 +183,7 @@ describe('UrlUtils', () => {
             name: 'xxx',
             branch: 'karaoke',
             runId: 7,
+            organization: 'jenkins',
         };
         it('should build the urlObject no multibranch', () => {
             const urlObject = calculateRunLogURLObject(testData);
