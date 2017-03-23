@@ -29,15 +29,12 @@ export class Pipelines extends Component {
 
     // Figure out how many extensions we have for the action buttons column so we can size it appropriately
     _countExtensions() {
-        console.log('_countExtensions'); // TODO:RM
         Extensions.store.getExtensions('jenkins.pipeline.list.action', extensions => {
-            console.log('_countExtensions found', extensions); // TODO:RM
             const count = extensions && typeof(extensions.length) === 'number' ? extensions.length : 0;
             if (count !== this.state.actionExtensionCount) {
                 this.setState({ actionExtensionCount: count });
             }
         });
-        console.log('_countExtensions done'); // TODO:RM
     }
 
     _initPager(props) {
@@ -50,7 +47,6 @@ export class Pipelines extends Component {
     }
 
     render() {
-        console.log('Pipelines.render()'); // TODO: RM
         const pipelines = this.pager.data;
         const { organization, location = { } } = this.context.params;
         const { actionExtensionCount } = this.state;
@@ -68,7 +64,7 @@ export class Pipelines extends Component {
         const labelBranches = translate('home.pipelineslist.header.branches', { defaultValue: 'Branches' });
         const labelPullReqs = translate('home.pipelineslist.header.pullrequests', { defaultValue: 'PR' });
 
-        const columns = [ // TODO: resource labels
+        const columns = [
             JTable.column(640, labelName, true),
             JTable.column(70, labelHealth),
             JTable.column(70, labelBranches),
@@ -88,12 +84,6 @@ export class Pipelines extends Component {
         });
 
         this.props.setTitle('Jenkins Blue Ocean');
-
-        // TODO: REMOVE FROM HERE -------------------------------------------
-        console.log('Extensions is', Extensions);
-        Extensions.store.getExtensions('jenkins.pipeline.list.action',
-            extensions => console.log('jenkins.pipeline.list.action extensions ==', extensions));
-        // TODO: REMOVE TO HERE -------------------------------------------
 
         return (
             <Page>
