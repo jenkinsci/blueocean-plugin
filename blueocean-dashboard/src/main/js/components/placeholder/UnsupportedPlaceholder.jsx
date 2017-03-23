@@ -21,7 +21,7 @@ export function UnsupportedPlaceholder(props) {
     ];
 
     const content = {
-        icon: Icon.PULL_REQUEST,
+        icon: Icon.WARNING,
         title: t('pipelinedetail.placeholder.unsupported.title'),
         message: t('pipelinedetail.placeholder.unsupported.message'),
         linkText: t('pipelinedetail.placeholder.unsupported.linktext'),
