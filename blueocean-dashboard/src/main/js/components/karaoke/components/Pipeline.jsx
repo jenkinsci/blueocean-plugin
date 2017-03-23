@@ -19,7 +19,7 @@ export default class Pipeline extends Component {
         // the following should go into  a config object and then read out from it
         this.showPending = true; // Configure flag to show pending or not
         this.karaoke = props.augmenter.karaoke; // initial karaoke state
-        this.updateOnFinish = false;
+        this.updateOnFinish = true;
     }
     componentWillMount() {
         // starting pipeline service when we have an augmenter

@@ -26,16 +26,17 @@ export class LogConsole extends Component {
 
     componentWillMount() {
         // We need a shallow copy of the ObservableArray to "cast" it down to normal array
-        this._processLines(this.props.logArray);
-        logger.debug('isArray', Array.isArray(this.props.logArray));
+        const lineArray = this.props.logArray !== undefined && !Array.isArray(this.props.logArray) ? this.props.logArray.slice() : this.props.logArray;
+        logger.debug('isArray props', Array.isArray(this.props.logArray), 'isArray after', Array.isArray(lineArray));
+        this._processLines(lineArray);
     }
 
     // componentWillReceiveProps does not return anything and return null is an early out, so disable lint complaining
     componentWillReceiveProps(nextProps) { // eslint-disable-line
         logger.debug('newProps isArray', Array.isArray(nextProps.logArray));
         // We need a shallow copy of the ObservableArray to "cast" it down to normal array
-        const newArray = !Array.isArray(nextProps.logArray) ? nextProps.logArray.slice() : nextProps.logArray;
-        const oldArray = !Array.isArray(this.props.logArray) ? this.props.logArray.slice() : this.props.logArray;
+        const newArray = nextProps.logArray !== undefined && !Array.isArray(nextProps.logArray) ? nextProps.logArray.slice() : nextProps.logArray;
+        const oldArray = this.props.logArray !== undefined && !Array.isArray(this.props.logArray) ? this.props.logArray.slice() : this.props.logArray;
         // const newLines = newArray.filter((item) => !oldArray.has(item));
         // if have a new logArray, simply add it to the queue and wait for next tick
         this.queuedLines = this.queuedLines.concat(newArray.slice(oldArray.length));
