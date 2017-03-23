@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.rest;
+package io.jenkins.blueocean.auth.jwt;
 
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;

@@ -1,12 +1,10 @@
-package io.jenkins.blueocean.service.embedded;
+package io.jenkins.blueocean.auth.jwt.impl;
 
 import hudson.Extension;
 import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStore;
 import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStoreFactory;
-import io.jenkins.blueocean.auth.jwt.JwtToken;
-import io.jenkins.blueocean.auth.jwt.impl.SimpleJwtAuthenticationStore;
+import io.jenkins.blueocean.auth.jwt.JwtTokenVerifier;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.JwtTokenVerifier;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import org.jose4j.jwt.JwtClaims;
@@ -31,7 +29,7 @@ import static org.jose4j.jws.AlgorithmIdentifiers.RSA_USING_SHA256;
  * @author Kohsuke Kawaguchi
  */
 @Extension(ordinal = -9999)
-public final class JwtAuthenticationToken extends JwtTokenVerifier{
+public final class JwtAuthenticationToken extends JwtTokenVerifier {
 
     private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationToken.class);
 
@@ -76,7 +74,7 @@ public final class JwtAuthenticationToken extends JwtTokenVerifier{
                 throw new ServiceException.UnauthorizedException("Invalid JWT token");
             }
 
-            JwtToken.JwtRsaDigitalSignatureKey key = new JwtToken.JwtRsaDigitalSignatureKey(kid);
+            JwtTokenImpl.JwtRsaDigitalSignatureKey key = new JwtTokenImpl.JwtRsaDigitalSignatureKey(kid);
             try {
                 if(!key.exists()){
                     throw new ServiceException.NotFoundException(String.format("kid %s not found", kid));
