@@ -37,23 +37,18 @@ export default class FreeStyle extends Component {
             logger.debug('re-fetching since result changed and we want to display the full log');
             this.pager.fetchGeneralLog({ start: nextStart });
         }
-
     }
-
     componentWillUnmount() {
         this.stopKaraoke();
     }
-
     stopKaraoke() {
         logger.debug('stopping karaoke mode, by removing the timeouts on the pager.');
         this.pager.clear();
     }
-
     fetchData(props) {
         const { augmenter, location } = props;
         this.pager = KaraokeService.generalLogPager(augmenter, location);
     }
-
     render() {
         if (this.pager.pending) {
             logger.debug('abort due to pager pending');

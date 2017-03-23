@@ -35,7 +35,7 @@ export class Step extends Component {
         logger.debug('durationMillis mounting', this.durationMillis);
         const isFocused = this.isFocused(this.props);
         if ((!step.isInputStep && isFocused) &&
-            (this.pager.log === undefined || (this.pager.log && !this.pager.log.data))){
+            (this.pager.log === undefined || (this.pager.log && !this.pager.log.data))) {
             const cfg = { url: step.logUrl, start };
             logger.debug('getLogForStep called will fetch now with cfg.', cfg);
             this.pager.fetchLog(cfg);
@@ -70,7 +70,7 @@ export class Step extends Component {
             const match = stepReg.exec(anchorName);
 
             if (match && match[1] && match[1] === step.id) {
-                isFocused= true;
+                isFocused = true;
             }
         }
         return isFocused || false;
