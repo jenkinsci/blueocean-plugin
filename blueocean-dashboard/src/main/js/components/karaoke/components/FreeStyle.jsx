@@ -15,14 +15,20 @@ export default class FreeStyle extends Component {
         }
     }
     componentWillReceiveProps(nextProps) {
-        logger.debug('newProps mate');
+        const nextStart = nextProps.location && nextProps.location.query ? nextProps.location.query.start : undefined;
+        const currentStart = this.props.location && this.props.location.query ? this.props.location.query.start : undefined;
+        logger.debug('newProps mate', nextProps, currentStart);
         if (!nextProps.augmenter.karaoke) {
             this.stopKaraoke();
         }
-        if (nextProps.run.isCompleted() && !this.props.run.isCompleted()) {
+        if (
+            (currentStart !== nextStart && nextStart !== undefined) ||
+            (nextProps.run.isCompleted() && !this.props.run.isCompleted())
+        ) {
             logger.debug('re-fetching since result changed and we want to display the full log');
-            this.pager.fetchGeneralLog({ });
+            this.pager.fetchGeneralLog({ start: nextStart });
         }
+
     }
 
     componentWillUnmount() {
@@ -35,8 +41,8 @@ export default class FreeStyle extends Component {
     }
 
     fetchData(props) {
-        const { augmenter } = props;
-        this.pager = KaraokeService.generalLogPager(augmenter);
+        const { augmenter, location } = props;
+        this.pager = KaraokeService.generalLogPager(augmenter, location);
     }
 
     render() {
@@ -46,6 +52,7 @@ export default class FreeStyle extends Component {
         }
         const { t, router, location, scrollToBottom } = this.props;
         const { data: logArray, hasMore } = this.pager.log;
+        // const currentStart = location && location.query ? this.props.location.query.start : undefined;
         logger.warn('props', scrollToBottom, this.pager.log.newStart);
         return (<div>
             <LogToolbar

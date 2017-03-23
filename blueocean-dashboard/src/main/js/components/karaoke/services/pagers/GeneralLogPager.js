@@ -47,10 +47,11 @@ export class GeneralLogPager {
      * @param {string} branch the name of the branch we are requesting
      * @param {string} run Run that this pager belongs to.
      */
-    constructor(bunker, augmenter) {
+    constructor(bunker, augmenter, location) {
         this.bunker = bunker;
         this.augmenter = augmenter;
-        this.fetchGeneralLog({ followAlong: augmenter.karaoke });
+        const start = location && location.query ? location.query.start : undefined;
+        this.fetchGeneralLog({ start, followAlong: augmenter.karaoke });
     }
 
     /**
