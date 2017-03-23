@@ -29,7 +29,7 @@
     "zombie": "4.2.1"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.89",
+    "@jenkins-cd/blueocean-core-js": "0.0.90-fetch-indicator-1",
     "@jenkins-cd/design-language": "0.0.125",
     "@jenkins-cd/js-extensions": "0.0.33",
     "@jenkins-cd/js-modules": "0.0.8",
