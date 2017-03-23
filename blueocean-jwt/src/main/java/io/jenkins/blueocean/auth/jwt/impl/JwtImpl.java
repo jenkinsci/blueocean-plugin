@@ -80,6 +80,7 @@ public class JwtImpl extends JwtAuthenticationService {
         if(jwtToken == null){
             throw new ServiceException.UnexpectedErrorException("No implementation of JwtToken found");
         }
+        jwtToken.claim.put("kid", UUID.randomUUID().toString().replace("-", ""));
         jwtToken.claim.put("jti", UUID.randomUUID().toString().replace("-",""));
         jwtToken.claim.put("iss", issuer);
         jwtToken.claim.put("sub", userId);

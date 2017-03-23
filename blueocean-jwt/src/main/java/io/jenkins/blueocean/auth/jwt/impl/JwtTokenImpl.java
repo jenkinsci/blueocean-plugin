@@ -2,7 +2,6 @@ package io.jenkins.blueocean.auth.jwt.impl;
 
 import hudson.Extension;
 import io.jenkins.blueocean.auth.jwt.JwtToken;
-import io.jenkins.blueocean.auth.jwt.JwtTokenDecorator;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.security.RSADigitalSignatureConfidentialKey;
 import net.sf.json.JSONObject;
@@ -15,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
-import java.util.UUID;
 
 /**
  * BlueOcean JWT token
@@ -27,39 +25,15 @@ public  class JwtTokenImpl extends JwtToken {
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenImpl.class);
 
     public static final String X_BLUEOCEAN_JWT="X-BLUEOCEAN-JWT";
-    private static final String DEFAULT_KEY_ID = UUID.randomUUID().toString().replace("-", "");
-
 
     @Override
     public @Nonnull String getJwtHttpResponseHeader() {
         return X_BLUEOCEAN_JWT;
     }
 
-    /**
-     * Generates base64 representation of JWT token sign using "RS256" algorithm
-     *
-     * getHeader().toBase64UrlEncode() + "." + getClaim().toBase64UrlEncode() + "." + sign
-     *
-     *
-     * @return base64 representation of JWT token
-     */
     @Override
-    public String sign(){
-        for(JwtTokenDecorator decorator: JwtTokenDecorator.all()){
-            decorator.decorate(this);
-        }
-
-        /**
-         *  kid might have been set already by using {@link #header} or {@link JwtTokenDecorator}, if present use it
-         *  otherwise use the default kid
-         */
-        String keyId = (String)header.get(HeaderParameterNames.KEY_ID);
-        if(keyId == null){
-            keyId = DEFAULT_KEY_ID;
-        }
-
+    public String sign(String keyId){
         JwtRsaDigitalSignatureKey rsaDigitalSignatureConfidentialKey = new JwtRsaDigitalSignatureKey(keyId);
-
         try {
             return rsaDigitalSignatureConfidentialKey.sign(claim);
         } catch (JoseException e) {
