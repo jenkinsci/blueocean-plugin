@@ -59,14 +59,13 @@ export default class FreeStyle extends Component {
             logger.debug('abort due to pager pending');
             return null;
         }
-        const { t, router, location, scrollToBottom } = this.props;
+        const { t, router, location, scrollToBottom, augmenter } = this.props;
         const { data: logArray, hasMore } = this.pager.log;
-        // const currentStart = location && location.query ? this.props.location.query.start : undefined;
-        logger.warn('props', scrollToBottom, this.pager.log.newStart);
+        logger.debug('props', scrollToBottom, this.pager.log.newStart, augmenter.generalLogUrl);
         return (<div>
             <LogToolbar
-                fileName={this.pager.generalLogFileName}
-                url={this.pager.generalLogUrl}
+                fileName={augmenter.generalLogFileName}
+                url={augmenter.generalLogUrl}
                 title={t('rundetail.pipeline.logs', { defaultValue: 'Logs' })}
             />
             <LogConsole {...{
@@ -76,7 +75,7 @@ export default class FreeStyle extends Component {
                 hasMore,
                 scrollToBottom,
                 logArray,
-                key: this.pager.generalLogUrl,
+                key: augmenter.generalLogUrl,
             }}
             />
         </div>);
