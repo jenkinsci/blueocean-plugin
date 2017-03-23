@@ -293,6 +293,7 @@ export class RunDetailsPipeline extends Component {
             name: params.pipeline,
             branch: params.branch,
             runId: params.runId,
+            organization: params.organization,
         };
         // get the key for the steps we want to display
         const stepKey = calculateStepsBaseUrl(calculatedResponse);
