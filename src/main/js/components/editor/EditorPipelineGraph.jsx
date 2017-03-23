@@ -10,17 +10,16 @@ import pipelineValidator from '../../services/PipelineValidator';
 export const defaultLayout = {
     nodeSpacingH: 120,
     nodeSpacingV: 70,
-    nodeRadius: 11,
+    nodeRadius: 12.5,
+    innerDotRadius: 9.3,
+    placeholderRadius: 11,
     startRadius: 7.5,
-    dotRadius: 3.4,
     curveRadius: 12,
     connectorStrokeWidth: 3.2,
     addStrokeWidth: 1.7,
     labelOffsetV: 25,
     smallLabelOffsetV: 20
 };
-
-const nodeStrokeWidth = 3.1;
 
 // Typedefs
 
@@ -452,12 +451,12 @@ needsLayout = true;
         const key = leftNode.key + "_con_" + rightNode.key;
 
         const leftPos = {
-            x: leftNode.x,// + nodeRadius - (nodeStrokeWidth / 2),
+            x: leftNode.x,
             y: leftNode.y
         };
 
         const rightPos = {
-            x: rightNode.x,// - nodeRadius + (nodeStrokeWidth / 2),
+            x: rightNode.x,
             y: rightNode.y
         };
 
@@ -503,7 +502,7 @@ needsLayout = true;
 
     getSVGForNode(node:NodeInfo) {
 
-        const {nodeRadius, startRadius, addStrokeWidth} = this.state.layout;
+        const {nodeRadius, startRadius, addStrokeWidth, innerDotRadius, placeholderRadius} = this.state.layout;
         const nodeIsSelected = this.nodeIsSelected(node);
 
         if (node.isPlaceholder === true) {
@@ -511,25 +510,19 @@ needsLayout = true;
                 return <circle r={startRadius} className="start-node" stroke="none"/>;
             }
 
-            return getAddIconGroup(nodeRadius, addStrokeWidth);
+            return getAddIconGroup(placeholderRadius, addStrokeWidth);
         }
 
-        /*
-        if (nodeHasErrors(node)) {
-            return (<g>
-                <circle className="editor-graph-node" r="13" strokeWidth="2.5"/>
-                <circle className="editor-graph-node" r="8.5" strokeWidth="2.5"/>
-            </g>);
-        }
-        */
-
-        return <circle className="editor-graph-node" r={nodeRadius} strokeWidth={nodeStrokeWidth} />;
+        return (<g>
+            <circle className="editor-graph-node" r={nodeRadius} />
+            <circle className="editor-graph-node-inner" r={innerDotRadius} />
+        </g>);
     }
 
     renderNode(node:NodeInfo) {
 
         const nodeIsSelected = this.nodeIsSelected(node);
-        const { nodeRadius, dotRadius, connectorStrokeWidth } = this.state.layout;
+        const { nodeRadius, connectorStrokeWidth } = this.state.layout;
 
         // Use a bigger radius for invisible click/touch target
         const mouseTargetRadius = nodeRadius + (2 * connectorStrokeWidth);
@@ -575,11 +568,6 @@ needsLayout = true;
 
         if (nodeIsSelected) {
             classNames.push("selected");
-
-            // add a middle dot
-//            groupChildren.push(
-//                <circle className="pipeline-selection-highlight" r={dotRadius} strokeWidth={nodeStrokeWidth} />
-//            );
         }
 
         // Add an invisible click/touch target, coz the nodes are small and (more importantly)

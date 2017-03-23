@@ -178,31 +178,22 @@
     //--[ Pipeline Graph ]--------------------------------------------------------------------------------------------------
 
     .editor-graph-node {
-        fill: none;
-        stroke: @brand-grey-lite;
-        transition: stroke .25s, fill .25s;
+        fill: @brand-grey-lite;
     }
 
-    .editor-graph-nodegroup .editor-graph-node {
+    .editor-graph-node-inner {
         fill: #fff;
-    }
-
-    .editor-graph-nodegroup.selected .editor-graph-node {
-        stroke: @brand-color;
-    }
-    
-    .editor-graph-nodegroup circle {
         transition: all 0.1s ease-in;
     }
 
-    .editor-graph-nodegroup.selected circle {
-        stroke-width: 12px;
-        r: 6px;
-    }
-
-    .pipeline-selection-highlight {
-        fill: @brand-color;
-        stroke: @brand-color;
+    .editor-graph-nodegroup.selected {
+        .editor-graph-node {
+            fill: @brand-color;
+        }
+        .editor-graph-node-inner {
+            fill: @brand-color;
+            transform: scale(0);
+        }
     }
 
     .editor-graph-nodegroup.errors text {
@@ -223,10 +214,6 @@
 
     .pipeline-big-label.errors, .pipeline-small-label.errors {
         color: @error-highlight;
-    }
-
-    .editor-add-node-placeholder {
-        fill: @brand-color;
     }
 
     .result-status-glyph polygon {

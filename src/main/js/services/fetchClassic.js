@@ -40,7 +40,7 @@ export default function fetch(path, body, handler, disableLoadingIndicator) {
             } else {
                 try {
                     let crumb = response.text();
-                    if (crumb instanceof Promise) {
+                    if (crumb.then) {
                         crumb.then(c => {
                             cache.crumb = c;
                             useCrumb(c);
