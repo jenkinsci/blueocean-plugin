@@ -95,8 +95,7 @@ export class Activity extends Component {
                 return <NoBranchesPlaceholder t={t} />;
             }
             if (!runs || !runs.length) {
-                return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton}
-                                    pipeline={pipeline} t={t} />);
+                return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} t={t} />);
             }
         }
 
