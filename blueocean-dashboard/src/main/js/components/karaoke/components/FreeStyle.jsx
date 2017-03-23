@@ -9,11 +9,20 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.FreeStyle'
 
 @observer
 export default class FreeStyle extends Component {
+    /**
+     * Mainly implemented because
+     * - we need to fetch the log to display it
+     */
     componentWillMount() {
         if (this.props.augmenter) {
             this.fetchData(this.props);
         }
     }
+    /**
+     * Mainly implemented because
+     * - we need to re-fetch the log to display it when the log finished
+     * - or when start is set to 0
+     */
     componentWillReceiveProps(nextProps) {
         const nextStart = nextProps.location && nextProps.location.query ? nextProps.location.query.start : undefined;
         const currentStart = this.props.location && this.props.location.query ? this.props.location.query.start : undefined;
