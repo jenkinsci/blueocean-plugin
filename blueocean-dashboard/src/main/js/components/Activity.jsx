@@ -44,23 +44,26 @@ EmptyState.propTypes = {
 };
 @observer
 export class Activity extends Component {
-
     componentWillMount() {
         if (this.context.params) {
             const organization = this.context.params.organization;
             const pipeline = this.context.params.pipeline;
-            const branch = this.context.location.query.branch;
+            const branch = this._branchFromProps(this.props);
             this.pager = this.context.activityService.activityPager(organization, pipeline, branch);
         }
     }
     
     componentWillReceiveProps(newProps) {
-        if (this.props.params && this.props.location.query.branch !== newProps.location.query.branch) {
+        if (this.props.params && this._branchFromProps(this.props) !== this._branchFromProps(newProps)) {
             const organization = newProps.params.organization;
             const pipeline = newProps.params.pipeline;
-            const branch = newProps.location.query.branch;
+            const branch = this._branchFromProps(newProps);
             this.pager = this.context.activityService.activityPager(organization, pipeline, branch);
         }
+    }
+    
+    _branchFromProps(props) {
+        return ((props.location || {}).query || {}).branch;
     }
     
     navigateToBranch(branch) {
@@ -80,8 +83,8 @@ export class Activity extends Component {
         if (!pipeline) {
             return null;
         }
-        const { branch } = this.context.location.query;
-        console.log('aa', branch);
+        const branch = this._branchFromProps(this.props);
+        
         const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
 
         // Only show the Run button for non multi-branch pipelines.
