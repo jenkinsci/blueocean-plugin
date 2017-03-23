@@ -59,11 +59,8 @@ public class JwtImpl extends JwtAuthenticationService {
             expiryTime = expiryTimeInMins * 60;
         }
 
-        Authentication authentication = Jenkins.getInstance().getAuthentication();
+        Authentication authentication = Jenkins.getAuthentication();
 
-        if(authentication == null){
-            throw new ServiceException.UnauthorizedException("Unauthorized: No login session found");
-        }
         String userId = authentication.getName();
 
         User user = User.get(userId, false, Collections.emptyMap());
@@ -79,7 +76,10 @@ public class JwtImpl extends JwtAuthenticationService {
         Plugin plugin = Jenkins.getInstance().getPlugin("blueocean-jwt");
         String issuer = "blueocean-jwt:"+ ((plugin!=null) ? plugin.getWrapper().getVersion() : "");
 
-        JwtToken jwtToken = new JwtToken();
+        JwtToken jwtToken = JwtToken.first();
+        if(jwtToken == null){
+            throw new ServiceException.UnexpectedErrorException("No implementation of JwtToken found");
+        }
         jwtToken.claim.put("jti", UUID.randomUUID().toString().replace("-",""));
         jwtToken.claim.put("iss", issuer);
         jwtToken.claim.put("sub", userId);
@@ -134,7 +134,7 @@ public class JwtImpl extends JwtAuthenticationService {
 
         @Override
         public JSONObject getJwk() {
-            JwtToken.JwtRsaDigitalSignatureKey key = new JwtToken.JwtRsaDigitalSignatureKey(keyId);
+            JwtTokenImpl.JwtRsaDigitalSignatureKey key = new JwtTokenImpl.JwtRsaDigitalSignatureKey(keyId);
             try {
                 if(!key.exists()){
                     throw new ServiceException.NotFoundException(String.format("kid %s not found", keyId));

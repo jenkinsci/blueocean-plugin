@@ -11,7 +11,7 @@ import hudson.remoting.Base64;
 import io.jenkins.blueocean.BlueOceanUI;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.JwtTokenVerifier;
+import io.jenkins.blueocean.auth.jwt.JwtTokenVerifier;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;

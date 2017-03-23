@@ -2,6 +2,7 @@ package io.jenkins.blueocean.auth.jwt;
 
 import hudson.ExtensionPoint;
 import hudson.model.RootAction;
+import io.jenkins.blueocean.auth.jwt.impl.JwtTokenImpl;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.GET;
@@ -31,12 +32,12 @@ public abstract class JwtAuthenticationService implements RootAction, ExtensionP
      * @return JWT if there is authenticated user or if  anonymous user has at least READ permission, otherwise 401
      *         error code is returned
      *
-     *  @see JwtToken
+     *  @see JwtTokenImpl
      */
     @GET
     @WebMethod(name = "token")
     public abstract JwtToken getToken(@Nullable @QueryParameter("expiryTimeInMins") Integer expiryTimeInMins,
-                                      @Nullable  @QueryParameter("maxExpiryTimeInMins") Integer maxExpiryTimeInMins);
+                                          @Nullable  @QueryParameter("maxExpiryTimeInMins") Integer maxExpiryTimeInMins);
 
     /**
      *  Gives Json web key. See https://tools.ietf.org/html/rfc7517
