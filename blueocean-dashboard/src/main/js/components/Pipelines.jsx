@@ -45,8 +45,6 @@ export class Pipelines extends Component {
                 { organization }
             </Link> : '';
 
-        debugger;
-
         const noPipelines = !this.pager.pending && (!pipelines || !pipelines.length);
 
         const headers = [

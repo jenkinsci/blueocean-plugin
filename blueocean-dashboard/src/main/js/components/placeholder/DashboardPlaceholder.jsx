@@ -19,7 +19,7 @@ export function DashboardPlaceholder(props) {
     ];
 
     const content = {
-        icon: Icon.PIPELINE,
+        icon: Icon.PIPELINE_RUNNING,
         title: t('home.placeholder.title'),
         message: t('home.placeholder.message'),
         linkElement: <Link className="btn" to={t('home.placeholder.linkhref')}>{t('home.placeholder.linktext')}</Link>,
