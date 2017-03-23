@@ -147,6 +147,10 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                             repos.add(existingRepo);
                         }
                     }
+
+                    if (credentialId == null) {
+                        credentialId = gitHubSCMNavigator.getScanCredentialsId();
+                    }
                 }
 
                 gitHubSCMNavigator = new GitHubSCMNavigator(apiUrl, orgName, credentialId, credentialId);
