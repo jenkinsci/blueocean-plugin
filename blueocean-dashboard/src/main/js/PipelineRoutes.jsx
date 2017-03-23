@@ -120,7 +120,7 @@ export default (
 
         <Route path="organizations/:organization" component={PipelinePage}>
             <Route path=":pipeline/branches" component={MultiBranch} />
-            <Route path=":pipeline/activity(/:branch)" component={Activity} />
+            <Route path=":pipeline/activity" component={Activity} />
             <Route path=":pipeline/pr" component={PullRequests} />
 
             <Route path=":pipeline/detail/:branch/:runId" component={RunDetails} onLeave={onLeaveCheckBackground}>
