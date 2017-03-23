@@ -22,15 +22,29 @@ export class Step extends Component {
         };
     }
 
+    /**
+     * Mainly implemented due to fetch full log `start=0` for a step
+     * @param nextProps
+     */
+    componentWillReceiveProps(nextProps) {
+        const nextStart = nextProps.location && nextProps.location.query ? nextProps.location.query.start : undefined;
+        const currentStart = this.props.location && this.props.location.query ? this.props.location.query.start : undefined;
+        logger.debug('newProps mate', nextStart, currentStart);
+        if (currentStart !== nextStart && nextStart !== undefined) {
+            logger.debug('re-fetching since result changed and we want to display the full log');
+            this.pager.fetchLog({ url: nextProps.step.logUrl, start: nextStart });
+        }
+    }
     componentWillMount() {
-        const { step } = this.props;
+        const { step, location } = this.props;
+        const start = location && location.query ? location.query.start : undefined;
         // needed for running steps as reference
         this.durationMillis = (this.durationHarmonize(step)).durationMillis;
         logger.debug('durationMillis mounting', this.durationMillis);
         const isFocused = this.isFocused(this.props);
         if ((!step.isInputStep && isFocused) &&
             (this.pager.log === undefined || (this.pager.log && !this.pager.log.data))){
-            const cfg = { url: step.logUrl };
+            const cfg = { url: step.logUrl, start };
             logger.debug('getLogForStep called will fetch now with cfg.', cfg);
             this.pager.fetchLog(cfg);
         }
