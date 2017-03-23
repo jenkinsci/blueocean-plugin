@@ -1,10 +1,38 @@
 // @flow
 
 import { action, computed, observable } from 'mobx';
-import { Fetch, Paths, sseService, loadingIndicator } from '@jenkins-cd/blueocean-core-js';
+import { Fetch, getRestUrl, sseService, loadingIndicator, capabilityAugmenter } from '@jenkins-cd/blueocean-core-js';
 
 export class SaveApi {
-    index(organization, folder, complete, onError, progress) {
+
+    indexRepo(organization, teamName, repoName) {
+        const createUrl = `${getRestUrl({organization})}/pipelines/`;
+
+        const requestBody = {
+            name: teamName,
+            $class: 'io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest',
+            scmConfig: {
+                uri: 'https://api.github.com',
+                config: {
+                    orgName: teamName,
+                    repos: [repoName],
+                },
+            },
+        };
+
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(requestBody),
+        };
+
+        return Fetch.fetchJSON(createUrl, { fetchOptions })
+            .then(pipeline => capabilityAugmenter.augmentCapabilities(pipeline));
+    }
+
+    index(organization, folder, repo, complete, onError, progress) {
         const cleanup = err => {
             sseService.removeHandler(sseId);
             clearTimeout(timeoutId);
@@ -24,31 +52,14 @@ export class SaveApi {
         
         const sseId = sseService.registerHandler(event => {
             if (event.job_multibranch_indexing_result === 'SUCCESS') {
-                if (progress) progress(event);
-            }
-            if (event.job_orgfolder_indexing_result === 'SUCCESS') {
                 cleanup();
             }
-            if (event.job_orgfolder_indexing_result === 'FAILURE') {
+            if (event.job_multibranch_indexing_result === 'FAILURE') {
                 cleanup({ message: 'Indexing failed' });
             }
         });
 
-        Fetch.fetchJSON(Paths.rest.apiRoot() + '/organizations/' + organization + '/pipelines/' + folder + '/runs/1/replay/', {
-            fetchOptions: {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: '{}',
-            }
-        })
-        .then(data => {
-            // Nothing to do here
-        })
-        .catch(err => {
-            cleanup(err);
-        });
+        this.indexRepo(organization, folder, repo);
     }
 }
 

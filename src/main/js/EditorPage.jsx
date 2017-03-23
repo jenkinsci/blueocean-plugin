@@ -169,6 +169,7 @@ class PipelineLoader extends React.Component {
                 agent: { type: 'any' },
                 children: [],
             });
+            this.forceUpdate();
         };
 
         if (!pipeline) {
@@ -193,6 +194,23 @@ class PipelineLoader extends React.Component {
                 });
         };
         
+        if (!branch) {
+            const split = pipeline.split('/');
+            const team = split[0];
+            const repo = split[1];
+            const provider = 'github';
+            Fetch.fetchJSON(`${getRestUrl({organization})}scm/${provider}/`)
+            .then( ({ credentialId }) =>
+                Fetch.fetchJSON(`${getRestUrl({organization})}scm/${provider}/organizations/${team}/repositories/${repo}/?credentialId=${credentialId}`)
+            )
+            .then( ({ defaultBranch }) => {
+                this.defaultBranch = defaultBranch || 'master';
+            })
+            .catch(err => this.defaultBranch = 'master');
+        } else {
+            this.defaultBranch = branch;
+        }
+
         Fetch.fetchJSON(`${getRestUrl(this.props.params)}scm/content/?branch=${encodeURIComponent(branch)}&path=Jenkinsfile`)
         .then( ({ content }) => {
             const pipelineScript = Base64.decode(content.base64Data);
@@ -348,7 +366,8 @@ class PipelineLoader extends React.Component {
                     "content": {
                       "message": saveMessage,
                       "path": "Jenkinsfile",
-                      branch: saveToBranch || 'master',
+                      branch: saveToBranch || this.defaultBranch,
+                      sourceBranch: branch,
                       repo: repo,
                       "sha": this.state.sha,
                       "base64Data": Base64.encode(pipelineScript),
@@ -369,18 +388,18 @@ class PipelineLoader extends React.Component {
                     if (this.state.sha && branch === body.content.branch) {
                         RunApi.startRun({ _links: { self: { href: this.href + 'branches/' + encodeURIComponent(branch) + '/' }}})
                             .then(() => this.goToActivity())
-                            .catch(err => errorHandler(err, body));//this.showErrorDialog(err));
+                            .catch(err => errorHandler(err, body));
                     } else {
                         // otherwise, call indexing so this branch gets picked up
-                        saveApi.index(organization, team, () => this.goToActivity(), err => errorHandler(err));//this.showErrorDialog(err));
+                        saveApi.index(organization, team, repo, () => this.goToActivity(), err => errorHandler(err));
                     }
                     this.setState({ sha: data.sha });
                 })
                 .catch(err => {
-                    errorHandler(err, body);//this.showErrorDialog(err, { saveRequest: body });
+                    errorHandler(err, body);
                 });
             } else {
-                errorHandler(err);//this.showErrorDialog(err);
+                errorHandler(err);
             }
         });
     }
@@ -409,7 +428,7 @@ class PipelineLoader extends React.Component {
                 </div>
             }
             {this.state.dialog}
-            {this.state.showSaveDialog && <SaveDialog branch={branch || 'master'}
+            {this.state.showSaveDialog && <SaveDialog branch={branch || this.defaultBranch}
                 cancel={() => this.setState({showSaveDialog: false})}
                 functions={this} />
             }
