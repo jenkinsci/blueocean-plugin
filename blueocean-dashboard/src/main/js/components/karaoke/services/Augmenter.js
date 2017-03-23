@@ -21,7 +21,10 @@ export class Augmenter {
      * @type {string}
      */
     @computed get generalLogUrl() {
-        return prefixIfNeeded(this.run._links.log.href);
+        if (this.run._links && this.run._links.log && this.run._links.log.href) {
+            return prefixIfNeeded(this.run._links.log.href);
+        }
+        return undefined;
     }
     /**
      * nodes ref or undefined

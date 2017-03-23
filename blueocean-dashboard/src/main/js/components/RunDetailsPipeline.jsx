@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import { logging } from '@jenkins-cd/blueocean-core-js';
+import { logging, calculateLogView } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import Extensions from '@jenkins-cd/js-extensions';
 import { Augmenter } from './karaoke/services/Augmenter';
@@ -13,6 +13,7 @@ export class RunDetailsPipeline extends Component {
         super(props);
         this._handleKeys = this._handleKeys.bind(this);
         this._onScrollHandler = this._onScrollHandler.bind(this);
+        this.classicLog = calculateLogView(props);
     }
     componentWillMount() {
         if (this.props.params) {
@@ -80,7 +81,7 @@ export class RunDetailsPipeline extends Component {
         };
         let provider;
         const stepScrollAreaClass = `step-scroll-area ${this.augmenter.karaoke ? 'follow-along-on' : 'follow-along-off'}`;
-        if (this.augmenter.isFreeStyle) {
+        if (this.classicLog || this.augmenter.isFreeStyle) {
             provider = (<Extensions.Renderer {
                     ...{
                         extensionPoint: 'jenkins.pipeline.karaoke.freestyle.provider',
@@ -89,7 +90,7 @@ export class RunDetailsPipeline extends Component {
                 }
             />);
         }
-        if (this.augmenter.isPipeline) {
+        if (!this.classicLog && this.augmenter.isPipeline) {
             provider = (<Extensions.Renderer {
                     ...{
                         extensionPoint: 'jenkins.pipeline.karaoke.pipeline.provider',
