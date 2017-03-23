@@ -1,47 +1,16 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView, Table } from '@jenkins-cd/design-language';
+import { Table } from '@jenkins-cd/design-language';
 import { capable, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
-import Markdown from 'react-remarkable';
 import { observer } from 'mobx-react';
 
-import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
 import Branches from './Branches';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
+import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
+import { UnsupportedPlaceholder } from './placeholder/UnsupportedPlaceholder';
+
 
 const { object, string, any, func } = PropTypes;
 
-const EmptyState = ({ repoName, t }) => (
-    <main>
-        <EmptyStateView iconName="branch">
-            <Markdown>
-                {t('EmptyState.branches', {
-                    0: repoName,
-                    defaultValue: '# Branch out\nCreate a branch in the repository _{0}_ and Jenkins will start testing your changes.\n\nGive it a try and become a hero to your team.',
-                })}
-            </Markdown>
-            <button>{t('Enable', { defaultValue: 'Enable' })}</button>
-        </EmptyStateView>
-    </main>
-);
-
-const NotSupported = ({ t }) => (
-    <main>
-        <EmptyStateView>
-            <Markdown>
-                {t('EmptyState.branches.notSupported', { defaultValue: '# Branches are unsupported\nBranch runs only work with the _Multibranch Pipeline_ job type. This is just one of the many reasons to switch to Jenkins Pipeline.\n\n[Learn more](https://jenkins.io/doc/book/pipeline-as-code/)' })}
-            </Markdown>
-        </EmptyStateView>
-    </main>
-);
-
-EmptyState.propTypes = {
-    repoName: string,
-    t: func,
-};
-
-NotSupported.propTypes = {
-    t: func,
-};
 
 @observer
 export class MultiBranch extends Component {
@@ -56,7 +25,7 @@ export class MultiBranch extends Component {
         const { t, locale, pipeline } = this.props;
 
         if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
-            return (<NotSupported t={t} />);
+            return (<UnsupportedPlaceholder t={t} />);
         }
 
         const branches = this.pager.data;
