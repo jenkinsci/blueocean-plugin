@@ -80,17 +80,9 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
                 SecurityContextHolder.setContext(securityContext);
 
                 //TODO: implement this as filter, see PluginServletFilter to clear the context
-            } else {
-                HashCode hashCode = Hashing.sha1()
-                    .newHasher()
-                    .putString(Jenkins.getAuthentication().getName(), StandardCharsets.UTF_8)
-                    .putLong(randomBits)
-                    .hash();
+            } 
+            Stapler.getCurrentResponse().setHeader("X-Blueocean-Refresher", Jenkins.SESSION_HASH);
 
-                // Base64 encode to ensure no non-ASCII characters get into the header
-                String refresherToken = Base64.encode(hashCode.asBytes());
-                Stapler.getCurrentResponse().setHeader("X-Blueocean-Refresher", refresherToken);
-            }
         }else{
             //If user doesn't have overall Jenkins read permission then return 403, which results in classic UI redirecting
             // user to login page
