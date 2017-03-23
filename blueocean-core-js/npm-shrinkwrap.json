@@ -1,11 +1,11 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.90-jdl1",
+  "version": "0.0.90-jdl2",
   "dependencies": {
     "@jenkins-cd/design-language": {
-      "version": "0.0.126-placeholder2",
-      "from": "@jenkins-cd/design-language@0.0.126-placeholder2",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.126-placeholder2.tgz"
+      "version": "0.0.126-placeholder3",
+      "from": "@jenkins-cd/design-language@0.0.126-placeholder3",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.126-placeholder3.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
