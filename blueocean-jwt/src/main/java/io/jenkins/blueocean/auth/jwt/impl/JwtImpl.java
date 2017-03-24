@@ -10,6 +10,7 @@ import io.jenkins.blueocean.auth.jwt.JwkService;
 import io.jenkins.blueocean.auth.jwt.JwtAuthenticationService;
 import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStore;
 import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStoreFactory;
+import io.jenkins.blueocean.auth.jwt.JwtPublicKeyProvider;
 import io.jenkins.blueocean.auth.jwt.JwtToken;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
@@ -18,7 +19,6 @@ import org.acegisecurity.Authentication;
 import org.kohsuke.stapler.QueryParameter;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Collections;
 import java.util.UUID;
@@ -135,15 +135,12 @@ public class JwtImpl extends JwtAuthenticationService {
 
         @Override
         public JSONObject getJwk() {
-            JwtTokenImpl.JwtRsaDigitalSignatureKey key = new JwtTokenImpl.JwtRsaDigitalSignatureKey(keyId);
-            try {
-                if(!key.exists()){
-                    throw new ServiceException.NotFoundException(String.format("kid %s not found", keyId));
-                }
-            } catch (IOException e) {
-                throw new ServiceException.UnexpectedErrorException("Unexpected error: "+e.getMessage(), e);
+            JwtPublicKeyProvider publicKeyProvider = JwtPublicKeyProvider.first(keyId);
+            if(publicKeyProvider == null){
+                throw new ServiceException.UnexpectedErrorException("No JWT public key provider found");
             }
-            RSAPublicKey publicKey = key.getPublicKey();
+
+            RSAPublicKey publicKey = publicKeyProvider.getPublicKey(keyId);
             JSONObject jwk = new JSONObject();
             jwk.put("kty", "RSA");
             jwk.put("alg","RS256");
