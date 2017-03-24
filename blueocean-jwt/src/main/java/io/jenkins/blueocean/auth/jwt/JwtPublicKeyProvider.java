@@ -24,9 +24,9 @@ public abstract class JwtPublicKeyProvider implements ExtensionPoint{
         return  ExtensionList.lookup(JwtPublicKeyProvider.class);
     }
 
-    public @CheckForNull static JwtPublicKeyProvider first(String jwtToken){
+    public @CheckForNull static JwtPublicKeyProvider first(String keyId){
         for(JwtPublicKeyProvider provider:all()){
-            if(provider.getPublicKey(jwtToken) != null) {
+            if(provider.getPublicKey(keyId) != null) {
                 return provider;
             }
         }
