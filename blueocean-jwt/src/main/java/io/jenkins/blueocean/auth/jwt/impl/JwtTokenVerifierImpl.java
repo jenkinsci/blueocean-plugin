@@ -4,8 +4,9 @@ import hudson.Extension;
 import hudson.model.User;
 import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStore;
 import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStoreFactory;
-import io.jenkins.blueocean.auth.jwt.JwtPublicKeyProvider;
+import io.jenkins.blueocean.auth.jwt.JwtSigningKeyProvider;
 import io.jenkins.blueocean.auth.jwt.JwtTokenVerifier;
+import io.jenkins.blueocean.auth.jwt.SigningPublicKey;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
@@ -25,8 +26,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
-import java.security.PublicKey;
 import java.security.interfaces.RSAPublicKey;
 import java.util.Collections;
 import java.util.Map;
@@ -48,7 +47,7 @@ public class JwtTokenVerifierImpl extends JwtTokenVerifier {
             String subject = claims.getSubject();
 
             if(subject.equals("anonymous")) { //if anonymous, we don't look in user db
-                return Jenkins.getInstance().ANONYMOUS;
+                return Jenkins.ANONYMOUS;
             }else{
 
                 JwtAuthenticationStore authenticationStore = getJwtStore(claims.getClaimsMap());
@@ -85,18 +84,17 @@ public class JwtTokenVerifierImpl extends JwtTokenVerifier {
                 throw new ServiceException.UnauthorizedException("Invalid JWT token");
             }
 
-            JwtPublicKeyProvider provider = JwtPublicKeyProvider.first(kid);
-            if(provider == null){
-                throw new ServiceException.UnexpectedErrorException("No JWT publick key provider found");
+            SigningPublicKey publicKey = JwtSigningKeyProvider.toPublicKey(kid);
+            if(publicKey == null){
+                throw new ServiceException.UnexpectedErrorException("Invalid kid="+kid);
             }
-            PublicKey publicKey = provider.getPublicKey(kid);
 
             JwtConsumer jwtConsumer = new JwtConsumerBuilder()
                 .setRequireExpirationTime() // the JWT must have an expiration time
                 .setRequireJwtId()
                 .setAllowedClockSkewInSeconds(30) // allow some leeway in validating time based claims to account for clock skew
                 .setRequireSubject() // the JWT must have a subject claim
-                .setVerificationKey(publicKey) // verify the sign with the public key
+                .setVerificationKey(publicKey.getKey()) // verify the sign with the public key
                 .build(); // create the JwtConsumer instance
 
             try {
@@ -120,23 +118,6 @@ public class JwtTokenVerifierImpl extends JwtTokenVerifier {
         } catch (JoseException e) {
             logger.error("Error parsing JWT token: "+e.getMessage(), e);
             throw new ServiceException.UnauthorizedException("Invalid JWT Token: "+ e.getMessage());
-        }
-    }
-
-    @Extension(ordinal = -9999)
-    public static class PublicKeyProviderImpl extends JwtPublicKeyProvider{
-        @Override
-        public RSAPublicKey getPublicKey(String kid) {
-            JwtTokenImpl.JwtRsaDigitalSignatureKey key = new JwtTokenImpl.JwtRsaDigitalSignatureKey(kid);
-            try {
-                if(!key.exists()){
-                    throw new ServiceException.NotFoundException(String.format("kid %s not found", kid));
-                }
-            } catch (IOException e) {
-                logger.error(String.format("Error reading RSA key for id %s: %s",kid,e.getMessage()),e);
-                throw new ServiceException.UnexpectedErrorException("Unexpected error: "+e.getMessage(), e);
-            }
-            return key.getPublicKey();
         }
     }
 

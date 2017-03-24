@@ -31,8 +31,6 @@ public abstract class JwtAuthenticationService implements UnprotectedRootAction,
      *
      * @return JWT if there is authenticated user or if  anonymous user has at least READ permission, otherwise 401
      *         error code is returned
-     *
-     *  @see JwtTokenImpl
      */
     @GET
     @WebMethod(name = "token")
@@ -40,12 +38,15 @@ public abstract class JwtAuthenticationService implements UnprotectedRootAction,
                                           @Nullable  @QueryParameter("maxExpiryTimeInMins") Integer maxExpiryTimeInMins);
 
     /**
-     *  Gives Json web key. See https://tools.ietf.org/html/rfc7517
+     * Binds Json web key to the URL space.
      *
      * @param keyId keyId of the key
      *
-     * @return JWK reponse
+     * @return JWK response
+     * @see <a href="https://tools.ietf.org/html/rfc7517">the spec</a>
      */
     @GET
-    public abstract JwkService getJwks(String keyId);
+    public SigningPublicKey getJwks(String keyId) {
+        return JwtSigningKeyProvider.toPublicKey(keyId);
+    }
 }

@@ -1,25 +1,32 @@
 package io.jenkins.blueocean.auth.jwt;
 
-import hudson.ExtensionList;
 import hudson.ExtensionPoint;
+import io.jenkins.blueocean.commons.ServiceException;
 import net.sf.json.JSONObject;
+import org.jose4j.jws.AlgorithmIdentifiers;
+import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwx.HeaderParameterNames;
+import org.jose4j.lang.JoseException;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.util.UUID;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Generates JWT token
  *
  * @author Vivek Pandey
  */
-public abstract class JwtToken implements HttpResponse, ExtensionPoint{
+public class JwtToken implements HttpResponse {
+    private static final Logger LOGGER = Logger.getLogger(JwtToken.class.getName());
+
+    /**
+     * {@link JwtToken} is sent as HTTP header of name.
+     */
     public static final String X_BLUEOCEAN_JWT="X-BLUEOCEAN-JWT";
 
     /**
@@ -40,43 +47,40 @@ public abstract class JwtToken implements HttpResponse, ExtensionPoint{
      *
      * @return base64 representation of JWT token
      */
-    public String sign(){
+    public String sign() {
         for(JwtTokenDecorator decorator: JwtTokenDecorator.all()){
             decorator.decorate(this);
         }
 
-        /**
-         *  kid might have been set already by using {@link #header} or {@link JwtTokenDecorator}, if present use it
-         *  otherwise use the default kid
-         */
-        String keyId = (String)header.get(HeaderParameterNames.KEY_ID);
-        if(keyId == null){
-            keyId = UUID.randomUUID().toString().replace("-", "");
+        for(JwtSigningKeyProvider signer: JwtSigningKeyProvider.all()){
+            SigningKey k = signer.select(this);
+            if (k!=null) {
+                try {
+                    JsonWebSignature jsonWebSignature = new JsonWebSignature();
+                    jsonWebSignature.setPayload(claim.toString());
+                    jsonWebSignature.setKey(k.getKey());
+                    jsonWebSignature.setKeyIdHeaderValue(k.getKid());
+                    jsonWebSignature.setAlgorithmHeaderValue(AlgorithmIdentifiers.RSA_USING_SHA256);
+                    jsonWebSignature.setHeader(HeaderParameterNames.TYPE, "JWT");
+
+                    return jsonWebSignature.getCompactSerialization();
+                } catch (JoseException e) {
+                    String msg = "Failed to sign JWT token: " + e.getMessage();
+                    LOGGER.log(Level.SEVERE, "Failed to sign JWT token", e);
+                    throw new ServiceException.UnexpectedErrorException(msg, e);
+                }
+            }
         }
-        return sign(keyId);
+
+        throw new IllegalStateException("No key is available to sign a token");
     }
 
     /**
-     * Do the actual signing using this keyId
-     * @param keyId keyId
-     * @return signed value as String
+     * Writes the token as an HTTP response.
      */
-    public abstract String sign(String keyId);
-
     @Override
     public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
         rsp.setStatus(200);
         rsp.addHeader(X_BLUEOCEAN_JWT, sign());
-    }
-
-    public static @Nonnull ExtensionList<JwtToken> all(){
-        return ExtensionList.lookup(JwtToken.class);
-    }
-
-    public static @CheckForNull JwtToken first(){
-        for(JwtToken token:all()){
-            return token;
-        }
-        return null;
     }
 }
