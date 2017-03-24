@@ -29,7 +29,7 @@ import java.util.Date;
 import java.util.Map;
 import java.util.logging.LogManager;
 
-import static io.jenkins.blueocean.auth.jwt.impl.JwtTokenImpl.X_BLUEOCEAN_JWT;
+import static io.jenkins.blueocean.auth.jwt.JwtToken.X_BLUEOCEAN_JWT;
 
 /**
  * @author Vivek Pandey
