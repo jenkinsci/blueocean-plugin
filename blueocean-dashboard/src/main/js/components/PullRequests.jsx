@@ -26,7 +26,14 @@ export class PullRequests extends Component {
         const { t, locale, pipeline } = this.props;
 
         if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
-            return (<UnsupportedPlaceholder t={t} />);
+            const childProps = {
+                title: t('pipelinedetail.placeholder.unsupported.pullrequests.title'),
+                message: t('pipelinedetail.placeholder.unsupported.pullrequests.message'),
+                linkText: t('pipelinedetail.placeholder.unsupported.pullrequests.linktext'),
+                linkHref: t('pipelinedetail.placeholder.unsupported.pullrequests.linkhref'),
+            };
+
+            return (<UnsupportedPlaceholder {...childProps} />);
         }
         const pullRequests = this.pager.data;
 

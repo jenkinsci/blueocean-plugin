@@ -25,7 +25,14 @@ export class MultiBranch extends Component {
         const { t, locale, pipeline } = this.props;
 
         if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
-            return (<UnsupportedPlaceholder t={t} />);
+            const childProps = {
+                title: t('pipelinedetail.placeholder.unsupported.branches.title'),
+                message: t('pipelinedetail.placeholder.unsupported.branches.message'),
+                linkText: t('pipelinedetail.placeholder.unsupported.branches.linktext'),
+                linkHref: t('pipelinedetail.placeholder.unsupported.branches.linkhref'),
+            };
+
+            return (<UnsupportedPlaceholder {...childProps} />);
         }
 
         const branches = this.pager.data;

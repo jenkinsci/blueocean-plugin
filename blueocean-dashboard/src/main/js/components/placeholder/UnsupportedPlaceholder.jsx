@@ -7,7 +7,7 @@ import Icon from './Icon';
 
 
 export function UnsupportedPlaceholder(props) {
-    const { t } = props;
+    const { linkHref, linkText, message, title } = props;
 
     const columns = [
         { width: 40, head: { text: 40 }, cell: { icon: 20 } },
@@ -22,10 +22,10 @@ export function UnsupportedPlaceholder(props) {
 
     const content = {
         icon: Icon.WARNING,
-        title: t('pipelinedetail.placeholder.unsupported.title'),
-        message: t('pipelinedetail.placeholder.unsupported.message'),
-        linkText: t('pipelinedetail.placeholder.unsupported.linktext'),
-        linkHref: t('pipelinedetail.placeholder.unsupported.linkhref'),
+        title,
+        message,
+        linkText,
+        linkHref,
     };
 
     return (
@@ -37,5 +37,8 @@ export function UnsupportedPlaceholder(props) {
 }
 
 UnsupportedPlaceholder.propTypes = {
-    t: PropTypes.func,
+    title: PropTypes.string,
+    message: PropTypes.string,
+    linkText: PropTypes.string,
+    linkHref: PropTypes.string,
 };
