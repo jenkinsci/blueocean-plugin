@@ -1,17 +1,14 @@
 package io.jenkins.blueocean.service.embedded;
 
-import com.google.common.hash.HashCode;
-import com.google.common.hash.Hashing;
 import com.google.inject.Binder;
 import com.google.inject.Inject;
 import com.google.inject.Module;
 import hudson.Extension;
 import hudson.model.UnprotectedRootAction;
-import hudson.remoting.Base64;
 import io.jenkins.blueocean.BlueOceanUI;
+import io.jenkins.blueocean.auth.jwt.JwtTokenVerifier;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.auth.jwt.JwtTokenVerifier;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;
@@ -21,7 +18,6 @@ import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
 
-import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
 /**
