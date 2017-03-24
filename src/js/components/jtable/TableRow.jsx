@@ -11,7 +11,7 @@ import type {ColumnDescription} from './JTable';
 
 type Props = {
     className?: string,
-    children: ReactChildren,
+    children?: ReactChildren,
     href?: string,
     onClick?: Function,
     columns: Array<ColumnDescription>,
@@ -65,7 +65,7 @@ export class TableRow extends Component {
 
         const numChildren = Children.count(children);
         const columns = processColumns(this.props.columns, numChildren);
-        
+
         const newChildren = Children.map(children, (child, i) => {
 
             const elementStyle = child.props.style || {};

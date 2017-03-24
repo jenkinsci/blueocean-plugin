@@ -13,6 +13,7 @@ require('./FilterableListStories');
 require('./FloatingElementStories');
 require('./FormElementStories');
 require('./ListStories');
+require('./PlaceholderStories');
 require('./pipelinegraph.jsx');
 require('./pipelineresult.jsx');
 require('./RadioButtonGroupStories');
