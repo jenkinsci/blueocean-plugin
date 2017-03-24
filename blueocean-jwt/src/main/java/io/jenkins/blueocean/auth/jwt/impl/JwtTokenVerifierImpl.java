@@ -22,10 +22,11 @@ import org.jose4j.jwt.consumer.JwtConsumerBuilder;
 import org.jose4j.jwt.consumer.JwtContext;
 import org.jose4j.jwx.JsonWebStructure;
 import org.jose4j.lang.JoseException;
-import org.kohsuke.stapler.StaplerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.CheckForNull;
+import javax.servlet.http.HttpServletRequest;
 import java.util.Collections;
 import java.util.Map;
 
@@ -40,8 +41,10 @@ public class JwtTokenVerifierImpl extends JwtTokenVerifier {
     private static final Logger logger = LoggerFactory.getLogger(JwtTokenVerifierImpl.class);
 
     @Override
-    public Authentication verify(StaplerRequest request) {
+    public Authentication verify(HttpServletRequest request) {
         JwtClaims claims = validate(request);
+        if (claims==null)   return null;
+
         try {
             String subject = claims.getSubject();
 
@@ -62,14 +65,23 @@ public class JwtTokenVerifierImpl extends JwtTokenVerifier {
         }
     }
 
-    private  JwtClaims validate(StaplerRequest request) {
+    /**
+     * @return
+     *      null if the JWT token is not present
+     * @throws Exception
+     *      if the JWT token is present but invalid
+     */
+    private @CheckForNull JwtClaims validate(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if(authHeader == null || !authHeader.startsWith("Bearer ")){
-            throw new ServiceException.UnauthorizedException("JWT token not found");
+            return null;
         }
         String token = authHeader.substring("Bearer ".length());
+        JsonWebStructure jws = parse(token);
+        if (jws==null) {
+            return null;
+        }
         try {
-            JsonWebStructure jws = JsonWebStructure.fromCompactSerialization(token);
             String alg = jws.getAlgorithmHeaderValue();
             if(alg == null || !alg.equals(RSA_USING_SHA256)){
                 logger.error(String.format("Invalid JWT token: unsupported algorithm in header, found %s, expected %s", alg, RSA_USING_SHA256));
@@ -117,6 +129,16 @@ public class JwtTokenVerifierImpl extends JwtTokenVerifier {
         } catch (JoseException e) {
             logger.error("Error parsing JWT token: "+e.getMessage(), e);
             throw new ServiceException.UnauthorizedException("Invalid JWT Token: "+ e.getMessage());
+        }
+    }
+
+    private JsonWebStructure parse(String token) {
+        try {
+            return JsonWebStructure.fromCompactSerialization(token);
+        } catch (JoseException e) {
+            // token was not formed as JWT token. Probably it's a different kind of bearer token
+            // some other plugins have introduced
+            return null;
         }
     }
 
