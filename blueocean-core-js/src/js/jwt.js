@@ -1,9 +1,10 @@
 import es6Promise from 'es6-promise'; es6Promise.polyfill();
 import fetch from 'isomorphic-fetch';
 import jwt from 'jsonwebtoken';
-import UrlUtils from './urlconfig';
 import { FetchFunctions } from './fetch';
 import { jwk2pem } from 'pem-jwk';
+import config from './config';
+
 let storedToken = null;
 let publicKeyStore = null;
 let tokenFetchPromise = null;
@@ -25,7 +26,7 @@ export default {
         }
 
         if (!tokenFetchPromise) {
-            tokenFetchPromise = fetch(`${UrlUtils.getJenkinsRootURL()}/jwt-auth/token`, { credentials: 'same-origin' })
+            tokenFetchPromise = fetch(`${config.getJWTServiceHostUrl()}/jwt-auth/token`, { credentials: 'include', mode: 'cors' })
                 .then(this.checkStatus)
                 .then(response => {
                     const token = response.headers.get('X-BLUEOCEAN-JWT');
@@ -59,7 +60,7 @@ export default {
      */
     fetchJWTPublicKey(token) {
         const decoded = jwt.decode(token, { complete: true });
-        const url = `${UrlUtils.getJenkinsRootURL()}/jwt-auth/jwks/${decoded.header.kid}/`;
+        const url = `${config.getJWTServiceHostUrl()}/jwt-auth/jwks/${decoded.header.kid}/`;
         if (!publicKeyStore) {
             publicKeyStore = fetch(url, { credentials: 'same-origin' })
                 .then(FetchFunctions.checkStatus)
