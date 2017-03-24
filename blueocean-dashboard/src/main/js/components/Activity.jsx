@@ -45,23 +45,26 @@ EmptyState.propTypes = {
 
 @observer
 export class Activity extends Component {
-
     componentWillMount() {
         if (this.context.params) {
             const organization = this.context.params.organization;
             const pipeline = this.context.params.pipeline;
-            const branch = this.context.params.branch;
+            const branch = this._branchFromProps(this.props);
             this.pager = this.context.activityService.activityPager(organization, pipeline, branch);
         }
     }
 
     componentWillReceiveProps(newProps) {
-        if (this.props.params && this.props.params.branch !== newProps.params.branch) {
+        if (this.props.params && this._branchFromProps(this.props) !== this._branchFromProps(newProps)) {
             const organization = newProps.params.organization;
             const pipeline = newProps.params.pipeline;
-            const branch = newProps.params.branch;
+            const branch = this._branchFromProps(newProps);
             this.pager = this.context.activityService.activityPager(organization, pipeline, branch);
         }
+    }
+
+    _branchFromProps(props) {
+        return ((props.location || {}).query || {}).branch;
     }
 
     navigateToBranch(branch) {
@@ -70,7 +73,7 @@ export class Activity extends Component {
         const baseUrl = buildPipelineUrl(organization, pipeline);
         let activitiesURL = `${baseUrl}/activity`;
         if (branch) {
-            activitiesURL += '/' + encodeURIComponent(branch);
+            activitiesURL += '?branch=' + encodeURIComponent(branch);
         }
         this.context.router.push(activitiesURL);
     }
@@ -81,7 +84,8 @@ export class Activity extends Component {
         if (!pipeline) {
             return null;
         }
-        const { branch } = this.context.params;
+        const branch = this._branchFromProps(this.props);
+
         const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
         const hasBranches = pipeline.branchNames && pipeline.branchNames.length;
 
@@ -199,6 +203,7 @@ Activity.propTypes = {
     locale: string,
     t: func,
     params: object,
+    location: object.isRequired,
 };
 
 export default Activity;
