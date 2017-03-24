@@ -5,15 +5,17 @@ import { observer } from 'mobx-react';
 import Extensions from '@jenkins-cd/js-extensions';
 import { Augmenter } from './karaoke/services/Augmenter';
 
-const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.RunDetailsPipeline');
+import { KaraokeConfig } from './karaoke';
 
+const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.RunDetailsPipeline');
 @observer
 export class RunDetailsPipeline extends Component {
     constructor(props) {
         super(props);
         this._handleKeys = this._handleKeys.bind(this);
         this._onScrollHandler = this._onScrollHandler.bind(this);
-        this.classicLog = calculateLogView(props);
+        // query parameter before preference
+        this.classicLog = calculateLogView(props) || KaraokeConfig.getPreference('runDetails.logView').value === 'classic';
     }
     componentWillMount() {
         if (this.props.params) {
@@ -34,8 +36,14 @@ export class RunDetailsPipeline extends Component {
         }
     }
     componentWillReceiveProps(nextProps) {
-        logger.debug('Augmenting next properties');
-        this.augment(nextProps);
+        if (KaraokeConfig.getPreference('runDetails.pipeline.updateOnFinish').value !== 'never') {
+            logger.debug('Augmenting next properties');
+            this.augment(nextProps);
+        } else if (nextProps.params.runId !== this.props.params.runId
+            && KaraokeConfig.getPreference('runDetails.pipeline.updateOnFinish').value === 'never') {
+            logger.debug('Augmenting next properties - new run needs update');
+            this.augment(nextProps);
+        }
     }
     componentWillUnmount() {
         const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);

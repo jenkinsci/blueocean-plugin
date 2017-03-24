@@ -8,6 +8,7 @@ import { KaraokeService } from '../index';
 import LogToolbar from './LogToolbar';
 import Steps from './Steps';
 
+import { KaraokeConfig } from '../';
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pipeline');
 
 @observer
@@ -16,10 +17,9 @@ export default class Pipeline extends Component {
         super(props);
         this.listener = {};
         this.sseEventHandler = this.sseEventHandler.bind(this);
-        // the following should go into  a config object and then read out from it
-        this.showPending = true; // Configure flag to show pending or not
-        this.karaoke = props.augmenter.karaoke; // initial karaoke state
-        this.updateOnFinish = true;
+        this.showPending = KaraokeConfig.getPreference('runDetails.pipeline.showPending').value !== 'never'; // Configure flag to show pending or not
+        this.karaoke = KaraokeConfig.getPreference('runDetails.pipeline.karaoke').value === 'never' ? false : props.augmenter.karaoke; // initial karaoke state
+        this.updateOnFinish = KaraokeConfig.getPreference('runDetails.pipeline.updateOnFinish').value;
     }
     componentWillMount() {
         // starting pipeline service when we have an augmenter
@@ -36,11 +36,12 @@ export default class Pipeline extends Component {
         if (!nextProps.augmenter.karaoke) {
             logger.debug('stopping karaoke mode.');
             this.stopKaraoke();
-        } else if (nextProps.augmenter.karaoke) {
+        } else if (nextProps.augmenter.karaoke &&
+            KaraokeConfig.getPreference('runDetails.pipeline.karaoke').value !== 'never') {
             this.karaoke = true;
         }
         // update on finish, you can de-activate it by setting updateOnFinish to false
-        if (this.updateOnFinish && nextProps.run.isCompleted() && !this.props.run.isCompleted()) {
+        if (this.updateOnFinish !== 'never' && nextProps.run.isCompleted() && !this.props.run.isCompleted()) {
             logger.debug('re-fetching since result changed and we want to display the full log and correct result states');
             // remove all timeouts in the backend
             this.stopKaraoke();
@@ -49,7 +50,9 @@ export default class Pipeline extends Component {
                 nextProps.augmenter.setRun(nextProps.run);
             }
             debounce(() => {
-                this.karaoke = true;
+                if (KaraokeConfig.getPreference('runDetails.pipeline.karaoke').value !== 'never') {
+                    this.karaoke = true;
+                }
                 this.pager.fetchNodes({ node: nextProps.params.node });
             }, 200)();
         }
@@ -85,6 +88,10 @@ export default class Pipeline extends Component {
          // we are using try/catch to throw an early out error
         try {
             logger.debug('incoming event', event);
+            if (KaraokeConfig.getPreference('runDetails.pipeline.karaoke').value === 'never' || !this.karaoke) {
+                logger.warn('early out because we do not want to follow along sse events');
+                throw new Error('exit');
+            }
             const jenkinsEvent = event.jenkins_event;
             const { run } = this.props;
             const runId = run.id;
@@ -99,9 +106,7 @@ export default class Pipeline extends Component {
                 logger.warn('sse event step fetchCurrentSteps', jenkinsEvent);
                 debounce(() => {
                     logger.warn('should i sse fetch it or not?', this.karaoke);
-                    if (this.karaoke) {
-                        this.pager.fetchCurrentStepUrl();
-                    }
+                    this.pager.fetchCurrentStepUrl();
                 }, 200)();
                 // prevent flashing of stages and nodes
                 this.showPending = false;
@@ -114,9 +119,7 @@ export default class Pipeline extends Component {
                 logger.warn('sse event block starts refetchNodes', jenkinsEvent);
                 debounce(() => {
                     logger.warn('should i sse fetch it or not?', this.karaoke);
-                    if (this.karaoke) {
-                        this.pager.fetchNodes({});
-                    }
+                    this.pager.fetchNodes({});
                 }, 200)();
                 // prevent flashing of stages and nodes
                 this.showPending = false;
