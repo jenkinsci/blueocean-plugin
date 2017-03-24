@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.auth.jwt;
 
 import hudson.ExtensionPoint;
-import hudson.model.RootAction;
+import hudson.model.UnprotectedRootAction;
 import io.jenkins.blueocean.auth.jwt.impl.JwtTokenImpl;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.WebMethod;
@@ -15,7 +15,7 @@ import javax.annotation.Nullable;
  *
  * @author Vivek Pandey
  */
-public abstract class JwtAuthenticationService implements RootAction, ExtensionPoint{
+public abstract class JwtAuthenticationService implements UnprotectedRootAction, ExtensionPoint{
 
     @Override
     public String getUrlName() {
