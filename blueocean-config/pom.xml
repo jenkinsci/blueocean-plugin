@@ -27,5 +27,9 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>blueocean-commons</artifactId>
     </dependency>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>blueocean-jwt</artifactId>
+    </dependency>
   </dependencies>
  </project>
