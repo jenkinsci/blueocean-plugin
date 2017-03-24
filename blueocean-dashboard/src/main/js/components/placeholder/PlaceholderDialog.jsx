@@ -18,7 +18,7 @@ function createContent(content) {
     return [
         icon && React.cloneElement(icon, { className: 'icon' }),
         <h1 className="title">{title}</h1>,
-        <p className="message">{message}</p>,
+        message && <p className="message">{message}</p>,
         link,
     ];
 }

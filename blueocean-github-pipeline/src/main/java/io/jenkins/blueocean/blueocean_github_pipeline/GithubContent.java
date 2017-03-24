@@ -20,16 +20,17 @@ public class GithubContent extends ScmContent {
     private final String base64Data;
     private final String branch;
     private final String sha;
+    private final String sourceBranch;
     private final Boolean autoCreateBranch;
     private final Number size;
 
 
     @DataBoundConstructor
-    public GithubContent(String owner, String repo, String path, String message, String base64Data, String sha, String branch, Boolean autoCreateBranch) {
-        this(null, owner, repo, path, 0, message, base64Data, sha, branch, autoCreateBranch);
+    public GithubContent(String owner, String repo, String path, String message, String base64Data, String sha, String branch, String sourceBranch, Boolean autoCreateBranch) {
+        this(null, owner, repo, path, 0, message, base64Data, sha, branch, sourceBranch, autoCreateBranch);
     }
 
-    public GithubContent(String name, String owner, String repo, String path, Number size, String message, String base64Data, String sha, String branch, Boolean autoCreateBranch) {
+    public GithubContent(String name, String owner, String repo, String path, Number size, String message, String base64Data, String sha, String branch, String sourceBranch, Boolean autoCreateBranch) {
         this.name = name;
         this.owner = owner;
         this.repo = repo;
@@ -38,6 +39,7 @@ public class GithubContent extends ScmContent {
         this.base64Data = base64Data;
         this.branch = branch;
         this.sha = sha;
+        this.sourceBranch = sourceBranch;
         this.autoCreateBranch = autoCreateBranch;
         this.size = size;
     }
@@ -87,6 +89,11 @@ public class GithubContent extends ScmContent {
         return sha;
     }
 
+    @Exported(name = "sourceBranch", skipNull = true)
+    public String getSourceBranch() {
+        return sourceBranch;
+    }
+
     @Exported(name = "autoCreateBranch", skipNull = true)
     public Boolean isAutoCreateBranch() {
         return autoCreateBranch;
@@ -120,6 +127,7 @@ public class GithubContent extends ScmContent {
         private String base64Data;
         private String branch;
         private String sha;
+        private String sourceBranch;
         private Boolean autoCreateBranch;
         private Number size;
 
@@ -163,6 +171,11 @@ public class GithubContent extends ScmContent {
             return this;
         }
 
+        public Builder sourceBranch(String sourceBranch) {
+            this.sourceBranch = sourceBranch;
+            return this;
+        }
+
         public Builder autoCreateBranch(Boolean autoCreateBranch) {
             this.autoCreateBranch = autoCreateBranch;
             return this;
@@ -174,7 +187,7 @@ public class GithubContent extends ScmContent {
         }
 
         public GithubContent build() {
-            return new GithubContent(name, owner, repo, path, size, message, base64Data, sha, branch, autoCreateBranch);
+            return new GithubContent(name, owner, repo, path, size, message, base64Data, sha, branch, sourceBranch, autoCreateBranch);
         }
     }
 }

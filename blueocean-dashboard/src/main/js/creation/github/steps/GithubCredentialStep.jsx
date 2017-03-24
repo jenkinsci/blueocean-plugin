@@ -4,6 +4,8 @@ import { FormElement, TextInput } from '@jenkins-cd/design-language';
 
 import FlowStep from '../../flow2/FlowStep';
 import { GithubAccessTokenState } from '../GithubAccessTokenState';
+import { Button } from '../Button';
+
 
 const GITHUB_URL = 'https://github.com/settings/tokens/new?scopes=repo,read:user,user:email';
 
@@ -49,7 +51,18 @@ export default class GithubCredentialsStep extends React.Component {
         const errorMessage = this._getErrorMessage(manager.stateId);
 
         const disabled = manager.stateId === GithubAccessTokenState.SAVE_SUCCESS;
-        const buttonDisabled = manager.pendingValidation;
+
+        let result = null;
+
+        if (manager.pendingValidation) {
+            result = 'running';
+        } else if (manager.stateId === GithubAccessTokenState.SAVE_SUCCESS) {
+            result = 'success';
+        }
+
+        const status = {
+            result,
+        };
 
         return (
             <FlowStep {...this.props} className="github-credentials-step" disabled={disabled} title={title}>
@@ -61,7 +74,7 @@ export default class GithubCredentialsStep extends React.Component {
                 <FormElement errorMessage={errorMessage}>
                     <TextInput className="text-token" placeholder="Your Github access token" onChange={val => this._tokenChange(val)} />
 
-                    <button className="button-connect" disabled={buttonDisabled} onClick={() => this._createToken()}>Connect</button>
+                    <Button className="button-connect" status={status} onClick={() => this._createToken()}>Connect</Button>
                 </FormElement>
             </FlowStep>
         );

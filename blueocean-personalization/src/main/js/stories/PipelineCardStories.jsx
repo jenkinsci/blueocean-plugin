@@ -146,7 +146,12 @@ function pipelineCardRendererExamples() {
         <div style={outerStyle}>
             { showRenderer('SUCCESS', displayPath, branchText, commitText, timeText) }
             { showRenderer('PAUSED', displayPath + noise, branchText + noise, commitText + noise, timeText + noise) }
-
+            <div style={{ maxWidth: '800px' }}>
+                { showRenderer('SUCCESS', displayPath, 'Max-width 800px', commitText, timeText) }
+            </div>
+            <div style={{ minWidth: '800px' }}>
+                { showRenderer('SUCCESS', displayPath, 'Min-width 800px', commitText, timeText) }
+            </div>
         </div>
     );
 }

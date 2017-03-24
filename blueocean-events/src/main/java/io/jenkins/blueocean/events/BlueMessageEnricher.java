@@ -58,7 +58,7 @@ public class BlueMessageEnricher extends MessageEnricher {
         message.set(EventProps.Jenkins.jenkins_org, OrganizationImpl.INSTANCE.getName());
 
         String channelName = message.getChannelName();
-        if (channelName.equals(Events.JobChannel.NAME)) {
+        if (channelName.equals(Events.JobChannel.NAME) && message instanceof JobChannelMessage) {
             JobChannelMessage jobChannelMessage = (JobChannelMessage) message;
             Item jobChannelItem = jobChannelMessage.getJobChannelItem();
             Link jobUrl = LinkResolver.resolveLink(jobChannelItem);
