@@ -4,7 +4,8 @@ import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import io.jenkins.blueocean.auth.jwt.impl.JwtTokenVerifierImpl.JwtAuthentication;
 import org.acegisecurity.Authentication;
-import org.kohsuke.stapler.StaplerRequest;
+
+import javax.servlet.http.HttpServletRequest;
 
 /**
  * If an incoming HTTP request contains JWT token, pick that up, verifies the integrity, then
@@ -25,7 +26,7 @@ public abstract class JwtTokenVerifier implements ExtensionPoint {
      *      If the request does contain JWT token but it's invalid, in which case the request processing will
      *      fail.
      */
-    public abstract Authentication verify(StaplerRequest request);
+    public abstract Authentication verify(HttpServletRequest request);
 
     public static ExtensionList<JwtTokenVerifier> all(){
         return ExtensionList.lookup(JwtTokenVerifier.class);
