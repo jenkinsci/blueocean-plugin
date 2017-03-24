@@ -10,7 +10,6 @@ import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { buildPipelineUrl } from '../util/UrlUtils';
 import { ColumnFilter } from './ColumnFilter';
 import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
-import { NoRunsPlaceholder } from './placeholder/NoRunsPlaceholder';
 
 const { object, array, func, string, bool } = PropTypes;
 
@@ -46,23 +45,26 @@ EmptyState.propTypes = {
 
 @observer
 export class Activity extends Component {
-
     componentWillMount() {
         if (this.context.params) {
             const organization = this.context.params.organization;
             const pipeline = this.context.params.pipeline;
-            const branch = this.context.params.branch;
+            const branch = this._branchFromProps(this.props);
             this.pager = this.context.activityService.activityPager(organization, pipeline, branch);
         }
     }
 
     componentWillReceiveProps(newProps) {
-        if (this.props.params && this.props.params.branch !== newProps.params.branch) {
+        if (this.props.params && this._branchFromProps(this.props) !== this._branchFromProps(newProps)) {
             const organization = newProps.params.organization;
             const pipeline = newProps.params.pipeline;
-            const branch = newProps.params.branch;
+            const branch = this._branchFromProps(newProps);
             this.pager = this.context.activityService.activityPager(organization, pipeline, branch);
         }
+    }
+
+    _branchFromProps(props) {
+        return ((props.location || {}).query || {}).branch;
     }
 
     navigateToBranch(branch) {
@@ -71,7 +73,7 @@ export class Activity extends Component {
         const baseUrl = buildPipelineUrl(organization, pipeline);
         let activitiesURL = `${baseUrl}/activity`;
         if (branch) {
-            activitiesURL += '/' + encodeURIComponent(branch);
+            activitiesURL += '?branch=' + encodeURIComponent(branch);
         }
         this.context.router.push(activitiesURL);
     }
@@ -82,9 +84,10 @@ export class Activity extends Component {
         if (!pipeline) {
             return null;
         }
-        const { branch } = this.context.params;
+        const branch = this._branchFromProps(this.props);
+
         const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
-        const hasBranches = pipeline.branchNames && !!pipeline.branchNames.length;
+        const hasBranches = pipeline.branchNames && pipeline.branchNames.length;
 
         // Only show the Run button for non multi-branch pipelines.
         // Multi-branch pipelines have the Run/play button beside them on
@@ -96,12 +99,7 @@ export class Activity extends Component {
                 return <NoBranchesPlaceholder t={t} />;
             }
             if (!runs || !runs.length) {
-                if (hasBranches) {
-                    const { params } = this.context;
-                    const branchesUrl = buildPipelineUrl(params.organization, params.pipeline, 'branches');
-                    return <NoRunsPlaceholder t={t} linkUrl={branchesUrl} />;
-                }
-                // TOOD: what do we here?
+                return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} t={t} />);
             }
         }
 
@@ -205,6 +203,7 @@ Activity.propTypes = {
     locale: string,
     t: func,
     params: object,
+    location: object.isRequired,
 };
 
 export default Activity;
