@@ -45,7 +45,8 @@ export class Pipelines extends Component {
                 { organization }
             </Link> : '';
 
-        const noPipelines = !this.pager.pending && (!pipelines || !pipelines.length);
+        const showPipelineList = !this.pager.pending && pipelines && pipelines.length > 0;
+        const showEmptyState = !this.pager.pending && (!pipelines || !pipelines.length);
 
         const headers = [
             { label: translate('home.pipelineslist.header.name', { defaultValue: 'Name' }), className: 'name-col' },
@@ -72,8 +73,8 @@ export class Pipelines extends Component {
                         <CreatePipelineLink />
                     </Extensions.Renderer>
                 </ContentPageHeader>
-                { noPipelines && <DashboardPlaceholder t={translate} /> }
-                { !noPipelines &&
+                { showEmptyState && <DashboardPlaceholder t={translate} /> }
+                { showPipelineList &&
                 <main>
                     <article>
                         { /* TODO: need to adjust Extensions to make store available */ }
