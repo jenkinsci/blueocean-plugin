@@ -7,7 +7,7 @@ import { observer } from 'mobx-react';
 import PullRequest from './PullRequest';
 import { RunsRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
-import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
+import { NoPullRequestsPlaceholder } from './placeholder/NoPullRequestsPlaceholder';
 
 const { object, string, func } = PropTypes;
 
@@ -68,7 +68,7 @@ export class PullRequests extends Component {
         }
 
         if (!this.pager.pending && !this.pager.data.length) {
-            return <NoBranchesPlaceholder t={t} />;
+            return <NoPullRequestsPlaceholder t={t} />;
         }
 
         const head = 'pipelinedetail.pullrequests.header';
