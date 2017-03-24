@@ -2,7 +2,6 @@ package io.jenkins.blueocean.auth.jwt;
 
 import hudson.ExtensionPoint;
 import hudson.model.UnprotectedRootAction;
-import io.jenkins.blueocean.auth.jwt.impl.JwtTokenImpl;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.GET;
