@@ -1,12 +1,17 @@
 package io.jenkins.blueocean.auth.jwt.impl;
 
 import hudson.Extension;
+import hudson.model.User;
 import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStore;
 import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStoreFactory;
+import io.jenkins.blueocean.auth.jwt.JwtPublicKeyProvider;
 import io.jenkins.blueocean.auth.jwt.JwtTokenVerifier;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
+import org.acegisecurity.GrantedAuthority;
+import org.acegisecurity.providers.AbstractAuthenticationToken;
+import org.acegisecurity.userdetails.UserDetails;
 import org.jose4j.jwt.JwtClaims;
 import org.jose4j.jwt.MalformedClaimException;
 import org.jose4j.jwt.NumericDate;
@@ -21,6 +26,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.security.PublicKey;
+import java.security.interfaces.RSAPublicKey;
+import java.util.Collections;
 import java.util.Map;
 
 import static org.jose4j.jws.AlgorithmIdentifiers.RSA_USING_SHA256;
@@ -29,9 +37,9 @@ import static org.jose4j.jws.AlgorithmIdentifiers.RSA_USING_SHA256;
  * @author Kohsuke Kawaguchi
  */
 @Extension(ordinal = -9999)
-public final class JwtAuthenticationToken extends JwtTokenVerifier {
+public class JwtTokenVerifierImpl extends JwtTokenVerifier {
 
-    private static final Logger logger = LoggerFactory.getLogger(JwtAuthenticationToken.class);
+    private static final Logger logger = LoggerFactory.getLogger(JwtTokenVerifierImpl.class);
 
     @Override
     public Authentication verify(StaplerRequest request) {
@@ -44,13 +52,16 @@ public final class JwtAuthenticationToken extends JwtTokenVerifier {
             }else{
 
                 JwtAuthenticationStore authenticationStore = getJwtStore(claims.getClaimsMap());
-                return authenticationStore.getAuthentication(claims.getClaimsMap());
+                Authentication authentication = authenticationStore.getAuthentication(claims.getClaimsMap());
+                if(authentication == null){ //fallback?
+                    return new JwtAuthentication(subject);
+                }
+                return authentication;
             }
         } catch (MalformedClaimException e) {
             logger.error(String.format("Error reading sub header for token %s",claims.getRawJson()),e);
             throw new ServiceException.UnauthorizedException("Invalid JWT token: malformed claim");
         }
-
     }
 
     private  JwtClaims validate(StaplerRequest request) {
@@ -74,22 +85,18 @@ public final class JwtAuthenticationToken extends JwtTokenVerifier {
                 throw new ServiceException.UnauthorizedException("Invalid JWT token");
             }
 
-            JwtTokenImpl.JwtRsaDigitalSignatureKey key = new JwtTokenImpl.JwtRsaDigitalSignatureKey(kid);
-            try {
-                if(!key.exists()){
-                    throw new ServiceException.NotFoundException(String.format("kid %s not found", kid));
-                }
-            } catch (IOException e) {
-                logger.error(String.format("Error reading RSA key for id %s: %s",kid,e.getMessage()),e);
-                throw new ServiceException.UnexpectedErrorException("Unexpected error: "+e.getMessage(), e);
+            JwtPublicKeyProvider provider = JwtPublicKeyProvider.first(kid);
+            if(provider == null){
+                throw new ServiceException.UnexpectedErrorException("No JWT publick key provider found");
             }
+            PublicKey publicKey = provider.getPublicKey(kid);
 
             JwtConsumer jwtConsumer = new JwtConsumerBuilder()
                 .setRequireExpirationTime() // the JWT must have an expiration time
                 .setRequireJwtId()
                 .setAllowedClockSkewInSeconds(30) // allow some leeway in validating time based claims to account for clock skew
                 .setRequireSubject() // the JWT must have a subject claim
-                .setVerificationKey(key.getPublicKey()) // verify the sign with the public key
+                .setVerificationKey(publicKey) // verify the sign with the public key
                 .build(); // create the JwtConsumer instance
 
             try {
@@ -116,6 +123,23 @@ public final class JwtAuthenticationToken extends JwtTokenVerifier {
         }
     }
 
+    @Extension(ordinal = -9999)
+    public static class PublicKeyProviderImpl extends JwtPublicKeyProvider{
+        @Override
+        public RSAPublicKey getPublicKey(String kid) {
+            JwtTokenImpl.JwtRsaDigitalSignatureKey key = new JwtTokenImpl.JwtRsaDigitalSignatureKey(kid);
+            try {
+                if(!key.exists()){
+                    throw new ServiceException.NotFoundException(String.format("kid %s not found", kid));
+                }
+            } catch (IOException e) {
+                logger.error(String.format("Error reading RSA key for id %s: %s",kid,e.getMessage()),e);
+                throw new ServiceException.UnexpectedErrorException("Unexpected error: "+e.getMessage(), e);
+            }
+            return key.getPublicKey();
+        }
+    }
+
     private static JwtAuthenticationStore getJwtStore(Map<String,Object> claims){
         JwtAuthenticationStore jwtAuthenticationStore=null;
         for(JwtAuthenticationStoreFactory factory: JwtAuthenticationStoreFactory.all()){
@@ -131,5 +155,42 @@ public final class JwtAuthenticationToken extends JwtTokenVerifier {
 
         //none found, lets use SimpleJwtAuthenticationStore
         return jwtAuthenticationStore;
+    }
+
+    public static class JwtAuthentication extends AbstractAuthenticationToken{
+        private final String name;
+        private final GrantedAuthority[] grantedAuthorities;
+
+        public JwtAuthentication(String subject) {
+            User user = User.get(subject, false, Collections.emptyMap());
+            if (user == null) {
+                throw new ServiceException.UnauthorizedException("Invalid JWT token: subject " + subject + " not found");
+            }
+            //TODO: UserDetails call is expensive, encode it in token and create UserDetails from it
+            UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(user.getId());
+            this.grantedAuthorities = d.getAuthorities();
+            this.name = subject;
+            super.setAuthenticated(true);
+        }
+
+        @Override
+        public Object getCredentials() {
+            return "";
+        }
+
+        @Override
+        public Object getPrincipal() {
+            return name;
+        }
+
+        @Override
+        public String getName() {
+            return name;
+        }
+
+        @Override
+        public GrantedAuthority[] getAuthorities() {
+            return grantedAuthorities;
+        }
     }
 }

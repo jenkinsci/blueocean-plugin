@@ -20,6 +20,8 @@ import java.util.UUID;
  * @author Vivek Pandey
  */
 public abstract class JwtToken implements HttpResponse, ExtensionPoint{
+    public static final String X_BLUEOCEAN_JWT="X-BLUEOCEAN-JWT";
+
     /**
      * JWT header
      */
@@ -30,11 +32,6 @@ public abstract class JwtToken implements HttpResponse, ExtensionPoint{
      * JWT Claim
      */
     public final JSONObject claim = new JSONObject();
-
-    /**
-     * @return Gives HTTP header name to return generated JWT token
-     */
-    public abstract @Nonnull String getJwtHttpResponseHeader();
 
     /**
      * Generates base64 representation of JWT token sign using "RS256" algorithm
@@ -69,7 +66,7 @@ public abstract class JwtToken implements HttpResponse, ExtensionPoint{
     @Override
     public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
         rsp.setStatus(200);
-        rsp.addHeader(getJwtHttpResponseHeader(), sign());
+        rsp.addHeader(X_BLUEOCEAN_JWT, sign());
     }
 
     public static @Nonnull ExtensionList<JwtToken> all(){
