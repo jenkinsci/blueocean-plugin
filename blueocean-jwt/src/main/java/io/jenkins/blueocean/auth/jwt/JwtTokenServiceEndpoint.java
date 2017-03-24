@@ -11,7 +11,6 @@ import javax.annotation.Nonnull;
  *
  * @author Vivek Pandey
  * @see JwtAuthenticationService
- * @see JwkService
  */
 public abstract class JwtTokenServiceEndpoint implements ExtensionPoint{
     /**
