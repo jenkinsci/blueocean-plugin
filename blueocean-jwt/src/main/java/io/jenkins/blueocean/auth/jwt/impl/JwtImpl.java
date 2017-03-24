@@ -35,18 +35,9 @@ public class JwtImpl extends JwtAuthenticationService {
 
     @Override
     public JwtToken getToken(@Nullable @QueryParameter("expiryTimeInMins") Integer expiryTimeInMins, @Nullable @QueryParameter("maxExpiryTimeInMins") Integer maxExpiryTimeInMins) {
-        String t = System.getProperty("EXPIRY_TIME_IN_MINS");
-        long expiryTime=DEFAULT_EXPIRY_IN_SEC;
-        if(t!= null){
-            expiryTime = Integer.parseInt(t);
-        }
+        long expiryTime= Long.getLong("EXPIRY_TIME_IN_MINS",DEFAULT_EXPIRY_IN_SEC);
 
-        int maxExpiryTime = DEFAULT_MAX_EXPIRY_TIME_IN_MIN;
-
-        t = System.getProperty("MAX_EXPIRY_TIME_IN_MINS");
-        if(t!= null){
-            maxExpiryTime = Integer.parseInt(t);
-        }
+        int maxExpiryTime = Integer.getInteger("MAX_EXPIRY_TIME_IN_MINS",DEFAULT_MAX_EXPIRY_TIME_IN_MIN);
 
         if(maxExpiryTimeInMins != null){
             maxExpiryTime = maxExpiryTimeInMins;
