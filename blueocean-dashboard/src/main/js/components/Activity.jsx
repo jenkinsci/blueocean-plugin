@@ -10,6 +10,7 @@ import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { buildPipelineUrl } from '../util/UrlUtils';
 import { ColumnFilter } from './ColumnFilter';
 import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
+import { NoRunsPlaceholder } from './placeholder/NoRunsPlaceholder';
 
 const { object, array, func, string, bool } = PropTypes;
 
@@ -87,7 +88,7 @@ export class Activity extends Component {
         const branch = this._branchFromProps(this.props);
 
         const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
-        const hasBranches = pipeline.branchNames && pipeline.branchNames.length;
+        const hasBranches = pipeline.branchNames && !!pipeline.branchNames.length;
 
         // Only show the Run button for non multi-branch pipelines.
         // Multi-branch pipelines have the Run/play button beside them on
@@ -99,7 +100,11 @@ export class Activity extends Component {
                 return <NoBranchesPlaceholder t={t} />;
             }
             if (!runs || !runs.length) {
-                return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} t={t} />);
+                if (hasBranches) {
+                    const { params } = this.context;
+                    const branchesUrl = buildPipelineUrl(params.organization, params.pipeline, 'branches');
+                    return <NoRunsPlaceholder t={t} linkUrl={branchesUrl} />;
+                }
             }
         }
 
