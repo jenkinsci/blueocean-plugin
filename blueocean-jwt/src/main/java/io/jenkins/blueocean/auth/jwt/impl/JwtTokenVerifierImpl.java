@@ -26,11 +26,10 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.security.interfaces.RSAPublicKey;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.jose4j.jws.AlgorithmIdentifiers.RSA_USING_SHA256;
+import static org.jose4j.jws.AlgorithmIdentifiers.*;
 
 /**
  * @author Kohsuke Kawaguchi

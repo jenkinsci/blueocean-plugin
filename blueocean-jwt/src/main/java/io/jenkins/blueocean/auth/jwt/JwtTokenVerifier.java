@@ -2,21 +2,28 @@ package io.jenkins.blueocean.auth.jwt;
 
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
+import io.jenkins.blueocean.auth.jwt.impl.JwtTokenVerifierImpl.JwtAuthentication;
 import org.acegisecurity.Authentication;
 import org.kohsuke.stapler.StaplerRequest;
 
 /**
- * Verifier for JWT token
+ * If an incoming HTTP request contains JWT token, pick that up, verifies the integrity, then
+ * convert that into {@link JwtAuthentication} so that the rest of Jenkins can process this request
+ * with proper identity of the caller.
  *
  * @author Vivek Pandey
  */
 public abstract class JwtTokenVerifier implements ExtensionPoint {
-
     /**
-     * On successful verification returns Authentication object representing authentication attached to this JWT token
      *
-     * @param request {@link StaplerRequest} to verify
-     * @return null if verification fails, an {@link Authentication} instance from JWT token
+     * @param request
+     *      Incoming HTTP request that may (or may not) contains JWT token that we are trying to process
+     * @return
+     *      null if the request doesn't contain JWT token, in which case the HTTP request will proceed normally
+     *      (for example the HTTP session might establish the identity of the user.)
+     * @throws Exception
+     *      If the request does contain JWT token but it's invalid, in which case the request processing will
+     *      fail.
      */
     public abstract Authentication verify(StaplerRequest request);
 
