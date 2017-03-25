@@ -551,6 +551,7 @@ public abstract class PipelineBaseTest{
                 if(request instanceof HttpRequestWithBody && data != null) {
                     ((HttpRequestWithBody)request).body(data);
                 }
+
                 HttpResponse<T> response = request.asObject(clzzz);
                 Assert.assertEquals(expectedStatus, response.getStatus());
                 return response.getBody();

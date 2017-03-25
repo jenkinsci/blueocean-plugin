@@ -90,7 +90,7 @@ class RunDetailsHeader extends Component {
             </h1>
         );
 
-        const branchUrl = `${buildPipelineUrl(run.organization, pipeline.fullName)}/activity/${run.pipeline}`;
+        const branchUrl = `${buildPipelineUrl(run.organization, pipeline.fullName)}/activity?branch=${run.pipeline}`;
         const labelClassName = run.pullRequest ? 'pullRequest' : '';
 
         const branchSourceDetails = (

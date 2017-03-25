@@ -39,14 +39,7 @@ export default class GitCompletedStep extends React.Component {
             title = t('creation.git.step3.title_pipeline_create');
         } else if (stateId === STATE.COMPLETE) {
             percentage = 100;
-            content = (
-                <button
-                  className="button-open-pipeline"
-                  onClick={() => this.finish()}
-                >
-                    {t('creation.git.step3.button_open')}
-                </button>
-            );
+            setTimeout(() => this.finish(), 2000);
             status = StepStatus.COMPLETE;
         }
 
