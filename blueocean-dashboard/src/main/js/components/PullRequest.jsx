@@ -49,7 +49,7 @@ export default class PullRequest extends Component {
         const result = latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
         const { fullName, organization } = contextPipeline;
         const runDetailsUrl = buildRunDetailsUrl(organization, fullName, decodeURIComponent(latestRun.pipeline), latestRun.id, 'pipeline');
-        const historyButtonUrl = `${buildPipelineUrl(organization, contextPipeline.name)}/activity/${pr.name}`;
+        const historyButtonUrl = `${buildPipelineUrl(organization, contextPipeline.name)}/activity?branch=${pr.name}`;
 
         return (
             <CellRow linkUrl={runDetailsUrl} id={`${name}-${latestRun.id}`}>
