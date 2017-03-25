@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.auth.jwt.impl;
 
 import hudson.Extension;
+import hudson.init.Initializer;
 import hudson.util.PluginServletFilter;
 import io.jenkins.blueocean.auth.jwt.JwtTokenVerifier;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
@@ -31,8 +32,9 @@ public class JwtAuthenticationFilter implements Filter {
      */
     private static final String JWT_TOKEN_VALIDATED = JwtAuthenticationFilter.class.getName()+".validated";
 
-    public JwtAuthenticationFilter() throws ServletException {
-        PluginServletFilter.addFilter(this);
+    @Initializer(fatal=false)
+    public static void init() throws ServletException {
+        PluginServletFilter.addFilter(new JwtAuthenticationFilter());
     }
 
     @Override
