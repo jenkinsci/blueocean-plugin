@@ -100,7 +100,7 @@ export default class Branches extends Component {
                     />
 
                     <div className="history-button-component">
-                        <Link to={historyButtonUrl} className="materials-icons">
+                        <Link to={historyButtonUrl} className="materials-icons history-button">
                             <Icon size={24} icon="history" />
                         </Link>
                     </div>
