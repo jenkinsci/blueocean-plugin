@@ -22,4 +22,4 @@ IntegerPropertyInput.propTypes = {
     onChange: React.PropTypes.func,
 };
 
-IntegerPropertyInput.dataTypes = [ 'byte', 'short', 'int', 'long', 'java.lang.Byte', 'java.lang.Short', 'java.lang.Integer', 'java.lang.Long', 'java.math.BigInterger' ];
+IntegerPropertyInput.dataTypes = [ 'byte', 'short', 'int', 'long', 'java.lang.Byte', 'java.lang.Short', 'java.lang.Integer', 'java.lang.Long', 'java.math.BigInteger' ];
