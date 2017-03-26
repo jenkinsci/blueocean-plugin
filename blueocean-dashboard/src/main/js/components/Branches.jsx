@@ -15,6 +15,19 @@ import { Link } from 'react-router';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
+function sortByOrdinal(extensions, done) {
+    const sorted = extensions.sort((a, b) => {
+        if (a.ordinal || b.ordinal) {
+            if (!a.ordinal) return 1;
+            if (!b.ordinal) return -1;
+            if (a.ordinal < b.ordinal) return -1;
+            return 1;
+        }
+        return a.pluginId.localeCompare(b.pluginId);
+    });
+    done(sorted);
+}
+
 function noRun(branch, openRunDetails, t, store) {
     return (<tr>
                 <td></td>
@@ -31,6 +44,7 @@ function noRun(branch, openRunDetails, t, store) {
                     />
                     <Extensions.Renderer
                       extensionPoint="jenkins.pipeline.branches.list.action"
+                      filter={sortByOrdinal}
                       pipeline={branch }
                       store={store}
                       {...t}
@@ -107,6 +121,7 @@ export default class Branches extends Component {
 
                     <Extensions.Renderer
                       extensionPoint="jenkins.pipeline.branches.list.action"
+                      filter={sortByOrdinal}
                       pipeline={branch }
                       store={this.context.store}
                       {...t}

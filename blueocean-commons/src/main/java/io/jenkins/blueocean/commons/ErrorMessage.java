@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -43,12 +44,10 @@ public class ErrorMessage {
     }
 
     @JsonIgnore
-    public ErrorMessage addAll(List<Error> errors){
+    public ErrorMessage addAll(Collection<Error> errors){
         this.errors.addAll(errors);
         return this;
     }
-
-
 
     @JsonProperty("errors")
     public List<Error> getErrors(){

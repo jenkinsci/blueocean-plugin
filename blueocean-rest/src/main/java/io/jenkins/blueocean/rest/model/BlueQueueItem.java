@@ -22,6 +22,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_QUEUE_ITEM;
 public abstract class BlueQueueItem extends Resource {
 
     public static final String QUEUED_TIME = "queuedTime";
+    private static final String CAUSE_OF_BLOCKAGE = "causeOfBlockage";
 
     /**
      * @return Id of the item in the queue. Much be unique in the queue of a pipeline
@@ -60,4 +61,11 @@ public abstract class BlueQueueItem extends Resource {
      */
     @WebMethod(name="") @DELETE
     public abstract void delete();
+
+    /**
+     * @return Gives reason of blockage if run is in QUEUED state
+     */
+    @Exported(name = CAUSE_OF_BLOCKAGE)
+    public abstract String getCauseOfBlockage();
+
 }

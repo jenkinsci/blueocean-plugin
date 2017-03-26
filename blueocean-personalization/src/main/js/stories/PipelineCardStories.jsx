@@ -1,3 +1,4 @@
+/* eslint-disable */
 /**
  * Created by cmeyers on 6/28/16.
  */
@@ -7,10 +8,16 @@ import moment from 'moment';
 import { DEBUG } from '@jenkins-cd/blueocean-core-js';
 DEBUG.enableMocksForI18n();
 
-import { PipelineCard } from '../components/PipelineCard';
+import { PipelineCard, PipelineCardRenderer } from '../components/PipelineCard';
 
-const style = { padding: '10px' };
-const style2 = { paddingBottom: '10px' };
+const outerStyle = {
+    padding: '15px',
+    maxWidth: '1200px'
+};
+
+const cardWrapStyle = {
+    paddingBottom: '10px'
+};
 
 const pipeline = {
     _links: {
@@ -28,6 +35,8 @@ const pipeline = {
     favorite: true,
     latestRun: {
         result: 'UNKNOWN',
+        state: 'UNKNOWN',
+        commitId: '447d8e1',
     },
 };
 
@@ -53,41 +62,122 @@ Context.childContextTypes = {
     config: PropTypes.object,
 };
 
+const statuses = [
+    'SUCCESS',
+    'QUEUED',
+    'RUNNING',
+    'FAILURE',
+    'ABORTED',
+    'UNSTABLE',
+    'NOT_BUILT',
+    'UNKNOWN'
+];
+
+// Dummy translation
+const t = (key, options) => options && options.defaultValue || key;
+t.lng = 'EN';
+
+// Some times to show
+const startTime = moment().subtract(180, 'seconds').toISOString();
+const endTime = moment().subtract(45, 'seconds').toISOString();
+const estimatedDuration = 1000 * 60 * 5; // 5 mins
 
 storiesOf('PipelineCard', module)
     .addDecorator(story => <Context>{story()}</Context>)
-    .add('all states', () => {
-        const statuses = 'SUCCESS,QUEUED,RUNNING,FAILURE,ABORTED,UNSTABLE,NOT_BUILT,UNKNOWN'.split(',');
+    .add('PipelineCardRenderer', pipelineCardRendererExamples)
+    .add('PipelineCard', pipelineCardExamples)
+;
 
-        const startTime = moment().subtract(60, 'seconds').toISOString();
-        const estimatedDuration = 1000 * 60 * 5; // 5 mins
+function makePipelineData(state) {
+    const newPipeline = JSON.parse(JSON.stringify(pipeline));
+    newPipeline.latestRun.result = state;
 
-        const running = JSON.parse(JSON.stringify(pipeline));
-        running.latestRun.estimatedDuration = estimatedDuration;
-        running.latestRun.startTime = startTime;
-        running.latestRun.state = 'RUNNING';
+    newPipeline.permissions = {};
+    newPipeline.permissions.stop = true;
+    newPipeline.permissions.start = true;
 
-        return (
-            <div style={style}>
-            { statuses.map(state => {
-                const clone = JSON.parse(JSON.stringify(pipeline));
-                clone.latestRun.state = state;
+    if (['SUCCESS', 'RUNNING', 'FAILURE', 'ABORTED', 'UNSTABLE'].indexOf(state) !== -1) {
+        newPipeline.latestRun.startTime = startTime;
+        newPipeline.latestRun.estimatedDuration = estimatedDuration;
+    }
 
-                return (
-                    <div key={state} style={style2}>
+    if (['SUCCESS', 'FAILURE', 'ABORTED', 'UNSTABLE'].indexOf(state) !== -1) {
+        newPipeline.latestRun.endTime = endTime;
+        newPipeline.latestRun.state = 'FINISHED';
+    }
+
+    return newPipeline;
+}
+
+function pipelineCardExamples() {
+    let key = 111;
+    return (
+        <div style={outerStyle}>
+            {
+                statuses.map(makePipelineData).map(pipeline => (
+                    <div key={key++} style={cardWrapStyle}>
                         <PipelineCard
-                          runnable={clone}
-                          onRunClick={action('run')}
-                          onFavoriteToggle={action('toggle')}
+                            favorite
+                            runnable={pipeline}
+                            onRunClick={action('run')}
+                            onFavoriteToggle={action('toggle')}
+                            t={t}
+                            locale="EN"
                         />
                     </div>
-                );
-            }) }
-                <PipelineCard
-                  runnable={running}
-                  onRunClick={action('run')}
-                  onFavoriteToggle={action('toggle')}
-                />
+                ))
+            }
+        </div>
+    );
+}
+
+function pipelineCardRendererExamples() {
+
+    document.body.style.backgroundColor = '#ccc'; // To see the white contents when things go wrong :D
+
+    const displayPath = 'Build name/with/many/and-some-super-super-really-flaming-long-like-you-wouldnt-believe-it/nested/slashes';
+    const branchText = 'Branch name';
+    const commitText = 'C0MM17H45H';
+    const timeText = 'Some time ago';
+    const noise = ' Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce ullamcorper rutrum ipsum nec ' +
+        'mollis. Suspendisse imperdiet nisi eget convallis condimentum.';
+
+    return (
+        <div style={outerStyle}>
+            { showRenderer('SUCCESS', displayPath, branchText, commitText, timeText) }
+            { showRenderer('PAUSED', displayPath + noise, branchText + noise, commitText + noise, timeText + noise) }
+            <div style={{ maxWidth: '800px' }}>
+                { showRenderer('SUCCESS', displayPath, 'Max-width 800px', commitText, timeText) }
             </div>
-        );
-    });
+            <div style={{ minWidth: '800px' }}>
+                { showRenderer('SUCCESS', displayPath, 'Min-width 800px', commitText, timeText) }
+            </div>
+        </div>
+    );
+}
+
+function showRenderer(status, displayPath, branchText, commitText, timeText) {
+
+    const clone = JSON.parse(JSON.stringify(pipeline));
+    clone.latestRun.state = status;
+
+    const favoriteChecked = !!Math.round(Math.random());
+    const runnableItem = clone;
+    const latestRun = JSON.parse(JSON.stringify(clone.latestRun));
+
+    return (
+        <div style={cardWrapStyle}>
+            <PipelineCardRenderer status={status}
+                                  startTime={startTime}
+                                  estimatedDuration={estimatedDuration}
+                                  activityUrl="/job/activities"
+                                  displayPath={displayPath}
+                                  branchText={branchText}
+                                  commitText={commitText}
+                                  timeText={timeText}
+                                  favoriteChecked={favoriteChecked}
+                                  runnableItem={runnableItem}
+                                  latestRun={latestRun} />
+        </div>
+    );
+}
