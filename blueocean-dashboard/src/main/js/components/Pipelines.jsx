@@ -101,7 +101,7 @@ export class Pipelines extends Component {
                             }
                         </Table>
 
-                        { pipelines && <ShowMoreButton pager={this.pager}/> }
+                        { pipelines && <ShowMoreButton pager={this.pager} /> }
                     </article>
                 </main>
                 }
