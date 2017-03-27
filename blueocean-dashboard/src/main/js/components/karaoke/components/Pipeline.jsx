@@ -31,6 +31,11 @@ export default class Pipeline extends Component {
         this.listener.ssePipeline = sseConnection.subscribe('pipeline', this.sseEventHandler);
         this.listener.sseJob = sseConnection.subscribe('job', this.sseEventHandler);
     }
+
+    /**
+     * Core logic to update and re-fetch data
+     * @param nextProps
+     */
     componentWillReceiveProps(nextProps) {
         // karaoke has changed state?
         if (!nextProps.augmenter.karaoke) {
@@ -62,6 +67,9 @@ export default class Pipeline extends Component {
             this.pager.fetchNodes({ node: nextProps.params.node });
         }
     }
+    /**
+     * Need to remove the listener to prevent memory leaks
+     */
     componentWillUnmount() {
         this.stopKaraoke();
         if (this.listener.ssePipeline) {
