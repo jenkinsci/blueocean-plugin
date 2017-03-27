@@ -16,9 +16,9 @@ export class Step extends Component {
         const { augmenter, step } = props;
         const focused = this.isFocused(props);
         // if we are called with anchor that means that we need to fetch the log to display it
-        const { isFocused, ...rest } = step;
+        const { isFocused, ...rest } = step; // this will remove isFocused from the rest, so we can pass the updated state
         this.pager = KaraokeService.logPager(augmenter, { rest, isFocused: focused });
-        logger.debug('isFocused initial', focused);
+        logger.debug('isFocused initial', isFocused, 'after', focused);
         this.state = {
             expanded: focused,
         };
