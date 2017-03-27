@@ -48,7 +48,7 @@ export default class GithubChooseDiscoverStep extends React.Component {
                     <button className={`monochrome ${option1Class}`} onClick={() => this.selectDiscover(false)}>
                         <h1 className="title">New Pipeline <span>&mdash; Recommended</span></h1>
                         <p className="text">
-                            Create a Pipeline from a single Repository.
+                            Create a Pipeline from a single repository.
                         </p>
                     </button>
 
