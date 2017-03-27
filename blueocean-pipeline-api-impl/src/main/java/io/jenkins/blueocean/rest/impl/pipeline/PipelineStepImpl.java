@@ -272,18 +272,7 @@ public class PipelineStepImpl extends BluePipelineStep {
         }
     }
     private boolean canSubmit(InputStep inputStep){
-
-        Authentication a = Jenkins.getAuthentication();
-        String submitter = inputStep.getSubmitter();
-        if (submitter==null || a.getName().equals(submitter)) {
-            return true;
-        }
-        for (GrantedAuthority ga : a.getAuthorities()) {
-            if (ga.getAuthority().equals(submitter)) {
-                return true;
-            }
-        }
-        return false;
+        return inputStep.canSubmit();
     }
 
     @Override
