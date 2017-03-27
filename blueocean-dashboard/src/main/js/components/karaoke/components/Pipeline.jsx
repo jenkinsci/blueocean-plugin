@@ -120,7 +120,7 @@ export default class Pipeline extends Component {
             case 'pipeline_step': {
                 logger.debug('sse event step fetchCurrentSteps', jenkinsEvent);
                 debounce(() => {
-                    logger.debug('should i sse fetch it or not?', this.karaoke);
+                    logger.debug('sse fetch it', this.karaoke);
                     this.pager.fetchCurrentStepUrl();
                 }, 200)();
                 // prevent flashing of stages and nodes
@@ -134,7 +134,7 @@ export default class Pipeline extends Component {
             case 'pipeline_stage': {
                 logger.debug('sse event block starts refetchNodes', jenkinsEvent);
                 debounce(() => {
-                    logger.debug('should i sse fetch it or not?', this.karaoke);
+                    logger.debug('sse fetch it', this.karaoke);
                     this.pager.fetchNodes({});
                 }, 200)();
                 // prevent flashing of stages and nodes
