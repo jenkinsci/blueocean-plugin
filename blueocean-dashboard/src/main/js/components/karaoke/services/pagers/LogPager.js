@@ -3,7 +3,7 @@ import { logging } from '@jenkins-cd/blueocean-core-js';
 
 import { KaraokeApi } from '../../index';
 
-const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pager');
+const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pager.Step');
 
 /**
  * The pager fetches pages of data from the BlueOcean api. It fetches pages of data, then
@@ -107,7 +107,7 @@ export class LogPager {
                     }, 1000);
                 }
             })).catch(err => {
-                logger.error('Error fetching page', err);
+                logger.error('Error fetching page - fetch log', err);
                 action('set error', () => { this.error = err; });
             });
     }
@@ -144,7 +144,7 @@ export class LogPager {
                     }, 1000);
                 }
             })).catch(err => {
-                logger.error('Error fetching page', err);
+                logger.error('Error fetching page - follow log', err);
                 action('set error', () => { this.error = err; });
             });
     }

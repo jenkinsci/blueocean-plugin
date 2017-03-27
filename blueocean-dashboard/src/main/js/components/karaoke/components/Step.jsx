@@ -14,8 +14,10 @@ export class Step extends Component {
     constructor(props) {
         super(props);
         const { augmenter, step } = props;
-        this.pager = KaraokeService.logPager(augmenter, step);
         const focused = this.isFocused(props);
+        // if we are called with anchor that means that we need to fetch the log to display it
+        const { isFocused, ...rest } = step;
+        this.pager = KaraokeService.logPager(augmenter, { rest, isFocused: focused });
         logger.debug('isFocused initial', focused);
         this.state = {
             expanded: focused,
@@ -24,22 +26,13 @@ export class Step extends Component {
 
     /**
      * Mainly implemented because
-     * - if we are called with anchor that means that we need to fetch the log to display it
      * - we need to create a reference time for running jobs
      */
     componentWillMount() {
-        const { step, location } = this.props;
-        const start = location && location.query ? location.query.start : undefined;
+        const { step } = this.props;
         // needed for running steps as reference
         this.durationMillis = (this.durationHarmonize(step)).durationMillis;
         logger.debug('durationMillis mounting', this.durationMillis);
-        const isFocused = this.isFocused(this.props);
-        if ((!step.isInputStep && isFocused) &&
-            (this.pager.log === undefined || (this.pager.log && !this.pager.log.data))) {
-            const cfg = { url: step.logUrl, start };
-            logger.debug('getLogForStep called will fetch now with cfg.', cfg);
-            this.pager.fetchLog(cfg);
-        }
     }
     /**
      * Mainly implemented due to fetch full log `start=0` for a step

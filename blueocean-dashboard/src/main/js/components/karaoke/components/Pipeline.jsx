@@ -128,6 +128,7 @@ export default class Pipeline extends Component {
                 break;
             }
             case 'pipeline_end':
+            case 'pipeline_start':
             case 'job_run_ended':
             case 'pipeline_block_end':
             case 'pipeline_stage': {

@@ -4,7 +4,7 @@ import { logging } from '@jenkins-cd/blueocean-core-js';
 import { prefixIfNeeded } from '../../urls/prefixIfNeeded';
 import { KaraokeApi } from '../../index';
 
-const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.PipelinePager');
+const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pager.Pipeline');
 
 /**
  * The pager fetches pages of data from the BlueOcean api. It fetches pages of data, then
