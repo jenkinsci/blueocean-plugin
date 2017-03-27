@@ -48,9 +48,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/logging/-/logging-0.0.6.tgz"
     },
     "@jenkins-cd/preferences": {
-      "version": "0.0.2",
-      "from": "@jenkins-cd/preferences@0.0.2",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/preferences/-/preferences-0.0.2.tgz"
+      "version": "0.0.3",
+      "from": "@jenkins-cd/preferences@0.0.3",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/preferences/-/preferences-0.0.3.tgz"
     },
     "@jenkins-cd/react-material-icons": {
       "version": "1.0.0",
