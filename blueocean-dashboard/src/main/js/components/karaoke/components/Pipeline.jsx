@@ -195,11 +195,11 @@ export default class Pipeline extends Component {
             location.pathname = nextPath;
             logger.debug('redirecting now to:', location.pathname);
             // see whether we need to update the state
-            if ((nextNode.state === 'FINISHED') && this.props.augmenter.karaoke) {
+            if (nextNode.state === 'FINISHED' && this.karaoke) {
                 logger.debug('turning off karaoke since we do not need it anymore because focus is on a finished node.');
-                this.props.augmenter.setKaraoke(false);
+                this.stopKaraoke();
             }
-            if (nextNode.state !== 'FINISHED' && !this.props.augmenter.karaoke) {
+            if (nextNode.state !== 'FINISHED' && !this.karaoke) {
                 logger.debug('turning on karaoke since we need it because we are focusing on a new node.');
                 this.props.augmenter.setKaraoke(true);
             }

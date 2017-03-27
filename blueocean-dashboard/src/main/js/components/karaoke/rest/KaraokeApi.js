@@ -87,10 +87,6 @@ export class KaraokeApi {
         return Fetch.fetchJSON(href, { fetchOptions })
             .then(FetchFunctions.checkStatus)
             .then(data => capabilityAugmenter.augmentCapabilities(data))
-            .then(data => {
-                logger.warn('data dumb', href, data);
-                return data;
-            })
             .then(getNodesInformation);
     }
 

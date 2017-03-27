@@ -67,7 +67,7 @@ export class PipelinePager {
      */
     @action
     fetchNodes({ node }) {
-        logger.warn('Fetching now nodes url and further process it');
+        logger.debug('Fetching now nodes url and further process it');
         // while fetching we are pending
         this.pending = true;
         // log is text and not json, further it does not has _link in the response
@@ -81,7 +81,6 @@ export class PipelinePager {
         // get api data and further process it
         return KaraokeApi.getNodes(this.augmenter.nodesUrl)
             .then(action('Process node data', result => {
-                logger.warn('data dumb nodes', result);
                 if (result.model.length === 0) {
                     logger.debug('Seems we do not have any nodes for this run.');
                     this.currentStepsUrl = this.augmenter.stepsUrl;
@@ -99,7 +98,7 @@ export class PipelinePager {
                 }
                 const focused = logData.data.model.filter((item) => {
                     if (node) {
-                        logger.warn('check whether the node we are requesting is same', node, item);
+                        logger.debug('check whether the node we are requesting is same', node, item);
                         return item.id === node;
                     }
                     return item.isFocused;
