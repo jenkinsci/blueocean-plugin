@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView, Table } from '@jenkins-cd/design-language';
+import { Table } from '@jenkins-cd/design-language';
 import { capable, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 

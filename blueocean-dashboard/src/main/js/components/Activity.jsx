@@ -1,8 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { EmptyStateView, Table } from '@jenkins-cd/design-language';
+import { Table } from '@jenkins-cd/design-language';
 import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
-import Markdown from 'react-remarkable';
 import { observer } from 'mobx-react';
 
 import Runs from './Runs';
@@ -13,36 +12,7 @@ import { ColumnFilter } from './ColumnFilter';
 import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
 import { NoRunsPlaceholder } from './placeholder/NoRunsPlaceholder';
 
-const { object, array, func, string, bool } = PropTypes;
-
-const EmptyState = ({ repoName, pipeline, showRunButton, onNavigation, t }) =>
-    (<main>
-        <EmptyStateView iconName="shoes">
-            <Markdown>
-                {t('EmptyState.activity', {
-                    0: repoName,
-                    defaultValue: '# Ready, get set...\nHmm, looks like there are no runs in this pipeline\u2019s history.\n\nCommit to the repository _{0}_ or run the pipeline manually.',
-                })}
-            </Markdown>
-            { showRunButton &&
-                <RunButton
-                  runnable={pipeline}
-                  buttonType="run-only"
-                  runLabel={ t('pipelinedetail.activity.button.run', { defaultValue: 'Run now' }) }
-                  onNavigation={onNavigation}
-                />
-            }
-        </EmptyStateView>
-    </main>
-);
-
-EmptyState.propTypes = {
-    repoName: string,
-    pipeline: object,
-    showRunButton: bool,
-    onNavigation: func,
-    t: func,
-};
+const { object, array, func, string } = PropTypes;
 
 
 @observer
