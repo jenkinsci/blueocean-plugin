@@ -54,9 +54,6 @@ public class JwtTokenVerifierImpl extends JwtTokenVerifier {
 
                 JwtAuthenticationStore authenticationStore = getJwtStore(claims.getClaimsMap());
                 Authentication authentication = authenticationStore.getAuthentication(claims.getClaimsMap());
-                if(authentication == null){ //fallback?
-                    return new JwtAuthentication(subject);
-                }
                 return authentication;
             }
         } catch (MalformedClaimException e) {
