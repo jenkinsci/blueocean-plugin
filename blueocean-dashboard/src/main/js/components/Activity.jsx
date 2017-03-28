@@ -1,16 +1,19 @@
 import React, { Component, PropTypes } from 'react';
 import {
-  EmptyStateView,
-  Table,
+    EmptyStateView,
+    Table,
+    JTable,
+    TableHeaderRow
 } from '@jenkins-cd/design-language';
 import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import Markdown from 'react-remarkable';
 import { observer } from 'mobx-react';
-import Runs from './Runs';
+import Runs, { RunDetailsRow } from './Runs';
 import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { buildPipelineUrl } from '../util/UrlUtils';
 import { ColumnFilter } from './ColumnFilter';
+
 
 const { object, array, func, string, bool } = PropTypes;
 
@@ -42,6 +45,18 @@ EmptyState.propTypes = {
     onNavigation: func,
     t: func,
 };
+
+function extractLatestRecord(run) {
+    const changeset = run.changeSet;
+    let latestRecord = {};
+
+    if (changeset && changeset.length > 0) {
+        latestRecord = new ChangeSetRecord(changeset[changeset.length - 1]);
+    }
+
+    return [run, latestRecord];
+}
+
 @observer
 export class Activity extends Component {
 
@@ -100,6 +115,7 @@ export class Activity extends Component {
         const latestRun = runs[0];
         const head = 'pipelinedetail.activity.header';
 
+        // TODO: Postfix these var names
         const status = t(`${head}.status`, { defaultValue: 'Status' });
         const runHeader = t(`${head}.run`, { defaultValue: 'Run' });
         const commit = t(`${head}.commit`, { defaultValue: 'Commit' });
@@ -112,12 +128,30 @@ export class Activity extends Component {
             onChange={b => this.navigateToBranch(b)}
             options={pipeline.branchNames.map(b => decodeURIComponent(b))}
         />);
-       
-        const headers = isMultiBranchPipeline ? [
+
+        // Build up our column metadata
+        const columns = [
+            JTable.column(60, status, false),
+            JTable.column(60, runHeader, false),
+            JTable.column(60, commit, false),
+        ];
+
+        if (isMultiBranchPipeline) {
+            columns.push(JTable.column(60, branchFilter, false))
+        }
+
+        columns.push(
+            JTable.column(480, message, true),
+            JTable.column(100, duration, false),
+            JTable.column(100, completed, false),
+            JTable.column(60, '', false),
+        );
+
+        const headers = isMultiBranchPipeline ? [ // TODO: Remove this old stuff, once I'm sure the classNames aren't needed and have bneen cleaned up from styles
             status,
             runHeader,
             commit,
-            { label: branchFilter, className: 'branch' },
+            { label: branchFilter, className: 'branch' },    /// <-- Only diff
             { label: message, className: 'message' },
             { label: duration, className: 'duration' },
             { label: completed, className: 'completed' },
@@ -132,6 +166,26 @@ export class Activity extends Component {
             { label: '', className: 'actions' },
         ];
 
+        // Build main display table
+
+        const runsTable = runs.length && (
+                <JTable columns={columns} className="activity-table">
+                    <TableHeaderRow />
+                    {
+                        runs.map(extractLatestRecord).map(
+                            ([run, changeset], index) => (
+                                <RunDetailsRow t={t}
+                                               locale={locale}
+                                               run={run}
+                                               pipeline={pipeline}
+                                               key={index}
+                                               changeset={changeset}
+                                />
+                            ))
+                    }
+                </JTable>
+            );
+
         return (<main>
             <article className="activity">
                 { showRunButton &&
@@ -143,6 +197,9 @@ export class Activity extends Component {
                       onNavigation={onNavigation}
                     />
                 }
+
+                { runsTable }
+
                 { runs.length > 0 &&
                     <Table className="activity-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding key={branch}>
                         {

@@ -41,7 +41,6 @@ export class PipelineRowItem extends Component {
     }
 
     render() {
-        console.log('PipelineRowItem render'); // TODO: RM
         const { pipeline, showOrganization, columns } = this.props;
 
         // Early out
