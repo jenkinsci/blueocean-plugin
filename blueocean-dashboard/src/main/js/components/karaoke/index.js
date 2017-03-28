@@ -16,10 +16,10 @@ export { karaokeService as KaraokeService };
  *   }]}
  */
 export const preferencesArray = [{
-    key: 'runDetails.logView',
-    defaultValue: 'pipeline',
-    allowedValues: ['classic', 'pipeline'],
-},
+        key: 'runDetails.logView',
+        defaultValue: 'pipeline',
+        allowedValues: ['classic', 'pipeline'],
+    },
     {
         key: 'runDetails.pipeline.updateOnFinish',
         defaultValue: 'default',
