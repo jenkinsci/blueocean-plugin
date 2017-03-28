@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import { Link } from 'react-router';
 import { Table } from '@jenkins-cd/design-language';
 import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
@@ -10,7 +9,12 @@ import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { buildPipelineUrl } from '../util/UrlUtils';
 import { ColumnFilter } from './ColumnFilter';
 import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
-import { NoRunsPlaceholder } from './placeholder/NoRunsPlaceholder';
+import {
+    NoRunsDefaultPlaceholder,
+    NoRunsMultibranchPlaceholder,
+    NoRunsForBranchPlaceholder,
+} from './placeholder/NoRunsPlaceholder';
+
 
 const { object, array, func, string } = PropTypes;
 
@@ -53,6 +57,8 @@ export class Activity extends Component {
     render() {
         const { pipeline, t, locale } = this.props;
         const runs = this.pager.data;
+        const isLoading = this.pager.pending;
+
         if (!pipeline) {
             return null;
         }
@@ -61,50 +67,40 @@ export class Activity extends Component {
         const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
         const hasBranches = pipeline.branchNames && !!pipeline.branchNames.length;
 
-        // Only show the Run button for non multi-branch pipelines.
-        // Multi-branch pipelines have the Run/play button beside them on
-        // the Branches/PRs tab.
-        const showRunButton = !isMultiBranchPipeline;
-
         const onNavigation = (url) => {
             this.context.location.pathname = url;
             this.context.router.push(this.context.location);
         };
 
-        if (!this.pager.pending) {
+        const latestRun = runs && runs[0];
+        // Only show the Run button for non multi-branch pipelines.
+        // Multi-branch pipelines have the Run/play button beside them on
+        // the Branches/PRs tab.
+        const runButton = !isMultiBranchPipeline && (
+            <RunButton
+                buttonType="run-only"
+                innerButtonClasses="btn-secondary"
+                runnable={pipeline}
+                latestRun={latestRun}
+                onNavigation={onNavigation}
+            />
+        );
+
+        if (!isLoading) {
             if (isMultiBranchPipeline && !hasBranches) {
                 return <NoBranchesPlaceholder t={t} />;
             }
             if (!runs || !runs.length) {
-                if (isMultiBranchPipeline && hasBranches) {
+                if (!isMultiBranchPipeline) {
+                    return <NoRunsDefaultPlaceholder t={t} runButton={runButton} />;
+                } else if (!branch) {
                     const { params } = this.context;
-                    const title = t('pipelinedetail.placeholder.noruns.multibranch.withbranches.title');
-                    const linkText = t('pipelinedetail.placeholder.noruns.multibranch.withbranches.linktext');
                     const branchesUrl = buildPipelineUrl(params.organization, params.pipeline, 'branches');
-                    const linkElement = <Link className="btn" title={title} to={branchesUrl}>{linkText}</Link>;
-                    return <NoRunsPlaceholder title={title} linkElement={linkElement} />;
-                } else if (isMultiBranchPipeline) {
-                    const label = branch || pipeline.name;
-                    const title = t('pipelinedetail.placeholder.noruns.multibranch.default.title', { 0: label });
-                    return <NoRunsPlaceholder title={title} />;
+                    return <NoRunsMultibranchPlaceholder t={t} branchName={branch} branchesUrl={branchesUrl} />;
                 }
-
-                const title = t('pipelinedetail.placeholder.noruns.legacy.title');
-                const label = t('pipelinedetail.placeholder.noruns.legacy.linktext');
-                const runButton = (
-                    <RunButton
-                        runnable={pipeline}
-                        buttonType="run-only"
-                        runLabel={label}
-                        innerButtonClasses="btn"
-                        onNavigation={onNavigation}
-                    />
-                );
-                return <NoRunsPlaceholder title={title} linkElement={runButton} />;
             }
         }
 
-        const latestRun = runs[0];
         const head = 'pipelinedetail.activity.header';
 
         const status = t(`${head}.status`, { defaultValue: 'Status' });
@@ -141,42 +137,36 @@ export class Activity extends Component {
 
         return (<main>
             <article className="activity">
-                { showRunButton &&
-                    <RunButton
-                      buttonType="run-only"
-                      innerButtonClasses="btn-secondary"
-                      runnable={pipeline}
-                      latestRun={latestRun}
-                      onNavigation={onNavigation}
-                    />
+                { runButton }
+                { !isLoading &&
+                <Table className="activity-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding key={branch}>
+                    {
+                        runs.length > 0 && runs.map((run, index) => {
+                            const changeset = run.changeSet;
+                            let latestRecord = {};
+
+                            if (changeset && changeset.length > 0) {
+                                latestRecord = new ChangeSetRecord(changeset[changeset.length - 1]);
+                            }
+
+                            return (
+                                <Runs {...{
+                                    t,
+                                    locale,
+                                    run,
+                                    pipeline,
+                                    key: index,
+                                    changeset: latestRecord,
+                                }}
+                                />
+                            );
+                        })
+                    }
+                </Table>
                 }
-                { runs.length > 0 &&
-                    <Table className="activity-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding key={branch}>
-                        {
-                            runs.map((run, index) => {
-                                const changeset = run.changeSet;
-                                let latestRecord = {};
-
-                                if (changeset && changeset.length > 0) {
-                                    latestRecord = new ChangeSetRecord(changeset[changeset.length - 1]);
-                                }
-
-                                return (
-                                    <Runs {...{
-                                        t,
-                                        locale,
-                                        run,
-                                        pipeline,
-                                        key: index,
-                                        changeset: latestRecord,
-                                    }}
-                                    />
-                                );
-                            })
-                        }
-                    </Table>
+                { !isLoading && !runs.length && branch &&
+                    <NoRunsForBranchPlaceholder t={t} branchName={branch} />
                 }
-
                 { runs && runs.length > 0 &&
                   <ShowMoreButton pager={this.pager} />
                 }
