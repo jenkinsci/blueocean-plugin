@@ -32,7 +32,7 @@ export default class GithubChooseDiscoverStep extends React.Component {
 
     render() {
         const { flowManager } = this.props;
-        const title = 'Do you want to create a Pipeline for one repository or automatically discover?';
+        const title = 'Create a single Pipeline or discover all Pipelines?';
         const disabled = flowManager.stepsDisabled;
 
         // const existing = flowManager.existingAutoDiscover ? 'This organization is already set to "Automatically Discover."' : '';
@@ -46,18 +46,16 @@ export default class GithubChooseDiscoverStep extends React.Component {
 
                 <div className="toggle layout-large">
                     <button className={`monochrome ${option1Class}`} onClick={() => this.selectDiscover(false)}>
-                        <h1 className="title">Just one repository</h1>
+                        <h1 className="title">New Pipeline <span>&mdash; Recommended</span></h1>
                         <p className="text">
-                            Recommended if you haven't created a Pipeline before or do not
-                            have any repositories containing a <em>Jenkinsfile</em>
+                            Create a Pipeline from a single repository.
                         </p>
                     </button>
 
                     <button className={`monochrome ${option2Class}`} onClick={() => this.selectDiscover(true)}>
-                        <h1 className="title">Automatically discover</h1>
+                        <h1 className="title">Auto-discover Jenkinsfiles <span>&mdash; Advanced</span></h1>
                         <p className="text">
-                            Actively discovers new <em>Jenkinsfiles</em> in this organization's
-                            repositories and creates Pipelines automatically.
+                            Create Pipelines for any repository in this organization that contain a <em>Jenkinsfile</em>.
                         </p>
                     </button>
                 </div>
