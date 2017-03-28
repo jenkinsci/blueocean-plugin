@@ -171,8 +171,8 @@ export default class Pipeline extends Component {
         }
         if (this.pager.pending && this.showPending) { // we are waiting for the backend information
             logger.debug('EarlyOut - abort due to pager pending');
-            const queuedMessage = t('rundetail.pipeline.pending.message', { defaultValue: 'Waiting for backend to response' });
-            return <QueuedState message={queuedMessage} />;
+            const pendingMessage = t('rundetail.pipeline.pending.message', { defaultValue: 'Waiting for backend to response' });
+            return <QueuedState message={pendingMessage} />;
         }
         // here we decide what to do next if somebody clicks on a flowNode
         // Underlying tasks are fetching nodes information for the selected node
@@ -247,10 +247,10 @@ export default class Pipeline extends Component {
                 />
             }
 
-            { !isPipelineQueued && noResultsToDisplay && <NoSteps message={t('rundetail.pipeline.nosteps',
+            { !isPipelineQueued && noResultsToDisplay && <NoSteps
+                message={t('rundetail.pipeline.nosteps',
                 { defaultValue: 'There are no logsrrr' })}
-                />
-            }
+            /> }
 
             { isPipelineQueued && <QueuedState message={queuedMessage} /> }
         </div>);
