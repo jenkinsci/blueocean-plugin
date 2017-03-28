@@ -21,6 +21,7 @@ export default class Pipeline extends Component {
         this.showPending = KaraokeConfig.getPreference('runDetails.pipeline.showPending').value !== 'never'; // Configure flag to show pending or not
         this.karaoke = KaraokeConfig.getPreference('runDetails.pipeline.karaoke').value === 'never' ? false : props.augmenter.karaoke; // initial karaoke state
         this.updateOnFinish = KaraokeConfig.getPreference('runDetails.pipeline.updateOnFinish').value;
+        this.stopOnClick = KaraokeConfig.getPreference('runDetails.pipeline.stopKaraokeOnAnyNodeClick').value === 'always';
     }
     componentWillMount() {
         // starting pipeline service when we have an augmenter
@@ -199,7 +200,7 @@ export default class Pipeline extends Component {
                 logger.debug('turning off karaoke since we do not need it anymore because focus is on a finished node.');
                 this.stopKaraoke();
             }
-            if (nextNode.state !== 'FINISHED' && !this.karaoke) {
+            if (!this.stopOnClick && nextNode.state !== 'FINISHED' && !this.karaoke) {
                 logger.debug('turning on karaoke since we need it because we are focusing on a new node.');
                 this.props.augmenter.setKaraoke(true);
             }
