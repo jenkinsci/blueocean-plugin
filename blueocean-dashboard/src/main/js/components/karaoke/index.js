@@ -27,8 +27,8 @@ export const preferencesArray = [{
     },
     {
         key: 'runDetails.pipeline.showPending',
-        defaultValue: 'default',
-        allowedValues: ['default', 'never'],
+        defaultValue: 'never',
+        allowedValues: ['always', 'never'],
     },
     {
         key: 'runDetails.pipeline.karaoke',
