@@ -16,6 +16,7 @@ import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
 import org.acegisecurity.Authentication;
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -84,7 +85,7 @@ public class GitPipelineUpdateRequest extends BluePipelineUpdateRequest {
                 }
             }
 
-            if(sourceUri != null) {
+            if(StringUtils.isNotEmpty(sourceUri)) {
                 errors.addAll(GitUtils.validateCredentials(sourceUri, credentials));
             }
             credentialId = scmConfig.getCredentialId() == null ? "" : scmConfig.getCredentialId();
@@ -105,6 +106,10 @@ public class GitPipelineUpdateRequest extends BluePipelineUpdateRequest {
                 if(sourceUri != null
                         && !sourceUri.equals(gitSCMSource.getRemote())){
                     remote = sourceUri;
+                }
+
+                if (sourceUri == null) {
+                    remote = StringUtils.defaultIfBlank(scmConfig.getUri(), gitSCMSource.getRemote());
                 }
 
                 String cred = gitSCMSource.getCredentialsId();
