@@ -8,7 +8,7 @@ import Icon from './Icon';
 
 
 export function NoRunsPlaceholder(props) {
-    const { t } = props;
+    const { linkElement, title } = props;
 
     const columns = [
         { width: 40, head: { text: 40 }, cell: { icon: 20 } },
@@ -23,8 +23,8 @@ export function NoRunsPlaceholder(props) {
 
     const content = {
         icon: Icon.PIPELINE_EMPTY,
-        title: t('pipelinedetail.placeholder.noruns.title'),
-        linkElement: <Link className="btn" to={props.linkUrl}>{t('pipelinedetail.placeholder.noruns.linktext')}</Link>,
+        title,
+        linkElement,
     };
 
     return (
@@ -36,6 +36,6 @@ export function NoRunsPlaceholder(props) {
 }
 
 NoRunsPlaceholder.propTypes = {
-    t: PropTypes.func,
-    linkUrl: PropTypes.string,
+    title: PropTypes.string,
+    linkElement: PropTypes.element,
 };

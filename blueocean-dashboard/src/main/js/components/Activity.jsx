@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import { Link } from 'react-router';
 import { EmptyStateView, Table } from '@jenkins-cd/design-language';
 import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import Markdown from 'react-remarkable';
@@ -95,23 +96,43 @@ export class Activity extends Component {
         // the Branches/PRs tab.
         const showRunButton = !isMultiBranchPipeline;
 
+        const onNavigation = (url) => {
+            this.context.location.pathname = url;
+            this.context.router.push(this.context.location);
+        };
+
         if (!this.pager.pending) {
             if (isMultiBranchPipeline && !hasBranches) {
                 return <NoBranchesPlaceholder t={t} />;
             }
             if (!runs || !runs.length) {
-                if (hasBranches) {
+                if (isMultiBranchPipeline && hasBranches) {
                     const { params } = this.context;
+                    const title = t('pipelinedetail.placeholder.noruns.multibranch.withbranches.title');
+                    const linkText = t('pipelinedetail.placeholder.noruns.multibranch.withbranches.linktext');
                     const branchesUrl = buildPipelineUrl(params.organization, params.pipeline, 'branches');
-                    return <NoRunsPlaceholder t={t} linkUrl={branchesUrl} />;
+                    const linkElement = <Link className="btn" title={title} to={branchesUrl}>{linkText}</Link>;
+                    return <NoRunsPlaceholder title={title} linkElement={linkElement} />;
+                } else if (isMultiBranchPipeline) {
+                    const label = branch || pipeline.name;
+                    const title = t('pipelinedetail.placeholder.noruns.multibranch.default.title', { 0: label });
+                    return <NoRunsPlaceholder title={title} />;
                 }
+
+                const title = t('pipelinedetail.placeholder.noruns.legacy.title');
+                const label = t('pipelinedetail.placeholder.noruns.legacy.linktext');
+                const runButton = (
+                    <RunButton
+                        runnable={pipeline}
+                        buttonType="run-only"
+                        runLabel={label}
+                        innerButtonClasses="btn"
+                        onNavigation={onNavigation}
+                    />
+                );
+                return <NoRunsPlaceholder title={title} linkElement={runButton} />;
             }
         }
-
-        const onNavigation = (url) => {
-            this.context.location.pathname = url;
-            this.context.router.push(this.context.location);
-        };
 
         const latestRun = runs[0];
         const head = 'pipelinedetail.activity.header';
