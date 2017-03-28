@@ -22,9 +22,6 @@ public abstract class JwtTokenVerifier implements ExtensionPoint {
      * @return
      *      null if the request doesn't contain JWT token, in which case the HTTP request will proceed normally
      *      (for example the HTTP session might establish the identity of the user.)
-     * @throws Exception
-     *      If the request does contain JWT token but it's invalid, in which case the request processing will
-     *      fail.
      */
     public abstract Authentication verify(HttpServletRequest request);
 
