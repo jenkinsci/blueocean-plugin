@@ -39,10 +39,12 @@ export class RunDetailsPipeline extends Component {
         if (KaraokeConfig.getPreference('runDetails.pipeline.updateOnFinish').value !== 'never') {
             logger.debug('Augmenting next properties');
             this.augment(nextProps);
-        } else if (nextProps.params.runId !== this.props.params.runId
+        } else if (((nextProps.params.runId !== this.props.params.runId) || nextProps.result.id !== this.props.result.id)
             && KaraokeConfig.getPreference('runDetails.pipeline.updateOnFinish').value === 'never') {
             logger.debug('Augmenting next properties - new run needs update');
             this.augment(nextProps);
+        } else {
+            logger.debug('EarlyOut - dropping nextProps on the floor.');
         }
     }
     componentWillUnmount() {

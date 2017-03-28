@@ -49,8 +49,9 @@ export default class Pipeline extends Component {
             nextProps.augmenter.karaoke, 'this.props.augmenter.karaoke',
             this.props.augmenter.karaoke, 'this.karaoke',
             this.karaoke);
-        // update on finish, you can de-activate it by setting updateOnFinish to false
-        if (this.updateOnFinish !== 'never' && nextProps.run.isCompleted() && !this.props.run.isCompleted()) {
+        // update on finish and start, you can de-activate it by setting updateOnFinish to false
+        //
+        if (nextProps.run.id !== this.props.run.id || (this.updateOnFinish !== 'never' && nextProps.run.isCompleted() && !this.props.run.isCompleted())) {
             logger.debug('re-fetching since result changed and we want to display the full log and correct result states');
             // remove all timeouts in the backend
             this.stopKaraoke();
@@ -91,9 +92,6 @@ export default class Pipeline extends Component {
         logger.debug('stopping karaoke mode, by removing the timeouts on the pager.');
         this.pager.clear();
         this.karaoke = false;
-        if (this.props && this.props.augmenter) {
-            this.props.augmenter.setKaraoke(false);
-        }
     }
 
     /**
@@ -159,19 +157,20 @@ export default class Pipeline extends Component {
         // do we have something to display?
         const noResultsToDisplay = this.pager.steps === undefined || (this.pager.steps && !this.pager.steps.data.hasResultsForSteps);
         // Queue magic since a pipeline is only showing queued state a short time even if still waiting for executors
-        const isQueued = run.isQueued() || (run.isRunning() && noResultsToDisplay);
-        logger.debug(' isQueued', isQueued, 'noResultsToDisplay', noResultsToDisplay);
-        if (isQueued) { // if queued we are saying that we are waiting to start
-            logger.debug('abort due to run queued.');
-            const queuedMessage = t('rundetail.pipeline.queued.message', { defaultValue: 'Waiting for run to start' });
+        const isPipelineQueued = run.isQueued() || (run.isRunning() && noResultsToDisplay);
+        logger.debug('isQueued', run.isQueued(), 'noResultsToDisplay', noResultsToDisplay, 'isPipelineQueued', isPipelineQueued);
+        const queuedMessage = t('rundetail.pipeline.queued.message', { defaultValue: 'Waiting for run to start' });
+        if (run.isQueued()) { // if queued we are saying that we are waiting to start
+            logger.debug('EarlyOut - abort due to run queued.');
             return <QueuedState message={queuedMessage} />;
         }
-        if(noResultsToDisplay && this.pager.nodes === undefined && !this.pager.pending) { // no information? fallback to freeStyle
-            logger.warn('We do not have any information we can display, falling back to freeStyle rendering');
+        const supportsNodes = this.pager.nodes === undefined;
+        if(noResultsToDisplay && supportsNodes && !this.pager.pending) { // no information? fallback to freeStyle
+            logger.debug('EarlyOut - We do not have any information we can display, falling back to freeStyle rendering');
             return (<FreeStyle {...this.props }/>);
         }
         if (this.pager.pending && this.showPending) { // we are waiting for the backend information
-            logger.debug('abort due to pager pending');
+            logger.debug('EarlyOut - abort due to pager pending');
             const queuedMessage = t('rundetail.pipeline.pending.message', { defaultValue: 'Waiting for backend to response' });
             return <QueuedState message={queuedMessage} />;
         }
@@ -202,7 +201,7 @@ export default class Pipeline extends Component {
             }
             if (!this.stopOnClick && nextNode.state !== 'FINISHED' && !this.karaoke) {
                 logger.debug('turning on karaoke since we need it because we are focusing on a new node.');
-                this.props.augmenter.setKaraoke(true);
+                this.karaoke = true;
             }
             router.push(location);
         };
@@ -247,9 +246,13 @@ export default class Pipeline extends Component {
                     }}
                 />
             }
-            { noResultsToDisplay && <NoSteps message={t('rundetail.pipeline.nosteps',
+
+            { !isPipelineQueued && noResultsToDisplay && <NoSteps message={t('rundetail.pipeline.nosteps',
                 { defaultValue: 'There are no logsrrr' })}
-            />}
+                />
+            }
+
+            { isPipelineQueued && <QueuedState message={queuedMessage} /> }
         </div>);
     }
 }
