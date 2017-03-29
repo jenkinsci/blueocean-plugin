@@ -31,21 +31,27 @@ export default class GithubCompleteStep extends React.Component {
         return status;
     }
 
-    _getTitle(state, autoDiscover) {
+    _getTitle(state, autoDiscover, repo, count) {
         if (state === STATE.PENDING_CREATION_SAVING) {
-            return autoDiscover ? 'Saving Organization...' : 'Creating Pipeline...';
+            return autoDiscover ? 'Discovering Pipelines...' : 'Creating Pipeline...';
         } else if (state === STATE.STEP_COMPLETE_SAVING_ERROR) {
             return 'Error Saving Organization';
         } else if (state === STATE.PENDING_CREATION_EVENTS) {
-            return autoDiscover ? 'Creating Pipelines...' : 'Creating Pipeline...';
+            if (autoDiscover && count > 0) {
+                return `Discovered ${count} Pipelines...`;
+            }
+            return autoDiscover ? 'Discovering Pipelines...' : 'Creating Pipeline...';
         } else if (state === STATE.STEP_COMPLETE_EVENT_ERROR) {
             return autoDiscover ? 'Error Creating Pipelines' : 'Error Creating Pipeline';
         } else if (state === STATE.STEP_COMPLETE_EVENT_TIMEOUT) {
             return 'Pipeline Creation Pending...';
         } else if (state === STATE.STEP_COMPLETE_MISSING_JENKINSFILE) {
-            return 'Create a pipeline';
+            return <span>There are no Jenkinsfiles in <i>{repo.name}</i></span>;
         } else if (state === STATE.STEP_COMPLETE_SUCCESS) {
-            return 'Creation Successful!';
+            if (autoDiscover && count === 0) {
+                return 'No Jenkinsfiles found in any of your repositories';
+            }
+            return 'Completed';
         }
 
         return 'Something Unexpected Happened';
@@ -62,19 +68,23 @@ export default class GithubCompleteStep extends React.Component {
     }
 
     _getContent(state, autoDiscover, repo, count) {
-        const { selectedOrganization, selectedRepository } = this.props.flowManager;
+        const { selectedOrganization, selectedRepository, redirectTimeout } = this.props.flowManager;
 
         let copy = '';
+        let showOrgScanWithNoRepos = false;
         let showDashboardLink = false;
-        let showPipelineLink = false;
         let showCreateLink = false;
 
-        if (state === STATE.PENDING_CREATION_SAVING) {
-            copy = 'Please wait while your settings are saved.';
-        } else if (state === STATE.STEP_COMPLETE_SAVING_ERROR) {
+        if (state === STATE.STEP_COMPLETE_SAVING_ERROR) {
             copy = 'An error occurrred while saving this pipeline.';
         } else if (state === STATE.PENDING_CREATION_EVENTS) {
-            copy = `Saving was successful. Pipeline creation is in progress. ${count} pipelines have been created.`;
+            if (count > 0) {
+                if (autoDiscover) {
+                    setTimeout(() => this.navigateDashboard(), redirectTimeout);
+                } else {
+                    setTimeout(() => this.navigatePipeline(), redirectTimeout);
+                }
+            }
         } else if (state === STATE.STEP_COMPLETE_EVENT_ERROR) {
             copy = 'An error occurred while discovering pipelines.';
             showDashboardLink = true;
@@ -82,15 +92,16 @@ export default class GithubCompleteStep extends React.Component {
             copy = 'Pipelines are still waiting to be created.';
             showDashboardLink = true;
         } else if (state === STATE.STEP_COMPLETE_MISSING_JENKINSFILE) {
-            copy = `There are no Jenkinsfiles in the repository ${repo.name}.`;
             showCreateLink = true;
         } else if (state === STATE.STEP_COMPLETE_SUCCESS) {
-            copy = `Success! ${count} pipelines have been created.`;
-
             if (autoDiscover) {
-                showDashboardLink = true;
+                if (count > 0) {
+                    setTimeout(() => this.navigateDashboard(), redirectTimeout);
+                } else {
+                    showOrgScanWithNoRepos = true;
+                }
             } else {
-                showPipelineLink = true;
+                setTimeout(() => this.navigatePipeline(), redirectTimeout);
             }
         }
 
@@ -106,11 +117,13 @@ export default class GithubCompleteStep extends React.Component {
                 </div>
                 }
 
-                { showPipelineLink &&
+                { showOrgScanWithNoRepos &&
                 <div>
-                    <p>You may now view your created pipeline.</p>
+                    <p>A Jenkinsfile is stored in your repository and describes how your Pipeline will run –
+                        &nbsp;<a href="https://jenkins.io/doc/" target="_blank">Learn more</a>
+                    </p>
 
-                    <button onClick={() => this.navigatePipeline()}>View Pipeline</button>
+                    <button onClick={() => this.props.flowManager.saveAutoDiscover()}>Check again</button>
                 </div>
                 }
 
@@ -130,7 +143,7 @@ export default class GithubCompleteStep extends React.Component {
         const status = this._getStatus(flowManager.stateId, this.props.status);
         const loading = this._getLoading(flowManager.stateId);
         const error = this._getError(flowManager.stateId);
-        const title = this._getTitle(flowManager.stateId, flowManager.selectedAutoDiscover);
+        const title = this._getTitle(flowManager.stateId, flowManager.selectedAutoDiscover, flowManager.selectedRepository, flowManager.pipelineCount);
         const content = this._getContent(flowManager.stateId, flowManager.selectedAutoDiscover, flowManager.selectedRepository, flowManager.pipelineCount);
 
         return (

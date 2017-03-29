@@ -3,10 +3,13 @@ import { Link } from 'react-router';
 import { Page, JTable, TableHeaderRow } from '@jenkins-cd/design-language';
 import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
+import { observer } from 'mobx-react';
+
 import { documentTitle } from './DocumentTitle';
 import CreatePipelineLink from './CreatePipelineLink';
 import PipelineRowItem from './PipelineRowItem';
-import { observer } from 'mobx-react';
+import { DashboardPlaceholder } from './placeholder/DashboardPlaceholder';
+
 
 const translate = i18nTranslator('blueocean-dashboard');
 
@@ -59,6 +62,9 @@ export class Pipelines extends Component {
                 { organization }
             </Link> : '';
 
+        const showPipelineList = !this.pager.pending && pipelines && pipelines.length > 0;
+        const showEmptyState = !this.pager.pending && (!pipelines || !pipelines.length);
+
         const labelName = translate('home.pipelineslist.header.name', { defaultValue: 'Name' });
         const labelHealth = translate('home.pipelineslist.header.health', { defaultValue: 'Health' });
         const labelBranches = translate('home.pipelineslist.header.branches', { defaultValue: 'Branches' });
@@ -101,6 +107,8 @@ export class Pipelines extends Component {
                         <CreatePipelineLink />
                     </Extensions.Renderer>
                 </ContentPageHeader>
+                { showEmptyState && <DashboardPlaceholder t={translate} /> }
+                { showPipelineList &&
                 <main>
                     <article>
                         { /* FIXME: need to adjust Extensions to make store available */ }
@@ -118,7 +126,9 @@ export class Pipelines extends Component {
                         { pipelines && <ShowMoreButton pager={this.pager} /> }
                     </article>
                 </main>
-            </Page>);
+                }
+            </Page>
+        );
     }
 }
 

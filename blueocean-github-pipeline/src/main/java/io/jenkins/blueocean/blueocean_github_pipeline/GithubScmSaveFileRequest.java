@@ -40,7 +40,6 @@ public class GithubScmSaveFileRequest{
             errors.addAll(content.validate());
         }
 
-
         //if no owner given then check if its there in request
         if(owner == null){
             owner = content.getOwner();
@@ -83,7 +82,7 @@ public class GithubScmSaveFileRequest{
             if(!StringUtils.isBlank(sha)){
                 body.put("sha", sha);
             }
-            final Map ghResp = HttpRequest.put(String.format("%s/repos/%s/%s/contents/%s",
+            final Map<?,?> ghResp = HttpRequest.put(String.format("%s/repos/%s/%s/contents/%s",
                     apiUrl,
                     owner,
                     repoName,
@@ -96,7 +95,7 @@ public class GithubScmSaveFileRequest{
                 throw new ServiceException.UnexpectedErrorException("Failed to save file to Github: "+content.getPath());
             }
 
-            final Map ghContent = (Map) ghResp.get("content");
+            final Map<?,?> ghContent = (Map<?,?>) ghResp.get("content");
 
             if(ghContent == null){
                 throw new ServiceException.UnexpectedErrorException("Failed to save file: "+content.getPath());
@@ -148,17 +147,22 @@ public class GithubScmSaveFileRequest{
             String sha = content.getSha();
             //branch doesn't exist, lets create new one
             //1. Find commit sha off which this branch will be created
-            //2. We need to find default branch first
             GHRepoEx repo = HttpRequest.get(String.format("%s/repos/%s/%s", apiUrl,
                     owner, repoName))
                     .withAuthorization("token " + accessToken).to(GHRepoEx.class);
 
-            //3. Get default branch's commit sha
+            //2. Check the source branch or use default if not provided
+            String sourceBranch = content.getSourceBranch();
+            if (sourceBranch == null) {
+                sourceBranch = repo.getDefaultBranch();
+            }
+
+            //3. Get source branch's commit sha
             GHBranch branch = HttpRequest.get(String.format("%s/repos/%s/%s/branches/%s",
                     apiUrl,
                     owner,
                     repoName,
-                    repo.getDefaultBranch())).withAuthorization("token " + accessToken).to(GHBranch.class);
+                    sourceBranch)).withAuthorization("token " + accessToken).to(GHBranch.class);
 
             //4. create this missing branch. We ignore the response, if no error branch was created
             HttpRequest.post(String.format("%s/repos/%s/%s/git/refs",
