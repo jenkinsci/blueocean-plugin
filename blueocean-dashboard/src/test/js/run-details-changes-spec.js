@@ -40,7 +40,7 @@ describe('RunDetailsChanges', () => {
         });
 
         it('renders EmptyStateView', () => {
-            assert.equal(output.type.name, 'EmptyStateView');
+            assert.equal(output.type.name, 'NoChangesPlaceholder');
         });
     });
 
