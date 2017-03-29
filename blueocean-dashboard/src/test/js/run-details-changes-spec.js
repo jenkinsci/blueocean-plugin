@@ -39,7 +39,7 @@ describe('RunDetailsChanges', () => {
             output = tree.getRenderOutput();
         });
 
-        it('renders EmptyStateView', () => {
+        it('renders NoChangesPlaceholder', () => {
             assert.equal(output.type.name, 'NoChangesPlaceholder');
         });
     });
