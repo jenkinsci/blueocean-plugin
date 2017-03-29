@@ -227,11 +227,11 @@ export default class Pipeline extends Component {
                     t={t}
                 />
             }
-            <LogToolbar
+            { !isPipelineQueued && <LogToolbar
                 fileName={logFileName}
                 url={logUrl}
                 title={title}
-            />
+            /> }
             { this.pager.steps && !noResultsToDisplay &&
                 <Steps
                     {...{
