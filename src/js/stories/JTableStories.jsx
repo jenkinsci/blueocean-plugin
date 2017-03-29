@@ -133,14 +133,23 @@ function manual() {
                 <TableHeader>Y</TableHeader>
                 <TableHeader>AND</TableHeader>
                 <TableHeader>OR</TableHeader>
+                {
+                    false // Need to make sure you can drop columns based on some logic!
+                }
                 <TableHeader>XOR</TableHeader>
                 <TableHeader>NAND</TableHeader>
                 <TableHeader>Nonsense</TableHeader>
             </TableRow>
+            {
+                null // Make sure we can have optional rows, as well as optional columns!
+            }
             <TableRow href="http://www.example.org/alpha/">
                 <TableCell>True</TableCell>
                 <TableCell>True</TableCell>
                 <TableCell>True</TableCell>
+                {
+                    null // Need to make sure you can drop columns based on some logic!
+                }
                 <TableCell>True</TableCell>
                 <TableCell>False</TableCell>
                 <TableCell>False</TableCell>
@@ -151,6 +160,9 @@ function manual() {
                 <TableCell>False</TableCell>
                 <TableCell>False</TableCell>
                 <TableCell>True</TableCell>
+
+                {/* Make sure nothing breaks when you add some comments, either! */}
+                
                 <TableCell>True</TableCell>
                 <TableCell>True</TableCell>
                 <TableCell>this space intentionally left blank</TableCell>

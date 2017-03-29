@@ -18,21 +18,49 @@ type Props = {
     useRollover?: boolean
 };
 
-function processColumns(columns: any, numChildren: number) {
+function processChildren(children: any, columns: any): Array<React$Element<any>> {
 
-    const processed = Array.isArray(columns) ? columns.concat() : [];
+    // First filter the children to strip any falsey values dropped by logic in our parent's render() method
+    const filteredChildren = [];
+
+    Children.forEach(children, child => {
+        if (child) {
+            filteredChildren.push(child);
+        }
+    });
+
+    const numChildren = filteredChildren.length;
+    const processedColumns:Array<ColumnDescription> = Array.isArray(columns) ? columns.concat() : [];
 
     // Make sure we have the right number of columns
-    if (processed.length !== numChildren) {
-        console.warn('TableRow - received', numChildren, 'children, but', processed.length, 'columns!');
+    if (processedColumns.length !== numChildren) {
+        console.warn('TableRow - received', numChildren, 'children, but', processedColumns.length, 'columns!');
 
         // Add generic columns if there's some missing
-        while (processed.length < numChildren) {
-            processed.push({name: '', width: 100, isFlexible: true});
+        while (processedColumns.length < numChildren) {
+            processedColumns.push({name: '', width: 100, isFlexible: true});
         }
     }
 
-    return processed;
+    return filteredChildren.map((child, i) => {
+        const elementStyle = child.props.style || {};
+        const newStyle = {...elementStyle};
+        const columnDescription = processedColumns[i];
+
+        // Calc width including "spacing" because it needs to actually be padding in order to support whole-row anchors
+        let colWidth = columnDescription.width;
+        if (i === 0 || i === numChildren - 1) {
+            colWidth += TABLE_LEFT_RIGHT_PADDING + (TABLE_COLUMN_SPACING / 2);
+        } else {
+            colWidth += TABLE_COLUMN_SPACING;
+        }
+        newStyle.flexBasis = colWidth;
+
+        // Add or remove space on flexible columns in proportion to comparitive widths
+        newStyle.flexGrow = newStyle.flexShrink = columnDescription.isFlexible ? colWidth : 0;
+
+        return React.cloneElement(child, {style: newStyle});
+    });
 }
 
 /**
@@ -52,6 +80,7 @@ export class TableRow extends Component {
         const {
             className,
             children,
+            columns,
             href,
             onClick,
         } = this.props;
@@ -63,29 +92,7 @@ export class TableRow extends Component {
             classNames.push(className);
         }
 
-        const numChildren = Children.count(children);
-        const columns = processColumns(this.props.columns, numChildren);
-
-        const newChildren = Children.map(children, (child, i) => {
-
-            const elementStyle = child.props.style || {};
-            const newStyle = {...elementStyle};
-            const columnDescription = columns[i];
-
-            // Calc width including "spacing" because it needs to actually be padding for whole-row anchors
-            let colWidth = columnDescription.width;
-            if (i === 0 || i === numChildren - 1) {
-                colWidth += TABLE_LEFT_RIGHT_PADDING + (TABLE_COLUMN_SPACING / 2);
-            } else {
-                colWidth += TABLE_COLUMN_SPACING;
-            }
-            newStyle.flexBasis = colWidth;
-
-            // Add or remove space on flexible columns in proportion to comparitive widths
-            newStyle.flexGrow = newStyle.flexShrink = columnDescription.isFlexible ? colWidth : 0;
-
-            return React.cloneElement(child, {style: newStyle});
-        });
+        const newChildren = processChildren(children, columns);
 
         let tagName = 'div';
         const props = {

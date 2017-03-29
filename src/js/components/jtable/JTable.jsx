@@ -2,7 +2,7 @@
 
 import React, { Component, PropTypes, Children } from 'react';
 
-export const TABLE_LEFT_RIGHT_PADDING = 24;
+export const TABLE_LEFT_RIGHT_PADDING = 23; // 24 inc border
 export const TABLE_COLUMN_SPACING = 32;
 // !!!IMPORTANT!!! Don't change the above consts without changing jtable.less to match!
 
@@ -112,8 +112,12 @@ export class JTable extends Component {
             columns
         };
 
-        const newChildren = Children.map(children, child => {
-            return React.cloneElement(child, newChildProps);
+        const newChildren = [];
+
+        Children.forEach(children, child => {
+            if (child) {
+                newChildren.push(React.cloneElement(child, newChildProps));
+            }
         });
 
         return (
