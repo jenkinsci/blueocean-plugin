@@ -110,28 +110,6 @@ export default class TestResult extends Component {
             );
         } else {
             summaryBlock = (
-                <div className="test-summary">
-                    <div className={`new-passed count-${fixed.length}`}>
-                        <div className="count">{fixed.length}</div>
-                        <label>{translation('rundetail.tests.results.fixed', { defaultValue: 'Fixed' })}</label>
-                    </div>
-                    <div className={`new-failed count-${newFailures.length}`}>
-                        <div className="count">{newFailures.length}</div>
-                        <label>{translation('rundetail.tests.results.failures.new', { defaultValue: 'New' })}</label>
-                    </div>
-                    <div className={`failed count-${testResults.failCount}`}>
-                        <div className="count">{testResults.failCount}</div>
-                        <label>{translation('rundetail.tests.results.failures', { defaultValue: 'Failures' })}</label>
-                    </div>
-                    <div className={`passed count-${testResults.passCount}`}>
-                        <div className="count">{testResults.passCount}</div>
-                        <label>{translation('rundetail.tests.results.passing', { defaultValue: 'Passing' })}</label>
-                    </div>
-                    <div className={`skipped count-${testResults.skipCount}`}>
-                        <div className="count">{testResults.skipCount}</div>
-                        <label>{translation('rundetail.tests.results.skipped', { defaultValue: 'Skipped' })}</label>
-                    </div>
-                </div>
             );
 
             if (newFailures.length > 0) {
