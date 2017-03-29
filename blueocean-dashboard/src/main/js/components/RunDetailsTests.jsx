@@ -36,39 +36,18 @@ export class RunDetailsTests extends Component {
             </EmptyStateView>);
         }
 
-        const percentComplete = testResults.passCount /
-            (testResults.passCount + testResults.failCount);
-
-        return (<div className="test-results-container">
-            <div className="test=result-summary" style={{ display: 'none' }}>
-                <div className={`test-result-bar ${percentComplete}%`}></div>
-                <div className="test-result-passed">{t('rundetail.tests.passed', {
-                    0: testResults.passCount,
-                    defaultValue: 'Passed {0}',
-                })}</div>
-                <div className="test-result-failed">{t('rundetail.tests.failed', {
-                    0: testResults.failCount,
-                    defaultValue: 'Failed {0}',
-                })}</div>
-                <div className="test-result-skipped">{t('rundetail.tests.skipped', {
-                    0: testResults.skipCount,
-                    defaultValue: 'Skipped {0}',
-                })}</div>
-                <div className="test-result-duration">{t('rundetail.tests.duration', {
-                    0: testResults.duration,
-                    defaultValue: 'Duration {0}',
-                })}</div>
+        return (
+            <div className="test-results-container">
+                <Extensions.Renderer
+                  extensionPoint="jenkins.test.result"
+                  filter={dataType(testResults)}
+                  testResults={testResults}
+                  locale={locale}
+                  t={t}
+                  run={this.props.result}
+                />
             </div>
-
-            <Extensions.Renderer
-              extensionPoint="jenkins.test.result"
-              filter={dataType(testResults)}
-              testResults={testResults}
-              locale={locale}
-              t={t}
-              run={this.props.result}
-            />
-        </div>);
+        );
     }
 }
 
