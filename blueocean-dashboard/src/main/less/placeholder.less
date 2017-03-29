@@ -1,3 +1,10 @@
+.dialog-center {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+}
+
 .PlaceholderContent {
     position: relative;
 
@@ -19,9 +26,8 @@
     }
 
     .PlaceholderDialog {
-        position: absolute;
+        .dialog-center;
         top: 130px;
-        left: 50%;
     }
 }
 
@@ -77,8 +83,7 @@
     margin-top: 25px;
 
     .PlaceholderDialog {
-        position: absolute;
-        left: 50%;
+        .dialog-center;
     }
 }
 
@@ -86,8 +91,7 @@
     position: relative;
 
     .PlaceholderDialog {
-        position: absolute;
-        left: 50%;
+        .dialog-center;
         top: 110px;
     }
 }
