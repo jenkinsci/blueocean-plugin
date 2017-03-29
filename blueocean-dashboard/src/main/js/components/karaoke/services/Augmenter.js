@@ -1,9 +1,10 @@
 import { action, computed, observable } from 'mobx';
-import { capable } from '@jenkins-cd/blueocean-core-js';
-import { prefixIfNeeded } from '../urls/prefixIfNeeded';
+import { capable, logging } from '@jenkins-cd/blueocean-core-js';
 
+import { prefixIfNeeded } from '../urls/prefixIfNeeded';
 import { FREESTYLE_JOB, MULTIBRANCH_PIPELINE, PIPELINE_JOB } from '../../../Capabilities';
 
+const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Augmenter');
 
 /**
  * @export
@@ -24,6 +25,7 @@ export class Augmenter {
         if (this.run._links && this.run._links.log && this.run._links.log.href) {
             return prefixIfNeeded(this.run._links.log.href);
         }
+        logger.debug('returning undefined as generalLogUrl');
         return undefined;
     }
     /**
@@ -36,6 +38,7 @@ export class Augmenter {
         } else if (this.run._links.self.href) {
             return `${prefixIfNeeded(this.run._links.self.href)}nodes/`;
         }
+        logger.debug('returning undefined as nodeUrl');
         return undefined;
     }
     /**
@@ -46,6 +49,7 @@ export class Augmenter {
         if (currentNode) {
             return `${prefixIfNeeded(currentNode._links.self.href)}log/`;
         }
+        logger.debug('returning undefined as currentNode');
         return undefined;
     }
     /**
@@ -58,6 +62,7 @@ export class Augmenter {
         } else if (this.run._links.self.href) {
             return `${prefixIfNeeded(this.run._links.self.href)}steps/`;
         }
+        logger.debug('returning undefined as stepUrl');
         return undefined;
     }
     /**
