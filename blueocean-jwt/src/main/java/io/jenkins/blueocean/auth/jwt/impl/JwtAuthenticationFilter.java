@@ -66,12 +66,17 @@ public class JwtAuthenticationFilter implements Filter {
         // create a new context and set it to holder to not clobber existing context
         SecurityContext sc = new SecurityContextImpl();
         sc.setAuthentication(token);
+        SecurityContext previous = SecurityContextHolder.getContext();
         SecurityContextHolder.setContext(sc);
         request.setAttribute(JWT_TOKEN_VALIDATED,true);
         try {
             chain.doFilter(req,rsp);
         } finally {
-            SecurityContextHolder.clearContext();
+            if(previous != null){
+                SecurityContextHolder.setContext(previous);
+            }else {
+                SecurityContextHolder.clearContext();
+            }
         }
     }
 
