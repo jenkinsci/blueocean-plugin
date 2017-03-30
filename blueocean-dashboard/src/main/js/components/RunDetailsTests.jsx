@@ -25,7 +25,7 @@ function NoTestsPlaceholder(props) {
     };
 
     return (
-        <div className="NoTests">
+        <div className="RunDetailsEmpty NoTests">
             <PlaceholderTable columns={columns} />
             <PlaceholderDialog width={300} content={content} />
         </div>

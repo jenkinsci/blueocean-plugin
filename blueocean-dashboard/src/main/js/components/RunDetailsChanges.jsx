@@ -19,7 +19,7 @@ function NoChangesPlaceholder(props) {
     };
 
     return (
-        <div className="NoChanges">
+        <div className="RunDetailsEmpty NoChanges">
             <PlaceholderTable columns={columns} />
             <PlaceholderDialog width={265} content={content} />
         </div>
