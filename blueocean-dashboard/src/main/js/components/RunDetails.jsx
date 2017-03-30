@@ -65,6 +65,7 @@ class RunDetails extends Component {
     componentWillMount() {
         this._fetchRun(this.props);
         this.opener = locationService.previous;
+        this.initialHistoryLength = history.length;
     }
 
     componentWillReceiveProps(nextProps) {
@@ -137,10 +138,11 @@ class RunDetails extends Component {
     afterClose = () => {
         const { router, params } = this.context;
         if (this.opener) {
-            router.goBack();
+            const offsetToInitialRoute = this.initialHistoryLength - history.length;
+            router.go(offsetToInitialRoute - 1);
         } else {
             const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
-            router.push(fallbackUrl);
+            router.replace(fallbackUrl);
         }
     };
 
