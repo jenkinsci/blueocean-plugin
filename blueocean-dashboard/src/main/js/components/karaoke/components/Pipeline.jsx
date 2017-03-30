@@ -247,7 +247,7 @@ export default class Pipeline extends Component {
                 />
             }
 
-            { !isPipelineQueued && noResultsToDisplay && <NoSteps
+            { !this.pager.pending && !isPipelineQueued && noResultsToDisplay && <NoSteps
                 message={t('rundetail.pipeline.nosteps',
                 { defaultValue: 'There are no logsrrr' })}
             /> }
