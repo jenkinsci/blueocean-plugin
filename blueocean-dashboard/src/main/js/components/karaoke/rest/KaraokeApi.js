@@ -1,4 +1,5 @@
 import { capabilityAugmenter, Fetch, FetchFunctions, logging } from '@jenkins-cd/blueocean-core-js';
+import debounce from 'lodash.debounce';
 import { generateDetailUrl } from '../urls/detailUrl';
 import { getNodesInformation } from '../../../util/logDisplayHelper';
 
@@ -72,26 +73,34 @@ export class KaraokeApi {
      * @returns {*} Promise
      */
     getGeneralLog(href, { start }) {
-        const fetchOptions = prepareOptions();
-        const finalHref = start ? `${href}?start=${start}` : href;
-        logger.debug('Fetching href', finalHref, start);
-        return Fetch.fetch(finalHref, { fetchOptions })
-            .then(FetchFunctions.checkStatus)
-            .then(parseMoreDataHeader)
-            .then(parseNewStart);
+        return new Promise((resolve) => {
+            debounce(() => {
+                const fetchOptions = prepareOptions();
+                const finalHref = start ? `${href}?start=${start}` : href;
+                logger.debug('Fetching with txt enabled parsing the following href', finalHref, 'start from',  start);
+                resolve(Fetch.fetch(finalHref, { fetchOptions })
+                    .then(FetchFunctions.checkStatus)
+                    .then(parseMoreDataHeader)
+                    .then(parseNewStart));
+            }, 200)();
+        });
     }
 
     getNodes(href) {
-        const fetchOptions = prepareOptions();
-        logger.debug('Fetching href', href);
-        return Fetch.fetchJSON(href, { fetchOptions })
-            .then(FetchFunctions.checkStatus)
-            .then(data => capabilityAugmenter.augmentCapabilities(data))
-            .then(getNodesInformation);
+        // creating a new promise to be able to debounce the fetching
+        return new Promise((resolve) => {
+            debounce(() => {
+                const fetchOptions = prepareOptions();
+                logger.debug('Fetching with json enabled parsing the following href', href);
+                resolve(Fetch.fetchJSON(href, { fetchOptions })
+                    .then(FetchFunctions.checkStatus)
+                    .then(data => capabilityAugmenter.augmentCapabilities(data))
+                    .then(getNodesInformation));
+            }, 200)();
+        });
     }
 
     getSteps(href) {
         return this.getNodes(href);
     }
 }
-
