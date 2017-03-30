@@ -77,7 +77,7 @@ export class KaraokeApi {
             debounce(() => {
                 const fetchOptions = prepareOptions();
                 const finalHref = start ? `${href}?start=${start}` : href;
-                logger.debug('Fetching with txt enabled parsing the following href', finalHref, 'start from',  start);
+                logger.debug('Fetching with txt enabled parsing the following href', finalHref, 'start from', start);
                 resolve(Fetch.fetch(finalHref, { fetchOptions })
                     .then(FetchFunctions.checkStatus)
                     .then(parseMoreDataHeader)
