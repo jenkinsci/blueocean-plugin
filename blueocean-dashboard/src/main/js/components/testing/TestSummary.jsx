@@ -20,7 +20,7 @@ export function TestSummary(props) {
         message = translate('rundetail.tests.results.summary.passing_after_fixes_message', { 0: fixed, 1: passing });
     } else if (failuresTotal > 0) {
         title = translate('rundetail.tests.results.summary.failing_title', { 0: failuresTotal });
-        message = translate('rundetail.tests.results.summary.failing_message', { 0: failuresNew, 1: failuresExisting });
+        message = translate('rundetail.tests.results.summary.failing_message', { 0: failuresNew, 1: failuresExisting, 2: skipped });
     }
 
     return (

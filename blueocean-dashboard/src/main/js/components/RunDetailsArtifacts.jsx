@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import {  FileSize, Table } from '@jenkins-cd/design-language';
+import { FileSize, Table } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/react-material-icons';
 import { observer } from 'mobx-react';
 import mobxUtils from 'mobx-utils';

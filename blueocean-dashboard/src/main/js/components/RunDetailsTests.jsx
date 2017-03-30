@@ -5,7 +5,7 @@ import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 import { actions as selectorActions, testResults as testResultsSelector,
     connect, createSelector } from '../redux';
 import Icon from './placeholder/Icon';
-import { PlaceholderDialog} from './placeholder/PlaceholderDialog';
+import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
 
 
 function NoTestsPlaceholder(props) {
@@ -59,7 +59,7 @@ export class RunDetailsTests extends Component {
         }
 
         if (testResults.$failed) {
-            return <NoTestsPlaceholder t={t} />
+            return <NoTestsPlaceholder t={t} />;
         }
 
         return (
