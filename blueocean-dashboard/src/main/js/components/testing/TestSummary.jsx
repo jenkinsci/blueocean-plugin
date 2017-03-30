@@ -7,7 +7,7 @@ export function TestSummary(props) {
     const extraClass = failuresTotal ? 'u-failed' : '';
 
     const iconAsset = failuresTotal > 0 ? Icon.CLOSE : Icon.DONE_ALL;
-    const icon = React.cloneElement(iconAsset, { className: 'icon' });
+    const icon = React.cloneElement(iconAsset, { className: 'TestSummary-icon' });
 
     let title = '';
     let message = '';
@@ -27,10 +27,10 @@ export function TestSummary(props) {
         <div className={`TestSummary ${extraClass}`}>
             {icon}
 
-            <div className="content">
-                <h1>{title}</h1>
+            <div className="TestSummary-content">
+                <h1 className="TestSummary-title">{title}</h1>
 
-                <p>{message}</p>
+                <p className="TestSummary-message">{message}</p>
             </div>
         </div>
     );
