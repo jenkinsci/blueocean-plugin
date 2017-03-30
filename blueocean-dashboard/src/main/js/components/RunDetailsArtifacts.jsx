@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView, FileSize, Table } from '@jenkins-cd/design-language';
+import {  FileSize, Table } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/react-material-icons';
-import Markdown from 'react-remarkable';
 import { observer } from 'mobx-react';
 import mobxUtils from 'mobx-utils';
 import { UrlConfig, logging } from '@jenkins-cd/blueocean-core-js';
@@ -30,27 +29,23 @@ ZipFileDownload.propTypes = {
 };
 
 
-const ArtifactListingLimited = (props) => {
-    const { artifacts, t } = props;
+function ArtifactListingLimited(props) {
+    const { t } = props;
 
-    if (!artifacts || artifacts.length < 100) {
-        return null;
-    }
-
-    return (<div className="artifactListingLimited">
-        <EmptyStateView tightSpacing>
-            <Markdown>
-                {t('rundetail.artifacts.limit', { defaultValue: 'Only showing the first 100 artifacts' })}
-            </Markdown>
-        </EmptyStateView>
-    </div>);
-};
-
+    return (
+        <div className="artifacts-info-container">
+            <div className="artifacts-info">
+                {t('rundetail.artifacts.limit')}
+            </div>
+        </div>
+    );
+}
 
 ArtifactListingLimited.propTypes = {
-    artifacts: object,
     t: func,
 };
+
+
 /**
  * Displays a list of artifacts from the supplied build run property.
  */
@@ -121,8 +116,8 @@ export default class RunDetailsArtifacts extends Component {
         });
 
         return (
-            <div>
-                <ArtifactListingLimited artifacts={artifacts} t={t} />
+            <div className="">
+                { artifacts.length > 100 && <ArtifactListingLimited t={t} /> }
                 <Table headers={headers} className="artifacts-table">
                     <tr>
                         <td>
