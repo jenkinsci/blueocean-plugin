@@ -6,7 +6,9 @@ export function TestSummary(props) {
     const failuresTotal = failuresNew + failuresExisting;
     const extraClass = failuresTotal ? 'u-failed' : '';
 
-    const icon = React.cloneElement(Icon.PULL_REQUEST, { className: 'icon' });
+    const iconAsset = failuresTotal > 0 ? Icon.CLOSE : Icon.DONE_ALL;
+    const icon = React.cloneElement(iconAsset, { className: 'icon' });
+
     let title = '';
     let message = '';
 
