@@ -24,6 +24,7 @@ node {
 
         triggerATH();
       } catch(err) {
+        echo 'caught exception';
         echo err;
         currentBuild.result = "FAILURE"
       } finally {
