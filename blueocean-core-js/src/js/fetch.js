@@ -46,7 +46,7 @@ export const FetchFunctions = {
         }
         return response;
     },
-    
+
     stopLoadingIndicator(response) {
         loadingIndicator.hide();
         return response;
@@ -154,11 +154,12 @@ export const FetchFunctions = {
     rawFetchJSON(url, { onSuccess, onError, fetchOptions, disableDedupe, disableLoadingIndicator } = {}) {
         const request = () => {
             let future = getPrefetchedDataFuture(url); // eslint-disable-line no-use-before-define
-            if (!future) {
-                if (!disableLoadingIndicator) {
-                    loadingIndicator.show();
-                }
 
+            if (!disableLoadingIndicator) {
+                loadingIndicator.show();
+            }
+
+            if (!future) {
                 future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
                     .then(FetchFunctions.checkRefreshHeader)
                     .then(FetchFunctions.checkStatus)
@@ -167,6 +168,8 @@ export const FetchFunctions = {
                 if (!disableLoadingIndicator) {
                     future = future.then(FetchFunctions.stopLoadingIndicator, err => { FetchFunctions.stopLoadingIndicator(); throw err; });
                 }
+            } else if (!disableLoadingIndicator) {
+                loadingIndicator.hide();
             }
             if (onSuccess) {
                 return future.then(onSuccess).catch(FetchFunctions.onError(onError));
