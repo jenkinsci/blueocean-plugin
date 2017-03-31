@@ -24,10 +24,9 @@ node {
 
         triggerATH();
       } catch(err) {
-        echo 'caught exception';
-        echo err.message;
-        echo err.cause;
         currentBuild.result = "FAILURE"
+        echo 'caught exception'
+        echo 'toString: ' + err.toString()
       } finally {
         sendhipchat()
         deleteDir()
