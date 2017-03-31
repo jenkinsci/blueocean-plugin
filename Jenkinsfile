@@ -73,8 +73,10 @@ def sendhipchat() {
         color = "YELLOW"
     } else if(currentBuild.result == "SUCCESS" || currentBuild.result == null){
         color = "GREEN"
-    } else if(currentBuild.result == "FAILURE" || currentBuild.result == "ABORTED") {
+    } else if(currentBuild.result == "FAILURE") {
         color = "RED"
+    } else if(currentBuild.result == "ABORTED") {
+        color = "GRAY"
     }
     if(color != null) {
         hipchatSend message: message, color: color
