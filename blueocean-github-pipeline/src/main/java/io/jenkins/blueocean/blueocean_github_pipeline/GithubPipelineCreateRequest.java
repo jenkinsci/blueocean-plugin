@@ -179,8 +179,10 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                         }
                     });
                 }else {
+                    gitHubSCMNavigator.setPattern(".*");
                     organizationFolder.scheduleBuild(new Cause.UserIdCause());
                 }
+                organizationFolder.save();
                 return githubOrganizationFolder;
             }
         } catch (Exception e){
