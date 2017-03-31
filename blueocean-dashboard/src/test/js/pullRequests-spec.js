@@ -39,7 +39,7 @@ describe("PullRequests should render", () => {
 describe("PullRequests should not render", () => {
   it("does render NotSupported the PullRequests without data", () => {
     const wrapper =  shallow(<PullRequests t={t} />);
-    assert.equal(wrapper.find('NotSupported').length, 1);
+    assert.equal(wrapper.find('UnsupportedPlaceholder').length, 1);
   });
 
 });

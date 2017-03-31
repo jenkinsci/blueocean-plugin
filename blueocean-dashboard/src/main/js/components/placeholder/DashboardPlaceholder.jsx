@@ -22,7 +22,7 @@ export function DashboardPlaceholder(props) {
         icon: Icon.PIPELINE_RUNNING,
         title: t('home.placeholder.title'),
         message: t('home.placeholder.message'),
-        linkElement: <Link className="btn" to={t('home.placeholder.linkhref')}>{t('home.placeholder.linktext')}</Link>,
+        linkElement: <Link className="btn" to="/create-pipeline">{t('home.placeholder.linktext')}</Link>,
     };
 
     return (

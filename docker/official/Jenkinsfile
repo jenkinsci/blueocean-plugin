@@ -2,7 +2,7 @@
 
 properties([
     buildDiscarder(logRotator(numToKeepStr: '10')),
-    pipelineTriggers([cron('@weekly')]),
+    pipelineTriggers([cron('@daily')]),
 ])
 
 node('docker') {
