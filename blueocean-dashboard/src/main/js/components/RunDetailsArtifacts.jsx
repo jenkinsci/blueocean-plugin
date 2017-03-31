@@ -116,7 +116,7 @@ export default class RunDetailsArtifacts extends Component {
         });
 
         return (
-            <div className="">
+            <div>
                 { artifacts.length > 100 && <ArtifactListingLimited t={t} /> }
                 <Table headers={headers} className="artifacts-table">
                     <tr>
