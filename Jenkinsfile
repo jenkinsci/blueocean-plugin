@@ -24,6 +24,7 @@ node {
 
         triggerATH();
       } catch(err) {
+        echo err;
         currentBuild.result = "FAILURE"
       } finally {
         sendhipchat()
