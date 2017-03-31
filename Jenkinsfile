@@ -24,10 +24,10 @@ node {
 
         triggerATH();
       } catch(err) {
+        currentBuild.result = "FAILURE"
+
         if (err.toString().contains('AbortException')) {
             currentBuild.result = "ABORTED"
-        } else {
-            currentBuild.result = "FAILURE"
         }
       } finally {
         sendhipchat()
