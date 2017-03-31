@@ -31,7 +31,7 @@ export default class GithubOrgListStep extends React.Component {
 
     render() {
         const { flowManager } = this.props;
-        const title = 'In which Github organization are your repositories located?';
+        const title = 'Which organization does the repository belong to?';
         const disabled = flowManager.stepsDisabled;
 
         return (

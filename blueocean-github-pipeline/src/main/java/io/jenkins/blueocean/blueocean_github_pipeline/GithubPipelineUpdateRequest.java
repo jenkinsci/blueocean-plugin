@@ -55,6 +55,7 @@ public class GithubPipelineUpdateRequest extends BluePipelineUpdateRequest {
                 folder.scheduleBuild(new Cause.UserIdCause());
             }
         }
+        item.save();
         return pipeline;
     }
 
