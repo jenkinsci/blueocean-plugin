@@ -24,9 +24,11 @@ node {
 
         triggerATH();
       } catch(err) {
-        currentBuild.result = "FAILURE"
-        echo 'caught exception'
-        echo 'toString: ' + err.toString()
+        if (err.toString().contains('AbortException')) {
+            currentBuild.result = "ABORTED"
+        } else {
+            currentBuild.result = "FAILURE"
+        }
       } finally {
         sendhipchat()
         deleteDir()
@@ -71,7 +73,7 @@ def sendhipchat() {
         color = "YELLOW"
     } else if(currentBuild.result == "SUCCESS" || currentBuild.result == null){
         color = "GREEN"
-    } else if(currentBuild.result == "FAILURE") {
+    } else if(currentBuild.result == "FAILURE" || currentBuild.result == "ABORTED") {
         color = "RED"
     }
     if(color != null) {
