@@ -1,11 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
-import { logging, calculateLogView } from '@jenkins-cd/blueocean-core-js';
+import { logging } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import Extensions from '@jenkins-cd/js-extensions';
 import { Augmenter } from './karaoke/services/Augmenter';
-
-import { KaraokeConfig } from './karaoke';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.RunDetailsPipeline');
 @observer
@@ -14,8 +12,6 @@ export class RunDetailsPipeline extends Component {
         super(props);
         this._handleKeys = this._handleKeys.bind(this);
         this._onScrollHandler = this._onScrollHandler.bind(this);
-        // query parameter before preference
-        this.classicLog = calculateLogView(props) || KaraokeConfig.getPreference('runDetails.logView').value === 'classic';
     }
     componentWillMount() {
         if (this.props.params) {
@@ -91,7 +87,7 @@ export class RunDetailsPipeline extends Component {
         };
         let provider;
         const stepScrollAreaClass = `step-scroll-area ${this.augmenter.karaoke ? 'follow-along-on' : 'follow-along-off'}`;
-        if (this.classicLog || this.augmenter.isFreeStyle) {
+        if (this.augmenter.isFreeStyle) {
             provider = (<Extensions.Renderer {
                     ...{
                         extensionPoint: 'jenkins.pipeline.karaoke.freestyle.provider',

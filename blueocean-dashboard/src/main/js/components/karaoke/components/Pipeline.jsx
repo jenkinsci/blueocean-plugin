@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { logging, sseConnection } from '@jenkins-cd/blueocean-core-js';
+import { logging, sseConnection, calculateLogView } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
@@ -18,6 +18,8 @@ export default class Pipeline extends Component {
         super(props);
         this.listener = {};
         this.sseEventHandler = this.sseEventHandler.bind(this);
+        // query parameter before preference
+        this.classicLog = calculateLogView(props) || KaraokeConfig.getPreference('runDetails.logView').value === 'classic';
         this.showPending = KaraokeConfig.getPreference('runDetails.pipeline.showPending').value !== 'never'; // Configure flag to show pending or not
         this.karaoke = KaraokeConfig.getPreference('runDetails.pipeline.karaoke').value === 'never' ? false : props.augmenter.karaoke; // initial karaoke state
         this.updateOnFinish = KaraokeConfig.getPreference('runDetails.pipeline.updateOnFinish').value;
@@ -165,8 +167,8 @@ export default class Pipeline extends Component {
             return <QueuedState message={queuedMessage} />;
         }
         const supportsNodes = this.pager.nodes === undefined;
-        if(noResultsToDisplay && supportsNodes && !this.pager.pending) { // no information? fallback to freeStyle
-            logger.debug('EarlyOut - We do not have any information we can display, falling back to freeStyle rendering');
+        if(!this.pager.pending && (this.classicLog  || ( noResultsToDisplay && supportsNodes))) { // no information? fallback to freeStyle
+            logger.debug('EarlyOut - We do not have any information we can display or we opt-out by preference, falling back to freeStyle rendering');
             return (<FreeStyle {...this.props }/>);
         }
         if (this.pager.pending && this.showPending) { // we are waiting for the backend information
