@@ -7,6 +7,7 @@ import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -20,9 +21,7 @@ public class SimpleJwtAuthenticationStore extends JwtAuthenticationStoreFactory 
     private final ConcurrentMap<String, Authentication> authenticationMap = new ConcurrentHashMap<>();
 
     public void add(String id, Authentication authentication){
-        if(authenticationMap.get(id) == null){
-            authenticationMap.put(id, authentication);
-        }
+        authenticationMap.putIfAbsent(id, authentication);
     }
 
     public Authentication get(String id){
@@ -37,7 +36,16 @@ public class SimpleJwtAuthenticationStore extends JwtAuthenticationStoreFactory 
 
             if(authProvider.get("id") != null){
                 String id = (String) authProvider.get("id");
-                return authenticationMap.get(id);
+                Authentication authentication =  authenticationMap.get(id);
+                if(authentication != null) {
+                    // if expired, we clear this id from the map and return null
+                    long expiryTime = (Long)claims.get("exp");
+                    if (expiryTime < (System.currentTimeMillis()/1000)) {
+                        authenticationMap.remove(id);
+                        return null;
+                    }
+                }
+                return authentication;
             }
         }
         return null;
@@ -45,8 +53,8 @@ public class SimpleJwtAuthenticationStore extends JwtAuthenticationStoreFactory 
 
     @Override
     public void store(Authentication authentication, Map<String,Object> claims) {
-        String authenticationId = String.valueOf(authentication.hashCode());
-        authenticationMap.putIfAbsent(authenticationId, authentication);
+        String authenticationId = UUID.randomUUID().toString().replace("-", "");
+        add(authenticationId, authentication);
         JSONObject provider = new JSONObject();
 
         provider.put("id", authenticationId);

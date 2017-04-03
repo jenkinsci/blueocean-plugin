@@ -9,6 +9,7 @@ import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.context.SecurityContextImpl;
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Stapler;
 
 import javax.servlet.Filter;
@@ -97,6 +98,9 @@ public class JwtAuthenticationFilter implements Filter {
             return false;
 
         String path = req.getRequestURI().substring(req.getContextPath().length());
+        if(!StringUtils.isBlank(path)){
+            path = path.replaceAll("//+", "/"); //skip extra slashes
+        }
         return path.startsWith("/blue/")
             || path.startsWith("/sse-gateway/");
     }
