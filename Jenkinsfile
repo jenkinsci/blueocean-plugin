@@ -67,7 +67,7 @@ def sendhipchat() {
     if(currentBuild.result == null) {
       res = "SUCCESS"
     }
-    message = "${env.JOB_NAME} #${env.BUILD_NUMBER}, status: ${res} (<a href='${currentBuild.absoluteUrl}'>Open</a>)"
+    message = "${env.JOB_NAME} #${env.BUILD_NUMBER}, status: ${res} (<a href='${env.RUN_DISPLAY_URL}'>Open</a>)"
     color = null
     if(currentBuild.result == "UNSTABLE") {
         color = "YELLOW"
