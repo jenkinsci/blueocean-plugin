@@ -25,9 +25,13 @@
 /**
  * Remove all html markup tags from the supplied markup text.
  * @param {string} markupText The markup text to be "cleaned".
- * @return {string} The cleaned markup text.
+ * @return {string} The cleaned markup text. Empty string if markupText is undefined.
  */
 export const removeMarkupTags = function (markupText) {
+    if (markupText === null || markupText === undefined) {
+        return '';
+    }
+
     if (typeof markupText !== 'string') {
         throw new Error('Invalid arg type for "markupText". Must be a string.');
     }
