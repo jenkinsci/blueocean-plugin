@@ -293,6 +293,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
     @Test
     public void getMultiBranchPipelinesWithNonMasterBranch() throws Exception {
+        sampleRepo.git("checkout", "feature2");
         sampleRepo.git("branch","-D", "master");
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
 
@@ -942,6 +943,7 @@ public class MultiBranchTest extends PipelineBaseTest {
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo.write("file", "subsequent content2");
         sampleRepo.git("commit", "--all", "--message=tweaked2");
+        sampleRepo.git("checkout", "master");
     }
     private void setupScmWithChangeSet() throws Exception {
         // create git repo
