@@ -42,24 +42,7 @@ public class JwtTokenVerifierImpl extends JwtTokenVerifier {
 
     @Override
     public Authentication verify(HttpServletRequest request) {
-        JwtClaims claims = validate(request);
-        if (claims==null)   return null;
-
-        try {
-            String subject = claims.getSubject();
-
-            if(subject.equals("anonymous")) { //if anonymous, we don't look in user db
-                return Jenkins.ANONYMOUS;
-            }else{
-
-                JwtAuthenticationStore authenticationStore = getJwtStore(claims.getClaimsMap());
-                Authentication authentication = authenticationStore.getAuthentication(claims.getClaimsMap());
-                return authentication;
-            }
-        } catch (MalformedClaimException e) {
-            logger.error(String.format("Error reading sub header for token %s",claims.getRawJson()),e);
-            throw new ServiceException.UnauthorizedException("Invalid JWT token: malformed claim");
-        }
+        return  validate(request);
     }
 
     /**
@@ -68,7 +51,7 @@ public class JwtTokenVerifierImpl extends JwtTokenVerifier {
      * @throws Exception
      *      if the JWT token is present but invalid
      */
-    private @CheckForNull JwtClaims validate(HttpServletRequest request) {
+    private @CheckForNull Authentication validate(HttpServletRequest request) {
         String authHeader = request.getHeader("Authorization");
         if(authHeader == null || !authHeader.startsWith("Bearer ")){
             return null;
@@ -109,13 +92,26 @@ public class JwtTokenVerifierImpl extends JwtTokenVerifier {
                 JwtContext context = jwtConsumer.process(token);
                 JwtClaims claims = context.getJwtClaims();
 
-                //check if token expired
-                NumericDate expirationTime = claims.getExpirationTime();
-                if (expirationTime.isBefore(NumericDate.now())){
-                    throw new ServiceException.UnauthorizedException("Invalid JWT token: expired");
+                String subject = claims.getSubject();
+                if(subject.equals("anonymous")) { //if anonymous, we do not bother checking expiration
+                    return Jenkins.ANONYMOUS;
+                }else{
+                    // If not anonymous user, get Authentication object associated with this claim
+                    // We give a change to the authentication store to inspect the claims and if expired it might
+                    // do cleanup of associated Authenticaiton object for example.
+                    JwtAuthenticationStore authenticationStore = getJwtStore(claims.getClaimsMap());
+                    Authentication authentication = authenticationStore.getAuthentication(claims.getClaimsMap());
+
+                    // Now check if token expired
+                    NumericDate expirationTime = claims.getExpirationTime();
+                    if (expirationTime.isBefore(NumericDate.now())){
+                        throw new ServiceException.UnauthorizedException("Invalid JWT token: expired");
+
+                    }
+                    return authentication;
                 }
 
-                return claims;
+
             } catch (InvalidJwtException e) {
                 logger.error("Invalid JWT token: "+e.getMessage(), e);
                 throw new ServiceException.UnauthorizedException("Invalid JWT token");
