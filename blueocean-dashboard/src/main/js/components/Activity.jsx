@@ -101,6 +101,7 @@ export class Activity extends Component {
             }
         }
 
+        const showTable = branch || (runs && runs.length > 0);
         const head = 'pipelinedetail.activity.header';
 
         const status = t(`${head}.status`, { defaultValue: 'Status' });
@@ -138,7 +139,7 @@ export class Activity extends Component {
         return (<main>
             <article className="activity">
                 { runButton }
-                { !isLoading &&
+                { showTable &&
                 <Table className="activity-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding key={branch}>
                     {
                         runs.length > 0 && runs.map((run, index) => {
