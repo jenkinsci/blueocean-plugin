@@ -148,6 +148,13 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                         }
                     }
 
+                    // Add any existing discovered repos
+                    for (MultiBranchProject<?,?> p : organizationFolder.getItems()) {
+                        if (!repos.contains(p.getName())) {
+                            repos.add(p.getName());
+                        }
+                    }
+
                     if (credentialId == null) {
                         credentialId = gitHubSCMNavigator.getScanCredentialsId();
                     }
@@ -179,8 +186,10 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                         }
                     });
                 }else {
+                    gitHubSCMNavigator.setPattern(".*");
                     organizationFolder.scheduleBuild(new Cause.UserIdCause());
                 }
+                organizationFolder.save();
                 return githubOrganizationFolder;
             }
         } catch (Exception e){

@@ -39,8 +39,8 @@
     "skin-deep": "0.16.0"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.90-ivan-SNAPSHOT",
-    "@jenkins-cd/design-language": "0.0.125",
+    "@jenkins-cd/blueocean-core-js": "0.0.92",
+    "@jenkins-cd/design-language": "0.0.127",
     "@jenkins-cd/js-extensions": "0.0.33",
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/react-material-icons": "1.0.0",
