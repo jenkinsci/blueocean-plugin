@@ -18,7 +18,7 @@ const translate = i18nTranslator('blueocean-dashboard');
 export class Pipelines extends Component {
 
     state = {
-        actionExtensionCount: 0
+        actionExtensionCount: 0,
     };
 
     componentWillMount() {
@@ -118,10 +118,10 @@ export class Pipelines extends Component {
                             router={ this.context.router }
                         />
 
-                        <JTable columns={columns} className="pipelines-table">
-                            <TableHeaderRow />
-                            { pipelineRows }
-                        </JTable>
+                        {/*<JTable columns={columns} className="pipelines-table">*/}
+                            {/*<TableHeaderRow />*/}
+                            {/*{ pipelineRows }*/}
+                        {/*</JTable>*/}
 
                         { pipelines && <ShowMoreButton pager={this.pager} /> }
                     </article>

@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/react-material-icons';
 

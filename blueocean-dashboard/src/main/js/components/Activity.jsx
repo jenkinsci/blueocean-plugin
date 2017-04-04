@@ -1,8 +1,13 @@
 import React, { Component, PropTypes } from 'react';
-import { Table } from '@jenkins-cd/design-language';
+import {
+    Table,
+    JTable,
+    TableHeaderRow,
+} from '@jenkins-cd/design-language';
 import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
-import Runs, { RunDetailsRow } from './Runs';
+import Runs from './Runs';
+import { RunDetailsRow } from './RunDetailsRow';
 import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { buildPipelineUrl } from '../util/UrlUtils';
@@ -106,8 +111,8 @@ export class Activity extends Component {
                     const { params } = this.context;
                     const branchesUrl = buildPipelineUrl(params.organization, params.pipeline, 'branches');
                     return <NoRunsMultibranchPlaceholder t={t} branchName={branch} branchesUrl={branchesUrl} />;
+                }
             }
-        }
         }
 
         const head = 'pipelinedetail.activity.header';
@@ -134,7 +139,7 @@ export class Activity extends Component {
         ];
 
         if (isMultiBranchPipeline) {
-            columns.push(JTable.column(60, branchFilter, false))
+            columns.push(JTable.column(60, branchFilter, false));
         }
 
         columns.push(
@@ -148,7 +153,7 @@ export class Activity extends Component {
             status,
             runHeader,
             commit,
-            { label: branchFilter, className: 'branch' },    /// <-- Only diff
+            { label: branchFilter, className: 'branch' },    // <-- Only diff
             { label: message, className: 'message' },
             { label: duration, className: 'duration' },
             { label: completed, className: 'completed' },
@@ -186,29 +191,32 @@ export class Activity extends Component {
         return (<main>
             <article className="activity">
                 { runButton }
+
+                { runsTable }
+
                 { !isLoading &&
                     <Table className="activity-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding key={branch}>
                         {
                         runs.length > 0 && runs.map((run, index) => {
-                                const changeset = run.changeSet;
-                                let latestRecord = {};
+                            const changeset = run.changeSet;
+                            let latestRecord = {};
 
-                                if (changeset && changeset.length > 0) {
-                                    latestRecord = new ChangeSetRecord(changeset[changeset.length - 1]);
-                                }
+                            if (changeset && changeset.length > 0) {
+                                latestRecord = new ChangeSetRecord(changeset[changeset.length - 1]);
+                            }
 
-                                return (
-                                    <Runs {...{
-                                        t,
-                                        locale,
-                                        run,
-                                        pipeline,
-                                        key: index,
-                                        changeset: latestRecord,
-                                    }}
-                                    />
-                                );
-                            })
+                            return (
+                                <Runs {...{
+                                    t,
+                                    locale,
+                                    run,
+                                    pipeline,
+                                    key: index,
+                                    changeset: latestRecord,
+                                }}
+                                />
+                            );
+                        })
                         }
                     </Table>
                 }
