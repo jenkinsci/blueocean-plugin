@@ -34,12 +34,10 @@ function createContent(content) {
  */
 export function PlaceholderDialog(props) {
     const { children, style, width, content } = props;
-    const marginLeft = width / -2;
-
     const newChildren = children || createContent(content);
 
     return (
-        <div className="PlaceholderDialog" style={{ ...style, width, marginLeft }}>
+        <div className="PlaceholderDialog" style={{ ...style, width }}>
             { newChildren }
         </div>
     );
