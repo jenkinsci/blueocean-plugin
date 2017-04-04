@@ -1,6 +1,35 @@
 import React, { Component, PropTypes } from 'react';
-import { CommitHash, EmptyStateView, ReadableDate, Table } from '@jenkins-cd/design-language';
-import Markdown from 'react-remarkable';
+import { CommitHash, PlaceholderTable, ReadableDate, Table } from '@jenkins-cd/design-language';
+import Icon from './placeholder/Icon';
+import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
+
+
+function NoChangesPlaceholder(props) {
+    const { t } = props;
+
+    const columns = [
+        { width: 750, isFlexible: true, head: { text: 40 }, cell: { text: 150 } },
+        { width: 90, head: { text: 50 }, cell: { text: 60 } },
+        { width: 30, head: {}, cell: { icon: 20 } },
+    ];
+
+    const content = {
+        icon: Icon.EDIT,
+        title: t('rundetail.changes.placeholder.title'),
+    };
+
+    return (
+        <div className="RunDetailsEmpty NoChanges">
+            <PlaceholderTable columns={columns} />
+            <PlaceholderDialog width={265} content={content} />
+        </div>
+    );
+}
+
+NoChangesPlaceholder.propTypes = {
+    t: PropTypes.func,
+};
+
 
 const CommitLink = (commit) => {
     if (commit.url) {
@@ -23,11 +52,7 @@ export default class RunDetailsChanges extends Component {
         const { changeSet } = result;
 
         if (!changeSet || !changeSet.length) {
-            return (<EmptyStateView tightSpacing>
-                <Markdown>
-                    {t('EmptyState.changes', { defaultValue: 'There are no changes for this pipeline run.\n\n' })}
-                </Markdown>
-            </EmptyStateView>);
+            return <NoChangesPlaceholder t={t} />;
         }
 
         const head = 'rundetail.changes.header';

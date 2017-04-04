@@ -56,19 +56,13 @@ describe("TestResults", () => {
     };
 
     it("Test fixed included", () => {
-        let wrapper = shallow(<TestResults t={t} testResults={testResults1} />);
-
-        const fixed = wrapper.find('.new-passed .count').text();
-        assert.equal(fixed, 1);
-
-        const failed = wrapper.find('.failed .count').text();
-        assert.equal(failed, 4);
-
-        const skipped = wrapper.find('.skipped .count').text();
-        assert.equal(skipped, 3);
-
-        const newFailed = wrapper.find('.new-failed .count').text();
-        assert.equal(newFailed, 1);
+        const wrapper = shallow(<TestResults t={t} testResults={testResults1} />);
+        const output = wrapper.html();
+        assert(output.indexOf('summary.failing_title') >= 0, 'should show failing title');
+        assert(output.indexOf('new-failure-block') >= 0, 'should find new failure block');
+        assert(output.indexOf('existing-failure-block') >= 0, 'should find existing failure block');
+        assert(output.indexOf('fixed-block') >= 0, 'should find a fixed block');
+        assert(output.indexOf('skipped-block') >= 0, 'should find a skipped blocks');
     });
 
     it("Handles REGRESSION case", () => {
@@ -93,26 +87,24 @@ describe("TestResults", () => {
     });
 
     it("All passing shown", () => {
-        let wrapper = shallow(<TestResults t={t} testResults={testResults1} />);
-        let isDone = wrapper.html().indexOf('done_all') > 0;
-        assert(!isDone, "Done all found, when shouldn't have been");
-
         var success = {
             "_class": "hudson.tasks.junit.TestResult",
             "duration": 0.008, "empty": false, "failCount": 0, "passCount": 3, "skipCount": 0, "suites": [
                 {
                     "duration": 0, "id": null, "name": "failure.TestThisWontFail", "stderr": null, "stdout": null, "timestamp": null, "cases": [
-                        { "age": 0, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest2", "skipped": false, "skippedMessage": null, "status": "PASSED", "stderr": null, "stdout": null },
-                        { "age": 0, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest3", "skipped": false, "skippedMessage": null, "status": "PASSED", "stderr": null, "stdout": null },
-                        { "age": 0, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest4", "skipped": false, "skippedMessage": null, "status": "PASSED", "stderr": null, "stdout": null },
-                    ],
+                    { "age": 0, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest2", "skipped": false, "skippedMessage": null, "status": "PASSED", "stderr": null, "stdout": null },
+                    { "age": 0, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest3", "skipped": false, "skippedMessage": null, "status": "PASSED", "stderr": null, "stdout": null },
+                    { "age": 0, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest4", "skipped": false, "skippedMessage": null, "status": "PASSED", "stderr": null, "stdout": null },
+                ],
                 }]
         };
 
-        wrapper = shallow(<TestResults t={t} testResults={success} />);
-        let html = wrapper.html();
-        assert(html.indexOf('done_all') > 0, "Done all not found, when should be");
-        assert(html.indexOf('fixed-block') < 0, "No fixed tests!");
+        const wrapper = shallow(<TestResults t={t} testResults={success} />);
+        const output = wrapper.html();
+        assert(output.indexOf('summary.passing_title') >= 0, 'should show all passing title');
+        assert(output.indexOf('-failure-block') < 0, 'should not find any failure blocks');
+        assert(output.indexOf('fixed-block') < 0, 'should not find a fixed block');
+        assert(output.indexOf('skipped-block') < 0, 'should not find a skipped blocks');
     });
 
     it("All passing and fixed shown", () => {
@@ -128,10 +120,12 @@ describe("TestResults", () => {
                 }]
         };
 
-        let wrapper = shallow(<TestResults t={t} testResults={successWithFixed} />);
-        let html = wrapper.html();
-        assert(html.indexOf('done_all') > 0, "Done all not found, when should be");
-        assert(html.indexOf('fixed-block') > 0, "Should have fixed tests!");
+        const wrapper = shallow(<TestResults t={t} testResults={successWithFixed} />);
+        const output = wrapper.html();
+        assert(output.indexOf('summary.passing_after_fixes_title') >= 0, 'should show passing with fixes title');
+        assert(output.indexOf('-failure-block') < 0, 'should not find any failure blocks');
+        assert(output.indexOf('fixed-block') >= 0, 'should find a fixed block');
+        assert(output.indexOf('skipped-block') < 0, 'should not find a skipped blocks');
     });
 
     it("unstable renders with no error message", () => {
