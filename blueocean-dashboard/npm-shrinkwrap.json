@@ -5,7 +5,14 @@
     "@jenkins-cd/blueocean-core-js": {
       "version": "0.0.94",
       "from": "@jenkins-cd/blueocean-core-js@0.0.94",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.94.tgz"
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.94.tgz",
+      "dependencies": {
+        "@jenkins-cd/js-extensions": {
+          "version": "0.0.33",
+          "from": "@jenkins-cd/js-extensions@0.0.33",
+          "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.33.tgz"
+        }
+      }
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.127",
@@ -7446,9 +7453,9 @@
       "dev": true
     },
     "stream-http": {
-      "version": "2.6.3",
+      "version": "2.7.0",
       "from": "stream-http@>=2.0.0 <3.0.0",
-      "resolved": "https://registry.npmjs.org/stream-http/-/stream-http-2.6.3.tgz",
+      "resolved": "https://registry.npmjs.org/stream-http/-/stream-http-2.7.0.tgz",
       "dev": true,
       "dependencies": {
         "readable-stream": {
