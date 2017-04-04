@@ -35,7 +35,8 @@ function ArtifactListingLimited(props) {
     return (
         <div className="artifacts-info-container">
             <div className="artifacts-info">
-                {t('rundetail.artifacts.limit')}
+                <h1 className="title">{t('rundetail.artifacts.limit_title')}</h1>
+                <p className="message">{t('rundetail.artifacts.limit_message')}</p>
             </div>
         </div>
     );
