@@ -11,7 +11,7 @@
   ],
   "scripts": {
     "build": "rm -rf dist && mkdir dist && npm install && npm run compile && npm run test",
-    "compile": "babel --presets es2015,react src -d dist",         
+    "compile": "babel --presets es2015,react src -d dist",
     "test": "gulp test",
     "compile-test": "npm run compile && npm run test",
     "lint": "gulp lint"
@@ -20,7 +20,7 @@
   "license": "MIT",
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.52",
+    "@jenkins-cd/js-builder": "0.0.54",
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/js-test": "1.2.3",
     "@jenkins-cd/logging": "0.0.6",
