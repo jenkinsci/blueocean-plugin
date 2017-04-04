@@ -5,6 +5,8 @@ import { observer } from 'mobx-react';
 import Extensions from '@jenkins-cd/js-extensions';
 import { Augmenter } from './karaoke/services/Augmenter';
 
+import { KaraokeConfig } from './karaoke';
+
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.RunDetailsPipeline');
 @observer
 export class RunDetailsPipeline extends Component {
