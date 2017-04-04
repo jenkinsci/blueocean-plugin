@@ -115,6 +115,7 @@ export class Activity extends Component {
             }
         }
 
+        const showTable = branch || (runs && runs.length > 0);
         const head = 'pipelinedetail.activity.header';
 
         // TODO: Postfix these var names
@@ -194,9 +195,7 @@ export class Activity extends Component {
 
                 { runsTable }
 
-                { !isLoading &&
-                    <Table className="activity-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding key={branch}>
-                        {
+                { showTable &&
                         runs.length > 0 && runs.map((run, index) => {
                             const changeset = run.changeSet;
                             let latestRecord = {};
