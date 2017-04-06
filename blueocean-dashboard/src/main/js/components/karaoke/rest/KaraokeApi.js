@@ -78,6 +78,11 @@ export class KaraokeApi {
                 const fetchOptions = prepareOptions();
                 const finalHref = start ? `${href}?start=${start}` : href;
                 logger.debug('Fetching with txt enabled parsing the following href', finalHref, 'start from', start);
+                if (!href || href === undefined) {
+                    // leave a logger warning and abort
+                    logger.warn('could not fetch with empty href')
+                    resolve();
+                }
                 resolve(Fetch.fetch(finalHref, { fetchOptions })
                     .then(FetchFunctions.checkStatus)
                     .then(parseMoreDataHeader)
@@ -92,6 +97,11 @@ export class KaraokeApi {
             debounce(() => {
                 const fetchOptions = prepareOptions();
                 logger.debug('Fetching with json enabled parsing the following href', href);
+                if (!href || href === undefined) {
+                    // leave a logger warning and abort
+                    logger.warn('could not fetch with empty href');
+                    resolve();
+                }
                 resolve(Fetch.fetchJSON(href, { fetchOptions })
                     .then(FetchFunctions.checkStatus)
                     .then(data => capabilityAugmenter.augmentCapabilities(data))
