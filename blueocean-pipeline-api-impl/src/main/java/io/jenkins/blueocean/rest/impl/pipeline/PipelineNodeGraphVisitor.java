@@ -274,9 +274,13 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                     status = new NodeRunStatus(genericStatus);
                 }
             }else{
-                times = new TimingInfo(TimingAction.getStartTime(branchStartNode)+System.currentTimeMillis(),
+                long startTime = System.currentTimeMillis();
+                if (branchStartNode.getAction(TimingAction.class) != null) {
+                    startTime = TimingAction.getStartTime(branchStartNode);
+                }
+                times = new TimingInfo(System.currentTimeMillis() - startTime,
                         chunk.getPauseTimeMillis(),
-                        TimingAction.getStartTime(branchStartNode));
+                        startTime);
                 status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.RUNNING);
             }
 
