@@ -12,6 +12,8 @@ import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
+import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.service.embedded.rest.LogResource;
 import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
@@ -145,6 +147,16 @@ public class OrganizationFolderRunImpl extends BlueRun {
 
     @Override
     public BluePipelineStepContainer getSteps() {
+        return null;
+    }
+
+    @Override
+    public BlueTestResultContainer getTests() {
+        return null;
+    }
+
+    @Override
+    public BlueTestSummary getTestSummary() {
         return null;
     }
 

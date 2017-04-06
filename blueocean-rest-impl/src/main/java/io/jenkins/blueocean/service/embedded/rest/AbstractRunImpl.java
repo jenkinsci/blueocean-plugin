@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.model.Action;
 import hudson.model.Result;
 import hudson.model.Run;
+import hudson.tasks.test.AbstractTestResultAction;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -14,12 +15,15 @@ import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
+import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.GenericResource;
 import org.kohsuke.stapler.QueryParameter;
 
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Basic {@link BlueRun} implementation.
@@ -144,6 +148,30 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public BluePipelineStepContainer getSteps() {
         return null;
+    }
+
+    @Override
+    public BlueTestResultContainer getTests() {
+        return new BlueTestResultContainer(this, run);
+    }
+
+    @Override
+    public BlueTestSummary getTestSummary() {
+        List<AbstractTestResultAction> actions = run.getActions(AbstractTestResultAction.class);
+        if (actions.isEmpty()) {
+            return null;
+        }
+        long passed = 0;
+        long failed = 0;
+        long skipped = 0;
+        long total = 0;
+        for (AbstractTestResultAction action : actions) {
+            passed += action.getPassedTests().size();
+            failed += action.getFailCount();
+            passed += action.getSkipCount();
+            total += action.getTotalCount();
+        }
+        return new BlueTestSummary(passed, failed, skipped, total);
     }
 
     public Collection<BlueActionProxy> getActions() {
