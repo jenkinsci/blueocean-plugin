@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react';
 import { PlaceholderTable } from '@jenkins-cd/design-language';
 import { Link } from 'react-router';
 
-import { PlaceholderContent } from './PlaceholderContent';
 import { PlaceholderDialog } from './PlaceholderDialog';
 import Icon from './Icon';
 
