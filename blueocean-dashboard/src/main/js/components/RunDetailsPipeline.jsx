@@ -24,12 +24,7 @@ export class RunDetailsPipeline extends Component {
     componentDidMount() {
         const { result } = this.props;
         if (!result.isQueued()) {
-             // determine scroll area
-            const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
-            // add both listener, one to the scroll area and another to the whole document
-            if (domNode) {
-                domNode.addEventListener('wheel', this._onScrollHandler, false);
-            }
+            document.addEventListener('wheel', this._onScrollHandler, false);
             document.addEventListener('keydown', this._handleKeys, false);
         }
     }
@@ -46,11 +41,8 @@ export class RunDetailsPipeline extends Component {
         }
     }
     componentWillUnmount() {
-        const domNode = ReactDOM.findDOMNode(this.refs.scrollArea);
-        if (domNode) {
-            domNode.removeEventListener('wheel', this._onScrollHandler);
-        }
         document.removeEventListener('keydown', this._handleKeys);
+        document.removeEventListener('wheel', this._onScrollHandler);
     }
  // we bail out on arrow_up key
     _handleKeys(event) {
@@ -107,7 +99,7 @@ export class RunDetailsPipeline extends Component {
                 }
             />);
         }
-        return (<div ref="scrollArea" className={stepScrollAreaClass} >
+        return (<div className={stepScrollAreaClass} >
             { provider }
         </div>);
     }
