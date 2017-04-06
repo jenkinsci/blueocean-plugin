@@ -31,6 +31,8 @@ export default class Pipeline extends Component {
             const { augmenter, params: { node } } = this.props;
             this.pager = KaraokeService.pipelinePager(augmenter, { node });
         }
+    }
+    componentDidMount() {
         // get sse listener to react on the different in sse events
         this.listener.ssePipeline = sseConnection.subscribe('pipeline', this.sseEventHandler);
         this.listener.sseJob = sseConnection.subscribe('job', this.sseEventHandler);
@@ -251,7 +253,7 @@ export default class Pipeline extends Component {
 
             { !this.pager.pending && !isPipelineQueued && noResultsToDisplay && <NoSteps
                 message={t('rundetail.pipeline.nosteps',
-                { defaultValue: 'There are no logsrrr' })}
+                { defaultValue: 'There are no logs' })}
             /> }
 
             { isPipelineQueued && <QueuedState message={queuedMessage} /> }
