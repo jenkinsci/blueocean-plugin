@@ -7,10 +7,12 @@ import org.kohsuke.stapler.verb.GET;
 
 public abstract class BlueTestResult extends Resource {
 
-    public static final String STATUS = "STATUS";
-    public static final String DURATION = "DURATION";
-    public static final String NAME = "NAME";
-    public static final String ID = "ID";
+    public static final String STATUS = "status";
+    public static final String DURATION = "duration";
+    public static final String NAME = "name";
+    public static final String ID = "id";
+    public static final String STDERR = "stderr";
+    public static final String STDOUT = "stdout";
 
     public enum Status {
         PASSED,
@@ -32,11 +34,11 @@ public abstract class BlueTestResult extends Resource {
 
     @Navigable
     @GET
-    @WebMethod(name="stderr")
+    @WebMethod(name= STDERR)
     public abstract String getStdErr();
 
     @Navigable
     @GET
-    @WebMethod(name="stdout")
+    @WebMethod(name= STDOUT)
     public abstract String getStdOut();
 }
