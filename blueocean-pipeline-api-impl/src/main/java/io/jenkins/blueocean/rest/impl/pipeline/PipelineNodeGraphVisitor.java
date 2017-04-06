@@ -567,7 +567,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
         long duration = 0;
         long pauseDuration = 0;
-        long startTime = 0;
+        long startTime = System.currentTimeMillis();
         TimingAction timingAction = null; //= parallelStartNode.getAction(TimingAction.class);
         if(timingAction != null){
             startTime = timingAction.getStartTime();
