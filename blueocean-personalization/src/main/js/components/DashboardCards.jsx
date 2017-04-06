@@ -49,34 +49,33 @@ export class DashboardCards extends Component {
     }
 
     render() {
-        if (!this.props.favorites) {
-            return null;
-        }
+        const favorites = this.props.favorites || [];
 
         const locale = t && t.lng;
 
         // empty array will be filled in the next method if any paused fav's exist
         const pausedCards = [];
-        const favoriteCards = this.props.favorites
-          .map(favorite => {
-              const pipeline = favorite.item;
-              const responseElement = (<div key={favorite._links.self.href}>
-                  <PipelineCard
-                    router={this.props.router}
-                    runnable={pipeline}
-                    t={t}
-                    locale={locale}
-                    favorite
-                    onFavoriteToggle={(isFavorite) => this._onFavoriteToggle(isFavorite, favorite)}
-                  />
-              </div>);
-              // if we are in paused state fill the pause array and return null
-              if (favorite.item.latestRun && favorite.item.latestRun.state === 'PAUSED') {
-                  pausedCards.push(responseElement);
-                  return null;
-              }
-              return (responseElement);
-          });
+        const favoriteCards = favorites.map(favorite => {
+            const pipeline = favorite.item;
+            const responseElement = (
+                <div key={favorite._links.self.href}>
+                    <PipelineCard
+                      router={this.props.router}
+                      runnable={pipeline}
+                      t={t}
+                      locale={locale}
+                      favorite
+                      onFavoriteToggle={(isFavorite) => this._onFavoriteToggle(isFavorite, favorite)}
+                    />
+                </div>
+            );
+            // if we are in paused state fill the pause array and return null
+            if (favorite.item.latestRun && favorite.item.latestRun.state === 'PAUSED') {
+                pausedCards.push(responseElement);
+                return null;
+            }
+            return (responseElement);
+        });
 
         // generic sub-render to output fav or paused stacks
         const StackOutput = (properties) => {
