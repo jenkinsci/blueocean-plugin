@@ -26,7 +26,7 @@ export class LogConsole extends Component {
 
     componentWillMount() {
         // We need a shallow copy of the ObservableArray to "cast" it down to normal array
-        const lineArray = this.props.logArray !== undefined && !Array.isArray(this.props.logArray) ? this.props.logArray.slice() : this.props.logArray;
+        const lineArray = this.props.logArray !== undefined && this.props.logArray.slice();
         logger.debug('isArray props', Array.isArray(this.props.logArray), 'isArray after', Array.isArray(lineArray));
         this._processLines(lineArray);
     }
@@ -35,8 +35,8 @@ export class LogConsole extends Component {
     componentWillReceiveProps(nextProps) { // eslint-disable-line
         logger.debug('newProps isArray', Array.isArray(nextProps.logArray));
         // We need a shallow copy of the ObservableArray to "cast" it down to normal array
-        const newArray = nextProps.logArray !== undefined && !Array.isArray(nextProps.logArray) ? nextProps.logArray.slice() : nextProps.logArray;
-        const oldArray = this.props.logArray !== undefined && !Array.isArray(this.props.logArray) ? this.props.logArray.slice() : this.props.logArray;
+        const newArray = nextProps.logArray !== undefined && nextProps.logArray.slice();
+        const oldArray = this.props.logArray !== undefined && this.props.logArray.slice();
         // if have a new logArray, simply add it to the queue and wait for next tick
         this.queuedLines = this.queuedLines.concat(newArray.slice(oldArray.length));
         clearTimeout(this.timeouts.render);
