@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { PlaceholderTable } from '@jenkins-cd/design-language';
 
-import { actions as selectorActions, connect, createSelector, tests as testsSelector } from '../redux';
 import Icon from './placeholder/Icon';
 import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
 import TestResults from './testing/TestResults';
@@ -40,33 +39,15 @@ NoTestsPlaceholder.propTypes = {
  * Displays a list of tests from the supplied build run property.
  */
 export class RunDetailsTests extends Component {
-    componentWillMount() {
-        this.props.fetchTests(
-            this.props.result
-        );
-    }
-
-    componentWillUnmount() {
-        this.props.resetTests();
-    }
 
     render() {
-        const { tests, t, locale } = this.props;
-
-        if (!tests || tests.$pending) {
-            return null;
-        }
-
-        if (tests.$failed) {
-            return <NoTestsPlaceholder t={t} />;
-        }
-
+        const { t, locale } = this.props;
         return (
             <div className="test-results-container">
                 <TestResults
-                    tests={tests}
                     locale={locale}
                     t={t}
+                    pipeline={this.props.pipeline}
                     run={this.props.result}
                 />
             </div>
@@ -76,11 +57,9 @@ export class RunDetailsTests extends Component {
 
 RunDetailsTests.propTypes = {
     params: PropTypes.object,
+    pipeline: PropTypes.object,
     isMultiBranch: PropTypes.bool,
     result: PropTypes.object,
-    tests: PropTypes.object,
-    resetTests: PropTypes.func,
-    fetchTests: PropTypes.func,
     fetchTypeInfo: PropTypes.func,
     t: PropTypes.func,
     locale: PropTypes.string,
@@ -90,7 +69,4 @@ RunDetailsTests.contextTypes = {
     config: PropTypes.object.isRequired,
 };
 
-const selectors = createSelector([testsSelector],
-    (tests) => ({ tests }));
-
-export default connect(selectors, selectorActions)(RunDetailsTests);
+export default RunDetailsTests;

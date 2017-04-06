@@ -1,93 +1,87 @@
 import React, { Component, PropTypes } from 'react';
+import { observer } from 'mobx-react';
+import { pagerService } from '@jenkins-cd/blueocean-core-js';
 import { TestSummary } from './TestSummary';
+import TestService from './TestService';
+import TestSection from './TestSection';
 // needs to be loaded since the moment lib will use require which in run time will fail
 import 'moment/min/locales.min';
-import TestCaseResultRow from './TestCaseResultRow';
 
 /* eslint-disable max-len */
 
+@observer
 export default class TestResults extends Component {
 
+    propTypes = {
+        pipeline: PropTypes.object,
+        run: PropTypes.object,
+        t: PropTypes.func,
+        locale: PropTypes.string,
+    };
+
+    componentWillMount() {
+        this.testService = new TestService(pagerService);
+        this._initPagers(this.props);
+    }
+
+    componentWillReceiveProps(nextProps) {
+        this._initPagers(nextProps);
+    }
+
+    _initPagers(props) {
+        const pipeline = props.pipeline;
+        const run = props.run;
+        this.regressionsPager = this.testService.newRegressionsPager(pipeline, run);
+        this.existingFailedPager = this.testService.newExistingFailedPager(pipeline, run);
+        this.skippedPager = this.testService.newSkippedPager(pipeline, run);
+        this.fixedPager = this.testService.newFixedPager(pipeline, run);
+    }
+
     render() {
-        const { t: translation, tests, locale, run } = this.props;
-
-        const fixed = tests.filter(t => t.state === 'FIXED');
-        const skipped = tests.filter(t => t.status === 'SKIPPED');
-        const newFailures = tests.filter(t => (t.age <= 1 && t.status === 'FAILED') || t.state === 'REGRESSION');
-        const existingFailures = tests.filter(t => t.age > 1 && t.status === 'FAILED');
-
-        let newFailureBlock = null;
-        let existingFailureBlock = null;
-        let fixedBlock = null;
-        let skippedBlock = null;
-
-        const summaryBlock = (
-            <TestSummary
-                translate={translation}
-                passing={run.testSummary.passed}
-                fixed={run.testSummary.fixed}
-                failuresNew={run.testSummary.regressions}
-                failuresExisting={run.testSummary.existingFailed}
-                skipped={run.testSummary.skipped}
-            />
-        );
-
-        if (newFailures.length > 0) {
-            newFailureBlock = (<div className="test-result-block new-failure-block">
-                <h4>{translation('rundetail.testResults.results.errors.new.count', {
-                    0: run.testSummary.regressions,
-                    defaultValue: 'New failing - {0}',
-                })}</h4>
-                {newFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} translation={translation} locale={locale} />)}
-            </div>);
-        }
-
-        if (existingFailures.length > 0) {
-            existingFailureBlock = (<div className="test-result-block existing-failure-block">
-                <h4>{translation('rundetail.testResults.results.errors.existing.count', {
-                    0: run.testSummary.existingFailed,
-                    defaultValue: 'Existing failures - {0}',
-                })}</h4>
-                {existingFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} translation={translation} locale={locale} />)}
-            </div>);
-        }
-
-        if (skipped.length > 0) {
-            skippedBlock = (<div className="test-result-block skipped-block">
-                <h4>{translation('rundetail.testResults.results.skipped.count', {
-                    0: run.testSummary.skipped,
-                    defaultValue: 'Skipped - {0}',
-                })}</h4>
-                {skipped.map((t, i) => <TestCaseResultRow key={i} testCase={t} translation={translation} locale={locale} />)}
-            </div>);
-        }
-
-        // always show fixed, whether showing totals or the encouraging message
-        if (fixed.length > 0) {
-            fixedBlock = (<div className="test-result-block fixed-block">
-                <h4>{translation('rundetail.testResults.results.fixed', {
-                    0: run.testSummary.fixed,
-                    defaultValue: 'Fixed – {0}',
-                })}</h4>
-                {fixed.map((t, i) => <TestCaseResultRow key={i} testCase={t} translation={translation} locale={locale} />)}
-            </div>);
-        }
-
+        const { t: translation, locale, run } = this.props;
         return (
             <div>
-                {summaryBlock}
-                {newFailureBlock}
-                {existingFailureBlock}
-                {fixedBlock}
-                {skippedBlock}
+                <TestSummary
+                    translate={translation}
+                    passing={run.testSummary.passed}
+                    fixed={run.testSummary.fixed}
+                    failuresNew={run.testSummary.regressions}
+                    failuresExisting={run.testSummary.existingFailed}
+                    skipped={run.testSummary.skipped}
+                />
+                <TestSection
+                    titleKey="rundetail.tests.results.errors.new.count"
+                    pager={this.regressionsPager}
+                    extraClasses="new-failure-block"
+                    locale={locale} t={translation}
+                    total={run.testSummary.regressions}
+                    testService={this.testService}
+                />
+                <TestSection
+                    titleKey="rundetail.tests.results.errors.existing.count"
+                    pager={this.existingFailedPager}
+                    extraClasses="existing-failure-block"
+                    locale={locale} t={translation}
+                    total={run.testSummary.existingFailed}
+                    testService={this.testService}
+                />
+                <TestSection
+                    titleKey="rundetail.tests.results.fixed"
+                    pager={this.fixedPager}
+                    extraClasses="fixed-block"
+                    locale={locale} t={translation}
+                    total={run.testSummary.fixed}
+                    testService={this.testService}
+                />
+                <TestSection
+                    titleKey="rundetail.tests.results.skipped.count"
+                    pager={this.skippedPager}
+                    extraClasses="skipped-block"
+                    locale={locale} t={translation}
+                    total={run.testSummary.skipped}
+                    testService={this.testService}
+                />
             </div>
         );
     }
 }
-
-TestResults.propTypes = {
-    run: PropTypes.object,
-    tests: PropTypes.array,
-    t: PropTypes.func,
-    locale: PropTypes.string,
-};
