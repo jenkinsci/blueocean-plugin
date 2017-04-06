@@ -26,10 +26,10 @@ export function DashboardPlaceholder(props) {
     };
 
     return (
-        <PlaceholderContent className="HomePlaceholder u-fill u-fade-bottom" style={{ top: 72 }}>
+        <div className="HomePlaceholder u-fade-bottom">
             <PlaceholderTable columns={columns} rowCount={20} />
             <PlaceholderDialog width={375} content={content} />
-        </PlaceholderContent>
+        </div>
     );
 }
 
