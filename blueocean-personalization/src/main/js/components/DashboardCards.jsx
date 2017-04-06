@@ -18,6 +18,26 @@ import { PipelineCard } from './PipelineCard';
 
 const t = i18nTranslator('blueocean-personalization');
 
+function CardStack(props) {
+    const { cards, message } = props;
+    return (
+        <div key={message} className="favorites-card-stack">
+            <div className="favorites-card-stack-heading"> {message}</div>
+            <TransitionGroup transitionName="vertical-expand-collapse"
+                             transitionEnterTimeout={300}
+                             transitionLeaveTimeout={300}
+            >
+                {cards}
+            </TransitionGroup>
+        </div>
+    );
+}
+CardStack.propTypes = {
+    cards: PropTypes.array,
+    message: PropTypes.string,
+};
+
+
 /**
  * Renders a stack of "favorites cards" including current most recent status.
  */
@@ -77,26 +97,13 @@ export class DashboardCards extends Component {
             return (responseElement);
         });
 
-        // generic sub-render to output fav or paused stacks
-        const StackOutput = (properties) => {
-            const { cards, message } = properties;
-            return (<div key={message} className="favorites-card-stack">
-                <div className="favorites-card-stack-heading"> {message}</div>
-                <TransitionGroup transitionName="vertical-expand-collapse"
-                  transitionEnterTimeout={300}
-                  transitionLeaveTimeout={300}
-                >
-                    {cards}
-                </TransitionGroup>
-            </div>);
-        };
         // Only show paused pipelines when we really have some
         // do we have any paused pipelines?
-        const pausedCardsStack = pausedCards.length > 0 ? (<StackOutput
+        const pausedCardsStack = pausedCards.length > 0 ? (<CardStack
           message={t('dashboardCard.input.required', { defaultValue: 'Input required' })}
           cards={pausedCards}
         />) : null;
-        const favoriteCardsStack = favoriteCards.size > 0 ? (<StackOutput
+        const favoriteCardsStack = favoriteCards.size > 0 ? (<CardStack
           message={t('dashboardCard.input.favorite', { defaultValue: 'Favorites' })}
           cards={favoriteCards}
         />) : null;
