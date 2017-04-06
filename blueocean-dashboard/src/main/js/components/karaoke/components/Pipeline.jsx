@@ -155,7 +155,6 @@ export default class Pipeline extends Component {
             }
         }
     }
-
     render() {
         const { t, run, augmenter, branch, pipeline, router, scrollToBottom, location } = this.props;
         // do we have something to display?
@@ -188,18 +187,17 @@ export default class Pipeline extends Component {
             const pathname = location.pathname.replace(/\/$/, '');
             let nextPath;
             if (pathname.endsWith('pipeline')) {
-                nextPath = `${pathname}/${id}`;
+                nextPath = pathname;
             } else { // means we are in a node url
                 // remove last bits
                 const pathArray = pathname.split('/');
                 pathArray.pop();
                 pathArray.shift();
-                nextPath = `/${pathArray.join('/')}/${id}`;
+                nextPath = `/${pathArray.join('/')}`;
             }
-            location.pathname = nextPath;
-            logger.debug('redirecting now to:', location.pathname);
             // see whether we need to update the state
-            if (nextNode.state === 'FINISHED' && this.karaoke) {
+            if (nextNode.state === 'FINISHED') {
+                nextPath = `${nextPath}/${id}`; // only allow node param in finished nodes
                 logger.debug('turning off karaoke since we do not need it anymore because focus is on a finished node.');
                 this.stopKaraoke();
             }
@@ -207,6 +205,8 @@ export default class Pipeline extends Component {
                 logger.debug('turning on karaoke since we need it because we are focusing on a new node.');
                 this.karaoke = true;
             }
+            location.pathname = nextPath;
+            logger.debug('redirecting now to:', location.pathname);
             router.push(location);
         };
         const title = this.pager.nodes !== undefined ? t('rundetail.pipeline.steps', {
