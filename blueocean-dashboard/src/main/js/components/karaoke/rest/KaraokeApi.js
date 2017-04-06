@@ -80,7 +80,7 @@ export class KaraokeApi {
                 logger.debug('Fetching with txt enabled parsing the following href', finalHref, 'start from', start);
                 if (!href || href === undefined) {
                     // leave a logger warning and abort
-                    logger.warn('could not fetch with empty href')
+                    logger.warn('could not fetch with empty href');
                     resolve();
                 }
                 resolve(Fetch.fetch(finalHref, { fetchOptions })
