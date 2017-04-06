@@ -19,21 +19,21 @@ import { PipelineCard } from './PipelineCard';
 const t = i18nTranslator('blueocean-personalization');
 
 function CardStack(props) {
-    const { cards, message } = props;
+    const { children, message } = props;
     return (
-        <div key={message} className="favorites-card-stack">
+        <div className="favorites-card-stack">
             <div className="favorites-card-stack-heading"> {message}</div>
             <TransitionGroup transitionName="vertical-expand-collapse"
                              transitionEnterTimeout={300}
                              transitionLeaveTimeout={300}
             >
-                {cards}
+                {children}
             </TransitionGroup>
         </div>
     );
 }
 CardStack.propTypes = {
-    cards: PropTypes.array,
+    children: PropTypes.array,
     message: PropTypes.string,
 };
 
@@ -99,14 +99,14 @@ export class DashboardCards extends Component {
 
         // Only show paused pipelines when we really have some
         // do we have any paused pipelines?
-        const pausedCardsStack = pausedCards.length > 0 ? (<CardStack
-          message={t('dashboardCard.input.required', { defaultValue: 'Input required' })}
-          cards={pausedCards}
-        />) : null;
-        const favoriteCardsStack = favoriteCards.size > 0 ? (<CardStack
-          message={t('dashboardCard.input.favorite', { defaultValue: 'Favorites' })}
-          cards={favoriteCards}
-        />) : null;
+        const pausedCardsStack = pausedCards.length > 0 ? (
+            <CardStack message={t('dashboardCard.input.required')}>
+                {pausedCards}
+            </CardStack>) : null;
+        const favoriteCardsStack = favoriteCards.size > 0 ? (
+            <CardStack message={t('dashboardCard.input.favorite')}>
+                {favoriteCards}
+            </CardStack>) : null;
 
         return (
             <FavoritesProvider store={this.props.store}>
