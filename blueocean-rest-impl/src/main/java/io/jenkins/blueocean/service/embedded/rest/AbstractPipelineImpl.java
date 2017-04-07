@@ -14,6 +14,7 @@ import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Run;
 import hudson.model.User;
 import hudson.plugins.favorite.Favorites;
+import io.jenkins.blueocean.commons.BlueUrlTokenizer;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
@@ -142,7 +143,11 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     @Override
     public String getFullName(){
-        return job.getFullName();
+        // Lets make sure that the fullName is properly encoded etc.
+        // The name part of the fullName can contain unencoded characters
+        // if the Job was programmatically created, causing screwups
+        // when mapping those URLs to Blue Ocean web/rest URLs. See JENKINS-41425.
+        return BlueUrlTokenizer.reconstructJobNamePath(job.getName(), job.getFullName());
     }
 
     @Override
@@ -177,23 +182,15 @@ public class AbstractPipelineImpl extends BluePipeline {
         return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(getRecursivePathFromFullName(this));
     }
 
-    public static String getRecursivePathFromFullName(BluePipeline pipeline){
-        StringBuilder pipelinePath = new StringBuilder();
-        String[] names = pipeline.getFullName().split("/");
-        int count = 1;
-        if(names.length > 1) { //nested
-            for (String n : names) {
-                if(count == 1){
-                    pipelinePath.append(n);
-                }else{
-                    pipelinePath.append("/pipelines/").append(n);
-                }
-                count++;
-            }
-        }else{
-            pipelinePath.append(pipeline.getFullName());
+    public static String getRecursivePathFromFullName(BluePipeline pipeline) {
+        if (pipeline instanceof AbstractPipelineImpl) {
+            // Slight optimization to eliminate multiple calls to reconstructJobNamePath().
+            // See AbstractPipelineImpl.getFullName() and how it calls reconstructJobNamePath().
+            AbstractPipelineImpl abstractPipeline = (AbstractPipelineImpl) pipeline;
+            return BlueUrlTokenizer.reconstructJobNamePath(abstractPipeline.job.getName(), abstractPipeline.job.getFullName(), "/pipelines/");
+        } else {
+            return BlueUrlTokenizer.reconstructJobNamePath(pipeline.getName(), pipeline.getFullName(), "/pipelines/");
         }
-        return pipelinePath.toString();
     }
 
     @Override

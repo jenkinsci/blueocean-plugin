@@ -33,6 +33,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
@@ -269,6 +270,75 @@ public class BlueUrlTokenizer {
             return getPart(this.lastPart).equals(value);
         }
         return false;
+    }
+
+    public static String reconstructJobNamePath(String name, String fullName) {
+        return reconstructJobNamePath(name, fullName, "/");
+    }
+
+    public static String reconstructJobNamePath(String name, String fullName, String separator){
+        StringBuilder pipelinePath = new StringBuilder();
+        String fullPath;
+        List<String> pathTokens;
+
+        //
+        // The Job "fullName" is typically suffixed with the "name".
+        // The name is NOT part of the path to the job, so lets remove
+        // it from the fullName before we parse and reconstruct the path.
+        // This, along with reencoding of the name, helps us to eliminate
+        // the problems where a Job is programatically created with a name
+        // that's not URL encoded and contains characters that should be
+        // encoded e.g. slashes (see JENKINS-41425).
+        //
+        if (fullName.endsWith(name)) {
+            fullPath = fullName.substring(0, fullName.length() - name.length());
+            pathTokens = new ArrayList<>();
+            pathTokens.addAll(Arrays.asList(fullPath.split("/")));
+            pathTokens.add(urlReencode(name));
+        } else {
+            fullPath = fullName;
+            pathTokens = Arrays.asList(fullPath.split("/"));
+        }
+
+        for (String n : pathTokens) {
+            if (n.length() == 0) {
+                // Ignore empty strings. Can be caused by
+                // leading/trailing slashes.
+                continue;
+            }
+            // Don't add the separator to the start of the path.
+            if(pipelinePath.length() > 0){
+                pipelinePath.append(separator);
+            }
+            pipelinePath.append(n);
+        }
+
+        return pipelinePath.toString();
+    }
+
+    /**
+     * Re-encode the supplied string.
+     * <p>
+     * Use this on strings that may already be encoded, but are not guaranteed to
+     * be e.g. Job names (see JENKINS-41425).
+     * @param string The string to be re-encoded.
+     * @return The re-encoded string.
+     */
+    private static String urlReencode(String string) {
+        try {
+            // Decode the string in case it's already encoded, or partially
+            // encoded. This will be a no-op if the string is not encoded.
+            string = URLDecoder.decode(string, "UTF-8");
+            // And encode ...
+            string = URLEncoder.encode(string, "UTF-8");
+            // The Java URLEncoder encodes spaces as "+", while the javascript
+            // encodeURIComponent function encodes them as "%20". We need to make them
+            // consistent with how it's done in encodeURIComponent, so replace the
+            // "+" with "%20".
+            return string.replace("+", "%20");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("Unexpected exception re-encoding the pipeline name.", e);
+        }
     }
 
     private static String urlDecode(String string) {
