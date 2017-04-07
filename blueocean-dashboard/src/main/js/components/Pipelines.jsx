@@ -61,13 +61,15 @@ export class Pipelines extends Component {
             <Page>
                 <ContentPageHeader>
                     <div className="u-flex-grow">
-                        <h1>
-                            <Link to="/" query={ location.query }>
-                                { translate('home.header.dashboard', { defaultValue: 'Dashboard' }) }
-                            </Link>
-                            { organization && ' / ' }
-                            { organization && orgLink }
-                        </h1>
+                        <Extensions.Renderer extensionPoint="jenkins.pipeline.header">
+                            <h1>
+                                <Link to="/" query={ location.query }>
+                                    { translate('home.header.dashboard', { defaultValue: 'Dashboard' }) }
+                                </Link>
+                                { organization && ' / ' }
+                                { organization && orgLink }
+                            </h1>
+                        </Extensions.Renderer>
                     </div>
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
                         <CreatePipelineLink />
