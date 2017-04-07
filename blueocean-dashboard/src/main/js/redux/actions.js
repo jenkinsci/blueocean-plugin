@@ -246,7 +246,7 @@ export const actions = {
     clearPipelineData() {
         return (dispatch) => dispatch({ type: ACTION_TYPES.CLEAR_PIPELINE_DATA });
     },
-    
+
     /**
      * Returns cached global pipeline list or causes a fetch
      */
@@ -824,7 +824,7 @@ export const actions = {
     fetchTestResults(run) {
         return (dispatch) => {
             const baseUrl = UrlConfig.getJenkinsRootURL();
-            const url = `${baseUrl}${run._links.self.href}testReport/result`;
+            const url = `${baseUrl}${run._links.tests.href}`;
 
             return smartFetch(url, data =>
                 dispatch({

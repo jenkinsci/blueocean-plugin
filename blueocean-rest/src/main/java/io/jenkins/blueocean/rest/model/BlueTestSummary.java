@@ -10,17 +10,20 @@ public class BlueTestSummary {
     public static final String SKIPPED = "skipped";
     public static final String FAILED = "failed";
     public static final String PASSED = "passed";
+    public static final String DURATION = "duration";
 
     private final long passedTotal;
     private final long failedTotal;
     private final long skippedTotal;
     private final long total;
+    private final float duration;
 
-    public BlueTestSummary(long passedTotal, long failedTotal, long skippedTotal, long total) {
+    public BlueTestSummary(long passedTotal, long failedTotal, long skippedTotal, long total, float duration) {
         this.passedTotal = passedTotal;
         this.failedTotal = failedTotal;
         this.skippedTotal = skippedTotal;
         this.total = total;
+        this.duration = duration;
     }
 
     @Exported(name = PASSED)
@@ -41,5 +44,10 @@ public class BlueTestSummary {
     @Exported(name = TOTAL)
     public long getTotal() {
         return total;
+    }
+
+    @Exported(name = DURATION)
+    public float getDuration() {
+        return duration;
     }
 }

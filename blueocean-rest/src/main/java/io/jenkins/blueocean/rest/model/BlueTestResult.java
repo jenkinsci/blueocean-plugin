@@ -13,6 +13,7 @@ public abstract class BlueTestResult extends Resource {
     public static final String ID = "id";
     public static final String STDERR = "stderr";
     public static final String STDOUT = "stdout";
+    public static final String STATE = "state";
 
     public enum Status {
         PASSED,
@@ -20,8 +21,17 @@ public abstract class BlueTestResult extends Resource {
         SKIPPED
     }
 
+    public enum State {
+        UNKNOWN,
+        FIXED,
+        REGRESSION
+    }
+
     @Exported(name = STATUS)
     public abstract Status getStatus();
+
+    @Exported(name = STATE)
+    public abstract State getTestState();
 
     @Exported(name = DURATION)
     public abstract float getDuration();

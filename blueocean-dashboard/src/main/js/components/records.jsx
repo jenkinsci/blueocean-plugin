@@ -55,6 +55,15 @@ export const PullRequestRecord = Record({
     },
 });
 
+export const TestSummaryRecord = Record({
+    testSummary: {
+        failed: null,
+        passed: null,
+        skipped: null,
+        total: null
+    }
+});
+
 export class RunRecord extends Record({
     _class: null,
     _capabilities: [],
@@ -77,6 +86,7 @@ export class RunRecord extends Record({
     parameters: null,
     artifactsZipFile: null,
     pullRequest: PullRequestRecord,
+    testSummary: TestSummaryRecord,
 }) {
     isQueued() {
         return this.state === 'QUEUED';

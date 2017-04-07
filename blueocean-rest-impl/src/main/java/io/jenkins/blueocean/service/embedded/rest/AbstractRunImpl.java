@@ -168,10 +168,10 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         for (AbstractTestResultAction action : actions) {
             passed += action.getPassedTests().size();
             failed += action.getFailCount();
-            passed += action.getSkipCount();
+            skipped += action.getSkipCount();
             total += action.getTotalCount();
         }
-        return new BlueTestSummary(passed, failed, skipped, total);
+        return new BlueTestSummary(passed, failed, skipped, total, 0);
     }
 
     public Collection<BlueActionProxy> getActions() {
