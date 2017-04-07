@@ -72,6 +72,18 @@ public class BlueTestResultImpl<T extends TestResult> extends BlueTestResult {
         return Util.rawEncode(testResult.getParentAction().getClass().getName()) + ":" + Util.rawEncode(testResult.getId());
     }
 
+    @SuppressWarnings("deprecation")
+    @Override
+    public int getAge() {
+        if(testResult.isPassed())
+            return 0;
+        else if (testResult.getRun() != null) {
+            return testResult.getRun().getNumber()-testResult.getFailedSince()+1;
+        } else {
+            return 0; 
+        }
+    }
+
     @Override
     public String getStdErr() {
         return serveLog(testResult.getStderr());

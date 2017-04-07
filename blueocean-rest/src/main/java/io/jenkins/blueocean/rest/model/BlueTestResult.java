@@ -11,6 +11,7 @@ public abstract class BlueTestResult extends Resource {
     public static final String DURATION = "duration";
     public static final String NAME = "name";
     public static final String ID = "id";
+    public static final String AGE = "age";
     public static final String STDERR = "stderr";
     public static final String STDOUT = "stdout";
     public static final String STATE = "state";
@@ -38,6 +39,9 @@ public abstract class BlueTestResult extends Resource {
 
     @Exported(name = ID)
     public abstract String getId();
+
+    @Exported(name = AGE)
+    public abstract int getAge();
 
     @Exported(name = NAME)
     public abstract String getName();
