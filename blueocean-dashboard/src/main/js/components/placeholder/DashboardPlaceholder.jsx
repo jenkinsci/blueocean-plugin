@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react';
 import { PlaceholderTable } from '@jenkins-cd/design-language';
 import { Link } from 'react-router';
 
-import { PlaceholderContent } from './PlaceholderContent';
 import { PlaceholderDialog } from './PlaceholderDialog';
 import Icon from './Icon';
 
@@ -26,10 +25,10 @@ export function DashboardPlaceholder(props) {
     };
 
     return (
-        <PlaceholderContent className="HomePlaceholder u-fill u-fade-bottom" style={{ top: 72 }}>
+        <div className="HomePlaceholder u-fade-bottom">
             <PlaceholderTable columns={columns} rowCount={20} />
             <PlaceholderDialog width={375} content={content} />
-        </PlaceholderContent>
+        </div>
     );
 }
 
