@@ -1,10 +1,8 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import hudson.Extension;
 import hudson.Util;
 import hudson.tasks.test.TestResult;
 import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
-import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
 
@@ -61,7 +59,7 @@ public class BlueTestResultImpl<T extends TestResult> extends BlueTestResult {
         else if (testResult.getRun() != null) {
             return testResult.getRun().getNumber()-testResult.getFailedSince()+1;
         } else {
-            return 0; 
+            return 0;
         }
     }
 
@@ -85,13 +83,5 @@ public class BlueTestResultImpl<T extends TestResult> extends BlueTestResult {
             throw new NotFoundException("No log");
         }
         return log;
-    }
-
-    @Extension(ordinal = -1)
-    public static class FactoryImpl extends BlueTestResultFactory {
-        @Override
-        public BlueTestResult getTestResult(TestResult testResult, Reachable parent) {
-            return new BlueTestResultImpl<>(testResult, parent.getLink());
-        }
     }
 }

@@ -8,6 +8,11 @@ import jenkins.model.Jenkins;
 
 public abstract class BlueTestResultFactory implements ExtensionPoint {
 
+    /**
+     * @param testResult to check type
+     * @param parent run that this belongs to
+     * @return implementation of BlueTestResult matching your TestResult or null
+     */
     public abstract BlueTestResult getTestResult(TestResult testResult, Reachable parent);
 
     public static BlueTestResult resolve(TestResult testResult, Reachable parent) {
@@ -17,6 +22,6 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
                 return result;
             }
         }
-        return null;
+        return new BlueTestResultImpl<>(testResult, parent.getLink());
     }
 }
