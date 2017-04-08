@@ -47,6 +47,16 @@ public class BlueTestResultImpl<T extends TestResult> extends BlueTestResult {
     }
 
     @Override
+    public String getErrorStackTrace() {
+        return testResult.getErrorStackTrace();
+    }
+
+    @Override
+    public String getErrorDetails() {
+        return testResult.getErrorDetails();
+    }
+
+    @Override
     public String getId() {
         return Util.rawEncode(testResult.getParentAction().getClass().getName()) + ":" + Util.rawEncode(testResult.getId());
     }

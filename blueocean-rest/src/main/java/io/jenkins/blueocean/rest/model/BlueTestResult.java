@@ -15,6 +15,8 @@ public abstract class BlueTestResult extends Resource {
     public static final String STDERR = "stderr";
     public static final String STDOUT = "stdout";
     public static final String STATE = "state";
+    public static final String ERROR_STACK_TRACE = "errorStackTrace";
+    public static final String ERROR_DETAILS = "errorDetails";
 
     public enum Status {
         PASSED,
@@ -45,6 +47,12 @@ public abstract class BlueTestResult extends Resource {
 
     @Exported(name = NAME)
     public abstract String getName();
+
+    @Exported(name = ERROR_STACK_TRACE)
+    public abstract String getErrorStackTrace();
+
+    @Exported(name = ERROR_DETAILS)
+    public abstract String getErrorDetails();
 
     @Navigable
     @GET
