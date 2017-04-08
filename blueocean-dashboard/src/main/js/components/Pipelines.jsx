@@ -10,9 +10,7 @@ import CreatePipelineLink from './CreatePipelineLink';
 import PipelineRowItem from './PipelineRowItem';
 import { DashboardPlaceholder } from './placeholder/DashboardPlaceholder';
 
-
 const translate = i18nTranslator('blueocean-dashboard');
-
 
 @observer
 export class Pipelines extends Component {

@@ -5,6 +5,7 @@ import {
     PageTabs,
     HeaderDetails,
 } from '@jenkins-cd/design-language';
+import Extensions from '@jenkins-cd/js-extensions';
 
 import { BlueLogo } from './BlueLogo';
 
@@ -26,10 +27,14 @@ export const SiteHeader = props => {
     return (
         <BasicHeader className="ContentPageHeader">
             <TopNav>
-                <BlueLogo href={props.homeURL} />
+                <Extensions.Renderer extensionPoint="jenkins.header.logo">
+                    <BlueLogo href={props.homeURL} />
+                </Extensions.Renderer>
                 <div className="u-flex-grow" />
-                { topNavLinks }
-                { userComponents }
+                    <Extensions.Renderer extensionPoint="jenkins.header.navigation">
+                        { topNavLinks }
+                        { userComponents }
+                    </Extensions.Renderer>
             </TopNav>
         </BasicHeader>
     );
