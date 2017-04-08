@@ -16,6 +16,11 @@ public class BlueJUnitTestResult extends BlueTestResultImpl<CaseResult> {
     }
 
     @Override
+    public String getName() {
+        return testResult.getPackageName() + " – " + testResult.getName();
+    }
+
+    @Override
     public State getTestState() {
         State state;
         switch (testResult.getStatus()) {

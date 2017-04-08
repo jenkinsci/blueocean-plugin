@@ -65,7 +65,7 @@ const TestCaseResultRow = (props) => {
     return (<ResultItem
       result={statusIndicator}
       expanded={false}
-      label={`${t.name} - ${t.className}`}
+      label={ `${t.name}` }
       onExpand={null}
       extraInfo={duration}
     >
