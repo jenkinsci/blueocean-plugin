@@ -31,10 +31,8 @@ export const SiteHeader = props => {
                     <BlueLogo href={props.homeURL} />
                 </Extensions.Renderer>
                 <div className="u-flex-grow" />
-                    <Extensions.Renderer extensionPoint="jenkins.header.navigation">
-                        { topNavLinks }
-                        { userComponents }
-                    </Extensions.Renderer>
+                    { topNavLinks }
+                    { userComponents }
             </TopNav>
         </BasicHeader>
     );
