@@ -18,9 +18,6 @@ import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 
-/**
- * Created by jdumay on 8/4/17.
- */
 public class BlueTestResultContainerImpl extends BlueTestResultContainer {
     private final Run<?, ?> run;
 
@@ -70,7 +67,7 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
         // Find all test actions
         List<AbstractTestResultAction> actions = run.getActions(AbstractTestResultAction.class);
         if (actions.isEmpty()) {
-            return ImmutableList.<BlueTestResult>of().iterator();
+            throw new NotFoundException("no tests for this run");
         }
         Iterable<TestResult> failed = ImmutableList.of();
         Iterable<TestResult> skipped = ImmutableList.of();
