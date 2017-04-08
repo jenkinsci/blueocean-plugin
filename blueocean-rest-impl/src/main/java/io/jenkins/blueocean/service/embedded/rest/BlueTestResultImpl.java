@@ -2,19 +2,17 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.Extension;
 import hudson.Util;
-import hudson.tasks.junit.CaseResult;
 import hudson.tasks.test.TestResult;
 import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
-import io.jenkins.blueocean.rest.model.BlueTestResultFactory;
 
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 public class BlueTestResultImpl<T extends TestResult> extends BlueTestResult {
 
-    private final T testResult;
+    protected final T testResult;
     private final Link parent;
 
     public BlueTestResultImpl(T testResult, Link parent) {
@@ -37,24 +35,7 @@ public class BlueTestResultImpl<T extends TestResult> extends BlueTestResult {
 
     @Override
     public State getTestState() {
-        State state;
-        // TODO: move this to a subclass
-        if (testResult instanceof CaseResult) {
-            CaseResult caseResult = (CaseResult)testResult;
-            switch (caseResult.getStatus()) {
-                case REGRESSION:
-                    state = State.REGRESSION;
-                    break;
-                case FIXED:
-                    state = State.REGRESSION;
-                    break;
-                default:
-                    state = State.UNKNOWN;
-            }
-        } else {
-            state = State.UNKNOWN;
-        }
-        return state;
+        return State.UNKNOWN;
     }
 
     @Override

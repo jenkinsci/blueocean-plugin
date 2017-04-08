@@ -152,7 +152,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public BlueTestResultContainer getTests() {
-        return new BlueTestResultContainer(this, run);
+        return new BlueTestResultContainerImpl(this, run);
     }
 
     @Override

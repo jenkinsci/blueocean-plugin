@@ -1,8 +1,9 @@
-package io.jenkins.blueocean.rest.model;
+package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.ExtensionPoint;
 import hudson.tasks.test.TestResult;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.model.BlueTestResult;
 import jenkins.model.Jenkins;
 
 public abstract class BlueTestResultFactory implements ExtensionPoint {
