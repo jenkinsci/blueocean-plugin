@@ -31,8 +31,8 @@ export const SiteHeader = props => {
                     <BlueLogo href={props.homeURL} />
                 </Extensions.Renderer>
                 <div className="u-flex-grow" />
-                    { topNavLinks }
-                    { userComponents }
+                { topNavLinks }
+                { userComponents }
             </TopNav>
         </BasicHeader>
     );
