@@ -4,6 +4,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Lists;
 import hudson.model.Run;
 import hudson.tasks.test.AbstractTestResultAction;
 import hudson.tasks.test.TestResult;
@@ -78,8 +79,14 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
             skipped = Iterables.concat(skipped, action.getSkippedTests());
             passed = Iterables.concat(passed, action.getPassedTests());
         }
+
+        List<TestResult> results = Lists.newLinkedList(Iterables.concat(failed, skipped, passed));
+        if (results.isEmpty()) {
+            throw new NotFoundException("no tests");
+        }
+
         // Transform to resource
-        return Iterables.transform(Iterables.concat(failed, skipped, passed), new Function<TestResult, BlueTestResult>() {
+        return Iterables.transform(results, new Function<TestResult, BlueTestResult>() {
             @Override
             public BlueTestResult apply(@Nullable TestResult input) {
                 return BlueTestResultFactory.resolve(input, parent);
