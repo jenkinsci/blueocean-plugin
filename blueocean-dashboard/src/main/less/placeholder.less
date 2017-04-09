@@ -5,17 +5,7 @@
     margin: 0 auto;
 }
 
-.PlaceholderContent {
-    position: relative;
-
-    &.u-fill {
-        position: absolute;
-        top: 0;
-        bottom: 0;
-        width: 100%;
-        overflow-y: hidden;
-    }
-
+.fade-bottom {
     &.u-fade-bottom::after {
         content: '';
         position: absolute;
@@ -23,6 +13,21 @@
         height: 50px;
         bottom: 0;
         background-image: linear-gradient(rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+    }
+}
+
+
+.PlaceholderContent {
+    position: relative;
+
+    .fade-bottom;
+
+    &.u-fill {
+        position: absolute;
+        top: 0;
+        bottom: 0;
+        width: 100%;
+        overflow-y: hidden;
     }
 
     .PlaceholderDialog {
@@ -63,6 +68,17 @@
 
     .btn {
         margin-top: 25px;
+    }
+}
+
+.HomePlaceholder {
+    position: relative;
+
+    .fade-bottom;
+
+    .PlaceholderDialog {
+        .dialog-center;
+        top: 72px;
     }
 }
 

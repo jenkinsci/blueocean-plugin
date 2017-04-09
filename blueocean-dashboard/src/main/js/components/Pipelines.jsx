@@ -107,26 +107,37 @@ export class Pipelines extends Component {
                         <CreatePipelineLink />
                     </Extensions.Renderer>
                 </ContentPageHeader>
-                { showEmptyState && <DashboardPlaceholder t={translate} /> }
-                { showPipelineList &&
                 <main>
                     <article>
-                        { /* FIXME: need to adjust Extensions to make store available */ }
                         <Extensions.Renderer
                             extensionPoint="jenkins.pipeline.list.top"
                             store={ this.context.store }
                             router={ this.context.router }
                         />
-
-                        {/*<JTable columns={columns} className="pipelines-table">*/}
-                            {/*<TableHeaderRow />*/}
-                            {/*{ pipelineRows }*/}
-                        {/*</JTable>*/}
+                        { showEmptyState && <DashboardPlaceholder t={translate} /> }
+                        { showPipelineList &&
+                        <Table
+                            className="pipelines-table"
+                            headers={ headers }
+                        >
+                            { pipelines &&
+                            pipelines.map(pipeline => {
+                                const key = pipeline._links.self.href;
+                                return (
+                                    <PipelineRowItem
+                                        t={ translate }
+                                        key={ key } pipeline={ pipeline }
+                                        showOrganization={ AppConfig.showOrg() }
+                                    />
+                                );
+                            })
+                            }
+                        </Table>
+                        }
 
                         { pipelines && <ShowMoreButton pager={this.pager} /> }
                     </article>
                 </main>
-                }
             </Page>
         );
     }
