@@ -60,8 +60,8 @@ export const TestSummaryRecord = Record({
         failed: null,
         passed: null,
         skipped: null,
-        total: null
-    }
+        total: null,
+    },
 });
 
 export class RunRecord extends Record({

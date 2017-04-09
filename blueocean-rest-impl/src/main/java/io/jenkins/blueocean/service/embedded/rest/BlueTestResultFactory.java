@@ -12,7 +12,7 @@ import jenkins.model.Jenkins;
 public abstract class BlueTestResultFactory implements ExtensionPoint {
 
     /**
-     * @param run
+     * @param run to find tests for
      * @param parent run that this belongs to
      * @return implementation of BlueTestResult matching your TestResult or {@link Result#notFound()}
      */
@@ -64,7 +64,7 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
                         break;
                 }
             }
-            return new Result(results, new BlueTestSummary(passed, failed, skipped, passed + skipped + failed, 0));
+            return new Result(results, new BlueTestSummary(passed, failed, skipped, passed + skipped + failed));
         }
 
         /**

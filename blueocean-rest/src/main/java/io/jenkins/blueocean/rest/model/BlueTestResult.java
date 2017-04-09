@@ -79,6 +79,6 @@ public abstract class BlueTestResult extends Resource {
 
     @Override
     public Link getLink() {
-        return parent.rel("tests/" + Util.rawEncode(getUniqueId()));
+        return parent.rel("tests/" + Util.rawEncode(getId()));
     }
 }

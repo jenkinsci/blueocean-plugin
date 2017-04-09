@@ -824,7 +824,7 @@ export const actions = {
     fetchTestResults(run) {
         return (dispatch) => {
             const baseUrl = UrlConfig.getJenkinsRootURL();
-            const url = `${baseUrl}${run._links.tests.href}`;
+            const url = `${baseUrl}${run._links.tests.href}?status=FAILED,SKIPPED`;
 
             return smartFetch(url, data =>
                 dispatch({
