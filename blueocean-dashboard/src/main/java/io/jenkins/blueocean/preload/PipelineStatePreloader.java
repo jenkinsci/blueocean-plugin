@@ -27,7 +27,7 @@ import hudson.Extension;
 import hudson.model.Item;
 import io.jenkins.blueocean.commons.BlueUrlTokenizer;
 import io.jenkins.blueocean.commons.RESTFetchPreloader;
-import io.jenkins.blueocean.commons.stapler.ModelObjectSerializer;
+import io.jenkins.blueocean.commons.stapler.Export;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import jenkins.model.Jenkins;
@@ -65,7 +65,7 @@ public class PipelineStatePreloader extends RESTFetchPreloader {
                 BluePipeline bluePipeline = (BluePipeline) BluePipelineFactory.resolve(pipelineJobItem);
                 if (bluePipeline != null) {
                     try {
-                        return new FetchData(bluePipeline.getLink().getHref(), ModelObjectSerializer.toJson(bluePipeline));
+                        return new FetchData(bluePipeline.getLink().getHref(), Export.toJson(bluePipeline));
                     } catch (IOException e) {
                         LOGGER.log(Level.FINE, String.format("Unable to preload pipeline '%s'. Serialization error.", pipelineJobItem.getUrl()), e);
                         return null;

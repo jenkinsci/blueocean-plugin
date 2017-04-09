@@ -26,7 +26,7 @@ package io.jenkins.blueocean.preload;
 import hudson.Extension;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.PageStatePreloader;
-import io.jenkins.blueocean.commons.stapler.ModelObjectSerializer;
+import io.jenkins.blueocean.commons.stapler.Export;
 import io.jenkins.blueocean.service.embedded.rest.UserImpl;
 import net.sf.json.JSONObject;
 
@@ -62,7 +62,7 @@ public class UserStatePreloader extends PageStatePreloader {
         try {
             User currentUser = User.current();
             if (currentUser != null) {
-                return ModelObjectSerializer.toJson(new UserImpl(currentUser));
+                return Export.toJson(new UserImpl(currentUser));
             } else {
                 return ANONYMOUS;
             }
