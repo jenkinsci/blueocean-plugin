@@ -4,7 +4,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 @ExportedBean
-public class BlueTestSummary {
+public final class BlueTestSummary {
 
     public static final String TOTAL = "total";
     public static final String SKIPPED = "skipped";
@@ -49,5 +49,19 @@ public class BlueTestSummary {
     @Exported(name = DURATION)
     public float getDuration() {
         return duration;
+    }
+
+    public static BlueTestSummary empty() {
+        return new BlueTestSummary(0, 0, 0, 0, 0);
+    }
+
+    public BlueTestSummary tally(BlueTestSummary summary) {
+        return new BlueTestSummary(
+            this.passedTotal + summary.passedTotal,
+            this.failedTotal + summary.failedTotal,
+            this.skippedTotal + summary.skippedTotal,
+            this.total + summary.total,
+            0
+        );
     }
 }

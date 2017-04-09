@@ -3,7 +3,6 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.model.Action;
 import hudson.model.Result;
 import hudson.model.Run;
-import hudson.tasks.test.AbstractTestResultAction;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -23,7 +22,6 @@ import org.kohsuke.stapler.QueryParameter;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 /**
  * Basic {@link BlueRun} implementation.
@@ -157,21 +155,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public BlueTestSummary getTestSummary() {
-        List<AbstractTestResultAction> actions = run.getActions(AbstractTestResultAction.class);
-        if (actions.isEmpty()) {
-            return null;
-        }
-        long passed = 0;
-        long failed = 0;
-        long skipped = 0;
-        long total = 0;
-        for (AbstractTestResultAction action : actions) {
-            passed += action.getPassedTests().size();
-            failed += action.getFailCount();
-            skipped += action.getSkipCount();
-            total += action.getTotalCount();
-        }
-        return new BlueTestSummary(passed, failed, skipped, total, 0);
+        return BlueTestResultFactory.resolve(run, this).summary;
     }
 
     public Collection<BlueActionProxy> getActions() {

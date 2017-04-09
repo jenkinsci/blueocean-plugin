@@ -1,6 +1,8 @@
 package io.jenkins.blueocean.rest.model;
 
+import hudson.Util;
 import io.jenkins.blueocean.rest.Navigable;
+import io.jenkins.blueocean.rest.hal.Link;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.verb.GET;
@@ -19,6 +21,7 @@ public abstract class BlueTestResult extends Resource {
     public static final String ERROR_DETAILS = "errorDetails";
 
     public enum Status {
+        UNKNOWN,
         PASSED,
         FAILED,
         SKIPPED
@@ -28,6 +31,12 @@ public abstract class BlueTestResult extends Resource {
         UNKNOWN,
         FIXED,
         REGRESSION
+    }
+
+    protected final Link parent;
+
+    public BlueTestResult(Link parent) {
+        this.parent = parent;
     }
 
     @Exported(name = STATUS)
@@ -40,7 +49,9 @@ public abstract class BlueTestResult extends Resource {
     public abstract float getDuration();
 
     @Exported(name = ID)
-    public abstract String getId();
+    public final String getId() {
+        return Util.rawEncode(this.getClass().getName()) + ":" + Util.rawEncode(getUniqueId());
+    }
 
     @Exported(name = AGE)
     public abstract int getAge();
@@ -63,4 +74,11 @@ public abstract class BlueTestResult extends Resource {
     @GET
     @WebMethod(name= STDOUT)
     public abstract String getStdOut();
+
+    protected abstract String getUniqueId();
+
+    @Override
+    public Link getLink() {
+        return parent.rel("tests/" + Util.rawEncode(getUniqueId()));
+    }
 }

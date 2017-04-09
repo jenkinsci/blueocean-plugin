@@ -1,23 +1,58 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.google.common.base.Function;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import hudson.Extension;
+import hudson.model.Run;
 import hudson.tasks.junit.CaseResult;
-import hudson.tasks.test.TestResult;
+import hudson.tasks.junit.TestResultAction;
+import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
 
+import javax.annotation.Nullable;
+
+import static org.apache.commons.lang.StringUtils.isEmpty;
+
 /**
  * TODO: move to junit plugin
  */
-public class BlueJUnitTestResult extends BlueTestResultImpl<CaseResult> {
+public class BlueJUnitTestResult extends BlueTestResult {
+
+    protected final CaseResult testResult;
+
     public BlueJUnitTestResult(CaseResult testResult, Link parent) {
-        super(testResult, parent);
+        super(parent);
+        this.testResult = testResult;
     }
 
     @Override
     public String getName() {
         return testResult.getPackageName() + " – " + testResult.getName();
+    }
+
+    @Override
+    public Status getStatus() {
+        Status status;
+        switch (testResult.getStatus()) {
+            case SKIPPED:
+                status = Status.SKIPPED;
+                break;
+            case FAILED:
+            case REGRESSION:
+                status = Status.FAILED;
+                break;
+            case PASSED:
+            case FIXED:
+                status = Status.PASSED;
+                break;
+            default:
+                status = Status.UNKNOWN;
+                break;
+        }
+        return status;
     }
 
     @Override
@@ -36,14 +71,72 @@ public class BlueJUnitTestResult extends BlueTestResultImpl<CaseResult> {
         return state;
     }
 
+    @Override
+    public float getDuration() {
+        return testResult.getDuration();
+    }
+
+    @Override
+    public String getErrorStackTrace() {
+        return testResult.getErrorStackTrace();
+    }
+
+    @Override
+    public String getErrorDetails() {
+        return testResult.getErrorDetails();
+    }
+
+    @Override
+    protected String getUniqueId() {
+        return testResult.getId();
+    }
+
+    @SuppressWarnings("deprecation")
+    @Override
+    public int getAge() {
+        if(testResult.isPassed())
+            return 0;
+        else if (testResult.getRun() != null) {
+            return testResult.getRun().getNumber()-testResult.getFailedSince()+1;
+        } else {
+            return 0;
+        }
+    }
+
+    @Override
+    public String getStdErr() {
+        return serveLog(testResult.getStderr());
+    }
+
+    @Override
+    public String getStdOut() {
+        return serveLog(testResult.getStdout());
+    }
+
+    private String serveLog(String log) {
+        if (isEmpty(log)) {
+            throw new NotFoundException("No log");
+        }
+        return log;
+    }
+
     @Extension
     public static class FactoryImpl extends BlueTestResultFactory {
         @Override
-        public BlueTestResult getTestResult(TestResult testResult, Reachable parent) {
-            if (testResult instanceof CaseResult) {
-                return new BlueJUnitTestResult((CaseResult) testResult, parent.getLink());
+        public Result getBlueTestResults(Run<?, ?> run, final Reachable parent) {
+            Iterable<BlueTestResult> results;
+            TestResultAction action = run.getAction(TestResultAction.class);
+            if (action != null) {
+                results = Iterables.transform(Iterables.concat(action.getFailedTests(), action.getSkippedTests(), action.getPassedTests()), new Function<CaseResult, BlueTestResult>() {
+                    @Override
+                    public BlueTestResult apply(@Nullable CaseResult input) {
+                        return new BlueJUnitTestResult(input, parent.getLink());
+                    }
+                });
+            } else {
+                results = ImmutableList.of();
             }
-            return null;
+            return Result.of(results);
         }
     }
 }
