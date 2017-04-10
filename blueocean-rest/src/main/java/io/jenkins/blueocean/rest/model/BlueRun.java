@@ -6,7 +6,6 @@ import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.POST;
 import org.kohsuke.stapler.verb.PUT;
 
@@ -38,8 +37,6 @@ public abstract class BlueRun extends Resource {
     public static final String RUN_SUMMARY = "runSummary";
     public static final String RESULT = "result";
     public static final String STATE = "state";
-    public static final String ARTIFACTS = "artifacts";
-    public static final String STEPS = "steps";
     public static final String ACTIONS = "actions";
 
     public static final int DEFAULT_BLOCKING_STOP_TIMEOUT_IN_SECS=10;
@@ -169,11 +166,16 @@ public abstract class BlueRun extends Resource {
     public abstract BlueRun stop(@QueryParameter("blocking") Boolean blocking, @QueryParameter("timeOutInSecs") Integer timeOutInSecs);
 
     /**
+     * @return Uri of artifacts zip file.
+     */
+    @Exported
+    public abstract String getArtifactsZipFile();
+    /**
      *
      * @return Run artifacts
      */
-    @Exported(name=ARTIFACTS)
-    public abstract Container<BlueArtifact> getArtifacts();
+    @Navigable
+    public abstract BlueArtifactContainer getArtifacts();
 
     /**
      * @return Serves .../runs/{rundId}/nodes/ and provides pipeline execution nodes
@@ -222,6 +224,7 @@ public abstract class BlueRun extends Resource {
         QUEUED,
         RUNNING,
         PAUSED,
+        SKIPPED,
         NOT_BUILT,
         FINISHED
     }
@@ -242,23 +245,6 @@ public abstract class BlueRun extends Resource {
         UNKNOWN,
 
         /** Aborted run*/
-        ABORTED;
-    }
-
-    @ExportedBean(defaultVisibility = 2)
-    public static abstract class BlueArtifact extends Resource{
-        public static final String NAME = "name";
-        public static final String URL = "url";
-        public static final String SIZE = "size";
-
-
-        @Exported(name=NAME)
-        public abstract String getName();
-
-        @Exported(name=URL)
-        public abstract String getUrl();
-
-        @Exported(name=SIZE)
-        public abstract long getSize();
+        ABORTED,
     }
 }

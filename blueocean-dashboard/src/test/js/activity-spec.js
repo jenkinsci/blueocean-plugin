@@ -133,7 +133,9 @@ const
 
 const context = {
   params: {},
-  config: {},
+  config: {
+      getServerBrowserTimeSkewMillis: () => 0
+  },
       activityService: {
         activityPager() {
           return {
@@ -145,11 +147,13 @@ const context = {
 
 const contextNoData = {
   params: {},
-  config: {},
+  config: {
+      getServerBrowserTimeSkewMillis: () => 0
+  },
       activityService: {
         activityPager() {
           return {
-            data: undefined,
+            data: [],
             pending: true,
           }
         }
@@ -157,11 +161,11 @@ const contextNoData = {
 };
 const pipeline = {
   _class: "some.class"
-}
+};
 
 const capabilities = {
   'some.class': new CapabilityRecord({})
-}
+};
 data.$success = true; // fetch flag
 
 const t = () => {};
@@ -172,13 +176,14 @@ describe("Activity", () => {
     const wrapper =  shallow(<Activity t={ ()=>{} } runs={data} pipeline={pipeline} capabilities={capabilities}/>, { context });
 
     // does data renders?
-    assert.isNotNull(wrapper)
-    assert.equal(wrapper.find('Runs').length, data.length)
+    assert.isNotNull(wrapper);
+    assert.equal(wrapper.find('NewComponent').length, data.length)
   });
 
   it("does not render without data", () => {
-    const wrapper =  shallow(<Activity pipeline={pipeline} capabilities={capabilities}/>, { context: contextNoData}).node;
-    assert.isNull(wrapper);
+    const wrapper =  shallow(<Activity pipeline={pipeline}  t={ ()=>{} } capabilities={capabilities}/>, { context: contextNoData});
+    assert.equal(wrapper.find('NewComponent').length, 0)
+
   });
 });
 
@@ -189,7 +194,7 @@ describe('Pipeline -> Activity List', () => {
 
         assert.isNotNull(wrapper);
 
-        const runs = wrapper.find('Runs');
+        const runs = wrapper.find('NewComponent');
         assert.isNotNull(runs);
 
         const run4 = runs.at(3);

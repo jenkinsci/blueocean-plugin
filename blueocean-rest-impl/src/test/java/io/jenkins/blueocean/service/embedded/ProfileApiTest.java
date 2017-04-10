@@ -7,16 +7,24 @@ import hudson.model.Project;
 import hudson.model.User;
 import hudson.tasks.Mailer;
 import hudson.tasks.UserAvatarResolver;
+import io.jenkins.blueocean.service.embedded.rest.UserImpl;
 import jenkins.model.Jenkins;
+import org.acegisecurity.adapters.PrincipalAcegiUserToken;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.userdetails.UserDetails;
 import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestExtension;
 
+import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Vivek Pandey
@@ -27,9 +35,9 @@ public class ProfileApiTest extends BaseTest{
         User system = j.jenkins.getUser("SYSTEM");
         get("/users/", List.class);
         Map response = get("/users/"+system.getId());
-        Assert.assertEquals(system.getId(), response.get("id"));
-        Assert.assertEquals(system.getFullName(), response.get("fullName"));
-        Assert.assertEquals("http://avatar.example/i/img.png", response.get("avatar"));
+        assertEquals(system.getId(), response.get("id"));
+        assertEquals(system.getFullName(), response.get("fullName"));
+        assertEquals("http://avatar.example/i/img.png", response.get("avatar"));
     }
 
     //XXX: There is no method on User API to respond to POST or PUT or PATH. Since there are other tests that
@@ -39,8 +47,8 @@ public class ProfileApiTest extends BaseTest{
     public void postCrumbTest() throws Exception {
         User system = j.jenkins.getUser("SYSTEM");
         Map response = post("/users/"+system.getId()+"/", Collections.emptyMap());
-        Assert.assertEquals(system.getId(), response.get("id"));
-        Assert.assertEquals(system.getFullName(), response.get("fullName"));
+        assertEquals(system.getId(), response.get("id"));
+        assertEquals(system.getFullName(), response.get("fullName"));
     }
 
     //UX-159
@@ -56,8 +64,8 @@ public class ProfileApiTest extends BaseTest{
     public void putMimeTest() throws Exception {
         User system = j.jenkins.getUser("SYSTEM");
         Map response = put("/users/"+system.getId()+"/", Collections.emptyMap());
-        Assert.assertEquals(system.getId(), response.get("id"));
-        Assert.assertEquals(system.getFullName(), response.get("fullName"));
+        assertEquals(system.getId(), response.get("id"));
+        assertEquals(system.getFullName(), response.get("fullName"));
     }
 
     @Test
@@ -72,8 +80,8 @@ public class ProfileApiTest extends BaseTest{
         User system = j.jenkins.getUser("SYSTEM");
 
         Map response = patch("/users/"+system.getId()+"/", Collections.emptyMap());
-        Assert.assertEquals(system.getId(), response.get("id"));
-        Assert.assertEquals(system.getFullName(), response.get("fullName"));
+        assertEquals(system.getId(), response.get("id"));
+        assertEquals(system.getFullName(), response.get("fullName"));
     }
 
     @Test
@@ -101,8 +109,8 @@ public class ProfileApiTest extends BaseTest{
 
         //Call is made as anonymous user, email should be null
         Map response = get("/users/"+alice.getId());
-        Assert.assertEquals(alice.getId(), response.get("id"));
-        Assert.assertEquals(alice.getFullName(), response.get("fullName"));
+        assertEquals(alice.getId(), response.get("id"));
+        assertEquals(alice.getFullName(), response.get("fullName"));
         Assert.assertNull(response.get("email"));
 
         //make a request on bob's behalf to get alice's user details, should get null email
@@ -111,20 +119,20 @@ public class ProfileApiTest extends BaseTest{
             .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
             .get("/users/"+alice.getId()).build(Map.class);
 
-        Assert.assertEquals(alice.getId(), r.get("id"));
-        Assert.assertEquals(alice.getFullName(), r.get("fullName"));
+        assertEquals(alice.getId(), r.get("id"));
+        assertEquals(alice.getFullName(), r.get("fullName"));
         Assert.assertTrue(bob.hasPermission(Jenkins.ADMINISTER));
         //bob is admin so can see alice email
-        Assert.assertEquals("alice@jenkins-ci.org",r.get("email"));
+        assertEquals("alice@jenkins-ci.org",r.get("email"));
 
         r = new RequestBuilder(baseUrl)
             .status(200)
             .jwtToken(getJwtToken(j.jenkins,"alice", "alice"))
             .get("/users/"+alice.getId()).build(Map.class);
 
-        Assert.assertEquals(alice.getId(), r.get("id"));
-        Assert.assertEquals(alice.getFullName(), r.get("fullName"));
-        Assert.assertEquals("alice@jenkins-ci.org",r.get("email"));
+        assertEquals(alice.getId(), r.get("id"));
+        assertEquals(alice.getFullName(), r.get("fullName"));
+        assertEquals("alice@jenkins-ci.org",r.get("email"));
     }
 
     @Test
@@ -148,13 +156,13 @@ public class ProfileApiTest extends BaseTest{
             .jwtToken(token)
             .build(List.class);
 
-        Assert.assertEquals(1, l.size());
+        assertEquals(1, l.size());
         Map pipeline = (Map)((Map)l.get(0)).get("item");
 
         validatePipeline(p, pipeline);
 
         String href = getHrefFromLinks((Map)l.get(0),"self");
-        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite/", href);
+        assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite/", href);
         map = new RequestBuilder(baseUrl)
             .put(href.substring("/blue/rest".length()))
             .jwtToken(token)
@@ -168,7 +176,7 @@ public class ProfileApiTest extends BaseTest{
             .jwtToken(token)
             .build(List.class);
 
-        Assert.assertEquals(0, l.size());
+        assertEquals(0, l.size());
 
         new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
@@ -200,14 +208,14 @@ public class ProfileApiTest extends BaseTest{
             .jwtToken(token)
             .build(List.class);
 
-        Assert.assertEquals(1, l.size());
+        assertEquals(1, l.size());
         Map pipeline = (Map)((Map)l.get(0)).get("item");
 
         validatePipeline(p, pipeline);
 
         String href = getHrefFromLinks((Map)l.get(0),"self");
 
-        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/pipeline1/favorite/", href);
+        assertEquals("/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/pipeline1/favorite/", href);
 
         map = new RequestBuilder(baseUrl)
             .put(href.substring("/blue/rest".length()))
@@ -222,7 +230,7 @@ public class ProfileApiTest extends BaseTest{
             .jwtToken(token)
             .build(List.class);
 
-        Assert.assertEquals(0, l.size());
+        assertEquals(0, l.size());
 
 
         new RequestBuilder(baseUrl)
@@ -244,7 +252,7 @@ public class ProfileApiTest extends BaseTest{
             .jwtToken(token)
             .build(List.class);
 
-        Assert.assertEquals(0, l.size());
+        assertEquals(0, l.size());
 
     }
 
@@ -287,11 +295,46 @@ public class ProfileApiTest extends BaseTest{
             .status(200)
             .build(Map.class);
 
-        Assert.assertEquals(user.getFullName(), u.get("fullName"));
-        Assert.assertEquals("alice@jenkins-ci.org", u.get("email"));
-        Assert.assertEquals(user.getId(), u.get("id"));
+        assertEquals(user.getFullName(), u.get("fullName"));
+        assertEquals("alice@jenkins-ci.org", u.get("email"));
+        assertEquals(user.getId(), u.get("id"));
+        Map permission = (Map) u.get("permission");
+        assertNotNull(permission);
+        assertTrue((Boolean) permission.get("administrator"));
+        Map pipelinePerm = (Map) permission.get("pipeline");
+        assertEquals(true, pipelinePerm.get("start"));
+        assertEquals(true, pipelinePerm.get("create"));
+        assertEquals(true, pipelinePerm.get("read"));
+        assertEquals(true, pipelinePerm.get("stop"));
+        assertEquals(true, pipelinePerm.get("configure"));
+
+        Map credentialPerm = (Map) permission.get("credential");
+        assertEquals(true, credentialPerm.get("create"));
+        assertEquals(true, credentialPerm.get("view"));
+        assertEquals(true, credentialPerm.get("update"));
+        assertEquals(true, credentialPerm.get("manageDomains"));
+        assertEquals(true, credentialPerm.get("delete"));
     }
 
+    @Test
+    public void testPermissionOfOtherUser() throws IOException {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+
+        hudson.model.User alice = j.jenkins.getUser("alice");
+        alice.setFullName("Alice Cooper");
+        alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
+
+
+        hudson.model.User bob = j.jenkins.getUser("bob");
+        bob.setFullName("Bob Cooper");
+        bob.addProperty(new Mailer.UserProperty("bob@jenkins-ci.org"));
+
+        UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
+
+        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
+
+        Assert.assertNull(new UserImpl(alice).getPermission());
+    }
 
     @Test
     public void getAuthenticatedUserShouldFail() throws Exception {
@@ -345,7 +388,7 @@ public class ProfileApiTest extends BaseTest{
             .jwtToken(getJwtToken(j.jenkins))
             .build(List.class);
 
-        Assert.assertEquals(0, l.size());
+        assertEquals(0, l.size());
         Assert.assertNull(User.current());
     }
 

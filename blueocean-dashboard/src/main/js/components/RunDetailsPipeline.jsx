@@ -2,11 +2,20 @@ import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 import Extensions from '@jenkins-cd/js-extensions';
 
-import LogConsoleView from './LogConsoleView';
-import { sseConnection } from '@jenkins-cd/blueocean-core-js';
+import {
+    calculateLogView,
+    calculateStepsBaseUrl,
+    calculateRunLogURLObject,
+    calculateNodeBaseUrl,
+    calculateFetchAll,
+    buildClassicInputUrl,
+    sseConnection,
+    logging,
+} from '@jenkins-cd/blueocean-core-js';
 import { EmptyStateView } from '@jenkins-cd/design-language';
-import { Icon } from 'react-material-icons-blue';
+import { Icon } from '@jenkins-cd/react-material-icons';
 
+import LogConsoleView from './LogConsoleView';
 import LogToolbar from './LogToolbar';
 import Steps from './Steps';
 import {
@@ -19,12 +28,13 @@ import {
     createSelector,
 } from '../redux';
 
-import { calculateLogView, calculateStepsBaseUrl, calculateRunLogURLObject, calculateNodeBaseUrl, calculateFetchAll } from '../util/UrlUtils';
 import { calculateNode } from '../util/KaraokeHelper';
 
+const logger = logging.logger('io.jenkins.blueocean.dashboard.RunDetailsPipeline');
 
 const { string, object, any, func } = PropTypes;
 
+// FIXME: needs to use i18n for translations
 const QueuedState = () => (
     <EmptyStateView tightSpacing>
         <p>
@@ -62,7 +72,8 @@ export class RunDetailsPipeline extends Component {
             }
         }
 
-        this.listener.sse = sseConnection.subscribe('pipeline', this._onSseEvent);
+        this.listener.ssePipeline = sseConnection.subscribe('pipeline', this._onSseEvent);
+        this.listener.sseJob = sseConnection.subscribe('job', this._onSseEvent);
     }
 
     componentDidMount() {
@@ -80,7 +91,7 @@ export class RunDetailsPipeline extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        if (this.props.result.isQueued()) {
+        if (nextProps.result.isQueued()) {
             return;
         }
         const followAlong = this.state.followAlong;
@@ -105,9 +116,13 @@ export class RunDetailsPipeline extends Component {
     }
 
     componentWillUnmount() {
-        if (this.listener.sse) {
-            sseConnection.unsubscribe(this.listener.sse);
-            delete this.listener.sse;
+        if (this.listener.ssePipeline) {
+            sseConnection.unsubscribe(this.listener.ssePipeline);
+            delete this.listener.ssePipeline;
+        }
+        if (this.listener.sseJob) {
+            sseConnection.unsubscribe(this.listener.sseJob);
+            delete this.listener.sseJob;
         }
 
         if (this.props.result.isQueued()) {
@@ -141,16 +156,34 @@ export class RunDetailsPipeline extends Component {
     // We filter them only for steps and the end event all other we let pass
     _onSseEvent(event) {
         const { fetchNodes, fetchSteps, removeStep, removeLogs } = this.props;
-        const jenkinsEvent = event.jenkins_event;
         // we are using try/catch to throw an early out error
         try {
-            if (event.pipeline_run_id !== this.props.result.id) {
+            const jenkinsEvent = event.jenkins_event;
+            const runId = this.props.result.id;
+            // we get events from the pipeline and the job channel, they have different naming for the id
+            if (event.pipeline_run_id !== runId && event.jenkins_object_id !== runId) {
                 // console.log('early out');
                 throw new Error('exit');
             }
             // we turn on refetch so we always fetch a new Node result
             const refetch = true;
+            const refetchNodes = () => {
+                delete this.mergedConfig.node;
+                fetchNodes({ ...this.mergedConfig, refetch });
+            };
             switch (jenkinsEvent) {
+
+            // In all in the following cases we need to update the display of the run
+            case 'job_run_started':
+            case 'job_run_unpaused':
+            case 'pipeline_stage':
+            case 'pipeline_start':
+            case 'pipeline_block_start':
+            case 'pipeline_block_end':
+                {
+                    refetchNodes();
+                    break;
+                }
             case 'pipeline_step':
                 {
                     // we are not using an early out for the events since we want to refresh the node if we finished
@@ -165,17 +198,16 @@ export class RunDetailsPipeline extends Component {
                          * some steps.
                          */
                         if (event.pipeline_step_stage_id !== this.mergedConfig.node && parallel) {
-                            // console.log('nodes fetching via sse triggered');
-                            delete this.mergedConfig.node;
-                            fetchNodes({ ...this.mergedConfig, refetch });
+                            // console.log('nodes fetching via ssePipeline triggered');
+                            refetchNodes();
                         } else {
-                            // console.log('only steps fetching via sse triggered');
+                            // console.log('only steps fetching via ssePipeline triggered');
                             fetchSteps({ ...this.mergedConfig, refetch });
                         }
                     }
                     break;
                 }
-            case 'pipeline_end':
+            case 'pipeline_end': // FIXME: the following code will be go away when refactoring to mobx
                 {
                     // get all steps from the current run, we use the nodeKey and remove the last bit
                     const keyArray = this.mergedConfig.nodeKey.split('/');
@@ -202,12 +234,12 @@ export class RunDetailsPipeline extends Component {
                         notFinishedSteps.map((step) => removeStep(step.nodesBaseUrl));
                     }
                     // we always want to refresh if the run has finished
-                    fetchNodes({ ...this.mergedConfig, refetch });
+                    refetchNodes();
                     break;
                 }
             default:
                 {
-                    // //console.log(event);
+                    // console.log(event);
                 }
             }
         } catch (e) {
@@ -306,7 +338,7 @@ export class RunDetailsPipeline extends Component {
             ;
 
         const logGeneral = calculateRunLogURLObject(this.mergedConfig);
-   
+
         let title = this.mergedConfig.nodeReducer.displayName;
         if (this.mergedConfig.nodeReducer.id !== null && title) {
             title = `${t('rundetail.pipeline.steps', { defaultValue: 'Steps' })} - ${title}`;
@@ -354,6 +386,16 @@ export class RunDetailsPipeline extends Component {
 
         const shouldShowCV = (!hasResultsForSteps && !isPipelineQueued) || !supportsNode || this.mergedConfig.forceLogView;
         const shouldShowEmptyState = !isPipelineQueued && hasResultsForSteps && noSteps;
+
+        logger.debug('display helper', { shouldShowCV, shouldShowLogHeader, shouldShowEmptyState });
+        const pipe = { fullName: this.props.pipeline.fullName };
+        if (isMultiBranch) {
+            pipe.fullName += `/${params.branch}`;
+        }
+        const classicInputUrl = buildClassicInputUrl(pipe, run.id);
+        logger.debug('classic Input url', classicInputUrl, pipe);
+
+        const logUrl = shouldShowCV || !this.mergedConfig.nodeReducer.id ? logGeneral.url : `${nodeKey}${this.mergedConfig.node}/log/`;
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
                 { (hasResultsForSteps || isPipelineQueued) && nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer
@@ -370,16 +412,17 @@ export class RunDetailsPipeline extends Component {
                 }
                 { hasResultsForSteps && shouldShowLogHeader && !this.mergedConfig.forceLogView &&
                     <LogToolbar
-                      fileName={logGeneral.fileName}
-                      url={logGeneral.url}
+                      fileName={`${title || 'pipeline'}.log`}
+                      url={logUrl}
                       title={title}
                     />
                 }
                 { hasResultsForSteps && currentSteps && !this.mergedConfig.forceLogView && <Steps
                   nodeInformation={currentSteps}
-                  followAlong={followAlong}
-                  router={router}
                   {...{
+                      followAlong,
+                      router,
+                      classicInputUrl,
                       scrollToBottom,
                       ...this.props,
                       ...this.state,
@@ -396,6 +439,7 @@ export class RunDetailsPipeline extends Component {
                 { shouldShowCV && <LogConsoleView
                   {
                     ...{
+                        router,
                         title: t('rundetail.pipeline.logs', { defaultValue: 'Logs' }),
                         scrollToBottom,
                         ...this.props,

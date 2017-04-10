@@ -11,13 +11,31 @@ function clone(object) {
     return JSON.parse(JSON.stringify(object));
 }
 
+const context = {
+    params: {},
+    config: {
+        getServerBrowserTimeSkewMillis: () => 0
+    },
+    activityService: {
+        activityPager() {
+            return {
+                data: data
+            }
+        }
+    }
+};
+
+// Dummy translation
+const t = (key, options) => options && options.defaultValue || key;
+t.lng = 'EN';
+
 describe('PipelineCard', () => {
     let item;
     let favorite;
 
     function shallowRenderCard() {
         return shallow(
-            <PipelineCard runnable={item} favorite={favorite} />
+            <PipelineCard runnable={item} favorite={favorite} t={t}/>, {context}
         );
     }
 
@@ -31,89 +49,31 @@ describe('PipelineCard', () => {
 
     it('renders without error for empty props', () => {
         const wrapper = shallow(
-            <PipelineCard />
+            <PipelineCard t={t}/>, {context}
         );
 
         assert.isOk(wrapper);
     });
 
-    it('renders basic child elements', () => {
+    it('renders with correct props', () => {
         item.latestRun.result = 'SUCCESS';
         const wrapper = shallowRenderCard();
 
-        assert.equal(wrapper.find('LiveStatusIndicator').length, 1);
-        assert.equal(wrapper.find('.name').length, 1);
-        assert.equal(wrapper.find('.name').text(), '<Link />');
-        assert.equal(wrapper.find('.branch').length, 1);
-        assert.equal(wrapper.find('.branchText').text(), 'UX-301');
-        assert.equal(wrapper.find('.commit').length, 1);
-        assert.equal(wrapper.find('.commitId').text(), '#cfca303');
-        assert.equal(wrapper.find('Favorite').length, 1);
-    });
+        assert.equal(wrapper.find('PipelineCardRenderer').length, 1);
 
-    it('renders "rerun" button after failure', () => {
-        item.latestRun.result = 'FAILURE';
-        const wrapper = shallowRenderCard();
-        const replayButton = wrapper.find('ReplayButton').shallow();
-
-        assert.isOk(replayButton.text());
-    });
-
-    it('renders no "rerun" button after success', () => {
-        item.latestRun.result = 'SUCCESS';
-        const wrapper = shallowRenderCard();
-        const replayButton = wrapper.find('ReplayButton').shallow();
-
-        assert.isNotOk(replayButton.text());
-    });
-
-    it('renders a "run" button when successful', () => {
-        item.latestRun.result = 'SUCCESS';
-        const wrapper = shallowRenderCard();
-        const runButton = wrapper.find('RunButton').shallow();
-
-        assert.equal(runButton.find('.run-button').length, 1);
-    });
-
-    it('renders no "run" button while running', () => {
-        item.latestRun.state = 'RUNNING';
-        const wrapper = shallowRenderCard();
-        const runButton = wrapper.find('RunButton').shallow();
-
-        assert.equal(runButton.find('.run-button').length, 0);
-    });
-
-    it('renders a "stop" button while running', () => {
-        item.latestRun.state = 'RUNNING';
-        const wrapper = shallowRenderCard();
-        const runButton = wrapper.find('RunButton').shallow();
-
-        assert.equal(runButton.find('.stop-button').length, 1);
-    });
-
-    it('renders no "stop" button after success', () => {
-        item.latestRun.state = 'RUNNING';
-        const wrapper = shallowRenderCard();
-        const runButton = wrapper.find('RunButton').shallow();
-
-        assert.equal(runButton.find('.stop-button').length, 1);
-    });
-
-    it('renders "not built" status if no latest run', () => {
-        item.latestRun = null;
-        const wrapper = shallowRenderCard();
-
-        assert.equal(wrapper.find('.not_built-bg-lite').length, 1);
-    });
-
-    it('escapes the branch name', () => {
-        const branch = 'experiment/build-locally-docker';
-        item.fullName = `jdl1/${encodeURIComponent(branch)}`;
-        item.name = encodeURIComponent(branch);
-        const wrapper = shallowRenderCard();
-
-        const elements = wrapper.find('.branchText');
-        assert.equal(elements.length, 1);
-        assert.equal(elements.at(0).text(), branch);
+        assert.equal(wrapper.prop('status'), 'SUCCESS');
+        assert.equal(wrapper.prop('startTime'), '2016-05-24T08:57:04.432-0400');
+        assert.equal(wrapper.prop('estimatedDuration'), 73248);
+        assert.equal(wrapper.prop('activityUrl'), '/organizations/jenkins/blueocean/activity');
+        assert.equal(wrapper.prop('displayPath'), 'blueocean');
+        assert.equal(wrapper.prop('branchText'), 'UX-301');
+        assert.equal(wrapper.prop('commitText'), 'cfca303');
+        assert.equal(wrapper.prop('favoriteChecked'), true);
+        assert.equal(typeof wrapper.prop('runnableItem'), 'object');
+        assert.equal(typeof wrapper.prop('latestRun'), 'object');
+        assert.equal(typeof wrapper.prop('timeText'), 'object');
+        assert.equal(typeof wrapper.prop('onFavoriteToggle'), 'function');
+        assert.equal(typeof wrapper.prop('onRunDetails'), 'function');
+        assert.equal(typeof wrapper.prop('onClickMain'), 'function');
     });
 });

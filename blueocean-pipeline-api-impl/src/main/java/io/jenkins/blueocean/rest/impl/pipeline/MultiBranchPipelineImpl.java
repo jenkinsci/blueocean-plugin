@@ -16,9 +16,11 @@ import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
+import io.jenkins.blueocean.rest.model.BlueIcon;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
+import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -26,18 +28,20 @@ import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
+import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
 import io.jenkins.blueocean.service.embedded.rest.BlueFavoriteResolver;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
-import jenkins.scm.api.SCMHead;
-import jenkins.scm.api.actions.ChangeRequestAction;
+
+import org.apache.commons.lang.StringUtils;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.json.JsonBody;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
@@ -45,6 +49,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static io.jenkins.blueocean.rest.impl.pipeline.PipelineJobFilters.isPullRequest;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_MULTI_BRANCH_PROJECT;
 
 /**
@@ -73,7 +78,10 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         if(favoriteAction == null) {
             throw new ServiceException.BadRequestExpception("Must provide pipeline name");
         }
-        Job job = FavoriteUtil.resolveDefaultBranch(mbp);
+        Job job = PrimaryBranch.resolve(mbp);
+        if (job == null) {
+            throw new ServiceException.BadRequestExpception("no default branch to favorite");
+        }
         FavoriteUtil.toggle(favoriteAction, job);
         return new FavoriteImpl(new BranchImpl(job,getLink().rel("branches")), getLink().rel("favorite"));
     }
@@ -81,6 +89,12 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     @Override
     public Map<String, Boolean> getPermissions() {
         return AbstractPipelineImpl.getPermissions(mbp);
+    }
+
+    @Navigable
+    @Override
+    public BluePipelineScm getScm() {
+        return new ScmResourceImpl(mbp, this);
     }
 
     @Override
@@ -149,59 +163,9 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Integer getWeatherScore(){
-        /**
-         * TODO: this code need cleanup once MultiBranchProject exposes default branch. At present
-         *
-         * At present we look for master as primary branch, if not found we find the latest build across all branches and
-         * return its score.
-         *
-         * If there are no builds taken place 0 score is returned.
-         */
-
-        Job j = mbp.getItem("master");
-        if(j == null) {
-            j = mbp.getItem("production");
-            /**
-             * If there are no master or production branch then we return weather score of
-             *
-             * - Sort latest build of all branches in ascending order
-             * - Return the latest
-             *
-             */
-            if(j == null){
-                Collection<Job>  jbs = mbp.getAllJobs();
-                if(jbs.size() > 0){
-                    Job[] jobs = jbs.toArray(new Job[jbs.size()]);
-                    Arrays.sort(jobs, new Comparator<Job>() {
-                        @Override
-                        public int compare(Job o1, Job o2) {
-                            long t1 = 0;
-                            if(o1.getLastBuild() != null){
-                                t1 = o1.getLastBuild().getTimeInMillis() + o1.getLastBuild().getDuration();
-                            }
-
-                            long t2 = 0;
-                            if(o2.getLastBuild() != null){
-                                t2 = o2.getLastBuild().getTimeInMillis() + o2.getLastBuild().getDuration();
-                            }
-
-                            if(t1<2){
-                                return -1;
-                            }else if(t1 > t2){
-                                return 1;
-                            }else{
-                                return 0;
-                            }
-                        }
-                    });
-
-                    return jobs[jobs.length - 1].getBuildHealth().getScore();
-                }
-            }
-        }
-        return j == null ? 0 : j.getBuildHealth().getScore();
+        Job j = PrimaryBranch.resolve(mbp);
+        return j == null ? 100 : j.getBuildHealth().getScore();
     }
 
     @Override
@@ -263,10 +227,6 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
         return counter;
     }
-    private boolean isPullRequest(Job job) {
-        SCMHead head = SCMHead.HeadByItem.findHead(job);
-        return head != null && head.getAction(ChangeRequestAction.class) != null;
-    }
 
 
     @Override
@@ -277,10 +237,6 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                 return MultiBranchPipelineImpl.this.getLink().rel("runs");
             }
 
-            @Override
-            public BluePipeline getPipeline(String name) {
-                return null;
-            }
 
             @Override
             public BlueRun get(String name) {
@@ -301,12 +257,28 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
             public Iterator<BlueRun> iterator(int start, int limit) {
                 List<BlueRun> c = new ArrayList<>();
 
-                List<BluePipeline> branches = Lists.newArrayList(getBranches().list());
+                List<BluePipeline> branches;
+                
+                // Check for branch filter
+                StaplerRequest req = Stapler.getCurrentRequest();
+                String branchFilter = null;
+                if (req != null) {
+                    branchFilter = req.getParameter("branch");
+                }
+                
+                if (!StringUtils.isEmpty(branchFilter)) {
+                    BluePipeline pipeline = getBranches().get(branchFilter);
+                    if (pipeline != null) {
+                        branches = Collections.singletonList(pipeline);
+                    } else {
+                        branches = Collections.emptyList();
+                    }
+                } else {
+                    branches = Lists.newArrayList(getBranches().list());
+                    sortBranchesByLatestRun(branches);
+                }
 
-
-                sortBranchesByLatestRun(branches);
-
-                for(final BluePipeline b: getBranches()) {
+                for(final BluePipeline b: branches) {
                     Iterator<BlueRun> it = b.getRuns().iterator(0,MAX_MBP_RUNS_ROWS);
                     int count = 0;
                     Iterators.skip(it, start);
@@ -375,7 +347,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
 
             @Override
-            public BlueQueueItem create() {
+            public BlueQueueItem create(StaplerRequest request) {
                 throw new ServiceException.NotImplementedException("This action is not supported");
             }
         };
@@ -395,7 +367,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     @Override
     public Collection<BlueActionProxy> getActions() {
-        return PipelineImpl.getActionProxies(mbp.getAllActions(), this);
+        return ActionProxiesImpl.getActionProxies(mbp.getAllActions(), this);
     }
 
     @Override
@@ -440,7 +412,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         public BlueFavorite resolve(Item item, Reachable parent) {
             if(item instanceof MultiBranchProject){
                 MultiBranchProject project = (MultiBranchProject) item;
-                Job job = FavoriteUtil.resolveDefaultBranch(project);
+                Job job = PrimaryBranch.resolve(project);
                 if(job != null){
                     Resource resource = BluePipelineFactory.resolve(job);
                     Link l = LinkResolver.resolveLink(project);
@@ -477,5 +449,15 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
             }
         };
 
+    }
+
+    @Override
+    public List<Object> getParameters() {
+        return null;
+    }
+
+    @Override
+    public BlueIcon getIcon() {
+        return null;
     }
 }

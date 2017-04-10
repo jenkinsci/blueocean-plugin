@@ -1,0 +1,35 @@
+{
+    "_class":"io.jenkins.blueocean.service.embedded.rest.UserImpl",
+    "_links":{
+        "favorites":{
+            "_class":"io.jenkins.blueocean.rest.hal.Link",
+            "href":"/blue/rest/users/ivan/favorites/"
+        }, 
+        "self":{
+            "_class":"io.jenkins.blueocean.rest.hal.Link",
+            "href":"/blue/rest/users/blah/"
+        }
+    },
+    "avatar":null,
+    "email":"blah@blah.com",
+    "fullName":"Blah",
+    "id":"blah",
+    "permission":{
+        "_class":"io.jenkins.blueocean.service.embedded.rest.UserImpl$1",
+        "administrator":true,
+        "credential":{
+            "create":true,
+            "view":true,
+            "delete":true,
+            "update":true,
+            "manageDomains":true
+        },
+        "pipeline":{
+            "create":true,
+            "read":true,
+            "start":true,
+            "stop":true,
+            "configure":true
+        }
+    }
+}

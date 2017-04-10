@@ -5,11 +5,14 @@ import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
+import io.jenkins.blueocean.rest.impl.pipeline.PipelineInputStepListener;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeUtil;
-import org.jenkins.pubsub.Message;
-import org.jenkins.pubsub.MessageException;
-import org.jenkins.pubsub.PubsubBus;
-import org.jenkins.pubsub.SimpleMessage;
+import org.jenkinsci.plugins.pubsub.Events;
+import org.jenkinsci.plugins.pubsub.Message;
+import org.jenkinsci.plugins.pubsub.MessageException;
+import org.jenkinsci.plugins.pubsub.PubsubBus;
+import org.jenkinsci.plugins.pubsub.RunMessage;
+import org.jenkinsci.plugins.pubsub.SimpleMessage;
 import org.jenkinsci.plugins.workflow.actions.BodyInvocationAction;
 import org.jenkinsci.plugins.workflow.actions.StageAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
@@ -21,11 +24,16 @@ import org.jenkinsci.plugins.workflow.flow.GraphListener;
 import org.jenkinsci.plugins.workflow.graph.FlowEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.*;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -160,6 +168,22 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
                 message.set(PipelineEventChannel.EventProps.pipeline_step_name, stepNode.getDescriptor().getFunctionName());
             }
 
+            if (flowNode instanceof StepAtomNode) {
+                boolean pausedForInputStep = PipelineNodeUtil
+                    .isPausedForInputStep((StepAtomNode) flowNode, this.run.getAction(InputAction.class));
+                if (pausedForInputStep) {
+                    // Fire job event to tell we are paused
+                    // We will publish on the job channel
+                    try {
+                        PubsubBus.getBus().publish(new RunMessage(this.run)
+                            .setEventName(Events.JobChannel.job_run_paused)
+                        );
+                    } catch (MessageException e) {
+                        LOGGER.log(Level.WARNING, "Error publishing Run pause event.", e);
+                    }
+                }
+                message.set(PipelineEventChannel.EventProps.pipeline_step_is_paused, String.valueOf(pausedForInputStep));
+            }
             return message;
         }
 
@@ -168,6 +192,22 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
                 pubSubBus.publish(message);
             } catch (MessageException e) {
                 LOGGER.log(Level.SEVERE, "Unexpected error publishing pipeline FlowNode event.", e);
+            }
+        }
+    }
+
+    @Extension
+    public static class InputStepPublisher implements PipelineInputStepListener {
+
+        @Override
+        public void onStepContinue(InputStep inputStep, WorkflowRun run) {
+            // fire an unpaused event in case the input step has received its input
+            try {
+                PubsubBus.getBus().publish(new RunMessage(run)
+                        .setEventName(Events.JobChannel.job_run_unpaused)
+                );
+            } catch (MessageException e) {
+                LOGGER.log(Level.WARNING, "Error publishing Run un-pause event.", e);
             }
         }
     }

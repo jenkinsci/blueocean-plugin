@@ -5,22 +5,42 @@
  * @param url
  * @returns {string}
  */
-const cleanSlashes = (url: string) => {
-    if (url.indexOf('//') !== -1) {
-        let cleanUrl = url.replace('//', '/');
-        cleanUrl = cleanUrl.substr(-1) === '/' ?
-            cleanUrl : `${cleanUrl}/`;
+function cleanSlashes(url: string) {
+    let baseUrl = '';
+    let urlParams = '';
 
-        return cleanSlashes(cleanUrl);
+    if (url && url.indexOf('?') > -1) {
+        baseUrl = url.split('?').slice(0, 1).join('');
+        urlParams = url.split('?').slice(-1).join('');
+    } else {
+        baseUrl = url;
     }
 
-    return url;
-};
+    // replace any number of consecutive slashes with one slash
+    baseUrl = baseUrl.replace(/\/\/+/g, '/');
 
+    if (baseUrl.substr(-1) !== '/') {
+        baseUrl = `${baseUrl}/`;
+    }
+
+    return !urlParams ? baseUrl : `${baseUrl}?${urlParams}`;
+}
+
+/**
+ * Generate a "unique" ID with an optional prefix
+ * @param prefix
+ * @returns {string}
+ */
+function randomId(prefix = 'id') {
+    const integer = Math.round(Math.random() * Number.MAX_SAFE_INTEGER);
+    return `${prefix}-${integer}`;
+}
 
 export default {
     cleanSlashes,
+    randomId,
     clone(obj: Object) {
+        if (!obj) return obj;
         return JSON.parse(JSON.stringify(obj));
     },
     windowOrGlobal() {

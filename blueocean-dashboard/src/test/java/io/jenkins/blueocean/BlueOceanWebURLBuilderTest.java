@@ -110,7 +110,7 @@ public class BlueOceanWebURLBuilderTest {
         blueOceanURL = BlueOceanWebURLBuilder.toBlueOceanURL(masterJob.getFirstBuild());
         assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/detail/master/1", blueOceanURL);
         blueOceanURL = BlueOceanWebURLBuilder.toBlueOceanURL(featureUx1Job.getFirstBuild());
-        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/detail/feature%252Fux-1/1", blueOceanURL);
+        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/detail/feature%2Fux-1/1", blueOceanURL);
     }
 
     private WorkflowJob findBranchProject(WorkflowMultiBranchProject mp, String name) throws Exception {
@@ -123,7 +123,7 @@ public class BlueOceanWebURLBuilderTest {
     }
 
     private void assertURL(String expected, String actual) throws IOException {
-        Assert.assertEquals(jenkinsRule.getURL().toString() + expected, actual);
+        Assert.assertEquals(expected, actual);
     }
 
     @Before

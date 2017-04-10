@@ -1,0 +1,17 @@
+#!groovy
+
+properties([
+    buildDiscarder(logRotator(numToKeepStr: '10')),
+    pipelineTriggers([cron('@daily')]),
+])
+
+node('docker') {
+  stage('Checkout') {
+    deleteDir()
+    checkout scm
+  }
+
+  stage('Build and publish container') {
+      sh 'docker/official/build.sh'
+  }
+}

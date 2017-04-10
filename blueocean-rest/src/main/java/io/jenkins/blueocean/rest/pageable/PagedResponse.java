@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.rest.pageable;
 
 import com.google.common.collect.Iterators;
-import hudson.model.Api;
+import io.jenkins.blueocean.commons.stapler.Export;
 import org.kohsuke.stapler.CancelRequestHandlingException;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
@@ -14,6 +14,8 @@ import java.io.IOException;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 import java.lang.reflect.InvocationTargetException;
+import java.util.Arrays;
+import java.util.List;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.RetentionPolicy.RUNTIME;
@@ -53,11 +55,41 @@ public @interface PagedResponse {
                         limit = DEFAULT_LIMIT;
                     }
                     Object[] page = Iterators.toArray(resp.iterator(start, limit), Object.class);
-                        String separator = (req.getQueryString() != null) ? "&" : "?";
-                        rsp.setHeader("Link", "<" + req.getRequestURIWithQueryString() + separator + "start=" + (start + limit) + "&limit="+limit + ">; rel=\"next\"");
-                    new Api(page).doJson(req, rsp);
+                    String url = req.getOriginalRequestURI();
+
+                    String separator = "?";
+                    if(req.getQueryString() != null){
+                        String q = getQueryString(req.getQueryString(), "start", "limit");
+                        if(q.length()>0){
+                            url += "?"+q;
+                            separator = "&";
+                        }
+                    }
+                    rsp.setHeader("Link", "<" + url + separator + "start=" + (start + limit) + "&limit="+limit + ">; rel=\"next\"");
+
+                    Export.doJson(req, rsp, page);
                 }
             };
+        }
+
+        private String getQueryString(String query, String... excludes){
+            List<String> excludeList = Arrays.asList(excludes);
+            String[] values = query.split("&");
+
+            StringBuilder sb = new StringBuilder();
+
+            for (String v : values) {
+                String[] vv = v.split("=");
+                if (vv.length != 2 || excludeList.contains(vv[0].trim())) {
+                    continue;
+                }
+                if(sb.length() > 0){
+                    sb.append("&");
+                }
+                sb.append(vv[0].trim()).append("=").append(vv[1].trim());
+            }
+
+            return sb.toString();
         }
 
 

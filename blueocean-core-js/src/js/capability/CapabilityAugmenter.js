@@ -3,7 +3,20 @@
  */
 
 const addClass = (clazz, classMap) => {
-    const className = clazz._class;
+    let className;
+
+    if (Array.isArray(clazz._class)) {
+        // If it's an array of class names, just take the first.
+        // TODO: Hmmm ... not sure if this is the right thing to do when we have an array of class names.
+        // Not sure what the array is about tbh. What are the relationships?
+        if (clazz._class.length > 0) {
+            className = clazz._class[0];
+        } else {
+            return;
+        }
+    } else {
+        className = clazz._class;
+    }
 
     if (!classMap[className]) {
         // eslint-disable-next-line no-param-reassign

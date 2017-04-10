@@ -31,6 +31,8 @@ public final class ApiHead implements RootRoutable, Reachable  {
 
     private volatile Map<String,ApiRoutable> apis;
 
+    public static final String URL_NAME="rest";
+
     /**
      * Search API
      *
@@ -55,7 +57,7 @@ public final class ApiHead implements RootRoutable, Reachable  {
      */
     @Override
     public String getUrlName() {
-        return "rest";
+        return URL_NAME;
     }
 
     /**
@@ -119,7 +121,7 @@ public final class ApiHead implements RootRoutable, Reachable  {
                 if(apiMap == null){
                     Map<String,ApiRoutable> apiMapTmp = new HashMap<>();
                     for ( ApiRoutable api : ExtensionList.lookup(ApiRoutable.class)) {
-                        apiMapTmp.put(api.getUrlName(),api);
+                        apiMapTmp.put(api.getUrlName(), api);
                     }
                     apis = apiMap = apiMapTmp;
                 }

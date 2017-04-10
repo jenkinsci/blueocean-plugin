@@ -6,10 +6,11 @@ import com.google.common.collect.Iterators;
 import hudson.Extension;
 import hudson.Util;
 import hudson.model.AbstractItem;
-import hudson.model.Action;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
+import hudson.model.ParameterDefinition;
+import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Run;
 import hudson.model.User;
 import hudson.plugins.favorite.Favorites;
@@ -22,6 +23,7 @@ import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
 import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
@@ -107,7 +109,7 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     @Override
     public Collection<BlueActionProxy> getActions() {
-        return getActionProxies(job.getAllActions(), this);
+        return ActionProxiesImpl.getActionProxies(job.getAllActions(), this);
     }
 
     @Override
@@ -194,18 +196,6 @@ public class AbstractPipelineImpl extends BluePipeline {
         return pipelinePath.toString();
     }
 
-    public static Collection<BlueActionProxy> getActionProxies(List<? extends Action> actions, Reachable parent){
-        List<BlueActionProxy> actionProxies = new ArrayList<>();
-        for(Action action:actions){
-            if(action == null){
-                continue;
-            }
-            actionProxies.add(new ActionProxiesImpl(action, parent));
-        }
-        return actionProxies;
-
-    }
-
     @Override
     public Container<Resource> getActivities() {
         return new Container<Resource>(){
@@ -229,6 +219,22 @@ public class AbstractPipelineImpl extends BluePipeline {
                 return activityIterator(getQueue(), getRuns(), start, limit);
             }
         };
+    }
+
+    @Override
+    public List<Object> getParameters() {
+        return getParameterDefinitions(job);
+    }
+
+    public static List<Object> getParameterDefinitions(Job job){
+        ParametersDefinitionProperty pp = (ParametersDefinitionProperty) job.getProperty(ParametersDefinitionProperty.class);
+        List<Object> pds = new ArrayList<>();
+        if(pp != null){
+            for(ParameterDefinition pd : pp.getParameterDefinitions()){
+                pds.add(pd);
+            }
+        }
+        return pds;
     }
 
     public static Iterator<Resource> activityIterator(final BlueQueueContainer queueContainer,
@@ -294,9 +300,15 @@ public class AbstractPipelineImpl extends BluePipeline {
         return getPermissions(job);
     }
 
+    @Override
+    public BluePipelineScm getScm() {
+        return null;
+    }
+
     public static Map<String, Boolean> getPermissions(AbstractItem item){
         return ImmutableMap.of(
             BluePipeline.CREATE_PERMISSION, item.getACL().hasPermission(Item.CREATE),
+            BluePipeline.CONFIGURE_PERMISSION, item.getACL().hasPermission(Item.CONFIGURE),
             BluePipeline.READ_PERMISSION, item.getACL().hasPermission(Item.READ),
             BluePipeline.START_PERMISSION, item.getACL().hasPermission(Item.BUILD),
             BluePipeline.STOP_PERMISSION, item.getACL().hasPermission(Item.CANCEL)

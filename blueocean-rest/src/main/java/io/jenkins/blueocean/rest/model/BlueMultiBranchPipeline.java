@@ -3,6 +3,7 @@ package io.jenkins.blueocean.rest.model;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.hal.Link;
+import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 
 import java.util.Collection;
@@ -73,6 +74,14 @@ public abstract class BlueMultiBranchPipeline extends BluePipelineFolder{
     public abstract Collection<String> getBranchNames();
 
     /**
+     * MultiBranch pipeline is computed folder, no sub-folders in it
+     */
+    @Override
+    public Iterable<String> getPipelineFolderNames() {
+        return Collections.emptyList();
+    }
+
+    /**
      * @return It gives no-op {@link BlueRunContainer} since Multi-branch is not a build item, does not build on its own
      *
      */
@@ -80,11 +89,6 @@ public abstract class BlueMultiBranchPipeline extends BluePipelineFolder{
         return new BlueRunContainer() {
             @Override
             public Link getLink() {
-                return null;
-            }
-
-            @Override
-            public BluePipeline getPipeline(String name) {
                 return null;
             }
 
@@ -100,7 +104,7 @@ public abstract class BlueMultiBranchPipeline extends BluePipelineFolder{
             }
 
             @Override
-            public BlueQueueItem create() {
+            public BlueQueueItem create(StaplerRequest request) {
                 throw new ServiceException.NotImplementedException("This action is not supported");
             }
         };

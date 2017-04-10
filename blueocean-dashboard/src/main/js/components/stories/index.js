@@ -9,6 +9,7 @@ ext.store.init({
 require('./pipelines');
 require('./status');
 require('./icons');
-require('./logDisplay');
-require('./changes');
+require('./RunDetailsHeaderStories');
+require('./FullScreenStories');
 require('./moments');
+require('./inputStep');

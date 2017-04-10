@@ -51,7 +51,7 @@ export class CreatePipelineScmListRenderer extends React.Component {
 
     render() {
         return (
-            <div className="scm-provider-list">
+            <div className="scm-provider-list layout-large">
                 { this.state.providers.map(provider => {
                     let defaultOption;
 
@@ -64,6 +64,7 @@ export class CreatePipelineScmListRenderer extends React.Component {
 
                     const props = {
                         onSelect: () => this._onSelection(provider),
+                        isSelected: provider === this.props.selectedProvider,
                     };
 
                     return (
@@ -80,4 +81,5 @@ export class CreatePipelineScmListRenderer extends React.Component {
 CreatePipelineScmListRenderer.propTypes = {
     extensionPoint: PropTypes.string,
     onSelection: PropTypes.func,
+    selectedProvider: PropTypes.object,
 };

@@ -34,7 +34,6 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
-import jenkins.model.Jenkins;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.Ancestor;
@@ -44,6 +43,7 @@ import org.kohsuke.stapler.StaplerRequest;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.List;
 
@@ -59,14 +59,14 @@ public class BlueOceanWebURLBuilder {
     }
 
     /**
-     * Construct a Blue Ocean web URL for the Jenkins {@link ModelObject}
+     * Get the {@link TryBlueOceanURLs} instance for the {@link ModelObject}
      * associated with the current Stapler request.
      *
-     * @return The most appropriate Blue Ocean web URL for the current classic
+     * @return The {@link TryBlueOceanURLs} instance for the current classic
      * Jenkins page. The URL to the Blue Ocean homepage is returned if a more
      * appropriate URL is not found.
      */
-    public static @Nonnull String toBlueOceanURL() {
+    public static @Nonnull TryBlueOceanURLs getTryBlueOceanURLs() {
         StaplerRequest staplerRequest = Stapler.getCurrentRequest();
         List<Ancestor> list = staplerRequest.getAncestors();
 
@@ -79,13 +79,21 @@ public class BlueOceanWebURLBuilder {
             if (object instanceof ModelObject) {
                 String blueUrl = toBlueOceanURL((ModelObject) object);
                 if (blueUrl != null) {
-                    return blueUrl;
+                    if (object instanceof Item) {
+                        return new TryBlueOceanURLs(blueUrl, ((Item) object).getUrl());
+                    } else if (object instanceof Run) {
+                        return new TryBlueOceanURLs(blueUrl, ((Run) object).getUrl());
+                    } else {
+                        return new TryBlueOceanURLs(blueUrl);
+                    }
+                } else if (object instanceof Item) {
+                    return new TryBlueOceanURLs(getBlueHome(), ((Item) object).getUrl());
                 }
             }
         }
 
         // Otherwise just return Blue Ocean home.
-        return getBlueHome();
+        return new TryBlueOceanURLs(getBlueHome());
     }
 
     /**
@@ -108,15 +116,15 @@ public class BlueOceanWebURLBuilder {
             Run run = (Run) classicModelObject;
             Job job = run.getParent();
             BlueOceanModelMapping pipelineModelMapping = getPipelineModelMapping(job);
-            return pipelineModelMapping.blueUiUrl + "/detail/" + encodeURIComponent(job.getName()) + "/" + encodeURIComponent(run.getId());
+            // The job can be created with a name that has special encoding chars in it (if created outside the UI e.g. MBP indexing),
+            // specifically %. Encoding it again breaks things ala JENKINS-40137. The creation name can also
+            // have spaces, even from the UI (it should prevent that). So, decode to revert anything that's already
+            // encoded and re-encode to do the full monty. Nasty :)
+            return pipelineModelMapping.blueUiUrl + "/detail/" + encodeURIComponent(decodeURIComponent(job.getName())) + "/" + encodeURIComponent(run.getId());
         } else if (classicModelObject instanceof Item) {
             Resource blueResource = BluePipelineFactory.resolve((Item) classicModelObject);
-            if (blueResource != null) {
-                if (blueResource instanceof BlueMultiBranchPipeline) {
-                    return getOrgPrefix() + "/" + encodeURIComponent(((BluePipeline) blueResource).getFullName()) + "/branches";
-                } else if (blueResource instanceof BluePipeline) {
-                    return getOrgPrefix() + "/" + encodeURIComponent(((BluePipeline) blueResource).getFullName());
-                }
+            if (blueResource instanceof BlueMultiBranchPipeline) {
+                return getOrgPrefix() + "/" + encodeURIComponent(((BluePipeline) blueResource).getFullName()) + "/branches";
             }
         }
 
@@ -128,17 +136,7 @@ public class BlueOceanWebURLBuilder {
     }
 
     private static String getBlueHome() {
-        String rootUrl = Jenkins.getInstance().getRootUrl();
-
-        if (rootUrl == null) {
-            throw new IllegalStateException("Unable to determine Jenkins root URL.");
-        }
-
-        if (rootUrl.endsWith("/")) {
-            rootUrl = rootUrl.substring(0, rootUrl.length() - 1);
-        }
-
-        return rootUrl + "/blue";
+        return "blue";
     }
 
     private static BlueOceanModelMapping getPipelineModelMapping(Job job) {
@@ -159,6 +157,14 @@ public class BlueOceanWebURLBuilder {
                 blueResource,
                 getOrgPrefix() + "/" + encodeURIComponent(blueResource.getFullName())
             );
+        }
+    }
+
+    static String decodeURIComponent(String string) {
+        try {
+            return URLDecoder.decode(string, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+            throw new IllegalStateException("Unexpected UTF-8 encoding error.", e);
         }
     }
 

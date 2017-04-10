@@ -1,8 +1,7 @@
-/**
- * Created by cmeyers on 10/21/16.
- */
 import React, { PropTypes } from 'react';
+import { IconButton } from '@jenkins-cd/design-language';
 
+import { GithubIcon } from './GithubIcon';
 
 export default function GitHubDefaultOption(props) {
     function onSelect() {
@@ -10,14 +9,16 @@ export default function GitHubDefaultOption(props) {
             props.onSelect();
         }
     }
-
+    const className = `monochrome ${props.isSelected ? 'active' : ''}`;
+    
     return (
-        <button onClick={onSelect}>
-            Github
-        </button>
+        <IconButton className={className} label="Github" onClick={onSelect}>
+            <GithubIcon />
+        </IconButton>
     );
 }
 
 GitHubDefaultOption.propTypes = {
     onSelect: PropTypes.func,
+    isSelected: PropTypes.bool,
 };

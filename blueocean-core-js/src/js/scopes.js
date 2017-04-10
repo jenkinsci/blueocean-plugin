@@ -30,3 +30,5 @@ export const root = (typeof self === 'object' && self.self === self && self) ||
 // and blueocean-config/src/main/resources/io/jenkins/blueocean/config/BlueOceanConfig/header.jelly
 //
 export const blueocean = (root.$blueocean || {});
+
+export const prefetchdata = (blueocean.prefetchdata || {});

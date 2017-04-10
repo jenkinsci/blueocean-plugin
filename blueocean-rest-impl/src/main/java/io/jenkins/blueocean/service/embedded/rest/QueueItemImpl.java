@@ -70,6 +70,11 @@ public class QueueItemImpl extends BlueQueueItem {
     }
 
     @Override
+    public String getCauseOfBlockage() {
+        return item.getCauseOfBlockage().toString();
+    }
+
+    @Override
     public Link getLink() {
         return self;
     }

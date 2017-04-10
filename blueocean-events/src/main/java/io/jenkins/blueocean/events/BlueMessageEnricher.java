@@ -29,12 +29,11 @@ import hudson.model.ItemGroup;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
-import jenkins.model.ParameterizedJobMixIn;
-import org.jenkins.pubsub.EventProps;
-import org.jenkins.pubsub.Events;
-import org.jenkins.pubsub.JobChannelMessage;
-import org.jenkins.pubsub.Message;
-import org.jenkins.pubsub.MessageEnricher;
+import org.jenkinsci.plugins.pubsub.EventProps;
+import org.jenkinsci.plugins.pubsub.Events;
+import org.jenkinsci.plugins.pubsub.JobChannelMessage;
+import org.jenkinsci.plugins.pubsub.Message;
+import org.jenkinsci.plugins.pubsub.MessageEnricher;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 
@@ -59,20 +58,19 @@ public class BlueMessageEnricher extends MessageEnricher {
         message.set(EventProps.Jenkins.jenkins_org, OrganizationImpl.INSTANCE.getName());
 
         String channelName = message.getChannelName();
-        if (channelName.equals(Events.JobChannel.NAME)) {
+        if (channelName.equals(Events.JobChannel.NAME) && message instanceof JobChannelMessage) {
             JobChannelMessage jobChannelMessage = (JobChannelMessage) message;
-            ParameterizedJobMixIn.ParameterizedJob job = jobChannelMessage.getJob();
-            Link jobUrl = LinkResolver.resolveLink(job);
+            Item jobChannelItem = jobChannelMessage.getJobChannelItem();
+            Link jobUrl = LinkResolver.resolveLink(jobChannelItem);
 
             jobChannelMessage.set(BlueEventProps.blueocean_job_rest_url, jobUrl.getHref());
-            jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, job.getFullName());
-            if (job instanceof WorkflowJob) {
-                ItemGroup<? extends Item> parent = job.getParent();
+            jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, jobChannelItem.getFullName());
+            if (jobChannelItem instanceof WorkflowJob) {
+                ItemGroup<? extends Item> parent = jobChannelItem.getParent();
                 if (parent instanceof WorkflowMultiBranchProject) {
                     String multiBranchProjectName = parent.getFullName();
-                    jobChannelMessage.set(EventProps.Job.job_ismultibranch, "true");
                     jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, multiBranchProjectName);
-                    jobChannelMessage.set(BlueEventProps.blueocean_job_branch_name, job.getName());
+                    jobChannelMessage.set(BlueEventProps.blueocean_job_branch_name, jobChannelItem.getName());
                 }
             }
         }

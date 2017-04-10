@@ -1,13 +1,19 @@
-/**
- * Created by cmeyers on 10/17/16.
- */
 import React, { PropTypes } from 'react';
-import { BasicDialog, DialogContent } from '@jenkins-cd/design-language';
-import { Icon } from 'react-material-icons-blue';
+import { Page } from '@jenkins-cd/design-language';
+import { ContentPageHeader, i18nTranslator, loadingIndicator } from '@jenkins-cd/blueocean-core-js';
+import Extensions from '@jenkins-cd/js-extensions';
 
+import { ClassicCreationLink } from './ClassicCreationLink';
 import { CreatePipelineScmListRenderer } from './CreatePipelineScmListRenderer';
 import { CreatePipelineStepsRenderer } from './CreatePipelineStepsRenderer';
-import VerticalStep from './VerticalStep';
+import VerticalStep from './flow2/VerticalStep';
+import StepStatus from './flow2/FlowStepStatus';
+import securityUtils from '../util/security-utils';
+
+
+const Sandbox = Extensions.SandboxedComponent;
+const t = i18nTranslator('blueocean-dashboard');
+
 
 export default class CreatePipeline extends React.Component {
 
@@ -19,69 +25,97 @@ export default class CreatePipeline extends React.Component {
         };
     }
 
+    componentWillMount() {
+        loadingIndicator.hide();
+    }
+
+    componentWillUnmount() {
+        if (this.state.selectedProvider) {
+            this.state.selectedProvider.destroyFlowManager();
+        }
+    }
+
     _onSelection(selectedProvider) {
+        if (this.state.selectedProvider) {
+            this.state.selectedProvider.destroyFlowManager();
+        }
+
         this.setState({
             selectedProvider,
         });
     }
 
-    _onCompleteFlow() {
-        this._onExit();
+    _onCompleteFlow(path) {
+        this._onExit(path);
     }
 
-    _onExit() {
-        if (history && history.length > 2) {
-            this.context.router.goBack();
+    _onNavigatePipelines() {
+        this._onExit({ url: '/pipelines' });
+    }
+
+    _onExit({ url } = {}) {
+        if (url) {
+            this.context.router.replace(url);
+        } else if (history && history.length <= 2) {
+            this.context.router.replace('/pipelines');
         } else {
-            this.context.router.push('/pipelines');
+            this.context.router.goBack();
         }
     }
 
     render() {
-        const firstStepStatus = this.state.selectedProvider ? 'complete' : 'active';
+        const firstStepStatus = this.state.selectedProvider ? StepStatus.COMPLETE : StepStatus.ACTIVE;
+        const creationEnabled = securityUtils.isCreationEnabled();
 
         return (
-            <BasicDialog
-              className="creation-dialog"
-              onDismiss={() => this._onExit()}
-              ignoreEscapeKey
-            >
-                <CustomHeader onClose={() => this._onExit()} />
-                <DialogContent>
-                    <VerticalStep className="first-step" status={firstStepStatus}>
-                        <h1>Where do you store your code?</h1>
+            <Page>
+                <div className="create-pipeline">
+                    <ContentPageHeader>
+                        <h1>{t('creation.core.header.title')}</h1>
 
-                        <CreatePipelineScmListRenderer
-                          extensionPoint="jenkins.pipeline.create.scm.provider"
-                          onSelection={(provider) => this._onSelection(provider)}
-                        />
-                    </VerticalStep>
+                        <ClassicCreationLink />
+                    </ContentPageHeader>
+                    { creationEnabled &&
+                    <main>
+                        <article className="content-area">
+                            <VerticalStep className="first-step" status={firstStepStatus}>
+                                <h1>{t('creation.core.intro.scm_provider')}</h1>
 
-                    <CreatePipelineStepsRenderer
-                      selectedProvider={this.state.selectedProvider}
-                      onCompleteFlow={() => this._onCompleteFlow()}
-                    />
-                </DialogContent>
-            </BasicDialog>
+                                <CreatePipelineScmListRenderer
+                                    extensionPoint="jenkins.pipeline.create.scm.provider"
+                                    onSelection={(provider) => this._onSelection(provider)}
+                                    selectedProvider={this.state.selectedProvider}
+                                />
+                            </VerticalStep>
+
+                            <Sandbox>
+                                <CreatePipelineStepsRenderer
+                                    selectedProvider={this.state.selectedProvider}
+                                    onCompleteFlow={(data) => this._onCompleteFlow(data)}
+                                />
+                            </Sandbox>
+                        </article>
+                    </main>
+                    }
+                    { !creationEnabled &&
+                    <main>
+                        <article className="content-area">
+                            <VerticalStep className="first-step" status={StepStatus.ERROR}>
+                                <h1>{t('creation.core.intro.invalid_permission_title')}</h1>
+
+                                <button onClick={() => this._onNavigatePipelines()}>
+                                    {t('creation.core.intro.invalid_permission_button')}
+                                </button>
+                            </VerticalStep>
+                        </article>
+                    </main>
+                    }
+                </div>
+            </Page>
         );
     }
 }
 
 CreatePipeline.contextTypes = {
     router: PropTypes.object,
-};
-
-function CustomHeader(props) {
-    return (
-        <div className="Dialog-header creation-header">
-            <h3>Create Pipeline</h3>
-            <a className="close-button" href="#" onClick={props.onClose}>
-                <Icon icon="close" size={42} />
-            </a>
-        </div>
-    );
-}
-
-CustomHeader.propTypes = {
-    onClose: PropTypes.func,
 };

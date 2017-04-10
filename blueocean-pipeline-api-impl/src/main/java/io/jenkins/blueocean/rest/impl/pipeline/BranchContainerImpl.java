@@ -2,7 +2,6 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.collect.Ordering;
 import hudson.model.Job;
-
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -31,6 +30,15 @@ public class BranchContainerImpl extends BluePipelineContainer {
         public int compare(BluePipeline _pipeline1, BluePipeline _pipeline2) {
             BranchImpl pipeline1 = (BranchImpl)_pipeline1;
             BranchImpl pipeline2 = (BranchImpl)_pipeline2;
+
+            // If one pipeline isnt the primary there is no need to go further
+            if(pipeline1.getBranch().isPrimary() && !pipeline2.getBranch().isPrimary()) {
+                return -1;
+            }
+
+            if(!pipeline1.getBranch().isPrimary() && pipeline2.getBranch().isPrimary()) {
+                return 1;
+            }
 
             // If One pipeline isnt a favorite there is no need to go further.
             if(pipeline1.isFavorite() && !pipeline2.isFavorite()) {

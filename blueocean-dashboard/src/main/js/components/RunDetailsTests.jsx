@@ -1,10 +1,41 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView } from '@jenkins-cd/design-language';
+import { PlaceholderTable } from '@jenkins-cd/design-language';
 import Extensions, { dataType } from '@jenkins-cd/js-extensions';
-import Markdown from 'react-remarkable';
+
 import { actions as selectorActions, testResults as testResultsSelector,
     connect, createSelector } from '../redux';
-import PageLoading from './PageLoading';
+import Icon from './placeholder/Icon';
+import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
+
+
+function NoTestsPlaceholder(props) {
+    const { t } = props;
+
+    const columns = [
+        { width: 30, head: { text: 30 }, cell: { icon: 20 } },
+        { width: 750, isFlexible: true, head: { text: 40 }, cell: { text: 200 } },
+        { width: 80, head: {}, cell: { text: 50 } },
+    ];
+
+    const content = {
+        icon: Icon.NOT_INTERESTED,
+        title: t('rundetail.tests.results.empty.title'),
+        linkText: t('rundetail.tests.results.empty.linktext'),
+        linkHref: t('rundetail.tests.results.empty.linkhref'),
+    };
+
+    return (
+        <div className="RunDetailsEmpty NoTests">
+            <PlaceholderTable columns={columns} />
+            <PlaceholderDialog width={300} content={content} />
+        </div>
+    );
+}
+
+NoTestsPlaceholder.propTypes = {
+    t: PropTypes.func,
+};
+
 
 import {
     ExtensionPoint,
@@ -78,62 +109,27 @@ export class RunDetailsTests extends Component {
         const { testResults, t, locale } = this.props;
 
         if (!testResults || testResults.$pending) {
-            return <PageLoading />;
+            return null;
         }
 
         if (testResults.$failed) {
-            return (<EmptyStateView tightSpacing>
-                 <Markdown>
-                    {t('EmptyState.tests', {
-                        defaultValue: 'There are no tests run for this build.\n\n',
-                    })}
-                </Markdown>
-            </EmptyStateView>);
+            return <NoTestsPlaceholder t={t} />;
         }
 
-        const percentComplete = testResults.passCount /
-            (testResults.passCount + testResults.failCount);
-
-        return (<div className="test-results-container">
-            <div className="test=result-summary" style={{ display: 'none' }}>
-                <div className={`test-result-bar ${percentComplete}%`}></div>
-                <div className="test-result-passed">{t('rundetail.tests.passed', {
-                    0: testResults.passCount,
-                    defaultValue: 'Passed {0}',
-                })}</div>
-                <div className="test-result-failed">{t('rundetail.tests.failed', {
-                    0: testResults.failCount,
-                    defaultValue: 'Failed {0}',
-                })}</div>
-                <div className="test-result-skipped">{t('rundetail.tests.skipped', {
-                    0: testResults.skipCount,
-                    defaultValue: 'Skipped {0}',
-                })}</div>
-                <div className="test-result-duration">{t('rundetail.tests.duration', {
-                    0: testResults.duration,
-                    defaultValue: 'Duration {0}',
-                })}</div>
-            </div>
-            
-            {/* we should decorate data coming back from the JSON APIs instead of this
-                to emulate the way actions work. By using classes as extension
-                points, we can define whichever methods we need to obtain different
-                views as react components */}
-            {this.testReportHandlers.map(h => {
-                let component = h.getComponent();
-                return <ExtensionRenderer extension={component} testResults={testResults} />;
-            })}
-
+        return (
+            <div className="test-results-container">
             {/*
-            <Extensions.Renderer
-              extensionPoint="jenkins.test.result"
-              filter={dataType(testResults)}
-              testResults={testResults}
-              locale={locale}
-              t={t}
-            />
+                <Extensions.Renderer
+                  extensionPoint="jenkins.test.result"
+                  filter={dataType(testResults)}
+                  testResults={testResults}
+                  locale={locale}
+                  t={t}
+                  run={this.props.result}
+                />
             */}
-        </div>);
+            </div>
+        );
     }
 }
 

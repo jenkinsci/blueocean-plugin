@@ -1,48 +1,50 @@
-/**
- * Created by cmeyers on 10/19/16.
- */
 import React, { PropTypes } from 'react';
+import { observer } from 'mobx-react';
 
-import FlowStep from '../FlowStep';
-import StepStatus from '../FlowStepStatus';
+import { buildPipelineUrl } from '../../util/UrlUtils';
+import FlowStep from '../flow2/FlowStep';
+import StepStatus from '../flow2/FlowStepStatus';
+import STATE from './GitCreationState';
 
-import FlowStatus from './GitCreationStatus';
+let t = null;
 
 /**
  * Shows the current progress after creation was initiated.
  */
+@observer
 export default class GitCompletedStep extends React.Component {
+
+    constructor(props) {
+        super(props);
+
+        t = this.props.flowManager.translate;
+    }
+
+    finish() {
+        const pipeline = this.props.flowManager.pipeline;
+        const url = buildPipelineUrl(pipeline.organization, pipeline.fullName, 'activity');
+        this.props.flowManager.completeFlow({ url });
+    }
+
     render() {
-        let status = this.props.status;
+        const { stateId } = this.props.flowManager;
+
+        let status;
         let percentage = -1;
-        let title = 'Completed';
+        let title = t('creation.git.step3.title_completed');
         let content = null;
 
-        switch (this.props.flowStatus) {
-        case FlowStatus.CREATE_CREDS:
-            percentage = 25;
-            title = `${title} - Creating Credentials...`;
-            break;
-        case FlowStatus.CREATE_PIPELINE:
+        if (stateId === STATE.CREATE_PIPELINE) {
             percentage = 50;
-            title = `${title} - Creating Pipeline...`;
-            break;
-        case FlowStatus.RUN_PIPELINE:
-            percentage = 75;
-            title = `${title} - Starting Pipeline...`;
-            break;
-        case FlowStatus.COMPLETE:
+            title = t('creation.git.step3.title_pipeline_create');
+        } else if (stateId === STATE.COMPLETE) {
             percentage = 100;
-            title = `${title}!`;
-            content = <button onClick={() => this.props.onCompleteFlow()}>Close</button>;
+            setTimeout(() => this.finish(), 2000);
             status = StepStatus.COMPLETE;
-            break;
-        default:
-            break;
         }
 
         return (
-            <FlowStep {...this.props} title={title} status={status} percentage={percentage}>
+            <FlowStep {...this.props} className="git-step-completed" title={title} status={status} percentage={percentage}>
                 {content}
             </FlowStep>
         );
@@ -50,7 +52,5 @@ export default class GitCompletedStep extends React.Component {
 }
 
 GitCompletedStep.propTypes = {
-    status: PropTypes.string,
-    flowStatus: PropTypes.string,
-    onCompleteFlow: PropTypes.func,
+    flowManager: PropTypes.string,
 };

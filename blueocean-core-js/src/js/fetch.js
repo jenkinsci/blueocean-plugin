@@ -5,6 +5,10 @@ import utils from './utils';
 import config from './config';
 import dedupe from './utils/dedupe-calls';
 import urlconfig from './urlconfig';
+import { prefetchdata } from './scopes';
+import loadingIndicator from './LoadingIndicator';
+
+const Promise = es6Promise.Promise;
 
 import { capabilityAugmenter } from './capability/index';
 let refreshToken = null;
@@ -29,6 +33,7 @@ export const FetchFunctions = {
         }
         return response;
     },
+
     /**
      * This method checks for for 2XX http codes. Throws error it it is not.
      * This should only be used if not using fetch or fetchJson.
@@ -39,6 +44,11 @@ export const FetchFunctions = {
             error.response = response;
             throw error;
         }
+        return response;
+    },
+
+    stopLoadingIndicator(response) {
+        loadingIndicator.hide();
         return response;
     },
 
@@ -81,6 +91,23 @@ export const FetchFunctions = {
         });
     },
 
+    /* eslint-disable no-param-reassign */
+    /**
+     * Parses the response body for the error generated in checkStatus.
+     */
+    parseErrorJson(error) {
+        return error.response.json().then(
+            body => {
+                error.responseBody = body;
+                throw error;
+            },
+            () => {
+                error.responseBody = null;
+                throw error;
+            });
+    },
+    /* eslint-enable no-param-reassign */
+
      /**
      * Error function helper to log errors to console.
      *
@@ -120,14 +147,30 @@ export const FetchFunctions = {
      * @param {function} [options.onSuccess] - Optional callback success function.
      * @param {function} [options.onError] - Optional error callback.
      * @param {Object} [options.fetchOptions] - Optional isomorphic-fetch options.
+     * @param {boolean} [options.disableDedupe] - Optional flag to disable dedupe for this request.
+     * @param {boolean} [options.disableLoadingIndicator] - Optional flag to disable loading indicator for this request.
      * @returns JSON body
      */
-    rawFetchJSON(url, { onSuccess, onError, fetchOptions, disableDedupe } = {}) {
+    rawFetchJSON(url, { onSuccess, onError, fetchOptions, disableDedupe, disableLoadingIndicator } = {}) {
         const request = () => {
-            const future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
-                .then(FetchFunctions.checkRefreshHeader)
-                .then(FetchFunctions.checkStatus)
-                .then(FetchFunctions.parseJSON);
+            let future = getPrefetchedDataFuture(url); // eslint-disable-line no-use-before-define
+
+            if (!disableLoadingIndicator) {
+                loadingIndicator.show();
+            }
+
+            if (!future) {
+                future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
+                    .then(FetchFunctions.checkRefreshHeader)
+                    .then(FetchFunctions.checkStatus)
+                    .then(FetchFunctions.parseJSON, FetchFunctions.parseErrorJson);
+
+                if (!disableLoadingIndicator) {
+                    future = future.then(FetchFunctions.stopLoadingIndicator, err => { FetchFunctions.stopLoadingIndicator(); throw err; });
+                }
+            } else if (!disableLoadingIndicator) {
+                loadingIndicator.hide();
+            }
             if (onSuccess) {
                 return future.then(onSuccess).catch(FetchFunctions.onError(onError));
             }
@@ -151,14 +194,26 @@ export const FetchFunctions = {
      * @param {function} [options.onSuccess] - Optional callback success function.
      * @param {function} [options.onError] - Optional error callback.
      * @param {Object} [options.fetchOptions] - Optional isomorphic-fetch options.
+     * @param {boolean} [options.disableDedupe] - Optional flag to disable dedupe for this request.
+     * @param {boolean} [options.disableLoadingIndicator] - Optional flag to disable loading indicator for this request.
      * @returns fetch response
      */
-    rawFetch(url, { onSuccess, onError, fetchOptions, disableDedupe } = {}) {
+    rawFetch(url, { onSuccess, onError, fetchOptions, disableDedupe, disableLoadingIndicator } = {}) {
         const request = () => {
-            const future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
-                .then(FetchFunctions.checkRefreshHeader)
-                .then(FetchFunctions.checkStatus);
+            let future = getPrefetchedDataFuture(url); // eslint-disable-line no-use-before-define
+            if (!future) {
+                if (!disableLoadingIndicator) {
+                    loadingIndicator.show();
+                }
 
+                future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
+                    .then(FetchFunctions.checkRefreshHeader)
+                    .then(FetchFunctions.checkStatus);
+
+                if (!disableLoadingIndicator) {
+                    future = future.then(FetchFunctions.stopLoadingIndicator, err => { FetchFunctions.stopLoadingIndicator(); throw err; });
+                }
+            }
             if (onSuccess) {
                 return future.then(onSuccess).catch(FetchFunctions.onError(onError));
             }
@@ -224,15 +279,14 @@ export const Fetch = {
      */
     fetch(url, { onSuccess, onError, fetchOptions } = {}) {
         let fixedUrl = url;
-        
-        
+
         if (urlconfig.getJenkinsRootURL() !== '' && !url.startsWith(urlconfig.getJenkinsRootURL())) {
             fixedUrl = `${urlconfig.getJenkinsRootURL()}${url}`;
         }
         if (!config.isJWTEnabled()) {
             return FetchFunctions.rawFetch(fixedUrl, { onSuccess, onError, fetchOptions });
         }
-        
+
         return jwt.getToken()
             .then(token => FetchFunctions.rawFetch(fixedUrl, {
                 onSuccess,
@@ -242,3 +296,42 @@ export const Fetch = {
     },
 };
 
+function trimRestUrl(url) {
+    const REST_PREFIX = 'blue/rest/';
+    const prefixOffset = url.indexOf(REST_PREFIX);
+
+    if (prefixOffset !== -1) {
+        return url.substring(prefixOffset);
+    }
+
+    return url;
+}
+
+function getPrefetchedDataFuture(url) {
+    const trimmedUrl = trimRestUrl(url);
+
+    for (const prop in prefetchdata) {
+        if (prefetchdata.hasOwnProperty(prop)) {
+            const preFetchEntry = prefetchdata[prop];
+            if (preFetchEntry.restUrl && preFetchEntry.data) {
+                // If the trimmed/normalized rest URL matches the url arg supplied
+                // to the function, construct a pre-resolved future object containing
+                // the prefetched data as the value.
+                if (trimRestUrl(preFetchEntry.restUrl) === trimmedUrl) {
+                    try {
+                        return Promise.resolve(JSON.parse(preFetchEntry.data));
+                    } finally {
+                        // Delete the preFetchEntry i.e. we only use these entries once. So, this
+                        // works only for the first request for the data at that URL. Subsequent
+                        // calls on that REST endpoint will result in a proper fetch. A local
+                        // store needs to be used (redux/mobx etc) if you want to avoid multiple calls
+                        // for the same data. This is not a caching layer/mechanism !!!
+                        delete prefetchdata[prop];
+                    }
+                }
+            }
+        }
+    }
+
+    return undefined;
+}

@@ -46,6 +46,15 @@ export const ChangeSetRecord = Record({
     timestamp: null,
 });
 
+export const PullRequestRecord = Record({
+    pullRequest: {
+        author: null,
+        id: null,
+        title: null,
+        url: null,
+    },
+});
+
 export class RunRecord extends Record({
     _class: null,
     _capabilities: [],
@@ -65,6 +74,9 @@ export class RunRecord extends Record({
     state: null,
     type: null,
     commitId: null,
+    parameters: null,
+    artifactsZipFile: null,
+    pullRequest: PullRequestRecord,
 }) {
     isQueued() {
         return this.state === 'QUEUED';
@@ -79,25 +91,24 @@ export class RunRecord extends Record({
         return this.state === 'RUNNING';
     }
 
+    isPaused() {
+        return this.state === 'PAUSED';
+    }
+
     getComputedResult() {
-        return this.isCompleted() ? this.result : this.state;
+        if (this.isCompleted()) {
+            return this.result;
+        }
+        return this.state;
     }
 }
-
-export const PullRequestRecord = Record({
-    pullRequest: {
-        author: null,
-        id: null,
-        title: null,
-        url: null,
-    },
-});
 
 export const RunsRecord = Record({
     _class: null,
     _capabilities: [],
     _links: null,
     latestRun: RunRecord,
+    parameters: null,
     name: null,
     weatherScore: 0,
     pullRequest: PullRequestRecord,

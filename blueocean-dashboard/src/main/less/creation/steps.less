@@ -1,48 +1,62 @@
+@stroke-color: #949393;
+
 .vertical-step-component {
     display: flex;
 
     .step-progress {
+        width: 60px;
+        flex-shrink: 0;
         display: flex;
         flex-direction: column;
         align-items: center;
-        margin-left: 20px;
         margin-right: 20px;
 
         .step-stroke-top {
             width: 3px;
             height: 5px;
-            background-color: #949393;
+            background-color: @stroke-color;
         }
 
-        .step-indicator-component {
-            height: 24px;
+        .step-indicator-component .svgResultStatus {
+            display: block;
         }
 
         .step-stroke-bottom {
             width: 3px;
             flex-grow: 1;
-            background-color: #949393;
+            background-color: @stroke-color;
         }
     }
 
     .step-content {
+        width: 100%;
         min-height: 75px;
-        padding-bottom: 10px;
+        padding-bottom: 30px;
 
         h1 {
-            margin-top: 2px;
-            font-size: 24px;
+            margin-top: 10px;
+            margin-bottom: 15px;
+            font-weight: normal;
         }
     }
 
     &.incomplete {
-        opacity: 0.5;
+        .step-progress, .step-content {
+            opacity: 0.4;
+        }
+
+        // ensure positioned elements earlier in the DOM
+        // sit on top of step content since opacity creates new stacking context
+        position: relative;
+        z-index: -1;
     }
 
-    &.incomplete, &.active {
+    &.active {
+        .svgResultStatus .progress-spinner.not_built circle:first-child {
+            stroke: #3a70b0;
+        }
         .step-stroke-bottom {
-            background: transparent;
-            border-left: 3px dashed #949393;
+            opacity: 0.4
         }
     }
 
@@ -54,5 +68,11 @@
     &.last-step .step-stroke-bottom {
         background: transparent;
         border: 0;
+    }
+
+    &.first-step.active, &.first-step.error {
+        .step-stroke-bottom {
+            background: linear-gradient(@stroke-color, #fff);
+        }
     }
 }

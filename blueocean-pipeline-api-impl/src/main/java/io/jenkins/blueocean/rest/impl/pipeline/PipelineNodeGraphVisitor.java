@@ -5,11 +5,15 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
+import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
+import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode;
 import org.jenkinsci.plugins.workflow.graph.BlockEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
+import org.jenkinsci.plugins.workflow.graph.FlowStartNode;
 import org.jenkinsci.plugins.workflow.graphanalysis.DepthFirstScanner;
 import org.jenkinsci.plugins.workflow.graphanalysis.ForkScanner;
 import org.jenkinsci.plugins.workflow.graphanalysis.MemoryFlowChunk;
@@ -20,18 +24,19 @@ import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StageChunkFinder;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StatusAndTiming;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.TimingInfo;
 import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -63,12 +68,19 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     private final Stack<FlowNode> nestedStages = new Stack<>();
     private final Stack<FlowNode> nestedbranches = new Stack<>();
 
-    private final Map<FlowNode, FlowNode> nestedBranchesEndNodeMap = new HashMap<>();
+    private final ArrayDeque<FlowNode> pendingInputSteps = new ArrayDeque<>();
 
+    private final Stack<FlowNode> parallelBranchEndNodes = new Stack<>();
 
+    private final InputAction inputAction;
+
+    private StepStartNode agentNode = null;
+
+    private final static String PARALLEL_SYNTHETIC_STAGE_NAME = "Parallel";
 
     public PipelineNodeGraphVisitor(WorkflowRun run) {
         this.run = run;
+        this.inputAction = run.getAction(InputAction.class);
         if(run.getExecution()!=null) {
             ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), this, new StageChunkFinder());
         }
@@ -81,6 +93,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             dump(String.format("chunkStart=> id: %s, name: %s, function: %s", startNode.getId(),
                     startNode.getDisplayName(), startNode.getDisplayFunctionName()));
 
+        if(PipelineNodeUtil.isSyntheticStage(startNode)){
+            return;
+        }
         if (NotExecutedNodeAction.isExecuted(startNode)) {
             firstExecuted = startNode;
         }
@@ -99,9 +114,31 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             dump("\tStartNode: "+((StepEndNode) endNode).getStartNode());
         }
 
+        if(endNode instanceof StepStartNode){
+            if(endNode.getDisplayFunctionName().equals("node")){
+                agentNode = (StepStartNode) endNode;
+            }
+        }
+        // capture orphan branches
+        captureOrphanParallelBranches();
+
         //if block stage node push it to stack as it may have nested stages
-        if(endNode instanceof StepEndNode && PipelineNodeUtil.isStage(((StepEndNode) endNode).getStartNode())) {
-            nestedStages.push(endNode);
+        if(parallelEnd == null &&
+                endNode instanceof StepEndNode
+                && !PipelineNodeUtil.isSyntheticStage(((StepEndNode) endNode).getStartNode()) //skip synthetic stages
+                && PipelineNodeUtil.isStage(((StepEndNode) endNode).getStartNode())) {
+
+
+            //XXX: There seems to be bug in eventing, chunkEnd is sent twice for the same FlowNode
+            //     Lets peek and if the last one is same as this endNode then skip adding it
+            FlowNode node=null;
+            if(!nestedStages.empty()){
+                node = nestedStages.peek();
+            }
+            if(node == null || !node.equals(endNode)){
+                nestedStages.push(endNode);
+            }
+
         }
         firstExecuted = null;
 
@@ -109,6 +146,94 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         if (!(endNode instanceof BlockEndNode)) {
             atomNode(null, endNode, afterBlock, scanner);
         }
+    }
+
+    // This gets triggered on encountering a new chunk (stage or branch)
+    @Override
+    protected void handleChunkDone(@Nonnull MemoryFlowChunk chunk) {
+        if(isNodeVisitorDumpEnabled)
+            dump(String.format("handleChunkDone=> id: %s, name: %s, function: %s", chunk.getFirstNode().getId(),
+                    chunk.getFirstNode().getDisplayName(), chunk.getFirstNode().getDisplayFunctionName()));
+
+        if(PipelineNodeUtil.isSyntheticStage(chunk.getFirstNode())){
+            return;
+        }
+
+        // its stage inside parallel, we skip it and clear nest stages collected inside parallel
+        if(parallelEnd != null){
+            return;
+        }
+
+        if(!nestedStages.empty()){
+            nestedStages.pop(); //we throw away nested stages
+            if(!nestedStages.empty()){ //there is still a nested stage, return
+                return;
+            }
+        }
+
+        TimingInfo times = null;
+
+        //TODO: remove chunk.getLastNode() != null check based on how JENKINS-40200 gets resolved
+        if (firstExecuted != null && chunk.getLastNode() != null) {
+            times = StatusAndTiming.computeChunkTiming(run, chunk.getPauseTimeMillis(), firstExecuted, chunk.getLastNode(), chunk.getNodeAfter());
+        }
+
+        if(times == null){
+            times = new TimingInfo();
+        }
+
+        NodeRunStatus status;
+        boolean skippedStage = PipelineNodeUtil.isSkippedStage(chunk.getFirstNode());
+        if(skippedStage){
+            status = new NodeRunStatus(BlueRun.BlueRunResult.NOT_BUILT, BlueRun.BlueRunState.SKIPPED);
+        }else if (firstExecuted == null) {
+            status = new NodeRunStatus(GenericStatus.NOT_EXECUTED);
+        }else if(chunk.getLastNode() != null){
+            status = new NodeRunStatus(StatusAndTiming
+                    .computeChunkStatus(run, chunk.getNodeBefore(),
+                            firstExecuted, chunk.getLastNode(), chunk.getNodeAfter()));
+        }else{
+            status = new NodeRunStatus(firstExecuted);
+        }
+
+        if (!pendingInputSteps.isEmpty()) {
+            status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.PAUSED);
+        }
+        FlowNodeWrapper stage = new FlowNodeWrapper(chunk.getFirstNode(),
+                status, times, run);
+
+        try {
+            String cause = PipelineNodeUtil.getCauseOfBlockage(stage.getNode(), agentNode, run);
+            stage.setCauseOfFailure(cause);
+        } catch (IOException | InterruptedException e) {
+            //log the error but don't fail. This is better as in worst case all we will lose is blockage cause of a node.
+            logger.error(String.format("Error trying to get blockage status of pipeline: %s, runId: %s node block: %s. %s"
+                    ,run.getParent().getFullName(), run.getId(), agentNode, e.getMessage()), e);
+        }
+        nodes.push(stage);
+        nodeMap.put(stage.getId(), stage);
+        if(!skippedStage && !parallelBranches.isEmpty()){
+            Iterator<FlowNodeWrapper> branches = parallelBranches.descendingIterator();
+            while(branches.hasNext()){
+                FlowNodeWrapper p = branches.next();
+                p.addParent(stage);
+                stage.addEdge(p.getId());
+            }
+        }else{
+            if(nextStage != null) {
+                nextStage.addParent(stage);
+                stage.addEdge(nextStage.getId());
+            }
+        }
+        parallelBranches.clear();
+        this.nextStage = stage;
+    }
+
+    @Override
+    protected void resetChunk(@Nonnull MemoryFlowChunk chunk) {
+        super.resetChunk(chunk);
+        firstExecuted = null;
+        pendingInputSteps.clear();
     }
 
     @Override
@@ -120,11 +245,16 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                     branchNode.getDisplayName(), branchNode.getDisplayFunctionName()));
         }
 
+        if(nestedbranches.size() != parallelBranchEndNodes.size()){
+            logger.error(String.format("nestedBranches size: %s not equal to parallelBranchEndNodes: %s",
+                    nestedbranches.size(), parallelBranchEndNodes.size()));
+            return;
+        }
 
-        while(!nestedbranches.empty()){
+        while(!nestedbranches.empty() && !parallelBranchEndNodes.empty()){
             FlowNode branchStartNode = nestedbranches.pop();
 
-            FlowNode endNode = nestedBranchesEndNodeMap.get(branchStartNode);
+            FlowNode endNode = parallelBranchEndNodes.pop();
 
             TimingInfo times;
             NodeRunStatus status;
@@ -132,9 +262,17 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             if(endNode != null) {
                 times = StatusAndTiming.computeChunkTiming(run, chunk.getPauseTimeMillis(), branchStartNode, endNode,
                         chunk.getNodeAfter());
-                GenericStatus genericStatus = StatusAndTiming.computeChunkStatus(run,
-                        parallelStartNode, branchStartNode, endNode, parallelEnd);
-                status = new NodeRunStatus(genericStatus);
+                if(endNode instanceof StepAtomNode){
+                    if(PipelineNodeUtil.isPausedForInputStep((StepAtomNode) endNode, inputAction)) {
+                        status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.PAUSED);
+                    }else{
+                        status = new NodeRunStatus(endNode);
+                    }
+                }else {
+                    GenericStatus genericStatus = StatusAndTiming.computeChunkStatus(run,
+                            parallelStartNode, branchStartNode, endNode, parallelEnd);
+                    status = new NodeRunStatus(genericStatus);
+                }
             }else{
                 times = new TimingInfo(TimingAction.getStartTime(branchStartNode)+System.currentTimeMillis(),
                         chunk.getPauseTimeMillis(),
@@ -142,7 +280,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                 status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.RUNNING);
             }
 
-            FlowNodeWrapper branch = new FlowNodeWrapper(branchStartNode, status, times);
+            FlowNodeWrapper branch = new FlowNodeWrapper(branchStartNode, status, times, run);
 
             if(nextStage!=null) {
                 branch.addEdge(nextStage.getId());
@@ -166,6 +304,8 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             nodes.push(p);
             nodeMap.put(p.getId(), p);
         }
+
+        //reset parallelEnd node for next parallel block
         this.parallelEnd = null;
     }
 
@@ -179,8 +319,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                         ((StepEndNode) parallelEndNode).getStartNode().getId(),((StepEndNode) parallelEndNode).getStartNode().getDisplayName(), ((StepEndNode) parallelEndNode).getStartNode().getDisplayFunctionName()));
             }
         }
-
-
+        captureOrphanParallelBranches();
         this.parallelEnd = parallelEndNode;
     }
 
@@ -205,91 +344,35 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             }
 
         }
-        if(branchEndNode instanceof StepEndNode){
-            nestedBranchesEndNodeMap.put(((StepEndNode) branchEndNode).getStartNode(), branchEndNode);
-        }
-    }
-
-    // This gets triggered on encountering a new chunk (stage or branch)
-    @Override
-    protected void handleChunkDone(@Nonnull MemoryFlowChunk chunk) {
-        if(isNodeVisitorDumpEnabled)
-            dump(String.format("handleChunkDone=> id: %s, name: %s, function: %s", chunk.getFirstNode().getId(),
-                    chunk.getFirstNode().getDisplayName(), chunk.getFirstNode().getDisplayFunctionName()));
-
-
-        if(!nestedStages.empty()){
-            nestedStages.pop(); //we throw away nested stages
-            if(!nestedStages.empty()){ //there is still a nested stage, return
-                return;
-            }
-        }
-
-        TimingInfo times = null;
-
-        //TODO: remove chunk.getLastNode() != null check based on how JENKINS-40200 gets resolved
-        if (firstExecuted != null && chunk.getLastNode() != null) {
-            times = StatusAndTiming.computeChunkTiming(run, chunk.getPauseTimeMillis(), firstExecuted, chunk.getLastNode(), chunk.getNodeAfter());
-        }
-
-        if(times == null){
-            times = new TimingInfo();
-        }
-
-        NodeRunStatus status;
-        if(firstExecuted == null){
-            status = new NodeRunStatus(GenericStatus.NOT_EXECUTED);
-        }else if(chunk.getLastNode() != null){
-            status = new NodeRunStatus(StatusAndTiming
-                    .computeChunkStatus(run, chunk.getNodeBefore(),
-                            firstExecuted, chunk.getLastNode(), chunk.getNodeAfter()));
-        }else{
-            status = new NodeRunStatus(firstExecuted);
-        }
-
-        FlowNodeWrapper stage = new FlowNodeWrapper(chunk.getFirstNode(),
-                status, times);
-
-        nodes.push(stage);
-        nodeMap.put(stage.getId(), stage);
-        if(!parallelBranches.isEmpty()){
-            Iterator<FlowNodeWrapper> branches = parallelBranches.descendingIterator();
-            while(branches.hasNext()){
-                FlowNodeWrapper p = branches.next();
-                p.addParent(stage);
-                stage.addEdge(p.getId());
-            }
-            parallelBranches.clear();
-        }else{
-            if(nextStage != null) {
-                nextStage.addParent(stage);
-                stage.addEdge(nextStage.getId());
-            }
-        }
-        this.nextStage = stage;
+        parallelBranchEndNodes.add(branchEndNode);
     }
 
     @Override
-    protected void resetChunk(@Nonnull MemoryFlowChunk chunk) {
-        super.resetChunk(chunk);
-        firstExecuted = null;
-    }
-
-    @Override
-    public void atomNode(@CheckForNull FlowNode before, @Nonnull FlowNode atomNode, @CheckForNull FlowNode after, @Nonnull ForkScanner scan) {
+    public void atomNode(@CheckForNull FlowNode before, @Nonnull FlowNode atomNode,
+                         @CheckForNull FlowNode after, @Nonnull ForkScanner scan) {
         if(isNodeVisitorDumpEnabled)
             dump(String.format("atomNode=> id: %s, name: %s, function: %s, type: %s", atomNode.getId(),
                     atomNode.getDisplayName(), atomNode.getDisplayFunctionName(), atomNode.getClass()));
+
+        if(atomNode instanceof FlowStartNode){
+            captureOrphanParallelBranches();
+            return;
+        }
 
         if (NotExecutedNodeAction.isExecuted(atomNode)) {
             firstExecuted = atomNode;
         }
         long pause = PauseAction.getPauseDuration(atomNode);
         chunk.setPauseTimeMillis(chunk.getPauseTimeMillis()+pause);
+
+        if(atomNode instanceof StepAtomNode
+                && PipelineNodeUtil.isPausedForInputStep((StepAtomNode) atomNode, inputAction)){
+            pendingInputSteps.add(atomNode);
+        }
     }
 
     private void dump(String str){
-        logger.debug(str);
+        System.out.println(str);
     }
 
     @Override
@@ -375,16 +458,47 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                 if(currentNodeSize>0 && i == currentNodeSize){
                     FlowNodeWrapper latestNode = currentNodes.get(i-1);
                     if(latestNode.type == FlowNodeWrapper.NodeType.STAGE){
-                        latestNode.addEdge(futureNode.getId());
+                        if(futureNode.type == FlowNodeWrapper.NodeType.STAGE){
+                            latestNode.addEdge(futureNode.getId());
+                        }else if(futureNode.type == FlowNodeWrapper.NodeType.PARALLEL){
+                            FlowNodeWrapper thatStage = futureNode.getFirstParent();
+                            if(thatStage.equals(latestNode)){
+                                for(String edge:thatStage.edges){
+                                    if(!latestNode.edges.contains(edge)){
+                                        latestNode.addEdge(edge);
+                                    }
+                                }
+                            }
+                        }
                     }else if(latestNode.type == FlowNodeWrapper.NodeType.PARALLEL){
-                        //get stage of this parallel
+                        String futureNodeId = null;
+                        FlowNodeWrapper thatStage = null;
+                        if(futureNode.type == FlowNodeWrapper.NodeType.STAGE){
+                            thatStage = futureNode;
+                            futureNodeId = futureNode.getId();
+                        }else if(futureNode.type == FlowNodeWrapper.NodeType.PARALLEL &&
+                                futureNode.getFirstParent().equals(latestNode.getFirstParent())){
+                            thatStage = futureNode.getFirstParent();
+                            if(futureNode.edges.size() > 0){
+                                futureNodeId = futureNode.edges.get(0);
+                            }
+                        }
                         FlowNodeWrapper stage = latestNode.getFirstParent();
                         if(stage != null){
                             //Add future node as edge to all edges of last stage
                             for(String id:stage.edges){
                                 FlowNodeWrapper node = nodeMap.get(id);
-                                if(node != null) {
-                                    node.addEdge(futureNode.getId());
+                                if(node != null && futureNodeId != null) {
+                                    node.addEdge(futureNodeId);
+                                }
+                            }
+
+                            //now patch edges in case its partial
+                            if(thatStage != null && futureNode.type == FlowNodeWrapper.NodeType.PARALLEL) {
+                                for (String edge : thatStage.edges) {
+                                    if (!stage.edges.contains(edge)) {
+                                        stage.addEdge(edge);
+                                    }
                                 }
                             }
                         }
@@ -392,7 +506,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                 }
                 FlowNodeWrapper n = new FlowNodeWrapper(futureNode.getNode(),
                         new NodeRunStatus(null,null),
-                        new TimingInfo());
+                        new TimingInfo(), run);
                 n.addEdges(futureNode.edges);
                 n.addParents(futureNode.getParents());
                 currentNodes.add(n);
@@ -403,5 +517,107 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             newNodes.add(new PipelineNodeImpl(n,parent,run));
         }
         return newNodes;
+    }
+
+
+    private void captureOrphanParallelBranches(){
+        if(!parallelBranches.isEmpty() && (firstExecuted == null
+                || !PipelineNodeUtil.isStage(firstExecuted)
+        )){
+            FlowNodeWrapper synStage = createParallelSyntheticNode();
+            if(synStage!=null) {
+                nodes.push(synStage);
+                nodeMap.put(synStage.getId(), synStage);
+                parallelBranches.clear();
+                this.nextStage = synStage;
+            }
+        }
+    }
+
+    /**
+     * Create synthetic stage that wraps a parallel block at top level, that is not enclosed inside a stage.
+     */
+    private @Nullable FlowNodeWrapper createParallelSyntheticNode(){
+
+        if(parallelBranches.isEmpty()){
+            return null;
+        }
+        FlowNodeWrapper firstBranch = parallelBranches.getLast();
+        FlowNodeWrapper parallel = firstBranch.getFirstParent();
+        String firstNodeId = firstBranch.getId();
+        List<FlowNode> parents;
+        if(parallel != null){
+            parents = parallel.getNode().getParents();
+        }else{
+            parents = new ArrayList<>();
+        }
+        FlowNode syntheticNode = new FlowNode(firstBranch.getNode().getExecution(),
+                createSyntheticStageId(firstNodeId, PARALLEL_SYNTHETIC_STAGE_NAME), parents){
+            @Override
+            protected String getTypeDisplayName() {
+                return PARALLEL_SYNTHETIC_STAGE_NAME;
+            }
+        };
+
+        syntheticNode.addAction(new LabelAction(PARALLEL_SYNTHETIC_STAGE_NAME));
+
+        long duration = 0;
+        long pauseDuration = 0;
+        long startTime = 0;
+        TimingAction timingAction = null; //= parallelStartNode.getAction(TimingAction.class);
+        if(timingAction != null){
+            startTime = timingAction.getStartTime();
+        }
+
+        boolean isCompleted = true;
+        boolean isPaused = false;
+        boolean isFailure = false;
+        boolean isUnknown = false;
+        for(FlowNodeWrapper pb: parallelBranches){
+            if(!isPaused && pb.getStatus().getState() == BlueRun.BlueRunState.PAUSED){
+                isPaused = true;
+            }
+            if(isCompleted && pb.getStatus().getState() != BlueRun.BlueRunState.FINISHED){
+                isCompleted = false;
+            }
+
+            if(!isFailure && pb.getStatus().getResult() == BlueRun.BlueRunResult.FAILURE){
+                isFailure = true;
+            }
+            if(!isUnknown && pb.getStatus().getResult() == BlueRun.BlueRunResult.UNKNOWN){
+                isUnknown = true;
+            }
+            duration += pb.getTiming().getTotalDurationMillis();
+            pauseDuration += pb.getTiming().getPauseDurationMillis();
+        }
+
+        BlueRun.BlueRunState state = isCompleted ? BlueRun.BlueRunState.FINISHED :
+                (isPaused ? BlueRun.BlueRunState.PAUSED : BlueRun.BlueRunState.RUNNING);
+        BlueRun.BlueRunResult result = isFailure ? BlueRun.BlueRunResult.FAILURE :
+                (isUnknown ? BlueRun.BlueRunResult.UNKNOWN : BlueRun.BlueRunResult.SUCCESS);
+
+        TimingInfo timingInfo = new TimingInfo(duration,pauseDuration, startTime);
+
+        FlowNodeWrapper synStage = new FlowNodeWrapper(syntheticNode,new NodeRunStatus(result, state),timingInfo,run);
+
+        Iterator<FlowNodeWrapper> sortedBranches = parallelBranches.descendingIterator();
+        while(sortedBranches.hasNext()){
+            FlowNodeWrapper p = sortedBranches.next();
+            p.addParent(synStage);
+            synStage.addEdge(p.getId());
+        }
+        return synStage;
+    }
+
+    /**
+     * Create id of synthetic stage in a deterministic base.
+     *
+     * For example, an orphan parallel block with id 12 (appears top level not wrapped inside a stage) gets wrapped in a synthetic
+     * stage with id: 12-parallel-synthetic. Later client calls nodes API using this id: /nodes/12-parallel-synthetic/ would
+     * correctly pick the synthetic stage wrapping parallel block 12 by doing a lookup nodeMap.get("12-parallel-synthetic")
+     *
+     */
+    private @Nonnull String createSyntheticStageId(@Nonnull String firstNodeId, @Nonnull String syntheticStageName){
+        return String.format("%s-%s-synthetic",firstNodeId, syntheticStageName.toLowerCase());
     }
 }

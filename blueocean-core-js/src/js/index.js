@@ -13,6 +13,9 @@ import { ToastService } from './ToastService';
 // export i18n provider
 export i18nTranslator, { defaultLngDetector } from './i18n/i18n';
 
+export logging from './logging';
+export loadingIndicator from './LoadingIndicator';
+
 export { Fetch, FetchFunctions } from './fetch';
 export UrlBuilder from './UrlBuilder';
 export UrlConfig from './urlconfig';
@@ -28,12 +31,33 @@ export Paths from './paths/index';
 import { Pager, PagerService, PipelineService, SSEService, ActivityService, DefaultSSEHandler, LocationService } from './services/index';
 export { Pager, PagerService, PipelineService, SSEService, ActivityService };
 
+import * as stringUtil from './stringUtil';
+export { stringUtil as StringUtil };
 
 export Fullscreen from './Fullscreen';
 export NotFound from './NotFound';
 
+export { ShowMoreButton } from './components/ShowMoreButton';
 export { ReplayButton } from './components/ReplayButton';
-export { RunButton } from './components/RunButton';
+export { RunButton as RunButtonBase } from './components/RunButton';
+export {
+    ParametersRunButton as RunButton,
+    ParameterService,
+    ParameterApi,
+    Boolean,
+    Choice,
+    String,
+    Text,
+    Password,
+    supportedInputTypesMapping,
+    ParametersRender,
+} from './parameter';
+export {
+    BlueLogo,
+    BlueOceanIcon,
+} from './components/BlueLogo';
+export { ContentPageHeader, SiteHeader } from './components/ContentPageHeader';
+export { ResultPageHeader } from './components/ResultPageHeader';
 
 // Create and export the SSE connection that will be shared by other
 // Blue Ocean components via this package.
@@ -63,3 +87,42 @@ export const locationService = new LocationService();
 
 const defaultSSEhandler = new DefaultSSEHandler(pipelineService, activityService, pagerService);
 sseService.registerHandler(defaultSSEhandler.handleEvents);
+
+// Export some debugging stuff client code may need
+
+import { enableMocksForI18n, disableMocksForI18n } from './i18n/i18n';
+
+export const DEBUG = {
+    enableMocksForI18n,
+    disableMocksForI18n,
+};
+
+export { TimeManager } from './utils/serverBrowserTimeHarmonize';
+
+export { TimeHarmonizer } from './components/TimeHarmonizer';
+import LiveStatusIndicator from './components/LiveStatusIndicator';
+export { LiveStatusIndicator };
+export {
+    buildOrganizationUrl,
+    buildPipelineUrl,
+    rootPath,
+    buildClassicConfigUrl,
+    buildClassicInputUrl,
+    buildClassicBuildUrl,
+    buildRunDetailsUrl,
+    doubleUriEncode,
+    fetchAllSuffix,
+    applyFetchAll,
+    calculateFetchAll,
+    calculateLogView,
+    calculateLogUrl,
+    calculateNodeBaseUrl,
+    calculateStepsBaseUrl,
+    calculateRunLogURLObject,
+    paginateUrl,
+    endSlash,
+    getRestUrl,
+    buildUrl,
+    relativeUrl,
+    toClassicJobPage,
+} from './utils/UrlUtils';

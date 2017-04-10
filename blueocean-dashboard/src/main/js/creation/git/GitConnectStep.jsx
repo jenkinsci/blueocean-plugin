@@ -1,19 +1,28 @@
-/**
- * Created by cmeyers on 10/19/16.
- */
 import React, { PropTypes } from 'react';
-import FlowStep from '../FlowStep';
+import { observer } from 'mobx-react';
+import debounce from 'lodash.debounce';
 
-const CREDENTIAL_CHOICE = {
-    SSH: 'SSH',
-    SYSTEM_SSH: 'SYSTEM_SSH',
-    USER_PASS: 'USER_PASS',
-};
+import { Dropdown, FormElement, TextInput } from '@jenkins-cd/design-language';
+
+import FlowStep from '../flow2/FlowStep';
+
+import { CreateCredentialDialog } from '../credentials/CreateCredentialDialog';
+import { CreatePipelineOutcome } from './GitCreationApi';
+import STATE from './GitCreationState';
+
+
+let t = null;
+
+function validateUrl(url) {
+    return !!url && !!url.trim();
+}
+
 
 /**
  * Component that accepts repository URL and credentials to initiate
  * creation of a new pipeline.
  */
+@observer
 export default class GitConnectStep extends React.Component {
 
     constructor(props) {
@@ -21,162 +30,163 @@ export default class GitConnectStep extends React.Component {
 
         this.state = {
             repositoryUrl: null,
-            credentialsSelection: null,
-            sshKeyValue: null,
-            usernameValue: null,
-            passwordValue: null,
-            createButtonDisabled: true,
-            createInProgress: false,
+            repositoryErrorMsg: null,
+            credentialErrorMsg: null,
+            selectedCredential: null,
+            showCreateCredentialDialog: false,
         };
+
+        t = this.props.flowManager.translate;
     }
 
-    componentDidUpdate() {
-        this._updateCreateButton();
+    componentWillMount() {
+        const { noCredentialsOption } = this.props.flowManager;
+        this._selectedCredentialChange(noCredentialsOption);
+    }
+
+    _bindDropdown(dropdown) {
+        this.dropdown = dropdown;
     }
 
     _repositoryUrlChange(value) {
         this.setState({
             repositoryUrl: value,
         });
+
+        this._updateRepositoryErrorMsg();
     }
 
-    _credentialsChange(option) {
-        this.setState({
-            credentialsSelection: option,
-        });
-    }
-
-    _sshKeyChange(value) {
-        this.setState({
-            sshKeyValue: value,
-        });
-    }
-
-    _usernameChange(value) {
-        this.setState({
-            usernameValue: value,
-        });
-    }
-
-    _passwordChange(value) {
-        this.setState({
-            passwordValue: value,
-        });
-    }
-
-    /**
-     * Enables/disables the create button based on the state of the form.
-     * @private
-     */
-    _updateCreateButton() {
-        let disabled = false;
-
-        if (!this.state.repositoryUrl) {
-            disabled = true;
+    _getRepositoryErrorMsg(outcome) {
+        if (this.state.repositoryErrorMsg) {
+            return this.state.repositoryErrorMsg;
+        } else if (outcome === CreatePipelineOutcome.INVALID_URI) {
+            return t('creation.git.step1.repo_error_invalid');
         }
 
-        if (!this.state.credentialsSelection) {
-            disabled = disabled || true;
-        } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SSH) {
-            disabled = disabled || !this.state.sshKeyValue;
-        } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.USER_PASS) {
-            disabled = disabled || (!this.state.usernameValue || !this.state.passwordValue);
-        }
+        return null;
+    }
 
-        if (this.state.createInProgress) {
-            disabled = true;
-        }
-
-        // only set the new button state if it's out of sync; prevents nasty update loop
-        if (this.state.createButtonDisabled !== disabled) {
+    _updateRepositoryErrorMsg = debounce(() => {
+        if (validateUrl(this.state.repositoryUrl)) {
             this.setState({
-                createButtonDisabled: disabled,
+                repositoryErrorMsg: null,
             });
         }
+    }, 200);
+
+    _selectedCredentialChange(credential) {
+        this.setState({
+            selectedCredential: credential,
+        });
     }
 
-    _completeStep() {
-        this.setState({
-            createInProgress: true,
-            createButtonDisabled: true,
-        });
-
-        if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SSH) {
-            this.props.manager.createWithSshKeyCredential(this.state.repositoryUrl, this.state.sshKeyValue);
-        } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.USER_PASS) {
-            this.props.manager.createWithUsernamePasswordCredential(this.state.repositoryUrl, this.state.usernameValue, this.state.passwordValue);
-        } else if (this.state.credentialsSelection === CREDENTIAL_CHOICE.SYSTEM_SSH) {
-            this.props.manager.createWithSystemSshCredential(this.state.repositoryUrl);
+    _getCredentialErrorMsg(outcome) {
+        if (this.state.credentialErrorMsg) {
+            return this.state.credentialErrorMsg;
+        } else if (outcome === CreatePipelineOutcome.INVALID_CREDENTIAL) {
+            return t('creation.git.step1.credentials_error_invalid');
         }
 
-        this.props.onCompleteStep();
+        return null;
+    }
+
+    _onCreateCredentialClick() {
+        this.setState({
+            showCreateCredentialDialog: true,
+        });
+    }
+
+    _onCreateCredentialClosed(credential) {
+        const newState = {
+            showCreateCredentialDialog: false,
+        };
+
+        if (credential) {
+            newState.selectedCredential = credential;
+        }
+
+        this.setState(newState);
+
+        // TODO: control this more cleanly via a future 'selectedOption' prop on Dropdown
+        this.dropdown.setState({
+            selectedOption: credential,
+        });
+    }
+
+    _performValidation() {
+        if (!validateUrl(this.state.repositoryUrl)) {
+            this.setState({
+                repositoryErrorMsg: t('creation.git.step1.repo_error_required'),
+            });
+
+            return false;
+        }
+
+        return true;
+    }
+
+    _beginCreation() {
+        const isValid = this._performValidation();
+
+        if (!isValid) {
+            return;
+        }
+
+        this.props.flowManager.createPipeline(this.state.repositoryUrl, this.state.selectedCredential);
     }
 
     render() {
+        const { noCredentialsOption } = this.props.flowManager;
+        const { flowManager } = this.props;
+        const repositoryErrorMsg = this._getRepositoryErrorMsg(flowManager.outcome);
+        const credentialErrorMsg = this._getCredentialErrorMsg(flowManager.outcome);
+
+        const disabled = flowManager.stateId !== STATE.STEP_CONNECT && flowManager.stateId !== STATE.COMPLETE;
+        const createButtonLabel = !disabled ?
+            t('creation.git.step1.create_button') :
+            t('creation.git.step1.create_button_progress');
+
         return (
-            <FlowStep {...this.props} title="Connect to a Git repository">
-                <p>Make sure you have a Jenkinsfile... yadda yadda.</p>
+            <FlowStep {...this.props} className="git-step-connect" title={t('creation.git.step1.title')} disabled={disabled}>
+                <p className="instructions">
+                    {t('creation.git.step1.instructions')} &nbsp;
+                    <a href="https://jenkins.io/doc/book/pipeline/jenkinsfile/" target="_blank">{t('creation.git.step1.instructions_link')}</a>
+                </p>
 
-                <h2>Repository Url</h2>
-                <input type="text" onChange={(e) => this._repositoryUrlChange(e.currentTarget.value)} />
+                <FormElement title={t('creation.git.step1.repo_title')} errorMessage={repositoryErrorMsg}>
+                    <TextInput className="text-repository-url" onChange={val => this._repositoryUrlChange(val)} />
+                </FormElement>
 
-                <h2>Credentials</h2>
+                <FormElement title={t('creation.git.step1.credentials')} errorMessage={credentialErrorMsg}>
+                    <Dropdown
+                      ref={dropdown => this._bindDropdown(dropdown)}
+                      className="dropdown-credentials"
+                      options={flowManager.credentials}
+                      defaultOption={noCredentialsOption}
+                      labelField="displayName"
+                      onChange={opt => this._selectedCredentialChange(opt)}
+                    />
 
-                <ul>
-                    <li>
-                        <label>
-                            <input type="radio"
-                              value={CREDENTIAL_CHOICE.SSH}
-                              checked={this.state.credentialsSelection === CREDENTIAL_CHOICE.SSH}
-                              onChange={() => this._credentialsChange(CREDENTIAL_CHOICE.SSH)}
-                            />
-                            <span>SSH</span>
-                        </label>
-                    </li>
-                    <li>
-                        <label>
-                            <input type="radio"
-                              value={CREDENTIAL_CHOICE.USER_PASS}
-                              checked={this.state.credentialsSelection === CREDENTIAL_CHOICE.USER_PASS}
-                              onChange={() => this._credentialsChange(CREDENTIAL_CHOICE.USER_PASS)}
-                            />
-                            <span>Username &amp; Password</span>
-                        </label>
-                    </li>
-                    <li>
-                        <label>
-                            <input type="radio"
-                              value={CREDENTIAL_CHOICE.SYSTEM_SSH}
-                              checked={this.state.credentialsSelection === CREDENTIAL_CHOICE.SYSTEM_SSH}
-                              onChange={() => this._credentialsChange(CREDENTIAL_CHOICE.SYSTEM_SSH)}
-                            />
-                            <span>Use System SSH</span>
-                        </label>
-                    </li>
-                </ul>
+                    <button
+                      className="button-create-credential btn-secondary"
+                      onClick={() => this._onCreateCredentialClick()}
+                    >
+                        {t('creation.git.step1.create_credential_button')}
+                    </button>
+                </FormElement>
 
-                { this.state.credentialsSelection === CREDENTIAL_CHOICE.SSH &&
-                <div>
-                    <h2>SSH Key</h2>
-                    <textarea onChange={(e) => this._sshKeyChange(e.currentTarget.value)} />
-                </div>
-                }
-
-                { this.state.credentialsSelection === CREDENTIAL_CHOICE.USER_PASS &&
-                <div>
-                    <h2>Username</h2>
-                    <input type="text" name="username" onChange={(e) => this._usernameChange(e.currentTarget.value)} />
-
-                    <h2>Password</h2>
-                    <input type="password" name="password" onChange={(e) => this._passwordChange(e.currentTarget.value)} />
-                </div>
+                { this.state.showCreateCredentialDialog &&
+                    <CreateCredentialDialog
+                      flowManager={flowManager}
+                      onClose={cred => this._onCreateCredentialClosed(cred)}
+                    />
                 }
 
                 <button
-                  onClick={() => this._completeStep()}
-                  disabled={this.state.createButtonDisabled}
+                  className="button-create-pipeline"
+                  onClick={() => this._beginCreation()}
                 >
-                    {this.state.createInProgress ? 'Creating Pipeline...' : 'Create Pipeline'}
+                    {createButtonLabel}
                 </button>
 
             </FlowStep>
@@ -185,6 +195,5 @@ export default class GitConnectStep extends React.Component {
 }
 
 GitConnectStep.propTypes = {
-    manager: PropTypes.object,
-    onCompleteStep: PropTypes.func,
+    flowManager: PropTypes.object,
 };

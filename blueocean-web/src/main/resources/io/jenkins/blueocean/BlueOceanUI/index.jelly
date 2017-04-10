@@ -14,11 +14,13 @@
         <j:invokeStatic var="j" className="jenkins.model.Jenkins" method="getActiveInstance"/>
         ${h.initPageVariables(context)}
 
-        <j:set var="isMSIE" value="${userAgent.contains('MSIE') || userAgent.contains('Trident')}"/>
+        <j:set var="isMSIE" value="${userAgent.contains('Edge') || userAgent.contains('MSIE') || userAgent.contains('Trident')}"/>
 
-        <head data-rooturl="${rootURL}"
+        <head lang="${it.lang}"
+              data-rooturl="${rootURL}"
               data-resurl="${resURL}"
               data-appurl="${rootURL}/${it.urlBase}"
+              data-servertime="${it.now}"
               data-adjuncturl="${rootURL}/${j.getAdjuncts('').rootURL}">
 
             <title>Jenkins Blue Ocean</title>
@@ -29,16 +31,9 @@
                 <script src="${resURL}/plugin/blueocean-web/scripts/ie-detect.js"></script>
                 <script src="${resURL}/plugin/blueocean-web/scripts/html5shiv-printshiv.min.js"></script>
                 <st:adjunct includes="org.jenkins.ui.jsmodules.blueocean-web.iepolyfills"/>
+                <st:adjunct includes="org.jenkinsci.plugins.ssegateway.sse.EventSource" />
             </j:if>
-            <st:adjunct includes="org.jenkinsci.plugins.ssegateway.sse.EventSource" />
             <j:set var="assetsPath" value="${resURL}/plugin/blueocean-web/assets" />
-
-            <!-- Reset -->
-            <link rel="stylesheet" type="text/css" href="${assetsPath}/jdl/css/normalize.css" />
-
-            <!-- Icons + Fonts -->
-            <link rel="stylesheet" type="text/css" href="${assetsPath}/jdl/css/latofonts.css" />
-            <link rel="stylesheet" type="text/css" href="${assetsPath}/jdl/octicons/octicons.css" />
 
             <!-- Core Styles -->
             <link rel="stylesheet" type="text/css" href="${assetsPath}/jdl/css/jenkins-design-language.css" />
@@ -61,6 +56,7 @@
         <body>
             <div id="loadbar"></div>
             <script>
+                window.isDevelopmentMode = ${it.developmentMode};
                 function lb(c,t){setTimeout(function(){document.getElementById('loadbar').classList.add(c)},t)}
                 lb('go',10);lb('long',1000);lb('longer',6000);
             </script>

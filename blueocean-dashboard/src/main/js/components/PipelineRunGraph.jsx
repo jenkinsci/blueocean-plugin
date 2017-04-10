@@ -1,8 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { PipelineGraph } from '@jenkins-cd/design-language';
+import { TimeManager, i18nTranslator, logging } from '@jenkins-cd/blueocean-core-js';
 
+const timeManager = new TimeManager();
 const { array, any, func, object, string } = PropTypes;
-
+const logger = logging.logger('io.jenkins.blueocean.dashboard.PipelineRunGraph');
+const translate = i18nTranslator('blueocean-web');
 
 function badNode(jenkinsNode) {
     // eslint-disable-next-line
@@ -10,13 +13,29 @@ function badNode(jenkinsNode) {
     return new Error('convertJenkinsNodeDetails: malformed / missing Jenkins run node.');
 }
 
-function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
+function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
     if (!jenkinsNode
-        || !jenkinsNode.displayName
         || !jenkinsNode.id) {
         throw badNode(jenkinsNode);
     }
-
+    logger.debug('jenkinsNode', jenkinsNode);
+    const isRunning = () => {
+        switch (jenkinsNode.state) {
+        case 'RUNNING':
+        case 'PAUSED':
+        case 'QUEUED':
+            return true;
+        default:
+            return false;
+        }
+    };
+    const { durationInMillis, startTime } = jenkinsNode;
+    // we need to make sure that we calculate with the correct time offset
+    const { durationMillis } = timeManager.harmonizeTimes({
+        isRunning: isRunning(),
+        durationInMillis,
+        startTime,
+    }, skewMillis);
     let completePercent = 0;
     let state = 'unknown';
 
@@ -26,8 +45,14 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
     } else if (jenkinsNode.result === 'FAILURE') {
         state = 'failure';
         completePercent = 100;
+    } else if (jenkinsNode.state === 'PAUSED') {
+        state = 'paused';
+        completePercent = 100;
     } else if (jenkinsNode.result === 'UNSTABLE') {
         state = 'unstable';
+        completePercent = 100;
+    } else if (jenkinsNode.result === 'ABORTED') {
+        state = 'aborted';
         completePercent = 100;
     } else if (jenkinsNode.state === 'RUNNING') {
         state = 'running';
@@ -37,19 +62,24 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
         state = 'queued';
         completePercent = 0;
     } else if (jenkinsNode.state === 'NOT_BUILT'
-        || jenkinsNode.state === 'ABORTED'
         || jenkinsNode.state == null) {
         state = 'not_built';
         completePercent = 0;
     }
+    const i18nDuration = timeManager.format(durationMillis, translate('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' }));
 
-    return {
+    const title = translate(`common.state.${state}`, { 0: i18nDuration });
+
+    const converted = {
         name: jenkinsNode.displayName,
         children: [],
         state,
         completePercent,
         id: jenkinsNode.id,
+        title,
     };
+    logger.debug('converted node', converted);
+    return converted;
 }
 
 /**
@@ -60,7 +90,7 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted) {
  * still pending or simply weren't executed due to logic or early-abort
  * (either failure or intervention)
  */
-export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted) {
+export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
     if (!jenkinsGraph || !jenkinsGraph.length) {
         return [];
     }
@@ -72,7 +102,7 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted) {
 
     // Convert the basic details of nodes, and index them by id
     jenkinsGraph.forEach(jenkinsNode => {
-        const convertedNode = convertJenkinsNodeDetails(jenkinsNode, isCompleted);
+        const convertedNode = convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis);
         const { id } = convertedNode;
 
         firstNode = firstNode || convertedNode;
@@ -131,8 +161,8 @@ export default class PipelineRunGraph extends Component {
     processData(newData, run) {
         this.lastData = newData;
         const isCompleted = run.state.toUpperCase() === 'FINISHED';
-
-        const convertedGraph = convertJenkinsNodeGraph(newData, isCompleted);
+        const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
+        const convertedGraph = convertJenkinsNodeGraph(newData, isCompleted, skewMillis);
 
         this.setState({
             graphNodes: convertedGraph,
@@ -160,13 +190,13 @@ export default class PipelineRunGraph extends Component {
         let selectedStage = graphNodes.filter((item) => {
             let matches = item.id === id;
             if (!matches && item.children.length > 0) {
-                const childMatches = item.children.filter(child => child.id === id);
+                const childMatches = item.children.filter(child => child ? child.id === id : false);
                 matches = childMatches.length === 1;
             }
             return matches;
         });
         if (selectedStage[0] && selectedStage[0].id !== id && selectedStage[0].children.length > 0) {
-            selectedStage = selectedStage[0].children.filter(item => item.id === id);
+            selectedStage = selectedStage[0].children.filter(item => item ? item.id === id : false);
         }
         return (
             <div style={outerDivStyle}>
@@ -192,5 +222,9 @@ PipelineRunGraph.propTypes = {
     node: any,
     selectedStage: object,
     callback: func,
-    t: func,
+};
+
+
+PipelineRunGraph.contextTypes = {
+    config: object.isRequired,
 };

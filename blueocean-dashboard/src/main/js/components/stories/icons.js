@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
 
-import { Icon, shapes } from 'react-material-icons-blue';
+import { Icon, shapes } from '@jenkins-cd/react-material-icons';
 
 const custom = `<path
      d="m 19,12.473273 -4,0 L 15,3 9,3 l 0,9.473273 -4,0 7,11.052151 7,-11.052151 z"

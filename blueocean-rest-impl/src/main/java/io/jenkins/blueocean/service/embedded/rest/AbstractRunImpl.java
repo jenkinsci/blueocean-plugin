@@ -8,22 +8,18 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
+import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
-import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.GenericResource;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.Stapler;
 
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 
 /**
  * Basic {@link BlueRun} implementation.
@@ -136,39 +132,8 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
-    public Container<BlueArtifact> getArtifacts() {
-        Map<String, BlueArtifact> m = new HashMap<>();
-        List<Run.Artifact> artifacts = run.getArtifacts();
-        for (final Run.Artifact artifact: artifacts) {
-            m.put(artifact.getFileName(), new BlueArtifact() {
-                @Override
-                public String getName() {
-                    return artifact.getFileName();
-                }
-
-                @Override
-                public String getUrl() {
-                    return Stapler.getCurrentRequest().getContextPath() +
-                        "/" + run.getUrl()+"artifact/"+ artifact.getHref();
-                }
-
-                @Override
-                public long getSize() {
-                    try {
-                        return artifact.getFileSize();
-                    } catch (NumberFormatException e) {
-                        return 0;
-                    }
-                }
-
-                @Override
-                public Link getLink() {
-                    return new Link(getUrl());
-                }
-
-            });
-        }
-        return Containers.fromResourceMap(getLink(),m);
+    public BlueArtifactContainer getArtifacts() {
+       return new ArtifactContainerImpl(run, this);
     }
 
     @Override
@@ -182,7 +147,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     public Collection<BlueActionProxy> getActions() {
-        return AbstractPipelineImpl.getActionProxies(run.getAllActions(), this);
+        return ActionProxiesImpl.getActionProxies(run.getAllActions(), this);
     }
 
     public static BlueRun getBlueRun(Run r, Reachable parent){
@@ -198,6 +163,11 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public BlueRun stop(@QueryParameter("blocking") Boolean blocking, @QueryParameter("timeOutInSecs") Integer timeOutInSecs){
         throw new ServiceException.NotImplementedException("Stop should be implemented on a subclass");
+    }
+
+    @Override
+    public String getArtifactsZipFile() {
+        return "/" + run.getUrl()+"artifact/*zip*/archive.zip";
     }
 
     protected BlueRun stop(Boolean blocking, Integer timeOutInSecs, StoppableRun stoppableRun){

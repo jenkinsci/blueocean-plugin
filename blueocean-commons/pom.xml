@@ -5,13 +5,13 @@
   <parent>
     <groupId>io.jenkins.blueocean</groupId>
     <artifactId>blueocean-parent</artifactId>
-    <version>1.0.0-b13-SNAPSHOT</version>
+    <version>1.1.0-SNAPSHOT</version>
   </parent>
 
   <artifactId>blueocean-commons</artifactId>
   <packaging>hpi</packaging>
 
-  <name>Module :: BlueOcean :: Commons API</name>
+  <name>Common API for Blue Ocean</name>
 
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
   <dependencies>
@@ -21,4 +21,23 @@
       <version>${jackson.version}</version>
     </dependency>
   </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-javadoc-plugin</artifactId>
+        <configuration>
+          <excludePackageNames>io.jenkins.blueocean.commons.stapler.export</excludePackageNames>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>2.18.1</version>
+          <configuration>
+            <trimStackTrace>false</trimStackTrace>
+          </configuration>
+      </plugin>
+    </plugins>
+  </build>
 </project>

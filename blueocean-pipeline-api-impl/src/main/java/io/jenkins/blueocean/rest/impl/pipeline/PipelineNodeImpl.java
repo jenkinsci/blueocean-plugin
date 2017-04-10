@@ -2,12 +2,16 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
+import io.jenkins.blueocean.rest.model.BlueInputStep;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.StaplerRequest;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -21,7 +25,7 @@ import java.util.List;
  * @see FlowNode
  */
 public class PipelineNodeImpl extends BluePipelineNode {
-    final FlowNodeWrapper node;
+    private final FlowNodeWrapper node;
     private final List<Edge> edges;
     private final Long durationInMillis;
     private final NodeRunStatus status;
@@ -77,13 +81,18 @@ public class PipelineNodeImpl extends BluePipelineNode {
     }
 
     /**
-     * No logs for Node as Node by itself doesn't have any log to repot, its steps inside it that has logs
+     * Appended logs of steps.
      *
      * @see BluePipelineStep#getLog()
      */
     @Override
     public Object getLog() {
-        return null;
+        return new NodeLogResource(this);
+    }
+
+    @Override
+    public String getCauseOfBlockage() {
+        return node.getCauseOfFailure();
     }
 
     @Override
@@ -98,9 +107,18 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     @Override
     public Collection<BlueActionProxy> getActions() {
-        return PipelineImpl.getActionProxies(node.getNode().getAllActions(), this);
+        return ActionProxiesImpl.getActionProxies(node.getNode().getAllActions(), this);
     }
 
+    @Override
+    public BlueInputStep getInputStep() {
+        return null;
+    }
+
+    @Override
+    public HttpResponse submitInputStep(StaplerRequest request) {
+        return null;
+    }
 
     public static class EdgeImpl extends Edge{
         private final String id;
@@ -123,6 +141,10 @@ public class PipelineNodeImpl extends BluePipelineNode {
             }
         }
         return edges;
+    }
+
+    FlowNodeWrapper getFlowNodeWrapper(){
+        return node;
     }
 
 }

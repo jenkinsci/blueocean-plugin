@@ -7,6 +7,7 @@ import {
     connect,
     createSelector,
 } from './redux';
+
 class Dashboard extends Component {
 
     constructor(props) {

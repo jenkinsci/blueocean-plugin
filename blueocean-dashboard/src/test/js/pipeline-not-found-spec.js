@@ -3,7 +3,6 @@ import { expect } from 'chai';
 import { shallow } from 'enzyme';
 
 import { PipelinePage } from '../../main/js/components/PipelinePage.jsx';
-import PageLoading from '../../main/js/components/PageLoading.jsx';
 
 const params = {
       organization: 'jenkins',
@@ -59,12 +58,9 @@ describe("PipelinePage", () => {
   it("shows 404 for failure", () => {
     let wrapper;
     wrapper = shallow(<PipelinePage params={params} setTitle={()=>{}}/>, { context });
-    expect(wrapper.find('PageLoading')).to.have.length(1);
     /**
      * This test is broken because of mobx re-rendering the page when there is an error.
- 
     wrapper = shallow(<PipelinePage params={params} setTitle={()=>{}} />, { context: contextFailed });
-    expect(wrapper.find('PageLoading')).to.have.length(0);
     expect(wrapper.html()).to.contain('404') */
   });
 });

@@ -4,19 +4,26 @@ import XHR from 'i18next-xhr-backend';
 import { store } from '@jenkins-cd/js-extensions';
 
 import urlConfig from '../urlconfig';
+import logging from '../logging';
+
+const logger = logging.logger('io.jenkins.blueocean.i18n');
 
 /**
  * Init language detector, we are going to use first queryString and then the navigator prefered language
  */
 export const defaultLngDetector = new LngDetector(null, {
     // order and from where user language should be detected
-    order: ['querystring', 'navigator'],
+    order: ['querystring', 'htmlTag', 'navigator'],
     // keys or params to lookup language from
     lookupQuerystring: 'language',
+    // Don't use the default (document.documentElement) because that can
+    // trigger the browsers auto-translate, which is quite annoying.
+    htmlTag: (window.document ? window.document.head : undefined),
 });
 const prefix = urlConfig.getJenkinsRootURL() || '';
+const FALLBACK_LANG = '';
 
-function newPluginXHR(pluginName) {
+function newPluginXHR(pluginName, onLoad) {
     let pluginVersion = store.getPluginVersion(pluginName);
 
     if (!pluginVersion) {
@@ -32,6 +39,12 @@ function newPluginXHR(pluginName) {
         parse: (data) => {
             // we need to parse the response and then extract the data since the rest is garbage for us
             const response = JSON.parse(data);
+            if (logger.isDebugEnabled()) {
+                logger.debug('Received i18n resource bundle for plugin "%s".', pluginName, response.data);
+            }
+            if (typeof onLoad === 'function') {
+                onLoad();
+            }
             return response.data;
         },
     });
@@ -59,6 +72,7 @@ const i18nextInstance = (backend, lngDetector = defaultLngDetector, options) => 
 };
 
 const translatorCache = {};
+let useMockFallback = false;
 
 const assertPluginNameDefined = (pluginName) => {
     if (!pluginName) {
@@ -82,7 +96,7 @@ const toDefaultNamespace = (pluginName) => {
  * for the "blueocean-dashboard" plugin.
  * @return An i18n instance.
  */
-const pluginI18next = (pluginName, namespace = toDefaultNamespace(pluginName)) => {
+const pluginI18next = (pluginName, namespace = toDefaultNamespace(pluginName), onLoad = undefined) => {
     assertPluginNameDefined(pluginName);
 
     const initOptions = {
@@ -90,7 +104,7 @@ const pluginI18next = (pluginName, namespace = toDefaultNamespace(pluginName)) =
         defaultNS: namespace,
         keySeparator: false, // we do not have any nested keys in properties files
         debug: false,
-        fallbackLng: '',
+        fallbackLng: FALLBACK_LANG,
         load: 'currentOnly',
         interpolation: {
             prefix: '{',
@@ -99,8 +113,12 @@ const pluginI18next = (pluginName, namespace = toDefaultNamespace(pluginName)) =
         },
     };
 
-    return i18nextInstance(newPluginXHR(pluginName), defaultLngDetector, initOptions);
+    return i18nextInstance(newPluginXHR(pluginName, onLoad), defaultLngDetector, initOptions);
 };
+
+function buildCacheKey(pluginName, namespace = toDefaultNamespace(pluginName)) {
+    return `${pluginName}:${namespace}`;
+}
 
 /**
  * Create an i18n Translator instance for accessing i18n resource bundles
@@ -112,21 +130,72 @@ const pluginI18next = (pluginName, namespace = toDefaultNamespace(pluginName)) =
  * for the "blueocean-dashboard" plugin.
  * @return An i18n Translator instance.
  */
-export default function i18nTranslator(pluginName, namespace = toDefaultNamespace(pluginName)) {
+export default function i18nTranslator(pluginName, namespace, onLoad) {
     assertPluginNameDefined(pluginName);
 
-    const translatorCacheKey = `${pluginName}:${namespace}`;
+    const translatorCacheKey = buildCacheKey(pluginName, namespace);
     let translator = translatorCache[translatorCacheKey];
 
     if (translator) {
+        if (typeof onLoad === 'function') {
+            onLoad();
+        }
         return translator;
     }
 
-    const I18n = pluginI18next(pluginName, namespace);
+    // Lazily construct what we need instead of on creation
+    return function translate(key, params) {
+        if (useMockFallback) {
+            return (params && params.defaultValue) || key;
+        }
 
-    // Create and cache the translator instance.
-    translator = I18n.getFixedT(defaultLngDetector.detect(), namespace);
-    translatorCache[translatorCacheKey] = translator;
+        if (!translator) {
+            const I18n = pluginI18next(pluginName, namespace, onLoad);
 
-    return translator;
+            // Create and cache the translator instance.
+            let detectedLang;
+            try {
+                detectedLang = defaultLngDetector.detect();
+            } catch (e) {
+                detectedLang = FALLBACK_LANG;
+            }
+
+            if (logger.isLogEnabled()) {
+                logger.log('Translator instance created for "%s". Language detected as "%s".', translatorCacheKey, detectedLang);
+            }
+
+            const fixedT = I18n.getFixedT(detectedLang, namespace);
+            translator = function (i18nKey, i18nParams) {
+                const normalizedKey = i18nKey.replace(/[\W]/g, '.');
+                let passedParams = i18nParams;
+                if (normalizedKey !== i18nKey) {
+                    if (!passedParams) {
+                        passedParams = {};
+                    }
+                    if (!passedParams.defaultValue) {
+                        passedParams.defaultValue = i18nKey;
+                    }
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(`Normalized i18n key "${i18nKey}" to "${normalizedKey}".`);
+                    }
+                }
+                return fixedT(normalizedKey, passedParams);
+            };
+            translatorCache[translatorCacheKey] = translator;
+        }
+
+        if (key) {
+            return translator(key, params);
+        }
+        return undefined;
+    };
 }
+
+export function enableMocksForI18n() {
+    useMockFallback = true;
+}
+
+export function disableMocksForI18n() {
+    useMockFallback = false;
+}
+

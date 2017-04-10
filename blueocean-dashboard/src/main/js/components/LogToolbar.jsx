@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 
-import { Icon } from 'react-material-icons-blue';
+import { Icon } from '@jenkins-cd/react-material-icons';
 import { fetchAllSuffix as suffix } from '../util/UrlUtils';
 
 const { string } = PropTypes;
@@ -28,7 +28,8 @@ export default class LogToolbar extends Component {
                 >
                     <Icon size={24} {...{ style, icon: 'launch' }} />
                 </a>
-                <a {...{
+                <a
+                {...{
                     title: 'Download the log file',
                     href: `${logUrl}&download=true`,
                 }}

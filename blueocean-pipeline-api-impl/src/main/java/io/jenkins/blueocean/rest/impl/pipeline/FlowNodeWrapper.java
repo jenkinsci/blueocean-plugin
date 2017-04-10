@@ -1,9 +1,14 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.graph.AtomNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.TimingInfo;
+import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,22 +24,45 @@ public class FlowNodeWrapper {
     private final NodeRunStatus status;
     private final TimingInfo timingInfo;
     public final List<String> edges = new ArrayList<>();
-    public final List<FlowNodeWrapper> steps = new ArrayList<>();
     public final NodeType type;
     private final String displayName;
+    private final InputStep inputStep;
+    private final WorkflowRun run;
+    private String causeOfFailure;
 
     private List<FlowNodeWrapper> parents = new ArrayList<>();
 
+    private ErrorAction blockErrorAction;
 
-    public FlowNodeWrapper(FlowNode node, NodeRunStatus status, TimingInfo timingInfo) {
+
+
+    public FlowNodeWrapper(@Nonnull FlowNode node, @Nonnull NodeRunStatus status, @Nonnull TimingInfo timingInfo, @Nonnull  WorkflowRun run) {
         this.node = node;
         this.status = status;
         this.timingInfo = timingInfo;
         this.type = getNodeType(node);
         this.displayName = PipelineNodeUtil.getDisplayName(node);
+        this.inputStep = null;
+        this.run = run;
     }
 
-    public String getDisplayName() {
+    public FlowNodeWrapper(@Nonnull FlowNode node, @Nonnull NodeRunStatus status,
+                           @Nonnull TimingInfo timingInfo, @Nullable InputStep inputStep, @Nonnull WorkflowRun run) {
+        this.node = node;
+        this.status = status;
+        this.timingInfo = timingInfo;
+        this.type = getNodeType(node);
+        this.displayName = PipelineNodeUtil.getDisplayName(node);
+        this.inputStep = inputStep;
+        this.run = run;
+    }
+
+
+    public WorkflowRun getRun() {
+        return run;
+    }
+
+    public @Nonnull String getDisplayName() {
         return displayName;
     }
 
@@ -49,19 +77,19 @@ public class FlowNodeWrapper {
         throw new IllegalArgumentException(String.format("Unknown FlowNode %s, type: %s",node.getId(),node.getClass()));
     }
 
-    public NodeRunStatus getStatus(){
+    public @Nonnull NodeRunStatus getStatus(){
         return status;
     }
 
-    public TimingInfo getTiming(){
+    public @Nonnull TimingInfo getTiming(){
         return timingInfo;
     }
 
-    public String getId(){
+    public @Nonnull String getId(){
         return node.getId();
     }
 
-    public FlowNode getNode(){
+    public @Nonnull FlowNode getNode(){
         return node;
     }
 
@@ -81,12 +109,20 @@ public class FlowNodeWrapper {
         parents.addAll(parents);
     }
 
-    public @Nullable FlowNodeWrapper getFirstParent(){
+    public @CheckForNull FlowNodeWrapper getFirstParent(){
         return parents.size() > 0 ? parents.get(0): null;
     }
 
-    public List<FlowNodeWrapper> getParents(){
+    public @Nonnull List<FlowNodeWrapper> getParents(){
         return parents;
+    }
+
+    public String getCauseOfFailure() {
+        return causeOfFailure;
+    }
+
+    public void setCauseOfFailure(String causeOfFailure) {
+        this.causeOfFailure = causeOfFailure;
     }
 
     @Override
@@ -94,15 +130,46 @@ public class FlowNodeWrapper {
         if(!(obj instanceof FlowNodeWrapper)){
             return false;
         }
-        return node.equals(obj);
+        return node.equals(((FlowNodeWrapper)obj).node);
     }
 
-    public FlowNode getFlowNode(){
-        return node;
+    public @CheckForNull InputStep getInputStep() {
+        return inputStep;
     }
 
     @Override
     public int hashCode() {
         return node.hashCode();
+    }
+
+    ErrorAction getBlockErrorAction() {
+        return blockErrorAction;
+    }
+
+    boolean hasBlockError(){
+        return blockErrorAction != null
+                && blockErrorAction.getError() != null;
+    }
+
+    String blockError(){
+        if(hasBlockError()){
+            return blockErrorAction.getError().getMessage();
+        }
+        return null;
+    }
+
+    String nodeError(){
+        if(node.getError() != null && node.getError().getError() != null) {
+            return node.getError().getError().getMessage();
+        }
+        return null;
+    }
+
+    boolean isLoggable(){
+        return PipelineNodeUtil.isLoggable.apply(node);
+    }
+
+    public void setBlockErrorAction(ErrorAction blockErrorAction) {
+        this.blockErrorAction = blockErrorAction;
     }
 }

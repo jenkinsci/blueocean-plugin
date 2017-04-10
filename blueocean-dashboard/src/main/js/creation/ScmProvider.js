@@ -17,19 +17,18 @@ export default class ScmProvider {
     }
 
     /**
-     * Return a React element that composes MultiStepFlow with one or more child FlowStep elements.
-     * Call props.onCompleteFlow to finish the flow.
+     * Return a FlowManager subclass which will return the initial step to begin.
      */
-    getCreationFlow() {
-        throw new Error('must implement getCreationFlow');
+    getFlowManager() {
+        throw new Error('must implement getFlowManager');
     }
 
-    getRentrantOption() {
-        return null;
-    }
-
-    getRentrantFlow() {
-        return null;
+    /**
+     * Called when the related creation flow is about to exit.
+     * Similar to React's componentWillUnmount, perform cleanup of event listeners, timers, etc.
+     */
+    destroyFlowManager() {
+        throw new Error('must implement destroyFlowManager');
     }
 
 }

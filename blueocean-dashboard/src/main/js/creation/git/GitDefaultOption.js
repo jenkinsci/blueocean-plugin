@@ -1,8 +1,13 @@
-/**
- * Created by cmeyers on 10/21/16.
- */
 import React, { PropTypes } from 'react';
+import { IconButton } from '@jenkins-cd/design-language';
 
+import { GitIcon } from './GitIcon';
+
+/**
+ * Simple button used to launch Git creation flow
+ * @param props
+ * @constructor
+ */
 export default function GitDefaultOption(props) {
     function onSelect() {
         if (props.onSelect) {
@@ -10,13 +15,18 @@ export default function GitDefaultOption(props) {
         }
     }
 
+    const className = `git-creation monochrome ${props.isSelected ? 'active' : ''}`;
+    
     return (
-        <button onClick={onSelect}>
-            Git
-        </button>
+        <div>
+            <IconButton className={className} label="Git" onClick={onSelect}>
+                <GitIcon />
+            </IconButton>
+        </div>
     );
 }
 
 GitDefaultOption.propTypes = {
     onSelect: PropTypes.func,
+    isSelected: PropTypes.bool,
 };

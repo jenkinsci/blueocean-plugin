@@ -3,8 +3,9 @@ import RestPaths from '../paths/rest';
 import { Fetch } from '../fetch';
 import { BunkerService } from './BunkerService';
 import utils from '../utils';
+import mobxUtils from 'mobx-utils';
 
-/**
+/*
  * This class provides activity related services.
  *
  * @export
@@ -17,10 +18,11 @@ export class ActivityService extends BunkerService {
      *
      * @param {string} organization Jenkins organization that this pager belongs to.
      * @param {string} pipeline Pipeline that this pager belongs to.
+     * @param {string} branch Optional branch that this pager belongs to.
      * @returns {string} key for [@link PagerService]
      */
-    pagerKey(organization, pipeline) {
-        return `Activities/${organization}-${pipeline}`;
+    pagerKey(organization, pipeline, branch) {
+        return `Activities/${organization}-${pipeline}-${branch}`;
     }
 
     /**
@@ -30,13 +32,13 @@ export class ActivityService extends BunkerService {
      * @param {string} pipeline Pipeline that this pager belongs to.
      * @returns {Pager} Pager for this pipelne.
      */
-    activityPager(organization, pipeline) {
+    activityPager(organization, pipeline, branch) {
         return this.pagerService.getPager({
-            key: this.pagerKey(organization, pipeline),
+            key: this.pagerKey(organization, pipeline, branch),
             /**
              * Lazily generate the pager incase its needed.
              */
-            lazyPager: () => new Pager(RestPaths.activities(organization, pipeline), 25, this),
+            lazyPager: () => new Pager(RestPaths.activities(organization, pipeline, branch), 25, this),
         });
     }
 
@@ -95,6 +97,17 @@ export class ActivityService extends BunkerService {
                 console.log('There has been an error while trying to get the data.', err); // FIXME: Ivan what is the way to return an "error" opbject so underlying component are aware of the problem and can react
             });
     }
+
+    /**
+     * Fetches artifacts for a given run.
+     *
+     * @param {string} runHref The href of the run to fetcfh artifacts for.
+     * @returns {Object} Object containing zipFile link and list of artifacts.
+     */
+    fetchArtifacts(runHref) {
+        return mobxUtils.fromPromise(Fetch.fetchJSON(`${runHref}artifacts/?start=0&limit=101`));
+    }
+
 
     /**
      * This function maps a queue item into a run instancce.

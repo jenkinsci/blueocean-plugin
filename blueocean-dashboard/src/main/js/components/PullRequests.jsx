@@ -1,48 +1,17 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView, Table } from '@jenkins-cd/design-language';
-import PullRequest from './PullRequest';
-import Markdown from 'react-remarkable';
-import { RunsRecord } from './records';
-import PageLoading from './PageLoading';
-import { capable } from '@jenkins-cd/blueocean-core-js';
-import { MULTIBRANCH_PIPELINE } from '../Capabilities';
+import { Table } from '@jenkins-cd/design-language';
+import { capable, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
+
+import PullRequest from './PullRequest';
+import { RunsRecord } from './records';
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
+import { NoPullRequestsPlaceholder } from './placeholder/NoPullRequestsPlaceholder';
+import { UnsupportedPlaceholder } from './placeholder/UnsupportedPlaceholder';
+
+
 const { object, string, func } = PropTypes;
 
-const EmptyState = ({ repoName, t }) => (
-    <main>
-        <EmptyStateView iconName="goat">
-            <Markdown>
-                {t('EmptyState.pr', {
-                    0: repoName,
-                    defaultValue: '# Push me, pull you\nWhen a Pull Request is opened on the repository _{0}_, Jenkins will test it and report the status of your changes back to the pull request on Github.',
-                })}
-            </Markdown>
-            <button>{t('Enable', { defaultValue: 'Enable' })}</button>
-        </EmptyStateView>
-    </main>
-);
-
-const NotSupported = ({ t }) => (
-    <main>
-        <EmptyStateView>
-            <Markdown>
-                {t('EmptyState.pr.notSupported', {
-                    defaultValue: '# Pull Requests are unsupported\nValidated pull request builds only work with the _Multibranch Pipeline_ job type. This is just one of the many reasons to switch to Jenkins Pipeline.\n\n[Learn more](https://jenkins.io/doc/book/pipeline-as-code/)',
-                })}
-            </Markdown>
-        </EmptyStateView>
-    </main>
-);
-
-EmptyState.propTypes = {
-    repoName: string,
-    t: func,
-};
-
-NotSupported.propTypes = {
-    t: func,
-};
 
 @observer
 export class PullRequests extends Component {
@@ -57,28 +26,35 @@ export class PullRequests extends Component {
         const { t, locale, pipeline } = this.props;
 
         if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
-            return (<NotSupported t={t} />);
+            const childProps = {
+                title: t('pipelinedetail.placeholder.unsupported.pullrequests.title'),
+                message: t('pipelinedetail.placeholder.unsupported.pullrequests.message'),
+                linkText: t('pipelinedetail.placeholder.unsupported.pullrequests.linktext'),
+                linkHref: t('pipelinedetail.placeholder.unsupported.pullrequests.linkhref'),
+            };
+
+            return (<UnsupportedPlaceholder {...childProps} />);
         }
         const pullRequests = this.pager.data;
 
         if (this.pager.pending) {
-            return <PageLoading />;
+            return null;
         }
 
         if (!this.pager.pending && !this.pager.data.length) {
-            return (<EmptyState t={t} repoName={this.context.params.pipeline} />);
+            return <NoPullRequestsPlaceholder t={t} />;
         }
 
         const head = 'pipelinedetail.pullrequests.header';
         const status = t(`${head}.status`, { defaultValue: 'Status' });
-        const build = t(`${head}.build`, { defaultValue: 'PR' });
+        const runHeader = t(`${head}.run`, { defaultValue: 'PR' });
         const author = t(`${head}.author`, { defaultValue: 'Author' });
         const summary = t(`${head}.summary`, { defaultValue: 'Summary' });
         const completed = t(`${head}.completed`, { defaultValue: 'Completed' });
 
         const headers = [
             status,
-            { label: build, className: 'build' },
+            { label: runHeader, className: 'run' },
             { label: summary, className: 'summary' },
             author,
             { label: completed, className: 'completed' },
@@ -88,7 +64,6 @@ export class PullRequests extends Component {
         return (
             <main>
                 <article>
-                    {this.pager.pending && <PageLoading />}
                     <Table className="pr-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
                         {pullRequests.map((run, index) => {
                             const result = new RunsRecord(run);
@@ -101,11 +76,7 @@ export class PullRequests extends Component {
                             />);
                         })}
                     </Table>
-                    {this.pager &&
-                        <button disabled={this.pager.pending || !this.pager.hasMore} className="btn-show-more btn-secondary" onClick={() => this.pager.fetchNextPage()}>
-                            {this.pager.pending ? 'Loading...' : 'Show More'}
-                        </button>
-                    }
+                    <ShowMoreButton pager={this.pager} />
                 </article>
             </main>
         );

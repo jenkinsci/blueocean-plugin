@@ -27,9 +27,10 @@ checkProject('../blueocean-dashboard');
 checkProject('../blueocean-personalization');
 checkProject('../blueocean-web');
 checkProject('../blueocean-config');
+checkProject('../blueocean-core-js');
 
 const ellapsed = new Date().getTime() - start;
-console.log(`dependencies look good! took ${ellapsed}ms`);
+console.log(`all dependencies look good! took ${ellapsed}ms`);
 // done!
 
 function checkProject(pathToProject) {
@@ -49,6 +50,8 @@ function checkProject(pathToProject) {
     const allDeps = Object.assign({}, packageDeps, packageDevDeps);
     const shrinkwrap = require(shrinkwrapJsonPath);
     validateDepsAgainstShrinkwrap(allDeps, shrinkwrap);
+    validateShrinkwrapResolve(shrinkwrap);
+    console.log('success!');
 }
 
 function buildPath(path) {
@@ -61,8 +64,7 @@ function buildPath(path) {
 }
 
 function checkImpreciseDependencies(dependencies) {
-    const badDeps = [];
-
+    const badDeps = [];    
     Object.keys(dependencies).forEach(name => {
         const version = dependencies[name];
 
@@ -87,6 +89,16 @@ function checkDuplicateDependencies(depList1, depList2) {
         duplicates.forEach(name => console.error(`${name} is already defined in 'dependencies'; remove from 'devDependencies'`));
         process.exit(1);
     }
+}
+
+function validateShrinkwrapResolve(shrinkwrap) {
+  
+  Object.keys(shrinkwrap.dependencies).forEach(name => {
+    if (shrinkwrap.dependencies[name].from.startsWith("..") || shrinkwrap.dependencies[name].resolved.startsWith("file:")) {
+        console.error(`Bad shrinkwrap resolution: 'from' or 'resolved' refer to a project relative path not absolute URI from:${shrinkwrap.dependencies[name].from} resolved:${shrinkwrap.dependencies[name].resolved} in ${name}`);
+        process.exit(1);
+    }
+  });
 }
 
 function validateDepsAgainstShrinkwrap(allDeps, shrinkwrap) {

@@ -1,0 +1,39 @@
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
+  <script>
+    (function () {
+      // construct the state object parent path inside window.$$blueocean.
+      function setState(statePropertyPath, state) {
+        var pathTokens = ('$blueocean.' + statePropertyPath).split('.');
+        var contextObj = window;
+
+        // Basically an Array shift
+        function nextToken() {
+          var nextToken = pathTokens[0];
+          pathTokens = pathTokens.slice(1);
+          return nextToken;
+        }
+
+        var pathToken = nextToken();
+
+        // Construct up to, but not including, the last point in the graph.
+        while (pathTokens.length !== 0) {
+          if (!contextObj[pathToken]) {
+            contextObj[pathToken] = {};
+          }
+          contextObj = contextObj[pathToken];
+          pathToken = nextToken();
+        }
+        // And set the state on the last object on the graph.
+        contextObj[pathToken] = state;
+      }
+
+      <j:forEach var="preloader" items="${it.pageStatePreloaders}">
+        // State Preloader: ${preloader.class.name}
+        <j:set var="stateJson" value="${preloader.stateJson}"/>
+        <j:if test="${stateJson != null}">
+        setState('${preloader.statePropertyPath}', ${stateJson});
+        </j:if>
+      </j:forEach>
+    })();
+  </script>
+</j:jelly>
