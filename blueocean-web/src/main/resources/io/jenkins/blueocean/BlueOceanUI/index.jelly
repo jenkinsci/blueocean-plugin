@@ -51,6 +51,9 @@
                 #loadbar.go.long.longer{transition: all 60s ease-out;width:95%}
                 #loadbar.go.complete.complete.complete{transition: all .5s ease-out;width:100%;opacity:0;}
             </style>
+            <script>
+                window.crumb = { field: "${h.getCrumbRequestField()}", crumb: "${h.getCrumb(request)}" };
+            </script>
         </head>
 
         <body>
