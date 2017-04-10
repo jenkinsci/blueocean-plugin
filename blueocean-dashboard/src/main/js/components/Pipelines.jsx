@@ -115,25 +115,12 @@ export class Pipelines extends Component {
                             router={ this.context.router }
                         />
                         { showEmptyState && <DashboardPlaceholder t={translate} /> }
-                        { showPipelineList &&
-                        <Table
-                            className="pipelines-table"
-                            headers={ headers }
-                        >
-                            { pipelines &&
-                            pipelines.map(pipeline => {
-                                const key = pipeline._links.self.href;
-                                return (
-                                    <PipelineRowItem
-                                        t={ translate }
-                                        key={ key } pipeline={ pipeline }
-                                        showOrganization={ AppConfig.showOrg() }
-                                    />
-                                );
-                            })
-                            }
-                        </Table>
-                        }
+                        { showPipelineList && (
+                            <JTable className="pipelines-table" columns={ columns }>
+                                <TableHeaderRow />
+                                { pipelineRows }
+                            </JTable>
+                        )}
 
                         { pipelines && <ShowMoreButton pager={this.pager} /> }
                     </article>

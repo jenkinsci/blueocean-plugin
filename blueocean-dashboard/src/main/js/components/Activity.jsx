@@ -196,6 +196,8 @@ export class Activity extends Component {
                 { runsTable }
 
                 { showTable &&
+                <Table className="activity-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding key={branch}>
+                    {
                         runs.length > 0 && runs.map((run, index) => {
                             const changeset = run.changeSet;
                             let latestRecord = {};
