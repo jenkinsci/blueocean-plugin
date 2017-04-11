@@ -1,11 +1,10 @@
-import React, {Component, PropTypes} from "react";
-import {PlaceholderTable} from "@jenkins-cd/design-language";
-import {dataType} from "@jenkins-cd/js-extensions";
+import React, { Component, PropTypes } from 'react';
+import { PlaceholderTable } from '@jenkins-cd/design-language';
 
-import {actions as selectorActions, connect, createSelector, tests as testsSelector} from "../redux";
-import Icon from "./placeholder/Icon";
-import {PlaceholderDialog} from "./placeholder/PlaceholderDialog";
-import TestResults from "./testing/TestResults";
+import { actions as selectorActions, connect, createSelector, tests as testsSelector } from '../redux';
+import Icon from './placeholder/Icon';
+import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
+import TestResults from './testing/TestResults';
 
 
 function NoTestsPlaceholder(props) {

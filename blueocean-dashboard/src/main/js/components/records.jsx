@@ -1,4 +1,4 @@
-import Immutable from "immutable";
+import Immutable from 'immutable';
 /* We cannot extend Record
 since we would return a function, */
 /* eslint new-cap: [0] */

@@ -1,11 +1,11 @@
-import keymirror from "keymirror";
-import {applyFetchMarkers, fetch as smartFetch, paginate} from "../util/smart-fetch";
-import {State} from "../components/records";
-import UrlConfig from "../config";
-import {getNodesInformation} from "../util/logDisplayHelper";
-import {calculateLogUrl, calculateNodeBaseUrl, calculateStepsBaseUrl, getRestUrl, paginateUrl} from "../util/UrlUtils";
-import findAndUpdate from "../util/find-and-update";
-import {Fetch, FetchFunctions} from "@jenkins-cd/blueocean-core-js";
+import keymirror from 'keymirror';
+import { applyFetchMarkers, fetch as smartFetch, paginate } from '../util/smart-fetch';
+import { State } from '../components/records';
+import UrlConfig from '../config';
+import { getNodesInformation } from '../util/logDisplayHelper';
+import { calculateLogUrl, calculateNodeBaseUrl, calculateStepsBaseUrl, getRestUrl, paginateUrl } from '../util/UrlUtils';
+import findAndUpdate from '../util/find-and-update';
+import { Fetch, FetchFunctions } from '@jenkins-cd/blueocean-core-js';
 const debugLog = require('debug')('blueocean-actions-js:debug');
 
 /**
