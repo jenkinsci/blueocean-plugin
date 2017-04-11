@@ -27,6 +27,7 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
 
         private static final Result NOT_FOUND = new Result(ImmutableList.<BlueTestResult>of(), null);
 
+        @Nullable
         public final Iterable<BlueTestResult> results;
         @Nullable
         public final BlueTestSummary summary;
@@ -106,7 +107,7 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
         BlueTestSummary summary = new BlueTestSummary(0, 0, 0, 0, 0, 0, 0);
         for (BlueTestResultFactory factory : Jenkins.getInstance().getExtensionList(BlueTestResultFactory.class)) {
             Result result = factory.getBlueTestResults(run, parent);
-            if (result != null && result.summary != null) {
+            if (result != null && result.results != null && result.summary != null) {
                 results = Iterables.concat(result.results, results);
                 summary = summary.tally(result.summary);
             }
@@ -114,6 +115,7 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
         // Never send back an empty summary
         if (summary.getTotal() == 0) {
             summary = null;
+            results = null;
         }
         return Result.of(results, summary);
     }

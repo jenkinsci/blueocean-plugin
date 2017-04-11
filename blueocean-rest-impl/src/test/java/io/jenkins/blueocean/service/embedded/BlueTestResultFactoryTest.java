@@ -2,7 +2,6 @@ package io.jenkins.blueocean.service.embedded;
 
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
@@ -16,7 +15,6 @@ import org.jvnet.hudson.test.TestExtension;
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertNotNull;
 import static junit.framework.TestCase.assertNull;
-import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -44,7 +42,7 @@ public class BlueTestResultFactoryTest extends BaseTest {
         Run<?, ?> run = mock(Run.class);
         Result resolved = BlueTestResultFactory.resolve(run, null);
         assertNull(resolved.summary);
-        assertTrue(Lists.newArrayList(resolved.results).isEmpty());
+        assertNull(resolved.results);
     }
 
     @TestExtension
