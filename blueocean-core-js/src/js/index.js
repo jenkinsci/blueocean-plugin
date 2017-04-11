@@ -97,7 +97,7 @@ export const DEBUG = {
     disableMocksForI18n,
 };
 
-export { TimeManager } from './utils/serverBrowserTimeHarmonize';
+export { TimeManager } from './utils/TimeManager';
 
 export { TimeHarmonizer } from './components/TimeHarmonizer';
 import LiveStatusIndicator from './components/LiveStatusIndicator';
