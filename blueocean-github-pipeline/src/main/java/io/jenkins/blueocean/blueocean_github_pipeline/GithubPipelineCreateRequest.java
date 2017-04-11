@@ -78,7 +78,6 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
         List<String> repos = new ArrayList<>();
 
         if (scmConfig != null) {
-            apiUrl = StringUtils.defaultIfBlank(scmConfig.getUri(), GithubScm.DEFAULT_API_URI);
             if (scmConfig.getConfig().get("orgName") instanceof String) {
                 orgName = (String) scmConfig.getConfig().get("orgName");
             }
@@ -99,10 +98,6 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
 
         Item item = Jenkins.getInstance().getItemByFullName(orgName);
         try {
-            if(credentialId != null) {
-                validateCredentialId(credentialId, apiUrl);
-            }
-
             if (item == null) {
                 item = create(Jenkins.getInstance(), getName(), DESCRIPTOR, CustomOrganizationFolderDescriptor.class);
             }
@@ -136,6 +131,8 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
 
                 StringBuilder sb = new StringBuilder();
                 if (gitHubSCMNavigator != null) {
+                    apiUrl = StringUtils.defaultIfBlank(gitHubSCMNavigator.getApiUri(), scmConfig.getUri());
+
                     // currently, we are setting a series of regular expressions to match the repositories
                     // so we need to extract the current set for incoming create requests to keep them
                     // see a few lines below for the pattern being used
@@ -158,6 +155,14 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                     if (credentialId == null) {
                         credentialId = gitHubSCMNavigator.getScanCredentialsId();
                     }
+                }
+
+                if (StringUtils.isBlank(apiUrl)) {
+                    apiUrl = StringUtils.defaultIfBlank(scmConfig.getUri(), GithubScm.DEFAULT_API_URI);
+                }
+
+                if(StringUtils.isNotBlank(credentialId)) {
+                    validateCredentialId(credentialId, apiUrl);
                 }
 
                 gitHubSCMNavigator = new GitHubSCMNavigator(apiUrl, orgName, credentialId, credentialId);
