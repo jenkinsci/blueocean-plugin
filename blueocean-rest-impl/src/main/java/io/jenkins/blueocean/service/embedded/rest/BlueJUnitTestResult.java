@@ -91,16 +91,15 @@ public class BlueJUnitTestResult extends BlueTestResult {
         return testResult.getId();
     }
 
-    @SuppressWarnings("deprecation")
     @Override
     public int getAge() {
-        if(testResult.isPassed())
-            return 0;
-        else if (testResult.getRun() != null) {
-            return testResult.getRun().getNumber()-testResult.getFailedSince()+1;
+        int age;
+        if (!testResult.isPassed() && testResult.getRun() != null) {
+            age = testResult.getRun().getNumber() - testResult.getFailedSince() + 1;
         } else {
-            return 0;
+            age = 0;
         }
+        return age;
     }
 
     @Override
