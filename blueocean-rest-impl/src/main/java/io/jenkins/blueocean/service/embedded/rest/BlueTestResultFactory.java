@@ -9,6 +9,8 @@ import io.jenkins.blueocean.rest.model.BlueTestResult;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import jenkins.model.Jenkins;
 
+import javax.annotation.Nullable;
+
 public abstract class BlueTestResultFactory implements ExtensionPoint {
 
     /**
@@ -23,9 +25,10 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
      */
     public static final class Result {
 
-        private static final Result NOT_FOUND = new Result(ImmutableList.<BlueTestResult>of(), BlueTestSummary.empty());
+        private static final Result NOT_FOUND = new Result(ImmutableList.<BlueTestResult>of(), null);
 
         public final Iterable<BlueTestResult> results;
+        @Nullable
         public final BlueTestSummary summary;
 
         private Result(Iterable<BlueTestResult> results, BlueTestSummary summary) {
@@ -48,9 +51,13 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
          * @return result
          */
         public static Result of(Iterable<BlueTestResult> results) {
-            int skipped = 0;
-            int passed = 0;
-            int failed = 0;
+            long skipped = 0;
+            long passed = 0;
+            long failed = 0;
+            long regressions = 0;
+            long existingFailedTotal = 0;
+            long fixedTotal = 0;
+            long total = 0;
             for (BlueTestResult result : results) {
                 switch (result.getStatus()) {
                     case SKIPPED:
@@ -58,13 +65,32 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
                         break;
                     case PASSED:
                         passed++;
+                        switch (result.getTestState()) {
+                            case FIXED:
+                                fixedTotal++;
+                                break;
+                        }
                         break;
                     case FAILED:
                         failed++;
+                        switch (result.getTestState()) {
+                            case REGRESSION:
+                                regressions++;
+                                break;
+                            default:
+                                existingFailedTotal++;
+                                break;
+                        }
                         break;
                 }
+                total++;
             }
-            return new Result(results, new BlueTestSummary(passed, failed, skipped, passed + skipped + failed));
+            if (total == 0) {
+                return notFound();
+            } else {
+                BlueTestSummary summary = new BlueTestSummary(passed, failed, fixedTotal, existingFailedTotal, regressions, skipped, total);
+                return new Result(results, summary);
+            }
         }
 
         /**
@@ -77,7 +103,7 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
 
     public static Result resolve(Run<?, ?> run, Reachable parent) {
         Iterable<BlueTestResult> results = ImmutableList.of();
-        BlueTestSummary summary = BlueTestSummary.empty();
+        BlueTestSummary summary = new BlueTestSummary(0, 0, 0, 0, 0, 0, 0);
         for (BlueTestResultFactory factory : Jenkins.getInstance().getExtensionList(BlueTestResultFactory.class)) {
             Result result = factory.getBlueTestResults(run, parent);
             if (result != null) {

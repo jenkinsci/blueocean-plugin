@@ -10,15 +10,24 @@ public final class BlueTestSummary {
     public static final String SKIPPED = "skipped";
     public static final String FAILED = "failed";
     public static final String PASSED = "passed";
+    public static final String FIXED = "fixed";
+    public static final String EXISTING_FAILED = "existingFailed";
+    public static final String REGRESSIONS = "regressions";
 
     private final long passedTotal;
     private final long failedTotal;
+    private final long fixedTotal;
+    private final long existingFailedTotal;
+    private final long regressionsTotal;
     private final long skippedTotal;
     private final long total;
 
-    public BlueTestSummary(long passedTotal, long failedTotal, long skippedTotal, long total) {
+    public BlueTestSummary(long passedTotal, long failedTotal, long fixedTotal, long existingFailedTotal, long regressionsTotal, long skippedTotal, long total) {
         this.passedTotal = passedTotal;
         this.failedTotal = failedTotal;
+        this.fixedTotal = fixedTotal;
+        this.existingFailedTotal = existingFailedTotal;
+        this.regressionsTotal = regressionsTotal;
         this.skippedTotal = skippedTotal;
         this.total = total;
     }
@@ -38,19 +47,33 @@ public final class BlueTestSummary {
         return skippedTotal;
     }
 
+    @Exported(name = FIXED)
+    public long getFixedTotal() {
+        return fixedTotal;
+    }
+
+    @Exported(name = EXISTING_FAILED)
+    public long getExistingFailedTotal() {
+        return existingFailedTotal;
+    }
+
+    @Exported(name = REGRESSIONS)
+    public long getRegressionsTotal() {
+        return regressionsTotal;
+    }
+
     @Exported(name = TOTAL)
     public long getTotal() {
         return total;
-    }
-
-    public static BlueTestSummary empty() {
-        return new BlueTestSummary(0, 0, 0, 0);
     }
 
     public BlueTestSummary tally(BlueTestSummary summary) {
         return new BlueTestSummary(
             this.passedTotal + summary.passedTotal,
             this.failedTotal + summary.failedTotal,
+            this.fixedTotal + summary.fixedTotal,
+            this.existingFailedTotal + summary.existingFailedTotal,
+            this.regressionsTotal + summary.regressionsTotal,
             this.skippedTotal + summary.skippedTotal,
             this.total + summary.total
         );
