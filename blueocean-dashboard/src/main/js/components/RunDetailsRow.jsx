@@ -38,7 +38,16 @@ class RunDetailsRow extends Component {
     render() {
         // TODO: Figure out why useRollover not working :(
 
-        const {run, changeset, pipeline, t, locale, getTimes, columns} = this.props;
+        const {
+            run,
+            changeset,
+            pipeline,
+            t,
+            locale,
+            getTimes,
+            columns,
+            isMultibranch,
+        } = this.props;
 
         if (!run || !pipeline) {
             return null;
@@ -60,16 +69,6 @@ class RunDetailsRow extends Component {
 
         const isRunning = run.state === 'RUNNING' || run.state === 'PAUSED' || run.state === 'QUEUED';
 
-        const isMultibranch = false; // TODO: Find capabilities, check for multibranch somehow
-        /*
-         TODO: Used to use the following:
-         <IfCapability className={pipeline._class} capability={MULTIBRANCH_PIPELINE} >
-         <TableCell linkUrl={runDetailsUrl}>{decodeURIComponent(run.pipeline)}</TableCell>
-         </IfCapability>
-
-         */
-
-
         return (
             <TableRow useRollover columns={columns}>
                 <TableCell>
@@ -82,9 +81,7 @@ class RunDetailsRow extends Component {
                 </TableCell>
                 <TableCell>{run.id}</TableCell>
                 <TableCell><CommitHash commitId={run.commitId}/></TableCell>
-                { isMultibranch && (
-                    <TableCell linkUrl={runDetailsUrl}>{decodeURIComponent(run.pipeline)}</TableCell>
-                )}
+                { isMultibranch && <TableCell linkUrl={runDetailsUrl}>{decodeURIComponent(run.pipeline)}</TableCell> }
                 <TableCell>{changeset && changeset.msg || '-'}</TableCell>
                 <TableCell>
                     <TimeDuration millis={durationMillis}
@@ -130,6 +127,7 @@ RunDetailsRow.propTypes = {
     t: PropTypes.func,
     getTimes: PropTypes.func,
     columns: PropTypes.object,
+    isMultibranch: PropTypes.boolan,
 };
 
 RunDetailsRow.contextTypes = {

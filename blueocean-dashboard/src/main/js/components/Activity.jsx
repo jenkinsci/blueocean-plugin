@@ -183,6 +183,7 @@ export class Activity extends Component {
                                                pipeline={pipeline}
                                                key={index}
                                                changeset={changeset}
+                                               isMultibranch={isMultiBranchPipeline}
                                 />
                             ))
                     }
