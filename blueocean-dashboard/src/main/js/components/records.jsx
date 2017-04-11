@@ -144,5 +144,5 @@ export const State = Record({
     pullRequests: null,
     steps: null,
     currentBranches: null,
-    testResults: null,
+    tests: null,
 });
