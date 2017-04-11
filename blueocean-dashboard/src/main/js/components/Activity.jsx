@@ -189,6 +189,8 @@ export class Activity extends Component {
                 </JTable>
             );
 
+        // TODO: count the extensions on extensionPoint="jenkins.pipeline.activity.list.action"
+
         return (<main>
             <article className="activity">
                 { runButton }

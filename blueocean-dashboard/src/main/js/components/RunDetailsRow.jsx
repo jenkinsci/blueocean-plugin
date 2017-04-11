@@ -1,24 +1,23 @@
-import React, { Component, PropTypes } from 'react';
+import React, {Component, PropTypes} from 'react';
 import {
     CommitHash,
-    // ReadableDate,
+    ReadableDate,
     TimeDuration,
     TableRow,
     TableCell,
 } from '@jenkins-cd/design-language';
 import {
-    // logging,
-    // ReplayButton,
-    // RunButton,
+    logging,
+    ReplayButton,
+    RunButton,
     LiveStatusIndicator,
     TimeHarmonizer as timeHarmonizer,
 } from '@jenkins-cd/blueocean-core-js';
-// import Extensions from '@jenkins-cd/js-extensions';
+import Extensions from '@jenkins-cd/js-extensions';
 
-// import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
-import { buildRunDetailsUrl } from '../util/UrlUtils';
-// import IfCapability from './IfCapability';
-// import { CellRow, CellLink } from './CellLink';
+import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
+import {buildRunDetailsUrl} from '../util/UrlUtils';
+import IfCapability from './IfCapability';
 
 // const logger = logging.logger('io.jenkins.blueocean.dashboard.Runs');
 
@@ -31,7 +30,7 @@ import { buildRunDetailsUrl } from '../util/UrlUtils';
 class RunDetailsRow extends Component {
 
     openRunDetails = (newURL) => {
-        const { router, location } = this.context;
+        const {router, location} = this.context;
         location.pathname = newURL;
         router.push(location);
     };
@@ -39,7 +38,7 @@ class RunDetailsRow extends Component {
     render() {
         // TODO: Figure out why useRollover not working :(
 
-        const { run, changeset, pipeline, t, locale, getTimes, columns } = this.props;
+        const {run, changeset, pipeline, t, locale, getTimes, columns} = this.props;
 
         if (!run || !pipeline) {
             return null;
@@ -50,7 +49,7 @@ class RunDetailsRow extends Component {
 
         const {
             durationMillis,
-            // endTime, // TODO: RM
+            endTime, 
             startTime,
         } = getTimes({
             result: resultRun,
@@ -82,7 +81,7 @@ class RunDetailsRow extends Component {
                     />
                 </TableCell>
                 <TableCell>{run.id}</TableCell>
-                <TableCell><CommitHash commitId={run.commitId} /></TableCell>
+                <TableCell><CommitHash commitId={run.commitId}/></TableCell>
                 { isMultibranch && (
                     <TableCell linkUrl={runDetailsUrl}>{decodeURIComponent(run.pipeline)}</TableCell>
                 )}
@@ -97,8 +96,27 @@ class RunDetailsRow extends Component {
                                   hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
                     />
                 </TableCell>
-                <TableCell>XXXX</TableCell>
-                <TableCell>XXXX</TableCell>
+                <TableCell>
+                    <ReadableDate date={endTime}
+                                  liveUpdate
+                                  locale={locale}
+                                  shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                                  longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
+                    />
+                </TableCell>
+                <TableCell>
+                    <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" {...t} />
+                    <RunButton
+                        className="icon-button"
+                        runnable={this.props.pipeline}
+                        latestRun={this.props.run}
+                        buttonType="stop-only"
+                    />
+                    { /* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */ }
+                    <IfCapability className={pipeline._class} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
+                        <ReplayButton className="icon-button" runnable={pipeline} latestRun={run} onNavigation={this.openRunDetails} />
+                    </IfCapability>
+                </TableCell>
             </TableRow>
         );
     }
@@ -120,5 +138,5 @@ RunDetailsRow.contextTypes = {
 };
 
 const harmonized = timeHarmonizer(RunDetailsRow);
-export { harmonized as RunDetailsRow };
+export {harmonized as RunDetailsRow};
 
