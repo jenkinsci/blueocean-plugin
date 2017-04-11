@@ -106,10 +106,14 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
         BlueTestSummary summary = new BlueTestSummary(0, 0, 0, 0, 0, 0, 0);
         for (BlueTestResultFactory factory : Jenkins.getInstance().getExtensionList(BlueTestResultFactory.class)) {
             Result result = factory.getBlueTestResults(run, parent);
-            if (result != null) {
+            if (result != null && result.summary != null) {
                 results = Iterables.concat(result.results, results);
                 summary = summary.tally(result.summary);
             }
+        }
+        // Never send back an empty summary
+        if (summary.getTotal() == 0) {
+            summary = null;
         }
         return Result.of(results, summary);
     }
