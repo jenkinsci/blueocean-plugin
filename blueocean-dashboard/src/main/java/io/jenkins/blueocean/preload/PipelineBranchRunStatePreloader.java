@@ -29,7 +29,7 @@ import hudson.model.Job;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.BlueUrlTokenizer;
 import io.jenkins.blueocean.commons.RESTFetchPreloader;
-import io.jenkins.blueocean.commons.stapler.ModelObjectSerializer;
+import io.jenkins.blueocean.commons.stapler.Export;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
@@ -86,7 +86,7 @@ public class PipelineBranchRunStatePreloader extends RESTFetchPreloader {
                         BlueRun blueRun = AbstractRunImpl.getBlueRun(run, BluePipelineFactory.resolve(pipelineBranchJob));
                         if (blueRun != null) {
                             try {
-                                return new FetchData(blueRun.getLink().getHref(), ModelObjectSerializer.toJson(blueRun));
+                                return new FetchData(blueRun.getLink().getHref(), Export.toJson(blueRun));
                             } catch (IOException e) {
                                 LOGGER.log(Level.FINE, String.format("Unable to preload run for pipeline '%s'. Run serialization error.", run.getUrl()), e);
                                 return null;
