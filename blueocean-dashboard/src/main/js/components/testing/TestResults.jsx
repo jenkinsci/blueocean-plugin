@@ -12,7 +12,7 @@ export default class TestResults extends Component {
     render() {
         const { t: translation, tests, locale, run } = this.props;
 
-        const fixed = tests.filter(t => t.status === 'FIXED');
+        const fixed = tests.filter(t => t.state === 'FIXED');
         const skipped = tests.filter(t => t.status === 'SKIPPED');
         const newFailures = tests.filter(t => (t.age <= 1 && t.status === 'FAILED') || t.state === 'REGRESSION');
         const existingFailures = tests.filter(t => t.age > 1 && t.status === 'FAILED');
