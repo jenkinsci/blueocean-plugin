@@ -1,4 +1,4 @@
-import Immutable from 'immutable';
+import Immutable from "immutable";
 /* We cannot extend Record
 since we would return a function, */
 /* eslint new-cap: [0] */
@@ -58,7 +58,10 @@ export const PullRequestRecord = Record({
 export const TestSummaryRecord = Record({
     testSummary: {
         failed: null,
+        regressions: null,
+        existingFailed: null,
         passed: null,
+        fixed: null,
         skipped: null,
         total: null,
     },
