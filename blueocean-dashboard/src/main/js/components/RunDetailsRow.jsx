@@ -29,6 +29,9 @@ import IfCapability from './IfCapability';
 
 class RunDetailsRow extends Component {
 
+    // The number of hardcoded actions not provided by extensions
+    static actionItemsCount = 2;
+
     openRunDetails = (newURL) => {
         const {router, location} = this.context;
         location.pathname = newURL;
@@ -36,7 +39,6 @@ class RunDetailsRow extends Component {
     };
 
     render() {
-        // TODO: Figure out why useRollover not working :(
 
         const {
             run,
@@ -101,7 +103,7 @@ class RunDetailsRow extends Component {
                                   longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
                     />
                 </TableCell>
-                <TableCell>
+                <TableCell className="TableCell--actions">
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" {...t} />
                     <RunButton
                         className="icon-button"
@@ -136,5 +138,7 @@ RunDetailsRow.contextTypes = {
 };
 
 const harmonized = timeHarmonizer(RunDetailsRow);
+harmonized.actionItemsCount = RunDetailsRow.actionItemsCount;
+
 export {harmonized as RunDetailsRow};
 

@@ -19,6 +19,7 @@ import {
     NoRunsForBranchPlaceholder,
 } from './placeholder/NoRunsPlaceholder';
 
+import Extensions from '@jenkins-cd/js-extensions';
 
 const { object, array, func, string } = PropTypes;
 
@@ -35,6 +36,21 @@ function extractLatestRecord(run) {
 
 @observer
 export class Activity extends Component {
+
+    state = {
+        actionExtensionCount: 0,
+    };
+
+    // Figure out how many extensions we have for the action buttons column so we can size it appropriately
+    _countExtensions() {
+        Extensions.store.getExtensions('jenkins.pipeline.activity.list.action', extensions => {
+            const count = extensions && typeof(extensions.length) === 'number' ? extensions.length : 0;
+            if (count !== this.state.actionExtensionCount) {
+                this.setState({ actionExtensionCount: count });
+            }
+        });
+    }
+
     componentWillMount() {
         if (this.context.params) {
             const organization = this.context.params.organization;
@@ -42,6 +58,7 @@ export class Activity extends Component {
             const branch = this._branchFromProps(this.props);
             this.pager = this.context.activityService.activityPager(organization, pipeline, branch);
         }
+        this._countExtensions();
     }
 
     componentWillReceiveProps(newProps) {
@@ -57,7 +74,7 @@ export class Activity extends Component {
         return ((props.location || {}).query || {}).branch;
     }
 
-    navigateToBranch(branch) {
+    navigateToBranch = branch => {
         const organization = this.context.params.organization;
         const pipeline = this.context.params.pipeline;
         const baseUrl = buildPipelineUrl(organization, pipeline);
@@ -66,16 +83,19 @@ export class Activity extends Component {
             activitiesURL += '?branch=' + encodeURIComponent(branch);
         }
         this.context.router.push(activitiesURL);
-    }
+    };
 
     render() {
         const { pipeline, t, locale } = this.props;
-        const runs = this.pager.data;
-        const isLoading = this.pager.pending;
+        const { actionExtensionCount } = this.state;
+        const actionsInRowCount = RunDetailsRow.actionItemsCount; // Non-extension actions
 
         if (!pipeline) {
             return null;
         }
+
+        const runs = this.pager.data;
+        const isLoading = this.pager.pending;
         const branch = this._branchFromProps(this.props);
 
         const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
@@ -127,10 +147,16 @@ export class Activity extends Component {
         const completed = t(`${head}.completed`, { defaultValue: 'Completed' });
         const branchText = t(`${head}.branch`, { defaultValue: 'Branch' });
 
-        const branchFilter = isMultiBranchPipeline && (<ColumnFilter placeholder={branchText} value={branch}
-            onChange={b => this.navigateToBranch(b)}
-            options={pipeline.branchNames.map(b => decodeURIComponent(b))}
-        />);
+        const branchFilter = isMultiBranchPipeline && (
+            <ColumnFilter placeholder={branchText}
+                          value={branch}
+                          onChange={this.navigateToBranch}
+                          options={pipeline.branchNames.map(b => decodeURIComponent(b))}
+            />
+        );
+
+        // TODO: Replace TableHeaderRow because we have a filter (or add component as label support)
+        // TODO: count the extensions on extensionPoint="jenkins.pipeline.activity.list.action"
 
         // Build up our column metadata
         const columns = [
@@ -140,14 +166,17 @@ export class Activity extends Component {
         ];
 
         if (isMultiBranchPipeline) {
-            columns.push(JTable.column(60, branchFilter, false));
+            columns.push(JTable.column(160, branchFilter, false));
         }
+
+        console.log('actionExtensionCount', actionExtensionCount); // TODO:RM
+        console.log('actionsInRowCount', actionsInRowCount); // TODO:RM
 
         columns.push(
             JTable.column(480, message, true),
             JTable.column(100, duration, false),
             JTable.column(100, completed, false),
-            JTable.column(60, '', false),
+            JTable.column((actionExtensionCount + actionsInRowCount) * 24, '', false),
         );
 
         const headers = isMultiBranchPipeline ? [ // TODO: Remove this old stuff, once I'm sure the classNames aren't needed and have bneen cleaned up from styles
@@ -190,7 +219,7 @@ export class Activity extends Component {
                 </JTable>
             );
 
-        // TODO: count the extensions on extensionPoint="jenkins.pipeline.activity.list.action"
+
 
         return (<main>
             <article className="activity">
