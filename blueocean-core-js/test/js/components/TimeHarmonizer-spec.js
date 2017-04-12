@@ -5,7 +5,7 @@ import WithContext from '@jenkins-cd/design-language/dist/js/stories/WithContext
 
 import { TimeHarmonizer } from '../../../src/js';
 
-function dump(obj) {
+function dump(obj) {  // TODO: RM
     const results = {};
     for (let key in obj) {
         let prop = obj[key];
@@ -29,14 +29,6 @@ class UselessComponent extends Component {
         } = this.props;
 
         const processedTimes = getTimes();
-
-        let propsString = JSON.stringify(dump(this.props), null, 4);
-        let contextString = JSON.stringify(dump(context), null, 4);
-
-        // startTime
-        // endTime
-        // durationInMillis
-        // isRunning
 
         return (
             <div className="UselessComponent">
