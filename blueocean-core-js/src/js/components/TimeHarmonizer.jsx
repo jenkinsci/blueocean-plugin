@@ -5,14 +5,25 @@ import logging from '../logging';
 import i18nTranslator from '../i18n/i18n';
 
 // TODO: De-const this shit
-const translate = i18nTranslator('blueocean-web');
+const translateGLOBAL = i18nTranslator('blueocean-web');
 const timeManager = new TimeManager();
 const logger = logging.logger('io.jenkins.blueocean.core.TimeHarmonizer');
+
+function translate(...args) {
+    console.log('called translate', args);
+    try {
+        let val = translateGLOBAL(...args);
+        console.log('got', val);
+        return val;
+    } catch (e) {
+        console.log('got exception', e);
+    }
+    return 'NUTS';
+}
 
 export class TimeHarmonizerUtil {
     // Construct with the owning component for access to props / context
     constructor(owner) {
-        throw "FUCKOFF";
         this.owner = owner;
 
         // TODO: I think we can splat this silly thing
@@ -101,7 +112,6 @@ export const TimeHarmonizer = ComposedComponent => {
                 isRunning: this.isRunningFunction(result)(),
             }, this.skewMillis);
             logger.warn('Returning object', harmonizeTimes);
-            console.log('!!!! harmonizeTimes result', harmonizeTimes); // TODO: RM
             return harmonizeTimes;
         }
 
@@ -131,15 +141,17 @@ export const TimeHarmonizer = ComposedComponent => {
         }
 
         render() {
+            const childProps = {
+                ...this.props,
+                ...this.state,
+                getTimes: this.getTimes,
+                getDuration: this.getDuration,
+                getI18nTitle: this.getI18nTitle,
+                isRunning: this.isRunning,
+            };
+
             // create a composedComponent and inject the functions we want to expose
-            return (<ComposedComponent
-                {...this.props}
-                {...this.state}
-                getTimes={this.getTimes}
-                getDuration={this.getDuration}
-                getI18nTitle={this.getI18nTitle}
-                isRunning={this.isRunning}
-            />);
+            return (<ComposedComponent {...childProps}/>);
         }
     }
 
