@@ -1,3 +1,4 @@
+/* eslint-disable */
 import {TimeManager} from '../../../src/js';
 import {assert} from 'chai';
 import moment from 'moment';

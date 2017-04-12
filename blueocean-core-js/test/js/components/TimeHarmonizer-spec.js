@@ -1,3 +1,4 @@
+/* eslint-disable */
 import React, { PropTypes, Component } from 'react';
 import { assert } from 'chai';
 import { shallow, render, mount } from 'enzyme';
