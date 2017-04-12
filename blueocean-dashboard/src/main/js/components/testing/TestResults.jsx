@@ -1,8 +1,8 @@
-import React, { Component, PropTypes } from 'react';
-import { TestSummary } from './TestSummary';
+import React, {Component, PropTypes} from "react";
+import {TestSummary} from "./TestSummary";
 // needs to be loaded since the moment lib will use require which in run time will fail
-import 'moment/min/locales.min';
-import TestCaseResultRow from './TestCaseResultRow';
+import "moment/min/locales.min";
+import TestCaseResultRow from "./TestCaseResultRow";
 
 /* eslint-disable max-len */
 
@@ -87,7 +87,7 @@ export default class TestResults extends Component {
 
 TestResults.propTypes = {
     run: PropTypes.object,
-    tests: PropTypes.object,
+    tests: PropTypes.array,
     t: PropTypes.func,
     locale: PropTypes.string,
 };

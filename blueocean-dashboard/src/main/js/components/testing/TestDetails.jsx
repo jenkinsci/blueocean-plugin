@@ -1,5 +1,5 @@
-import React, { Component, PropTypes } from 'react';
-import { observer } from 'mobx-react';
+import React, {Component, PropTypes} from "react";
+import {observer} from "mobx-react";
 
 /* eslint-disable max-len */
 
@@ -18,6 +18,15 @@ ConsoleLog.propTypes = {
 
 @observer
 class TestDetails extends Component {
+
+    propTypes = {
+        duration: PropTypes.number,
+        test: PropTypes.array,
+        stdout: PropTypes.string,
+        stderr: PropTypes.string,
+        translation: PropTypes.object,
+    };
+
     render() {
         const test = this.props.test;
         const duration = this.props.duration;
@@ -49,13 +58,5 @@ class TestDetails extends Component {
         </div>);
     }
 }
-
-TestDetails.propTypes = {
-    duration: PropTypes.number,
-    test: PropTypes.object,
-    stdout: PropTypes.string,
-    stderr: PropTypes.string,
-    translation: PropTypes.object,
-};
 
 export default TestDetails;

@@ -1,15 +1,21 @@
-import React, { Component, PropTypes } from 'react';
-import { action, observable } from 'mobx';
-import { observer } from 'mobx-react';
-import { Fetch } from '@jenkins-cd/blueocean-core-js';
-import { ResultItem, StatusIndicator } from '@jenkins-cd/design-language';
-import moment from 'moment';
-import TestDetails from './TestDetails';
+import React, {Component, PropTypes} from "react";
+import {action, observable} from "mobx";
+import {observer} from "mobx-react";
+import {Fetch} from "@jenkins-cd/blueocean-core-js";
+import {ResultItem, StatusIndicator} from "@jenkins-cd/design-language";
+import moment from "moment";
+import TestDetails from "./TestDetails";
 
 /* eslint-disable max-len */
 
 @observer
 export default class TestCaseResultRow extends Component {
+
+    propTypes = {
+        testCase: PropTypes.object,
+        translation: PropTypes.func,
+        locale: PropTypes.string,
+    };
 
     componentWillMount() {
         this.setState({ isFocused: false, attemptedFetchForStdOutStdErr: false });
@@ -89,9 +95,3 @@ export default class TestCaseResultRow extends Component {
         </ResultItem>);
     }
 }
-
-TestCaseResultRow.propTypes = {
-    testCase: PropTypes.object,
-    translation: PropTypes.func,
-    locale: PropTypes.string,
-};
