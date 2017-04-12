@@ -1,10 +1,10 @@
-import React, {Component, PropTypes} from "react";
-import {action, observable} from "mobx";
-import {observer} from "mobx-react";
-import {Fetch} from "@jenkins-cd/blueocean-core-js";
-import {ResultItem, StatusIndicator} from "@jenkins-cd/design-language";
-import moment from "moment";
-import TestDetails from "./TestDetails";
+import React, { Component, PropTypes } from 'react';
+import { action, observable } from 'mobx';
+import { observer } from 'mobx-react';
+import { Fetch } from '@jenkins-cd/blueocean-core-js';
+import { ResultItem, StatusIndicator } from '@jenkins-cd/design-language';
+import moment from 'moment';
+import TestDetails from './TestDetails';
 
 /* eslint-disable max-len */
 
@@ -82,7 +82,8 @@ export default class TestCaseResultRow extends Component {
         const onCollapse = () => {
             this.setState({ isFocused: false });
         };
-        const testDetails = showTestCase ? <TestDetails test={ t } duration={ duration } stdout={ this.stdout } stderr={ this.stderr } translation={ translation } /> : null;
+        const testDetails = showTestCase ?
+            <TestDetails test={ t } duration={ duration } stdout={ this.stdout } stderr={ this.stderr } translation={ translation } /> : null;
         return (<ResultItem
             result={ statusIndicator }
             expanded={ this.state.isFocused }
