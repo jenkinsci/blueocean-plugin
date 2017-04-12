@@ -50,9 +50,6 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
         Result resolved = BlueTestResultFactory.resolve(run, parent);
         checkFoundTests(resolved);
         StaplerRequest request = Stapler.getCurrentRequest();
-        if (resolved.results == null) {
-            throw new NotFoundException("No tests found");
-        }
         if (request != null) {
             String status = request.getParameter("status");
             String[] atoms = StringUtils.split(status, ',');
@@ -74,7 +71,7 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
     }
 
     private void checkFoundTests(Result resolved) {
-        if (resolved.summary != null || resolved.results == null) {
+        if (resolved.summary == null || resolved.results == null) {
             throw new NotFoundException("no tests");
         }
     }
