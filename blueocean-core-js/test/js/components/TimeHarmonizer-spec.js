@@ -36,28 +36,28 @@ class UselessComponent extends Component {
                 <h3>Input</h3>
                 <dl>
                     <dt>startTime</dt>
-                    <dd className="in-startTime">{ startTime }</dd>
+                    <dd className="in-startTime">{ String(startTime) }</dd>
                     <dt>endTime</dt>
-                    <dd className="in-endTime">{ endTime }</dd>
+                    <dd className="in-endTime">{ String(endTime) }</dd>
                     <dt>durationInMillis</dt>
-                    <dd className="in-durationInMillis">{ durationInMillis }</dd>
+                    <dd className="in-durationInMillis">{ String(durationInMillis) }</dd>
                     <dt>isRunning</dt>
-                    <dd className="in-isRunning">{ isRunning }</dd>
+                    <dd className="in-isRunning">{ String(isRunning) }</dd>
                 </dl>
                 <h3>Synced</h3>
                 <dl>
                     <dt>startTime</dt>
-                    <dd className="syn-startTime">{ processedTimes.startTime }</dd>
+                    <dd className="syn-startTime">{ String(processedTimes.startTime) }</dd>
                     <dt>endTime</dt>
-                    <dd className="syn-endTime">{ processedTimes.endTime }</dd>
+                    <dd className="syn-endTime">{ String(processedTimes.endTime) }</dd>
                     <dt>durationInMillis</dt>
-                    <dd className="syn-durationInMillis">{ processedTimes.durationInMillis }</dd>
+                    <dd className="syn-durationInMillis">{ String(processedTimes.durationInMillis) }</dd>
                     <dt>isRunning</dt>
-                    <dd className="syn-isRunning">{ processedTimes.isRunning }</dd>
+                    <dd className="syn-isRunning">{ String(processedTimes.isRunning) }</dd>
                     <dt>getDuration</dt>
-                    <dd className="syn-getDuration">{ getDuration() }</dd>
+                    <dd className="syn-getDuration">{ String(getDuration()) }</dd>
                     <dt>getI18nTitle</dt>
-                    <dd className="syn-getI18nTitle">{ getI18nTitle(status) }</dd>
+                    <dd className="syn-getI18nTitle">{ String(getI18nTitle(status)) }</dd>
                 </dl>
             </div>
         )
@@ -100,13 +100,13 @@ describe('TimeHarmonizer', () => {
         assert.equal(wrapper.find('.in-startTime').text(), time1Europe, 'input start time wrong');
 
         assert.equal(wrapper.find('.in-endTime').length, 1, 'input end time missing');
-        assert.equal(wrapper.find('.in-endTime').text(), '', 'input end time wrong');
+        assert.equal(wrapper.find('.in-endTime').text(), 'undefined', 'input end time wrong');
 
         assert.equal(wrapper.find('.in-durationInMillis').length, 1, 'input duration missing');
         assert.equal(wrapper.find('.in-durationInMillis').text(), '45678', 'input duration wrong');
 
         assert.equal(wrapper.find('.in-isRunning').length, 1, 'input isRunning missing');
-        assert.equal(wrapper.find('.in-isRunning').text(), '', 'input isRunning wrong');
+        assert.equal(wrapper.find('.in-isRunning').text(), 'undefined', 'input isRunning wrong');
         // assert.equal(wrapper.find('.in-isRunning').text(), 'true', 'input isRunning wrong');
         // FIXME: What is this for if it's broken in original code? ^^^
 
@@ -116,15 +116,15 @@ describe('TimeHarmonizer', () => {
         assert.equal(wrapper.find('.syn-startTime').text(), time1Zulu, 'sync start time wrong');
 
         assert.equal(wrapper.find('.syn-endTime').length, 1, 'sync end time missing');
-        assert.equal(wrapper.find('.syn-endTime').text(), '', 'sync end time wrong');
+        assert.equal(wrapper.find('.syn-endTime').text(), 'null', 'sync end time wrong');
 
         assert.equal(wrapper.find('.syn-durationInMillis').length, 1, 'sync duration missing');
-        assert.equal(wrapper.find('.syn-durationInMillis').text(), '', 'sync duration wrong');
+        assert.equal(wrapper.find('.syn-durationInMillis').text(), 'undefined', 'sync duration wrong');
         // assert.equal(wrapper.find('.syn-durationInMillis').text(), '45678', 'sync duration wrong');
         // FIXME: Why is this being destroyed?
 
         assert.equal(wrapper.find('.syn-isRunning').length, 1, 'sync isRunning missing');
-        assert.equal(wrapper.find('.syn-isRunning').text(), '', 'sync isRunning wrong');
+        assert.equal(wrapper.find('.syn-isRunning').text(), 'undefined', 'sync isRunning wrong');
         // assert.equal(wrapper.find('.syn-isRunning').text(), 'true', 'sync isRunning wrong');
         // FIXME: Again, why is this broken?
 
@@ -166,13 +166,13 @@ describe('TimeHarmonizer', () => {
         assert.equal(wrapper.find('.in-startTime').text(), time2BNE, 'input start time wrong');
 
         assert.equal(wrapper.find('.in-endTime').length, 1, 'input end time missing');
-        assert.equal(wrapper.find('.in-endTime').text(), '', 'input end time wrong');
+        assert.equal(wrapper.find('.in-endTime').text(), 'undefined', 'input end time wrong');
 
         assert.equal(wrapper.find('.in-durationInMillis').length, 1, 'input duration missing');
         assert.equal(wrapper.find('.in-durationInMillis').text(), '45678', 'input duration wrong');
 
         assert.equal(wrapper.find('.in-isRunning').length, 1, 'input isRunning missing');
-        assert.equal(wrapper.find('.in-isRunning').text(), '', 'input isRunning wrong');
+        assert.equal(wrapper.find('.in-isRunning').text(), 'undefined', 'input isRunning wrong');
         // assert.equal(wrapper.find('.in-isRunning').text(), 'true', 'input isRunning wrong');
         // FIXME: What is this for if it's broken in original code? ^^^
 
@@ -182,15 +182,15 @@ describe('TimeHarmonizer', () => {
         assert.equal(wrapper.find('.syn-startTime').text(), time2Zulu, 'sync start time wrong');
 
         assert.equal(wrapper.find('.syn-endTime').length, 1, 'sync end time missing');
-        assert.equal(wrapper.find('.syn-endTime').text(), '', 'sync end time wrong');
+        assert.equal(wrapper.find('.syn-endTime').text(), 'null', 'sync end time wrong');
 
         assert.equal(wrapper.find('.syn-durationInMillis').length, 1, 'sync duration missing');
-        assert.equal(wrapper.find('.syn-durationInMillis').text(), '', 'sync duration wrong');
+        assert.equal(wrapper.find('.syn-durationInMillis').text(), 'undefined', 'sync duration wrong');
         // assert.equal(wrapper.find('.syn-durationInMillis').text(), '45678', 'sync duration wrong');
         // FIXME: Why is this being destroyed?
 
         assert.equal(wrapper.find('.syn-isRunning').length, 1, 'sync isRunning missing');
-        assert.equal(wrapper.find('.syn-isRunning').text(), '', 'sync isRunning wrong');
+        assert.equal(wrapper.find('.syn-isRunning').text(), 'undefined', 'sync isRunning wrong');
         // assert.equal(wrapper.find('.syn-isRunning').text(), 'true', 'sync isRunning wrong');
         // FIXME: Again, why is this broken?
 
@@ -238,7 +238,7 @@ describe('TimeHarmonizer', () => {
         assert.equal(wrapper.find('.in-durationInMillis').text(), '45678', 'input duration wrong');
 
         assert.equal(wrapper.find('.in-isRunning').length, 1, 'input isRunning missing');
-        assert.equal(wrapper.find('.in-isRunning').text(), '', 'input isRunning wrong');
+        assert.equal(wrapper.find('.in-isRunning').text(), 'undefined', 'input isRunning wrong');
         // assert.equal(wrapper.find('.in-isRunning').text(), 'true', 'input isRunning wrong');
         // FIXME: What is this for if it's broken in original code? ^^^
 
@@ -251,12 +251,12 @@ describe('TimeHarmonizer', () => {
         assert.equal(wrapper.find('.syn-endTime').text(), time2ZuluPlus5h, 'sync end time wrong');
 
         assert.equal(wrapper.find('.syn-durationInMillis').length, 1, 'sync duration missing');
-        assert.equal(wrapper.find('.syn-durationInMillis').text(), '', 'sync duration wrong');
+        assert.equal(wrapper.find('.syn-durationInMillis').text(), 'undefined', 'sync duration wrong');
         // assert.equal(wrapper.find('.syn-durationInMillis').text(), '45678', 'sync duration wrong');
         // FIXME: Why is this being destroyed?
 
         assert.equal(wrapper.find('.syn-isRunning').length, 1, 'sync isRunning missing');
-        assert.equal(wrapper.find('.syn-isRunning').text(), '', 'sync isRunning wrong');
+        assert.equal(wrapper.find('.syn-isRunning').text(), 'undefined', 'sync isRunning wrong');
         // assert.equal(wrapper.find('.syn-isRunning').text(), 'true', 'sync isRunning wrong');
         // FIXME: Again, why is this broken?
 
