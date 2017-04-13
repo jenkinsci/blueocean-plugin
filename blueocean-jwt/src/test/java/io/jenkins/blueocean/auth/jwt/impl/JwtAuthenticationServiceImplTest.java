@@ -20,7 +20,7 @@ import java.util.Map;
 /**
  * @author Vivek Pandey
  */
-public class JwtImplTest {
+public class JwtAuthenticationServiceImplTest {
 
     @Rule
     public JenkinsRule j = new JenkinsRule();

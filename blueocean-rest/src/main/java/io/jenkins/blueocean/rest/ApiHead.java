@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest;
 
 import hudson.Extension;
 import hudson.ExtensionList;
+import hudson.ExtensionListListener;
 import io.jenkins.blueocean.BlueOceanUIProvider;
 import io.jenkins.blueocean.RootRoutable;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -31,6 +32,16 @@ public final class ApiHead implements RootRoutable, Reachable  {
     private volatile Map<String,ApiRoutable> apis;
 
     public static final String URL_NAME="rest";
+
+    public ApiHead() {
+        // when new extensions are installed, recompute 'apis'
+        ExtensionList.lookup(ApiRoutable.class).addListener(new ExtensionListListener() {
+            @Override
+            public void onChange() {
+                recomputeApis();
+            }
+        });
+    }
 
     /**
      * Search API
@@ -112,22 +123,27 @@ public final class ApiHead implements RootRoutable, Reachable  {
     }
 
     // Lazy initialize ApiRoutable(s), just so we have all of them
-    private void setApis(){
-        Map<String,ApiRoutable> apiMap = apis;
-        if(apiMap == null){
-            synchronized (this){
+    private void setApis() {
+        Map<String, ApiRoutable> apiMap = apis;
+        if (apiMap == null) {
+            synchronized (this) {
                 apiMap = apis;
-                if(apiMap == null){
-                    Map<String,ApiRoutable> apiMapTmp = new HashMap<>();
-                    for ( ApiRoutable api : ExtensionList.lookup(ApiRoutable.class)) {
-                        apiMapTmp.put(api.getUrlName(), api);
-                    }
-                    apis = apiMap = apiMapTmp;
+                if (apiMap == null) {
+                    recomputeApis();
                 }
             }
         }
     }
 
+    private void recomputeApis() {
+        Map<String, ApiRoutable> apiMap = new HashMap<>();
+        for (ApiRoutable api : ExtensionList.lookup(ApiRoutable.class)) {
+            String n = api.getUrlName();
+            if (!apiMap.containsKey(n))
+                apiMap.put(n, api);
+        }
+        apis = apiMap;
+    }
     private BlueOceanUIProvider getUiProvider(){
         for(BlueOceanUIProvider provider: BlueOceanUIProvider.all()){
             return provider;
