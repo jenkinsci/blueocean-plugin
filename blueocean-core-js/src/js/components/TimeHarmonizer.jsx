@@ -51,20 +51,19 @@ export class TimeHarmonizerUtil {
         return durationMillis;
     };
 
-    getTimes = (props) => { // TODO: Get rid of the props argument
+    getTimes = (props) => {
         props = props || this.owner.props;
         const { result, startTime, durationInMillis, endTime } = props;
         if (!startTime) {
             return {};
         }
         // we need to make sure that we calculate with the correct time offset
-        const harmonizeTimes = timeManager.harmonizeTimes({
+        return timeManager.harmonizeTimes({
             startTime,
             endTime,
             durationInMillis,
             isRunning: jobStillActive(result),
         }, this.getSkewMillis());
-        return harmonizeTimes;
     };
 
     getI18nTitle = (result) => {
@@ -87,14 +86,20 @@ export const TimeHarmonizer = ComposedComponent => {
         }
 
         render() {
+            const util = this.timeHarmonizerUtil;
+            const { result } = this.props;
+
             const childProps = {
                 ...this.props,
                 ...this.state,
-                getTimes: this.timeHarmonizerUtil.getTimes,
-                getDuration: this.timeHarmonizerUtil.getDuration,
-                getI18nTitle: this.timeHarmonizerUtil.getI18nTitle,
-                isRunning: this.timeHarmonizerUtil.isRunning,
+                getTimes: util.getTimes,
+                getDuration: util.getDuration,
+                getI18nTitle: util.getI18nTitle,
             };
+
+            if (result) {
+                childProps.isRunning = jobStillActive(result);
+            }
 
             // create a composedComponent and inject the functions we want to expose
             return (<ComposedComponent {...childProps}/>);
