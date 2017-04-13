@@ -9,7 +9,10 @@ import hudson.Extension;
 import hudson.model.UnprotectedRootAction;
 import hudson.remoting.Base64;
 import io.jenkins.blueocean.BlueOceanUI;
+import io.jenkins.blueocean.BlueOceanUIProvider;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
+import io.jenkins.blueocean.rest.model.BlueOrganizationContainer;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;
@@ -19,6 +22,7 @@ import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
 
+import javax.annotation.Nonnull;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
@@ -94,7 +98,29 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
 
         @Override
         public void configure(Binder binder) {
-            binder.bind(BlueOceanUI.class).toInstance(new BlueOceanUI(URL_BASE));
+            binder.bind(BlueOceanUI.class).toInstance(new BlueOceanUI());
+        }
+    }
+
+    @Extension(ordinal = -9999)
+    public static class BlueOceanUIProviderImpl extends BlueOceanUIProvider {
+        @Override
+        public String getRootUrl() {
+            return Jenkins.getInstance().getRootUrl();
+        }
+
+        @Nonnull
+        @Override
+        public String getUrlBasePrefix() {
+            return URL_BASE;
+        }
+
+        @Nonnull
+        @Override
+        public String getLandingPagePath() {
+            BlueOrganization organization = BlueOrganizationContainer.getBlueOrganization();
+            String orgName = organization != null ? organization.getName() : "jenkins";
+            return String.format("/organizations/%s/pipelines/", orgName);
         }
     }
 }
