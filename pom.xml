@@ -107,8 +107,9 @@
     <module>blueocean-dashboard</module>
     <module>blueocean-personalization</module>
     <module>blueocean-config</module>
-    <module>blueocean</module>
     <module>blueocean-jwt</module>
+    <module>blueocean-test-reporting</module>
+    <module>blueocean</module>
     <module>blueocean-github-pipeline</module>
     <module>blueocean-git-pipeline</module>
   </modules>
@@ -213,6 +214,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-jwt</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-test-reporting</artifactId>
             <version>${project.version}</version>
         </dependency>
 

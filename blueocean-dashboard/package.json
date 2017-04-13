@@ -23,6 +23,8 @@
     "babel-core": "6.17.0",
     "babel-eslint": "7.0.0",
     "babel-preset-es2015": "6.16.0",
+    "babel-preset-blueocean-js-extension-support": "0.0.1",
+    "babel-plugin-transform-decorators-legacy": "latest",
     "babel-preset-react": "6.16.0",
     "babel-preset-stage-0": "6.16.0",
     "chai": "3.5.0",
@@ -45,6 +47,7 @@
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/react-material-icons": "1.0.0",
     "babel-plugin-transform-decorators-legacy": "1.3.4",
+    "blueocean-js-extensions": "0.0.1",
     "es6-promise": "4.0.5",
     "immutable": "3.8.1",
     "isomorphic-fetch": "2.2.1",
@@ -74,7 +77,8 @@
       "react-redux",
       "react-router",
       "redux-thunk",
-      "reselect"
+      "reselect",
+      "blueocean-js-extensions"
     ]
   }
 }

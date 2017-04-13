@@ -13,6 +13,10 @@ import {
     buildClassicConfigUrl,
 } from '../util/UrlUtils';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
+import Extensions from '@jenkins-cd/js-extensions';
+
+import { ExtensionPoint, ExtensionList } from 'blueocean-js-extensions';
+
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import { FullScreen } from './FullScreen';
@@ -53,16 +57,23 @@ const classicJobRunLink = (pipeline, branch, runId) => {
         </a>
     );
 };
+@ExtensionPoint
+export class RunDetailsLink {
+    name() {}
+    url() {}
+}
 
 @observer
 class RunDetails extends Component {
-
+    @ExtensionList(RunDetailsLink) runDetailsLinks;
+    
     constructor(props) {
         super(props);
         this.state = { isVisible: true };
     }
 
     componentWillMount() {
+        
         this._fetchRun(this.props);
         this.opener = locationService.previous;
         this.initialHistoryLength = history.length;
@@ -186,9 +197,13 @@ class RunDetails extends Component {
             <TabLink to="/changes" { ...base }>{ t('rundetail.header.tab.changes', {
                 defaultValue: 'Changes',
             }) }</TabLink>,
-            <TabLink to="/tests" { ...base }>{ t('rundetail.header.tab.tests', {
-                defaultValue: 'Tests',
-            }) }</TabLink>,
+                            {/* Instead of doing this, we should decorate data coming back
+                                to emulate the way actions work. By using classes as extension
+                                points, we can define whichever methods we need to obtain different
+                                views as react components */}
+                            {this.runDetailsLinks.filter(d => d.isApplicable(currentRun)).map(d =>
+                                <TabLink to={d.url()}>{d.name()}</TabLink>
+                            )},
             <TabLink to="/artifacts" { ...base }>{ t('rundetail.header.tab.artifacts', {
                 defaultValue: 'Artifacts',
             }) }</TabLink>,

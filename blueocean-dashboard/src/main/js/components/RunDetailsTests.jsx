@@ -37,10 +37,64 @@ NoTestsPlaceholder.propTypes = {
 };
 
 
+import {
+    ExtensionPoint,
+    Extension,
+    ExtensionList,
+    ExtensionRenderer,
+    Ordinal,
+    extensionPoints,
+} from 'blueocean-js-extensions';
+
+const {
+    RunDetailsLink,
+} = extensionPoints;
+
+@ExtensionPoint
+class TestReportHandler {
+    isApplicable(runDetails) {
+        return true;
+    }
+    getComponent() {
+        return undefined;
+    }
+}
+
+@Extension
+export class TestReportLink extends RunDetailsLink {
+    @ExtensionList(TestReportHandler) testReportHandlers;
+    
+    isApplicable(runDetails) {
+        for (let h of this.testReportHandlers) {
+            if (h.isApplicable(runDetails)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    name() {
+        return 'Tests';
+    }
+    
+    url() {
+        return '/tests';
+    }
+    getComponent() {
+        for (let h of this.testReportHandlers) {
+            if (h.isApplicable(runDetails)) {
+                return h.getComponent();
+            }
+        }
+    }
+}
+
 /**
  * Displays a list of tests from the supplied build run property.
  */
 export class RunDetailsTests extends Component {
+    @ExtensionList(TestReportHandler) testReportHandlers;
+    
     componentWillMount() {
         this.props.fetchTestResults(
             this.props.result
@@ -64,6 +118,7 @@ export class RunDetailsTests extends Component {
 
         return (
             <div className="test-results-container">
+            {/*
                 <Extensions.Renderer
                   extensionPoint="jenkins.test.result"
                   filter={dataType(testResults)}
@@ -72,6 +127,7 @@ export class RunDetailsTests extends Component {
                   t={t}
                   run={this.props.result}
                 />
+            */}
             </div>
         );
     }

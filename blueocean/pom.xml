@@ -50,6 +50,10 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-test-reporting</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-rest-impl</artifactId>
         </dependency>
         <dependency>
@@ -155,6 +159,7 @@
                         linkHPI('blueocean-commons');
                         linkHPI('blueocean-i18n');
                         linkHPI('blueocean-jwt');
+                        linkHPI('blueocean-test-reporting');
                         linkHPI('blueocean-rest-impl');
                         linkHPI('blueocean-pipeline-api-impl')
                         linkHPI('blueocean-config')

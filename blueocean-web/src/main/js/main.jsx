@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { render } from 'react-dom';
+import ReactDOM, { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
 import {
@@ -18,6 +18,21 @@ import { Icon } from '@jenkins-cd/react-material-icons';
 useStrict(true);
 
 const LOGGER = logging.logger('io.jenkins.blueocean.web.routing');
+
+import * as jdl from '@jenkins-cd/design-language';
+import * as coreJs from '@jenkins-cd/blueocean-core-js';
+
+import { extensionRegistry } from 'blueocean-js-extensions';
+
+const Jenkins = {
+    jdl: jdl,
+    core: coreJs,
+};
+
+extensionRegistry.registerExtension('Globals', 'React', React, () => React, 0);
+extensionRegistry.registerExtension('Globals', 'ReactDOM', ReactDOM, () => ReactDOM, 0);
+extensionRegistry.registerExtension('Globals', 'jdl', jdl, () => jdl, 0);
+extensionRegistry.registerExtension('Globals', 'Jenkins', Jenkins, () => Jenkins, 0);
 
 let config; // Holder for various app-wide state
 
@@ -65,6 +80,38 @@ AdminLink.propTypes = {
  * Root Blue Ocean UI component
  */
 class App extends Component {
+    constructor() {
+        super();
+        this.componentWillMount();
+        this.state = { loadingExtensions: 0 };
+    }
+    componentWillMount() {
+        if (!this.extensionListener) {
+            extensionRegistry.addExtensionListener(this.extensionListener = () => this.forceUpdate());
+        }
+        if (!this.extensionPointListener) {
+            extensionRegistry.addExtensionPointListener(this.extensionPointListener = (extensionPointName, extensionPoint, initializing) => {
+                if (initializing) {
+                    this.setState({loadingExtensions: this.state.loadingExtensions + 1});
+                    Extensions.store.getExtensions(extensionPointName, () => {
+                        this.setState({loadingExtensions: this.state.loadingExtensions - 1});
+                        this.forceUpdate();
+                    });
+                }
+            });
+        }
+    }
+    
+    shouldComponentUpdate() {
+        return !(this.state && this.state.loadingExtensions);
+    }
+
+    componentDidUnmount() {
+        extensionRegistry.removeExtensionListener(this.extensionListener);
+        this.extensionListener = undefined;
+        extensionRegistry.removeExtensionPointListener(this.extensionPointListener);
+        this.extensionPointListener = undefined;
+    }
 
     getChildContext() {
         return {config};
