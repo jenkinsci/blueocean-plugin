@@ -3,14 +3,13 @@ package io.jenkins.blueocean.rest;
 import hudson.Extension;
 import hudson.ExtensionList;
 import hudson.ExtensionListListener;
-import io.jenkins.blueocean.BlueOceanUI;
+import io.jenkins.blueocean.BlueOceanUIProvider;
 import io.jenkins.blueocean.RootRoutable;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
 import io.jenkins.blueocean.rest.pageable.PagedResponse;
-import jenkins.model.Jenkins;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -28,7 +27,7 @@ import java.util.Map;
 @Extension
 public final class ApiHead implements RootRoutable, Reachable  {
 
-    private volatile BlueOceanUI blueOceanUI;
+    private volatile BlueOceanUIProvider blueOceanUI;
 
     private volatile Map<String,ApiRoutable> apis;
 
@@ -93,7 +92,7 @@ public final class ApiHead implements RootRoutable, Reachable  {
     @Override
     public Link getLink() {
         setBlueOceanUI(); //lazily initialize BlueOceanUI
-        return new Link("/"+blueOceanUI.getUrlBase()).rel(getUrlName());
+        return new Link("/"+blueOceanUI.getUrlBasePrefix()).rel(getUrlName());
     }
 
     /**
@@ -112,12 +111,12 @@ public final class ApiHead implements RootRoutable, Reachable  {
     // Lazy initialize BlueOcean UI via injection
     // Fix for: https://issues.jenkins-ci.org/browse/JENKINS-37429
     private void setBlueOceanUI(){
-        BlueOceanUI boui = blueOceanUI;
+        BlueOceanUIProvider boui = blueOceanUI;
         if(boui == null){
             synchronized (this){
                 boui = blueOceanUI;
                 if(boui == null){
-                    blueOceanUI = boui = Jenkins.getInstance().getInjector().getInstance(BlueOceanUI.class);
+                    blueOceanUI = boui = getUiProvider();
                 }
             }
         }
@@ -144,5 +143,11 @@ public final class ApiHead implements RootRoutable, Reachable  {
                 apiMap.put(n, api);
         }
         apis = apiMap;
+    }
+    private BlueOceanUIProvider getUiProvider(){
+        for(BlueOceanUIProvider provider: BlueOceanUIProvider.all()){
+            return provider;
+        }
+        return null;
     }
 }
