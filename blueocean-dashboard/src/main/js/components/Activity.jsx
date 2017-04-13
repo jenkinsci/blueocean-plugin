@@ -114,7 +114,7 @@ export class Activity extends Component {
 
         const branchFilter = isMultiBranchPipeline && (<ColumnFilter placeholder={branchText} value={branch}
             onChange={b => this.navigateToBranch(b)}
-            options={pipeline.branchNames.map(b => decodeURIComponent(b))}
+            options={pipeline.branchNames.map(b => decodeURIComponent(b)).sort()}
         />);
 
         const headers = isMultiBranchPipeline ? [

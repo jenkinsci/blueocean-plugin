@@ -2,9 +2,10 @@ package io.jenkins.blueocean;
 
 import hudson.ExtensionList;
 import hudson.Main;
-
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.Locale;
@@ -15,10 +16,11 @@ import java.util.Locale;
  * @author Kohsuke Kawaguchi
  */
 public class BlueOceanUI {
-    private final String urlBase;
+    private static final Logger logger = LoggerFactory.getLogger(BlueOceanUI.class);
 
-    public BlueOceanUI(String rootPath) {
-        this.urlBase = rootPath;
+    private BlueOceanUIProvider provider;
+
+    public BlueOceanUI() {
         ResourceCacheControl.install();
     }
 
@@ -40,7 +42,12 @@ public class BlueOceanUI {
      * The base of all BlueOcean URLs (underneath wherever Jenkins itself is deployed).
      */
     public String getUrlBase() {
-        return urlBase;
+        setBlueOceanUIProvider();
+        if(provider == null){
+            logger.error("BlueOceanUIProvider extension not found");
+            return null;
+        }
+        return provider.getUrlBasePrefix();
     }
     
     /**
@@ -73,5 +80,20 @@ public class BlueOceanUI {
 
     public long getNow() {
          return System.currentTimeMillis();
+    }
+
+    private void setBlueOceanUIProvider(){
+        BlueOceanUIProvider boui = provider;
+        if(boui == null){
+            synchronized (this){
+                boui = provider;
+                if(boui == null){
+                    for(BlueOceanUIProvider p: BlueOceanUIProvider.all()){
+                        provider = boui = p;
+                        return;
+                    }
+                }
+            }
+        }
     }
 }
