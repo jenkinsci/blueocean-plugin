@@ -11,7 +11,6 @@ import io.jenkins.blueocean.auth.jwt.impl.JwtAuthenticationFilter;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
-import io.jenkins.blueocean.rest.model.BlueOrganizationContainer;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
@@ -96,7 +95,7 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
         @Nonnull
         @Override
         public String getLandingPagePath() {
-            BlueOrganization organization = BlueOrganizationContainer.getBlueOrganization();
+            BlueOrganization organization = OrganizationResolver.getInstance().getContainingOrg(Jenkins.getInstance());
             String orgName = organization != null ? organization.getName() : "jenkins";
             return String.format("/organizations/%s/pipelines/", orgName);
         }
