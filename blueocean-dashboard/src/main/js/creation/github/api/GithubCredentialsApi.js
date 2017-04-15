@@ -1,4 +1,4 @@
-import { capabilityAugmenter, Fetch, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter, Fetch, UrlConfig, Utils, AppConfig } from '@jenkins-cd/blueocean-core-js';
 
 // TODO: temporary until we get more structured errors
 const INVALID_TOKEN = 'Invalid accessToken';
@@ -12,11 +12,12 @@ export class GithubCredentialsApi {
 
     constructor(fetch) {
         this._fetch = fetch || Fetch.fetchJSON;
+        this.organization = AppConfig.getOrganization();
     }
 
     findExistingCredential() {
         const path = UrlConfig.getJenkinsRootURL();
-        const credUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/scm/github`);
+        const credUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/github`);
 
         return this._fetch(credUrl)
             .then(credential => capabilityAugmenter.augmentCapabilities(credential));
@@ -24,7 +25,7 @@ export class GithubCredentialsApi {
 
     createAccessToken(accessToken) {
         const path = UrlConfig.getJenkinsRootURL();
-        const tokenUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/jenkins/scm/github/validate`);
+        const tokenUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/github/validate`);
 
         const requestBody = {
             accessToken,
