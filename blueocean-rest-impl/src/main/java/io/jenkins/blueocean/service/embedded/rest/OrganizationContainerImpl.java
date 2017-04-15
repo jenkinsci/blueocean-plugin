@@ -23,7 +23,7 @@ public class OrganizationContainerImpl extends BlueOrganizationContainer {
     public BlueOrganization get(String name) {
         BlueOrganization o = OrganizationResolver.getInstance().get(name);
         if (o==null)
-            throw new ServiceException.UnprocessableEntityException(String.format("Organization %s not found",name));
+            throw new ServiceException.NotFoundException(String.format("Organization %s not found",name));
         return o;
     }
 
