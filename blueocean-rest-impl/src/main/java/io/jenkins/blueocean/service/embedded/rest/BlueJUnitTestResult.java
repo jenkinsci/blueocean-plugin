@@ -30,7 +30,7 @@ public class BlueJUnitTestResult extends BlueTestResult {
 
     @Override
     public String getName() {
-        return testResult.getPackageName() + " – " + testResult.getName();
+        return testResult.getName() + " – " + testResult.getClassName();
     }
 
     @Override
