@@ -61,7 +61,7 @@ export class TimeManager {
             endTime = serverEndTime.toJSON();
         }
         if (props.endTime || !props.isRunning) { // sync server end date to local time via the skewMillis
-            durationMillis = props.durationInMillis;
+            durationMillis = props.durationInMillis; // TODO: s/durationMillis/durationInMillis/g
         } else {
             logger.debug('running, using timeElapsed for duration');
             durationMillis = Math.abs(timeElapsed);

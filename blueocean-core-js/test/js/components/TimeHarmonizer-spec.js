@@ -4,16 +4,8 @@ import { assert } from 'chai';
 import { shallow, render, mount } from 'enzyme';
 import WithContext from '@jenkins-cd/design-language/dist/js/stories/WithContext';
 
-import { TimeHarmonizer } from '../../../src/js';
-
-function dump(obj) {  // TODO: RM
-    const results = {};
-    for (let key in obj) {
-        let prop = obj[key];
-        results[key] = (typeof prop === 'function') ? "[function]" : prop;
-    }
-    return results;
-}
+import moment from 'moment';
+import { TimeHarmonizer, TimeHarmonizerUtil } from '../../../src/js';
 
 class UselessComponent extends Component {
 
@@ -26,7 +18,7 @@ class UselessComponent extends Component {
             getTimes,
             getDuration,
             getI18nTitle,
-            status,
+            result,
         } = this.props;
 
         const processedTimes = getTimes();
@@ -51,11 +43,11 @@ class UselessComponent extends Component {
                     <dt>endTime</dt>
                     <dd className="syn-endTime">{ String(processedTimes.endTime) }</dd>
                     <dt>durationInMillis</dt>
-                    <dd className="syn-durationInMillis">{ String(processedTimes.durationInMillis) }</dd>
+                    <dd className="syn-durationMillis">{ String(processedTimes.durationMillis) }</dd>
                     <dt>getDuration</dt>
                     <dd className="syn-getDuration">{ String(getDuration()) }</dd>
                     <dt>getI18nTitle</dt>
-                    <dd className="syn-getI18nTitle">{ String(getI18nTitle(status)) }</dd>
+                    <dd className="syn-getI18nTitle">{ String(getI18nTitle(result)) }</dd>
                 </dl>
             </div>
         )
@@ -63,7 +55,6 @@ class UselessComponent extends Component {
 }
 
 describe('TimeHarmonizer', () => {
-
     const HarmonizedUselessComponent = TimeHarmonizer(UselessComponent);
 
     it('/ renders', () => {
@@ -74,20 +65,35 @@ describe('TimeHarmonizer', () => {
 
     const time1Europe = '2017-01-25T10:28:34.755+0100';
     const time1Zulu = '2017-01-25T09:28:34.755Z';
+    const time1ZuluPlus5m = '2017-01-25T09:33:34.755Z';
     const time1ZuluPlus5h = '2017-01-25T14:28:34.755Z';
 
     const time2BNE = '2017-01-26T12:24:42.557+1000';
     const time2Zulu = '2017-01-26T02:24:42.557Z';
+    const time2ZuluPlus10m = '2017-01-26T02:34:42.557Z';
     const time2ZuluPlus5h = '2017-01-26T07:24:42.557Z';
 
+    let oldClock;
+
+    beforeEach(() => {
+        oldClock = TimeHarmonizerUtil.timeManager.currentTime;
+    });
+
+    afterEach(() => {
+        TimeHarmonizerUtil.timeManager.currentTime = oldClock;
+    });
+
+
     it('/ renders with time props', () => {
+
+        TimeHarmonizerUtil.timeManager.currentTime = () => moment(time1ZuluPlus5m);
 
         let timeRelatedProps = {
             isRunning: true,
             startTime: time1Europe,
             durationInMillis: 45678,
             endTime: undefined,
-            status: 'running',
+            result: 'running',
         };
 
         let wrapper = mount(<HarmonizedUselessComponent {...timeRelatedProps}/>);
@@ -114,20 +120,19 @@ describe('TimeHarmonizer', () => {
         assert.equal(wrapper.find('.syn-endTime').length, 1, 'sync end time missing');
         assert.equal(wrapper.find('.syn-endTime').text(), 'null', 'sync end time wrong');
 
-        assert.equal(wrapper.find('.syn-durationInMillis').length, 1, 'sync duration missing');
-        assert.equal(wrapper.find('.syn-durationInMillis').text(), 'undefined', 'sync duration wrong');
-        // assert.equal(wrapper.find('.syn-durationInMillis').text(), 'something', 'sync duration wrong');
-        // FIXME: Why is this being destroyed? It should be an updated total. Fix may need to go in TimeManager
+        assert.equal(wrapper.find('.syn-durationMillis').length, 1, 'sync duration missing');
+        assert.equal(wrapper.find('.syn-durationMillis').text(), String(5 * 60 * 1000), 'sync duration wrong');
 
         assert.equal(wrapper.find('.syn-getDuration').length, 1, 'sync duration2 missing');
-        assert.equal(wrapper.find('.syn-getDuration').text(), '45678', 'sync duration2 wrong');
-        // FIXME: Why isn't this formatted? If not, what's it for?
+        assert.equal(wrapper.find('.syn-getDuration').text(), String(5 * 60 * 1000), 'sync duration2 wrong');
 
         assert.equal(wrapper.find('.syn-getI18nTitle').length, 1, 'sync translated title missing');
         assert.equal(wrapper.find('.syn-getI18nTitle').text(), 'common.state.running', 'sync translated title wrong');
     });
 
     it('/ renders with time props and context without drift', () => {
+
+        TimeHarmonizerUtil.timeManager.currentTime = () => moment(time2ZuluPlus10m);
 
         let ctx = {
             config: {
@@ -142,7 +147,7 @@ describe('TimeHarmonizer', () => {
             startTime: time2BNE,
             durationInMillis: 45678,
             endTime: undefined,
-            status: 'running',
+            result: 'running',
         };
 
         let wrapper = mount(
@@ -173,20 +178,19 @@ describe('TimeHarmonizer', () => {
         assert.equal(wrapper.find('.syn-endTime').length, 1, 'sync end time missing');
         assert.equal(wrapper.find('.syn-endTime').text(), 'null', 'sync end time wrong');
 
-        assert.equal(wrapper.find('.syn-durationInMillis').length, 1, 'sync duration missing');
-        assert.equal(wrapper.find('.syn-durationInMillis').text(), 'undefined', 'sync duration wrong');
-        // assert.equal(wrapper.find('.syn-durationInMillis').text(), 'something', 'sync duration wrong');
-        // FIXME: Why is this being destroyed? It should be an updated total. Fix may need to go in TimeManager
+        assert.equal(wrapper.find('.syn-durationMillis').length, 1, 'sync duration missing');
+        assert.equal(wrapper.find('.syn-durationMillis').text(), String(10 * 60 * 1000), 'sync duration wrong');
 
         assert.equal(wrapper.find('.syn-getDuration').length, 1, 'sync duration2 missing');
-        assert.equal(wrapper.find('.syn-getDuration').text(), '45678', 'sync duration2 wrong');
-        // FIXME: Why isn't this formatted? If not, what's it for?
+        assert.equal(wrapper.find('.syn-getDuration').text(), String(10 * 60 * 1000), 'sync duration2 wrong');
 
         assert.equal(wrapper.find('.syn-getI18nTitle').length, 1, 'sync translated title missing');
         assert.equal(wrapper.find('.syn-getI18nTitle').text(), 'common.state.running', 'sync translated title wrong');
     });
 
     it('/ renders with time props and context with drift and endTime', () => {
+
+        TimeHarmonizerUtil.timeManager.currentTime = () => moment(time2ZuluPlus10m);
 
         let ctx = {
             config: {
@@ -201,7 +205,7 @@ describe('TimeHarmonizer', () => {
             startTime: time1Europe,
             durationInMillis: 45678,
             endTime: time2Zulu,
-            status: 'completed',
+            result: 'completed',
         };
 
         let wrapper = mount(
@@ -232,14 +236,11 @@ describe('TimeHarmonizer', () => {
         assert.equal(wrapper.find('.syn-endTime').length, 1, 'sync end time missing');
         assert.equal(wrapper.find('.syn-endTime').text(), time2ZuluPlus5h, 'sync end time wrong');
 
-        assert.equal(wrapper.find('.syn-durationInMillis').length, 1, 'sync duration missing');
-        assert.equal(wrapper.find('.syn-durationInMillis').text(), 'undefined', 'sync duration wrong');
-        // assert.equal(wrapper.find('.syn-durationInMillis').text(), '45678', 'sync duration wrong');
-        // FIXME: Why is this being destroyed? It should be the input value because job not running.
+        assert.equal(wrapper.find('.syn-durationMillis').length, 1, 'sync duration missing');
+        assert.equal(wrapper.find('.syn-durationMillis').text(), '45678', 'sync duration wrong');
 
         assert.equal(wrapper.find('.syn-getDuration').length, 1, 'sync duration2 missing');
         assert.equal(wrapper.find('.syn-getDuration').text(), '45678', 'sync duration2 wrong');
-        // FIXME: Why isn't this formatted? If not, what's it for?
 
         assert.equal(wrapper.find('.syn-getI18nTitle').length, 1, 'sync translated title missing');
         assert.equal(wrapper.find('.syn-getI18nTitle').text(), 'common.state.completed', 'sync translated title wrong');

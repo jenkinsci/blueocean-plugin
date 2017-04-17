@@ -4,20 +4,6 @@ import { TimeManager } from '../utils/TimeManager';
 import logging from '../logging';
 import i18nTranslator from '../i18n/i18n';
 
-// TODO: De-const this shit
-const translateGLOBAL = i18nTranslator('blueocean-web');
-const timeManager = new TimeManager();
-const logger = logging.logger('io.jenkins.blueocean.core.TimeHarmonizer');
-
-function translate(...args) { // TODO: RM
-    try {
-        let val = translateGLOBAL(...args);
-        return val;
-    } catch (e) {
-        console.log('translate got exception', e);
-    }
-    return 'NUTS';
-}
 
 function jobStillActive(status) {
     switch (String(status).toUpperCase()) {
@@ -47,6 +33,7 @@ export class TimeHarmonizerUtil {
     };
 
     getDuration = (result) => {
+        // TODO: Simplify this?
         const durationMillis = jobStillActive(result) ? this.durationMillis : this.getTimes().durationMillis;
         return durationMillis;
     };
@@ -57,8 +44,9 @@ export class TimeHarmonizerUtil {
         if (!startTime) {
             return {};
         }
+
         // we need to make sure that we calculate with the correct time offset
-        return timeManager.harmonizeTimes({
+        return TimeHarmonizerUtil.timeManager.harmonizeTimes({
             startTime,
             endTime,
             durationInMillis,
@@ -68,14 +56,18 @@ export class TimeHarmonizerUtil {
 
     getI18nTitle = (result) => {
         const durationMillis = this.getDuration(result);
-        const i18nDuration = timeManager.format(
+        const i18nDuration = TimeHarmonizerUtil.timeManager.format(
             durationMillis,
-            translate('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' }));
+            TimeHarmonizerUtil.translate('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' }));
 
-        const title = translate(`common.state.${result.toLowerCase()}`, { 0: i18nDuration });
+        const title = TimeHarmonizerUtil.translate(`common.state.${result.toLowerCase()}`, { 0: i18nDuration });
         return title;
     };
 }
+
+TimeHarmonizerUtil.timeManager = new TimeManager();
+TimeHarmonizerUtil.translate = i18nTranslator('blueocean-web');
+TimeHarmonizerUtil.logger = logging.logger('io.jenkins.blueocean.core.TimeHarmonizer');
 
 export const TimeHarmonizer = ComposedComponent => {
 
@@ -91,7 +83,6 @@ export const TimeHarmonizer = ComposedComponent => {
 
             const childProps = {
                 ...this.props,
-                ...this.state,
                 getTimes: util.getTimes,
                 getDuration: util.getDuration,
                 getI18nTitle: util.getI18nTitle,

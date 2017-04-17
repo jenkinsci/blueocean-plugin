@@ -99,7 +99,7 @@ export const DEBUG = {
 
 export { TimeManager } from './utils/TimeManager';
 
-export { TimeHarmonizer } from './components/TimeHarmonizer';
+export { TimeHarmonizer, TimeHarmonizerUtil } from './components/TimeHarmonizer';
 import LiveStatusIndicator from './components/LiveStatusIndicator';
 export { LiveStatusIndicator };
 export {
