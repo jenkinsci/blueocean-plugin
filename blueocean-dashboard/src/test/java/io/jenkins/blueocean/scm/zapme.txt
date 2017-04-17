@@ -1,1 +1,0 @@
-TODO: Move BlueOceanWebURLBuilderTest to somewhere more appropriate that then allows us to remove these scm classes (copied from pipeline-api-impl tests)

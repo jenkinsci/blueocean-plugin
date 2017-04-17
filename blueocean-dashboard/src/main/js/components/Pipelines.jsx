@@ -73,16 +73,15 @@ export class Pipelines extends Component {
                         <CreatePipelineLink />
                     </Extensions.Renderer>
                 </ContentPageHeader>
-                { showEmptyState && <DashboardPlaceholder t={translate} /> }
-                { showPipelineList &&
                 <main>
                     <article>
-                        { /* TODO: need to adjust Extensions to make store available */ }
                         <Extensions.Renderer
                             extensionPoint="jenkins.pipeline.list.top"
                             store={ this.context.store }
                             router={ this.context.router }
                         />
+                        { showEmptyState && <DashboardPlaceholder t={translate} /> }
+                        { showPipelineList &&
                         <Table
                             className="pipelines-table"
                             headers={ headers }
@@ -100,11 +99,11 @@ export class Pipelines extends Component {
                             })
                             }
                         </Table>
+                        }
 
                         { pipelines && <ShowMoreButton pager={this.pager} /> }
                     </article>
                 </main>
-                }
             </Page>
         );
     }
