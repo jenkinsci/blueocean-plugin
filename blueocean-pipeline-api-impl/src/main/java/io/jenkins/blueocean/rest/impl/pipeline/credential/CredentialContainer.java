@@ -32,7 +32,7 @@ public class CredentialContainer extends Container<CredentialApi> implements Org
     public CredentialContainer() {
         BlueOrganization organization=OrganizationResolver.getInstance().getContainingOrg(Jenkins.getInstance());
         this.self = (organization != null) ? organization.getLink().rel("credentials")
-                : new Link("/organizations/jenkins/credentials/");
+                : null;
     }
 
     public CredentialContainer(@Nonnull Link parent) {
