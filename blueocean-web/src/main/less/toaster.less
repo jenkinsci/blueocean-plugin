@@ -3,14 +3,19 @@
     position: fixed;
     z-index: 4000;
     bottom: 0;
-    left: 0;
+    right: 0;
     width: 400px;
     height: 210px;
-    padding-left: 10px;
+    padding-right: 10px;
     pointer-events: none;
     background: none !important;
 
     .toast {
         pointer-events: all;
+    }
+
+    /* override @jeninks-language/design-language/component/toast.less */
+    & > span {
+        align-items: flex-end;
     }
 }

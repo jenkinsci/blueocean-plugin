@@ -8,7 +8,7 @@ import { CreatePipelineScmListRenderer } from './CreatePipelineScmListRenderer';
 import { CreatePipelineStepsRenderer } from './CreatePipelineStepsRenderer';
 import VerticalStep from './flow2/VerticalStep';
 import StepStatus from './flow2/FlowStepStatus';
-import securityUtils from '../util/security-utils';
+import creationUtils from './creation-status-utils';
 
 
 const Sandbox = Extensions.SandboxedComponent;
@@ -65,7 +65,6 @@ export default class CreatePipeline extends React.Component {
 
     render() {
         const firstStepStatus = this.state.selectedProvider ? StepStatus.COMPLETE : StepStatus.ACTIVE;
-        const creationEnabled = securityUtils.isCreationEnabled();
 
         return (
             <Page>
@@ -75,7 +74,7 @@ export default class CreatePipeline extends React.Component {
 
                         <ClassicCreationLink />
                     </ContentPageHeader>
-                    { creationEnabled &&
+                    { creationUtils.isEnabled() &&
                     <main>
                         <article className="content-area">
                             <VerticalStep className="first-step" status={firstStepStatus}>
@@ -97,7 +96,24 @@ export default class CreatePipeline extends React.Component {
                         </article>
                     </main>
                     }
-                    { !creationEnabled &&
+                    { creationUtils.isDisabled() &&
+                    <main>
+                        <article className="content-area">
+                            <VerticalStep className="first-step" status={StepStatus.ERROR}>
+                                <h1>{t('creation.core.intro.invalid_security_title')}</h1>
+
+                                <p>
+                                    <span>{t('creation.core.intro.invalid_security_message')} - </span>
+
+                                    <a href={t('creation.core.intro.invalid_security_linkhref')} target="_blank">
+                                        {t('creation.core.intro.invalid_security_linktext')}
+                                    </a>
+                                </p>
+                            </VerticalStep>
+                        </article>
+                    </main>
+                    }
+                    { creationUtils.isHidden() &&
                     <main>
                         <article className="content-area">
                             <VerticalStep className="first-step" status={StepStatus.ERROR}>

@@ -3,13 +3,14 @@ import { Link } from 'react-router';
 import { Page, Table } from '@jenkins-cd/design-language';
 import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
+import { observer } from 'mobx-react';
+
 import { documentTitle } from './DocumentTitle';
 import CreatePipelineLink from './CreatePipelineLink';
 import PipelineRowItem from './PipelineRowItem';
-import { observer } from 'mobx-react';
+import { DashboardPlaceholder } from './placeholder/DashboardPlaceholder';
 
 const translate = i18nTranslator('blueocean-dashboard');
-
 
 @observer
 export class Pipelines extends Component {
@@ -42,6 +43,9 @@ export class Pipelines extends Component {
                 { organization }
             </Link> : '';
 
+        const showPipelineList = !this.pager.pending && pipelines && pipelines.length > 0;
+        const showEmptyState = !this.pager.pending && (!pipelines || !pipelines.length);
+
         const headers = [
             { label: translate('home.pipelineslist.header.name', { defaultValue: 'Name' }), className: 'name-col' },
             translate('home.pipelineslist.header.health', { defaultValue: 'Health' }),
@@ -50,17 +54,20 @@ export class Pipelines extends Component {
             { label: '', className: 'actions-col' },
         ];
         this.props.setTitle('Jenkins Blue Ocean');
+
         return (
             <Page>
                 <ContentPageHeader>
                     <div className="u-flex-grow">
-                        <h1>
-                            <Link to="/" query={ location.query }>
-                                { translate('home.header.dashboard', { defaultValue: 'Dashboard' }) }
-                            </Link>
-                            { organization && ' / ' }
-                            { organization && orgLink }
-                        </h1>
+                        <Extensions.Renderer extensionPoint="jenkins.pipeline.header">
+                            <h1>
+                                <Link to="/" query={ location.query }>
+                                    { translate('home.header.dashboard', { defaultValue: 'Dashboard' }) }
+                                </Link>
+                                { organization && ' / ' }
+                                { organization && orgLink }
+                            </h1>
+                        </Extensions.Renderer>
                     </div>
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
                         <CreatePipelineLink />
@@ -68,12 +75,13 @@ export class Pipelines extends Component {
                 </ContentPageHeader>
                 <main>
                     <article>
-                        { /* TODO: need to adjust Extensions to make store available */ }
                         <Extensions.Renderer
                             extensionPoint="jenkins.pipeline.list.top"
                             store={ this.context.store }
                             router={ this.context.router }
                         />
+                        { showEmptyState && <DashboardPlaceholder t={translate} /> }
+                        { showPipelineList &&
                         <Table
                             className="pipelines-table"
                             headers={ headers }
@@ -91,11 +99,13 @@ export class Pipelines extends Component {
                             })
                             }
                         </Table>
+                        }
 
                         { pipelines && <ShowMoreButton pager={this.pager} /> }
                     </article>
                 </main>
-            </Page>);
+            </Page>
+        );
     }
 }
 

@@ -18,6 +18,26 @@ import { PipelineCard } from './PipelineCard';
 
 const t = i18nTranslator('blueocean-personalization');
 
+function CardStack(props) {
+    const { children, message } = props;
+    return (
+        <div className="favorites-card-stack">
+            <div className="favorites-card-stack-heading"> {message}</div>
+            <TransitionGroup transitionName="vertical-expand-collapse"
+                             transitionEnterTimeout={300}
+                             transitionLeaveTimeout={300}
+            >
+                {children}
+            </TransitionGroup>
+        </div>
+    );
+}
+CardStack.propTypes = {
+    children: PropTypes.array,
+    message: PropTypes.string,
+};
+
+
 /**
  * Renders a stack of "favorites cards" including current most recent status.
  */
@@ -49,58 +69,44 @@ export class DashboardCards extends Component {
     }
 
     render() {
-        if (!this.props.favorites) {
-            return null;
-        }
+        const favorites = this.props.favorites || [];
 
         const locale = t && t.lng;
 
         // empty array will be filled in the next method if any paused fav's exist
         const pausedCards = [];
-        const favoriteCards = this.props.favorites
-          .map(favorite => {
-              const pipeline = favorite.item;
-              const responseElement = (<div key={favorite._links.self.href}>
-                  <PipelineCard
-                    router={this.props.router}
-                    runnable={pipeline}
-                    t={t}
-                    locale={locale}
-                    favorite
-                    onFavoriteToggle={(isFavorite) => this._onFavoriteToggle(isFavorite, favorite)}
-                  />
-              </div>);
-              // if we are in paused state fill the pause array and return null
-              if (favorite.item.latestRun && favorite.item.latestRun.state === 'PAUSED') {
-                  pausedCards.push(responseElement);
-                  return null;
-              }
-              return (responseElement);
-          });
+        const favoriteCards = favorites.map(favorite => {
+            const pipeline = favorite.item;
+            const responseElement = (
+                <div key={favorite._links.self.href}>
+                    <PipelineCard
+                      router={this.props.router}
+                      runnable={pipeline}
+                      t={t}
+                      locale={locale}
+                      favorite
+                      onFavoriteToggle={(isFavorite) => this._onFavoriteToggle(isFavorite, favorite)}
+                    />
+                </div>
+            );
+            // if we are in paused state fill the pause array and return null
+            if (favorite.item.latestRun && favorite.item.latestRun.state === 'PAUSED') {
+                pausedCards.push(responseElement);
+                return null;
+            }
+            return (responseElement);
+        });
 
-        // generic sub-render to output fav or paused stacks
-        const StackOutput = (properties) => {
-            const { cards, message } = properties;
-            return (<div key={message} className="favorites-card-stack">
-                <div className="favorites-card-stack-heading"> {message}</div>
-                <TransitionGroup transitionName="vertical-expand-collapse"
-                  transitionEnterTimeout={300}
-                  transitionLeaveTimeout={300}
-                >
-                    {cards}
-                </TransitionGroup>
-            </div>);
-        };
         // Only show paused pipelines when we really have some
         // do we have any paused pipelines?
-        const pausedCardsStack = pausedCards.length > 0 ? (<StackOutput
-          message={t('dashboardCard.input.required', { defaultValue: 'Input required' })}
-          cards={pausedCards}
-        />) : null;
-        const favoriteCardsStack = favoriteCards.size > 0 ? (<StackOutput
-          message={t('dashboardCard.input.favorite', { defaultValue: 'Favorites' })}
-          cards={favoriteCards}
-        />) : null;
+        const pausedCardsStack = pausedCards.length > 0 ? (
+            <CardStack message={t('dashboardCard.input.required')}>
+                {pausedCards}
+            </CardStack>) : null;
+        const favoriteCardsStack = favoriteCards.size > 0 ? (
+            <CardStack message={t('dashboardCard.input.favorite')}>
+                {favoriteCards}
+            </CardStack>) : null;
 
         return (
             <FavoritesProvider store={this.props.store}>

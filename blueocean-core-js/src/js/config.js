@@ -46,6 +46,10 @@ export default {
         return !!this.getSecurityConfig().enableJWT;
     },
 
+    getJWTServiceHostUrl() {
+        return this.getSecurityConfig().jwtServiceHostUrl;
+    },
+
     getLoginUrl() {
         return this.getSecurityConfig().loginUrl;
     },

@@ -23,7 +23,7 @@ public class ActionProxiesImpl extends BlueActionProxy {
     private final Action action;
     private final Reachable parent;
     private static final Logger logger = LoggerFactory.getLogger(ActionProxiesImpl.class);
-    private static final ImmutableSet<String> BANNED_ACTIONS = ImmutableSet.of("org.jenkinsci.plugins.workflow.job.views.FlowGraphAction");
+    private static final ImmutableSet<String> BANNED_ACTIONS = ImmutableSet.of("org.jenkinsci.plugins.workflow.job.views.FlowGraphAction", "hudson.plugins.jobConfigHistory.JobConfigHistoryProjectAction");
 
     public ActionProxiesImpl(Action action, Reachable parent) {
         this.action = action;

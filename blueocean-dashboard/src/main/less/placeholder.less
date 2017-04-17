@@ -1,5 +1,26 @@
+.dialog-center {
+    position: absolute;
+    left: 0;
+    right: 0;
+    margin: 0 auto;
+}
+
+.fade-bottom {
+    &.u-fade-bottom::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 50px;
+        bottom: 0;
+        background-image: linear-gradient(rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
+    }
+}
+
+
 .PlaceholderContent {
     position: relative;
+
+    .fade-bottom;
 
     &.u-fill {
         position: absolute;
@@ -9,19 +30,9 @@
         overflow-y: hidden;
     }
 
-    &.u-fade-bottom::after {
-        content: '';
-        position: absolute;
-        width: 100%;
-        height: 50px;
-        bottom: 0;
-        background-image: linear-gradient(rgba(255, 255, 255, 0) 0%, rgba(255, 255, 255, 1) 100%);
-    }
-
     .PlaceholderDialog {
-        position: absolute;
+        .dialog-center;
         top: 130px;
-        left: 50%;
     }
 }
 
@@ -55,14 +66,51 @@
         margin-top: 10px;
     }
 
-    // for button
-    .message + * {
+    .btn {
         margin-top: 25px;
+    }
+}
+
+.HomePlaceholder {
+    position: relative;
+
+    .fade-bottom;
+
+    .PlaceholderDialog {
+        .dialog-center;
+        top: 72px;
     }
 }
 
 .NoBranches {
     .JTable-row .JTable-cell:nth-child(8) {
         justify-content: flex-end;
+    }
+}
+
+.NoRuns {
+    .PlaceholderTable {
+        margin-top: 20px;
+    }
+}
+
+.NoRunsForBranch {
+    position: relative;
+    margin-top: 25px;
+
+    .PlaceholderDialog {
+        .dialog-center;
+    }
+}
+
+
+.RunDetailsEmpty {
+    position: relative;
+    max-width: 1200px;
+    margin: 0 auto;
+
+    .PlaceholderDialog {
+        .dialog-center;
+        top: 110px;
     }
 }
