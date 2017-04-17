@@ -5,7 +5,7 @@ import UrlConfig from '../config';
 import { getNodesInformation } from '../util/logDisplayHelper';
 import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl, paginateUrl, getRestUrl } from '../util/UrlUtils';
 import findAndUpdate from '../util/find-and-update';
-import { Fetch, FetchFunctions } from '@jenkins-cd/blueocean-core-js';
+import { Fetch, FetchFunctions, AppConfig } from '@jenkins-cd/blueocean-core-js';
 const debugLog = require('debug')('blueocean-actions-js:debug');
 
 /**
@@ -285,8 +285,9 @@ export const actions = {
     fetchAllPipelines() {
         return (dispatch) => {
             // Note: this is including folders, which we can't deal with, so exclude them with the ?filter=no-folders
+            const organization = AppConfig.getOrganization();
             const url =
-                `${UrlConfig.getRestRoot()}/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
+                `${UrlConfig.getRestRoot()}/search/?q=type:pipeline;organization:${organization};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
             return paginate({ urlProvider: paginateUrl(url) })
             .then(data => {
                 dispatch({
