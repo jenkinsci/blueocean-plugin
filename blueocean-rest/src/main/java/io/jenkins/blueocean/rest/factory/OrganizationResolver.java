@@ -7,6 +7,7 @@ import hudson.model.ItemGroup;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
@@ -80,5 +81,19 @@ public abstract class OrganizationResolver implements ExtensionPoint {
         if (r==null)
             throw new AssertionError("No OrganizationResolver is installed");
         return r;
+    }
+
+    @Nullable
+    @SuppressWarnings("unchecked")
+    public static ItemGroup<? extends Item> getItemGroup(String org) {
+        BlueOrganization blueOrganization = OrganizationResolver.getInstance().get(org);
+        if (blueOrganization instanceof ItemGroupProvider) {
+            return ((ItemGroupProvider)blueOrganization).getGroup();
+        }
+        return null;
+    }
+
+    public interface ItemGroupProvider {
+        ItemGroup getGroup();
     }
 }

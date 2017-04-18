@@ -138,14 +138,12 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
     private ItemGroup org(Query q) {
         String org = q.param(ORGANIZATION_PARAM);
         if (org==null)  return Jenkins.getInstance();
-
-        OrganizationImpl o = OrganizationResolver.getInstance().get(org);
-        if (o==null) {
+        ItemGroup group = OrganizationResolver.getItemGroup(org);
+        if (group==null) {
             throw new ServiceException.BadRequestExpception(
                 String.format("Organization %s not found. Query parameter %s value: %s is invalid. ", org,ORGANIZATION_PARAM,org));
         }
-
-        return o.getGroup();
+        return group;
     }
 
     private boolean exclude(ItemGroup item, List<Class> excludeList){

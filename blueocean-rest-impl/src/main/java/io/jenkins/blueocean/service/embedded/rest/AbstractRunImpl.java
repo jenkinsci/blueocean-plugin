@@ -12,6 +12,7 @@ import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
@@ -30,7 +31,7 @@ import java.util.Date;
  */
 public class AbstractRunImpl<T extends Run> extends BlueRun {
     protected final T run;
-    protected final OrganizationImpl org;
+    protected final BlueOrganization org;
 
     private final Link parent;
     public AbstractRunImpl(T run, Link parent) {

@@ -15,6 +15,7 @@ import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
 import io.jenkins.blueocean.rest.model.BlueIcon;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineFolder;
@@ -33,7 +34,7 @@ import java.util.Map;
  * @author Vivek Pandey
  */
 public class PipelineFolderImpl extends BluePipelineFolder {
-    protected final OrganizationImpl org;
+    protected final BlueOrganization org;
     private final ItemGroup folder;
     protected final Link parent;
 
