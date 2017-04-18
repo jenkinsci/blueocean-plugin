@@ -28,7 +28,7 @@ export class TimeHarmonizerUtil {
     };
 
     getDuration = (result) => {
-        return this.getTimes(this.owner.props).durationMillis;
+        return this.getTimes(this.owner.props).durationInMillis;
     };
 
     getTimes = ({ result, startTime, durationInMillis, endTime }) => {
@@ -46,9 +46,9 @@ export class TimeHarmonizerUtil {
     };
 
     getI18nTitle = (result) => {
-        const durationMillis = this.getDuration(result);
+        const durationInMillis = this.getDuration(result);
         const i18nDuration = TimeHarmonizerUtil.timeManager.format(
-            durationMillis,
+            durationInMillis,
             TimeHarmonizerUtil.translate('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' }));
 
         const title = TimeHarmonizerUtil.translate(`common.state.${result.toLowerCase()}`, { 0: i18nDuration });

@@ -7,7 +7,7 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.harmonizeTimes');
  *
  * @param run
  * @param skewMillis
- * @returns {{ durationMillis: diff, endTime: Date, startTime: Date}}
+ * @returns {{ durationInMillis: diff, endTime: Date, startTime: Date}}
  */
 export class TimeManager {
     currentTime() {
@@ -23,7 +23,7 @@ export class TimeManager {
      * @param props
      * @param skewMillis
      * @returns {
-            durationMillis,
+            durationInMillis,
             endTime,
             startTime,
         }
@@ -50,7 +50,7 @@ export class TimeManager {
         const timeElapsed = clientTime.diff(serverStartTime, 'milliseconds');
         // assume we do not have an end date
         let endTime = null;
-        let durationMillis = 0;
+        let durationInMillis = 0;
         if (props.endTime) { // sync server end date to local time via the skewMillis
             const serverEndTime = moment(props.endTime);
             if (skewMillis < 0) {
@@ -61,14 +61,14 @@ export class TimeManager {
             endTime = serverEndTime.toJSON();
         }
         if (props.endTime || !props.isRunning) { // sync server end date to local time via the skewMillis
-            durationMillis = props.durationInMillis; // TODO: s/durationMillis/durationInMillis/g
+            durationInMillis = props.durationInMillis;
         } else {
             logger.debug('running, using timeElapsed for duration');
-            durationMillis = Math.abs(timeElapsed);
+            durationInMillis = Math.abs(timeElapsed);
         }
-        logger.debug('durationMillis:', durationMillis);
+        logger.debug('durationInMillis:', durationInMillis);
         const harmonized = {
-            durationMillis,
+            durationInMillis,
             endTime,
             startTime,
         };

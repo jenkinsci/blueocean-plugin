@@ -25,11 +25,11 @@ describe("TimeManager", () => {
         const skewMillis = -7118377;
         aTtimeManager.currentTime = () => moment(1485441519326);
         const {
-            durationMillis,
+            durationInMillis,
             endTime,
             startTime,
         } = aTtimeManager.harmonizeTimes(runs[0], skewMillis);
-        assert.equal(durationMillis, 11486194);
+        assert.equal(durationInMillis, 11486194);
         assert.equal(startTime, "2017-01-26T11:27:13.132Z");
         assert.equal(endTime, null);
     });
@@ -38,11 +38,11 @@ describe("TimeManager", () => {
         const skewMillis = -7119267;
         aTtimeManager.currentTime = () => moment(1485441093121);
         const {
-            durationMillis,
+            durationInMillis,
             endTime,
             startTime,
         } = aTtimeManager.harmonizeTimes(runs[1], skewMillis);
-        assert.equal(durationMillis, 4091297);
+        assert.equal(durationInMillis, 4091297);
         assert.equal(startTime, "2017-01-26T13:23:21.824Z");
         assert.equal(endTime, null);
     });
@@ -51,11 +51,11 @@ describe("TimeManager", () => {
         const skewMillis = -7118719;
         aTtimeManager.currentTime = () => moment(1485441093121);
         const {
-            durationMillis,
+            durationInMillis,
             endTime,
             startTime,
         } = aTtimeManager.harmonizeTimes(runs[2], skewMillis);
-        assert.equal(durationMillis, 6940382);
+        assert.equal(durationInMillis, 6940382);
         assert.equal(endTime, "2017-01-26T13:22:53.856Z");
         assert.equal(startTime, "2017-01-26T13:25:52.190Z");
     });

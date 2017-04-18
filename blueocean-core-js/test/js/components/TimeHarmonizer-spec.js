@@ -48,7 +48,7 @@ class UselessComponent extends Component {
                     <dt>endTime</dt>
                     <dd className="syn-endTime">{ String(processedTimes.endTime) }</dd>
                     <dt>durationInMillis</dt>
-                    <dd className="syn-durationMillis">{ String(processedTimes.durationMillis) }</dd>
+                    <dd className="syn-durationInMillis">{ String(processedTimes.durationInMillis) }</dd>
                     <dt>getDuration</dt>
                     <dd className="syn-getDuration">{ String(getDuration()) }</dd>
                     <dt>getI18nTitle</dt>
@@ -125,8 +125,8 @@ describe('TimeHarmonizer', () => {
         assert.equal(wrapper.find('.syn-endTime').length, 1, 'sync end time missing');
         assert.equal(wrapper.find('.syn-endTime').text(), 'null', 'sync end time wrong');
 
-        assert.equal(wrapper.find('.syn-durationMillis').length, 1, 'sync duration missing');
-        assert.equal(wrapper.find('.syn-durationMillis').text(), String(5 * 60 * 1000), 'sync duration wrong');
+        assert.equal(wrapper.find('.syn-durationInMillis').length, 1, 'sync duration missing');
+        assert.equal(wrapper.find('.syn-durationInMillis').text(), String(5 * 60 * 1000), 'sync duration wrong');
 
         assert.equal(wrapper.find('.syn-getDuration').length, 1, 'sync duration2 missing');
         assert.equal(wrapper.find('.syn-getDuration').text(), String(5 * 60 * 1000), 'sync duration2 wrong');
@@ -183,8 +183,8 @@ describe('TimeHarmonizer', () => {
         assert.equal(wrapper.find('.syn-endTime').length, 1, 'sync end time missing');
         assert.equal(wrapper.find('.syn-endTime').text(), 'null', 'sync end time wrong');
 
-        assert.equal(wrapper.find('.syn-durationMillis').length, 1, 'sync duration missing');
-        assert.equal(wrapper.find('.syn-durationMillis').text(), String(10 * 60 * 1000), 'sync duration wrong');
+        assert.equal(wrapper.find('.syn-durationInMillis').length, 1, 'sync duration missing');
+        assert.equal(wrapper.find('.syn-durationInMillis').text(), String(10 * 60 * 1000), 'sync duration wrong');
 
         assert.equal(wrapper.find('.syn-getDuration').length, 1, 'sync duration2 missing');
         assert.equal(wrapper.find('.syn-getDuration').text(), String(10 * 60 * 1000), 'sync duration2 wrong');
@@ -241,8 +241,8 @@ describe('TimeHarmonizer', () => {
         assert.equal(wrapper.find('.syn-endTime').length, 1, 'sync end time missing');
         assert.equal(wrapper.find('.syn-endTime').text(), time2ZuluPlus5h, 'sync end time wrong');
 
-        assert.equal(wrapper.find('.syn-durationMillis').length, 1, 'sync duration missing');
-        assert.equal(wrapper.find('.syn-durationMillis').text(), '45678', 'sync duration wrong');
+        assert.equal(wrapper.find('.syn-durationInMillis').length, 1, 'sync duration missing');
+        assert.equal(wrapper.find('.syn-durationInMillis').text(), '45678', 'sync duration wrong');
 
         assert.equal(wrapper.find('.syn-getDuration').length, 1, 'sync duration2 missing');
         assert.equal(wrapper.find('.syn-getDuration').text(), '45678', 'sync duration2 wrong');
