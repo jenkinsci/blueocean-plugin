@@ -100,3 +100,5 @@ i18nBundles:
   - hpiPluginId: acme-commons
     resource: jenkins.plugins.acme.commons.Messages
 ```
+
+> Note how `i18nBundles` entries can define a string or an object, allowing the loading of bundles from plugins other than the default (i.e. the same plugin as the `@jenkins-cd/js-extensions` generated JavaScript bundle). 
