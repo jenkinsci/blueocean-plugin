@@ -97,5 +97,6 @@ extensions:
 
 i18nBundles:
   - jenkins.plugins.aaa.Messages
-  - jenkins.plugins.bbb.Messages
+  - hpiPluginId: acme-commons
+    resource: jenkins.plugins.acme.commons.Messages
 ```
