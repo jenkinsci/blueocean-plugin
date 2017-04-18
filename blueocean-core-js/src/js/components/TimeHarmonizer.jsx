@@ -4,7 +4,6 @@ import { TimeManager } from '../utils/TimeManager';
 import logging from '../logging';
 import i18nTranslator from '../i18n/i18n';
 
-
 function jobStillActive(status) {
     switch (String(status).toUpperCase()) {
         case 'RUNNING':
@@ -20,10 +19,6 @@ export class TimeHarmonizerUtil {
     // Construct with the owning component for access to props / context
     constructor(owner) {
         this.owner = owner;
-
-        // TODO: I think we can splat this silly thing?
-        const {startTime} = owner.props;
-        this.durationMillis = startTime ? this.getTimes(owner.props).durationMillis : 0;
     }
 
     // Current server skew
@@ -33,11 +28,10 @@ export class TimeHarmonizerUtil {
     };
 
     getDuration = (result) => {
-        // TODO: Simplify this?
-        const durationMillis = jobStillActive(result) ? this.durationMillis : this.getTimes().durationMillis;
-        return durationMillis;
+        return this.getTimes(this.owner.props).durationMillis;
     };
 
+    // TODO: Replace all these "props" with a destructure for clarity
     getTimes = (props) => {
         props = props || this.owner.props;
         const { result, startTime, durationInMillis, endTime } = props;
@@ -69,6 +63,12 @@ TimeHarmonizerUtil.timeManager = new TimeManager();
 TimeHarmonizerUtil.translate = i18nTranslator('blueocean-web');
 TimeHarmonizerUtil.logger = logging.logger('io.jenkins.blueocean.core.TimeHarmonizer');
 
+/**
+ * Replicate the functionality of the old wrapper component using the isolated library class
+ * @param ComposedComponent
+ * @return {NewComponent}
+ * @constructor
+ */
 export const TimeHarmonizer = ComposedComponent => {
 
     class NewComponent extends Component {
