@@ -23,6 +23,7 @@
  */
 package io.jenkins.blueocean.preload;
 
+import hudson.Extension;
 import hudson.model.Item;
 import io.jenkins.blueocean.commons.BlueUrlTokenizer;
 import io.jenkins.blueocean.commons.RESTFetchPreloader;
@@ -47,7 +48,7 @@ import java.util.logging.Logger;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-//@Extension
+@Extension
 public class PipelineActivityStatePreloader extends RESTFetchPreloader {
 
     private static final Logger LOGGER = Logger.getLogger(PipelineActivityStatePreloader.class.getName());
