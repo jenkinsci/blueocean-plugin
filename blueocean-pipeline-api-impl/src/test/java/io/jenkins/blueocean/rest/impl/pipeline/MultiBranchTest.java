@@ -435,7 +435,7 @@ public class MultiBranchTest extends PipelineBaseTest {
             Collections.EMPTY_MAP);
         String id = (String) resp.get("id");
         String link = getHrefFromLinks(resp, "self");
-        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature%252Fux-1/queue/"+id+"/", link);
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature%252Fux-1/runs/"+id+"/", link);
     }
 
 
