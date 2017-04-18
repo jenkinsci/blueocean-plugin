@@ -27,10 +27,8 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
-import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
-import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
@@ -351,7 +349,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
 
             @Override
-            public BlueQueueItem create(StaplerRequest request) {
+            public BlueRun create(StaplerRequest request) {
                 throw new ServiceException.NotImplementedException("This action is not supported");
             }
         };
@@ -427,32 +425,6 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
             }
             return null;
         }
-    }
-
-    @Navigable
-    public Container<Resource> getActivities() {
-        return new Container<Resource>() {
-            @Override
-            public Resource get(String name) {
-                return null;
-            }
-
-            @Override
-            public Link getLink() {
-                return MultiBranchPipelineImpl.this.getLink().rel("activities");
-            }
-
-            @Override
-            public Iterator<Resource> iterator() {
-                throw new ServiceException.NotImplementedException("Not implemented");
-            }
-
-            @Override
-            public Iterator<Resource> iterator(int start, int limit) {
-                return AbstractPipelineImpl.activityIterator(getQueue(), getRuns(), start, limit);
-            }
-        };
-
     }
 
     @Override

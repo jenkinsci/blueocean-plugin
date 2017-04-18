@@ -15,5 +15,5 @@ public abstract class BlueRunContainer extends Container<BlueRun> {
     @POST
     @WebMethod(name = "")
     @TreeResponse
-    public abstract BlueQueueItem create(StaplerRequest request);
+    public abstract BlueRun create(StaplerRequest request);
 }

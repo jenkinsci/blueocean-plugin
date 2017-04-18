@@ -2,21 +2,11 @@ import React, { Component, PropTypes } from 'react';
 import { Alerts, Dialog } from '@jenkins-cd/design-language';
 import Markdown from 'react-remarkable';
 
-import {
-  ToastUtils,
-  RunButtonBase as RunButton,
-  capable,
-  buildClassicBuildUrl,
-} from '../index';
+import { buildClassicBuildUrl, capable, RunButtonBase as RunButton, ToastUtils } from '../index';
 
 import i18nTranslator from '../i18n/i18n';
 
-import {
-    ParameterService,
-    ParametersRender,
-    ParameterApi as parameterApi,
-    supportedInputTypesMapping,
-} from './index';
+import { ParameterApi as parameterApi, ParameterService, ParametersRender, supportedInputTypesMapping } from './index';
 
 import logging from '../logging';
 const logger = logging.logger('io.jenkins.blueocean.core.ParametersRunButton');
@@ -99,9 +89,9 @@ export class ParametersRunButton extends Component {
     initializeBuild() {
         const parameters = this.parameterService.parametersToSubmitArray();
         parameterApi.startRunWithParameters(this.state.href, parameters)
-            .then((runInfo) => {
+            .then((run) => {
                 ToastUtils
-                  .createRunStartedToast(this.props.runnable, runInfo, this.props.onNavigation);
+                  .createRunStartedToast(this.props.runnable, run, this.props.onNavigation);
             });
         return this.hide();
     }

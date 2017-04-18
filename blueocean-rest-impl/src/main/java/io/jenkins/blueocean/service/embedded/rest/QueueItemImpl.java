@@ -8,6 +8,8 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
+import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueRun.BlueRunState;
 import jenkins.model.Jenkins;
 
 import java.util.Date;
@@ -29,7 +31,7 @@ public class QueueItemImpl extends BlueQueueItem {
             pipeline.getLink());
     }
 
-    public QueueItemImpl(Queue.Item item, String name, int expectedBuildNumber, Link self, Link parent) {
+    QueueItemImpl(Queue.Item item, String name, int expectedBuildNumber, Link self, Link parent) {
         this.item = item;
         this.pipelineName = name;
         this.expectedBuildNumber = expectedBuildNumber;
@@ -79,6 +81,11 @@ public class QueueItemImpl extends BlueQueueItem {
     @Override
     public String getCauseOfBlockage() {
         return item.getCauseOfBlockage().toString();
+    }
+
+    @Override
+    public BlueRun toRun() {
+        return new QueuedBlueRun(BlueRunState.QUEUED, this, parent);
     }
 
     @Override

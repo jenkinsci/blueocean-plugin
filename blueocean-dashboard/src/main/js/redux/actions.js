@@ -28,6 +28,7 @@ function _mapQueueToPsuedoRun(run) {
             enQueueTime: run.queuedTime,
             organization: run.organization,
             changeSet: [],
+            causeOfBlockage: run.causeOfBlockage,
             _item: run,
         };
     }

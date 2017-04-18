@@ -22,7 +22,7 @@ export default {
 
     activities(organization, pipeline, branch) {
         const branchStr = branch ? `?branch=${branch}` : '';
-        return `${this.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${pipeline}/activities/${branchStr}`;
+        return `${this.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${pipeline}/runs/${branchStr}`;
     },
 
     run({ organization, pipeline, branch, runId }) {

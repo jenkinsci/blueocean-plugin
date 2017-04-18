@@ -59,25 +59,17 @@ export class DefaultSSEHandler {
         ];
     }
 
-    updateJob(event, overrideQueuedState) {
+    updateJob(event) {
         // const queueId = event.job_run_queueId;
         // const queueSelf = `${event.blueocean_job_rest_url}queue/${queueId}/`;
         const runSelf = `${event.blueocean_job_rest_url}runs/${event.jenkins_object_id}/`;
-
-        for (const key of this.branchPagerKeys(event)) {
-            const pager = this.pagerService.getPager({ key });
-            this.activityService.fetchActivity(runSelf, { overrideQueuedState }).then(d => {
-                if (pager && !pager.has(runSelf)) {
-                    pager.insert(runSelf);
-                }
-                this.pipelineService.updateLatestRun(d);
-            });
-        }
+        this.updateRun(runSelf);
     }
+
     queueCancel(event) {
         if (event.job_run_status === 'CANCELLED') {
-            const queueId = event.job_run_queueId;
-            const self = `${event.blueocean_job_rest_url}queue/${queueId}/`;
+            const id = event.blueocean_queue_item_expected_build_number;
+            const self = `${event.blueocean_job_rest_url}runs/${id}/`;
             this.activityService.removeItem(self);
         }
     }
@@ -88,40 +80,11 @@ export class DefaultSSEHandler {
             return;
         }
 
-        const queueId = event.job_run_queueId;
-        const self = `${event.blueocean_job_rest_url}queue/${queueId}/`;
-        const id = this.activityService.getExpectedBuildNumber(event);
-
+        const id = event.blueocean_queue_item_expected_build_number;
         const runSelf = `${event.blueocean_job_rest_url}runs/${id}/`;
 
-        const newRun = {
-            id,
-            _links: {
-                self: {
-                    href: runSelf,
-                },
-                parent: {
-                    href: event.blueocean_job_rest_url,
-                },
-            },
-            job_run_queueId: queueId,
-            pipeline: event.blueocean_job_branch_name,
-            result: 'UNKNOWN',
-            state: 'QUEUED',
-            _item: {
-                _links: {
-                    self: {
-                        href: self,
-                    },
-                    parent: {
-                        href: event.blueocean_job_rest_url,
-                    },
-                },
-            },
-        };
+        this.updateRun(runSelf);
 
-        this.activityService.setItem(newRun);
-        
         for (const key of this.branchPagerKeys(event)) {
             const pager = this.pagerService.getPager({ key });
             if (pager) {
@@ -132,7 +95,7 @@ export class DefaultSSEHandler {
 
     queueLeft(event) {
         if (event.job_run_status === 'CANCELLED') {
-            const id = this.activityService.getExpectedBuildNumber(event);
+            const id = event.blueocean_queue_item_expected_build_number;
             const runSelf = `${event.blueocean_job_rest_url}runs/${id}/`;
             this.activityService.removeItem(runSelf);
             for (const key of this.branchPagerKeys(event)) {
@@ -141,6 +104,19 @@ export class DefaultSSEHandler {
                     pager.remove(runSelf);
                 }
             }
+        }
+    }
+
+    updateRun(runUrl) {
+        this.activityService.fetchActivity(runUrl, { useCache: false });
+        for (const key of this.branchPagerKeys(event)) {
+            const pager = this.pagerService.getPager({ key });
+            this.activityService.fetchActivity(runUrl, { useCache: false }).then(d => {
+                if (pager && !pager.has(runUrl)) {
+                    pager.insert(runUrl);
+                }
+                this.pipelineService.updateLatestRun(d);
+            });
         }
     }
 }
