@@ -318,7 +318,7 @@
         <dependency>
             <groupId>com.coravy.hudson.plugins.github</groupId>
             <artifactId>github</artifactId>
-            <version>1.26.2</version>
+            <version>1.27.0</version>
         </dependency>
 
         <!-- Other -->
