@@ -28,6 +28,7 @@ import hudson.model.Item;
 import hudson.model.ItemGroup;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
+import io.jenkins.blueocean.service.embedded.OrganizationResolver;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import org.jenkinsci.plugins.pubsub.EventProps;
 import org.jenkinsci.plugins.pubsub.Events;
@@ -54,14 +55,16 @@ public class BlueMessageEnricher extends MessageEnricher {
     @Override
     public void enrich(@Nonnull Message message) {
 
-        // TODO: Get organization name in generic way once multi-organization support is implemented in API
-        message.set(EventProps.Jenkins.jenkins_org, OrganizationImpl.INSTANCE.getName());
-
         String channelName = message.getChannelName();
         if (channelName.equals(Events.JobChannel.NAME) && message instanceof JobChannelMessage) {
             JobChannelMessage jobChannelMessage = (JobChannelMessage) message;
             Item jobChannelItem = jobChannelMessage.getJobChannelItem();
             Link jobUrl = LinkResolver.resolveLink(jobChannelItem);
+
+            OrganizationImpl org = OrganizationResolver.getInstance().getContainingOrg(jobChannelItem);
+            if (org!=null)
+                message.set(EventProps.Jenkins.jenkins_org, org.getName());
+
 
             jobChannelMessage.set(BlueEventProps.blueocean_job_rest_url, jobUrl.getHref());
             jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, jobChannelItem.getFullName());

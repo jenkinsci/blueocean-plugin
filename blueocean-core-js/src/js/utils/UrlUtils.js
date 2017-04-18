@@ -126,9 +126,9 @@ export const calculateLogUrl = (config) => {
  * @param config { name, runId, branch, _appURLBase, isMultiBranch}
  */
 export function calculateNodeBaseUrl(config) {
-    const { name, runId, branch, _appURLBase, isMultiBranch } = config;
+    const { name, runId, branch, _appURLBase, isMultiBranch, organization } = config;
     const baseUrl =
-        `${_appURLBase}/rest/organizations/jenkins/` +
+        `${_appURLBase}/rest/organizations/${encodeURIComponent(organization)}/` +
         `pipelines/${name}`;
     if (isMultiBranch) {
         return `${baseUrl}/branches/${doubleUriEncode(branch)}/runs/${runId}/nodes/`;
@@ -143,9 +143,9 @@ export function calculateNodeBaseUrl(config) {
  * @param config { name, runId, branch, _appURLBase, isMultiBranch, node}
  */
 export function calculateStepsBaseUrl(config) {
-    const { name, runId, branch, _appURLBase, isMultiBranch, node } = config;
+    const { name, runId, branch, _appURLBase, isMultiBranch, node, organization } = config;
     let baseUrl =
-        `${_appURLBase}/rest/organizations/jenkins/` +
+        `${_appURLBase}/rest/organizations/${encodeURIComponent(organization)}/` +
         `pipelines/${name}`;
     if (isMultiBranch) {
         baseUrl = `${baseUrl}/branches/${doubleUriEncode(branch)}`;
@@ -161,8 +161,8 @@ export function calculateStepsBaseUrl(config) {
  * @param config { name, runId, branch, _appURLBase, isMultiBranch}
  */
 export function calculateRunLogURLObject(config) {
-    const { name, runId, branch, _appURLBase, isMultiBranch } = config;
-    const baseUrl = `${_appURLBase}/rest/organizations/jenkins` +
+    const { name, runId, branch, _appURLBase, isMultiBranch, organization } = config;
+    const baseUrl = `${_appURLBase}/rest/organizations/${encodeURIComponent(organization)}` +
         `/pipelines/${name}`;
     let url;
     let fileName;

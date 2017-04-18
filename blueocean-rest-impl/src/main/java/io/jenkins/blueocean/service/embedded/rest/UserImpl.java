@@ -6,7 +6,7 @@ import hudson.model.Item;
 import hudson.model.User;
 import hudson.tasks.Mailer;
 import hudson.tasks.UserAvatarResolver;
-import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.commons.ServiceException.ForbiddenException;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -83,7 +83,7 @@ public class UserImpl extends BlueUser {
     public BlueFavoriteContainer getFavorites() {
         String name = Jenkins.getAuthentication().getName();
         if(!user.getId().equals(name)) {
-            throw new ServiceException.ForbiddenException("You do not have access to this resource.");
+            throw new ForbiddenException("This user '" + name + "' cannot access resource owned by '" + user.getId() + "'");
         }
         return new FavoriteContainerImpl(this, this);
     }
@@ -159,5 +159,4 @@ public class UserImpl extends BlueUser {
     private boolean isAnonymous(String name){
         return name.equals("anonymous") || user.getId().equals("anonymous");
     }
-
 }

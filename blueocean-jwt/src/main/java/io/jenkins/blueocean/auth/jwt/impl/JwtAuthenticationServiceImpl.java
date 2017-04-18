@@ -1,13 +1,12 @@
 package io.jenkins.blueocean.auth.jwt.impl;
 
-import com.google.common.collect.ImmutableList;
 import hudson.Extension;
 import hudson.Plugin;
 import hudson.model.User;
-import hudson.remoting.Base64;
 import hudson.tasks.Mailer;
-import io.jenkins.blueocean.auth.jwt.JwkService;
 import io.jenkins.blueocean.auth.jwt.JwtAuthenticationService;
+import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStore;
+import io.jenkins.blueocean.auth.jwt.JwtAuthenticationStoreFactory;
 import io.jenkins.blueocean.auth.jwt.JwtToken;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
@@ -16,16 +15,16 @@ import org.acegisecurity.Authentication;
 import org.kohsuke.stapler.QueryParameter;
 
 import javax.annotation.Nullable;
-import java.io.IOException;
-import java.security.interfaces.RSAPublicKey;
 import java.util.Collections;
 import java.util.UUID;
 
 /**
+ * Default implementation of {@link JwtAuthenticationService}
+ *
  * @author Vivek Pandey
  */
 @Extension
-public class JwtImpl extends JwtAuthenticationService {
+public class JwtAuthenticationServiceImpl extends JwtAuthenticationService {
 
     private static int DEFAULT_EXPIRY_IN_SEC = 1800;
     private static int DEFAULT_MAX_EXPIRY_TIME_IN_MIN = 480;
@@ -33,18 +32,9 @@ public class JwtImpl extends JwtAuthenticationService {
 
     @Override
     public JwtToken getToken(@Nullable @QueryParameter("expiryTimeInMins") Integer expiryTimeInMins, @Nullable @QueryParameter("maxExpiryTimeInMins") Integer maxExpiryTimeInMins) {
-        String t = System.getProperty("EXPIRY_TIME_IN_MINS");
-        long expiryTime=DEFAULT_EXPIRY_IN_SEC;
-        if(t!= null){
-            expiryTime = Integer.parseInt(t);
-        }
+        long expiryTime= Long.getLong("EXPIRY_TIME_IN_MINS",DEFAULT_EXPIRY_IN_SEC);
 
-        int maxExpiryTime = DEFAULT_MAX_EXPIRY_TIME_IN_MIN;
-
-        t = System.getProperty("MAX_EXPIRY_TIME_IN_MINS");
-        if(t!= null){
-            maxExpiryTime = Integer.parseInt(t);
-        }
+        int maxExpiryTime = Integer.getInteger("MAX_EXPIRY_TIME_IN_MINS",DEFAULT_MAX_EXPIRY_TIME_IN_MIN);
 
         if(maxExpiryTimeInMins != null){
             maxExpiryTime = maxExpiryTimeInMins;
@@ -57,11 +47,8 @@ public class JwtImpl extends JwtAuthenticationService {
             expiryTime = expiryTimeInMins * 60;
         }
 
-        Authentication authentication = Jenkins.getInstance().getAuthentication();
+        Authentication authentication = Jenkins.getAuthentication();
 
-        if(authentication == null){
-            throw new ServiceException.UnauthorizedException("Unauthorized: No login session found");
-        }
         String userId = authentication.getName();
 
         User user = User.get(userId, false, Collections.emptyMap());
@@ -89,22 +76,20 @@ public class JwtImpl extends JwtAuthenticationService {
 
         //set claim
         JSONObject context = new JSONObject();
+
         JSONObject userObject = new JSONObject();
         userObject.put("id", userId);
         userObject.put("fullName", fullName);
         userObject.put("email", email);
+
+        JwtAuthenticationStore authenticationStore = getJwtStore(authentication);
+
+        authenticationStore.store(authentication, context);
+
         context.put("user", userObject);
         jwtToken.claim.put("context", context);
 
         return jwtToken;
-    }
-
-    public JwkFactory getJwks(String name) {
-        if(name == null){
-            throw new ServiceException.BadRequestExpception("keyId is required");
-        }
-
-        return new JwkFactory(name);
     }
 
     @Override
@@ -117,35 +102,21 @@ public class JwtImpl extends JwtAuthenticationService {
         return "BlueOcean Jwt endpoint";
     }
 
-    public class JwkFactory extends JwkService {
-        private final String keyId;
-
-        public JwkFactory(String keyId) {
-            this.keyId = keyId;
-        }
-
-        @Override
-        public JSONObject getJwk() {
-            JwtToken.JwtRsaDigitalSignatureKey key = new JwtToken.JwtRsaDigitalSignatureKey(keyId);
-            try {
-                if(!key.exists()){
-                    throw new ServiceException.NotFoundException(String.format("kid %s not found", keyId));
-                }
-            } catch (IOException e) {
-                throw new ServiceException.UnexpectedErrorException("Unexpected error: "+e.getMessage(), e);
+    public static JwtAuthenticationStore getJwtStore(Authentication authentication){
+        JwtAuthenticationStore jwtAuthenticationStore=null;
+        for(JwtAuthenticationStoreFactory factory: JwtAuthenticationStoreFactory.all()){
+            if(factory instanceof SimpleJwtAuthenticationStore){
+                jwtAuthenticationStore = factory.getJwtAuthenticationStore(authentication);
+                continue;
             }
-            RSAPublicKey publicKey = key.getPublicKey();
-            JSONObject jwk = new JSONObject();
-            jwk.put("kty", "RSA");
-            jwk.put("alg","RS256");
-            jwk.put("kid",keyId);
-            jwk.put("use", "sig");
-            jwk.put("key_ops", ImmutableList.of("verify"));
-            jwk.put("n", Base64.encode(publicKey.getModulus().toByteArray()));
-            jwk.put("e", Base64.encode(publicKey.getPublicExponent().toByteArray()));
-            return jwk;
+            JwtAuthenticationStore authenticationStore = factory.getJwtAuthenticationStore(authentication);
+            if(authenticationStore != null){
+                return authenticationStore;
+            }
         }
-    }
 
+        //none found, lets use SimpleJwtAuthenticationStore
+        return jwtAuthenticationStore;
+    }
 }
 

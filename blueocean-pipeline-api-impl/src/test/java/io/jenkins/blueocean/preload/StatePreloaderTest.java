@@ -26,7 +26,7 @@ package io.jenkins.blueocean.preload;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import io.jenkins.blueocean.BlueOceanWebURLBuilder;
-import io.jenkins.blueocean.service.embedded.BaseTest;
+import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.junit.Assert;
@@ -39,7 +39,7 @@ import java.util.concurrent.ExecutionException;
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public class StatePreloaderTest extends BaseTest {
+public class StatePreloaderTest extends PipelineBaseTest {
 
     @Test
     public void test() throws IOException, ExecutionException, InterruptedException, SAXException {

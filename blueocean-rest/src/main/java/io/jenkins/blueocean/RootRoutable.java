@@ -3,7 +3,7 @@ package io.jenkins.blueocean;
 import hudson.ExtensionPoint;
 
 /**
- * Additional {@link Routable}s that augment {@link BlueOceanUI} root object.
+ * Additional {@link Routable}s that augment {@link BlueOceanUIProvider#getUrlBasePrefix()} root object.
  *
  * @author Kohsuke Kawaguchi
  */
