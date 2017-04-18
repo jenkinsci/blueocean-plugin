@@ -1,4 +1,3 @@
-/* eslint-disable */ //TODO: RM
 import React, { Component, PropTypes } from 'react';
 import { TimeManager } from '../utils/TimeManager';
 import logging from '../logging';
@@ -6,12 +5,12 @@ import i18nTranslator from '../i18n/i18n';
 
 function jobStillActive(status) {
     switch (String(status).toUpperCase()) {
-        case 'RUNNING':
-        case 'PAUSED':
-        case 'QUEUED':
-            return true;
-        default:
-            return false;
+    case 'RUNNING':
+    case 'PAUSED':
+    case 'QUEUED':
+        return true;
+    default:
+        return false;
     }
 }
 
@@ -27,9 +26,7 @@ export class TimeHarmonizerUtil {
         return ctx && ctx.config ? ctx.config.getServerBrowserTimeSkewMillis() : 0;
     };
 
-    getDuration = (result) => {
-        return this.getTimes(this.owner.props).durationInMillis;
-    };
+    getDuration = () => this.getTimes(this.owner.props).durationInMillis;
 
     getTimes = ({ result, startTime, durationInMillis, endTime }) => {
         if (!startTime) {
@@ -67,7 +64,6 @@ TimeHarmonizerUtil.logger = logging.logger('io.jenkins.blueocean.core.TimeHarmon
  * @constructor
  */
 export const TimeHarmonizer = ComposedComponent => {
-
     class NewComponent extends Component {
 
         componentWillMount() {
@@ -90,7 +86,7 @@ export const TimeHarmonizer = ComposedComponent => {
             }
 
             // create a composedComponent and inject the functions we want to expose
-            return (<ComposedComponent {...childProps}/>);
+            return (<ComposedComponent {...childProps} />);
         }
     }
 
@@ -111,5 +107,3 @@ export const TimeHarmonizer = ComposedComponent => {
 
     return NewComponent;
 };
-
-
