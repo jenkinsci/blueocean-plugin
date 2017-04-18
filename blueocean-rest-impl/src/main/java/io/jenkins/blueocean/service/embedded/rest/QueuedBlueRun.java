@@ -10,11 +10,14 @@ import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
+import org.kohsuke.stapler.export.Exported;
 
 import java.util.Collection;
 import java.util.Date;
 
 public class QueuedBlueRun extends BlueRun {
+
+    public static final String QUEUE_ID = "queueId";
 
     private final BlueRunState runState;
     private final BlueRunResult runResult;
@@ -36,6 +39,11 @@ public class QueuedBlueRun extends BlueRun {
     @Override
     public String getId() {
         return Integer.toString(item.getExpectedBuildNumber());
+    }
+
+    @Exported(name = QUEUE_ID)
+    public String getQueueId() {
+        return item.getId();
     }
 
     @Override
