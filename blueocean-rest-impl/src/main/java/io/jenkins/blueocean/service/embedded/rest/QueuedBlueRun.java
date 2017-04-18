@@ -73,7 +73,7 @@ public class QueuedBlueRun extends BlueRun {
 
     @Override
     public BlueRunState getStateObj() {
-        return BlueRunState.QUEUED;
+        return runState;
     }
 
     @Override
