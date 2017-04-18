@@ -10,10 +10,9 @@ import {
     calculateRunLogURLObject,
     calculateStepsBaseUrl,
     logging,
-    sseConnection
+    sseConnection,
 } from '@jenkins-cd/blueocean-core-js';
 import { Alerts } from '@jenkins-cd/design-language';
-import { Icon } from '@jenkins-cd/react-material-icons';
 
 import LogConsoleView from './LogConsoleView';
 import LogToolbar from './LogToolbar';
@@ -25,7 +24,7 @@ import {
     logs as logSelector,
     node as nodeSelector,
     nodes as nodesSelector,
-    steps as stepsSelector
+    steps as stepsSelector,
 } from '../redux';
 
 import { calculateNode } from '../util/KaraokeHelper';
