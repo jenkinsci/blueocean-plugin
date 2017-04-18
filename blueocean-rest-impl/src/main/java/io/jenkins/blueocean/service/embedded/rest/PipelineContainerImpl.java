@@ -8,10 +8,11 @@ import hudson.model.TopLevelItem;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
-import io.jenkins.blueocean.service.embedded.OrganizationResolver;
 import jenkins.model.Jenkins;
 import org.acegisecurity.AccessDeniedException;
 

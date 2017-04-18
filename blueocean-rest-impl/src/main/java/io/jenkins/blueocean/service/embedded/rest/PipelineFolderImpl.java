@@ -8,6 +8,8 @@ import hudson.model.Item;
 import hudson.model.ItemGroup;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
@@ -19,7 +21,6 @@ import io.jenkins.blueocean.rest.model.BluePipelineFolder;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
-import io.jenkins.blueocean.service.embedded.OrganizationResolver;
 import org.kohsuke.stapler.json.JsonBody;
 
 import javax.annotation.Nullable;
@@ -140,7 +141,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     }
 
     @Extension(ordinal = -10)
-    public static class PipelineFactoryImpl extends BluePipelineFactory{
+    public static class PipelineFactoryImpl extends BluePipelineFactory {
 
         @Override
         public PipelineFolderImpl getPipeline(Item item, Reachable parent) {

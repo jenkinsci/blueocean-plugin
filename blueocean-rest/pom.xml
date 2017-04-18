@@ -45,6 +45,7 @@
                         </goals>
                         <configuration>
                             <rules>
+                                <!-- All packages can use Extension points -->
                                 <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
                                     <basePackage>**</basePackage>
                                     <bannedImports>
@@ -58,6 +59,26 @@
                                         <allowedImport>hudson.ExtensionListListener</allowedImport>
                                         <allowedImport>hudson.security.csrf.CrumbExclusion</allowedImport>
                                         <allowedImport>hudson.util.AdaptedIterator</allowedImport>
+                                    </allowedImports>
+                                    <excludedClasses>
+                                        <excludedClass>io.jenkins.blueocean.rest.factory.*</excludedClass>
+                                    </excludedClasses>
+                                </restrictImports>
+                                <!-- Factory package is allowed to import Jenkins models -->
+                                <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+                                    <basePackage>io.jenkins.blueocean.rest.factory</basePackage>
+                                    <bannedImports>
+                                        <bannedImport>jenkins.**</bannedImport>
+                                        <bannedImport>hudson.**</bannedImport>
+                                    </bannedImports>
+                                    <allowedImports>
+                                        <allowedImport>hudson.Extension</allowedImport>
+                                        <allowedImport>hudson.ExtensionPoint</allowedImport>
+                                        <allowedImport>hudson.ExtensionList</allowedImport>
+                                        <allowedImport>hudson.model.Item</allowedImport>
+                                        <allowedImport>hudson.model.ItemGroup</allowedImport>
+                                        <allowedImport>hudson.model.TopLevelItem</allowedImport>
+                                        <allowedImport>jenkins.model.Jenkins</allowedImport>
                                     </allowedImports>
                                 </restrictImports>
                             </rules>
