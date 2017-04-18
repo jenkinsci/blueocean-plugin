@@ -17,11 +17,13 @@ import java.util.Date;
 public class QueuedBlueRun extends BlueRun {
 
     private final BlueRunState runState;
+    private final BlueRunResult runResult;
     private final QueueItemImpl item;
     private final Link parent;
 
-    public QueuedBlueRun(BlueRunState runState, QueueItemImpl item, Link parent) {
+    public QueuedBlueRun(BlueRunState runState, BlueRunResult runResult, QueueItemImpl item, Link parent) {
         this.runState = runState;
+        this.runResult = runResult;
         this.item = item;
         this.parent = parent;
     }
@@ -78,7 +80,7 @@ public class QueuedBlueRun extends BlueRun {
 
     @Override
     public BlueRunResult getResult() {
-        return BlueRunResult.UNKNOWN;
+        return runResult;
     }
 
     @Override
@@ -94,7 +96,7 @@ public class QueuedBlueRun extends BlueRun {
     @Override
     public BlueRun stop(Boolean blocking, Integer timeOutInSecs) {
         item.delete();
-        return new QueuedBlueRun(BlueRunState.FINISHED, item, parent);
+        return new QueuedBlueRun(BlueRunState.FINISHED, BlueRunResult.ABORTED, item, parent);
     }
 
     @Override
