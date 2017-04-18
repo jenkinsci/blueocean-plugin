@@ -31,7 +31,7 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
     };
     const { durationInMillis, startTime } = jenkinsNode;
     // we need to make sure that we calculate with the correct time offset
-    const { durationInMillis } = timeManager.harmonizeTimes({
+    const harmonized = timeManager.harmonizeTimes({
         isRunning: isRunning(),
         durationInMillis,
         startTime,
@@ -66,7 +66,7 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
         state = 'not_built';
         completePercent = 0;
     }
-    const i18nDuration = timeManager.format(durationInMillis, translate('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' }));
+    const i18nDuration = timeManager.format(harmonized.durationInMillis, translate('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' }));
 
     const title = translate(`common.state.${state}`, { 0: i18nDuration });
 

@@ -23,12 +23,12 @@ export default class Node extends Component {
           state,
           startTime,
         } = node;
-        const { durationInMillis } = this.durationHarmonize({
+        const harmonized = this.durationHarmonize({
             durationInMillis,
             startTime,
             isRunning: state === 'RUNNING' || state === 'PAUSED',
         });
-        this.durationInMillis = durationInMillis;
+        this.durationInMillis = harmonized.durationInMillis;
 
         if (node && node.isFocused) {
             const fetchAll = node.fetchAll;
@@ -149,15 +149,15 @@ export default class Node extends Component {
             || (resultRun === 'RUNNING' && followAlong)
         ;
         const isRunning = () => resultRun === 'RUNNING' || resultRun === 'PAUSED';
-        const { durationInMillis } = this.durationHarmonize({
+        const harmonized = this.durationHarmonize({
             durationInMillis,
             endTime,
             startTime,
             isRunning: isRunning(),
         });
         logger.debug('time:', {
-            responseDuration: durationInMillis,
-            durationInMillis,
+            responseDuration: harmonized.durationInMillis,
+            durationInMillis: harmonized.durationInMillis,
             endTime,
             startTime,
             isRunning: isRunning(),
@@ -191,7 +191,7 @@ export default class Node extends Component {
             children = <span>&nbsp;</span>;
         }
         const time = (<TimeDuration
-          millis={isRunning() ? this.durationInMillis : durationInMillis }
+          millis={isRunning() ? this.durationInMillis : harmonized.durationInMillis }
           liveUpdate={isRunning()}
           updatePeriod={1000}
           locale={locale}
