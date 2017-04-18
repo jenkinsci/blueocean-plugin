@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.rest;
 
 import hudson.ExtensionPoint;
-import hudson.model.Action;
 import io.jenkins.blueocean.Routable;
 
 /**
@@ -12,7 +11,7 @@ import io.jenkins.blueocean.Routable;
  */
 public interface ApiRoutable extends Routable, ExtensionPoint {
     /**
-     * See {@link Action#getUrlName()} for contract.
+     * See Action.getUrlName() for contract.
      */
     String getUrlName();
 }

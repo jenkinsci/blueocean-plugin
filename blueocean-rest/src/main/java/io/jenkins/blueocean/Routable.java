@@ -1,7 +1,5 @@
 package io.jenkins.blueocean;
 
-import hudson.model.Action;
-
 /**
  * Stapler-bound object in the URL space that defines its own url name relative to its parent.
  *
@@ -12,7 +10,7 @@ import hudson.model.Action;
  */
 public interface Routable {
     /**
-     * Follows the same convention as {@link Action#getUrlName()}
+     * Follows the same convention as Action.getUrlName()
      */
     String getUrlName();
 }
