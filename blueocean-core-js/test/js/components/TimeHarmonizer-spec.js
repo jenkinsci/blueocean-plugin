@@ -21,7 +21,12 @@ class UselessComponent extends Component {
             result,
         } = this.props;
 
-        const processedTimes = getTimes();
+        const processedTimes = getTimes({
+            startTime,
+            endTime,
+            durationInMillis,
+            result
+        });
 
         return (
             <div className="UselessComponent">

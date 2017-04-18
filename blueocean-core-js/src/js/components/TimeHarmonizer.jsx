@@ -31,10 +31,7 @@ export class TimeHarmonizerUtil {
         return this.getTimes(this.owner.props).durationMillis;
     };
 
-    // TODO: Replace all these "props" with a destructure for clarity
-    getTimes = (props) => {
-        props = props || this.owner.props;
-        const { result, startTime, durationInMillis, endTime } = props;
+    getTimes = ({ result, startTime, durationInMillis, endTime }) => {
         if (!startTime) {
             return {};
         }
