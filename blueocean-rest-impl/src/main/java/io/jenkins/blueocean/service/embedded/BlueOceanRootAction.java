@@ -10,6 +10,7 @@ import io.jenkins.blueocean.BlueOceanUIProvider;
 import io.jenkins.blueocean.auth.jwt.impl.JwtAuthenticationFilter;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.Stapler;

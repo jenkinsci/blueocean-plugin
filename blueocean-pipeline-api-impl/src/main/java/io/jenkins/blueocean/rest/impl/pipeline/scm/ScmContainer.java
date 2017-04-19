@@ -2,10 +2,10 @@ package io.jenkins.blueocean.rest.impl.pipeline.scm;
 
 import hudson.Extension;
 import io.jenkins.blueocean.rest.OrganizationRoute;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.Container;
-import io.jenkins.blueocean.service.embedded.OrganizationResolver;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.export.ExportedBean;
 

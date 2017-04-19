@@ -2,8 +2,8 @@ package io.jenkins.blueocean.preload;
 
 import hudson.Extension;
 import io.jenkins.blueocean.commons.PageStatePreloader;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
-import io.jenkins.blueocean.service.embedded.OrganizationResolver;
 import jenkins.model.Jenkins;
 import net.sf.json.util.JSONBuilder;
 

@@ -4,10 +4,10 @@ import hudson.Extension;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.OmniSearch;
 import io.jenkins.blueocean.rest.Query;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
-import io.jenkins.blueocean.service.embedded.OrganizationResolver;
 
 import java.util.ArrayList;
 import java.util.List;
