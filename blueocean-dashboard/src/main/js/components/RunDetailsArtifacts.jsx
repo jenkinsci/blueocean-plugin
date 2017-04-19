@@ -3,7 +3,7 @@ import { FileSize, Table } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/react-material-icons';
 import { observer } from 'mobx-react';
 import mobxUtils from 'mobx-utils';
-import { UrlConfig, logging } from '@jenkins-cd/blueocean-core-js';
+import { logging, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.artifacts');
 const { func, object, string } = PropTypes;
@@ -65,10 +65,11 @@ export default class RunDetailsArtifacts extends Component {
     }
 
     _fetchArtifacts(props) {
-        const { result } = props;
-        if (result && result.state === 'FINISHED') {
-            this.artifacts = this.context.activityService.fetchArtifacts(result._links.self.href);
+        const result = props.result;
+        if (!result) {
+            return;
         }
+        this.artifacts = this.context.activityService.fetchArtifacts(result._links.self.href);
     }
 
     render() {

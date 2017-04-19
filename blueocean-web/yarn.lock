@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@jenkins-cd/blueocean-core-js@0.0.94":
-  version "0.0.94"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.94.tgz#48a6ec9b40529453a61b605f2aa3f9b9f85dd7d7"
+"@jenkins-cd/blueocean-core-js@0.0.96":
+  version "0.0.96"
+  resolved "https://repo.jenkins-ci.org/api/npm/npm/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.96.tgz#503b1f79d6bd914c8173d5dc10c3d5916991e4aa"
   dependencies:
     "@jenkins-cd/design-language" "0.0.127"
     "@jenkins-cd/js-extensions" "0.0.33"
@@ -3442,13 +3442,9 @@ moment@2.15.1, moment@2.x.x:
   version "2.15.1"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/moment/-/moment-2.15.1.tgz#e979c2a29e22888e60f396f2220a6118f85cd94c"
 
-ms@0.7.2:
+ms@0.7.2, ms@^0.7.1:
   version "0.7.2"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/ms/-/ms-0.7.2.tgz#ae25cf2512b3885a1d95d7f037868d8431124765"
-
-ms@^0.7.1:
-  version "0.7.3"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/ms/-/ms-0.7.3.tgz#708155a5e44e33f5fd0fc53e81d0d40a91be1fff"
 
 ms@~0.6.0:
   version "0.6.2"

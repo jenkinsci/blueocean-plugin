@@ -4,6 +4,7 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.Item;
+import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
@@ -11,6 +12,9 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
+import io.jenkins.blueocean.rest.factory.BlueFavoriteResolver;
+import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
@@ -18,6 +22,7 @@ import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
 import io.jenkins.blueocean.rest.model.BlueIcon;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
@@ -29,13 +34,9 @@ import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
-import io.jenkins.blueocean.service.embedded.rest.BlueFavoriteResolver;
-import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
-import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
-
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -62,14 +63,17 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     private static final int MAX_MBP_RUNS_ROWS = Integer.getInteger("MAX_MBP_RUNS_ROWS", 250);
 
     private final Link self;
+    private final BlueOrganization org;
+
     public MultiBranchPipelineImpl(MultiBranchProject mbp) {
         this.mbp = mbp;
-        this.self = OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(PipelineImpl.getRecursivePathFromFullName(this));
+        this.org = OrganizationResolver.getInstance().getContainingOrg((ItemGroup)mbp);
+        this.self = org.getLink().rel("pipelines").rel(PipelineImpl.getRecursivePathFromFullName(this));
     }
 
     @Override
     public String getOrganization() {
-        return OrganizationImpl.INSTANCE.getName();
+        return org.getName();
     }
 
 
@@ -258,14 +262,14 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                 List<BlueRun> c = new ArrayList<>();
 
                 List<BluePipeline> branches;
-                
+
                 // Check for branch filter
                 StaplerRequest req = Stapler.getCurrentRequest();
                 String branchFilter = null;
                 if (req != null) {
                     branchFilter = req.getParameter("branch");
                 }
-                
+
                 if (!StringUtils.isEmpty(branchFilter)) {
                     BluePipeline pipeline = getBranches().get(branchFilter);
                     if (pipeline != null) {

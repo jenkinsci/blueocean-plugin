@@ -6,6 +6,7 @@ import hudson.model.Run;
 import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
+import io.jenkins.blueocean.rest.factory.BlueRunFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -55,7 +56,7 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
     }
 
     @Extension
-    public static class FactoryImpl extends BlueRunFactory{
+    public static class FactoryImpl extends BlueRunFactory {
         @Override
         public BlueRun getRun(Run run, Reachable parent) {
             if (run instanceof FreeStyleBuild) {

@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@jenkins-cd/blueocean-core-js@0.0.94":
-  version "0.0.94"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.94.tgz#48a6ec9b40529453a61b605f2aa3f9b9f85dd7d7"
+"@jenkins-cd/blueocean-core-js@0.0.96":
+  version "0.0.96"
+  resolved "https://repo.jenkins-ci.org/api/npm/npm/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.96.tgz#503b1f79d6bd914c8173d5dc10c3d5916991e4aa"
   dependencies:
     "@jenkins-cd/design-language" "0.0.127"
     "@jenkins-cd/js-extensions" "0.0.33"
@@ -4774,17 +4774,13 @@ ms@0.7.1:
   version "0.7.1"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/ms/-/ms-0.7.1.tgz#9cd13c03adbff25b65effde7ce864ee952017098"
 
-ms@0.7.2:
+ms@0.7.2, ms@^0.7.1:
   version "0.7.2"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/ms/-/ms-0.7.2.tgz#ae25cf2512b3885a1d95d7f037868d8431124765"
 
 ms@1.0.0:
   version "1.0.0"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/ms/-/ms-1.0.0.tgz#59adcd22edc543f7b5381862d31387b1f4bc9473"
-
-ms@^0.7.1:
-  version "0.7.3"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/ms/-/ms-0.7.3.tgz#708155a5e44e33f5fd0fc53e81d0d40a91be1fff"
 
 ms@~0.6.0:
   version "0.6.2"
@@ -7066,11 +7062,7 @@ webpack@^1.13.1:
     watchpack "^0.2.1"
     webpack-core "~0.6.9"
 
-whatwg-fetch@>=0.10.0:
-  version "2.0.3"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/whatwg-fetch/-/whatwg-fetch-2.0.3.tgz#9c84ec2dcf68187ff00bc64e1274b442176e1c84"
-
-whatwg-fetch@^1.0.0:
+whatwg-fetch@>=0.10.0, whatwg-fetch@^1.0.0:
   version "1.1.1"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/whatwg-fetch/-/whatwg-fetch-1.1.1.tgz#ac3c9d39f320c6dce5339969d054ef43dd333319"
 

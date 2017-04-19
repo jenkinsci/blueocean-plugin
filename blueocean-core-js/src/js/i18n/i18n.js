@@ -1,10 +1,11 @@
 import i18next from 'i18next';
 import LngDetector from 'i18next-browser-languagedetector';
-import XHR from 'i18next-xhr-backend';
 import { store } from '@jenkins-cd/js-extensions';
+import XHR from 'i18next-xhr-backend';
 
 import urlConfig from '../urlconfig';
 import logging from '../logging';
+import { Fetch } from '../fetch';
 
 const logger = logging.logger('io.jenkins.blueocean.i18n');
 
@@ -36,6 +37,28 @@ function newPluginXHR(pluginName, onLoad) {
     return new XHR(null, {
         loadPath,
         allowMultiLoading: false,
+        ajax: (url, options, callback) => {
+            if (logger.isDebugEnabled()) {
+                logger.debug('loading data for', url);
+            }
+            let status;
+            return Fetch.fetch(url)
+                .then(response => {
+                    // i18n xhr-backend needs the status
+                    status = response.status;
+                    // now return the raw data
+                    return response.text();
+                })
+                .then((data) => {
+                    if (callback) {
+                        const xhr = { status };
+                        if (logger.isDebugEnabled()) {
+                            logger.debug('calling now callback with xhr and data', xhr, data);
+                        }
+                        callback(data, xhr);
+                    }
+                });
+        },
         parse: (data) => {
             // we need to parse the response and then extract the data since the rest is garbage for us
             const response = JSON.parse(data);

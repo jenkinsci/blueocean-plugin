@@ -5,11 +5,14 @@ import hudson.model.Result;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.BlueRunFactory;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
@@ -28,11 +31,13 @@ import java.util.Date;
  */
 public class AbstractRunImpl<T extends Run> extends BlueRun {
     protected final T run;
+    protected final BlueOrganization org;
 
     private final Link parent;
     public AbstractRunImpl(T run, Link parent) {
         this.run = run;
         this.parent = parent;
+        this.org = OrganizationResolver.getInstance().getContainingOrg(run);
     }
 
     //TODO: It serializes jenkins Run model children, enable this code after fixing it
@@ -53,7 +58,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public String getOrganization() {
-        return OrganizationImpl.INSTANCE.getName();
+        return org.getName();
     }
 
     @Override
@@ -222,7 +227,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public Link getLink() {
         if(parent == null){
-            return OrganizationImpl.INSTANCE.getLink().rel(String.format("pipelines/%s/runs/%s", run.getParent().getName(), getId()));
+            return org.getLink().rel(String.format("pipelines/%s/runs/%s", run.getParent().getName(), getId()));
         }
         return parent.rel("runs/"+getId());
     }
