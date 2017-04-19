@@ -37,7 +37,6 @@ function checkProject(pathToProject) {
     const resolvedPath = buildPath(`${__dirname}/${pathToProject}`);
     console.log(`validating dependencies in ${resolvedPath}`);
     const packageJsonPath = buildPath(`${resolvedPath}/package.json`);
-    const shrinkwrapJsonPath = buildPath(`${resolvedPath}/npm-shrinkwrap.json`);
 
     const packages = require(packageJsonPath);
     const packageDeps = packages.dependencies;
@@ -47,10 +46,6 @@ function checkProject(pathToProject) {
     checkImpreciseDependencies(packageDevDeps);
     checkDuplicateDependencies(packageDeps, packageDevDeps);
 
-    const allDeps = Object.assign({}, packageDeps, packageDevDeps);
-    const shrinkwrap = require(shrinkwrapJsonPath);
-    validateDepsAgainstShrinkwrap(allDeps, shrinkwrap);
-    validateShrinkwrapResolve(shrinkwrap);
     console.log('success!');
 }
 
@@ -64,7 +59,7 @@ function buildPath(path) {
 }
 
 function checkImpreciseDependencies(dependencies) {
-    const badDeps = [];    
+    const badDeps = [];
     Object.keys(dependencies).forEach(name => {
         const version = dependencies[name];
 
@@ -87,37 +82,6 @@ function checkDuplicateDependencies(depList1, depList2) {
 
     if (duplicates.length) {
         duplicates.forEach(name => console.error(`${name} is already defined in 'dependencies'; remove from 'devDependencies'`));
-        process.exit(1);
-    }
-}
-
-function validateShrinkwrapResolve(shrinkwrap) {
-  
-  Object.keys(shrinkwrap.dependencies).forEach(name => {
-    if (shrinkwrap.dependencies[name].from.startsWith("..") || shrinkwrap.dependencies[name].resolved.startsWith("file:")) {
-        console.error(`Bad shrinkwrap resolution: 'from' or 'resolved' refer to a project relative path not absolute URI from:${shrinkwrap.dependencies[name].from} resolved:${shrinkwrap.dependencies[name].resolved} in ${name}`);
-        process.exit(1);
-    }
-  });
-}
-
-function validateDepsAgainstShrinkwrap(allDeps, shrinkwrap) {
-    const badDeps = [];
-    const shrinkDeps = shrinkwrap.dependencies;
-
-    Object.keys(allDeps).forEach(name => {
-        const version = allDeps[name];
-
-        if (!shrinkDeps[name]) {
-            badDeps.push(`${name}@${version} missing in shrinkwrap`);
-        } else if (shrinkDeps[name].version !== version) {
-            badDeps.push(`${name} should be ${version} but found ${shrinkDeps[name].version}`);
-        }
-    });
-
-    if (badDeps.length) {
-        badDeps.forEach(message => console.error(message));
-        console.log('You can use bin/cleanInstall to install the dominant dependency in various places.');
         process.exit(1);
     }
 }
