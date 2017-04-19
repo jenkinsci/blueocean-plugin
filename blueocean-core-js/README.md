@@ -27,7 +27,7 @@ To test changes in blueocean-core-js, perform the following steps:
 Once the changes to blueocean-core-js are approved via PR, perform the following steps:
 - Ensure your branch is 100% up to date with master. **This is critical**, otherwise recent changes may be lost and break the app.
    - If changes to core-js were made in the interim, ideally you should merge and publish a new pre-release version to ensure builds still pass.
-- Tick version numbers in package.json and npm-shrink.json to a production version, e.g. "0.0.90"
+- Tick version numbers in package.json and npm-shrinkwrap.json to a production version, e.g. "0.0.90"
 - `npm run bundle`
 - `npm publish`
 - Commit the changes to package.json and npm-shrinkwrap.json
