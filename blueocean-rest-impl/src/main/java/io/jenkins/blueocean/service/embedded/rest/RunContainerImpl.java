@@ -70,7 +70,7 @@ public class RunContainerImpl extends BlueRunContainer {
                 throw new NotFoundException(String.format("Run %s not found in organization %s and pipeline %s",
                     name, pipeline.getOrganization(), job.getName()));
             }
-            for (BlueQueueItem item : QueueContainerImpl.getQueuedItems(job)) {
+            for (BlueQueueItem item : QueueUtil.getQueuedItems(job)) {
                 if (item.getExpectedBuildNumber() == number) {
                     return item.toRun();
                 }
@@ -98,7 +98,7 @@ public class RunContainerImpl extends BlueRunContainer {
     }
 
     private Iterator<BlueRun> getRuns(Iterable<BlueRun> runs) {
-        return Iterables.concat(Iterables.transform(QueueContainerImpl.getQueuedItems(job), new Function<BlueQueueItem, BlueRun>() {
+        return Iterables.concat(Iterables.transform(QueueUtil.getQueuedItems(job), new Function<BlueQueueItem, BlueRun>() {
             @Override
             public BlueRun apply(BlueQueueItem input) {
                 return input.toRun();

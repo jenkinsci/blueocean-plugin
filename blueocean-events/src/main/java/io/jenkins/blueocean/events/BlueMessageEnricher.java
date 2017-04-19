@@ -33,7 +33,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
-import io.jenkins.blueocean.service.embedded.rest.QueueContainerImpl;
+import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import org.jenkinsci.plugins.pubsub.EventProps;
 import org.jenkinsci.plugins.pubsub.Events;
 import org.jenkinsci.plugins.pubsub.JobChannelMessage;
@@ -89,12 +89,12 @@ public class BlueMessageEnricher extends MessageEnricher {
                 final long queueId = Long.parseLong(message.get("job_run_queueId"));
                 Queue.Item queueItem = jenkins.model.Jenkins.getInstance().getQueue().getItem(queueId);
                 hudson.model.Job job = (hudson.model.Job) jobChannelItem;
-                BlueQueueItem blueQueueItem = QueueContainerImpl.getQueuedItem(queueItem, job);
+                BlueQueueItem blueQueueItem = QueueUtil.getQueuedItem(queueItem, job);
                 if (blueQueueItem != null) {
                     LOGGER.info("Expected: " + blueQueueItem.getExpectedBuildNumber());
                     jobChannelMessage.set(BlueEventProps.blueocean_queue_item_expected_build_number, Integer.toString(blueQueueItem.getExpectedBuildNumber()));
                 } else {
-                    Run run = QueueContainerImpl.getRun(job, queueId);
+                    Run run = QueueUtil.getRun(job, queueId);
                     if (run == null) {
                         return;
                     }
