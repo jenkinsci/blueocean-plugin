@@ -151,7 +151,7 @@ export class Activity extends Component {
             <ColumnFilter placeholder={branchText}
                           value={branch}
                           onChange={this.navigateToBranch}
-                          options={pipeline.branchNames.map(b => decodeURIComponent(b))}
+                          options={pipeline.branchNames.map(b => decodeURIComponent(b)).sort}
             />
         );
 

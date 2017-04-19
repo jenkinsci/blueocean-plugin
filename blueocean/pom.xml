@@ -30,6 +30,10 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-events</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-personalization</artifactId>
         </dependency>
         <dependency>

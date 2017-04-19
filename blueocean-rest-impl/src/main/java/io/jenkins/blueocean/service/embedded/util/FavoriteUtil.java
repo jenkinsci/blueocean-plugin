@@ -6,13 +6,13 @@ import hudson.plugins.favorite.Favorites;
 import hudson.plugins.favorite.Favorites.FavoriteException;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.BlueFavoriteResolver;
+import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
 import io.jenkins.blueocean.rest.model.BluePipeline;
-import io.jenkins.blueocean.service.embedded.rest.BlueFavoriteResolver;
-import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
 
 import javax.annotation.Nonnull;

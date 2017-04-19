@@ -4,6 +4,7 @@ import hudson.Extension;
 import hudson.security.AuthorizationStrategy;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import hudson.security.SecurityRealm;
+import io.jenkins.blueocean.auth.jwt.JwtTokenServiceEndpoint;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import io.jenkins.blueocean.commons.PageStatePreloader;
 import jenkins.model.Jenkins;
@@ -43,6 +44,11 @@ public class BlueOceanConfigStatePreloader extends PageStatePreloader {
             allowAnonymousRead = ((FullControlOnceLoggedInAuthorizationStrategy) authorizationStrategy).isAllowAnonymousRead();
         }
 
+        String jwtTokenEndpointHostUrl = Jenkins.getInstance().getRootUrl();
+        JwtTokenServiceEndpoint jwtTokenServiceEndpoint = JwtTokenServiceEndpoint.first();
+        if(jwtTokenServiceEndpoint != null){
+            jwtTokenEndpointHostUrl = jwtTokenServiceEndpoint.getHostUrl();
+        }
         new JSONBuilder(writer)
             .object()
                 .key("version").value(getBlueOceanPluginVersion())
@@ -57,6 +63,7 @@ public class BlueOceanConfigStatePreloader extends PageStatePreloader {
                             .key("allowAnonymousRead").value(allowAnonymousRead)
                         .endObject()
                         .key("enableJWT").value(BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION)
+                        .key("jwtServiceHostUrl").value(jwtTokenEndpointHostUrl)
                     .endObject()
                 .endObject()
                 // If more "features" vars are added, we could just iterate the system props

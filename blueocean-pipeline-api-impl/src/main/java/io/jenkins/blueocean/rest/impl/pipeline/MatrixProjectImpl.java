@@ -9,6 +9,7 @@ import hudson.matrix.MatrixProject;
 import hudson.model.Item;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
+import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -16,7 +17,6 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
-import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_MATRIX_PROJECT;
