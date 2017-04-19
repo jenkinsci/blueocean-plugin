@@ -9,6 +9,8 @@ import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
+import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Container;
 import org.kohsuke.stapler.export.Exported;
 
@@ -139,6 +141,16 @@ public class QueuedBlueRun extends BlueRun {
 
     @Override
     public BlueRun replay() {
+        return null;
+    }
+
+    @Override
+    public BlueTestResultContainer getTests() {
+        return null;
+    }
+
+    @Override
+    public BlueTestSummary getTestSummary() {
         return null;
     }
 
