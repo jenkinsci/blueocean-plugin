@@ -18,10 +18,13 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
+import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
@@ -29,7 +32,6 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
-import io.jenkins.blueocean.service.embedded.OrganizationResolver;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
@@ -55,7 +57,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_JOB;
 @Capability(JENKINS_JOB)
 public class AbstractPipelineImpl extends BluePipeline {
     private final Job job;
-    protected final OrganizationImpl org;
+    protected final BlueOrganization org;
 
     protected AbstractPipelineImpl(Job job) {
         this.job = job;

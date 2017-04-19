@@ -5,10 +5,10 @@ import hudson.model.Item;
 import hudson.model.Job;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
+import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
-import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_JOB;

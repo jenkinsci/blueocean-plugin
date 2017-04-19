@@ -1,12 +1,13 @@
-package io.jenkins.blueocean.service.embedded;
+package io.jenkins.blueocean.rest.factory;
 
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Run;
-import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
@@ -32,17 +33,17 @@ public abstract class OrganizationResolver implements ExtensionPoint {
      *
      * @return null if the no such org exists.
      */
-    public abstract OrganizationImpl get(String name);
+    public abstract BlueOrganization get(String name);
 
     /**
      * Iterates over all the organizations.
      */
-    public abstract Collection<OrganizationImpl> list();
+    public abstract Collection<BlueOrganization> list();
 
     /**
      * If given group is an org, return its representation, or null.
      */
-    public abstract OrganizationImpl of(ItemGroup group);
+    public abstract BlueOrganization of(ItemGroup group);
 
     /**
      * Finds a nearest organization that contains the given {@link ItemGroup}.
@@ -50,9 +51,9 @@ public abstract class OrganizationResolver implements ExtensionPoint {
      * @return
      *      null if the given object doesn't belong to any organization.
      */
-    public OrganizationImpl getContainingOrg(ItemGroup p) {
+    public BlueOrganization getContainingOrg(ItemGroup p) {
         while (true) {
-            OrganizationImpl n = of(p);
+            BlueOrganization n = of(p);
             if (n != null) {
                 return n;
             }
@@ -64,11 +65,11 @@ public abstract class OrganizationResolver implements ExtensionPoint {
         }
     }
 
-    public final OrganizationImpl getContainingOrg(Run r) {
+    public final BlueOrganization getContainingOrg(Run r) {
         return getContainingOrg(r.getParent());
     }
 
-    public final OrganizationImpl getContainingOrg(Item i) {
+    public final BlueOrganization getContainingOrg(Item i) {
         if (i instanceof ItemGroup)
             return getContainingOrg((ItemGroup)i);
         else
@@ -80,5 +81,19 @@ public abstract class OrganizationResolver implements ExtensionPoint {
         if (r==null)
             throw new AssertionError("No OrganizationResolver is installed");
         return r;
+    }
+
+    @Nullable
+    @SuppressWarnings("unchecked")
+    public static ItemGroup<? extends Item> getItemGroup(String org) {
+        BlueOrganization blueOrganization = OrganizationResolver.getInstance().get(org);
+        if (blueOrganization instanceof ItemGroupProvider) {
+            return ((ItemGroupProvider)blueOrganization).getGroup();
+        }
+        return null;
+    }
+
+    public interface ItemGroupProvider {
+        ItemGroup getGroup();
     }
 }

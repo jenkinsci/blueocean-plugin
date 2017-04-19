@@ -28,8 +28,8 @@ import hudson.model.Item;
 import io.jenkins.blueocean.commons.BlueUrlTokenizer;
 import io.jenkins.blueocean.commons.RESTFetchPreloader;
 import io.jenkins.blueocean.commons.stapler.Export;
+import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.model.BluePipeline;
-import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import jenkins.model.Jenkins;
 
 import javax.annotation.Nonnull;
