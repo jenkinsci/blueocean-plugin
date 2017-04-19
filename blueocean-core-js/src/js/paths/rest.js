@@ -20,7 +20,7 @@ export default {
         return `${this.apiRoot()}/search/?q=type:pipeline;organization:${AppConfig.getOrganizationName()};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
     },
 
-    activities(organization, pipeline, branch) {
+    runs(organization, pipeline, branch) {
         const branchStr = branch ? `?branch=${branch}` : '';
         return `${this.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${pipeline}/runs/${branchStr}`;
     },
@@ -42,9 +42,5 @@ export default {
 
     pullRequests(organization, pipeline) {
         return `${this.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${pipeline}/branches/?filter=pull-requests`;
-    },
-
-    queuedItem(organization, pipeline, queueId) {
-        return `${this.pipeline(organization, pipeline)}queue/${queueId}/`;
     },
 };

@@ -38,7 +38,7 @@ export class ActivityService extends BunkerService {
             /**
              * Lazily generate the pager incase its needed.
              */
-            lazyPager: () => new Pager(RestPaths.activities(organization, pipeline, branch), 25, this),
+            lazyPager: () => new Pager(RestPaths.runs(organization, pipeline, branch), 25, this),
         });
     }
 
@@ -59,7 +59,6 @@ export class ActivityService extends BunkerService {
      *
      * @param {string} href self href of activity.
      * @param {boolean} useCache Use the cache to lookup data or always fetch a new one.
-     * @param {boolean} overrideQueuedState Hack to make SSE work. Not use unless you know what you are doing!!!
      * @returns {Promise} Promise of fetched data.
      */
     fetchActivity(href, { useCache } = {}) {
