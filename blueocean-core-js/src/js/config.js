@@ -36,8 +36,8 @@ export default {
         return config.jenkinsConfig || {};
     },
 
-    getOrganization() {
-        return encodeURIComponent(organization.name);
+    getOrganizationName(encoded = true) {
+        return encoded ? encodeURIComponent(organization.name) : organization.name;
     },
 
     getSecurityConfig() {

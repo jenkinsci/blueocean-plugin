@@ -10,7 +10,7 @@ export default function CreatePipelineLink() {
     if (creationUtils.isHidden()) {
         return null;
     }
-    const organization = AppConfig.getOrganization();
+    const organization = AppConfig.getOrganizationName();
     const link = (organization) ? `/organizations/${organization}/create-pipeline` : '/create-pipeline';
 
     return (

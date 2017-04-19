@@ -17,7 +17,7 @@ export const actions = {
         return (dispatch) => {
             const baseUrl = UrlConfig.getBlueOceanAppURL();
             const username = user.id;
-            const organization = AppConfig.getOrganization();
+            const organization = AppConfig.getOrganizationName();
             const url = cleanSlashes(`${baseUrl}/rest/organizations/${organization}/users/${username}/favorites/`);
             if (fetchFlags[ACTION_TYPES.SET_FAVORITES]) {
                 return null;

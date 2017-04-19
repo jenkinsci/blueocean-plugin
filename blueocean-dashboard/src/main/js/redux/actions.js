@@ -285,7 +285,7 @@ export const actions = {
     fetchAllPipelines() {
         return (dispatch) => {
             // Note: this is including folders, which we can't deal with, so exclude them with the ?filter=no-folders
-            const organization = AppConfig.getOrganization();
+            const organization = AppConfig.getOrganizationName();
             const url =
                 `${UrlConfig.getRestRoot()}/search/?q=type:pipeline;organization:${organization};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
             return paginate({ urlProvider: paginateUrl(url) })

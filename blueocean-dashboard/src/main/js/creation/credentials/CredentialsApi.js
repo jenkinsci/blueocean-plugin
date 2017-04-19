@@ -13,7 +13,7 @@ export class CredentialsApi {
 
     constructor(fetch) {
         this._fetch = fetch || Fetch.fetchJSON;
-        this.organization = AppConfig.getOrganization();
+        this.organization = AppConfig.getOrganizationName();
     }
 
     listAllCredentials() {

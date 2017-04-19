@@ -17,7 +17,7 @@ export default {
     },
 
     allPipelines() {
-        return `${this.apiRoot()}/search/?q=type:pipeline;organization:${AppConfig.getOrganization()};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
+        return `${this.apiRoot()}/search/?q=type:pipeline;organization:${AppConfig.getOrganizationName()};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
     },
 
     activities(organization, pipeline, branch) {

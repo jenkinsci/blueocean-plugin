@@ -20,7 +20,7 @@ export class GithubCreationApi {
 
     constructor(fetch) {
         this._fetch = fetch || Fetch.fetchJSON;
-        this.organization = AppConfig.getOrganization();
+        this.organization = AppConfig.getOrganizationName();
     }
 
     listOrganizations(credentialId) {
