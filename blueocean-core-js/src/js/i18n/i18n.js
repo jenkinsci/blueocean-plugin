@@ -28,7 +28,9 @@ function newPluginXHR(pluginName, onLoad) {
     let pluginVersion = store.getPluginVersion(pluginName);
 
     if (!pluginVersion) {
-        throw new Error(`Unable to create an i18n instance for plugin "${pluginName}". This plugin is not currently installed, or is disabled.`);
+        // if we do not have a version we may have an alias to resolve a resourceBUndle
+        pluginVersion = 'dummy';
+        // throw new Error(`Unable to create an i18n instance for plugin "${pluginName}". This plugin is not currently installed, or is disabled.`);
     }
 
     pluginVersion = encodeURIComponent(pluginVersion);
