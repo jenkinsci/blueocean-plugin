@@ -8,6 +8,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.OrganizationRoute;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -28,7 +29,7 @@ import java.io.IOException;
  * @author Vivek Pandey
  * @author Kohsuke Kawaguchi
  */
-public class OrganizationImpl extends BlueOrganization {
+public class OrganizationImpl extends BlueOrganization implements OrganizationResolver.ItemGroupProvider {
     private final String name;
     /**
      * Everything in this {@link ItemGroup} is considered to belong to this organization.

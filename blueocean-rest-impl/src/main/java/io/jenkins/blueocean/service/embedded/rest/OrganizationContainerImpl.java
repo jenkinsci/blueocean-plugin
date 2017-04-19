@@ -3,10 +3,10 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.Extension;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.ApiHead;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueOrganizationContainer;
-import io.jenkins.blueocean.service.embedded.OrganizationResolver;
 
 import java.util.Iterator;
 

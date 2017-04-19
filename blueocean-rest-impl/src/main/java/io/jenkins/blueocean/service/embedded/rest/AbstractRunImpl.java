@@ -5,18 +5,20 @@ import hudson.model.Result;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.BlueRunFactory;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.GenericResource;
-import io.jenkins.blueocean.service.embedded.OrganizationResolver;
 import org.kohsuke.stapler.QueryParameter;
 
 import java.util.Collection;
@@ -29,7 +31,7 @@ import java.util.Date;
  */
 public class AbstractRunImpl<T extends Run> extends BlueRun {
     protected final T run;
-    protected final OrganizationImpl org;
+    protected final BlueOrganization org;
 
     private final Link parent;
     public AbstractRunImpl(T run, Link parent) {
