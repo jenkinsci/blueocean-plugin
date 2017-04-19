@@ -133,12 +133,6 @@ public abstract class BluePipeline extends Resource {
     public abstract BlueQueueContainer getQueue();
 
     /**
-     * @return Gives paginated concatenation of {#getQueue()} and {#getRuns()}, in that order
-     */
-    @Navigable
-    public abstract Container<Resource> getActivities();
-
-    /**
      * List of build parameters
      */
     @Exported(name = PARAMETERS, inline = true)

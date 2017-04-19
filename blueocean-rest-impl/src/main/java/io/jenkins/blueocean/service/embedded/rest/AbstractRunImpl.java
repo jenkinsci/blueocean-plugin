@@ -15,7 +15,6 @@ import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
-import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
@@ -90,7 +89,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         } else if(!run.isLogUpdated()){
             return BlueRunState.FINISHED;
         } else {
-            return BlueRunState.QUEUED;
+            return BlueRunState.RUNNING;
         }
     }
 
@@ -134,7 +133,12 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
-    public BlueQueueItem replay() {
+    public BlueRun replay() {
+        return null;
+    }
+
+    @Override
+    public String getCauseOfBlockage() {
         return null;
     }
 

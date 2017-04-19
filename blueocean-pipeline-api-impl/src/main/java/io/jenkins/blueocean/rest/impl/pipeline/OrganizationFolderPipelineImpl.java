@@ -21,7 +21,6 @@ import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
-import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
@@ -221,11 +220,6 @@ public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFol
                 };
             }
         };
-    }
-
-    @Override
-    public Container<Resource> getActivities() {
-        return null;
     }
 
     @Override

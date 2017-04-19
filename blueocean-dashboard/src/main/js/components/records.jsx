@@ -72,6 +72,7 @@ export class RunRecord extends Record({
     _capabilities: [],
     _links: null,
     changeSet: ChangeSetRecord,
+    causeOfBlockage: null,
     artifacts: null,
     durationInMillis: null,
     enQueueTime: null,

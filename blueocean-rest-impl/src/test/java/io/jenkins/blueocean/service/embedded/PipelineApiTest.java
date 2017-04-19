@@ -492,7 +492,7 @@ public class PipelineApiTest extends BaseTest {
 
         assertNotNull(p3.getQueueItem());
         String id = Long.toString(p3.getQueueItem().getId());
-        assertEquals(id, r.get("id"));
+        assertEquals(id, r.get("queueId"));
 
         delete("/organizations/jenkins/pipelines/pipeline3/queue/"+id+"/");
         Queue.Item item = j.jenkins.getQueue().getItem(Long.parseLong(id));
