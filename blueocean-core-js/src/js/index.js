@@ -16,7 +16,7 @@ import {
     Pager,
     PagerService,
     PipelineService,
-    SSEService
+    SSEService,
 } from './services/index';
 import * as stringUtil from './stringUtil';
 import { disableMocksForI18n, enableMocksForI18n } from './i18n/i18n';
