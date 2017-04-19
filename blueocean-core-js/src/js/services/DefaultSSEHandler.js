@@ -27,16 +27,14 @@ export class DefaultSSEHandler {
             break;
         case 'job_run_queue_buildable':
         case 'job_run_queue_enter':
+        case 'job_run_queue_blocked':
             this.queueEnter(event);
             break;
         case 'job_run_queue_left':
             this.queueLeft(event);
             break;
-        case 'job_run_queue_blocked': {
-            break;
-        }
         case 'job_run_started': {
-            this.updateJob(event, true);
+            this.updateJob(event);
             break;
         }
         case 'job_run_ended': {
@@ -61,15 +59,15 @@ export class DefaultSSEHandler {
     updateJob(event) {
         // const queueId = event.job_run_queueId;
         // const queueSelf = `${event.blueocean_job_rest_url}queue/${queueId}/`;
-        const runSelf = `${event.blueocean_job_rest_url}runs/${event.jenkins_object_id}/`;
-        this.updateRun(runSelf);
+        const href = `${event.blueocean_job_rest_url}runs/${event.jenkins_object_id}/`;
+        this._updateRun(event, href);
     }
 
     queueCancel(event) {
         if (event.job_run_status === 'CANCELLED') {
             const id = event.blueocean_queue_item_expected_build_number;
-            const self = `${event.blueocean_job_rest_url}runs/${id}/`;
-            this.activityService.removeItem(self);
+            const href = `${event.blueocean_job_rest_url}runs/${id}/`;
+            this._removeRun(event, href);
         }
     }
     queueEnter(event) {
@@ -78,44 +76,59 @@ export class DefaultSSEHandler {
         if (event.job_ismultibranch && !event.blueocean_job_branch_name) {
             return;
         }
-
-        const id = event.blueocean_queue_item_expected_build_number;
-        const runSelf = `${event.blueocean_job_rest_url}runs/${id}/`;
-
-        this.updateRun(runSelf);
-
-        for (const key of this.branchPagerKeys(event)) {
-            const pager = this.pagerService.getPager({ key });
-            if (pager) {
-                pager.insert(runSelf);
-            }
+        // Sometimes we can't match the queue item so we have to skip this event
+        if (!event.blueocean_queue_item_expected_build_number) {
+            return;
         }
+        const id = event.blueocean_queue_item_expected_build_number;
+        const href = `${event.blueocean_job_rest_url}runs/${id}/`;
+        this._updateRun(event, href);
     }
 
     queueLeft(event) {
+        const id = event.blueocean_queue_item_expected_build_number;
+        const href = `${event.blueocean_job_rest_url}runs/${id}/`;
         if (event.job_run_status === 'CANCELLED') {
-            const id = event.blueocean_queue_item_expected_build_number;
-            const runSelf = `${event.blueocean_job_rest_url}runs/${id}/`;
-            this.activityService.removeItem(runSelf);
-            for (const key of this.branchPagerKeys(event)) {
-                const pager = this.pagerService.getPager({ key });
-                if (pager) {
-                    pager.remove(runSelf);
-                }
+            // Cancelled runs are removed from the stores. They are gone *poof*.
+            this._removeRun(event, href);
+        } else {
+            // If not cancelled then the state may be leaving the queue to execute and should be updated with latest
+            this._updateRun(event, href);
+        }
+    }
+
+    /**
+     * Removes the run from the activity service and any branch pagers
+     * @param event triggering the removal
+     * @param href of the run to remove
+     * @private
+     */
+    _removeRun(event, href) {
+        this.activityService.removeItem(href);
+        for (const key of this.branchPagerKeys(event)) {
+            const pager = this.pagerService.getPager({ key });
+            if (pager) {
+                pager.remove(href);
             }
         }
     }
 
-    updateRun(runUrl) {
-        this.activityService.fetchActivity(runUrl, { useCache: false });
-        for (const key of this.branchPagerKeys(event)) {
-            const pager = this.pagerService.getPager({ key });
-            this.activityService.fetchActivity(runUrl, { useCache: false }).then(d => {
-                if (pager && !pager.has(runUrl)) {
-                    pager.insert(runUrl);
+    /**
+     * Fetches the latest activity for this run, updates activity service and any branch pagers
+     * @param event triggering the fetch
+     * @param href of the run to add
+     * @private
+     */
+    _updateRun(event, href) {
+        this.activityService.fetchActivity(href, { useCache: false }).then((run) => {
+            this.activityService.setItem(run);
+            for (const key of this.branchPagerKeys(event)) {
+                const pager = this.pagerService.getPager({ key });
+                if (pager && !pager.has(href)) {
+                    pager.insert(href);
                 }
-                this.pipelineService.updateLatestRun(d);
-            });
-        }
+            }
+            this.pipelineService.updateLatestRun(run);
+        });
     }
 }

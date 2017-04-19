@@ -26,9 +26,9 @@ package io.jenkins.blueocean.events;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import hudson.model.Queue;
 import hudson.model.Run;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
@@ -43,12 +43,15 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 
 import javax.annotation.Nonnull;
+import java.util.logging.Logger;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @Extension
 public class BlueMessageEnricher extends MessageEnricher {
+
+    private static final Logger LOGGER = Logger.getLogger(BlueMessageEnricher.class.getName());
 
     enum BlueEventProps {
         blueocean_job_rest_url,
@@ -83,14 +86,19 @@ public class BlueMessageEnricher extends MessageEnricher {
             }
 
             if (message.containsKey("job_run_queueId") && jobChannelItem instanceof hudson.model.Job) {
-                long queueId = Long.parseLong(message.get("job_run_queueId"));
+                final long queueId = Long.parseLong(message.get("job_run_queueId"));
                 Queue.Item queueItem = jenkins.model.Jenkins.getInstance().getQueue().getItem(queueId);
                 hudson.model.Job job = (hudson.model.Job) jobChannelItem;
                 BlueQueueItem blueQueueItem = QueueContainerImpl.getQueuedItem(queueItem, job);
-                Run run = QueueContainerImpl.getRun(job, queueId);
-                if (blueQueueItem != null || run == null) {
+                if (blueQueueItem != null) {
+                    LOGGER.info("Expected: " + blueQueueItem.getExpectedBuildNumber());
                     jobChannelMessage.set(BlueEventProps.blueocean_queue_item_expected_build_number, Integer.toString(blueQueueItem.getExpectedBuildNumber()));
                 } else {
+                    Run run = QueueContainerImpl.getRun(job, queueId);
+                    if (run == null) {
+                        return;
+                    }
+                    LOGGER.info("Actual number " + run.getNumber() + " queue id " + run.getQueueId());
                     jobChannelMessage.set(BlueEventProps.blueocean_queue_item_expected_build_number, Integer.toString(run.getNumber()));
                 }
             }

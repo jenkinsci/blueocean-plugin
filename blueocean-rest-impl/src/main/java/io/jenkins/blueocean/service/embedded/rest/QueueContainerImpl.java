@@ -91,7 +91,7 @@ public class QueueContainerImpl extends BlueQueueContainer {
             public boolean apply(@Nullable Run input) {
                 return input != null && input.getQueueId() == queueId;
             }
-        });
+        }, null);
     }
 
     @Override
