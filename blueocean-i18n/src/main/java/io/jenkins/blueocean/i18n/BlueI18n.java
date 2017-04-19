@@ -141,7 +141,7 @@ public class BlueI18n implements ApiRoutable {
             ResourceBundle resourceBundle;
             if (plugin == null) {
                 Jenkins jenkins = Jenkins.getInstance();
-                if(jenkins!=null && jenkins.pluginManager!=null && jenkins.pluginManager.uberClassLoader!=null) {
+                if (jenkins!=null && jenkins.pluginManager!=null && jenkins.pluginManager.uberClassLoader!=null) {
                     resourceBundle = ResourceBundle.getBundle(bundleParams.bundleName, locale, jenkins.pluginManager.uberClassLoader);
                 } else {
                     resourceBundle = ResourceBundle.getBundle(bundleParams.bundleName, locale);

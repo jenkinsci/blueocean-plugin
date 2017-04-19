@@ -102,3 +102,17 @@ i18nBundles:
 ```
 
 > Note how `i18nBundles` entries can define a string or an object, allowing the loading of bundles from plugins other than the default (i.e. the same plugin as the `@jenkins-cd/js-extensions` generated JavaScript bundle). 
+
+In case you have your common code and resources in a jar and not as hpi the above still works, since will fallback to the Jenkins 
+`uberClassLoader` to resolve the resource path.
+
+```yaml
+extensions:
+  # etc ....
+
+i18nBundles:
+  - hpiPluginId: jar-commons
+    resource: jenkins.plugins.jar.commons.Messages
+```
+
+> Note in case that the path does not exists we will return a 404 answer.
