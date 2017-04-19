@@ -38,6 +38,7 @@ public abstract class BlueRun extends Resource {
     public static final String RESULT = "result";
     public static final String STATE = "state";
     public static final String ACTIONS = "actions";
+    public static final String TEST_SUMMARY = "testSummary";
 
     public static final int DEFAULT_BLOCKING_STOP_TIMEOUT_IN_SECS=10;
 
@@ -198,6 +199,18 @@ public abstract class BlueRun extends Resource {
      */
     @Navigable
     public abstract BluePipelineStepContainer getSteps();
+
+    /**
+     * @return Gives tests in this run
+     */
+    @Navigable
+    public abstract BlueTestResultContainer getTests();
+
+    /**
+     * @return Gives the test summary for this run
+     */
+    @Exported(name = TEST_SUMMARY, inline = true, skipNull = true)
+    public abstract BlueTestSummary getTestSummary();
 
     /**
      * @return Instance of stapler aware instance that can do the following:

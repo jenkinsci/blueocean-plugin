@@ -17,6 +17,8 @@ import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
+import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.GenericResource;
 import org.kohsuke.stapler.QueryParameter;
@@ -149,6 +151,16 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public BluePipelineStepContainer getSteps() {
         return null;
+    }
+
+    @Override
+    public BlueTestResultContainer getTests() {
+        return new BlueTestResultContainerImpl(this, run);
+    }
+
+    @Override
+    public BlueTestSummary getTestSummary() {
+        return BlueTestResultFactory.resolve(run, this).summary;
     }
 
     public Collection<BlueActionProxy> getActions() {
