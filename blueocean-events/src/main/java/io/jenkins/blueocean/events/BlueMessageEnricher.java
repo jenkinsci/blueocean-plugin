@@ -28,6 +28,7 @@ import hudson.model.Item;
 import hudson.model.ItemGroup;
 import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import hudson.model.Queue;
+import hudson.model.Run;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
@@ -86,10 +87,11 @@ public class BlueMessageEnricher extends MessageEnricher {
                 Queue.Item queueItem = jenkins.model.Jenkins.getInstance().getQueue().getItem(queueId);
                 hudson.model.Job job = (hudson.model.Job) jobChannelItem;
                 BlueQueueItem blueQueueItem = QueueContainerImpl.getQueuedItem(queueItem, job);
-                if (blueQueueItem != null) {
+                Run run = QueueContainerImpl.getRun(job, queueId);
+                if (blueQueueItem != null || run == null) {
                     jobChannelMessage.set(BlueEventProps.blueocean_queue_item_expected_build_number, Integer.toString(blueQueueItem.getExpectedBuildNumber()));
                 } else {
-                    jobChannelMessage.set(BlueEventProps.blueocean_queue_item_expected_build_number, Integer.toString(job.getNextBuildNumber()));
+                    jobChannelMessage.set(BlueEventProps.blueocean_queue_item_expected_build_number, Integer.toString(run.getNumber()));
                 }
             }
         }

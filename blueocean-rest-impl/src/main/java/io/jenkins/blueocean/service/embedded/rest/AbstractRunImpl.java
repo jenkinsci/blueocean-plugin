@@ -89,7 +89,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         } else if(!run.isLogUpdated()){
             return BlueRunState.FINISHED;
         } else {
-            return BlueRunState.QUEUED;
+            return BlueRunState.RUNNING;
         }
     }
 

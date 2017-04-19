@@ -26,7 +26,6 @@ export class DefaultSSEHandler {
             // then a rename for the new one. This is somewhat confusing for us.
             break;
         case 'job_run_queue_buildable':
-            break;
         case 'job_run_queue_enter':
             this.queueEnter(event);
             break;
