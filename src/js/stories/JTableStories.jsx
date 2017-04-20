@@ -19,6 +19,7 @@ import {
 storiesOf('JTable', module)
     .add('Basic', basic)
     .add('Manual', manual)
+    .add('Component column header', headerComponent)
 ;
 
 
@@ -91,6 +92,28 @@ function basic() {
 
     columns[1].isFlexible = true;
     columns[6].isFlexible = true;
+
+    return container(
+        <JTable columns={columns}>
+            <TableHeaderRow/>
+            {rows}
+        </JTable>
+    );
+}
+
+function headerComponent() {
+
+    const rows = rowData.map(renderRow);
+    const columns = [];
+
+    for (let i = 0; i < colWidths.length; i++) {
+        columns.push(JTable.column(colWidths[i], rowHeaders[i]));
+    }
+
+    columns[1].isFlexible = true;
+    columns[6].isFlexible = true;
+
+    columns[6].name = <button>Button As Header</button>;
 
     return container(
         <JTable columns={columns}>

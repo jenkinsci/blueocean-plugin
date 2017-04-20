@@ -66,8 +66,16 @@ export class JTable extends Component {
         let hasFlexibleColumn = false;
         const processedColumns = propColumns.map(input => {
 
+            let colName = '';
+
+            if (input.name && React.isValidElement(input.name)) {
+                colName = input.name;
+            } else if (input.name !== null) {
+                colName = String(input.name);
+            }
+
             const result = {
-                name: input.name ? '' + input.name : '',
+                name: colName,
                 width: parseInt(input.width),
                 isFlexible: !!input.isFlexible
             };
@@ -120,11 +128,12 @@ export class JTable extends Component {
             }
         });
 
-        return (
-            <div className={classNames.join(' ')} style={style}>
-                {newChildren}
-            </div>
-        );
+        const newProps = {
+            className: classNames.join(' '),
+            style: style
+        };
+
+        return React.createElement('div', newProps, ...newChildren);
     }
 }
 
