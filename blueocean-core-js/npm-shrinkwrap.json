@@ -5064,6 +5064,12 @@
       "resolved": "https://registry.npmjs.org/jest-jasmine2/-/jest-jasmine2-19.0.2.tgz",
       "dev": true
     },
+    "jest-junit": {
+      "version": "1.5.1",
+      "from": "jest-junit@latest",
+      "resolved": "https://registry.npmjs.org/jest-junit/-/jest-junit-1.5.1.tgz",
+      "dev": true
+    },
     "jest-matcher-utils": {
       "version": "19.0.0",
       "from": "jest-matcher-utils@>=19.0.0 <20.0.0",
@@ -8385,6 +8391,12 @@
         }
       }
     },
+    "vinyl-paths": {
+      "version": "2.1.0",
+      "from": "vinyl-paths@latest",
+      "resolved": "https://registry.npmjs.org/vinyl-paths/-/vinyl-paths-2.1.0.tgz",
+      "dev": true
+    },
     "vinyl-sourcemaps-apply": {
       "version": "0.2.1",
       "from": "vinyl-sourcemaps-apply@>=0.2.0 <0.3.0",
@@ -8607,6 +8619,12 @@
       "version": "2.0.0",
       "from": "xdg-basedir@>=2.0.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/xdg-basedir/-/xdg-basedir-2.0.0.tgz",
+      "dev": true
+    },
+    "xml": {
+      "version": "1.0.1",
+      "from": "xml@>=1.0.1 <2.0.0",
+      "resolved": "https://registry.npmjs.org/xml/-/xml-1.0.1.tgz",
       "dev": true
     },
     "xml-name-validator": {

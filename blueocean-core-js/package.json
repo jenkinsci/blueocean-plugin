@@ -80,6 +80,7 @@
     "gulp-sourcemaps": "1.6.0",
     "jest": "19.0.2",
     "jest-cli": "19.0.2",
+    "jest-junit": "1.5.1",
     "karma": "1.3.0",
     "karma-browserify": "5.1.0",
     "karma-chrome-launcher": "2.0.0",
@@ -94,6 +95,7 @@
     "react-dom": "15.3.2",
     "run-sequence": "1.2.2",
     "sinon": "1.17.6",
+    "vinyl-paths": "2.1.0",
     "watchify": "3.7.0"
   }
 }

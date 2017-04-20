@@ -16,6 +16,7 @@ const lint = require('gulp-eslint');
 const Karma = require('karma').Server;
 const jest = require('gulp-jest').default;
 const fs = require('fs');
+const vinylPaths = require('vinyl-paths');
 
 // Options, src/dest folders, etc
 
@@ -38,6 +39,9 @@ const config = {
     },
     test: {
         sources: '.',
+        match: ['**/?(*-)(spec|test).js?(x)'],
+        dest: 'reports',
+        report: './junit.xml',
     },
 };
 
@@ -92,15 +96,37 @@ gulp.task("test-karma-debug", (done) => {
     }, done).start();
 });
 
-gulp.task('test-jest', () => (
+gulp.task('test-jest', () =>
+    runSequence('test-jest-full', 'test-jest-report')
+);
+
+gulp.task('test-jest-dev', () =>
+    gulp.src(config.test.sources)
+        .pipe(jest({
+            config: {
+                testMatch: config.test.match,
+            },
+        }))
+);
+
+gulp.task('test-jest-full', () =>
     gulp.src(config.test.sources)
         .pipe(jest({
             config: {
                 collectCoverage: true,
-                testMatch: ['**/?(*-)(spec|test).js?(x)'],
+                testMatch: config.test.match,
+                testResultsProcessor: 'jest-junit',
             },
         }))
-));
+);
+
+// to avoid putting jest-junit config in package.json, just move the file
+gulp.task('test-jest-report', () =>
+    gulp.src(config.test.report)
+        .pipe(vinylPaths(del))
+        .pipe(gulp.dest(config.test.dest))
+);
+
 
 // Build all
 
