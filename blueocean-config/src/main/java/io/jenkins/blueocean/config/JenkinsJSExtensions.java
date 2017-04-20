@@ -23,6 +23,19 @@
  */
 package io.jenkins.blueocean.config;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import hudson.Extension;
+import hudson.PluginWrapper;
+import io.jenkins.blueocean.rest.model.BlueExtensionClass;
+import io.jenkins.blueocean.rest.model.BlueExtensionClassContainer;
+import jenkins.model.Jenkins;
+import net.sf.json.JSONArray;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
@@ -36,20 +49,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.kohsuke.accmod.Restricted;
-import org.kohsuke.accmod.restrictions.NoExternalUse;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import hudson.Extension;
-import hudson.PluginWrapper;
-import io.jenkins.blueocean.rest.model.BlueExtensionClass;
-import io.jenkins.blueocean.rest.model.BlueExtensionClassContainer;
-import jenkins.model.Jenkins;
-import net.sf.json.JSONArray;
 
 /**
  * Utility class for gathering {@code jenkins-js-extension} data.
@@ -191,6 +190,7 @@ public class JenkinsJSExtensions {
     // TODO: Someone needs to write some docs on this function, explaining what it is doing and why it's needed.
     // ***********************************************************************************************************
     //
+    @SuppressFBWarnings(value = "WMI_WRONG_MAP_ITERATOR")
     private static Object mergeObjects(Object incoming) {
         if (incoming instanceof Map) {
             Map m = new HashMap();

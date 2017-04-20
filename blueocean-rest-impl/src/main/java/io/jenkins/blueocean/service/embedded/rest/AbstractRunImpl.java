@@ -95,7 +95,8 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public BlueRunResult getResult() {
-        return run.getResult() != null ? BlueRunResult.valueOf(run.getResult().toString()) : BlueRunResult.UNKNOWN;
+        Result result = run.getResult();
+        return result != null ? BlueRunResult.valueOf(result.toString()) : BlueRunResult.UNKNOWN;
     }
 
 
@@ -249,7 +250,8 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     private boolean isCompletedOrAborted(){
-        return run.getResult()!= null && (run.getResult() == Result.ABORTED || run.getResult().isCompleteBuild());
+        Result result = run.getResult();
+        return result != null && (result == Result.ABORTED || result.isCompleteBuild());
     }
 
     @Override

@@ -52,8 +52,9 @@ public class PipelineNodeUtil {
 
     @Nonnull
     public static String getDisplayName(@Nonnull FlowNode node) {
-        return node.getAction(ThreadNameAction.class) != null
-            ? node.getAction(ThreadNameAction.class).getThreadName()
+        ThreadNameAction threadNameAction = node.getAction(ThreadNameAction.class);
+        return threadNameAction != null
+            ? threadNameAction.getThreadName()
             : node.getDisplayName();
     }
 

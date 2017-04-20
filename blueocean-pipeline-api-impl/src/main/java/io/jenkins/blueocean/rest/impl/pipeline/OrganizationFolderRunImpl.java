@@ -3,6 +3,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import com.cloudbees.hudson.plugins.folder.computed.FolderComputation;
 import hudson.model.Cause;
 import hudson.model.CauseAction;
+import hudson.model.Result;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
@@ -104,8 +105,9 @@ public class OrganizationFolderRunImpl extends BlueRun {
 
     @Override
     public BlueRunResult getResult() {
-        return folderComputation.getResult() != null
-                ? BlueRun.BlueRunResult.valueOf(folderComputation.getResult().toString())
+        Result result = folderComputation.getResult();
+        return result != null
+                ? BlueRun.BlueRunResult.valueOf(result.toString())
                 : BlueRunResult.UNKNOWN;
     }
 

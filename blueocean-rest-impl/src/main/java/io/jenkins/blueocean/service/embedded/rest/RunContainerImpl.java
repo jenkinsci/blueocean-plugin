@@ -131,8 +131,10 @@ public class RunContainerImpl extends BlueRunContainer {
                         .getQueue()
                         .schedule2((Queue.Task) job, 0, new CauseAction(new Cause.UserIdCause()));
             }
-            if(scheduleResult.isAccepted()) {
-                final Queue.Item item = scheduleResult.getItem();
+            // Keep FB happy.
+            // scheduleResult.getItem() will always return non-null if scheduleResult.isAccepted() is true
+            final Queue.Item item = scheduleResult.getItem();
+            if(scheduleResult.isAccepted() && item != null) {
                 return new QueueItemImpl(
                         item,
                         job.getName(),

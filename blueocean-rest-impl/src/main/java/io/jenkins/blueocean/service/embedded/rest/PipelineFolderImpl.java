@@ -171,18 +171,14 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public Iterable<String> getPipelineFolderNames() {
-        Iterable<BluePipeline> pipelines = getPipelines();
-        if(pipelines != null) {
-            return Iterables.transform(getPipelines(), new Function<BluePipeline, String>() {
-                @Override
-                public String apply(@Nullable BluePipeline input) {
-                    if (input != null && input instanceof BluePipelineFolder) {
-                        return input.getName();
-                    }
-                    return null;
+        return Iterables.transform(getPipelines(), new Function<BluePipeline, String>() {
+            @Override
+            public String apply(@Nullable BluePipeline input) {
+                if (input != null && input instanceof BluePipelineFolder) {
+                    return input.getName();
                 }
-            });
-        }
-        return Collections.emptyList();
+                return null;
+            }
+        });
     }
 }
