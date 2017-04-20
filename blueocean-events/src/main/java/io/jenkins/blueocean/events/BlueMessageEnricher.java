@@ -91,14 +91,12 @@ public class BlueMessageEnricher extends MessageEnricher {
                 hudson.model.Job job = (hudson.model.Job) jobChannelItem;
                 BlueQueueItem blueQueueItem = QueueContainerImpl.getQueuedItem(queueItem, job);
                 if (blueQueueItem != null) {
-                    LOGGER.info("Expected: " + blueQueueItem.getExpectedBuildNumber());
                     jobChannelMessage.set(BlueEventProps.blueocean_queue_item_expected_build_number, Integer.toString(blueQueueItem.getExpectedBuildNumber()));
                 } else {
                     Run run = QueueContainerImpl.getRun(job, queueId);
                     if (run == null) {
                         return;
                     }
-                    LOGGER.info("Actual number " + run.getNumber() + " queue id " + run.getQueueId());
                     jobChannelMessage.set(BlueEventProps.blueocean_queue_item_expected_build_number, Integer.toString(run.getNumber()));
                 }
             }
