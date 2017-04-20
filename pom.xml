@@ -489,7 +489,7 @@
                   <version>${findbugs-maven-plugin.version}</version>
                   <configuration>
                       <effort>Max</effort>
-                      <threshold>High</threshold>
+                      <threshold>Default</threshold>
                       <xmlOutput>true</xmlOutput>
                       <findbugsXmlOutput>false</findbugsXmlOutput>
                   </configuration>
