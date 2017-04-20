@@ -104,7 +104,7 @@ public abstract class BlueMultiBranchPipeline extends BluePipelineFolder{
             }
 
             @Override
-            public BlueQueueItem create(StaplerRequest request) {
+            public BlueRun create(StaplerRequest request) {
                 throw new ServiceException.NotImplementedException("This action is not supported");
             }
         };

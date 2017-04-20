@@ -58,7 +58,7 @@ export class ReplayButton extends Component {
         });
 
         runApi.replayRun(this.props.latestRun)
-            .then(runInfo => ToastUtils.createRunStartedToast(this.props.runnable, runInfo, this.props.onNavigation))
+            .then(run => ToastUtils.createRunStartedToast(this.props.runnable, run, this.props.onNavigation))
             .then(runDetailsUrl => this._afterReplayStarted(runDetailsUrl));
     }
 

@@ -2,9 +2,9 @@
 # yarn lockfile v1
 
 
-"@jenkins-cd/blueocean-core-js@0.0.96":
-  version "0.0.96"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.96.tgz#503b1f79d6bd914c8173d5dc10c3d5916991e4aa"
+"@jenkins-cd/blueocean-core-js@0.0.99":
+  version "0.0.99"
+  resolved "https://repo.jenkins-ci.org/api/npm/npm/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.99.tgz#1e69286c8ab9f9db319859f5a368768291487956"
   dependencies:
     "@jenkins-cd/design-language" "0.0.127"
     "@jenkins-cd/js-extensions" "0.0.33"

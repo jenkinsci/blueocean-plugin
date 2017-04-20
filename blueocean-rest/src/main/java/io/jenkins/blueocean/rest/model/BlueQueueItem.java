@@ -68,4 +68,8 @@ public abstract class BlueQueueItem extends Resource {
     @Exported(name = CAUSE_OF_BLOCKAGE)
     public abstract String getCauseOfBlockage();
 
+    /**
+     * @return a run object representing this queued item
+     */
+    public abstract BlueRun toRun();
 }

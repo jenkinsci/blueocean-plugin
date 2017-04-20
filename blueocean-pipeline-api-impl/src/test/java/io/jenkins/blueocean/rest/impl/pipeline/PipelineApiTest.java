@@ -213,7 +213,7 @@ public class PipelineApiTest extends PipelineBaseTest {
     }
 
     @Test
-    public void getPipelineJobActivities() throws Exception {
+    public void getPipelineJobRuns() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
         job1.setDefinition(new CpsFlowDefinition("" +
             "node {" +
@@ -230,10 +230,10 @@ public class PipelineApiTest extends PipelineBaseTest {
         job1.scheduleBuild2(0);
 
 
-        List l = request().get("/organizations/jenkins/pipelines/pipeline1/activities").build(List.class);
+        List l = request().get("/organizations/jenkins/pipelines/pipeline1/runs").build(List.class);
 
         Assert.assertEquals(2, l.size());
-        Assert.assertEquals("io.jenkins.blueocean.service.embedded.rest.QueueItemImpl", ((Map) l.get(0)).get("_class"));
+        Assert.assertEquals("io.jenkins.blueocean.service.embedded.rest.QueuedBlueRun", ((Map) l.get(0)).get("_class"));
         Assert.assertEquals("io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl", ((Map) l.get(1)).get("_class"));
     }
 

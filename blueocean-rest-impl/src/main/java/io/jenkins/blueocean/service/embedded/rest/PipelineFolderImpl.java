@@ -20,7 +20,6 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineFolder;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
-import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
 import org.kohsuke.stapler.json.JsonBody;
 
@@ -75,11 +74,6 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     @Override
     public Collection<BlueActionProxy> getActions() {
         return Collections.emptyList();
-    }
-
-    @Override
-    public Container<Resource> getActivities() {
-        return null;
     }
 
     @Override

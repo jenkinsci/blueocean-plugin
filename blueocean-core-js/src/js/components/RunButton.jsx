@@ -3,11 +3,7 @@
  */
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/react-material-icons';
-import {
-    RunApi as runApi,
-    ToastService as toastService,
-    ToastUtils,
-} from '../';
+import { RunApi as runApi, ToastService as toastService, ToastUtils } from '../';
 import Security from '../security';
 import i18nTranslator from '../i18n/i18n';
 
@@ -51,7 +47,7 @@ export class RunButton extends Component {
 
     _onRunClick() {
         runApi.startRun(this.props.runnable)
-            .then((runInfo) => ToastUtils.createRunStartedToast(this.props.runnable, runInfo, this.props.onNavigation));
+            .then((run) => ToastUtils.createRunStartedToast(this.props.runnable, run, this.props.onNavigation));
     }
 
     _onStopClick() {
@@ -63,11 +59,7 @@ export class RunButton extends Component {
             stopping: true,
         });
 
-        if (this.props.latestRun.state === 'QUEUED') {
-            runApi.removeFromQueue(this.props.latestRun);
-        } else {
-            runApi.stopRun(this.props.latestRun);
-        }
+        runApi.stopRun(this.props.latestRun);
 
         const name = decodeURIComponent(this.props.runnable.name);
         const runId = this.props.latestRun.id;
