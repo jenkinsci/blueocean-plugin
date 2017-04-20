@@ -22,7 +22,7 @@ import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.ChangeSetResource;
-import io.jenkins.blueocean.service.embedded.rest.QueueContainerImpl;
+import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import io.jenkins.blueocean.service.embedded.rest.StoppableRun;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
@@ -100,12 +100,14 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
 
         Queue.Item item = replayAction.run2(replayAction.getOriginalScript(), replayAction.getOriginalLoadedScripts());
 
-        BlueQueueItem queueItem = QueueContainerImpl.getQueuedItem(item, run.getParent());
-
-        if(queueItem == null) {
-            throw new ServiceException.UnexpectedErrorException("Run was not added to queue.");
-        } else {
+        BlueQueueItem queueItem = QueueUtil.getQueuedItem(item, run.getParent());
+        WorkflowRun replayedRun = QueueUtil.getRun(run.getParent(), item.getId());
+        if (queueItem != null) { // If the item is still queued
             return queueItem.toRun();
+        } else if (replayedRun != null) { // If the item has left the queue and is running
+                return new PipelineRunImpl(replayedRun, parent);
+        } else { // For some reason could not be added to the queue
+            throw new ServiceException.UnexpectedErrorException("Run was not added to queue.");
         }
     }
 
