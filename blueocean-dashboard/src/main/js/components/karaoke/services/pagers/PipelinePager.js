@@ -120,6 +120,42 @@ export class PipelinePager {
                 action('set error', () => { this.error = err; });
             });
     }
+    /**
+     * Fetches the detail from the backend but only the nodes part
+     *
+     * @returns {Promise}
+     */
+    @action
+    fetchNodesOnly() {
+        logger.debug('Fetching now nodes url and further process it');
+        // while fetching we are pending
+        this.pending = true;
+        // log is text and not json, further it does not has _link in the response
+        const logData = {
+            _links: {
+                self: {
+                    href: this.augmenter.nodesUrl,
+                },
+            },
+        };
+        // get api data and further process it
+        return KaraokeApi.getNodes(this.augmenter.nodesUrl)
+            .then(action('Process node data', result => {
+                // get information about the result
+                logData.data = result;
+                // compare whether we really need to
+                // update the bunker
+                const cached = this.bunker.getItem(logData._links.self.href);
+                if (cached !== logData) { // calculate which node we need to focus
+                    logger.debug('objects are different - updating store');
+                    this.bunker.setItem(logData);
+                }
+                this.pending = false;
+            })).catch(err => {
+                logger.error('Error fetching page', err);
+                action('set error', () => { this.error = err; });
+            });
+    }
     @action
     fetchCurrentStepUrl() {
         this.pending = true;

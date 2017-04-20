@@ -106,10 +106,7 @@ export default class Pipeline extends Component {
          // we are using try/catch to throw an early out error
         try {
             logger.debug('incoming event', event);
-            if (KaraokeConfig.getPreference('runDetails.pipeline.karaoke').value === 'never' || !this.karaoke) {
-                logger.debug('early out because we do not want to follow along sse events');
-                throw new Error('exit');
-            }
+            const karaokeOut = KaraokeConfig.getPreference('runDetails.pipeline.karaoke').value === 'never' || !this.karaoke;
             const jenkinsEvent = event.jenkins_event;
             const { run } = this.props;
             const runId = run.id;
@@ -121,6 +118,10 @@ export default class Pipeline extends Component {
             }
             switch (jenkinsEvent) {
             case 'pipeline_step': {
+                if (karaokeOut) {
+                    logger.debug('early out because we do not want to follow along sse events');
+                    throw new Error('exit');
+                }
                 logger.debug('sse event step fetchCurrentSteps', jenkinsEvent);
                 debounce(() => {
                     logger.debug('sse fetch it', this.karaoke);
@@ -138,7 +139,11 @@ export default class Pipeline extends Component {
                 logger.debug('sse event block starts refetchNodes', jenkinsEvent);
                 debounce(() => {
                     logger.debug('sse fetch it', this.karaoke);
-                    this.pager.fetchNodes({});
+                    if (karaokeOut) {
+                        this.pager.fetchNodesOnly({});
+                    } else {
+                        this.pager.fetchNodes({});
+                    }
                 }, 200)();
                 // prevent flashing of stages and nodes
                 this.showPending = false;
