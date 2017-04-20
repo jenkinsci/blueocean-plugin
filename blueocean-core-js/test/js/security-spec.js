@@ -21,10 +21,11 @@ describe('Security', () => {
         });
 
         it('returns true when user has permission', () => {
-            assert.isFalse(permit(pipeline).read());
+            assert.isTrue(permit(pipeline).read());
             assert.isTrue(permit(pipeline).create());
             assert.isTrue(permit(pipeline).start());
             assert.isTrue(permit(pipeline).stop());
+            throw new Error('i should break the build');
         });
 
         it('returns false when user does not have permission', () => {
