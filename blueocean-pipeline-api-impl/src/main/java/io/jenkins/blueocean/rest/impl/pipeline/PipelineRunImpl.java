@@ -105,7 +105,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         if (queueItem != null) { // If the item is still queued
             return queueItem.toRun();
         } else if (replayedRun != null) { // If the item has left the queue and is running
-                return new PipelineRunImpl(replayedRun, getLink());
+                return new PipelineRunImpl(replayedRun, parent);
         } else { // For some reason could not be added to the queue
             throw new ServiceException.UnexpectedErrorException("Run was not added to queue.");
         }

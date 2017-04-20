@@ -34,7 +34,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     protected final T run;
     protected final BlueOrganization org;
 
-    private final Link parent;
+    protected final Link parent;
     public AbstractRunImpl(T run, Link parent) {
         this.run = run;
         this.parent = parent;
