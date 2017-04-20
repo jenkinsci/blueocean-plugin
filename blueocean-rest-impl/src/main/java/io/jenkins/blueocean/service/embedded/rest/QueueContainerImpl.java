@@ -1,9 +1,12 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import hudson.model.BuildableItem;
 import hudson.model.Job;
 import hudson.model.Queue;
+import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
@@ -11,6 +14,7 @@ import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import jenkins.model.Jenkins;
 
+import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
 
@@ -79,6 +83,17 @@ public class QueueContainerImpl extends BlueQueueContainer {
         }
         return null;
     }
+
+    @SuppressWarnings("unchecked")
+    public static Run getRun(Job job, final long queueId) {
+        return Iterables.find((Iterable<Run>) job.getBuilds(), new Predicate<Run>() {
+            @Override
+            public boolean apply(@Nullable Run input) {
+                return input != null && input.getQueueId() == queueId;
+            }
+        }, null);
+    }
+
     @Override
     public Link getLink() {
         return pipeline.getLink().rel("queue");

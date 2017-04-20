@@ -3,20 +3,16 @@
     align-items: center;
     border-radius: 3px;
     color: white;
-    min-width: 400px;
     cursor: pointer;
     height: 40px;
-    padding-left: 16px;
-    padding-right: 16px;
+    padding-left: 24px;
+    padding-right: 24px;
+    min-width: 550px;
 
     a {
         color: white;
         cursor: pointer;
     }
-
-    //.svgResultStatus {
-    //    min-width: 20px;
-    //}
 
     .name, .branch, .commit, .time {
         margin-left: 10px;
@@ -25,19 +21,19 @@
     .branch, .commit, .time {
         display: flex;
         align-items: center;
-        flex-shrink: 0;
         flex-grow: 0;
+        overflow: hidden;
     }
 
     .commit, .time {
         flex-basis: 150px;
-        width: 150px;
+        flex-shrink: 2;
     }
 
     .name {
         flex-grow: 1;
-        flex-shrink: 1;
-        flex-basis: 40%;
+        flex-shrink: 4;
+        flex-basis: 300px;
 
         overflow: hidden;
         white-space: nowrap;
@@ -53,11 +49,7 @@
 
     .branch {
         flex-basis: 200px;
-        width: 200px;
-    }
-
-    .commit {
-        min-width: 100px;
+        flex-shrink: 3;
     }
 
     .branchText, .commitId, .timeText {
@@ -70,11 +62,13 @@
 
     .actions {
         display: flex;
-        min-width: 95px;
         margin-left: 10px;
         justify-content: flex-end;
         flex-direction: row;
         align-items: center;
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-basis: (24px * 3) + (8px * 2); // 3 Icons, 2 spaces
     }
 
     .action-item {
@@ -143,6 +137,10 @@
     */
 
     >*:first-child {
+        // This is the status icon
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-basis: 20px;
         height: 20px;
         width: 20px;
         overflow: hidden;
@@ -151,6 +149,7 @@
     .actions > * {
         height: 24px;
         width: 24px;
+        flex-basis: 24px;
         overflow: hidden;
     }
 }

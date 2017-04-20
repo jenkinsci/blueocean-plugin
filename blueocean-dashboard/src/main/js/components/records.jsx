@@ -46,11 +46,33 @@ export const ChangeSetRecord = Record({
     timestamp: null,
 });
 
+export const PullRequestRecord = Record({
+    pullRequest: {
+        author: null,
+        id: null,
+        title: null,
+        url: null,
+    },
+});
+
+export const TestSummaryRecord = Record({
+    testSummary: {
+        failed: null,
+        regressions: null,
+        existingFailed: null,
+        passed: null,
+        fixed: null,
+        skipped: null,
+        total: null,
+    },
+});
+
 export class RunRecord extends Record({
     _class: null,
     _capabilities: [],
     _links: null,
     changeSet: ChangeSetRecord,
+    causeOfBlockage: null,
     artifacts: null,
     durationInMillis: null,
     enQueueTime: null,
@@ -67,6 +89,8 @@ export class RunRecord extends Record({
     commitId: null,
     parameters: null,
     artifactsZipFile: null,
+    pullRequest: PullRequestRecord,
+    testSummary: TestSummaryRecord,
 }) {
     isQueued() {
         return this.state === 'QUEUED';
@@ -92,15 +116,6 @@ export class RunRecord extends Record({
         return this.state;
     }
 }
-
-export const PullRequestRecord = Record({
-    pullRequest: {
-        author: null,
-        id: null,
-        title: null,
-        url: null,
-    },
-});
 
 export const RunsRecord = Record({
     _class: null,
@@ -130,5 +145,5 @@ export const State = Record({
     pullRequests: null,
     steps: null,
     currentBranches: null,
-    testResults: null,
+    tests: null,
 });

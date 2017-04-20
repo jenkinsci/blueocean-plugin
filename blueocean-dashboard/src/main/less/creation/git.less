@@ -1,18 +1,22 @@
-.git-step-connect {
-    .instructions {
-        margin-top: 0;
-    }
+.create-credential-dialog {
+    width: 460px;
 
+    .text-username, .text-password {
+        width: 100%;
+    }
+}
+
+.git-step-connect {
     .text-repository-url {
         width: 100%;
     }
 
-    .credentials > .FormElement-heading {
-        padding: 0;
-    }
+    .dropdown-credentials {
+        margin-right: 10px;
 
-    .credentials-new, .credentials-existing {
-        width: 50%;
+        .Dropdown-menu li:first-child {
+            font-style: italic;
+        }
     }
 }
 
@@ -20,5 +24,11 @@
     .text-pipeline {
         width: 100%;
         margin-right: 10px;
+    }
+}
+
+.git-step-connect, .git-step-rename, .unknown-error-step {
+    .instructions {
+        margin-top: 0;
     }
 }

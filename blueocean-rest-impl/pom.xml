@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.0.0-rc2-SNAPSHOT</version>
+        <version>1.1.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean-rest-impl</artifactId>
@@ -20,6 +20,10 @@
             <artifactId>blueocean-rest</artifactId>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-web</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>mailer</artifactId>
         </dependency>
@@ -31,7 +35,10 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-jwt</artifactId>
         </dependency>
-
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>credentials</artifactId>
@@ -81,6 +88,10 @@
             <groupId>org.jenkins-ci.main</groupId>
             <artifactId>jenkins-test-harness-tools</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
         </dependency>
     </dependencies>
 

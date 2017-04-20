@@ -9,7 +9,10 @@ import hudson.scm.ChangeLogSet.Entry;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
+import io.jenkins.blueocean.rest.factory.BlueRunFactory;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.Branch;
+import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.PullRequest;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
@@ -18,16 +21,16 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
-import io.jenkins.blueocean.service.embedded.rest.BlueRunFactory;
 import io.jenkins.blueocean.service.embedded.rest.ChangeSetResource;
 import io.jenkins.blueocean.service.embedded.rest.QueueContainerImpl;
 import io.jenkins.blueocean.service.embedded.rest.StoppableRun;
+import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.export.Exported;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,9 +47,20 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW
  */
 @Capability(JENKINS_WORKFLOW_RUN)
 public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
+    public static final String CAUSE_OF_BLOCKAGE = "causeOfBlockage";
     private static final Logger logger = LoggerFactory.getLogger(PipelineRunImpl.class);
     public PipelineRunImpl(WorkflowRun run, Link parent) {
         super(run, parent);
+    }
+
+    @Exported(name = Branch.BRANCH, inline = true)
+    public Branch getBranch() {
+        return Branch.getBranch(run.getParent());
+    }
+
+    @Exported(name = PullRequest.PULL_REQUEST, inline = true)
+    public PullRequest getPullRequest() {
+        return PullRequest.get(run.getParent());
     }
 
     @Override
@@ -78,7 +92,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     }
 
     @Override
-    public BlueQueueItem replay() {
+    public BlueRun replay() {
         ReplayAction replayAction = run.getAction(ReplayAction.class);
         if(replayAction == null) {
             throw new ServiceException.BadRequestExpception("This run does not support replay");
@@ -91,7 +105,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         if(queueItem == null) {
             throw new ServiceException.UnexpectedErrorException("Run was not added to queue.");
         } else {
-            return queueItem;
+            return queueItem.toRun();
         }
     }
 
@@ -130,6 +144,24 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         } else {
             return data.getLastBuiltRevision().getSha1String();
         }
+    }
+
+    @Override
+    public String getCauseOfBlockage() {
+        for(Queue.Item i: Jenkins.getInstance().getQueue().getItems()) {
+            if (i.task instanceof ExecutorStepExecution.PlaceholderTask) {
+                ExecutorStepExecution.PlaceholderTask task = (ExecutorStepExecution.PlaceholderTask) i.task;
+                Run r = task.runForDisplay();
+                if (r.equals(run)) {
+                    String cause = i.getCauseOfBlockage().getShortDescription();
+                    if (task.getCauseOfBlockage() != null) {
+                        cause = task.getCauseOfBlockage().getShortDescription();
+                    }
+                    return cause;
+                }
+            }
+        }
+        return null;
     }
 
     @Extension(ordinal = 1)

@@ -3,29 +3,28 @@ import ReactDOM from 'react-dom';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import {
-    calculateLogView,
-    calculateStepsBaseUrl,
-    calculateRunLogURLObject,
-    calculateNodeBaseUrl,
-    calculateFetchAll,
     buildClassicInputUrl,
-    sseConnection,
+    calculateFetchAll,
+    calculateLogView,
+    calculateNodeBaseUrl,
+    calculateRunLogURLObject,
+    calculateStepsBaseUrl,
     logging,
+    sseConnection,
 } from '@jenkins-cd/blueocean-core-js';
-import { EmptyStateView } from '@jenkins-cd/design-language';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Alerts } from '@jenkins-cd/design-language';
 
 import LogConsoleView from './LogConsoleView';
 import LogToolbar from './LogToolbar';
 import Steps from './Steps';
 import {
-    steps as stepsSelector,
-    logs as logSelector,
-    node as nodeSelector,
-    nodes as nodesSelector,
     actions,
     connect,
     createSelector,
+    logs as logSelector,
+    node as nodeSelector,
+    nodes as nodesSelector,
+    steps as stepsSelector,
 } from '../redux';
 
 import { calculateNode } from '../util/KaraokeHelper';
@@ -34,20 +33,19 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.RunDetailsPipeline
 
 const { string, object, any, func } = PropTypes;
 
-// FIXME: needs to use i18n for translations
-const QueuedState = () => (
-    <EmptyStateView tightSpacing>
-        <p>
-            <Icon {...{
-                size: 20,
-                icon: 'timer',
-                style: { fill: '#fff' },
-            }}
-            />
-            <span className="waiting">Waiting for run to start.</span>
-        </p>
-    </EmptyStateView>
+const blockingMessage = (run, t) => {
+    const defaultMessage = t('rundetail.pipeline.waiting.default');
+    return `${run.causeOfBlockage ? run.causeOfBlockage : defaultMessage}`;
+};
+
+const QueuedState = (props) => (
+    <Alerts title={props.t('rundetail.pipeline.waiting.title')} message={blockingMessage(props.run, props.t)} />
 );
+
+QueuedState.propTypes = {
+    run: object,
+    t: func,
+};
 
 // It should really be using capability using /rest/classes API
 const supportsNodes = (result) => result && result._class === 'io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl';
@@ -293,6 +291,7 @@ export class RunDetailsPipeline extends Component {
             name: params.pipeline,
             branch: params.branch,
             runId: params.runId,
+            organization: params.organization,
         };
         // get the key for the steps we want to display
         const stepKey = calculateStepsBaseUrl(calculatedResponse);
@@ -326,7 +325,7 @@ export class RunDetailsPipeline extends Component {
         const { isMultiBranch, nodes, result: run, params, t } = this.props;
 
         if (run.isQueued()) {
-            return <QueuedState />;
+            return <QueuedState run={run} t={t} />;
         }
         const { nodeKey, supportsNode, noSteps, currentSteps, hasResultsForSteps, isPipelineQueued } = this.mergedConfig;// supportsNodes(run);
         const resultRun = !run.isCompleted() ? run.state : run.result;
@@ -394,8 +393,11 @@ export class RunDetailsPipeline extends Component {
         }
         const classicInputUrl = buildClassicInputUrl(pipe, run.id);
         logger.debug('classic Input url', classicInputUrl, pipe);
+
+        const logUrl = shouldShowCV || !this.mergedConfig.nodeReducer.id ? logGeneral.url : `${nodeKey}${this.mergedConfig.node}/log/`;
         return (
             <div ref="scrollArea" className={stepScrollAreaClass}>
+                { isPipelineQueued && supportsNode && <QueuedState run={run} t={t} /> }
                 { (hasResultsForSteps || isPipelineQueued) && nodes && nodes[nodeKey] && !this.mergedConfig.forceLogView && <Extensions.Renderer
                   extensionPoint="jenkins.pipeline.run.result"
                   selectedStage={this.mergedConfig.nodeReducer}
@@ -410,8 +412,8 @@ export class RunDetailsPipeline extends Component {
                 }
                 { hasResultsForSteps && shouldShowLogHeader && !this.mergedConfig.forceLogView &&
                     <LogToolbar
-                      fileName={logGeneral.fileName}
-                      url={logGeneral.url}
+                      fileName={`${title || 'pipeline'}.log`}
+                      url={logUrl}
                       title={title}
                     />
                 }
@@ -429,11 +431,7 @@ export class RunDetailsPipeline extends Component {
                   }}
                 />
                 }
-                { isPipelineQueued && supportsNode && <QueuedState /> }
-                { shouldShowEmptyState && !this.mergedConfig.forceLogView && <EmptyStateView tightSpacing>
-                    <p>{t('rundetail.pipeline.nosteps', { defaultValue: 'There are no logs' })}</p>
-                </EmptyStateView>
-                }
+                { shouldShowEmptyState && !this.mergedConfig.forceLogView && <Alerts title={t('rundetail.pipeline.nosteps.title')} message={t('rundetail.pipeline.nosteps')} /> }
                 { shouldShowCV && <LogConsoleView
                   {
                     ...{

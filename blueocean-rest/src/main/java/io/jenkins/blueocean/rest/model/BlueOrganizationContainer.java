@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.model;
 
-import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import io.jenkins.blueocean.rest.ApiRoutable;
 
@@ -15,12 +14,5 @@ public abstract class BlueOrganizationContainer extends Container<BlueOrganizati
     @Override
     public final String getUrlName() {
         return "organizations";
-    }
-
-    public static BlueOrganization getBlueOrganization(){
-        for(BlueOrganization action: ExtensionList.lookup(BlueOrganization.class)){
-            return action;
-        }
-        return null;
     }
 }

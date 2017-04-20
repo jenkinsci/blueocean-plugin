@@ -1,10 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView, FileSize, Table } from '@jenkins-cd/design-language';
+import { FileSize, Table } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/react-material-icons';
-import Markdown from 'react-remarkable';
 import { observer } from 'mobx-react';
 import mobxUtils from 'mobx-utils';
-import { UrlConfig, logging } from '@jenkins-cd/blueocean-core-js';
+import { logging, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.artifacts');
 const { func, object, string } = PropTypes;
@@ -30,27 +29,24 @@ ZipFileDownload.propTypes = {
 };
 
 
-const ArtifactListingLimited = (props) => {
-    const { artifacts, t } = props;
+function ArtifactListingLimited(props) {
+    const { t } = props;
 
-    if (!artifacts || artifacts.length < 100) {
-        return null;
-    }
-
-    return (<div className="artifactListingLimited">
-        <EmptyStateView tightSpacing>
-            <Markdown>
-                {t('rundetail.artifacts.limit', { defaultValue: 'Only showing the first 100 artifacts' })}
-            </Markdown>
-        </EmptyStateView>
-    </div>);
-};
-
+    return (
+        <div className="artifacts-info-container">
+            <div className="artifacts-info">
+                <h1 className="title">{t('rundetail.artifacts.limit_title')}</h1>
+                <p className="message">{t('rundetail.artifacts.limit_message')}</p>
+            </div>
+        </div>
+    );
+}
 
 ArtifactListingLimited.propTypes = {
-    artifacts: object,
     t: func,
 };
+
+
 /**
  * Displays a list of artifacts from the supplied build run property.
  */
@@ -69,10 +65,11 @@ export default class RunDetailsArtifacts extends Component {
     }
 
     _fetchArtifacts(props) {
-        const { result } = props;
-        if (result && result.state === 'FINISHED') {
-            this.artifacts = this.context.activityService.fetchArtifacts(result._links.self.href);
+        const result = props.result;
+        if (!result) {
+            return;
         }
+        this.artifacts = this.context.activityService.fetchArtifacts(result._links.self.href);
     }
 
     render() {
@@ -88,14 +85,6 @@ export default class RunDetailsArtifacts extends Component {
         }
         const { artifactsZipFile: zipFile } = result;
         const artifacts = this.artifacts.value;
-
-        if (!artifacts || !artifacts.length) {
-            return (<EmptyStateView tightSpacing>
-                <Markdown>
-                    {t('EmptyState.artifacts', { defaultValue: 'There are no artifacts for this pipeline run.\n\n' })}
-                </Markdown>
-            </EmptyStateView>);
-        }
 
         const headers = [
             { label: t('rundetail.artifacts.header.name', { defaultValue: 'Name' }), className: 'name' },
@@ -130,8 +119,27 @@ export default class RunDetailsArtifacts extends Component {
 
         return (
             <div>
-                <ArtifactListingLimited artifacts={artifacts} t={t} />
+                { artifacts.length > 100 && <ArtifactListingLimited t={t} /> }
                 <Table headers={headers} className="artifacts-table">
+                    <tr>
+                        <td>
+                            <a target="_blank"
+                                title={t('rundetail.artifacts.button.open', { defaultValue: 'Open the artifact' })}
+                                href={`${UrlConfig.getJenkinsRootURL()}${result._links.self.href}log/?start=0`}
+                            >
+                                pipeline.log
+                            </a>
+                        </td>
+                        <td>-</td>
+                        <td className="download">
+                            <a target="_blank"
+                                title={t('rundetail.artifacts.button.download', { defaultValue: 'Download the artifact' })}
+                                href={`${UrlConfig.getJenkinsRootURL()}${result._links.self.href}log/?start=0&download=true`}
+                            >
+                                <Icon style={style} icon="file_download" />
+                            </a>
+                        </td>
+                    </tr>
                     { artifactsRendered }
                     <td colSpan="3"></td>
                 </Table>
