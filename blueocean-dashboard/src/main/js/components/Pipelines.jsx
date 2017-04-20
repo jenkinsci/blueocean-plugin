@@ -43,7 +43,7 @@ export class Pipelines extends Component {
                 { organization }
             </Link> : '';
 
-        const showPipelineList = !this.pager.pending && pipelines && pipelines.length > 0;
+        const showPipelineList = pipelines && pipelines.length > 0;
         const showEmptyState = !this.pager.pending && (!pipelines || !pipelines.length);
 
         const headers = [

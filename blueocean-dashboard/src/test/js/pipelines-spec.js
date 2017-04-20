@@ -62,7 +62,7 @@ describe('Pipelines', () => {
                 { context },
             );
 
-            assert.equal(wrapper.find('PipelineRowItem').length, 1);
+            assert.equal(wrapper.find('PipelineRowItem').length, 2);
         });
     });
 
