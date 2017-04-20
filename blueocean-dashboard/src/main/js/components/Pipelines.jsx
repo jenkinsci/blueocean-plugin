@@ -112,7 +112,6 @@ export class Pipelines extends Component {
 const { func, object } = PropTypes;
 
 Pipelines.contextTypes = {
-    config: object,
     params: object,
     store: object,
     router: object,

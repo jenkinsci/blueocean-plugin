@@ -12,25 +12,13 @@ import { pipelinesDupName } from './data/pipelines/pipelinesTwoJobsSameName';
 const resultArrayHeaders = ['Name', 'Status', 'Branches', 'Pull Requests', ''];
 
 describe('Pipelines', () => {
-    const config = {
-        getRootURL: () => '/',
-    };
-
-  //  const context = {
-   //     params: {},
-   ///     location: {},
-   ///     config,
-  //  };
-
     describe('basic table rendering', () => {
         let wrapper;
 
         beforeEach(() => {
-
             const context = {
                 params: {},
                 location: {},
-                config,
                 pipelineService: {
                     allPipelinesPager() {
                         return {
@@ -41,7 +29,7 @@ describe('Pipelines', () => {
             };
 
             wrapper = shallow(
-                <Pipelines params={context.params} setTitle={()=>{}}/>,
+                <Pipelines params={context.params} setTitle={() => {}} />,
                 {
                     context,
                 }
@@ -60,9 +48,8 @@ describe('Pipelines', () => {
     describe('duplicate job names', () => {
         it('should render two rows when job names are duplicated across folders', () => {
             const context = {
-                config,
                 params: {
-                    organization:'jenkins',
+                    organization: 'jenkins',
                 },
                 pipelineService: {
                     organiztionPipelinesPager() {
@@ -75,7 +62,7 @@ describe('Pipelines', () => {
 
 
             const wrapper = mount(
-                <Pipelines params={context.params} setTitle={()=>{}}/>,
+                <Pipelines params={context.params} setTitle={() => {}} />,
                 { context },
             );
 
