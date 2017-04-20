@@ -1,11 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { PlaceholderTable } from '@jenkins-cd/design-language';
-import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 
-import { actions as selectorActions, testResults as testResultsSelector,
-    connect, createSelector } from '../redux';
+import { actions as selectorActions, connect, createSelector, tests as testsSelector } from '../redux';
 import Icon from './placeholder/Icon';
 import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
+import TestResults from './testing/TestResults';
 
 
 function NoTestsPlaceholder(props) {
@@ -42,35 +41,33 @@ NoTestsPlaceholder.propTypes = {
  */
 export class RunDetailsTests extends Component {
     componentWillMount() {
-        this.props.fetchTestResults(
+        this.props.fetchTests(
             this.props.result
         );
     }
 
     componentWillUnmount() {
-        this.props.resetTestDetails();
+        this.props.resetTests();
     }
 
     render() {
-        const { testResults, t, locale } = this.props;
+        const { tests, t, locale } = this.props;
 
-        if (!testResults || testResults.$pending) {
+        if (!tests || tests.$pending) {
             return null;
         }
 
-        if (testResults.$failed) {
+        if (tests.$failed) {
             return <NoTestsPlaceholder t={t} />;
         }
 
         return (
             <div className="test-results-container">
-                <Extensions.Renderer
-                  extensionPoint="jenkins.test.result"
-                  filter={dataType(testResults)}
-                  testResults={testResults}
-                  locale={locale}
-                  t={t}
-                  run={this.props.result}
+                <TestResults
+                    tests={tests}
+                    locale={locale}
+                    t={t}
+                    run={this.props.result}
                 />
             </div>
         );
@@ -81,9 +78,9 @@ RunDetailsTests.propTypes = {
     params: PropTypes.object,
     isMultiBranch: PropTypes.bool,
     result: PropTypes.object,
-    testResults: PropTypes.object,
-    resetTestDetails: PropTypes.func,
-    fetchTestResults: PropTypes.func,
+    tests: PropTypes.object,
+    resetTests: PropTypes.func,
+    fetchTests: PropTypes.func,
     fetchTypeInfo: PropTypes.func,
     t: PropTypes.func,
     locale: PropTypes.string,
@@ -93,7 +90,7 @@ RunDetailsTests.contextTypes = {
     config: PropTypes.object.isRequired,
 };
 
-const selectors = createSelector([testResultsSelector],
-    (testResults) => ({ testResults }));
+const selectors = createSelector([testsSelector],
+    (tests) => ({ tests }));
 
 export default connect(selectors, selectorActions)(RunDetailsTests);

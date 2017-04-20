@@ -82,26 +82,6 @@ export const buildRunDetailsUrl = (run) => {
         `/${detailName}/${runId}/pipeline`;
 };
 
-export const buildRunDetailsUrlFromQueue = (queueItem, isMultiBranch, expectedBuildNumber) => {
-    const restUrl = extractRestUrl(queueItem);
-    const tokens = trimEmptyTokens(restUrl.split('/'));
-
-    // given the following URL '/blue/rest/organizations/jenkins/pipelines/jenkinsfile-experiments/pipelines/PR-2/queue/31/'
-
-    // modify the 'queue' URL so it looks like a 'runs' URL
-    tokens[tokens.length - 2] = 'runs';
-
-    // replace the queue number with the expected runId
-    tokens[tokens.length - 1] = expectedBuildNumber;
-
-    // if multi-branch, change the last value of 'pipelines' to 'branches' so it looks like a multibranch REST URL
-    if (isMultiBranch) {
-        tokens[tokens.length - 4] = 'branches';
-    }
-
-    return buildRunDetailsUrl(tokens.join('/'));
-};
-
 export default {
-    buildRunDetailsUrl, buildRunDetailsUrlFromQueue,
+    buildRunDetailsUrl,
 };

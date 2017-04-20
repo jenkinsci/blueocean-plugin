@@ -1,5 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.Item;
@@ -12,6 +14,7 @@ import hudson.model.Queue;
 import hudson.model.queue.ScheduleResult;
 import hudson.util.RunList;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
@@ -59,8 +62,22 @@ public class RunContainerImpl extends BlueRunContainer {
                     break;
                 }
             }
+
+            int number;
+            try {
+                number = Integer.parseInt(name);
+            } catch (NumberFormatException e) {
+                throw new NotFoundException(String.format("Run %s not found in organization %s and pipeline %s",
+                    name, pipeline.getOrganization(), job.getName()));
+            }
+            for (BlueQueueItem item : QueueUtil.getQueuedItems(job)) {
+                if (item.getExpectedBuildNumber() == number) {
+                    return item.toRun();
+                }
+            }
+
             if (run == null) {
-                throw new ServiceException.NotFoundException(
+                throw new NotFoundException(
                     String.format("Run %s not found in organization %s and pipeline %s",
                         name, pipeline.getOrganization(), job.getName()));
             }
@@ -72,14 +89,22 @@ public class RunContainerImpl extends BlueRunContainer {
 
     @Override
     public Iterator<BlueRun> iterator() {
-        return RunSearch.findRuns(job, pipeline.getLink()).iterator();
+        return getRuns(RunSearch.findRuns(job, pipeline.getLink()));
     }
 
     @Override
     public Iterator<BlueRun> iterator(int start, int limit) {
-        return RunSearch.findRuns(job, pipeline.getLink(), start, limit).iterator();
+        return getRuns(RunSearch.findRuns(job, pipeline.getLink(), start, limit));
     }
 
+    private Iterator<BlueRun> getRuns(Iterable<BlueRun> runs) {
+        return Iterables.concat(Iterables.transform(QueueUtil.getQueuedItems(job), new Function<BlueQueueItem, BlueRun>() {
+            @Override
+            public BlueRun apply(BlueQueueItem input) {
+                return input.toRun();
+            }
+        }), runs).iterator();
+    }
 
     /**
      * Schedules a build. If build already exists in the queue and the pipeline does not
@@ -89,7 +114,7 @@ public class RunContainerImpl extends BlueRunContainer {
      * @return Queue item.
      */
     @Override
-    public BlueQueueItem create(StaplerRequest request) {
+    public BlueRun create(StaplerRequest request) {
         job.checkPermission(Item.BUILD);
         if (job instanceof Queue.Task) {
             ScheduleResult scheduleResult;
@@ -112,7 +137,7 @@ public class RunContainerImpl extends BlueRunContainer {
                         item,
                         job.getName(),
                         expectedBuildNumber, pipeline.getLink().rel("queue").rel(Long.toString(item.getId())),
-                        pipeline.getLink());
+                        pipeline.getLink()).toRun();
             } else {
                 throw new ServiceException.UnexpectedErrorException("Queue item request was not accepted");
             }

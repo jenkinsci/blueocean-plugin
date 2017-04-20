@@ -10,8 +10,9 @@ import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
-import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
+import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.service.embedded.rest.LogResource;
 import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
@@ -149,14 +150,29 @@ public class OrganizationFolderRunImpl extends BlueRun {
     }
 
     @Override
+    public BlueTestResultContainer getTests() {
+        return null;
+    }
+
+    @Override
+    public BlueTestSummary getTestSummary() {
+        return null;
+    }
+
+    @Override
     public Object getLog() {
         return new LogResource(folderComputation.getLogText());
     }
 
     @Override
-    public BlueQueueItem replay() {
+    public String getCauseOfBlockage() {
+        return null;
+    }
+
+    @Override
+    public BlueRun replay() {
         if(pipeline.folder.isBuildable()) {
-            return new QueueItemImpl(pipeline.folder.scheduleBuild2(0,new CauseAction(new Cause.UserIdCause())), pipeline, 1);
+            return new QueueItemImpl(pipeline.folder.scheduleBuild2(0,new CauseAction(new Cause.UserIdCause())), pipeline, 1).toRun();
         }
         return null;
     }

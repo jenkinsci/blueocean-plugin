@@ -30,9 +30,9 @@ import hudson.model.Run;
 import io.jenkins.blueocean.commons.BlueUrlTokenizer;
 import io.jenkins.blueocean.commons.RESTFetchPreloader;
 import io.jenkins.blueocean.commons.stapler.Export;
+import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
-import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
 
