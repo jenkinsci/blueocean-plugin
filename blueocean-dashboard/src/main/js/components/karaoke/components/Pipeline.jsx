@@ -243,11 +243,13 @@ export default class Pipeline extends Component {
                     t={t}
                 />
             }
-            { !isPipelineQueued && <LogToolbar
-                fileName={logFileName}
-                url={logUrl}
-                title={title}
-            /> }
+            { !isPipelineQueued &&
+                <LogToolbar
+                    fileName={logFileName}
+                    url={logUrl}
+                    title={title}
+                />
+            }
             { this.pager.steps && !noResultsToDisplay &&
                 <Steps
                     {...{
@@ -264,19 +266,19 @@ export default class Pipeline extends Component {
             }
 
             { !this.pager.pending && !isPipelineQueued && noResultsToDisplay &&
-            <NoSteps
-                translation={t}
-                titleKey="rundetail.pipeline.nosteps.message.title"
-                messageKey="rundetail.pipeline.nosteps.message.description"
-            />
+                <NoSteps
+                    translation={t}
+                    titleKey="rundetail.pipeline.nosteps.message.title"
+                    messageKey="rundetail.pipeline.nosteps.message.description"
+                />
             }
 
             { isPipelineQueued &&
-            <QueuedState translation={t}
-                         titleKey="rundetail.pipeline.waiting.message.title"
-                         messageKey="rundetail.pipeline.waiting.message.description"
-                         message={run.causeOfBlockage}
-            />
+                <QueuedState translation={t}
+                    titleKey="rundetail.pipeline.waiting.message.title"
+                    messageKey="rundetail.pipeline.waiting.message.description"
+                    message={run.causeOfBlockage}
+                />
             }
         </div>);
     }
