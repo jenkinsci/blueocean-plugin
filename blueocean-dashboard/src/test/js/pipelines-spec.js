@@ -45,6 +45,30 @@ describe('Pipelines', () => {
         });
     });
 
+    describe('pending state', () => {
+        it('should continue to render existing data while a fetch is pending', () => {
+            const context = {
+                params: {},
+                location: {},
+                pipelineService: {
+                    allPipelinesPager() {
+                        return {
+                            pending: true,
+                            data: pipelines,
+                        };
+                    },
+                },
+            };
+
+            const wrapper = shallow(
+                <Pipelines params={context.params} setTitle={() => {}} />,
+                { context },
+            );
+
+            assert.equal(wrapper.find('PipelineRowItem').length, 1);
+        });
+    });
+
     describe('duplicate job names', () => {
         it('should render two rows when job names are duplicated across folders', () => {
             const context = {
