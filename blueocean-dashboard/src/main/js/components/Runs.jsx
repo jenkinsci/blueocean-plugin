@@ -5,7 +5,7 @@ import {
     logging,
     ReplayButton,
     RunButton,
-    TimeHarmonizer as timeHarmonizer
+    TimeHarmonizer as timeHarmonizer,
 } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
