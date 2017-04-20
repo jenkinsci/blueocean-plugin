@@ -37,7 +37,9 @@ public abstract class BlueRun extends Resource {
     public static final String RUN_SUMMARY = "runSummary";
     public static final String RESULT = "result";
     public static final String STATE = "state";
+    public static final String CAUSE_OF_BLOCKAGE = "causeOfBlockage";
     public static final String ACTIONS = "actions";
+    public static final String TEST_SUMMARY = "testSummary";
 
     public static final int DEFAULT_BLOCKING_STOP_TIMEOUT_IN_SECS=10;
 
@@ -198,6 +200,18 @@ public abstract class BlueRun extends Resource {
     public abstract BluePipelineStepContainer getSteps();
 
     /**
+     * @return Gives tests in this run
+     */
+    @Navigable
+    public abstract BlueTestResultContainer getTests();
+
+    /**
+     * @return Gives the test summary for this run
+     */
+    @Exported(name = TEST_SUMMARY, inline = true, skipNull = true)
+    public abstract BlueTestSummary getTestSummary();
+
+    /**
      * @return Instance of stapler aware instance that can do the following:
      * <p></p><ul>
      *  <li>Must be able to process start query parameter. 'start' parameter is the byte offset in the actual log file</li>
@@ -216,7 +230,10 @@ public abstract class BlueRun extends Resource {
      * @return The queued item.
      */
     @POST @TreeResponse @WebMethod(name = "replay")
-    public abstract BlueQueueItem replay();
+    public abstract BlueRun replay();
+
+    @Exported(name = CAUSE_OF_BLOCKAGE)
+    public abstract String getCauseOfBlockage();
 
     public enum BlueRunState {
         QUEUED,

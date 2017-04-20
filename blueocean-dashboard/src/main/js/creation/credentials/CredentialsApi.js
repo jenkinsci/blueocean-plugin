@@ -1,11 +1,11 @@
-import { capabilityAugmenter, Fetch, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter, Fetch, UrlConfig, Utils, AppConfig } from '@jenkins-cd/blueocean-core-js';
 
 const DOMAIN = 'blueocean-git-domain';
 const SCOPE = 'USER';
 
-function getCredentialsUrl() {
+function getCredentialsUrl(organization) {
     const path = UrlConfig.getRestBaseURL();
-    return Utils.cleanSlashes(`${path}/organizations/jenkins/credentials/user/`);
+    return Utils.cleanSlashes(`${path}/organizations/${organization}/credentials/user/`);
 }
 
 
@@ -13,11 +13,12 @@ export class CredentialsApi {
 
     constructor(fetch) {
         this._fetch = fetch || Fetch.fetchJSON;
+        this.organization = AppConfig.getOrganizationName();
     }
 
     listAllCredentials() {
         const path = UrlConfig.getRestBaseURL();
-        const searchUrl = Utils.cleanSlashes(`${path}/search?q=type:credential`, false);
+        const searchUrl = Utils.cleanSlashes(`${path}/search?q=type:credential;organization:${this.organization}`, false);
 
         return this._fetch(searchUrl)
             .then(data => capabilityAugmenter.augmentCapabilities(data))
@@ -41,7 +42,7 @@ export class CredentialsApi {
     }
 
     saveUsernamePasswordCredential(username, password) {
-        const requestUrl = getCredentialsUrl();
+        const requestUrl = getCredentialsUrl(this.organization);
 
         const requestBody = {
             credentials: {
@@ -67,7 +68,7 @@ export class CredentialsApi {
     }
 
     saveSSHKeyCredential(privateKey) {
-        const requestUrl = getCredentialsUrl();
+        const requestUrl = getCredentialsUrl(this.organization);
 
         const requestBody = {
             credentials: {
@@ -96,7 +97,7 @@ export class CredentialsApi {
     }
 
     saveSystemSSHCredential(id, description) {
-        const requestUrl = getCredentialsUrl();
+        const requestUrl = getCredentialsUrl(this.organization);
 
         const requestBody = {
             credentials: {

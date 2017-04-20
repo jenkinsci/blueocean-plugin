@@ -5,6 +5,7 @@ import { blueocean } from './scopes';
 
 const config = blueocean.config || {};
 const features = config.features || {};
+const organization = blueocean.organization || {};
 
 
 export default {
@@ -36,6 +37,10 @@ export default {
 
     getJenkinsConfig() {
         return config.jenkinsConfig || {};
+    },
+
+    getOrganizationName(encoded = true) {
+        return encoded ? encodeURIComponent(organization.name) : organization.name;
     },
 
     getSecurityConfig() {

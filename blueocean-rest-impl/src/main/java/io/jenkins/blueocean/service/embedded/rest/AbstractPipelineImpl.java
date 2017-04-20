@@ -2,7 +2,6 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterators;
 import hudson.Extension;
 import hudson.Util;
 import hudson.model.AbstractItem;
@@ -18,18 +17,19 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
+import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
-import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
-import io.jenkins.blueocean.service.embedded.OrganizationResolver;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
@@ -41,7 +41,6 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -55,7 +54,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_JOB;
 @Capability(JENKINS_JOB)
 public class AbstractPipelineImpl extends BluePipeline {
     private final Job job;
-    protected final OrganizationImpl org;
+    protected final BlueOrganization org;
 
     protected AbstractPipelineImpl(Job job) {
         this.job = job;
@@ -200,31 +199,6 @@ public class AbstractPipelineImpl extends BluePipeline {
     }
 
     @Override
-    public Container<Resource> getActivities() {
-        return new Container<Resource>(){
-            @Override
-            public Iterator<Resource> iterator() {
-                throw new ServiceException.NotImplementedException("Not implemented");
-            }
-
-            @Override
-            public Resource get(String name) {
-                throw new ServiceException.NotImplementedException("Not implemented");
-            }
-
-            @Override
-            public Link getLink() {
-                return AbstractPipelineImpl.this.getLink().rel("activities");
-            }
-
-            @Override
-            public Iterator<Resource> iterator(final int start, final int limit) {
-                return activityIterator(getQueue(), getRuns(), start, limit);
-            }
-        };
-    }
-
-    @Override
     public List<Object> getParameters() {
         return getParameterDefinitions(job);
     }
@@ -238,35 +212,6 @@ public class AbstractPipelineImpl extends BluePipeline {
             }
         }
         return pds;
-    }
-
-    public static Iterator<Resource> activityIterator(final BlueQueueContainer queueContainer,
-                                                      final BlueRunContainer runContainer,
-                                                      final int start, final int limit){
-        final Iterator<? extends Resource> queueIterator = queueContainer.iterator(start, limit);
-        int skipped = Iterators.skip(queueContainer.iterator(), start);
-        final Iterator<? extends Resource> runIterator = runContainer.iterator(start-skipped, limit);
-        return new Iterator<Resource>() {
-            int count=0;
-            @Override
-            public boolean hasNext() {
-                return count++ < limit &&(queueIterator.hasNext() || runIterator.hasNext());
-            }
-
-            @Override
-            public Resource next() {
-                if(queueIterator.hasNext()){
-                    return queueIterator.next();
-                }else{
-                    return runIterator.next();
-                }
-            }
-
-            @Override
-            public void remove() {
-                throw new ServiceException.NotImplementedException("Not implemented");
-            }
-        };
     }
 
     /**

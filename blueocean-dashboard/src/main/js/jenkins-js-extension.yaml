@@ -10,9 +10,6 @@ extensions:
     extensionPoint: jenkins.main.stores
   - component: components/PipelineRunGraph
     extensionPoint: jenkins.pipeline.run.result
-  - component: components/testing/TestResults
-    extensionPoint: jenkins.test.result
-    dataType: hudson.tasks.test.TestResult
 # creation for Git repos
   - component: creation/git/GitScmProvider
     extensionPoint: jenkins.pipeline.create.scm.provider
