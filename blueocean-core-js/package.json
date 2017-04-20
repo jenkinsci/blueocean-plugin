@@ -24,13 +24,9 @@
     "licenses",
     "dist"
   ],
-  "jest": {
-      "collectCoverage": true,
-      "testMatch": ["**/?(*-)(spec|test).js?(x)"]
-  },
-    "repository": {
-        "type": "git",
-        "url": "https://github.com/jenkinsci/blueocean-plugin.git"
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
     "@jenkins-cd/design-language": "0.0.127",
@@ -78,10 +74,12 @@
     "gulp-babel": "6.1.2",
     "gulp-copy": "0.0.2",
     "gulp-eslint": "3.0.1",
+    "gulp-jest": "1.0.0",
     "gulp-less": "3.1.0",
     "gulp-rename": "1.2.2",
     "gulp-sourcemaps": "1.6.0",
     "jest": "19.0.2",
+    "jest-cli": "19.0.2",
     "karma": "1.3.0",
     "karma-browserify": "5.1.0",
     "karma-chrome-launcher": "2.0.0",

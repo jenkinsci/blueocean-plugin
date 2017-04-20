@@ -4166,6 +4166,12 @@
         }
       }
     },
+    "gulp-jest": {
+      "version": "1.0.0",
+      "from": "gulp-jest@latest",
+      "resolved": "https://registry.npmjs.org/gulp-jest/-/gulp-jest-1.0.0.tgz",
+      "dev": true
+    },
     "gulp-less": {
       "version": "3.1.0",
       "from": "gulp-less@3.1.0",
@@ -4949,6 +4955,38 @@
       "from": "jest-changed-files@>=19.0.2 <20.0.0",
       "resolved": "https://registry.npmjs.org/jest-changed-files/-/jest-changed-files-19.0.2.tgz",
       "dev": true
+    },
+    "jest-cli": {
+      "version": "19.0.2",
+      "from": "jest-cli@latest",
+      "resolved": "https://registry.npmjs.org/jest-cli/-/jest-cli-19.0.2.tgz",
+      "dev": true,
+      "dependencies": {
+        "callsites": {
+          "version": "2.0.0",
+          "from": "callsites@>=2.0.0 <3.0.0",
+          "resolved": "https://registry.npmjs.org/callsites/-/callsites-2.0.0.tgz",
+          "dev": true
+        },
+        "camelcase": {
+          "version": "3.0.0",
+          "from": "camelcase@>=3.0.0 <4.0.0",
+          "resolved": "https://registry.npmjs.org/camelcase/-/camelcase-3.0.0.tgz",
+          "dev": true
+        },
+        "cliui": {
+          "version": "3.2.0",
+          "from": "cliui@>=3.2.0 <4.0.0",
+          "resolved": "https://registry.npmjs.org/cliui/-/cliui-3.2.0.tgz",
+          "dev": true
+        },
+        "yargs": {
+          "version": "6.6.0",
+          "from": "yargs@>=6.3.0 <7.0.0",
+          "resolved": "https://registry.npmjs.org/yargs/-/yargs-6.6.0.tgz",
+          "dev": true
+        }
+      }
     },
     "jest-config": {
       "version": "19.0.2",

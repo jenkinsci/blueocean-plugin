@@ -14,6 +14,7 @@ const del = require('del');
 const runSequence = require('run-sequence');
 const lint = require('gulp-eslint');
 const Karma = require('karma').Server;
+const jest = require('gulp-jest').default;
 const fs = require('fs');
 
 // Options, src/dest folders, etc
@@ -36,8 +37,8 @@ const config = {
         }
     },
     test: {
-        sources: "test/**/*-spec.{js,jsx}"
-    }
+        sources: '.',
+    },
 };
 
 // Watch all
@@ -71,7 +72,7 @@ gulp.task("lint", () => (
         .pipe(lint.failAfterError())
 ));
 
-gulp.task("test", ['test-karma']);
+gulp.task("test", ['test-jest']);
 
 gulp.task("test-debug", ['test-karma-debug']);
 
@@ -90,6 +91,16 @@ gulp.task("test-karma-debug", (done) => {
         browsers: ['Chrome'],
     }, done).start();
 });
+
+gulp.task('test-jest', () => (
+    gulp.src(config.test.sources)
+        .pipe(jest({
+            config: {
+                collectCoverage: true,
+                testMatch: ['**/?(*-)(spec|test).js?(x)'],
+            },
+        }))
+));
 
 // Build all
 
