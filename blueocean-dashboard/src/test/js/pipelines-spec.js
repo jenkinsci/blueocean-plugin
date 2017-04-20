@@ -1,9 +1,6 @@
-import { prepareMount } from './util/EnzymeUtils';
-prepareMount();
-
 import React from 'react';
 import { assert } from 'chai';
-import { mount, shallow } from 'enzyme';
+import { shallow } from 'enzyme';
 
 import { Pipelines } from '../../main/js/components/Pipelines.jsx';
 import { pipelines } from './data/pipelines/pipelinesSingle';
@@ -85,7 +82,7 @@ describe('Pipelines', () => {
             };
 
 
-            const wrapper = mount(
+            const wrapper = shallow(
                 <Pipelines params={context.params} setTitle={() => {}} />,
                 { context },
             );
