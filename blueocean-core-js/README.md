@@ -14,7 +14,7 @@ It is published as its own npm module which is then referenced in other Blue Oce
 
 To test changes in blueocean-core-js, perform the following steps:
 - Tick the version number in package.json and npm-shrinkwrap.json and ensure a "prelease" version specified, e.g. 0.0.90-SNAPSHOT-1
-- `npm run bundle`
+- `npm run gulp`
 - `npm publish --tag beta` (the "beta" tag is important)
    - If you receive an error about the package already existing, tick the version up again, e.g. 0.0.90-SNAPSHOT-2 and repeat above steps.
 - Then perform the following in blueocean-web, blueocean-dashboard, and blueocean-personalization
@@ -28,7 +28,7 @@ Once the changes to blueocean-core-js are approved via PR, perform the following
 - Ensure your branch is 100% up to date with master. **This is critical**, otherwise recent changes may be lost and break the app.
    - If changes to core-js were made in the interim, ideally you should merge and publish a new pre-release version to ensure builds still pass.
 - Tick version numbers in package.json and npm-shrinkwrap.json to a production version, e.g. "0.0.90"
-- `npm run bundle`
+- `npm run gulp`
 - `npm publish`
 - Commit the changes to package.json and npm-shrinkwrap.json
 - Tick the version number in package.json and npm-shrinkwrap.json and ensure a "prelease" suffix specified, e.g. 0.0.91-SNAPSHOT
