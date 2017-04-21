@@ -120,7 +120,8 @@ public class OrganizationImpl extends BlueOrganization implements OrganizationRe
 
         // No OrganizationRoute found, now lookup in available actions from Jenkins instance serving root
         for(Action action:Jenkins.getInstance().getActions()) {
-            if (action.getUrlName() != null && action.getUrlName().equals(route)) {
+            String urlName = action.getUrlName();
+            if (urlName != null && urlName.equals(route)) {
                 return wrap(action);
             }
         }

@@ -34,7 +34,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     protected final T run;
     protected final BlueOrganization org;
 
-    private final Link parent;
+    protected final Link parent;
     public AbstractRunImpl(T run, Link parent) {
         this.run = run;
         this.parent = parent;
@@ -95,7 +95,8 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public BlueRunResult getResult() {
-        return run.getResult() != null ? BlueRunResult.valueOf(run.getResult().toString()) : BlueRunResult.UNKNOWN;
+        Result result = run.getResult();
+        return result != null ? BlueRunResult.valueOf(result.toString()) : BlueRunResult.UNKNOWN;
     }
 
 
@@ -249,7 +250,8 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     private boolean isCompletedOrAborted(){
-        return run.getResult()!= null && (run.getResult() == Result.ABORTED || run.getResult().isCompleteBuild());
+        Result result = run.getResult();
+        return result != null && (result == Result.ABORTED || result.isCompleteBuild());
     }
 
     @Override

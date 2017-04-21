@@ -70,7 +70,7 @@ public class RunContainerImpl extends BlueRunContainer {
                 throw new NotFoundException(String.format("Run %s not found in organization %s and pipeline %s",
                     name, pipeline.getOrganization(), job.getName()));
             }
-            for (BlueQueueItem item : QueueContainerImpl.getQueuedItems(job)) {
+            for (BlueQueueItem item : QueueUtil.getQueuedItems(job)) {
                 if (item.getExpectedBuildNumber() == number) {
                     return item.toRun();
                 }
@@ -98,7 +98,7 @@ public class RunContainerImpl extends BlueRunContainer {
     }
 
     private Iterator<BlueRun> getRuns(Iterable<BlueRun> runs) {
-        return Iterables.concat(Iterables.transform(QueueContainerImpl.getQueuedItems(job), new Function<BlueQueueItem, BlueRun>() {
+        return Iterables.concat(Iterables.transform(QueueUtil.getQueuedItems(job), new Function<BlueQueueItem, BlueRun>() {
             @Override
             public BlueRun apply(BlueQueueItem input) {
                 return input.toRun();
@@ -131,8 +131,10 @@ public class RunContainerImpl extends BlueRunContainer {
                         .getQueue()
                         .schedule2((Queue.Task) job, 0, new CauseAction(new Cause.UserIdCause()));
             }
-            if(scheduleResult.isAccepted()) {
-                final Queue.Item item = scheduleResult.getItem();
+            // Keep FB happy.
+            // scheduleResult.getItem() will always return non-null if scheduleResult.isAccepted() is true
+            final Queue.Item item = scheduleResult.getItem();
+            if(scheduleResult.isAccepted() && item != null) {
                 return new QueueItemImpl(
                         item,
                         job.getName(),
