@@ -17,8 +17,10 @@ To test changes in blueocean-core-js, perform the following steps:
 - `npm run gulp`
 - `npm publish --tag beta` (the "beta" tag is important)
    - If you receive an error about the package already existing, tick the version up again, e.g. 0.0.90-SNAPSHOT-2 and repeat above steps.
-- Then perform the following in blueocean-web, blueocean-dashboard, and blueocean-personalization
-   - `npm install @jenkins-cd/blueocean-core-js@0.0.90-SNAPSHOT-1 -S -E`
+- Then update the modules that reference core-js:
+   - With script: `bin/cleanInstall.js @jenkins-cd/blueocean-core-js@0.0.90-SNAPSHOT-1`
+   - Or manually in blueocean-web, blueocean-dashboard, and blueocean-personalization
+      - `npm install @jenkins-cd/blueocean-core-js@0.0.90-SNAPSHOT-1 -S -E`
 - You should see all package.json and npm-shrinkwrap.json updated to reflect the new version number.
 - Push changes to your branch and ensure that the blueocean-plugin and ATH builds both pass.
 
@@ -33,8 +35,10 @@ Once the changes to blueocean-core-js are approved via PR, perform the following
 - Commit the changes to package.json and npm-shrinkwrap.json
 - Tick the version number in package.json and npm-shrinkwrap.json and ensure a "prelease" suffix specified, e.g. 0.0.91-SNAPSHOT
 - Commit the changes to package.json and npm-shrinkwrap.json
-- Then perform the following in blueocean-web, blueocean-dashboard, and blueocean-personalization
-   - `npm install @jenkins-cd/blueocean-core-js@0.0.90`
+- Then update the modules that reference core-js:
+   - With script: `bin/cleanInstall.js @jenkins-cd/blueocean-core-js@0.0.90`
+   - Or manually in blueocean-web, blueocean-dashboard, and blueocean-personalization
+      - `npm install @jenkins-cd/blueocean-core-js@0.0.90 -S -E`
 - You should see all package.json and npm-shrinkwrap.json updated to reflect the new version number.
 - Push changes to your branch and ensure that the blueocean-plugin and ATH builds both pass.
 - Merge your PR to master.
