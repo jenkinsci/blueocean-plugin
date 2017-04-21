@@ -101,6 +101,10 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
 
         Queue.Item item = replayAction.run2(replayAction.getOriginalScript(), replayAction.getOriginalLoadedScripts());
 
+        if(item == null){
+            throw new ServiceException.UnexpectedErrorException("Run was not added to queue.");
+        }
+
         BlueQueueItem queueItem = QueueUtil.getQueuedItem(item, run.getParent());
         WorkflowRun replayedRun = QueueUtil.getRun(run.getParent(), item.getId());
         if (queueItem != null) { // If the item is still queued
