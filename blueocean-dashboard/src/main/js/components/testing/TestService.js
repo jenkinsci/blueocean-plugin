@@ -3,7 +3,7 @@ import { Pager } from '@jenkins-cd/blueocean-core-js';
 import TestLogService from './TestLogService';
 
 
-const PAGE_SIZE = 1;
+const PAGE_SIZE = 100;
 
 
 export default class TestService extends BunkerService {
