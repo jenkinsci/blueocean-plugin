@@ -27,10 +27,11 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.CheckForNull;
 import javax.servlet.http.HttpServletRequest;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.jose4j.jws.AlgorithmIdentifiers.*;
+import static org.jose4j.jws.AlgorithmIdentifiers.RSA_USING_SHA256;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -185,7 +186,8 @@ public class JwtTokenVerifierImpl extends JwtTokenVerifier {
 
         @Override
         public GrantedAuthority[] getAuthorities() {
-            return grantedAuthorities;
+            //Fix for FB warning: EI_EXPOSE_REP
+            return Arrays.copyOf(grantedAuthorities, grantedAuthorities.length);
         }
     }
 }

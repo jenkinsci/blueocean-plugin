@@ -48,11 +48,14 @@ public class NodeLogResource {
                     PipelineStepImpl step = (PipelineStepImpl) blueStep;
 
                     final FlowNodeWrapper node = step.getFlowNodeWrapper();
-                    if (step.getFlowNodeWrapper().isLoggable()) {
-                        count += node.getNode().getAction(LogAction.class).getLogText().writeLogTo(0, spool);
-                        String errorLog = node.blockError();
-                        if (errorLog != null) {
-                            count += appendError(errorLog, new WriterOutputStream(spool));
+                    if (node.isLoggable()) {
+                        LogAction logAction = node.getNode().getAction(LogAction.class);
+                        if(logAction != null) {
+                            count += logAction.getLogText().writeLogTo(0, spool);
+                            String errorLog = node.blockError();
+                            if (errorLog != null) {
+                                count += appendError(errorLog, new WriterOutputStream(spool));
+                            }
                         }
 
                     } else {

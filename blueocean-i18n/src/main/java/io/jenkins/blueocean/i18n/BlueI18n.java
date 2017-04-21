@@ -25,7 +25,6 @@ package io.jenkins.blueocean.i18n;
 
 import hudson.Extension;
 import hudson.PluginWrapper;
-import hudson.model.RootAction;
 import hudson.util.HttpResponses;
 import io.jenkins.blueocean.rest.ApiRoutable;
 import jenkins.model.Jenkins;
@@ -377,7 +376,10 @@ public class BlueI18n implements ApiRoutable {
                 // The versions may not match (in theory - should never happen),
                 // in which case the brwoser might not want to use the bundle data.
                 jsonObject.put("plugin-version-requested", bundleCacheEntry.bundleParams.pluginVersion);
-                jsonObject.put("plugin-version-actual", bundleCacheEntry.bundleParams.getPlugin().getVersion());
+                PluginWrapper pluginWrapper = bundleCacheEntry.bundleParams.getPlugin();
+                if(pluginWrapper != null) {
+                    jsonObject.put("plugin-version-actual", pluginWrapper.getVersion());
+                }
 
                 if (bundleCacheEntry.bundleParams.isBrowserCacheable()) {
                     // Set the expiry to one year.
@@ -387,7 +389,7 @@ public class BlueI18n implements ApiRoutable {
                     // and the UI is coded up properly, with proper access to the installed
                     // plugin version.
                     LOGGER.log(Level.WARNING, String.format("Unexpected request for Blue Ocean i18n resource bundle '%s'. Installed plugin version '%s' does not match.",
-                        bundleCacheEntry.bundleParams, bundleCacheEntry.bundleParams.getPlugin().getVersion()));
+                        bundleCacheEntry.bundleParams, pluginWrapper!= null ? pluginWrapper.getVersion() : "unknown"));
                 }
             }
 

@@ -265,7 +265,7 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     public static final Predicate<Run> isRunning = new Predicate<Run>() {
         public boolean apply(Run r) {
-            return r.isBuilding();
+            return r != null && r.isBuilding();
         }
     };
 
