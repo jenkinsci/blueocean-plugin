@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import { logging, sseConnection, calculateLogView } from '@jenkins-cd/blueocean-core-js';
+import { calculateLogView, logging, sseConnection } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
-import { QueuedState, NoSteps } from './QueuedState';
+import { QueuedState } from './QueuedState';
 import { KaraokeService } from '../index';
 import LogToolbar from './LogToolbar';
 import Steps from './Steps';
@@ -262,14 +262,6 @@ export default class Pipeline extends Component {
                         router,
                         location,
                     }}
-                />
-            }
-
-            { !this.pager.pending && !isPipelineQueued && noResultsToDisplay &&
-                <NoSteps
-                    translation={t}
-                    titleKey="rundetail.pipeline.nosteps.message.title"
-                    messageKey="rundetail.pipeline.nosteps.message.description"
                 />
             }
 
