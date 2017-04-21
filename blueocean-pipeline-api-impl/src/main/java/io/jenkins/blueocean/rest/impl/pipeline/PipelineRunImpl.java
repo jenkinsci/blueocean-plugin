@@ -3,6 +3,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import hudson.Extension;
 import hudson.model.Queue;
 import hudson.model.Run;
+import hudson.plugins.git.Revision;
 import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
@@ -100,6 +101,10 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
 
         Queue.Item item = replayAction.run2(replayAction.getOriginalScript(), replayAction.getOriginalLoadedScripts());
 
+        if(item == null){
+            throw new ServiceException.UnexpectedErrorException("Run was not added to queue.");
+        }
+
         BlueQueueItem queueItem = QueueUtil.getQueuedItem(item, run.getParent());
         WorkflowRun replayedRun = QueueUtil.getRun(run.getParent(), item.getId());
         if (queueItem != null) { // If the item is still queued
@@ -139,13 +144,13 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     public String getCommitId() {
         BuildData data = run.getAction(BuildData.class);
 
-        if (data == null
-            || data.getLastBuiltRevision() == null
-            || data.getLastBuiltRevision().getSha1String() == null) {
-            return null;
-        } else {
-            return data.getLastBuiltRevision().getSha1String();
+        if (data != null){
+            Revision revision = data.getLastBuiltRevision();
+            if(revision != null){
+                return revision.getSha1String();
+            }
         }
+        return null;
     }
 
     @Override
@@ -154,7 +159,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
             if (i.task instanceof ExecutorStepExecution.PlaceholderTask) {
                 ExecutorStepExecution.PlaceholderTask task = (ExecutorStepExecution.PlaceholderTask) i.task;
                 Run r = task.runForDisplay();
-                if (r.equals(run)) {
+                if (r != null && r.equals(run)) {
                     String cause = i.getCauseOfBlockage().getShortDescription();
                     if (task.getCauseOfBlockage() != null) {
                         cause = task.getCauseOfBlockage().getShortDescription();

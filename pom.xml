@@ -10,7 +10,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.1.0-SNAPSHOT</version>
+  <version>1.1.0-beta-2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean Parent</name>
@@ -22,6 +22,8 @@
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <node.version>6.4.0</node.version>
     <npm.version>3.10.3</npm.version>
+    <findbugs-maven-plugin.version>3.0.4</findbugs-maven-plugin.version>
+    <findbugs.failOnError>true</findbugs.failOnError>
   </properties>
 
   <scm>
@@ -489,6 +491,17 @@
                   <artifactId>maven-javadoc-plugin</artifactId>
                   <version>2.10.4</version>
               </plugin>
+              <plugin>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>findbugs-maven-plugin</artifactId>
+                  <version>${findbugs-maven-plugin.version}</version>
+                  <configuration>
+                      <effort>Max</effort>
+                      <threshold>Default</threshold>
+                      <xmlOutput>true</xmlOutput>
+                      <findbugsXmlOutput>false</findbugsXmlOutput>
+                  </configuration>
+              </plugin>
           </plugins>
       </pluginManagement>
     <plugins>
@@ -496,14 +509,6 @@
         <!-- TODO: java8 signature doesn't exist yet -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>animal-sniffer-maven-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
-      <plugin>
-        <!-- No use worrying about this while we make such drastic changes left & right in every commit -->
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
         <configuration>
           <skip>true</skip>
         </configuration>
@@ -539,6 +544,11 @@
             </configuration>
         </plugin>
 
+        <!-- run findbugs on all modules -->
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>findbugs-maven-plugin</artifactId>
+        </plugin>
     </plugins>
   </build>
 </project>

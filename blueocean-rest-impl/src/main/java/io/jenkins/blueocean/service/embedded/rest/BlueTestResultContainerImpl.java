@@ -76,7 +76,7 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
         }
     }
 
-    class StatusPredicate implements Predicate<BlueTestResult> {
+    static class StatusPredicate implements Predicate<BlueTestResult> {
 
         private final Status status;
 

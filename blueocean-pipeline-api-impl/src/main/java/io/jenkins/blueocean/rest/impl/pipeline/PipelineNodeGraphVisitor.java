@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Predicate;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
@@ -11,6 +12,7 @@ import org.jenkinsci.plugins.workflow.actions.TimingAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode;
+import org.jenkinsci.plugins.workflow.flow.FlowExecution;
 import org.jenkinsci.plugins.workflow.graph.BlockEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.graph.FlowStartNode;
@@ -81,8 +83,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     public PipelineNodeGraphVisitor(WorkflowRun run) {
         this.run = run;
         this.inputAction = run.getAction(InputAction.class);
-        if(run.getExecution()!=null) {
-            ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), this, new StageChunkFinder());
+        FlowExecution execution = run.getExecution();
+        if(execution!=null) {
+            ForkScanner.visitSimpleChunks(execution.getCurrentHeads(), this, new StageChunkFinder());
         }
     }
 
@@ -149,6 +152,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     }
 
     // This gets triggered on encountering a new chunk (stage or branch)
+    @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "chunk.getLastNode() is marked non null but is null sometimes, when JENKINS-40200 is fixed we will remove this check ")
     @Override
     protected void handleChunkDone(@Nonnull MemoryFlowChunk chunk) {
         if(isNodeVisitorDumpEnabled)
@@ -283,6 +287,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                         startTime);
                 status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.RUNNING);
             }
+            assert times != null; //keep FB happy
 
             FlowNodeWrapper branch = new FlowNodeWrapper(branchStartNode, status, times, run);
 
@@ -395,13 +400,14 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
     @Override
     public List<BluePipelineStep> getPipelineNodeSteps(final String nodeId, Link parent) {
-        DepthFirstScanner depthFirstScanner = new DepthFirstScanner();
-        if(run.getExecution() == null){
+        FlowExecution execution = run.getExecution();
+        if(execution == null){
             logger.debug(String.format("Pipeline %s, runid %s  has null execution", run.getParent().getName(), run.getId()));
             return Collections.emptyList();
         }
+        DepthFirstScanner depthFirstScanner = new DepthFirstScanner();
         //If blocked scope, get the end node
-        FlowNode n = depthFirstScanner.findFirstMatch(run.getExecution().getCurrentHeads(), new Predicate<FlowNode>() {
+        FlowNode n = depthFirstScanner.findFirstMatch(execution.getCurrentHeads(), new Predicate<FlowNode>() {
             @Override
             public boolean apply(@Nullable FlowNode input) {
                 return (input!= null && input.getId().equals(nodeId) &&
@@ -413,7 +419,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             return Collections.emptyList();
         }
         PipelineStepVisitor visitor = new PipelineStepVisitor(run, n);
-        ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), visitor, new StageChunkFinder());
+        ForkScanner.visitSimpleChunks(execution.getCurrentHeads(), visitor, new StageChunkFinder());
         List<BluePipelineStep> steps = new ArrayList<>();
         for(FlowNodeWrapper node: visitor.getSteps()){
             steps.add(new PipelineStepImpl(node, parent));
@@ -423,11 +429,12 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
     @Override
     public List<BluePipelineStep> getPipelineNodeSteps(Link parent) {
-        if(run.getExecution() == null){
+        FlowExecution execution = run.getExecution();
+        if(execution == null){
             return Collections.emptyList();
         }
         PipelineStepVisitor visitor = new PipelineStepVisitor(run, null);
-        ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), visitor, new StageChunkFinder());
+        ForkScanner.visitSimpleChunks(execution.getCurrentHeads(), visitor, new StageChunkFinder());
         List<BluePipelineStep> steps = new ArrayList<>();
         for(FlowNodeWrapper node: visitor.getSteps()){
             steps.add(new PipelineStepImpl(node, parent));
@@ -437,11 +444,12 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
     @Override
     public BluePipelineStep getPipelineNodeStep(String id, Link parent) {
-        if(run.getExecution() == null){
+        FlowExecution execution = run.getExecution();
+        if(execution == null){
             return null;
         }
         PipelineStepVisitor visitor = new PipelineStepVisitor(run, null);
-        ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), visitor, new StageChunkFinder());
+        ForkScanner.visitSimpleChunks(execution.getCurrentHeads(), visitor, new StageChunkFinder());
         FlowNodeWrapper node = visitor.getStep(id);
         if( node == null){
             return null;
@@ -466,7 +474,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                             latestNode.addEdge(futureNode.getId());
                         }else if(futureNode.type == FlowNodeWrapper.NodeType.PARALLEL){
                             FlowNodeWrapper thatStage = futureNode.getFirstParent();
-                            if(thatStage.equals(latestNode)){
+                            if(thatStage != null && thatStage.equals(latestNode)){
                                 for(String edge:thatStage.edges){
                                     if(!latestNode.edges.contains(edge)){
                                         latestNode.addEdge(edge);
@@ -477,11 +485,13 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                     }else if(latestNode.type == FlowNodeWrapper.NodeType.PARALLEL){
                         String futureNodeId = null;
                         FlowNodeWrapper thatStage = null;
+                        FlowNodeWrapper futureNodeParent = futureNode.getFirstParent();
                         if(futureNode.type == FlowNodeWrapper.NodeType.STAGE){
                             thatStage = futureNode;
                             futureNodeId = futureNode.getId();
                         }else if(futureNode.type == FlowNodeWrapper.NodeType.PARALLEL &&
-                                futureNode.getFirstParent().equals(latestNode.getFirstParent())){
+                                futureNodeParent != null &&
+                                futureNodeParent.equals(latestNode.getFirstParent())){
                             thatStage = futureNode.getFirstParent();
                             if(futureNode.edges.size() > 0){
                                 futureNodeId = futureNode.edges.get(0);
@@ -568,11 +578,6 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         long duration = 0;
         long pauseDuration = 0;
         long startTime = System.currentTimeMillis();
-        TimingAction timingAction = null; //= parallelStartNode.getAction(TimingAction.class);
-        if(timingAction != null){
-            startTime = timingAction.getStartTime();
-        }
-
         boolean isCompleted = true;
         boolean isPaused = false;
         boolean isFailure = false;
