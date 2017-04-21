@@ -81,9 +81,20 @@ public class UserImpl extends BlueUser {
 
     @Override
     public BlueFavoriteContainer getFavorites() {
-        String name = Jenkins.getAuthentication().getName();
-        if(!user.getId().equals(name)) {
-            throw new ForbiddenException("This user '" + name + "' cannot access resource owned by '" + user.getId() + "'");
+
+        /*
+         * Get the user id using authenticated user. User.current() returns authenticated user using security realm and
+         * associated IdStrategy to get a consistent id.
+         *
+         * @see IdStrategy#keyFor(String)
+         * @see IdStrategy.CaseInsensitive#keyFor(String)
+         *
+         */
+        User u = User.current();
+        String expectedUserId = u != null ? u.getId(): Jenkins.ANONYMOUS.getName();
+
+        if(!user.getId().equals(expectedUserId)) {
+            throw new ForbiddenException("This user '" + expectedUserId + "' cannot access resource owned by '" + user.getId() + "'");
         }
         return new FavoriteContainerImpl(this, this);
     }
