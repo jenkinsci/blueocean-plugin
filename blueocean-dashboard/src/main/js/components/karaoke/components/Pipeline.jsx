@@ -3,7 +3,7 @@ import { calculateLogView, logging, sseConnection } from '@jenkins-cd/blueocean-
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
-import { QueuedState } from './QueuedState';
+import { NoSteps, QueuedState } from './QueuedState';
 import { KaraokeService } from '../index';
 import LogToolbar from './LogToolbar';
 import Steps from './Steps';
@@ -262,6 +262,14 @@ export default class Pipeline extends Component {
                         router,
                         location,
                     }}
+                />
+            }
+
+            { !this.pager.pending && !isPipelineQueued && !run.isRunning() && noResultsToDisplay &&
+                <NoSteps
+                    translation={t}
+                    titleKey="rundetail.pipeline.nosteps.message.title"
+                    messageKey="rundetail.pipeline.nosteps.message.description"
                 />
             }
 
