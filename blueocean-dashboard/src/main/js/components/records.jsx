@@ -91,6 +91,7 @@ export class RunRecord extends Record({
     artifactsZipFile: null,
     pullRequest: PullRequestRecord,
     testSummary: TestSummaryRecord,
+    replayable: null,
 }) {
     isQueued() {
         return this.state === 'QUEUED';
