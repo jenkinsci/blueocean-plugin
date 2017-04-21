@@ -34,13 +34,13 @@ export default class TestLogService extends BunkerService {
     getStdOut(test) {
         console.log('get out');
         const item = this.getItem(test._links.stdout.href);
-        return item ? item.log : null;
+        return item && item.value && item.value.log;
     }
 
     getStdErr(test) {
         console.log('get err');
         const item = this.getItem(test._links.stderr.href);
-        return item ? item.log : null;
+        return item && item.value && item.value.log;
     }
 
     bunkerKey(data) {
