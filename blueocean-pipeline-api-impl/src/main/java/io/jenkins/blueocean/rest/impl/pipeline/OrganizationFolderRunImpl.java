@@ -173,7 +173,7 @@ public class OrganizationFolderRunImpl extends BlueRun {
 
     @Override
     public BlueRun replay() {
-        if(pipeline.folder.isBuildable()) {
+        if(isReplayable()) {
             return new QueueItemImpl(pipeline.folder.scheduleBuild2(0,new CauseAction(new Cause.UserIdCause())), pipeline, 1).toRun();
         }
         return null;
