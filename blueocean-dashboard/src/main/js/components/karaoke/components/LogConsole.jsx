@@ -2,20 +2,19 @@ import React, { Component, PropTypes } from 'react';
 import { Progress } from '@jenkins-cd/design-language';
 import { logging } from '@jenkins-cd/blueocean-core-js';
 
-import { scrollHelper } from './ScrollHelper';
+import { scrollHelper } from '../../ScrollHelper';
 
 const INITIAL_RENDER_CHUNK_SIZE = 100;
 const INITIAL_RENDER_DELAY = 300;
 const RENDER_CHUNK_SIZE = 500;
 const RERENDER_DELAY = 17;
-const logger = logging.logger('io.jenkins.blueocean.dashboard.LogConsole');
 
+const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.LogConsole');
 
 export class LogConsole extends Component {
 
     constructor(props) {
         super(props);
-
         this.queuedLines = [];
         this.state = {
             lines: [],
@@ -26,19 +25,20 @@ export class LogConsole extends Component {
     }
 
     componentWillMount() {
-        this._processLines(this.props.logArray);
+        // We need a shallow copy of the ObservableArray to "cast" it down to normal array
+        const lineArray = this.props.logArray !== undefined && this.props.logArray.slice();
+        logger.debug('isArray props', Array.isArray(this.props.logArray), 'isArray after', Array.isArray(lineArray));
+        this._processLines(lineArray);
     }
-
 
     // componentWillReceiveProps does not return anything and return null is an early out, so disable lint complaining
     componentWillReceiveProps(nextProps) { // eslint-disable-line
-        const newArray = nextProps.logArray;
-        // we only want to update if we have an array and if it is new
-        if (!newArray || (newArray && newArray === this.props.logArray)) {
-            return null;
-        }
+        logger.debug('newProps isArray', Array.isArray(nextProps.logArray));
+        // We need a shallow copy of the ObservableArray to "cast" it down to normal array
+        const newArray = nextProps.logArray !== undefined && nextProps.logArray.slice();
+        const oldArray = this.props.logArray !== undefined && this.props.logArray.slice();
         // if have a new logArray, simply add it to the queue and wait for next tick
-        this.queuedLines = this.queuedLines.concat(newArray);
+        this.queuedLines = this.queuedLines.concat(newArray.slice(oldArray.length));
         clearTimeout(this.timeouts.render);
         this.timeouts.render = setTimeout(() => {
             this._processNextLines();
@@ -118,8 +118,10 @@ export class LogConsole extends Component {
         const { isLoading, lines } = this.state;
         const { prefix = '', hasMore = false, router, location, t } = this.props; // if hasMore true then show link to full log
         if (!lines) {
+            logger.debug('no lines passed');
             return null;
         }
+        logger.debug('render lines length', lines.length);
         // JENKINS-37925 - show more button should open log in new window
         // const logUrl = url && url.includes(suffix) ? url : `${url}${suffix}`;
         // JENKINS-41717 reverts above again

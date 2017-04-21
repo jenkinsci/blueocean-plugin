@@ -1,5 +1,3 @@
-// @flow
-
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/react-material-icons';
 import { logging, TimeManager, AppConfig } from '@jenkins-cd/blueocean-core-js';
