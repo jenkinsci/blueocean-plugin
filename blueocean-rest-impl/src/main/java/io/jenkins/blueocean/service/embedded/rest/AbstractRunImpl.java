@@ -1,6 +1,9 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import hudson.model.Action;
+import hudson.model.CauseAction;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -22,6 +25,7 @@ import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.GenericResource;
 import org.kohsuke.stapler.QueryParameter;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Date;
 
@@ -136,6 +140,11 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public BlueRun replay() {
         return null;
+    }
+
+    @Override
+    public Collection<Cause> getCauses() {
+        return CauseImpl.getCauses(this.run);
     }
 
     @Override
@@ -257,5 +266,46 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public Links getLinks() {
         return super.getLinks().add("parent", parent);
+    }
+
+    public static class CauseImpl extends Cause {
+
+        private final hudson.model.Cause cause;
+
+        CauseImpl(hudson.model.Cause cause) {
+            this.cause = cause;
+        }
+
+        @Override
+        public String getShortDescription() {
+            return cause.getShortDescription();
+        }
+
+        @Override
+        public Object getCause() {
+            return cause;
+        }
+
+        @Override
+        public String get_Class() {
+            return cause.getClass().getName();
+        }
+
+        static Collection<Cause> getCauses(Run run) {
+            CauseAction action = run.getAction(CauseAction.class);
+            if (action == null) {
+                return null;
+            }
+            return getCauses(action.getCauses());
+        }
+
+        static Collection<Cause> getCauses(Collection<hudson.model.Cause> causes) {
+            return Collections2.transform(causes, new Function<hudson.model.Cause, Cause>() {
+                @Override
+                public Cause apply(@Nullable hudson.model.Cause input) {
+                    return new CauseImpl(input);
+                }
+            });
+        }
     }
 }

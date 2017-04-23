@@ -13,6 +13,9 @@ class FilteringTreePruner extends TreePruner {
     private final TreePruner base;
 
     FilteringTreePruner(Predicate<String> predicate, TreePruner base) {
+        if (predicate == null) throw new IllegalArgumentException();
+        if (base == null) throw new IllegalArgumentException();
+
         this.predicate = predicate;
         this.base = base;
     }
@@ -25,7 +28,7 @@ class FilteringTreePruner extends TreePruner {
 
         // for merge properties, the current restrictions on the property names should
         // still apply to the child TreePruner
-        if (prop.merge)
+        if (prop.merge && child != null)
             child = new FilteringTreePruner(predicate,child);
 
         return child;

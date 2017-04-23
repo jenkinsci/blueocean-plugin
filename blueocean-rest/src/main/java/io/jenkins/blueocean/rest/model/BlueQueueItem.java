@@ -1,11 +1,13 @@
 package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.rest.annotation.Capability;
+import io.jenkins.blueocean.rest.model.BlueRun.Cause;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.verb.DELETE;
 
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 
 import static io.jenkins.blueocean.commons.JsonConverter.DATE_FORMAT_STRING;
@@ -23,20 +25,25 @@ public abstract class BlueQueueItem extends Resource {
 
     public static final String QUEUED_TIME = "queuedTime";
     private static final String CAUSE_OF_BLOCKAGE = "causeOfBlockage";
+    public static final String CAUSE = "cause";
+    public static final String EXPECTED_BUILD_NUMBER = "expectedBuildNumber";
+    public static final String PIPELINE = "pipeline";
+    public static final String ORGANIZATION = "organization";
+    public static final String ID = "id";
 
     /**
      * @return Id of the item in the queue. Much be unique in the queue of a pipeline
      */
-    @Exported
+    @Exported(name = ID)
     public abstract String getId();
 
-    @Exported
+    @Exported(name = ORGANIZATION)
     public abstract String getOrganization();
     /**
      *
      * @return pipeline this queued item belongs too
      */
-    @Exported
+    @Exported(name = PIPELINE)
     public abstract String getPipeline();
 
     /**
@@ -53,7 +60,7 @@ public abstract class BlueQueueItem extends Resource {
      *
      * @return  The expected build number of the build. This may change.
      */
-    @Exported
+    @Exported(name = EXPECTED_BUILD_NUMBER)
     public abstract int getExpectedBuildNumber();
 
     /**
@@ -61,6 +68,12 @@ public abstract class BlueQueueItem extends Resource {
      */
     @WebMethod(name="") @DELETE
     public abstract void delete();
+
+    /**
+     * @return causes for this item to be queued
+     */
+    @Exported(name = CAUSE)
+    public abstract Collection<Cause> getCauses();
 
     /**
      * @return Gives reason of blockage if run is in QUEUED state

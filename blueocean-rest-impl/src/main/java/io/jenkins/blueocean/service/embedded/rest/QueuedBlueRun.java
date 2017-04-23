@@ -155,6 +155,11 @@ public class QueuedBlueRun extends BlueRun {
     }
 
     @Override
+    public Collection<Cause> getCauses() {
+        return item.getCauses();
+    }
+
+    @Override
     public String getCauseOfBlockage() {
         return item.getCauseOfBlockage();
     }

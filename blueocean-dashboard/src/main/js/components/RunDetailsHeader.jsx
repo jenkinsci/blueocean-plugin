@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/react-material-icons';
-import { logging, TimeManager, AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { AppConfig, logging, ResultPageHeader, TimeManager } from '@jenkins-cd/blueocean-core-js';
 import { ExpandablePath, ReadableDate, TimeDuration } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
-import { ResultPageHeader } from '@jenkins-cd/blueocean-core-js';
+import RunCause from './RunCause';
 import { Link } from 'react-router';
 import { buildPipelineUrl } from '../util/UrlUtils';
 
@@ -28,7 +28,7 @@ class RunDetailsHeader extends Component {
         }, skewMillis);
         this.durationMillis = durationMillis;
     }
-    
+
     render() {
         const {
             data: run,
@@ -170,8 +170,9 @@ class RunDetailsHeader extends Component {
                     { durationDetails }
                     { endTimeDetails }
                 </div>
-                <div className="RunDetailsHeader-authors">
+                <div className="RunDetailsHeader-messages">
                     <ChangeSetToAuthors changeSet={ changeSet } onAuthorsClick={ onAuthorsClick } t={ t } />
+                    <RunCause run={run} />
                 </div>
             </ResultPageHeader>
         );

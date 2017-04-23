@@ -1,15 +1,18 @@
 import React, { Component, PropTypes } from 'react';
+import { CommitHash, ReadableDate, TimeDuration } from '@jenkins-cd/design-language';
 import {
-    CommitHash, ReadableDate, TimeDuration,
-}
-    from '@jenkins-cd/design-language';
-import { logging, ReplayButton, RunButton, LiveStatusIndicator, TimeHarmonizer as timeHarmonizer } from '@jenkins-cd/blueocean-core-js';
+    LiveStatusIndicator,
+    logging,
+    ReplayButton,
+    RunButton,
+    TimeHarmonizer as timeHarmonizer
+} from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
-import { CellRow, CellLink } from './CellLink';
+import { CellLink, CellRow } from './CellLink';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.Runs');
 /*
@@ -57,6 +60,9 @@ export class Runs extends Component {
             router.push(location);
         };
 
+        // If there is no changeset, show the first cause otherwise show nothing (-)
+        const message = changeset && changeset.msg || (run.causes.length > 0 && run.causes[0].shortDescription) || '-';
+
         return (
         <CellRow id={`${pipeline.name}-${run.id}`} linkUrl={runDetailsUrl}>
             <CellLink>
@@ -72,7 +78,7 @@ export class Runs extends Component {
             <IfCapability className={pipeline._class} capability={MULTIBRANCH_PIPELINE} >
                 <CellLink linkUrl={runDetailsUrl}>{decodeURIComponent(run.pipeline)}</CellLink>
             </IfCapability>
-            <CellLink>{changeset && changeset.msg || '-'}</CellLink>
+            <CellLink>{message}</CellLink>
             <CellLink>
                 <TimeDuration
                   millis={durationMillis}

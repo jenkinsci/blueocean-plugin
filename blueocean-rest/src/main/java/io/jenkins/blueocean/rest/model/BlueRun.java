@@ -6,6 +6,7 @@ import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.POST;
 import org.kohsuke.stapler.verb.PUT;
 
@@ -47,6 +48,7 @@ public abstract class BlueRun extends Resource {
 
     /** Date String format */
     public static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    public static final String CAUSES = "causes";
 
 
     /**
@@ -232,8 +234,28 @@ public abstract class BlueRun extends Resource {
     @POST @TreeResponse @WebMethod(name = "replay")
     public abstract BlueRun replay();
 
+    /**
+     * @return cause of the run being created
+     */
+    @Exported(name = CAUSES, inline = true)
+    public abstract Collection<Cause> getCauses();
+
+    /**
+     * @return cause of what is blocking this run
+     */
     @Exported(name = CAUSE_OF_BLOCKAGE)
     public abstract String getCauseOfBlockage();
+
+    @ExportedBean
+    public static abstract class Cause {
+        public abstract String getShortDescription();
+
+        @Exported(name="cause", merge = true)
+        public abstract Object getCause();
+
+        @Exported(name = "_class")
+        public abstract String get_Class();
+    }
 
     public enum BlueRunState {
         QUEUED,
