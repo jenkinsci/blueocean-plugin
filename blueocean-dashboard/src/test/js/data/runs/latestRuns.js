@@ -63,7 +63,8 @@ export const latestRuns = [{
         'startTime': '2016-03-15T00:38:33.928+0100',
         'state': 'FINISHED',
         'type': 'WorkflowRun',
-        'commitId': '09794ca7e2e98cdc5e2f0f02117d79f5b112c7c1'
+        'commitId': '09794ca7e2e98cdc5e2f0f02117d79f5b112c7c1',
+        "causes": [{"_class": "jenkins.branch.BranchIndexingCause", "shortDescription": "Branch indexing"}],
     },
     'name': 'master',
     'weatherScore': 100,
@@ -82,7 +83,8 @@ export const latestRuns = [{
         'startTime': '2016-03-15T00:38:35.980+0100',
         'state': 'FINISHED',
         'type': 'WorkflowRun',
-        'commitId': 'c38ab8e9275c2ee03e14e1bbfc9f44f2eddcff19'
+        'commitId': 'c38ab8e9275c2ee03e14e1bbfc9f44f2eddcff19',
+        "causes": [{"_class": "jenkins.branch.BranchIndexingCause", "shortDescription": "Branch indexing"}],
     },
     'name': 'PR-6',
     'weatherScore': 0,

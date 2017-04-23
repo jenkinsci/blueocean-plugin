@@ -71,7 +71,7 @@ export default class Branches extends Component {
 
         // If there is no changeset, show the first cause otherwise show nothing (-)
         const message = latestRun.changeSet && latestRun.changeSet.length > 0
-            && latestRun.changeSet[latestRun.changeSet.length - 1]
+            && latestRun.changeSet[latestRun.changeSet.length - 1].msg
             || (latestRun.causes.length > 0 && latestRun.causes[0].shortDescription)
             || '-';
 

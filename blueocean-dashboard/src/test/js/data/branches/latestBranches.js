@@ -58,16 +58,6 @@ export default [{
             }
         },
         "actions": [{
-            "_class": "hudson.model.CauseAction",
-            "_links": {
-                "self": {
-                    "_class": "io.jenkins.blueocean.rest.hal.Link",
-                    "href": "/blue/rest/organizations/jenkins/pipelines/tfprdemo/branches/master/runs/3/cause/"
-                }
-            },
-            "causes": [{"_class": "jenkins.branch.BranchIndexingCause", "shortDescription": "Branch indexing"}],
-            "urlName": "cause"
-        }, {
             "_class": "jenkins.metrics.impl.TimeInQueueAction",
             "_links": {
                 "self": {
@@ -170,6 +160,7 @@ export default [{
             "urlName": "flowGraph"
         }],
         "artifacts": [],
+        "causes": [{"_class": "jenkins.branch.BranchIndexingCause", "shortDescription": "Branch indexing"}],
         "changeSet": [{
             "_class": "io.jenkins.blueocean.service.embedded.rest.ChangeSetResource",
             "_links": {
@@ -318,16 +309,6 @@ export default [{
             }
         },
         "actions": [{
-            "_class": "hudson.model.CauseAction",
-            "_links": {
-                "self": {
-                    "_class": "io.jenkins.blueocean.rest.hal.Link",
-                    "href": "/blue/rest/organizations/jenkins/pipelines/tfprdemo/branches/quicker/runs/1/cause/"
-                }
-            },
-            "causes": [{"_class": "jenkins.branch.BranchIndexingCause", "shortDescription": "Branch indexing"}],
-            "urlName": "cause"
-        }, {
             "_class": "jenkins.metrics.impl.TimeInQueueAction",
             "_links": {
                 "self": {
@@ -430,6 +411,7 @@ export default [{
             "urlName": "flowGraph"
         }],
         "artifacts": [],
+        "causes": [{"_class": "jenkins.branch.BranchIndexingCause", "shortDescription": "Branch indexing"}],
         "changeSet": [],
         "durationInMillis": 18710,
         "enQueueTime": "2016-07-01T17:20:23.071+0100",
@@ -550,16 +532,6 @@ export default [{
             }
         },
         "actions": [{
-            "_class": "hudson.model.CauseAction",
-            "_links": {
-                "self": {
-                    "_class": "io.jenkins.blueocean.rest.hal.Link",
-                    "href": "/blue/rest/organizations/jenkins/pipelines/tfprdemo/branches/tfennelly-patch-1/runs/1/cause/"
-                }
-            },
-            "causes": [{"_class": "jenkins.branch.BranchIndexingCause", "shortDescription": "Branch indexing"}],
-            "urlName": "cause"
-        }, {
             "_class": "jenkins.metrics.impl.TimeInQueueAction",
             "_links": {
                 "self": {
@@ -582,6 +554,7 @@ export default [{
             "urlName": "flowGraph"
         }],
         "artifacts": [],
+        "causes": [{"_class": "jenkins.branch.BranchIndexingCause", "shortDescription": "Branch indexing"}],
         "changeSet": [],
         "durationInMillis": 0,
         "enQueueTime": "2016-07-04T16:13:59.226+0100",
