@@ -5,6 +5,8 @@ import { shallow } from 'enzyme';
 import { Activity } from '../../main/js/components/Activity.jsx';
 import { CapabilityRecord } from '../../main/js/components/Capability.jsx';
 
+import { pipelines } from './data/pipelines/pipelinesSingle';
+
 
 const
   data = [
@@ -164,9 +166,7 @@ const contextNoData = {
         }
       }
 };
-const pipeline = {
-  _class: "some.class"
-};
+const pipeline = pipelines[0];
 
 const capabilities = {
   'some.class': new CapabilityRecord({})
@@ -175,30 +175,37 @@ data.$success = true; // fetch flag
 
 const t = () => {};
 
-describe("Activity", () => {
+describe('Activity', () => {
+    it('render the Activity with data', () => {
+        const wrapper = shallow(<Activity t={ () => {} } runs={data} pipeline={pipeline} capabilities={capabilities} />, { context });
 
-  it("render the Activity with data", () => {
-    const wrapper =  shallow(<Activity t={ ()=>{} } runs={data} pipeline={pipeline} capabilities={capabilities}/>, { context });
+        // does data renders?
+        assert.isNotNull(wrapper);
+        assert.equal(wrapper.find('NewComponent').length, data.length);
+    });
 
-    // does data renders?
-    assert.isNotNull(wrapper);
-    assert.equal(wrapper.find('NewComponent').length, data.length)
-  });
-
-  it("does not render without data", () => {
-    const wrapper =  shallow(<Activity pipeline={pipeline}  t={ ()=>{} } capabilities={capabilities}/>, { context: contextNoData});
-    assert.equal(wrapper.find('NewComponent').length, 0)
-
-  });
+    it('does not render without data', () => {
+        const wrapper = shallow(<Activity pipeline={pipeline} t={ () => {} } capabilities={capabilities} />, { context: contextNoData});
+        assert.equal(wrapper.find('NewComponent').length, 0);
+    });
 });
 
 describe('Pipeline -> Activity List', () => {
-    it('should not duplicate changeset messages', () => {
-
-        const wrapper =  shallow(<Activity t={ ()=>{} } runs={data} pipeline={pipeline} capabilities={capabilities} />, { context });
-
+    it('should contain cause', () => {
+        const wrapper = shallow(<Activity t={ () => {} } runs={data} pipeline={pipeline} capabilities={capabilities} />, { context });
         assert.isNotNull(wrapper);
+        const runs = wrapper.find('NewComponent');
+        assert.isNotNull(runs);
+        const run1 = runs.at(0).html(); // has cause
+        const run3 = runs.at(2).html(); // has changeset
 
+        assert(run1.indexOf('Branch indexing') >= 0, 'should have cause message');
+        assert(run3.indexOf('Update Jenkinsfile') >= 0, 'should have changset message');
+    });
+
+    it('should not duplicate changeset messages', () => {
+        const wrapper = shallow(<Activity t={ () => {} } runs={data} pipeline={pipeline} capabilities={capabilities} />, { context });
+        assert.isNotNull(wrapper);
         const runs = wrapper.find('NewComponent');
         assert.isNotNull(runs);
 
