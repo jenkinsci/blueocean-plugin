@@ -139,37 +139,35 @@ const
   ];
 
 const context = {
-  params: {},
-  config: {
-      getServerBrowserTimeSkewMillis: () => 0
-  },
-      activityService: {
+    params: {},
+    config: {
+        getServerBrowserTimeSkewMillis: () => 0,
+    },
+    activityService: {
         activityPager() {
-          return {
-            data: data
-          }
-        }
-      }
+            return { data: data };
+        },
+    },
 };
 
 const contextNoData = {
-  params: {},
-  config: {
-      getServerBrowserTimeSkewMillis: () => 0
-  },
-      activityService: {
+    params: {},
+    config: {
+        getServerBrowserTimeSkewMillis: () => 0,
+    },
+    activityService: {
         activityPager() {
-          return {
-            data: [],
-            pending: true,
-          }
-        }
-      }
+            return {
+                data: [],
+                pending: true,
+            };
+        },
+    },
 };
 const pipeline = pipelines[0];
 
 const capabilities = {
-  'some.class': new CapabilityRecord({})
+    'some.class': new CapabilityRecord({}),
 };
 data.$success = true; // fetch flag
 
@@ -177,7 +175,7 @@ const t = () => {};
 
 describe('Activity', () => {
     it('render the Activity with data', () => {
-        const wrapper = shallow(<Activity t={ () => {} } runs={data} pipeline={pipeline} capabilities={capabilities} />, { context });
+        const wrapper = shallow(<Activity t={t} runs={data} pipeline={pipeline} capabilities={capabilities} />, { context });
 
         // does data renders?
         assert.isNotNull(wrapper);
@@ -185,14 +183,14 @@ describe('Activity', () => {
     });
 
     it('does not render without data', () => {
-        const wrapper = shallow(<Activity pipeline={pipeline} t={ () => {} } capabilities={capabilities} />, { context: contextNoData});
+        const wrapper = shallow(<Activity pipeline={pipeline} t={ () => {} } capabilities={capabilities} />, { context: contextNoData });
         assert.equal(wrapper.find('NewComponent').length, 0);
     });
 });
 
 describe('Pipeline -> Activity List', () => {
     it('should contain cause', () => {
-        const wrapper = shallow(<Activity t={ () => {} } runs={data} pipeline={pipeline} capabilities={capabilities} />, { context });
+        const wrapper = shallow(<Activity t={t} runs={data} pipeline={pipeline} capabilities={capabilities} />, { context });
         assert.isNotNull(wrapper);
         const runs = wrapper.find('NewComponent');
         assert.isNotNull(runs);
@@ -204,7 +202,7 @@ describe('Pipeline -> Activity List', () => {
     });
 
     it('should not duplicate changeset messages', () => {
-        const wrapper = shallow(<Activity t={ () => {} } runs={data} pipeline={pipeline} capabilities={capabilities} />, { context });
+        const wrapper = shallow(<Activity t={t} runs={data} pipeline={pipeline} capabilities={capabilities} />, { context });
         assert.isNotNull(wrapper);
         const runs = wrapper.find('NewComponent');
         assert.isNotNull(runs);

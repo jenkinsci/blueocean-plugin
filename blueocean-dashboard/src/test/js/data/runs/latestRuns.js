@@ -1,4 +1,11 @@
 export const latestRuns = [{
+    '_class': 'some.class',
+    '_links': {
+        'self': {
+            '_class': 'io.jenkins.blueocean.rest.hal.Link',
+            'href': '/blue/rest/organizations/jenkins/pipelines/morebeers/'
+        },
+    },
     'latestRun': {
         '_links': {
             'self': {
@@ -70,6 +77,13 @@ export const latestRuns = [{
     'weatherScore': 100,
     'pullRequest': null
 }, {
+    '_class': 'some.class',
+    '_links': {
+        'self': {
+            '_class': 'io.jenkins.blueocean.rest.hal.Link',
+            'href': '/blue/rest/organizations/jenkins/pipelines/morebeers/'
+        },
+    },
     'latestRun': {
         'changeSet': [],
         'durationInMillis': 25636,
