@@ -13,9 +13,6 @@ class FilteringTreePruner extends TreePruner {
     private final TreePruner base;
 
     FilteringTreePruner(Predicate<String> predicate, TreePruner base) {
-        if (predicate == null) throw new IllegalArgumentException();
-        if (base == null) throw new IllegalArgumentException();
-
         this.predicate = predicate;
         this.base = base;
     }
