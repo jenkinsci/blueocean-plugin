@@ -3,7 +3,6 @@ import { Icon } from '@jenkins-cd/react-material-icons';
 import { AppConfig, logging, ResultPageHeader, TimeManager } from '@jenkins-cd/blueocean-core-js';
 import { ExpandablePath, ReadableDate, TimeDuration } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
-import RunCause from './RunCause';
 import { Link } from 'react-router';
 import { buildPipelineUrl } from '../util/UrlUtils';
 
@@ -152,6 +151,9 @@ class RunDetailsHeader extends Component {
             </div>
         );
 
+        const causeMessage = (run && run.causes.length > 0 && run.causes[0].shortDescription) || null;
+        const cause = (<div className="causes">{causeMessage}</div>);
+
         return (
             <ResultPageHeader startTime={ startTime }
                               estimatedDurationInMillis={ estimatedDurationInMillis }
@@ -172,7 +174,7 @@ class RunDetailsHeader extends Component {
                 </div>
                 <div className="RunDetailsHeader-messages">
                     <ChangeSetToAuthors changeSet={ changeSet } onAuthorsClick={ onAuthorsClick } t={ t } />
-                    <RunCause run={run} />
+                    { cause }
                 </div>
             </ResultPageHeader>
         );
