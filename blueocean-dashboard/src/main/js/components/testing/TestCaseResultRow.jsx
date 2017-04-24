@@ -44,7 +44,7 @@ export default class TestCaseResultRow extends Component {
         case 'FAILED':
             statusIndicator = StatusIndicator.validResultValues.failure;
             break;
-        case 'FIXED':
+        case 'PASSED':
             statusIndicator = StatusIndicator.validResultValues.success;
             break;
         case 'SKIPPED':
