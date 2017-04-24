@@ -10,7 +10,9 @@
     "flow": "flow",
     "gulp": "gulp",
     "bundle:watch": "gulp watch",
-    "test": "jest",
+    "test": "gulp test",
+    "test-debug": "node --debug-brk ./node_modules/.bin/gulp test-debug",
+    "test-fast": "gulp test-fast",
     "prepublish": "gulp"
   },
   "author": "Cliff Meyers <cmeyers@cloudbees.com> (https://www.cloudbees.com/)",
@@ -88,6 +90,7 @@
     "karma-mocha": "1.2.0",
     "karma-mocha-reporter": "2.2.0",
     "karma-phantomjs-launcher": "1.0.2",
+    "minimist": "1.2.0",
     "mocha": "3.1.0",
     "phantomjs-prebuilt": "2.1.12",
     "react": "15.3.2",
@@ -95,7 +98,6 @@
     "react-dom": "15.3.2",
     "run-sequence": "1.2.2",
     "sinon": "1.17.6",
-    "vinyl-paths": "2.1.0",
     "watchify": "3.7.0"
   }
 }

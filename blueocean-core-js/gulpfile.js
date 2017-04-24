@@ -16,12 +16,12 @@ const lint = require('gulp-eslint');
 const Karma = require('karma').Server;
 const jest = require('gulp-jest').default;
 const fs = require('fs');
-const vinylPaths = require('vinyl-paths');
+const minimist = require('minimist');
 
 // Options, src/dest folders, etc
 
 const config = {
-    clean: ["dist", "licenses", "reports"],
+    clean: ["covarage", "dist", "licenses", "reports"],
     react: {
         sources: "src/**/*.{js,jsx}",
         dest: "dist"
@@ -35,15 +35,21 @@ const config = {
         less_assets: {
             sources: "src/less/**/*.svg",
             dest: "dist/assets/css"
-        }
+        },
     },
     test: {
         sources: '.',
         match: ['**/?(*-)(spec|test).js?(x)'],
-        dest: 'reports',
-        report: './junit.xml',
+        output: 'reports/junit.xml',
     },
 };
+
+// Helpers
+
+function getTestName() {
+    const argv = minimist(process.argv.slice(2));
+    return argv.test || null;
+}
 
 // Watch all
 
@@ -78,7 +84,9 @@ gulp.task("lint", () => (
 
 gulp.task("test", ['test-jest']);
 
-gulp.task("test-debug", ['test-karma-debug']);
+gulp.task("test-debug", ['test-jest-debug']);
+
+gulp.task("test-fast", ['test-jest-fast']);
 
 gulp.task("test-karma", (done) => {
     new Karma({
@@ -96,20 +104,11 @@ gulp.task("test-karma-debug", (done) => {
     }, done).start();
 });
 
-gulp.task('test-jest', () =>
-    runSequence('test-jest-full', 'test-jest-report')
-);
+gulp.task('test-jest', () => {
+    if (!process.env.JEST_JUNIT_OUTPUT) {
+        process.env.JEST_JUNIT_OUTPUT = config.test.output;
+    }
 
-gulp.task('test-jest-dev', () =>
-    gulp.src(config.test.sources)
-        .pipe(jest({
-            config: {
-                testMatch: config.test.match,
-            },
-        }))
-);
-
-gulp.task('test-jest-full', () =>
     gulp.src(config.test.sources)
         .pipe(jest({
             config: {
@@ -117,15 +116,32 @@ gulp.task('test-jest-full', () =>
                 testMatch: config.test.match,
                 testResultsProcessor: 'jest-junit',
             },
-        }))
+        }));
+});
+
+gulp.task('test-jest-fast', () =>
+    gulp.src(config.test.sources)
+        .pipe(jest({
+            testPathPattern: getTestName(),
+            notify: true,
+            forceExit: true,
+            config: {
+                testMatch: config.test.match,
+            },
+        }));
 );
 
-// to avoid putting jest-junit config in package.json, just move the file
-gulp.task('test-jest-report', () =>
-    gulp.src(config.test.report)
-        .pipe(vinylPaths(del))
-        .pipe(gulp.dest(config.test.dest))
-);
+gulp.task('test-jest-debug', () => {
+    gulp.src(config.test.sources)
+        .pipe(jest({
+            testPathPattern: getTestName(),
+            runInBand: true,
+            forceExit: true,
+            config: {
+                testMatch: config.test.match,
+            },
+        }));
+});
 
 
 // Build all
