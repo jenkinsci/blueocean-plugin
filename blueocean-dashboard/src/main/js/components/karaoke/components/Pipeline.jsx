@@ -207,9 +207,14 @@ export default class Pipeline extends Component {
                 pathArray.shift();
                 nextPath = `/${pathArray.join('/')}`;
             }
+            // check whether we have a parallel node
+            const isParallel = this.pager.isParallel(nextNode);
             // see whether we need to update the state
-            if (nextNode.state === 'FINISHED') {
+            if (nextNode.state === 'FINISHED' || isParallel) {
                 nextPath = `${nextPath}/${id}`; // only allow node param in finished nodes
+            }
+            // see whether we need to update the karaoke mode
+            if ((nextNode.state === 'FINISHED' || isParallel) && this.karaoke) {
                 logger.debug('turning off karaoke since we do not need it anymore because focus is on a finished node.');
                 this.stopKaraoke();
             }
