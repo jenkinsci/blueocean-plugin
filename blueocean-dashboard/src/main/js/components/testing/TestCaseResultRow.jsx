@@ -48,10 +48,10 @@ export default class TestCaseResultRow extends Component {
             statusIndicator = StatusIndicator.validResultValues.success;
             break;
         case 'SKIPPED':
-        case 'UNKNOWN':
             statusIndicator = StatusIndicator.validResultValues.not_built;
             break;
         default:
+            statusIndicator = StatusIndicator.validResultValues.unknown;
         }
 
         const onExpand = () => {
