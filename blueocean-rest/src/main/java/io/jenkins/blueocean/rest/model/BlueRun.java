@@ -252,9 +252,6 @@ public abstract class BlueRun extends Resource {
 
         @Exported(name="cause", merge = true)
         public abstract Object getCause();
-
-        @Exported(name = "_class")
-        public abstract String get_Class();
     }
 
     public enum BlueRunState {

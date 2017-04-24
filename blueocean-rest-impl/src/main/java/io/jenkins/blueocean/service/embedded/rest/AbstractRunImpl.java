@@ -286,11 +286,6 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
             return cause;
         }
 
-        @Override
-        public String get_Class() {
-            return cause.getClass().getName();
-        }
-
         static Collection<BlueCause> getCauses(Run run) {
             CauseAction action = run.getAction(CauseAction.class);
             if (action == null) {
