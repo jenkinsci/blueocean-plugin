@@ -143,8 +143,8 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
-    public Collection<Cause> getCauses() {
-        return CauseImpl.getCauses(this.run);
+    public Collection<BlueCause> getCauses() {
+        return BlueCauseImpl.getCauses(this.run);
     }
 
     @Override
@@ -268,11 +268,11 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         return super.getLinks().add("parent", parent);
     }
 
-    public static class CauseImpl extends Cause {
+    public static class BlueCauseImpl extends BlueCause {
 
         private final hudson.model.Cause cause;
 
-        CauseImpl(hudson.model.Cause cause) {
+        BlueCauseImpl(hudson.model.Cause cause) {
             this.cause = cause;
         }
 
@@ -291,7 +291,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
             return cause.getClass().getName();
         }
 
-        static Collection<Cause> getCauses(Run run) {
+        static Collection<BlueCause> getCauses(Run run) {
             CauseAction action = run.getAction(CauseAction.class);
             if (action == null) {
                 return null;
@@ -299,11 +299,11 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
             return getCauses(action.getCauses());
         }
 
-        static Collection<Cause> getCauses(Collection<hudson.model.Cause> causes) {
-            return Collections2.transform(causes, new Function<hudson.model.Cause, Cause>() {
+        static Collection<BlueCause> getCauses(Collection<hudson.model.Cause> causes) {
+            return Collections2.transform(causes, new Function<hudson.model.Cause, BlueCause>() {
                 @Override
-                public Cause apply(@Nullable hudson.model.Cause input) {
-                    return new CauseImpl(input);
+                public BlueCause apply(@Nullable hudson.model.Cause input) {
+                    return new BlueCauseImpl(input);
                 }
             });
         }

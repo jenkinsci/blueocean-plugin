@@ -166,7 +166,7 @@ public class OrganizationFolderRunImpl extends BlueRun {
     }
 
     @Override
-    public Collection<Cause> getCauses() {
+    public Collection<BlueCause> getCauses() {
         return null;
     }
 

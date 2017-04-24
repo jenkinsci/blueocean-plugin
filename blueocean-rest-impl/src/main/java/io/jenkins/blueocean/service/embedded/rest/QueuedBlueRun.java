@@ -155,7 +155,7 @@ public class QueuedBlueRun extends BlueRun {
     }
 
     @Override
-    public Collection<Cause> getCauses() {
+    public Collection<BlueCause> getCauses() {
         return item.getCauses();
     }
 

@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.rest.annotation.Capability;
-import io.jenkins.blueocean.rest.model.BlueRun.Cause;
+import io.jenkins.blueocean.rest.model.BlueRun.BlueCause;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.verb.DELETE;
@@ -73,7 +73,7 @@ public abstract class BlueQueueItem extends Resource {
      * @return causes for this item to be queued
      */
     @Exported(name = CAUSE)
-    public abstract Collection<Cause> getCauses();
+    public abstract Collection<BlueCause> getCauses();
 
     /**
      * @return Gives reason of blockage if run is in QUEUED state

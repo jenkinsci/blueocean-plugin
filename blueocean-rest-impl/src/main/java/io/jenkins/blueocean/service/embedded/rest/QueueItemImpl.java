@@ -9,10 +9,10 @@ import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueRun.BlueCause;
 import io.jenkins.blueocean.rest.model.BlueRun.BlueRunResult;
 import io.jenkins.blueocean.rest.model.BlueRun.BlueRunState;
-import io.jenkins.blueocean.rest.model.BlueRun.Cause;
-import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl.CauseImpl;
+import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl.BlueCauseImpl;
 import jenkins.model.Jenkins;
 
 import java.util.Collection;
@@ -83,8 +83,8 @@ public class QueueItemImpl extends BlueQueueItem {
     }
 
     @Override
-    public Collection<Cause> getCauses() {
-        return CauseImpl.getCauses(item.getCauses());
+    public Collection<BlueCause> getCauses() {
+        return BlueCauseImpl.getCauses(item.getCauses());
     }
 
     @Override
