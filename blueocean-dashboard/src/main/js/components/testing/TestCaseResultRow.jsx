@@ -41,18 +41,17 @@ export default class TestCaseResultRow extends Component {
         const showTestCase = (t.errorStackTrace || t.errorDetails || this.stdout || this.stderr);
         let statusIndicator = null;
         switch (t.status) {
-        case 'REGRESSION':
         case 'FAILED':
             statusIndicator = StatusIndicator.validResultValues.failure;
             break;
-        case 'SKIPPED':
-            statusIndicator = StatusIndicator.validResultValues.unstable;
-            break;
-        case 'FIXED':
         case 'PASSED':
             statusIndicator = StatusIndicator.validResultValues.success;
             break;
+        case 'SKIPPED':
+            statusIndicator = StatusIndicator.validResultValues.not_built;
+            break;
         default:
+            statusIndicator = StatusIndicator.validResultValues.unknown;
         }
 
         const onExpand = () => {
