@@ -238,7 +238,7 @@ public abstract class BlueRun extends Resource {
      * @return cause of the run being created
      */
     @Exported(name = CAUSES, inline = true)
-    public abstract Collection<Cause> getCauses();
+    public abstract Collection<BlueCause> getCauses();
 
     /**
      * @return cause of what is blocking this run
@@ -247,7 +247,7 @@ public abstract class BlueRun extends Resource {
     public abstract String getCauseOfBlockage();
 
     @ExportedBean
-    public static abstract class Cause {
+    public static abstract class BlueCause {
         public abstract String getShortDescription();
 
         @Exported(name="cause", merge = true)
