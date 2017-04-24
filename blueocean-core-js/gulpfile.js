@@ -44,12 +44,6 @@ const config = {
     },
 };
 
-// Helpers
-
-function getTestName() {
-    const argv = minimist(process.argv.slice(2));
-    return argv.test || null;
-}
 
 // Watch all
 
@@ -104,44 +98,50 @@ gulp.task("test-karma-debug", (done) => {
     }, done).start();
 });
 
+function runJest(options) {
+    const argv = minimist(process.argv.slice(2));
+    options.testPathPattern = argv.test || null;
+
+    return gulp.src(config.test.sources)
+        .pipe(jest(options))
+        .on('error', () => {
+            process.exit(1);
+        });
+}
+
 gulp.task('test-jest', () => {
     if (!process.env.JEST_JUNIT_OUTPUT) {
         process.env.JEST_JUNIT_OUTPUT = config.test.output;
     }
 
-    gulp.src(config.test.sources)
-        .pipe(jest({
-            config: {
-                collectCoverage: true,
-                testMatch: config.test.match,
-                testResultsProcessor: 'jest-junit',
-            },
-        }));
+    runJest({
+        config: {
+            collectCoverage: true,
+            testMatch: config.test.match,
+            testResultsProcessor: 'jest-junit',
+        },
+    });
 });
 
 gulp.task('test-jest-fast', () =>
-    gulp.src(config.test.sources)
-        .pipe(jest({
-            testPathPattern: getTestName(),
-            notify: true,
-            forceExit: true,
-            config: {
-                testMatch: config.test.match,
-            },
-        }));
+    runJest({
+        notify: true,
+        forceExit: true,
+        config: {
+            testMatch: config.test.match,
+        },
+    })
 );
 
-gulp.task('test-jest-debug', () => {
-    gulp.src(config.test.sources)
-        .pipe(jest({
-            testPathPattern: getTestName(),
-            runInBand: true,
-            forceExit: true,
-            config: {
-                testMatch: config.test.match,
-            },
-        }));
-});
+gulp.task('test-jest-debug', () =>
+    runJest({
+        runInBand: true,
+        forceExit: true,
+        config: {
+            testMatch: config.test.match,
+        },
+    })
+);
 
 
 // Build all
