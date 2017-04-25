@@ -78,3 +78,41 @@ In order to ensure a specific component is returned, an extension point may also
 
 Extensions are not limited to React components.
 The `componentType` filter will attempt to match returned components by a series of prototype and typeof checks to appropriately filter returned types including ES6 classes.
+
+### i18n resource pre-loading
+
+By default, all `@jenkins-cd/js-extensions` generated JavaScript bundles will automatically preload the i18n resource bundles it finds in the
+  `src/main/resources/jenkins/plugins/[pluginId]`, where `pluginId` is the Jenkins HPI plugin ID with all hyphen characters replaced by a path separator
+   e.g. for `blueocean-dashboard`, the path that is searched is `src/main/resources/jenkins/plugins/blueocean/dashboard`.
+   
+> See `findI18nBundles()` in [@jenkins-cd/subs/extensions-bundle.js](@jenkins-cd/subs/extensions-bundle.js)
+
+In some situations, a `@jenkins-cd/js-extensions` generated bundle may depend on i18n resources that are not in the default location or not in the host plugin (e.g. they may be defined in a "common" style utility plugin). In this situation,
+  your plugin needs to know about these i18n resources in order to generate the right pre-loading code into the generated bundle. To tell `@jenkins-cd/js-extensions` about the resources in the other plugin, you need to manually define a `i18nBundles`
+  list in the `jenkins-js-extensions.yaml` e.g.
+    
+```yaml
+extensions:
+  # etc ....
+
+i18nBundles:
+  - jenkins.plugins.aaa.Messages
+  - hpiPluginId: acme-commons
+    resource: jenkins.plugins.acme.commons.Messages
+```
+
+> Note how `i18nBundles` entries can define a string or an object, allowing the loading of bundles from plugins other than the default (i.e. the same plugin as the `@jenkins-cd/js-extensions` generated JavaScript bundle). 
+
+In case you have your common code and resources in a jar and not as hpi the above still works, since will fallback to the Jenkins 
+`uberClassLoader` to resolve the resource path.
+
+```yaml
+extensions:
+  # etc ....
+
+i18nBundles:
+  - hpiPluginId: jar-commons
+    resource: jenkins.plugins.jar.commons.Messages
+```
+
+> Note in case that the path does not exists we will return a 404 answer.
