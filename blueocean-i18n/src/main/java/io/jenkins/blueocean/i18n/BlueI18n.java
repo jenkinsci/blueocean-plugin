@@ -135,20 +135,12 @@ public class BlueI18n implements ApiRoutable {
     @CheckForNull
     private JSONObject getBundle(BundleParams bundleParams, Locale locale) {
         PluginWrapper plugin = bundleParams.getPlugin();
-
+        if (plugin == null) {
+            return null;
+        }
 
         try {
-            ResourceBundle resourceBundle;
-            if (plugin == null) {
-                Jenkins jenkins = Jenkins.getInstance();
-                if (jenkins!=null && jenkins.pluginManager!=null && jenkins.pluginManager.uberClassLoader!=null) {
-                    resourceBundle = ResourceBundle.getBundle(bundleParams.bundleName, locale, jenkins.pluginManager.uberClassLoader);
-                } else {
-                    resourceBundle = ResourceBundle.getBundle(bundleParams.bundleName, locale);
-                }
-            } else {
-                resourceBundle = ResourceBundle.getBundle(bundleParams.bundleName, locale, plugin.classLoader);
-            }
+            ResourceBundle resourceBundle = ResourceBundle.getBundle(bundleParams.bundleName, locale, plugin.classLoader);
             JSONObject bundleJSON = new JSONObject();
             for (String key : resourceBundle.keySet()) {
                 bundleJSON.put(key, resourceBundle.getString(key));
@@ -379,23 +371,17 @@ public class BlueI18n implements ApiRoutable {
             rsp.setStatus(statusCode);
             rsp.setContentType("application/json; charset=UTF-8");
             if (bundleCacheEntry != null) {
-                String actualVersion;
-                if (bundleCacheEntry.bundleParams.getPlugin() != null) {
-                    actualVersion =  bundleCacheEntry.bundleParams.getPlugin().getVersion();
-                } else {
-                    actualVersion =  bundleCacheEntry.bundleParams.pluginVersion;
-                }
-                // Set plugin version info that can be used by the browser to
+                // Set pugin version info that can be used by the browser to
                 // determine if it wants to use the resource bundle, or not.
                 // The versions may not match (in theory - should never happen),
                 // in which case the brwoser might not want to use the bundle data.
                 jsonObject.put("plugin-version-requested", bundleCacheEntry.bundleParams.pluginVersion);
-                jsonObject.put("plugin-version-actual", actualVersion);
+                jsonObject.put("plugin-version-actual", bundleCacheEntry.bundleParams.getPlugin().getVersion());
 
                 if (bundleCacheEntry.bundleParams.isBrowserCacheable()) {
                     // Set the expiry to one year.
                     rsp.setHeader("Cache-Control", "public, max-age=31536000");
-                } else if (!bundleCacheEntry.bundleParams.isMatchingPluginVersionInstalled() && bundleCacheEntry.bundleParams.getPlugin() != null) {
+                } else if (!bundleCacheEntry.bundleParams.isMatchingPluginVersionInstalled()) {
                     // This should never really happen if things are installed properly
                     // and the UI is coded up properly, with proper access to the installed
                     // plugin version.
