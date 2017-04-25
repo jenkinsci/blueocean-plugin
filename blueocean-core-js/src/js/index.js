@@ -78,6 +78,7 @@ export { toastService as ToastService };
 
 const runApi = new RunApi();
 export { runApi as RunApi };
+export { BunkerService } from './services/BunkerService';
 
 export const pagerService = new PagerService();
 export const sseService = new SSEService(sseConnection);

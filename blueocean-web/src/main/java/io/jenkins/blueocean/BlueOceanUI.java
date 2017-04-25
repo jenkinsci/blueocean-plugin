@@ -18,7 +18,7 @@ import java.util.Locale;
 public class BlueOceanUI {
     private static final Logger logger = LoggerFactory.getLogger(BlueOceanUI.class);
 
-    private BlueOceanUIProvider provider;
+    private volatile BlueOceanUIProvider provider;
 
     public BlueOceanUI() {
         ResourceCacheControl.install();

@@ -30,14 +30,11 @@ export class TimeManager {
      */
     harmonizeTimes(props, skewMillis = 0) {
         logger.debug('skewMillis', skewMillis);
-        if (!props.startTime) {
-            logger.error('not found any startTime, seems that a component should not have called this me');
-            return {};
-        }
+        const { startTime: localStartTime } = props;
         // What time is it now on the client
         const clientTime = this.currentTime();
         // what is the start time of the server
-        const serverStartTime = moment(props.startTime);
+        const serverStartTime = moment(!localStartTime ? this.currentTime() : localStartTime);
         // sync server start date to local time via the skewMillis
         if (skewMillis < 0) {
             serverStartTime.add({ milliseconds: Math.abs(skewMillis) });

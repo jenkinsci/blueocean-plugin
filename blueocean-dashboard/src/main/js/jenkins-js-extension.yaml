@@ -10,12 +10,16 @@ extensions:
     extensionPoint: jenkins.main.stores
   - component: components/PipelineRunGraph
     extensionPoint: jenkins.pipeline.run.result
-  - component: components/testing/TestResults
-    extensionPoint: jenkins.test.result
-    dataType: hudson.tasks.test.TestResult
 # creation for Git repos
   - component: creation/git/GitScmProvider
     extensionPoint: jenkins.pipeline.create.scm.provider
 # creation for Github
   - component: creation/github/GithubScmProvider
     extensionPoint: jenkins.pipeline.create.scm.provider
+# Karaoke
+  - component: components/karaoke/components/FreeStyle
+    extensionPoint: jenkins.pipeline.karaoke.freestyle.provider
+    dataType: hudson.model.FreeStyleBuild
+  - component: components/karaoke/components/Pipeline
+    extensionPoint: jenkins.pipeline.karaoke.pipeline.provider
+    dataType: org.jenkinsci.plugins.workflow.job.WorkflowRun

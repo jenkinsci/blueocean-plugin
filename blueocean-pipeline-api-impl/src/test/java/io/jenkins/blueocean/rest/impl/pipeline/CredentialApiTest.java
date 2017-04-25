@@ -69,12 +69,12 @@ public class CredentialApiTest extends PipelineBaseTest {
 
         CredentialsStoreAction.CredentialsWrapper credentials1 = domain1.getCredentialsList().get(0);
         CredentialsStoreAction.CredentialsWrapper credentials2 = domain2.getCredentialsList().get(0);
-        List<Map>  creds = get("/search?q=type:credential", List.class);
+        List<Map>  creds = get("/search?q=type:credential;organization:jenkins", List.class);
         Assert.assertEquals(2, creds.size());
         Assert.assertEquals(credentials1.getId(), creds.get(0).get("id"));
         Assert.assertEquals(credentials2.getId(), creds.get(1).get("id"));
 
-        creds = get("/search?q=type:credential;domain:domain2", List.class);
+        creds = get("/search?q=type:credential;organization:jenkins;domain:domain2", List.class);
         Assert.assertEquals(1, creds.size());
         Assert.assertEquals(credentials2.getId(), creds.get(0).get("id"));
     }
@@ -219,7 +219,7 @@ public class CredentialApiTest extends PipelineBaseTest {
 
         assertNotNull(credId);
 
-        String credUri = getHrefFromLinks(resp, "self");
+        String credUri = getUrlFromHref(getHrefFromLinks(resp, "self"));
         resp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))

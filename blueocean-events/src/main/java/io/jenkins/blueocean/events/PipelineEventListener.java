@@ -14,20 +14,19 @@ import org.jenkinsci.plugins.pubsub.PubsubBus;
 import org.jenkinsci.plugins.pubsub.RunMessage;
 import org.jenkinsci.plugins.pubsub.SimpleMessage;
 import org.jenkinsci.plugins.workflow.actions.BodyInvocationAction;
-import org.jenkinsci.plugins.workflow.actions.StageAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
-import org.jenkinsci.plugins.workflow.cps.nodes.StepNode;
+import org.jenkinsci.plugins.workflow.graph.StepNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode;
 import org.jenkinsci.plugins.workflow.flow.FlowExecution;
 import org.jenkinsci.plugins.workflow.flow.GraphListener;
 import org.jenkinsci.plugins.workflow.graph.FlowEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -50,7 +49,7 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
 
     private static final Logger LOGGER = Logger.getLogger(PipelineEventListener.class.getName());
 
-    private class StageEventPublisher implements GraphListener {
+    private static class StageEventPublisher implements GraphListener {
 
         private final Run run;
         private final PubsubBus pubSubBus;
@@ -79,20 +78,16 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
                 }
             } else if (flowNode instanceof StepAtomNode) {
                 List<String> branch = getBranch(flowNode);
-                StageAction stageAction = flowNode.getAction(StageAction.class);
                 publishEvent(newMessage(PipelineEventChannel.Event.pipeline_step, flowNode, branch));
             } else if (flowNode instanceof StepEndNode) {
                 if (flowNode.getAction(BodyInvocationAction.class) != null) {
-                    try {
-                        String startNodeId = ((StepEndNode) flowNode).getStartNode().getId();
-                        FlowNode startNode =  flowNode.getExecution().getNode(startNodeId);
-                        List<String> branch = getBranch(startNode);
+                    FlowNode startNode = ((StepEndNode) flowNode).getStartNode();
+                    String startNodeId = startNode.getId();
 
-                        branch.add(startNodeId);
-                        publishEvent(newMessage(PipelineEventChannel.Event.pipeline_block_end, flowNode, branch));
-                    } catch (IOException e) {
-                        LOGGER.log(Level.SEVERE, "Unexpected error publishing pipeline FlowNode event.", e);
-                    }
+                    List<String> branch = getBranch(startNode);
+
+                    branch.add(startNodeId);
+                    publishEvent(newMessage(PipelineEventChannel.Event.pipeline_block_end, flowNode, branch));
                 }
             } else if (flowNode instanceof FlowEndNode) {
                 publishEvent(newMessage(PipelineEventChannel.Event.pipeline_end));
@@ -165,7 +160,10 @@ public class PipelineEventListener extends RunListener<Run<?,?>> {
             }
             if (flowNode instanceof StepNode) {
                 StepNode stepNode = (StepNode) flowNode;
-                message.set(PipelineEventChannel.EventProps.pipeline_step_name, stepNode.getDescriptor().getFunctionName());
+                StepDescriptor stepDescriptor = stepNode.getDescriptor();
+                if(stepDescriptor != null) {
+                    message.set(PipelineEventChannel.EventProps.pipeline_step_name, stepDescriptor.getFunctionName());
+                }
             }
 
             if (flowNode instanceof StepAtomNode) {

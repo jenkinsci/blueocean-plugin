@@ -40,7 +40,7 @@ export default class InputStep extends Component {
     constructor(props) {
         super(props);
         this.parameterService = new ParameterService();
-        this.parameterService.init(this.props.node.input.parameters);
+        this.parameterService.init(this.props.step.input.parameters);
     }
     // we start with an empty state
     state = {};
@@ -56,14 +56,14 @@ export default class InputStep extends Component {
      * @param props
      */
     createFormState(props) {
-        const { node } = props;
-        // console.log({ node });
-        if (node) {
+        const { step } = props;
+        // console.log({ step });
+        if (step) {
             const { config = {} } = this.context;
             const {
                 input: { id },
                 _links: { self: { href } },
-            } = node;
+            } = step;
             this.setState({
                 id,
                 href: `${config._rootURL}${href}`,
@@ -106,7 +106,7 @@ export default class InputStep extends Component {
                 <Alerts message={alertCaption} type="Error" title={alertTitle} />
             </div>);
         }
-        const { input: { message, ok } } = this.props.node;
+        const { input: { message, ok } } = this.props.step;
         const cancelCaption = translate('rundetail.input.cancel', { defaultValue: 'Cancel' });
         const cancelButton = (<button title={cancelCaption} onClick={() => this.cancelForm()} className="btn btn-secondary inputStepCancel" >
             <span className="button-label">{cancelCaption}</span>
@@ -133,7 +133,7 @@ export default class InputStep extends Component {
 const { object, shape } = PropTypes;
 
 InputStep.propTypes = {
-    node: shape().isRequired,
+    step: shape().isRequired,
     classicInputUrl: object,
 };
 

@@ -3,32 +3,22 @@
  */
 
 import { ToastService as toastService } from './index';
-import { buildRunDetailsUrlFromQueue } from './UrlBuilder';
+import { buildRunDetailsUrl } from './UrlBuilder';
 import i18nTranslator from './i18n/i18n';
-
-const CAPABILITY_MULTIBRANCH_PIPELINE = 'io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline';
-const CAPABILITY_MULTIBRANCH_BRANCH = 'io.jenkins.blueocean.rest.model.BlueBranch';
 
 export default {
     /**
      *
      * @param runnable
-     * @param runInfo
+     * @param run
      * @param toastAction
      */
-    createRunStartedToast: (runnable, runInfo, toastAction) => {
+    createRunStartedToast: (runnable, run, toastAction) => {
         const translate = i18nTranslator('blueocean-web');
-        const isMultiBranch = runnable._capabilities.some(capability => (
-            [CAPABILITY_MULTIBRANCH_PIPELINE, CAPABILITY_MULTIBRANCH_BRANCH].indexOf(capability) !== -1
-        ));
 
-        const runId = runInfo.expectedBuildNumber;
+        const runId = run.id;
 
-        const runDetailsUrl = buildRunDetailsUrlFromQueue(
-            runInfo._links.self.href,
-            isMultiBranch,
-            runId,
-        );
+        const runDetailsUrl = buildRunDetailsUrl(run);
 
         const name = decodeURIComponent(runnable.name);
         const text = translate('toast.run.started', {

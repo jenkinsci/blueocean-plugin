@@ -1,12 +1,15 @@
 package io.jenkins.blueocean.service.embedded;
 
+import com.google.common.collect.ImmutableList;
 import hudson.Extension;
 import hudson.model.ItemGroup;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import jenkins.model.Jenkins;
+import org.apache.commons.lang.StringUtils;
 
 import java.util.Collection;
-import java.util.Collections;
 
 /**
  * Default implementation of {@link OrganizationResolver} for a master is to have everything in
@@ -16,13 +19,16 @@ import java.util.Collections;
  */
 @Extension(ordinal=-100)    // low ordinal to ensure this comes in the very last
 public class OrganizationResolverImpl extends OrganizationResolver {
+    private static final String ORGANIZATION_NAME = StringUtils.defaultIfBlank(
+            System.getProperty("BLUE_ORGANIZATION_NAME"),"jenkins");
+
     /**
      * In embedded mode, there's only one organization
      */
     private final OrganizationImpl instance;
 
     public OrganizationResolverImpl() {
-        this("jenkins");
+        this(ORGANIZATION_NAME);
     }
 
     public OrganizationResolverImpl(String name) {
@@ -30,7 +36,7 @@ public class OrganizationResolverImpl extends OrganizationResolver {
     }
 
     @Override
-    public OrganizationImpl get(String name) {
+    public BlueOrganization get(String name) {
         if (instance.getName().equals(name))
             return instance;
         else
@@ -38,8 +44,8 @@ public class OrganizationResolverImpl extends OrganizationResolver {
     }
 
     @Override
-    public Collection<OrganizationImpl> list() {
-        return Collections.singleton(instance);
+    public Collection<BlueOrganization> list() {
+        return ImmutableList.<BlueOrganization>of(instance);
     }
 
     @Override

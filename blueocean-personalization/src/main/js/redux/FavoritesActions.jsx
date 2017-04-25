@@ -1,7 +1,7 @@
 /**
  * Created by cmeyers on 7/6/16.
  */
-import { UrlConfig, Fetch } from '@jenkins-cd/blueocean-core-js';
+import { UrlConfig, Fetch, AppConfig } from '@jenkins-cd/blueocean-core-js';
 import { capabilityAugmenter as augmenter, ToastService, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 import { ACTION_TYPES } from './FavoritesStore';
@@ -17,8 +17,8 @@ export const actions = {
         return (dispatch) => {
             const baseUrl = UrlConfig.getBlueOceanAppURL();
             const username = user.id;
-            const url = cleanSlashes(`${baseUrl}/rest/users/${username}/favorites/`);
-
+            const organization = AppConfig.getOrganizationName();
+            const url = cleanSlashes(`${baseUrl}/rest/organizations/${organization}/users/${username}/favorites/`);
             if (fetchFlags[ACTION_TYPES.SET_FAVORITES]) {
                 return null;
             }

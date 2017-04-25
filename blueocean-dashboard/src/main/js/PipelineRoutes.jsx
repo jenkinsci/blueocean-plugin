@@ -115,9 +115,9 @@ function onLeaveCheckBackground() {
 
 export default (
     <Route path="/" component={Dashboard} onChange={persistBackgroundOnNavigationChange}>
-        <Redirect from="organizations/:organization(/*)" to="organizations/:organization/pipelines" />
         <Route path="organizations/:organization/pipelines" component={Pipelines} />
-
+        <Route path="organizations/:organization/create-pipeline" component={CreatePipeline} />
+        <Redirect from="organizations/:organization(/*)" to="organizations/:organization/pipelines" />
         <Route path="organizations/:organization" component={PipelinePage}>
             <Route path=":pipeline/branches" component={MultiBranch} />
             <Route path=":pipeline/activity" component={Activity} />

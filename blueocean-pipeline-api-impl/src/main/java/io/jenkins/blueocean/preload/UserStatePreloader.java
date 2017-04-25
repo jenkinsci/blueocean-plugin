@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.jenkins.blueocean;
+package io.jenkins.blueocean.preload;
 
 import hudson.Extension;
 import hudson.model.User;

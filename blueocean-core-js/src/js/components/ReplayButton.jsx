@@ -58,7 +58,7 @@ export class ReplayButton extends Component {
         });
 
         runApi.replayRun(this.props.latestRun)
-            .then(runInfo => ToastUtils.createRunStartedToast(this.props.runnable, runInfo, this.props.onNavigation))
+            .then(run => ToastUtils.createRunStartedToast(this.props.runnable, run, this.props.onNavigation))
             .then(runDetailsUrl => this._afterReplayStarted(runDetailsUrl));
     }
 
@@ -81,7 +81,7 @@ export class ReplayButton extends Component {
         const isPipeline = capable(this.props.runnable, PIPELINE_CAPABILITIES);
         const hasPermission = permit(this.props.runnable).start();
 
-        const replayLabel = translate('toast.re-run', { defaultValue: 'Re-run' });
+        const replayLabel = translate('run.rerun');
 
         if (!isFinished || !isPipeline || !hasPermission) {
             return null;
