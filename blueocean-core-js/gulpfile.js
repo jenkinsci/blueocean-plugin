@@ -21,7 +21,7 @@ const minimist = require('minimist');
 // Options, src/dest folders, etc
 
 const config = {
-    clean: ["covarage", "dist", "licenses", "reports"],
+    clean: ["coverage", "dist", "licenses", "reports"],
     react: {
         sources: "src/**/*.{js,jsx}",
         dest: "dist"
