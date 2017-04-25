@@ -4,11 +4,11 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
+import io.jenkins.blueocean.rest.factory.BlueTestResultFactory.Result;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
 import io.jenkins.blueocean.rest.model.BlueTestResult.State;
 import io.jenkins.blueocean.rest.model.BlueTestResult.Status;
-import io.jenkins.blueocean.service.embedded.rest.BlueTestResultFactory;
-import io.jenkins.blueocean.service.embedded.rest.BlueTestResultFactory.Result;
 import org.junit.Test;
 import org.jvnet.hudson.test.TestExtension;
 
