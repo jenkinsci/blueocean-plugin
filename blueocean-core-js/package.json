@@ -83,6 +83,7 @@
     "jest-cli": "19.0.2",
     "jest-junit": "1.5.1",
     "minimist": "1.2.0",
+    "nock": "9.0.14",
     "react": "15.3.2",
     "react-addons-test-utils": "15.3.2",
     "react-dom": "15.3.2",

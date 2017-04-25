@@ -84,7 +84,7 @@ export const FetchFunctions = {
         // FIXME: workaround for status=200 w/ empty response body that causes error in Chrome
         // server should probably return HTTP 204 instead
         .catch((error) => {
-            if (error.message === 'Unexpected end of JSON input') {
+            if (error.message.indexOf('Unexpected end of JSON input') !== -1) {
                 return {};
             }
             throw error;
@@ -250,10 +250,7 @@ export const Fetch = {
      * @returns JSON body.
      */
     fetchJSON(url, { onSuccess, onError, fetchOptions, disableCapabilites, ignoreRefreshHeader } = {}) {
-        let fixedUrl = url;
-        if (urlconfig.getJenkinsRootURL() !== '' && !url.startsWith(urlconfig.getJenkinsRootURL())) {
-            fixedUrl = `${urlconfig.getJenkinsRootURL()}${url}`;
-        }
+        const fixedUrl = url;
         let future;
         if (!config.isJWTEnabled()) {
             future = FetchFunctions.rawFetchJSON(fixedUrl, { onSuccess, onError, fetchOptions, ignoreRefreshHeader });
