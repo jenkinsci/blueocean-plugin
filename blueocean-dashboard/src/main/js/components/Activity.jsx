@@ -99,6 +99,10 @@ export class Activity extends Component {
         const branch = this._branchFromProps(this.props);
 
         const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
+        // console.log('              pipeline', pipeline); // TODO: RM
+        // console.log('        ._capabilities', '\n' + pipeline._capabilities.join('\n')); // TODO: RM
+        // console.log('  MULTIBRANCH_PIPELINE', MULTIBRANCH_PIPELINE); // TODO: RM
+        // console.log(' isMultiBranchPipeline', isMultiBranchPipeline); // TODO: RM
         const hasBranches = pipeline.branchNames && !!pipeline.branchNames.length;
 
         const onNavigation = (url) => {
@@ -151,7 +155,7 @@ export class Activity extends Component {
             <ColumnFilter placeholder={branchText}
                           value={branch}
                           onChange={this.navigateToBranch}
-                          options={pipeline.branchNames.map(b => decodeURIComponent(b)).sort}
+                          options={pipeline.branchNames.map(b => decodeURIComponent(b)).sort()}
             />
         );
 
@@ -183,7 +187,7 @@ export class Activity extends Component {
             status,
             runHeader,
             commit,
-            { label: branchFilter, className: 'branch' },    // <-- Only diff
+            { label: React.cloneElement(branchFilter), className: 'branch' },    // <-- Only diff
             { label: message, className: 'message' },
             { label: duration, className: 'duration' },
             { label: completed, className: 'completed' },
@@ -259,6 +263,9 @@ export class Activity extends Component {
                 { runs && runs.length > 0 &&
                   <ShowMoreButton pager={this.pager} />
                 }
+
+                <div style={{padding: '35em 2em'}}>This section intentionally left blank ;-)</div>
+                {/* TODO: Remove this :) */}
             </article>
         </main>);
     }
