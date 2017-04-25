@@ -116,13 +116,6 @@ public class BlueI18nTest extends BaseTest {
     }
 
     @Test
-    public void test_200_response_unknown_plugin_but_valid_path() {
-        Map<String, Object> response1 = get("/blue/rest/i18n/blueocean-xxxblah/1.0.0/jenkins.plugins.blueocean.dashboard.Messages/en", HttpServletResponse.SC_OK, Map.class);
-
-        Assert.assertEquals("ok", response1.get("status"));
-    }
-
-    @Test
     public void test_404_response_unknown_plugin() {
         Map<String, Object> response1 = get("/blue/rest/i18n/blueocean-xxxblah/1.0.0/j.plugins.blueocean.dashboard.Messages/en", HttpServletResponse.SC_NOT_FOUND, Map.class);
         Assert.assertEquals("error", response1.get("status"));
