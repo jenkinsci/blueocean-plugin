@@ -158,9 +158,10 @@ public class FlowNodeWrapper {
         return null;
     }
 
-    String nodeError(){
-        if(node.getError() != null && node.getError().getError() != null) {
-            return node.getError().getError().getMessage();
+    @CheckForNull String nodeError(){
+        ErrorAction errorAction = node.getError();
+        if(errorAction != null) {
+            return errorAction.getError().getMessage();
         }
         return null;
     }

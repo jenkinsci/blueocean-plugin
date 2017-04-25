@@ -67,6 +67,9 @@ public class BlueMessageEnricher extends MessageEnricher {
         if (channelName.equals(Events.JobChannel.NAME) && message instanceof JobChannelMessage) {
             JobChannelMessage jobChannelMessage = (JobChannelMessage) message;
             Item jobChannelItem = jobChannelMessage.getJobChannelItem();
+            if(jobChannelItem == null){
+                return;
+            }
             Link jobUrl = LinkResolver.resolveLink(jobChannelItem);
 
             BlueOrganization org = OrganizationResolver.getInstance().getContainingOrg(jobChannelItem);

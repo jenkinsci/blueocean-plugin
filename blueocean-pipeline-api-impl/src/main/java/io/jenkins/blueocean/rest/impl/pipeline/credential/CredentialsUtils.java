@@ -127,7 +127,7 @@ public class CredentialsUtils {
         return null;
     }
 
-    private static @CheckForNull Iterable<CredentialsStore> findUserStores(User user){
+    private static @Nonnull Iterable<CredentialsStore> findUserStores(User user){
         List<CredentialsStore> stores = new ArrayList<>();
 
         //First user store

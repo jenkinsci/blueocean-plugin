@@ -111,6 +111,9 @@ public class GithubRepositories extends ScmRepositories {
         return Lists.transform(Arrays.asList(repositories), new Function<GHRepoEx, ScmRepository>() {
             @Override
             public ScmRepository apply(@Nullable GHRepoEx input) {
+                if(input == null){
+                    return null;
+                }
                 return new GithubRepository(input, credential, GithubRepositories.this);
             }
         });
