@@ -4,20 +4,17 @@ import { shallow } from 'enzyme';
 
 import utils from '../../../src/js/utils';
 import { ReplayButton } from '../../../src/js/components/ReplayButton';
-import { enableMocksForI18n, disableMocksForI18n } from '../../../src/js/i18n/i18n';
+
+
+jest.mock('../../../src/js/i18n/i18n');
 
 
 describe('ReplayButton', () => {
     let pipeline;
 
     beforeEach(() => {
-        enableMocksForI18n();
         pipeline = utils.clone(require('../data/pipeline-1.json'));
         pipeline._capabilities = ['org.jenkinsci.plugins.workflow.job.WorkflowJob'];
-    });
-
-    afterEach(() => {
-        disableMocksForI18n();
     });
 
     it('renders without errors when no props are specified', () => {
