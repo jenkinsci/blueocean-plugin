@@ -33,7 +33,7 @@ export class Runs extends Component {
         const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
         const isRunning = () => run.state === 'RUNNING' || run.state === 'PAUSED' || run.state === 'QUEUED';
         const {
-            durationMillis,
+            durationInMillis,
             endTime,
             startTime,
         } = getTimes({
@@ -44,7 +44,7 @@ export class Runs extends Component {
         });
         logger.warn('time:', {
             runDuration: run,
-            durationMillis,
+            durationInMillis,
             endTime,
             startTime,
             isRunning: isRunning(),
@@ -61,7 +61,7 @@ export class Runs extends Component {
         <CellRow id={`${pipeline.name}-${run.id}`} linkUrl={runDetailsUrl}>
             <CellLink>
                 <LiveStatusIndicator
-                  durationInMillis={durationMillis}
+                  durationInMillis={durationInMillis}
                   result={resultRun}
                   startTime={startTime}
                   estimatedDuration={run.estimatedDurationInMillis}
@@ -75,7 +75,7 @@ export class Runs extends Component {
             <CellLink>{changeset && changeset.msg || '-'}</CellLink>
             <CellLink>
                 <TimeDuration
-                  millis={durationMillis}
+                  millis={durationInMillis}
                   updatePeriod={1000}
                   liveUpdate={isRunning()}
                   locale={locale}

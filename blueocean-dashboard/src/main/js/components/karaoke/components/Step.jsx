@@ -31,8 +31,8 @@ export class Step extends Component {
     componentWillMount() {
         const { step } = this.props;
         // needed for running steps as reference
-        this.durationMillis = (this.durationHarmonize(step)).durationMillis;
-        logger.debug('durationMillis mounting', this.durationMillis);
+        this.durationInMillis = (this.durationHarmonize(step)).durationInMillis;
+        logger.debug('durationInMillis mounting', this.durationInMillis);
     }
     /**
      * Mainly implemented due to fetch full log `start=0` for a step
@@ -86,7 +86,7 @@ export class Step extends Component {
         if (step === undefined || !step) {
             return null;
         }
-        const { durationMillis } = this.durationHarmonize(step);
+        const { durationInMillis } = this.durationHarmonize(step);
         const isFocused = this.isFocused(this.props);
         const { data: logArray, hasMore } = this.pager.log || {};
         let children = null;
@@ -128,7 +128,7 @@ export class Step extends Component {
         // some ATH hook enhancements
         const logConsoleClass = `logConsole step-${step.id}`;
         // duration calaculations
-        const duration = step.isRunning ? this.durationMillis : durationMillis;
+        const duration = step.isRunning ? this.durationInMillis : durationInMillis;
         logger.debug('duration', duration, step.isRunning);
         const time = (<TimeDuration
             millis={duration }
