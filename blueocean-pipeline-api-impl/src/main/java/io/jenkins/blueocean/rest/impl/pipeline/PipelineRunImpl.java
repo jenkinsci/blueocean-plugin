@@ -96,7 +96,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     @Override
     public BlueRun replay() {
         ReplayAction replayAction = run.getAction(ReplayAction.class);
-        if(replayAction == null) {
+        if(!isReplayable(replayAction)) {
             throw new ServiceException.BadRequestExpception("This run does not support replay");
         }
 
@@ -115,6 +115,16 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         } else { // For some reason could not be added to the queue
             throw new ServiceException.UnexpectedErrorException("Run was not added to queue.");
         }
+    }
+
+    @Override
+    public boolean isReplayable() {
+        ReplayAction replayAction = run.getAction(ReplayAction.class);
+        return isReplayable(replayAction);
+    }
+
+    private boolean isReplayable(ReplayAction replayAction) {
+        return replayAction != null && replayAction.isEnabled();
     }
 
     @Override

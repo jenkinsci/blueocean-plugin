@@ -145,6 +145,11 @@ public class QueuedBlueRun extends BlueRun {
     }
 
     @Override
+    public boolean isReplayable() {
+        return false;
+    }
+
+    @Override
     public BlueTestResultContainer getTests() {
         return null;
     }

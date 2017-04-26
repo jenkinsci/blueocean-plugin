@@ -5,7 +5,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/react-material-icons';
 
-import { capable, RunApi as runApi, ToastUtils } from '../index';
+import { RunApi as runApi, ToastUtils } from '../index';
 import Security from '../security';
 import i18nTranslator from '../i18n/i18n';
 
@@ -15,11 +15,6 @@ const translate = i18nTranslator('blueocean-web');
 const stopProp = (event) => {
     event.stopPropagation();
 };
-
-const CAPABILITY_MULTIBRANCH_PIPELINE = 'io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline';
-const CAPABILITY_MULTIBRANCH_BRANCH = 'io.jenkins.blueocean.rest.model.BlueBranch';
-const CAPABILITY_SIMPLE_PIPELINE = 'org.jenkinsci.plugins.workflow.job.WorkflowJob';
-const PIPELINE_CAPABILITIES = [CAPABILITY_SIMPLE_PIPELINE, CAPABILITY_MULTIBRANCH_PIPELINE, CAPABILITY_MULTIBRANCH_BRANCH];
 
 function isRunFinished(run) {
     return !!(run && run.state === 'FINISHED');
@@ -78,12 +73,12 @@ export class ReplayButton extends Component {
         const innerButtonClass = outerClassNames.indexOf('icon-button') === -1 ? 'btn inverse' : '';
 
         const isFinished = isRunFinished(this.props.latestRun);
-        const isPipeline = capable(this.props.runnable, PIPELINE_CAPABILITIES);
+        const isReplayable = this.props.latestRun.replayable;
         const hasPermission = permit(this.props.runnable).start();
 
         const replayLabel = translate('run.rerun');
 
-        if (!isFinished || !isPipeline || !hasPermission) {
+        if (!isFinished || !isReplayable || !hasPermission) {
             return null;
         }
 
