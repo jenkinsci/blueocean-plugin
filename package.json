@@ -47,7 +47,7 @@
     "react-dom": "15.3.2"
   },
   "devDependencies": {
-    "@kadira/storybook": "2.24.1",
+    "@kadira/storybook": "2.35.3",
     "babel-eslint": "7.0.0",
     "babel-polyfill": "6.16.0",
     "babel-preset-es2015": "6.16.0",
