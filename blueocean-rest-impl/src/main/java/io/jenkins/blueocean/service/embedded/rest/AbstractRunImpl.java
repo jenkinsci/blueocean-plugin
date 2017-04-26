@@ -6,6 +6,7 @@ import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
+import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
@@ -15,8 +16,9 @@ import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
-import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
+import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.GenericResource;
 import org.kohsuke.stapler.QueryParameter;
@@ -33,7 +35,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     protected final T run;
     protected final BlueOrganization org;
 
-    private final Link parent;
+    protected final Link parent;
     public AbstractRunImpl(T run, Link parent) {
         this.run = run;
         this.parent = parent;
@@ -88,13 +90,14 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         } else if(!run.isLogUpdated()){
             return BlueRunState.FINISHED;
         } else {
-            return BlueRunState.QUEUED;
+            return BlueRunState.RUNNING;
         }
     }
 
     @Override
     public BlueRunResult getResult() {
-        return run.getResult() != null ? BlueRunResult.valueOf(run.getResult().toString()) : BlueRunResult.UNKNOWN;
+        Result result = run.getResult();
+        return result != null ? BlueRunResult.valueOf(result.toString()) : BlueRunResult.UNKNOWN;
     }
 
 
@@ -132,8 +135,18 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
-    public BlueQueueItem replay() {
+    public BlueRun replay() {
         return null;
+    }
+
+    @Override
+    public String getCauseOfBlockage() {
+        return null;
+    }
+
+    @Override
+    public boolean isReplayable() {
+        return false;
     }
 
     @Override
@@ -149,6 +162,16 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public BluePipelineStepContainer getSteps() {
         return null;
+    }
+
+    @Override
+    public BlueTestResultContainer getTests() {
+        return new BlueTestResultContainerImpl(this, run);
+    }
+
+    @Override
+    public BlueTestSummary getTestSummary() {
+        return BlueTestResultFactory.resolve(run, this).summary;
     }
 
     public Collection<BlueActionProxy> getActions() {
@@ -233,7 +256,8 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     private boolean isCompletedOrAborted(){
-        return run.getResult()!= null && (run.getResult() == Result.ABORTED || run.getResult().isCompleteBuild());
+        Result result = run.getResult();
+        return result != null && (result == Result.ABORTED || result.isCompleteBuild());
     }
 
     @Override

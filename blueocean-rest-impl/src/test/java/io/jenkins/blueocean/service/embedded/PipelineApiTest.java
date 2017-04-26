@@ -492,7 +492,7 @@ public class PipelineApiTest extends BaseTest {
 
         assertNotNull(p3.getQueueItem());
         String id = Long.toString(p3.getQueueItem().getId());
-        assertEquals(id, r.get("id"));
+        assertEquals(id, r.get("queueId"));
 
         delete("/organizations/jenkins/pipelines/pipeline3/queue/"+id+"/");
         Queue.Item item = j.jenkins.getQueue().getItem(Long.parseLong(id));
@@ -694,4 +694,26 @@ public class PipelineApiTest extends BaseTest {
         assertEquals("p", ((Map) responses.get(0)).get("name"));
 
     }
+
+    @Test
+    public void actionsTest() throws Exception {
+        FreeStyleProject p = j.createFreeStyleProject("pipeline1");
+        p.getBuildersList().add(new Shell("echo hello!\nsleep 1"));
+        FreeStyleBuild b = p.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b);
+
+        Map resp = get("/organizations/jenkins/pipelines/pipeline1/", Map.class);
+        List<Map> actions = (List<Map>) resp.get("actions");
+        Assert.assertTrue(actions.isEmpty());
+        actions = (List<Map>) ((Map)resp.get("latestRun")).get("actions");
+
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/", Map.class);
+        actions = (List<Map>) resp.get("actions");
+        Assert.assertTrue(actions.isEmpty());
+
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/?tree=*[*]", Map.class);
+        actions = (List<Map>) resp.get("actions");
+        Assert.assertEquals(2, actions.size());
+    }
+
 }

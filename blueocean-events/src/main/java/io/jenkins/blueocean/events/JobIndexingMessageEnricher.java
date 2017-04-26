@@ -26,6 +26,7 @@ package io.jenkins.blueocean.events;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.Queue;
+import hudson.model.Result;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.MultiBranchProject.BranchIndexing;
 import jenkins.branch.OrganizationFolder;
@@ -82,10 +83,16 @@ public class JobIndexingMessageEnricher extends MessageEnricher {
                             Queue.Executable executable = ((Queue.LeftItem) queueItem).getExecutable();
                             if (executable instanceof BranchIndexing) {
                                 BranchIndexing branchIndexing = (BranchIndexing) executable;
-                                jobChannelMessage.set(indexingResult, branchIndexing.getResult().toString());
+                                Result result = branchIndexing.getResult();
+                                if(result != null) {
+                                    jobChannelMessage.set(indexingResult, result.toString());
+                                }
                             } else if (executable instanceof OrganizationFolder.OrganizationScan) {
                                 OrganizationFolder.OrganizationScan orgScan = (OrganizationFolder.OrganizationScan) executable;
-                                jobChannelMessage.set(indexingResult, orgScan.getResult().toString());
+                                Result result = orgScan.getResult();
+                                if(result != null) {
+                                    jobChannelMessage.set(indexingResult, result.toString());
+                                }
                             }
                         } else {
                             jobChannelMessage.set(indexingStatus, "INDEXING");

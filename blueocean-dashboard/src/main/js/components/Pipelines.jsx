@@ -60,7 +60,7 @@ export class Pipelines extends Component {
                 { organization }
             </Link> : '';
 
-        const showPipelineList = !this.pager.pending && pipelines && pipelines.length > 0;
+        const showPipelineList = pipelines && pipelines.length > 0;
         const showEmptyState = !this.pager.pending && (!pipelines || !pipelines.length);
 
         const labelName = translate('home.pipelineslist.header.name', { defaultValue: 'Name' });
@@ -133,7 +133,6 @@ export class Pipelines extends Component {
 const { func, object } = PropTypes;
 
 Pipelines.contextTypes = {
-    config: object,
     params: object,
     store: object,
     router: object,

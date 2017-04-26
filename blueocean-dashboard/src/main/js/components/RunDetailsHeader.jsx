@@ -1,5 +1,3 @@
-// @flow
-
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/react-material-icons';
 import { logging, TimeManager, AppConfig } from '@jenkins-cd/blueocean-core-js';
@@ -23,12 +21,12 @@ class RunDetailsHeader extends Component {
         const isRunning = () => run.isRunning() || run.isPaused() || run.isQueued();
         // we need to make sure that we calculate with the correct time offset
         const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
-        const { durationMillis } = RunDetailsHeader.timeManager.harmonizeTimes({
+        const { durationInMillis } = RunDetailsHeader.timeManager.harmonizeTimes({
             startTime: run.startTime,
             durationInMillis: run.durationInMillis,
             isRunning: isRunning(),
         }, skewMillis);
-        this.durationMillis = durationMillis;
+        this.durationInMillis = durationInMillis;
     }
     
     render() {
@@ -51,7 +49,7 @@ class RunDetailsHeader extends Component {
         const status = run.getComputedResult().toLowerCase();
         const estimatedDurationInMillis = run.estimatedDurationInMillis;
 
-        const durationMillis = run.durationInMillis; // Duration does not skew :)
+        const durationInMillis = run.durationInMillis; // Duration does not skew :)
 
         // we need to make sure that we calculate with the correct time offset
         const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
@@ -64,7 +62,7 @@ class RunDetailsHeader extends Component {
             endTime: run.endTime,
             startTime: run.startTime,
         }, skewMillis);
-        RunDetailsHeader.logger.debug('timeq:', { startTime, endTime, durationMillis });
+        RunDetailsHeader.logger.debug('timeq:', { startTime, endTime, durationInMillis });
 
         // pipeline name
         const displayName = decodeURIComponent(run.pipeline);
@@ -130,7 +128,7 @@ class RunDetailsHeader extends Component {
             <div>
                 <Icon size={ 16 } icon="timelapse" style={ { fill: '#fff' } } />
                 <TimeDuration
-                    millis={ isRunning() ? this.durationMillis : durationMillis }
+                    millis={ isRunning() ? this.durationInMillis : durationInMillis }
                     liveUpdate={ isRunning() }
                     updatePeriod={ 1000 }
                     locale={ locale }

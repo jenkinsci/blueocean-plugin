@@ -1,9 +1,6 @@
-import { prepareMount } from './util/EnzymeUtils';
-prepareMount();
-
 import React from 'react';
 import { assert } from 'chai';
-import { mount, shallow } from 'enzyme';
+import { shallow } from 'enzyme';
 
 import { Pipelines } from '../../main/js/components/Pipelines.jsx';
 import { pipelines } from './data/pipelines/pipelinesSingle';
@@ -12,25 +9,13 @@ import { pipelinesDupName } from './data/pipelines/pipelinesTwoJobsSameName';
 const resultArrayHeaders = ['Name', 'Status', 'Branches', 'Pull Requests', ''];
 
 describe('Pipelines', () => {
-    const config = {
-        getRootURL: () => '/',
-    };
-
-  //  const context = {
-   //     params: {},
-   ///     location: {},
-   ///     config,
-  //  };
-
     describe('basic table rendering', () => {
         let wrapper;
 
         beforeEach(() => {
-
             const context = {
                 params: {},
                 location: {},
-                config,
                 pipelineService: {
                     allPipelinesPager() {
                         return {
@@ -41,7 +26,7 @@ describe('Pipelines', () => {
             };
 
             wrapper = shallow(
-                <Pipelines params={context.params} setTitle={()=>{}}/>,
+                <Pipelines params={context.params} setTitle={() => {}} />,
                 {
                     context,
                 }
@@ -57,12 +42,35 @@ describe('Pipelines', () => {
         });
     });
 
+    describe('pending state', () => {
+        it('should continue to render existing data while a fetch is pending', () => {
+            const context = {
+                params: {},
+                location: {},
+                pipelineService: {
+                    allPipelinesPager() {
+                        return {
+                            pending: true,
+                            data: pipelines,
+                        };
+                    },
+                },
+            };
+
+            const wrapper = shallow(
+                <Pipelines params={context.params} setTitle={() => {}} />,
+                { context },
+            );
+
+            assert.equal(wrapper.find('PipelineRowItem').length, 2);
+        });
+    });
+
     describe('duplicate job names', () => {
         it('should render two rows when job names are duplicated across folders', () => {
             const context = {
-                config,
                 params: {
-                    organization:'jenkins',
+                    organization: 'jenkins',
                 },
                 pipelineService: {
                     organiztionPipelinesPager() {
@@ -74,8 +82,8 @@ describe('Pipelines', () => {
             };
 
 
-            const wrapper = mount(
-                <Pipelines params={context.params} setTitle={()=>{}}/>,
+            const wrapper = shallow(
+                <Pipelines params={context.params} setTitle={() => {}} />,
                 { context },
             );
 

@@ -2,10 +2,13 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.model.Result;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.GenericStatus;
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author Vivek Pandey
@@ -14,12 +17,12 @@ public class NodeRunStatus {
     public final BlueRun.BlueRunResult result;
     public final BlueRun.BlueRunState state;
 
-    public NodeRunStatus(FlowNode endNode) {
+    public NodeRunStatus(@Nonnull FlowNode endNode) {
         Result result = null;
-        if (endNode.getError() != null) {
-            if(endNode.getError().getError() != null &&
-                endNode.getError().getError() instanceof FlowInterruptedException) {
-                result = ((FlowInterruptedException) endNode.getError().getError()).getResult();
+        ErrorAction errorAction = endNode.getError();
+        if (errorAction != null) {
+            if(errorAction.getError() instanceof FlowInterruptedException) {
+                result = ((FlowInterruptedException) errorAction.getError()).getResult();
             }
             if(result == null || result != Result.ABORTED) {
                 this.result = BlueRun.BlueRunResult.FAILURE;
