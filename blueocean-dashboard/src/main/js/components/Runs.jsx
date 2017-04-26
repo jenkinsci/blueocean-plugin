@@ -1,22 +1,25 @@
 import React, { Component, PropTypes } from 'react';
-import { CommitHash, ReadableDate, TimeDuration } from '@jenkins-cd/design-language';
+
 import {
-    CommitHash, ReadableDate, TimeDuration,
-}
-    from '@jenkins-cd/design-language';
-import { logging, ReplayButton, RunButton, LiveStatusIndicator, TimeHarmonizer as timeHarmonizer } from '@jenkins-cd/blueocean-core-js';
+    CommitHash,
+    ReadableDate,
+    TimeDuration,
+} from '@jenkins-cd/design-language';
+
+import {
     LiveStatusIndicator,
     logging,
     ReplayButton,
     RunButton,
     TimeHarmonizer as timeHarmonizer,
 } from '@jenkins-cd/blueocean-core-js';
+
 import Extensions from '@jenkins-cd/js-extensions';
 
-import { MULTIBRANCH_PIPELINE } from '../Capabilities';
-import { buildRunDetailsUrl } from '../util/UrlUtils';
+import {MULTIBRANCH_PIPELINE} from '../Capabilities';
+import {buildRunDetailsUrl} from '../util/UrlUtils';
 import IfCapability from './IfCapability';
-import { CellLink, CellRow } from './CellLink';
+import {CellLink, CellRow} from './CellLink';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.Runs');
 /*
@@ -135,4 +138,4 @@ Runs.contextTypes = {
     location: object,
 };
 
-export default timeHarmonizer(Runs);
+export default TimeHarmonizer(Runs);
