@@ -1,16 +1,20 @@
-import {prepareMount} from "./util/EnzymeUtils";
-import React from "react";
-import {assert} from "chai";
-import {mount, shallow} from "enzyme";
+import { prepareMount } from './util/EnzymeUtils';
+import React from 'react';
+import { assert } from 'chai';
+import { mount, shallow } from 'enzyme';
 
-import TestResults from "../../main/js/components/testing/TestResults.jsx";
+import TestResults from '../../main/js/components/testing/TestResults.jsx';
 
-import {i18nTranslator} from "@jenkins-cd/blueocean-core-js";
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 prepareMount();
 
 const t = i18nTranslator('blueocean-dashboard');
 
 describe('TestResults', () => {
+
+    const pipeline = {
+        organization: 'myteam'
+    };
 
     const bigRun = {
         testSummary: {
@@ -22,6 +26,11 @@ describe('TestResults', () => {
             skipped: 3,
             total: 16,
         },
+        '_links': {
+            tests: {
+                href: '/pipeline/runs/1/tests'
+            }
+        }
     };
 
     const bigTests = [
@@ -40,7 +49,7 @@ describe('TestResults', () => {
     ];
 
     it('Test fixed included', () => {
-        const wrapper = shallow(<TestResults t={t} run={bigRun} tests={bigTests} />);
+        const wrapper = shallow(<TestResults t={t} run={bigRun} tests={bigTests} pipeline={pipeline} />);
         const output = wrapper.html();
         assert(output.indexOf('summary.failing_title') >= 0, 'should show failing title');
         assert(output.indexOf('new-failure-block') >= 0, 'should find new failure block');
@@ -67,7 +76,7 @@ describe('TestResults', () => {
             },
         };
 
-        const wrapper = shallow(<TestResults t={t} run={run} tests={failures} />);
+        const wrapper = shallow(<TestResults t={t} run={run} tests={failures} pipeline={pipeline} />);
         const newFailed = wrapper.find('.new-failure-block h4').text();
         assert.equal(newFailed, 'New failing - 2');
 
@@ -93,7 +102,7 @@ describe('TestResults', () => {
             },
         };
 
-        const wrapper = shallow(<TestResults t={t} run={run} tests={success} />);
+        const wrapper = shallow(<TestResults t={t} run={run} tests={success} pipeline={pipeline} />);
         const output = wrapper.html();
         assert(output.indexOf('summary.passing_title') >= 0, 'should show all passing title');
         assert(output.indexOf('-failure-block') < 0, 'should not find any failure blocks');
@@ -119,7 +128,7 @@ describe('TestResults', () => {
             },
         };
 
-        const wrapper = shallow(<TestResults t={t} run={run} tests={successWithFixed} />);
+        const wrapper = shallow(<TestResults t={t} run={run} tests={successWithFixed} pipeline={pipeline} />);
         const output = wrapper.html();
         assert(output.indexOf('summary.passing_after_fixes_title') >= 0, 'should show passing with fixes title');
         assert(output.indexOf('-failure-block') < 0, 'should not find any failure blocks');
@@ -143,7 +152,7 @@ describe('TestResults', () => {
             },
         };
         // Lets mount it to that it renders children.
-        const wrapper = mount(<TestResults t={t} run={run} tests={unstableWithNoMsg} />);
+        const wrapper = mount(<TestResults t={t} run={run} tests={unstableWithNoMsg} pipeline={pipeline} />);
 
         // Expend the test result
         wrapper.find('.result-item-head').simulate('click');
