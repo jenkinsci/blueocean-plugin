@@ -48,7 +48,18 @@ export function execute(done, bundleConfig) {
                 logger.debug(`Plugin ${bundleConfig.hpiPluginId} defines i18n resource bundles that must be loaded:`, pluginInfo.i18nBundles);
                 const loadedBundles = [];
                 const loadBundle = (namespace) => {
-                    const translator = i18nTranslator(bundleConfig.hpiPluginId, namespace, () => {
+                    let hpiPluginId = bundleConfig.hpiPluginId;
+                    let i18nResource = namespace;
+
+                    // By default the i18n resource is loaded from the same plugin as the
+                    // js-extension bundle, but sometimes you need to load it from another plugin.
+                    // The namespace can be defined as an object defining an alternate hpiPluginId.
+                    if (typeof namespace === 'object') {
+                        hpiPluginId = namespace.hpiPluginId;
+                        i18nResource = namespace.resource;
+                    }
+
+                    const translator = i18nTranslator(hpiPluginId, i18nResource, () => {
                         if (loadedBundles.indexOf(namespace) === -1) {
                             logger.debug(`Loading of i18n resource bundle "${bundleConfig.hpiPluginId}:${namespace}" done.`);
                             loadedBundles.push(namespace);

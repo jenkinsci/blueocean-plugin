@@ -76,7 +76,7 @@ export class ReplayButton extends Component {
         const isReplayable = this.props.latestRun.replayable;
         const hasPermission = permit(this.props.runnable).start();
 
-        const replayLabel = translate('toast.re-run', { defaultValue: 'Re-run' });
+        const replayLabel = translate('run.rerun');
 
         if (!isFinished || !isReplayable || !hasPermission) {
             return null;

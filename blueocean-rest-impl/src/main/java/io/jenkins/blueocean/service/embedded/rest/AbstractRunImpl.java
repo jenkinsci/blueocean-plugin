@@ -6,6 +6,7 @@ import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
+import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;

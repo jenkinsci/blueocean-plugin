@@ -100,8 +100,8 @@ List of browsers where we know Blue Ocean is not yet runnable:
 Follow the steps above for getting it running first. 
 
 Look in following README's for:
-* ``blueocean-dashboard`` guide on how to modify the GUI in the dashboard plugin. https://github.com/cloudbees/blueocean-sample-pipeline-result-ext-plugin has a video/sample of a plugin that extends Blue Ocean. 
 * ``blueocean-rest`` for how to navigate the rest api. 
+* ``blueocean-dashboard`` guide on how to modify the GUI in the dashboard plugin. 
 * ``blueocean-rest-impl`` for more details on how to actively develop this plugin for backend codebases.
 
 
