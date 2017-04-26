@@ -444,6 +444,12 @@
             <version>1.20</version>
         </dependency>
 
+        <!-- Needed to make other plugins work with `mvn hpi:run` by simply depending on blueocean aggregator -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>structs</artifactId>
+            <version>1.6</version>
+        </dependency>
 
         <!-- Test dependencies -->
         <dependency>
