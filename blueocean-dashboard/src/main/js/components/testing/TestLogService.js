@@ -1,5 +1,4 @@
-import { Fetch } from '@jenkins-cd/blueocean-core-js';
-import { BunkerService } from '../../../../../../blueocean-core-js/src/js/services/BunkerService';
+import { BunkerService, Fetch } from '@jenkins-cd/blueocean-core-js';
 
 class Item {
     constructor(test, log, isStdOut) {
