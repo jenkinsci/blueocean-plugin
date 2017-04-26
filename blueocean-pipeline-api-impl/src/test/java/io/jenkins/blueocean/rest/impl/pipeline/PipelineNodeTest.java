@@ -1620,9 +1620,13 @@ public class PipelineNodeTest extends PipelineBaseTest {
         j.assertBuildStatus(Result.SUCCESS, b1);
         List<Map> steps = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
         Assert.assertEquals(3, steps.size());
-        Assert.assertEquals("echo \"Building\"", steps.get(0).get("displayName"));
-        Assert.assertEquals("echo testing", steps.get(1).get("displayName"));
-        Assert.assertEquals("echo deploy", steps.get(2).get("displayName"));
+        Assert.assertEquals("Shell Script", steps.get(0).get("displayName"));
+        Assert.assertEquals("Shell Script", steps.get(1).get("displayName"));
+        Assert.assertEquals("Shell Script", steps.get(2).get("displayName"));
+
+        Assert.assertEquals("echo \"Building\"", steps.get(0).get("displayDescription"));
+        Assert.assertEquals("echo testing", steps.get(1).get("displayDescription"));
+        Assert.assertEquals("echo deploy", steps.get(2).get("displayDescription"));
 
     }
 
