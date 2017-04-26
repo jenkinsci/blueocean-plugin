@@ -69,11 +69,12 @@ public class PipelineStepImpl extends BluePipelineStep {
 
     @Override
     public String getDisplayName() {
-        String desc = ArgumentsAction.getArgumentDescriptionString(node.getNode());
-        if(desc != null) {
-            return desc;
-        }
         return node.getNode().getDisplayName();
+    }
+
+    @Override
+    public String getDisplayDescription() {
+        return ArgumentsAction.getArgumentDescriptionString(node.getNode());
     }
 
     @Override
