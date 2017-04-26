@@ -19,9 +19,9 @@
       "dev": true
     },
     "@jenkins-cd/js-builder": {
-      "version": "0.0.51-jdumay-1",
+      "version": "0.0.56",
       "from": "@jenkins-cd/js-builder@0.0.51-jdumay-1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.51-jdumay-1.tgz",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.56.tgz",
       "dev": true,
       "dependencies": {
         "underscore.string": {
