@@ -1,9 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { PlaceholderTable } from '@jenkins-cd/design-language';
+import { pagerService } from '@jenkins-cd/blueocean-core-js';
 
 import Icon from './placeholder/Icon';
 import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
 import TestResults from './testing/TestResults';
+import TestService from './testing/TestService';
 
 
 function NoTestsPlaceholder(props) {
@@ -40,6 +42,10 @@ NoTestsPlaceholder.propTypes = {
  */
 export class RunDetailsTests extends Component {
 
+    componentDidMount() {
+        this.testService = new TestService(pagerService);
+    }
+
     render() {
         const { t, locale } = this.props;
         return (
@@ -49,6 +55,7 @@ export class RunDetailsTests extends Component {
                     t={t}
                     pipeline={this.props.pipeline}
                     run={this.props.result}
+                    testService={this.testService}
                 />
             </div>
         );

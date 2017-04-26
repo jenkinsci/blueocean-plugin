@@ -48,11 +48,6 @@ export default class TestLogService extends BunkerService {
         return data.value.isStdOut ? links.stdout.href : links.stderr.href;
     }
 
-    setItem(item) {
-        console.log('setting item');
-        super.setItem(item);
-    }
-
     static ignoreNotFound(e) {
         if (e.response.status !== 404) {
             throw e;
