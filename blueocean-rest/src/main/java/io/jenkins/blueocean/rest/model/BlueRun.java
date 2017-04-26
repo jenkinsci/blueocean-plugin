@@ -42,6 +42,7 @@ public abstract class BlueRun extends Resource {
     public static final String REPLAYABLE = "replayable";
     public static final String TEST_SUMMARY = "testSummary";
     public static final String ACTIONS = "actions";
+    public static final String CAUSES = "causes";
 
     public static final int DEFAULT_BLOCKING_STOP_TIMEOUT_IN_SECS=10;
 
