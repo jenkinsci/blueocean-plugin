@@ -9,7 +9,7 @@ import {
 } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
-import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
 import { CellLink, CellRow } from './CellLink';
@@ -36,7 +36,7 @@ export class Runs extends Component {
         const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
         const isRunning = () => run.state === 'RUNNING' || run.state === 'PAUSED' || run.state === 'QUEUED';
         const {
-            durationMillis,
+            durationInMillis,
             endTime,
             startTime,
         } = getTimes({
@@ -47,7 +47,7 @@ export class Runs extends Component {
         });
         logger.warn('time:', {
             runDuration: run,
-            durationMillis,
+            durationInMillis,
             endTime,
             startTime,
             isRunning: isRunning(),
@@ -67,7 +67,7 @@ export class Runs extends Component {
         <CellRow id={`${pipeline.name}-${run.id}`} linkUrl={runDetailsUrl}>
             <CellLink>
                 <LiveStatusIndicator
-                  durationInMillis={durationMillis}
+                  durationInMillis={durationInMillis}
                   result={resultRun}
                   startTime={startTime}
                   estimatedDuration={run.estimatedDurationInMillis}
@@ -81,7 +81,7 @@ export class Runs extends Component {
             <CellLink>{message}</CellLink>
             <CellLink>
                 <TimeDuration
-                  millis={durationMillis}
+                  millis={durationInMillis}
                   updatePeriod={1000}
                   liveUpdate={isRunning()}
                   locale={locale}
@@ -107,10 +107,7 @@ export class Runs extends Component {
                   latestRun={this.props.run}
                   buttonType="stop-only"
                 />
-                { /* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */ }
-                <IfCapability className={pipeline._class} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
-                    <ReplayButton className="icon-button" runnable={pipeline} latestRun={run} onNavigation={openRunDetails} />
-                </IfCapability>
+                <ReplayButton className="icon-button" runnable={pipeline} latestRun={run} onNavigation={openRunDetails} />
             </td>
         </CellRow>
         );

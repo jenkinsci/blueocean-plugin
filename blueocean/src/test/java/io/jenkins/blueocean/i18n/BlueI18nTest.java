@@ -117,10 +117,9 @@ public class BlueI18nTest extends BaseTest {
 
     @Test
     public void test_404_response_unknown_plugin() {
-        Map<String, Object> response1 = get("/blue/rest/i18n/blueocean-xxxblah/1.0.0/jenkins.plugins.blueocean.dashboard.Messages/en", HttpServletResponse.SC_NOT_FOUND, Map.class);
-
+        Map<String, Object> response1 = get("/blue/rest/i18n/blueocean-xxxblah/1.0.0/j.plugins.blueocean.dashboard.Messages/en", HttpServletResponse.SC_NOT_FOUND, Map.class);
         Assert.assertEquals("error", response1.get("status"));
-        Assert.assertEquals("Unknown plugin or resource bundle: blueocean-xxxblah/1.0.0/jenkins.plugins.blueocean.dashboard.Messages/en", response1.get("message"));
+        Assert.assertEquals("Unknown plugin or resource bundle: blueocean-xxxblah/1.0.0/j.plugins.blueocean.dashboard.Messages/en", response1.get("message"));
     }
 
     @Test

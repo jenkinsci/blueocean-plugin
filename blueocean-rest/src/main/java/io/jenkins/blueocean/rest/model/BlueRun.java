@@ -39,8 +39,9 @@ public abstract class BlueRun extends Resource {
     public static final String RESULT = "result";
     public static final String STATE = "state";
     public static final String CAUSE_OF_BLOCKAGE = "causeOfBlockage";
-    public static final String ACTIONS = "actions";
+    public static final String REPLAYABLE = "replayable";
     public static final String TEST_SUMMARY = "testSummary";
+    public static final String ACTIONS = "actions";
 
     public static final int DEFAULT_BLOCKING_STOP_TIMEOUT_IN_SECS=10;
 
@@ -48,7 +49,6 @@ public abstract class BlueRun extends Resource {
 
     /** Date String format */
     public static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-    public static final String CAUSES = "causes";
 
 
     /**
@@ -245,6 +245,12 @@ public abstract class BlueRun extends Resource {
      */
     @Exported(name = CAUSE_OF_BLOCKAGE)
     public abstract String getCauseOfBlockage();
+
+    /**
+     * @return if the run will allow a replay
+     */
+    @Exported(name = REPLAYABLE)
+    public abstract boolean isReplayable();
 
     @ExportedBean
     public static abstract class BlueCause {
