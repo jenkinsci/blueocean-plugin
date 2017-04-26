@@ -1602,6 +1602,31 @@ public class PipelineNodeTest extends PipelineBaseTest {
     }
 
     @Test
+    public void BlockStageStepsWithDesc() throws Exception {
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition("node{\n" +
+                "    stage ('Build') {\n" +
+                "            sh 'echo \"Building\"'\n" +
+                "    }\n" +
+                "    stage ('Test') {\n" +
+                "            sh 'echo testing'\n" +
+                "    }\n" +
+                "    stage ('Deploy') {\n" +
+                "            sh 'echo deploy'\n" +
+                "    }\n" +
+                "}"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.SUCCESS, b1);
+        List<Map> steps = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
+        Assert.assertEquals(3, steps.size());
+        Assert.assertEquals("echo \"Building\"", steps.get(0).get("displayName"));
+        Assert.assertEquals("echo testing", steps.get(1).get("displayName"));
+        Assert.assertEquals("echo deploy", steps.get(2).get("displayName"));
+
+    }
+
+    @Test
     public void KyotoNodesFailureTest1() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
         job1.setDefinition(new CpsFlowDefinition("pipeline {\n" +
