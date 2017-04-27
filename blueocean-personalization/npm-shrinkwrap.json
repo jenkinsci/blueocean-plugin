@@ -3,9 +3,9 @@
   "version": "0.0.2-unpublished",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.106",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.106",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.106.tgz"
+      "version": "0.0.107",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.107",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.107.tgz"
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.127",
@@ -25,9 +25,9 @@
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.33",
-      "from": "@jenkins-cd/js-extensions@0.0.33",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.33.tgz"
+      "version": "0.0.35",
+      "from": "@jenkins-cd/js-extensions@0.0.35",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.35.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",
@@ -496,9 +496,9 @@
       "dev": true
     },
     "ast-types": {
-      "version": "0.9.4",
-      "from": "ast-types@0.9.4",
-      "resolved": "https://registry.npmjs.org/ast-types/-/ast-types-0.9.4.tgz"
+      "version": "0.9.6",
+      "from": "ast-types@0.9.6",
+      "resolved": "https://registry.npmjs.org/ast-types/-/ast-types-0.9.6.tgz"
     },
     "astw": {
       "version": "2.2.0",
@@ -6762,9 +6762,9 @@
       "dev": true
     },
     "recast": {
-      "version": "0.11.20",
+      "version": "0.11.23",
       "from": "recast@>=0.11.17 <0.12.0",
-      "resolved": "https://registry.npmjs.org/recast/-/recast-0.11.20.tgz",
+      "resolved": "https://registry.npmjs.org/recast/-/recast-0.11.23.tgz",
       "dependencies": {
         "esprima": {
           "version": "3.1.3",
