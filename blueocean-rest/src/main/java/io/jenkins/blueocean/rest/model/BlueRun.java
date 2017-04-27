@@ -6,6 +6,7 @@ import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.POST;
 import org.kohsuke.stapler.verb.PUT;
 
@@ -41,6 +42,7 @@ public abstract class BlueRun extends Resource {
     public static final String REPLAYABLE = "replayable";
     public static final String TEST_SUMMARY = "testSummary";
     public static final String ACTIONS = "actions";
+    public static final String CAUSES = "causes";
 
     public static final int DEFAULT_BLOCKING_STOP_TIMEOUT_IN_SECS=10;
 
@@ -233,6 +235,15 @@ public abstract class BlueRun extends Resource {
     @POST @TreeResponse @WebMethod(name = "replay")
     public abstract BlueRun replay();
 
+    /**
+     * @return cause of the run being created
+     */
+    @Exported(name = CAUSES, inline = true)
+    public abstract Collection<BlueCause> getCauses();
+
+    /**
+     * @return cause of what is blocking this run
+     */
     @Exported(name = CAUSE_OF_BLOCKAGE)
     public abstract String getCauseOfBlockage();
 
@@ -241,6 +252,14 @@ public abstract class BlueRun extends Resource {
      */
     @Exported(name = REPLAYABLE)
     public abstract boolean isReplayable();
+
+    @ExportedBean
+    public static abstract class BlueCause {
+        public abstract String getShortDescription();
+
+        @Exported(name="cause", merge = true)
+        public abstract Object getCause();
+    }
 
     public enum BlueRunState {
         QUEUED,

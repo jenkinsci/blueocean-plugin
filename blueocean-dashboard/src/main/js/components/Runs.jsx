@@ -60,6 +60,9 @@ export class Runs extends Component {
             router.push(location);
         };
 
+        // If there is no changeset, show the first cause otherwise show nothing (-)
+        const message = changeset && changeset.msg || (run.causes.length > 0 && run.causes[0].shortDescription) || '-';
+
         return (
         <CellRow id={`${pipeline.name}-${run.id}`} linkUrl={runDetailsUrl}>
             <CellLink>
@@ -75,7 +78,7 @@ export class Runs extends Component {
             <IfCapability className={pipeline._class} capability={MULTIBRANCH_PIPELINE} >
                 <CellLink linkUrl={runDetailsUrl}>{decodeURIComponent(run.pipeline)}</CellLink>
             </IfCapability>
-            <CellLink>{changeset && changeset.msg || '-'}</CellLink>
+            <CellLink>{message}</CellLink>
             <CellLink>
                 <TimeDuration
                   millis={durationInMillis}
