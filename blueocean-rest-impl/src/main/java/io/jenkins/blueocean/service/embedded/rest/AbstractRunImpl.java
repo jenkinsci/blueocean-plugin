@@ -1,24 +1,32 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import hudson.model.Action;
+import hudson.model.CauseAction;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.BlueRunFactory;
+import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
-import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
+import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.GenericResource;
-import io.jenkins.blueocean.service.embedded.OrganizationResolver;
 import org.kohsuke.stapler.QueryParameter;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Date;
 
@@ -29,9 +37,9 @@ import java.util.Date;
  */
 public class AbstractRunImpl<T extends Run> extends BlueRun {
     protected final T run;
-    protected final OrganizationImpl org;
+    protected final BlueOrganization org;
 
-    private final Link parent;
+    protected final Link parent;
     public AbstractRunImpl(T run, Link parent) {
         this.run = run;
         this.parent = parent;
@@ -86,13 +94,14 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         } else if(!run.isLogUpdated()){
             return BlueRunState.FINISHED;
         } else {
-            return BlueRunState.QUEUED;
+            return BlueRunState.RUNNING;
         }
     }
 
     @Override
     public BlueRunResult getResult() {
-        return run.getResult() != null ? BlueRunResult.valueOf(run.getResult().toString()) : BlueRunResult.UNKNOWN;
+        Result result = run.getResult();
+        return result != null ? BlueRunResult.valueOf(result.toString()) : BlueRunResult.UNKNOWN;
     }
 
 
@@ -130,8 +139,23 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
-    public BlueQueueItem replay() {
+    public BlueRun replay() {
         return null;
+    }
+
+    @Override
+    public Collection<BlueCause> getCauses() {
+        return BlueCauseImpl.getCauses(this.run);
+    }
+
+    @Override
+    public String getCauseOfBlockage() {
+        return null;
+    }
+
+    @Override
+    public boolean isReplayable() {
+        return false;
     }
 
     @Override
@@ -147,6 +171,16 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public BluePipelineStepContainer getSteps() {
         return null;
+    }
+
+    @Override
+    public BlueTestResultContainer getTests() {
+        return new BlueTestResultContainerImpl(this, run);
+    }
+
+    @Override
+    public BlueTestSummary getTestSummary() {
+        return BlueTestResultFactory.resolve(run, this).summary;
     }
 
     public Collection<BlueActionProxy> getActions() {
@@ -231,11 +265,48 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     private boolean isCompletedOrAborted(){
-        return run.getResult()!= null && (run.getResult() == Result.ABORTED || run.getResult().isCompleteBuild());
+        Result result = run.getResult();
+        return result != null && (result == Result.ABORTED || result.isCompleteBuild());
     }
 
     @Override
     public Links getLinks() {
         return super.getLinks().add("parent", parent);
+    }
+
+    public static class BlueCauseImpl extends BlueCause {
+
+        private final hudson.model.Cause cause;
+
+        BlueCauseImpl(hudson.model.Cause cause) {
+            this.cause = cause;
+        }
+
+        @Override
+        public String getShortDescription() {
+            return cause.getShortDescription();
+        }
+
+        @Override
+        public Object getCause() {
+            return cause;
+        }
+
+        static Collection<BlueCause> getCauses(Run run) {
+            CauseAction action = run.getAction(CauseAction.class);
+            if (action == null) {
+                return null;
+            }
+            return getCauses(action.getCauses());
+        }
+
+        static Collection<BlueCause> getCauses(Collection<hudson.model.Cause> causes) {
+            return Collections2.transform(causes, new Function<hudson.model.Cause, BlueCause>() {
+                @Override
+                public BlueCause apply(@Nullable hudson.model.Cause input) {
+                    return new BlueCauseImpl(input);
+                }
+            });
+        }
     }
 }

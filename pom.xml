@@ -10,7 +10,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.1.0-SNAPSHOT</version>
+  <version>1.1.0-beta-3-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean Parent</name>
@@ -22,6 +22,8 @@
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <node.version>6.4.0</node.version>
     <npm.version>3.10.3</npm.version>
+    <findbugs-maven-plugin.version>3.0.4</findbugs-maven-plugin.version>
+    <findbugs.failOnError>true</findbugs.failOnError>
   </properties>
 
   <scm>
@@ -226,7 +228,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-autofavorite</artifactId>
-            <version>0.6</version>
+            <version>0.7</version>
         </dependency>
 
         <!-- TODO: should be moved out of blueocean repo as separate plugin -->
@@ -250,7 +252,7 @@
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-model-definition</artifactId>
-            <version>1.1.2</version>
+            <version>1.1.3</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -260,7 +262,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-api</artifactId>
-            <version>2.12</version>
+            <version>2.13</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -325,14 +327,14 @@
         <dependency>
             <groupId>com.coravy.hudson.plugins.github</groupId>
             <artifactId>github</artifactId>
-            <version>1.26.2</version>
+            <version>1.27.0</version>
         </dependency>
 
         <!-- Other -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-display-url</artifactId>
-            <version>1.5.1</version>
+            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -342,7 +344,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>git</artifactId>
-            <version>3.2.0</version>
+            <version>3.3.0</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -362,7 +364,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>matrix-project</artifactId>
-            <version>1.9</version>
+            <version>1.10</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.main</groupId>
@@ -496,6 +498,17 @@
                   <artifactId>maven-javadoc-plugin</artifactId>
                   <version>2.10.4</version>
               </plugin>
+              <plugin>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>findbugs-maven-plugin</artifactId>
+                  <version>${findbugs-maven-plugin.version}</version>
+                  <configuration>
+                      <effort>Max</effort>
+                      <threshold>Default</threshold>
+                      <xmlOutput>true</xmlOutput>
+                      <findbugsXmlOutput>false</findbugsXmlOutput>
+                  </configuration>
+              </plugin>
           </plugins>
       </pluginManagement>
     <plugins>
@@ -503,14 +516,6 @@
         <!-- TODO: java8 signature doesn't exist yet -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>animal-sniffer-maven-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
-      <plugin>
-        <!-- No use worrying about this while we make such drastic changes left & right in every commit -->
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
         <configuration>
           <skip>true</skip>
         </configuration>
@@ -546,6 +551,11 @@
             </configuration>
         </plugin>
 
+        <!-- run findbugs on all modules -->
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>findbugs-maven-plugin</artifactId>
+        </plugin>
     </plugins>
   </build>
 </project>

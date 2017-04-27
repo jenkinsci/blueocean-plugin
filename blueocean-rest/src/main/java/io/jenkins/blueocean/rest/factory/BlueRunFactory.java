@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.service.embedded.rest;
+package io.jenkins.blueocean.rest.factory;
 
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;

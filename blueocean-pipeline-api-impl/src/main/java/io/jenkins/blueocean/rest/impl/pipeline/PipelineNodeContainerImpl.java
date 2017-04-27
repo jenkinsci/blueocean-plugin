@@ -34,7 +34,7 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
         //If build either failed or is in progress then return union with last successful pipeline run
         if (run.getResult() != Result.SUCCESS
             && job.getLastSuccessfulBuild() != null
-            && Integer.valueOf(job.getLastSuccessfulBuild().getId()) < Integer.valueOf(run.getId())) {
+            && Integer.parseInt(job.getLastSuccessfulBuild().getId()) < Integer.parseInt(run.getId())) {
 
             NodeGraphBuilder pastBuildGraph = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(job.getLastSuccessfulBuild());
             this.nodes = graphBuilder.union(pastBuildGraph.getPipelineNodes(), getLink());

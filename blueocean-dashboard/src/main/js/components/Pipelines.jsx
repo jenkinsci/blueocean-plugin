@@ -10,9 +10,7 @@ import CreatePipelineLink from './CreatePipelineLink';
 import PipelineRowItem from './PipelineRowItem';
 import { DashboardPlaceholder } from './placeholder/DashboardPlaceholder';
 
-
 const translate = i18nTranslator('blueocean-dashboard');
-
 
 @observer
 export class Pipelines extends Component {
@@ -45,7 +43,7 @@ export class Pipelines extends Component {
                 { organization }
             </Link> : '';
 
-        const showPipelineList = !this.pager.pending && pipelines && pipelines.length > 0;
+        const showPipelineList = pipelines && pipelines.length > 0;
         const showEmptyState = !this.pager.pending && (!pipelines || !pipelines.length);
 
         const headers = [
@@ -61,13 +59,15 @@ export class Pipelines extends Component {
             <Page>
                 <ContentPageHeader>
                     <div className="u-flex-grow">
-                        <h1>
-                            <Link to="/" query={ location.query }>
-                                { translate('home.header.dashboard', { defaultValue: 'Dashboard' }) }
-                            </Link>
-                            { organization && ' / ' }
-                            { organization && orgLink }
-                        </h1>
+                        <Extensions.Renderer extensionPoint="jenkins.pipeline.header">
+                            <h1>
+                                <Link to="/" query={ location.query }>
+                                    { translate('home.header.dashboard', { defaultValue: 'Dashboard' }) }
+                                </Link>
+                                { organization && ' / ' }
+                                { organization && orgLink }
+                            </h1>
+                        </Extensions.Renderer>
                     </div>
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
                         <CreatePipelineLink />
@@ -112,7 +112,6 @@ export class Pipelines extends Component {
 const { func, object } = PropTypes;
 
 Pipelines.contextTypes = {
-    config: object,
     params: object,
     store: object,
     router: object,

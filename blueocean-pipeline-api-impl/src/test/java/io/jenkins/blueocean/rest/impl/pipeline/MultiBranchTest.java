@@ -435,7 +435,7 @@ public class MultiBranchTest extends PipelineBaseTest {
             Collections.EMPTY_MAP);
         String id = (String) resp.get("id");
         String link = getHrefFromLinks(resp, "self");
-        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature%252Fux-1/queue/"+id+"/", link);
+        Assert.assertEquals("/blue/rest/organizations/jenkins/pipelines/p/branches/feature%252Fux-1/runs/"+id+"/", link);
     }
 
 
@@ -960,7 +960,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
     //Disabled test for now as I can't get it to work. Tested manually.
     //@Test
-    public void getPipelineJobActivities() throws Exception {
+    public void getPipelineJobrRuns() throws Exception {
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         sampleRepo1.init();
         sampleRepo1.write("Jenkinsfile", "stage 'build'\n "+"node {echo 'Building'}\n"+
@@ -1011,16 +1011,16 @@ public class MultiBranchTest extends PipelineBaseTest {
     }
 
     @Test
-    public void getPipelineJobActivitiesNoBranches() throws Exception {
+    public void getPipelineJobRunsNoBranches() throws Exception {
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo1.toString(), "", "*", "", false),
             new DefaultBranchPropertyStrategy(new BranchProperty[0])));
 
-        List l = request().get("/organizations/jenkins/pipelines/p/activities").build(List.class);
+        List l = request().get("/organizations/jenkins/pipelines/p/runs").build(List.class);
 
         Assert.assertEquals(0, l.size());
 
-        List branches = request().get("/organizations/jenkins/pipelines/p/branches").build(List.class);
+        List branches = request().get("/organizations/jenkins/pipelines/p/runs").build(List.class);
         Assert.assertEquals(0, branches.size());
 
     }
