@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.52",
+    "@jenkins-cd/js-builder": "0.0.56",
     "@kadira/storybook": "2.20.1",
     "babel": "6.5.2",
     "babel-core": "6.17.0",
@@ -39,9 +39,9 @@
     "skin-deep": "0.16.0"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.106",
+    "@jenkins-cd/blueocean-core-js": "0.0.107",
     "@jenkins-cd/design-language": "0.0.127",
-    "@jenkins-cd/js-extensions": "0.0.33",
+    "@jenkins-cd/js-extensions": "0.0.35",
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/preferences": "0.0.3",
     "@jenkins-cd/react-material-icons": "1.0.0",

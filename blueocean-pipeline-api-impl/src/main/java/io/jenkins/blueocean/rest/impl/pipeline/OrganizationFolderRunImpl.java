@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.cloudbees.hudson.plugins.folder.computed.FolderComputation;
-import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.Result;
 import io.jenkins.blueocean.rest.Reachable;
@@ -167,6 +166,11 @@ public class OrganizationFolderRunImpl extends BlueRun {
     }
 
     @Override
+    public Collection<BlueCause> getCauses() {
+        return null;
+    }
+
+    @Override
     public String getCauseOfBlockage() {
         return null;
     }
@@ -174,7 +178,7 @@ public class OrganizationFolderRunImpl extends BlueRun {
     @Override
     public BlueRun replay() {
         if(isReplayable()) {
-            return new QueueItemImpl(pipeline.folder.scheduleBuild2(0,new CauseAction(new Cause.UserIdCause())), pipeline, 1).toRun();
+            return new QueueItemImpl(pipeline.folder.scheduleBuild2(0,new CauseAction(new hudson.model.Cause.UserIdCause())), pipeline, 1).toRun();
         }
         return null;
     }
