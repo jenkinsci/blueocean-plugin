@@ -32,7 +32,6 @@ export default [{
     "displayName": "master",
     "estimatedDurationInMillis": 39110,
     "fullName": "tfprdemo/master",
-    "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/tfprdemo/branches/master/runs/3/",
     "latestRun": {
         "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
         "_links": {
@@ -283,7 +282,6 @@ export default [{
     "displayName": "quicker",
     "estimatedDurationInMillis": 18710,
     "fullName": "tfprdemo/quicker",
-    "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/tfprdemo/branches/quicker/runs/1/",
     "latestRun": {
         "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
         "_links": {
@@ -506,7 +504,6 @@ export default [{
     "displayName": "tfennelly-patch-1",
     "estimatedDurationInMillis": -1,
     "fullName": "tfprdemo/tfennelly-patch-1",
-    "lastSuccessfulRun": null,
     "latestRun": {
         "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
         "_links": {
