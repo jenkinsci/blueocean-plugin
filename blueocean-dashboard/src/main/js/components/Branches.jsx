@@ -84,7 +84,7 @@ export default class Branches extends Component {
                 </CellLink>
                 <CellLink>{cleanBranchName}</CellLink>
                 <CellLink><CommitHash commitId={latestRun.commitId} /></CellLink>
-                <CellLink><RunMessageCell run={latestRun} /></CellLink>
+                <CellLink><RunMessageCell run={latestRun} t={t} /></CellLink>
                 <CellLink>
                     <ReadableDate
                       date={latestRun.endTime}

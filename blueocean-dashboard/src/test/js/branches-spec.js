@@ -29,24 +29,7 @@ describe('Branches should render', () => {
 
         const message = wrapper.find('.message');
         expect(message).to.have.length(1);
-        assert.equal(message.text(), 'Update Jenkinsfile');
-    });
-
-    it('renders the branches with cause', () => {
-        const pipeline = new PipelineRecord(pipelines[0]);
-        const branch = new RunsRecord(runs[1]);
-        const wrapper = render(<Branches t={t} data={branch} pipeline={pipeline} capabilities={capabilities} />);
-        assert.isNotNull(wrapper);
-
-        expect(wrapper.find('.weather-storm')).to.have.length(1);
-
-        const hash = wrapper.find('.hash');
-        assert.isNotNull(hash);
-        assert.equal(hash.text(), 'c38ab8e');
-
-        const message = wrapper.find('.message');
-        expect(message).to.have.length(1);
-        assert.equal(message.text(), 'Branch indexing');
+        assert.equal(message.text(), 'Update Jenkinsfile ');
     });
 });
 
