@@ -83,7 +83,6 @@
     "displayName": "pipeline-success-1m",
     "estimatedDurationInMillis": 68399,
     "fullName": "simple-pipeline-jobs/pipeline-success-1m",
-    "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/runs/113/",
     "latestRun": {
         "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
         "_links": {

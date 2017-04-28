@@ -11,7 +11,6 @@ export class PipelineRecord extends Record({
     displayName: '',
     estimatedDurationInMillis: 0,
     fullName: '',
-    lastSuccessfulRun: null,
     latestRun: null,
     name: '',
     numberOfFailingBranches: 0,

@@ -77,7 +77,6 @@
     "displayName": "master",
     "estimatedDurationInMillis": 100690,
     "fullName": "multibranch/nested-folder/jenkinsfile-experiments/master",
-    "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/master/runs/97/",
     "latestRun": {
         "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
         "_links": {
@@ -342,7 +341,6 @@
     "displayName": "test-branch-1",
     "estimatedDurationInMillis": 103741,
     "fullName": "multibranch/nested-folder/jenkinsfile-experiments/test-branch-1",
-    "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/multibranch/pipelines/nested-folder/pipelines/jenkinsfile-experiments/branches/test-branch-1/runs/54/",
     "latestRun": {
         "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
         "_links": {

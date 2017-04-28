@@ -9,13 +9,11 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
-import hudson.Util;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.User;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.JsonConverter;
-import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
 import org.acegisecurity.adapters.PrincipalAcegiUserToken;
 import org.acegisecurity.context.SecurityContextHolder;
@@ -272,7 +270,6 @@ public abstract class PipelineBaseTest{
         Assert.assertEquals("jenkins", resp.get("organization"));
         Assert.assertEquals(p.getName(), resp.get("name"));
         Assert.assertEquals(p.getDisplayName(), resp.get("displayName"));
-        Assert.assertNull(resp.get("lastSuccessfulRun"));
         Assert.assertEquals(numBranches, resp.get("totalNumberOfBranches"));
         if(numOfFailingBranches >= 0) {
             Assert.assertEquals(numOfFailingBranches, resp.get("numberOfFailingBranches"));
@@ -289,20 +286,6 @@ public abstract class PipelineBaseTest{
         Assert.assertEquals(p.getDisplayName(), resp.get("displayName"));
         Assert.assertEquals(p.getFullName(), resp.get("fullName"));
         Assert.assertEquals(p.getBuildHealth().getScore(), resp.get("weatherScore"));
-        if(p.getLastSuccessfulBuild() != null){
-            Run b = p.getLastSuccessfulBuild();
-            String s = baseUrl + "/organizations/jenkins/pipelines/" +
-                p.getName() + "/runs/" + b.getId()+"/";
-            if(p instanceof WorkflowJob && p.getParent() instanceof MultiBranchProject){
-                s = baseUrl + "/organizations/jenkins/pipelines/" +
-                    ((MultiBranchProject) p.getParent()).getName() +"/branches/"+ Util.rawEncode(p.getName())+"/runs/" + b.getId()+"/";
-            }
-            Assert.assertEquals(s, resp.get("lastSuccessfulRun"));
-
-        }else{
-            Assert.assertNull(resp.get("lastSuccessfulRun"));
-        }
-
         if(p.getLastBuild() != null){
             Run r = p.getLastBuild();
             validateRun(r, (Map) resp.get("latestRun"), "FINISHED");

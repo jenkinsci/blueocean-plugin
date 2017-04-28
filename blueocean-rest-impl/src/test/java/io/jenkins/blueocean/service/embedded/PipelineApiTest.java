@@ -263,17 +263,6 @@ public class PipelineApiTest extends BaseTest {
     }
 
     @Test
-    public void getPipelineWithLastSuccessfulRun() throws Exception {
-        FreeStyleProject p = j.createFreeStyleProject("pipeline4");
-        p.getBuildersList().add(new Shell("echo hello!\nsleep 1"));
-        FreeStyleBuild b = p.scheduleBuild2(0).get();
-        j.assertBuildStatusSuccess(b);
-        Map resp = get("/organizations/jenkins/pipelines/pipeline4/");
-
-        validatePipeline(p, resp);
-    }
-
-    @Test
     public void getPipelineRunWithTestResult() throws Exception {
         FreeStyleProject p = j.createFreeStyleProject("pipeline4");
         p.getBuildersList().add(new Shell("echo '<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
