@@ -5,14 +5,19 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.0.0-b09-SNAPSHOT</version>
+        <version>1.1.0-beta-3-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean</artifactId>
     <packaging>hpi</packaging>
 
-    <name>BlueOcean beta</name>
+    <name>Blue Ocean</name>
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+    <description>Blue Ocean is a new project that rethinks the user experience of Jenkins. Designed from the ground up for Jenkins Pipeline and compatible with Freestyle jobs, Blue Ocean reduces clutter and increases clarity for every member of your team.</description>
+
+    <properties>
+        <jetty.contextPath>/jenkins</jetty.contextPath>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -25,6 +30,10 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-events</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-personalization</artifactId>
         </dependency>
         <dependency>
@@ -34,6 +43,10 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-commons</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-i18n</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -53,13 +66,35 @@
             <artifactId>blueocean-config</artifactId>
         </dependency>
 
-        <!-- Bundled plugins for improved out of the box experience -->
-        <!-- Kyoto feature -->
+
+        <!-- TODO: its here only for development, to be removed -->
         <dependency>
-            <groupId>org.jenkinsci.plugins</groupId>
-            <artifactId>pipeline-model-definition</artifactId>
-            <version>0.2</version>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-github-pipeline</artifactId>
         </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-git-pipeline</artifactId>
+        </dependency>
+
+
+        <!-- Bundled plugins for improved out of the box experience -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>blueocean-display-url</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>blueocean-autofavorite</artifactId>
+        </dependency>
+
+        <dependency>
+          <groupId>io.jenkins.blueocean</groupId>
+          <artifactId>blueocean-pipeline-editor</artifactId>
+        </dependency>
+
 
         <!-- Test deps -->
         <dependency>
@@ -122,10 +157,13 @@
                         linkHPI('blueocean-personalization');
                         linkHPI('blueocean-rest');
                         linkHPI('blueocean-commons');
+                        linkHPI('blueocean-i18n');
                         linkHPI('blueocean-jwt');
                         linkHPI('blueocean-rest-impl');
                         linkHPI('blueocean-pipeline-api-impl')
                         linkHPI('blueocean-config')
+                        linkHPI('blueocean-github-pipeline')
+                        linkHPI('blueocean-git-pipeline')
                     </source>
                 </configuration>
             </plugin>
@@ -141,6 +179,11 @@
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <webApp implementation="org.eclipse.jetty.maven.plugin.JettyWebAppContext">
+                        <contextPath>${jetty.contextPath}</contextPath>
+                    </webApp>
+                </configuration>
             </plugin>
         </plugins>
     </build>

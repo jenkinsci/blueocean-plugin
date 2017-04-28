@@ -4,9 +4,10 @@ import hudson.ExtensionPoint;
 import io.jenkins.blueocean.rest.ApiRoutable;
 
 /**
- * This is the head of the blue ocean API.
+ * Container of BlueOcean {@link BlueOrganization}s
  *
  * @author Kohsuke Kawaguchi
+ * @author Vivek Pandey
  */
 public abstract class BlueOrganizationContainer extends Container<BlueOrganization> implements ApiRoutable, ExtensionPoint {
 

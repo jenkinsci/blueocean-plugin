@@ -9,16 +9,22 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
-import hudson.Util;
 import hudson.model.Job;
 import hudson.model.Run;
+import hudson.model.User;
+import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.JsonConverter;
-import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
+import org.acegisecurity.adapters.PrincipalAcegiUserToken;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.userdetails.UserDetails;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
+import org.jenkinsci.plugins.workflow.graphanalysis.ForkScanner;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
+import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StageChunkFinder;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 import org.junit.Assert;
 import org.junit.Before;
@@ -32,11 +38,13 @@ import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.LogManager;
 
 import static io.jenkins.blueocean.auth.jwt.JwtToken.X_BLUEOCEAN_JWT;
+import static org.junit.Assert.fail;
 
 /**
  * @author Vivek Pandey
@@ -262,7 +270,6 @@ public abstract class PipelineBaseTest{
         Assert.assertEquals("jenkins", resp.get("organization"));
         Assert.assertEquals(p.getName(), resp.get("name"));
         Assert.assertEquals(p.getDisplayName(), resp.get("displayName"));
-        Assert.assertNull(resp.get("lastSuccessfulRun"));
         Assert.assertEquals(numBranches, resp.get("totalNumberOfBranches"));
         if(numOfFailingBranches >= 0) {
             Assert.assertEquals(numOfFailingBranches, resp.get("numberOfFailingBranches"));
@@ -279,20 +286,6 @@ public abstract class PipelineBaseTest{
         Assert.assertEquals(p.getDisplayName(), resp.get("displayName"));
         Assert.assertEquals(p.getFullName(), resp.get("fullName"));
         Assert.assertEquals(p.getBuildHealth().getScore(), resp.get("weatherScore"));
-        if(p.getLastSuccessfulBuild() != null){
-            Run b = p.getLastSuccessfulBuild();
-            String s = baseUrl + "/organizations/jenkins/pipelines/" +
-                p.getName() + "/runs/" + b.getId()+"/";
-            if(p instanceof WorkflowJob && p.getParent() instanceof MultiBranchProject){
-                s = baseUrl + "/organizations/jenkins/pipelines/" +
-                    ((MultiBranchProject) p.getParent()).getName() +"/branches/"+ Util.rawEncode(p.getName())+"/runs/" + b.getId()+"/";
-            }
-            Assert.assertEquals(s, resp.get("lastSuccessfulRun"));
-
-        }else{
-            Assert.assertNull(resp.get("lastSuccessfulRun"));
-        }
-
         if(p.getLastBuild() != null){
             Run r = p.getLastBuild();
             validateRun(r, (Map) resp.get("latestRun"), "FINISHED");
@@ -334,6 +327,47 @@ public abstract class PipelineBaseTest{
                 nodes.add(row.getNode());
             }
         }
+        return nodes;
+    }
+
+    protected List<FlowNode> getStages(NodeGraphBuilder builder){
+        List<FlowNode> nodes = new ArrayList<>();
+        for(FlowNodeWrapper node: builder.getPipelineNodes()){
+            if(node.type == FlowNodeWrapper.NodeType.STAGE){
+                nodes.add(node.getNode());
+            }
+        }
+
+        return nodes;
+    }
+    protected List<FlowNode> getAllSteps(WorkflowRun run){
+        PipelineStepVisitor visitor = new PipelineStepVisitor(run, null);
+        ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), visitor, new StageChunkFinder());
+        List<FlowNode> steps = new ArrayList<>();
+        for(FlowNodeWrapper node: visitor.getSteps()){
+            steps.add(node.getNode());
+        }
+        return steps;
+    }
+    protected List<FlowNode> getStagesAndParallels(NodeGraphBuilder builder){
+        List<FlowNode> nodes = new ArrayList<>();
+        for(FlowNodeWrapper node: builder.getPipelineNodes()){
+            if(node.type == FlowNodeWrapper.NodeType.STAGE || node.type == FlowNodeWrapper.NodeType.PARALLEL){
+                nodes.add(node.getNode());
+            }
+        }
+
+        return nodes;
+    }
+
+    protected List<FlowNode> getParallelNodes(NodeGraphBuilder builder){
+        List<FlowNode> nodes = new ArrayList<>();
+        for(FlowNodeWrapper node: builder.getPipelineNodes()){
+            if(node.type == FlowNodeWrapper.NodeType.PARALLEL){
+                nodes.add(node.getNode());
+            }
+        }
+
         return nodes;
     }
 
@@ -382,6 +416,7 @@ public abstract class PipelineBaseTest{
         private int expectedStatus = 200;
         private String token;
 
+        private Map<String,String> headers = new HashMap<>();
 
         private String getBaseUrl(String path){
             return baseUrl + path;
@@ -441,6 +476,11 @@ public abstract class PipelineBaseTest{
             return this;
         }
 
+        public RequestBuilder header(String key, String value){
+            this.headers.put(key, value);
+            return this;
+        }
+
         public RequestBuilder post(String url) {
             this.url = url;
             this.method = "POST";
@@ -477,20 +517,24 @@ public abstract class PipelineBaseTest{
 
                 }
                 request.header("Accept-Encoding","");
-                if(token == null) {
-                    request.header("Authorization", "Bearer " + PipelineBaseTest.this.jwtToken);
+                if(!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)){
+                    request.basicAuth(username, password);
                 }else{
-                    request.header("Authorization", "Bearer " + token);
+                    if (token == null) {
+                        request.header("Authorization", "Bearer " + PipelineBaseTest.this.jwtToken);
+                    }else{
+                        request.header("Authorization", "Bearer " + token);
+                    }
                 }
 
                 request.header("Content-Type", contentType);
-                if(!Strings.isNullOrEmpty(username) && !Strings.isNullOrEmpty(password)){
-                    request.basicAuth(username, password);
-                }
+
+                request.headers(headers);
 
                 if(request instanceof HttpRequestWithBody && data != null) {
                     ((HttpRequestWithBody)request).body(data);
                 }
+
                 HttpResponse<T> response = request.asObject(clzzz);
                 Assert.assertEquals(expectedStatus, response.getStatus());
                 return response.getBody();
@@ -525,4 +569,38 @@ public abstract class PipelineBaseTest{
         // tests that test token generation and validation
         return token;
     }
+
+    protected WorkflowJob scheduleAndFindBranchProject(WorkflowMultiBranchProject mp,  String name) throws Exception {
+        mp.scheduleBuild2(0).getFuture().get();
+        return findBranchProject(mp, name);
+    }
+
+    protected void scheduleAndFindBranchProject(WorkflowMultiBranchProject mp) throws Exception {
+        mp.scheduleBuild2(0).getFuture().get();
+    }
+
+    protected WorkflowJob findBranchProject(WorkflowMultiBranchProject mp,  String name) throws Exception {
+        WorkflowJob p = mp.getItem(name);
+        if (p == null) {
+            mp.getIndexing().writeWholeLogTo(System.out);
+            fail(name + " project not found");
+        }
+        return p;
+    }
+
+    protected User login() throws IOException {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+
+        hudson.model.User bob = j.jenkins.getUser("bob");
+
+        bob.setFullName("Bob Smith");
+        bob.addProperty(new Mailer.UserProperty("bob@jenkins-ci.org"));
+
+
+        UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
+
+        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
+        return bob;
+    }
+
 }

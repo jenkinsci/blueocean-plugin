@@ -2,37 +2,41 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
-import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import hudson.Extension;
+import hudson.Util;
 import hudson.model.AbstractItem;
-import hudson.model.Action;
 import hudson.model.Item;
+import hudson.model.ItemGroup;
 import hudson.model.Job;
+import hudson.model.ParameterDefinition;
+import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Run;
 import hudson.model.User;
-import hudson.plugins.favorite.user.FavoriteUserProperty;
+import hudson.plugins.favorite.Favorites;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
+import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
-import io.jenkins.blueocean.rest.model.Container;
-import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
-import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.DELETE;
 
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -49,14 +53,16 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_JOB;
 @Capability(JENKINS_JOB)
 public class AbstractPipelineImpl extends BluePipeline {
     private final Job job;
+    protected final BlueOrganization org;
 
     protected AbstractPipelineImpl(Job job) {
         this.job = job;
+        this.org = OrganizationResolver.getInstance().getContainingOrg(job);
     }
 
     @Override
     public String getOrganization() {
-        return OrganizationImpl.INSTANCE.getName();
+        return org.getName();
     }
 
     @Override
@@ -88,23 +94,13 @@ public class AbstractPipelineImpl extends BluePipeline {
     }
 
     @Override
-    public String getLastSuccessfulRun() {
-        if(job.getLastSuccessfulBuild() != null){
-            String id = job.getLastSuccessfulBuild().getId();
-
-            return Stapler.getCurrentRequest().getRootPath()+getLink().getHref()+"runs/"+id+"/";
-        }
-        return null;
-    }
-
-    @Override
     public BlueRunContainer getRuns() {
         return new RunContainerImpl(this, job);
     }
 
     @Override
     public Collection<BlueActionProxy> getActions() {
-        return getActionProxies(job.getAllActions(), this);
+        return ActionProxiesImpl.getActionProxies(job.getAllActions(), this);
     }
 
     @Override
@@ -125,8 +121,7 @@ public class AbstractPipelineImpl extends BluePipeline {
         if(favoriteAction == null) {
             throw new ServiceException.BadRequestExpception("Must provide pipeline name");
         }
-
-        FavoriteUtil.favoriteJob(job.getFullName(), favoriteAction.isFavorite());
+        FavoriteUtil.toggle(favoriteAction, job);
         return FavoriteUtil.getFavorite(job, new Reachable() {
             @Override
             public Link getLink() {
@@ -142,8 +137,35 @@ public class AbstractPipelineImpl extends BluePipeline {
     }
 
     @Override
+    public String getFullDisplayName() {
+        return getFullDisplayName(job.getParent(), Util.rawEncode(job.getDisplayName()));
+    }
+
+    /**
+     * Returns full display name. Each display name is separated by '/' and each display name is url encoded.
+     *
+     * @param parent parent folder
+     * @param displayName URL encoded display name. Caller must pass urlencoded name
+     *
+     * @return full display name
+     */
+    public static String getFullDisplayName(@Nonnull ItemGroup parent, @Nullable String displayName){
+        String name = parent.getDisplayName();
+        if(name.length() == 0 ) return displayName;
+
+        if(name.length() > 0  && parent instanceof AbstractItem) {
+            if(displayName == null){
+                return getFullDisplayName(((AbstractItem)parent).getParent(), String.format("%s", Util.rawEncode(name)));
+            }else {
+                return getFullDisplayName(((AbstractItem) parent).getParent(), String.format("%s/%s", Util.rawEncode(name),displayName));
+            }
+        }
+        return displayName;
+    }
+
+    @Override
     public Link getLink() {
-        return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(getRecursivePathFromFullName(this));
+        return org.getLink().rel("pipelines").rel(getRecursivePathFromFullName(this));
     }
 
     public static String getRecursivePathFromFullName(BluePipeline pipeline){
@@ -165,21 +187,20 @@ public class AbstractPipelineImpl extends BluePipeline {
         return pipelinePath.toString();
     }
 
-    public static Collection<BlueActionProxy> getActionProxies(List<? extends Action> actions, Reachable parent){
-        List<BlueActionProxy> actionProxies = new ArrayList<>();
-        for(Action action:actions){
-            if(action == null){
-                continue;
-            }
-            actionProxies.add(new ActionProxiesImpl(action, parent));
-        }
-        return actionProxies;
-
+    @Override
+    public List<Object> getParameters() {
+        return getParameterDefinitions(job);
     }
 
-    @Navigable
-    public Container<Resource> getActivities() {
-        return Containers.fromResource(getLink(), Lists.newArrayList(Iterators.concat(getQueue().iterator(), getRuns().iterator())));
+    public static List<Object> getParameterDefinitions(Job job){
+        ParametersDefinitionProperty pp = (ParametersDefinitionProperty) job.getProperty(ParametersDefinitionProperty.class);
+        List<Object> pds = new ArrayList<>();
+        if(pp != null){
+            for(ParameterDefinition pd : pp.getParameterDefinitions()){
+                pds.add(pd);
+            }
+        }
+        return pds;
     }
 
     /**
@@ -216,9 +237,15 @@ public class AbstractPipelineImpl extends BluePipeline {
         return getPermissions(job);
     }
 
+    @Override
+    public BluePipelineScm getScm() {
+        return null;
+    }
+
     public static Map<String, Boolean> getPermissions(AbstractItem item){
         return ImmutableMap.of(
             BluePipeline.CREATE_PERMISSION, item.getACL().hasPermission(Item.CREATE),
+            BluePipeline.CONFIGURE_PERMISSION, item.getACL().hasPermission(Item.CONFIGURE),
             BluePipeline.READ_PERMISSION, item.getACL().hasPermission(Item.READ),
             BluePipeline.START_PERMISSION, item.getACL().hasPermission(Item.BUILD),
             BluePipeline.STOP_PERMISSION, item.getACL().hasPermission(Item.CANCEL)
@@ -227,18 +254,13 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     public static final Predicate<Run> isRunning = new Predicate<Run>() {
         public boolean apply(Run r) {
-            return r.isBuilding();
+            return r != null && r.isBuilding();
         }
     };
 
     public boolean isFavorite() {
         User user = User.current();
-        if(user != null) {
-            FavoriteUserProperty prop = user.getProperty(FavoriteUserProperty.class);
-            return prop != null && prop.isJobFavorite(job.getFullName());
-        }
-
-        return false;
+        return user != null && Favorites.isFavorite(user, job);
     }
 
 }

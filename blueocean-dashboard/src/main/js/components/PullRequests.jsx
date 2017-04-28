@@ -1,112 +1,82 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView, Table } from '@jenkins-cd/design-language';
+import { Table } from '@jenkins-cd/design-language';
+import { capable, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+import { observer } from 'mobx-react';
+
 import PullRequest from './PullRequest';
 import { RunsRecord } from './records';
-import {
-    actions,
-    pullRequests as pullRequestSelector,
-    createSelector,
-    connect,
-} from '../redux';
-import PageLoading from './PageLoading';
-import { pipelineBranchesUnsupported } from './PipelinePage';
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
+import { NoPullRequestsPlaceholder } from './placeholder/NoPullRequestsPlaceholder';
+import { UnsupportedPlaceholder } from './placeholder/UnsupportedPlaceholder';
 
-const { func, object, array, string } = PropTypes;
 
-const EmptyState = ({ repoName }) => (
-    <main>
-        <EmptyStateView iconName="goat">
-            <h1>Push me, pull you</h1>
+const { object, string, func } = PropTypes;
 
-            <p>
-                When a Pull Request is opened on the repository <em>{repoName}</em>,
-                Jenkins will test it and report the status of
-                your changes back to the pull request on Github.
-            </p>
 
-            <button>Enable</button>
-        </EmptyStateView>
-    </main>
-);
-
-const NotSupported = () => (
-    <main>
-        <EmptyStateView>
-            <h1>Pull Requests are unsupported</h1>
-            <p>
-            Validated pull request builds only work with the <i>Multibranch Pipeline</i> job type.
-            This is just one of the many reasons to switch to Jenkins Pipeline.
-            </p>
-            <a href="https://jenkins.io/doc/book/pipeline-as-code/" target="_blank">Learn more</a>
-        </EmptyStateView>
-    </main>
-);
-
-EmptyState.propTypes = {
-    repoName: string,
-};
-
+@observer
 export class PullRequests extends Component {
     componentWillMount() {
-        if (this.context.pipeline && this.context.params && !pipelineBranchesUnsupported(this.context.pipeline)) {
-            this.props.fetchPullRequests({
-                organizationName: this.context.params.organization,
-                pipelineName: this.context.params.pipeline,
-            });
+        if (this.props.pipeline && this.props.params && capable(this.props.pipeline, MULTIBRANCH_PIPELINE)) {
+            this.pager = this.context.pipelineService.prPager(this.props.params.organization, this.props.params.pipeline);
         }
     }
 
-    componentWillUnmount() {
-        this.props.clearPRData();
-    }
 
     render() {
-        const { pullRequests } = this.props;
+        const { t, locale, pipeline } = this.props;
 
-        if (!pullRequests || (!pullRequests.$pending && pipelineBranchesUnsupported(this.context.pipeline))) {
-            return (<NotSupported />);
+        if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
+            const childProps = {
+                title: t('pipelinedetail.placeholder.unsupported.pullrequests.title'),
+                message: t('pipelinedetail.placeholder.unsupported.pullrequests.message'),
+                linkText: t('pipelinedetail.placeholder.unsupported.pullrequests.linktext'),
+                linkHref: t('pipelinedetail.placeholder.unsupported.pullrequests.linkhref'),
+            };
+
+            return (<UnsupportedPlaceholder {...childProps} />);
+        }
+        const pullRequests = this.pager.data;
+
+        if (this.pager.pending) {
+            return null;
         }
 
-        if (pullRequests.$pending && !pullRequests.length) {
-            return <PageLoading />;
+        if (!this.pager.pending && !this.pager.data.length) {
+            return <NoPullRequestsPlaceholder t={t} />;
         }
 
-
-        if (pullRequests.$failed) {
-            return <div>Error: {pullRequests.$failed}</div>;
-        }
-
-        if (!pullRequests.$pending && !pullRequests.length) {
-            return (<EmptyState repoName={this.context.params.pipeline} />);
-        }
+        const head = 'pipelinedetail.pullrequests.header';
+        const status = t(`${head}.status`, { defaultValue: 'Status' });
+        const runHeader = t(`${head}.run`, { defaultValue: 'PR' });
+        const author = t(`${head}.author`, { defaultValue: 'Author' });
+        const summary = t(`${head}.summary`, { defaultValue: 'Summary' });
+        const completed = t(`${head}.completed`, { defaultValue: 'Completed' });
 
         const headers = [
-            'Status',
-            { label: 'Latest Build', className: 'build' },
-            { label: 'Summary', className: 'summary' },
-            'Author',
-            { label: 'Completed', className: 'completed' },
+            status,
+            { label: runHeader, className: 'run' },
+            { label: summary, className: 'summary' },
+            author,
+            { label: completed, className: 'completed' },
             { label: '', className: 'run' },
         ];
 
         return (
             <main>
                 <article>
-                    {pullRequests.$pending && <PageLoading />}
-                    <Table className="pr-table fixed" headers={headers}>
+                    <Table className="pr-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
                         {pullRequests.map((run, index) => {
                             const result = new RunsRecord(run);
                             return (<PullRequest
+                              t={t}
+                              locale={locale}
+                              pipeline={pipeline}
                               key={index}
                               pr={result}
                             />);
                         })}
                     </Table>
-                    {pullRequests.$pager &&
-                        <button disabled={pullRequests.$pending || !pullRequests.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => pullRequests.$pager.fetchMore()}>
-                            {pullRequests.$pending ? 'Loading...' : 'Show More'}
-                        </button>
-                    }
+                    <ShowMoreButton pager={this.pager} />
                 </article>
             </main>
         );
@@ -116,15 +86,14 @@ export class PullRequests extends Component {
 PullRequests.contextTypes = {
     config: object.isRequired,
     params: object.isRequired,
-    pipeline: object,
+    pipelineService: object.isRequired,
 };
 
 PullRequests.propTypes = {
-    pullRequests: array,
-    clearPRData: func,
-    fetchPullRequests: func,
+    locale: string,
+    t: func,
+    pipeline: object,
+    params: object,
 };
 
-const selectors = createSelector([pullRequestSelector], (pullRequests) => ({ pullRequests }));
-
-export default connect(selectors, actions)(PullRequests);
+export default PullRequests;

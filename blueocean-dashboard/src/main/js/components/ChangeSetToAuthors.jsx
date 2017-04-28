@@ -32,15 +32,23 @@ export default class ChangeSetToAuthors extends Component {
     }
 
     render() {
-        const { props: { changeSet, onAuthorsClick }, state: { condense } } = this;
+        const { props: { changeSet, onAuthorsClick, t }, state: { condense } } = this;
         const authors = changeSet && changeSet.map ? [...(new Set(changeSet.map(change => change.author.fullName)):any)] : [];
-        let children = 'No changes';
+        let children = t('rundetail.header.changes.none', {
+            defaultValue: 'No changes',
+        });
         if (authors && authors.length > 0) {
             let nested;
             if (condense) {
-                nested = `${changeSet.length} changes`;
+                nested = t('rundetail.header.changes.count', {
+                    defaultValue: '{0} changes',
+                    0: changeSet.length,
+                });
             } else {
-                nested = `Changes by ${authors.map(author => ` ${author}`)} `;
+                nested = t('rundetail.header.changes.names', {
+                    0: authors.map(author => ` ${author}`),
+                    defaultValue: 'Changes by {0}',
+                });
             }
             children = (<a className="authors" onClick={onAuthorsClick}>
                {nested}
@@ -57,4 +65,5 @@ const { array, func } = PropTypes;
 ChangeSetToAuthors.propTypes = {
     changeSet: array,
     onAuthorsClick: func,
+    t: func,
 };

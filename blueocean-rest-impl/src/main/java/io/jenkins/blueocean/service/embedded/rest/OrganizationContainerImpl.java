@@ -3,12 +3,11 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.Extension;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.ApiHead;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueOrganizationContainer;
-import jenkins.model.Jenkins;
 
-import java.util.Collections;
 import java.util.Iterator;
 
 /**
@@ -22,20 +21,15 @@ public class OrganizationContainerImpl extends BlueOrganizationContainer {
 
     @Override
     public BlueOrganization get(String name) {
-        validateOrganization(name);
-        return OrganizationImpl.INSTANCE;
+        BlueOrganization o = OrganizationResolver.getInstance().get(name);
+        if (o==null)
+            throw new ServiceException.NotFoundException(String.format("Organization %s not found",name));
+        return o;
     }
 
     @Override
     public Iterator<BlueOrganization> iterator() {
-        return Collections.<BlueOrganization>singleton(OrganizationImpl.INSTANCE).iterator();
-    }
-
-    protected void validateOrganization(String organization){
-        if (!organization.equals(Jenkins.getActiveInstance().getDisplayName().toLowerCase())) {
-            throw new ServiceException.UnprocessableEntityException(String.format("Organization %s not found",
-                organization));
-        }
+        return (Iterator)OrganizationResolver.getInstance().list().iterator();
     }
 
     @Override

@@ -7,6 +7,8 @@ import { assert } from 'chai';
 
 import utils from '../../src/js/utils';
 import Security from '../../src/js/security';
+import config from '../../src/js/config';
+import { TestUtil as UserTestUtil } from '../../src/js/User';
 
 const { permit } = Security;
 
@@ -33,6 +35,33 @@ describe('Security', () => {
             assert.isFalse(permit(pipeline).create());
             assert.isFalse(permit(pipeline).start());
             assert.isFalse(permit(pipeline).stop());
+        });
+    });
+
+    describe('isSecurityEnabled', () => {
+        it('returns true when active', () => {
+            config._setJenkinsConfig({
+                security: {
+                    enabled: true,
+                },
+            });
+            assert.isTrue(Security.isSecurityEnabled());
+        });
+    });
+
+    describe('isAnonymousUser', () => {
+        it('returns true when anon', () => {
+            UserTestUtil.setCurrent({
+                id: 'anonymous',
+            });
+            assert.isTrue(Security.isAnonymousUser());
+        });
+
+        it('returns false when identified', () => {
+            UserTestUtil.setCurrent({
+                id: 'admin',
+            });
+            assert.isFalse(Security.isAnonymousUser());
         });
     });
 });

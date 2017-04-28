@@ -1,20 +1,12 @@
 package io.jenkins.blueocean.commons;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.google.common.collect.ImmutableMap;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
-import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 /**
  * This exception class to be used by all service methods.
@@ -61,61 +53,6 @@ public class ServiceException extends RuntimeException implements HttpResponse {
         w.close();
     }
 
-    /**
-     * Describes JSON based error message.
-     *
-     * {
-     *     "code": 401,
-     *     "message": "Password must be 8 chars",
-     *
-     *     "errors":[{
-     *         "field":"password",
-     *     }]
-     * }
-     *
-     * @author Vivek Pandey
-     **/
-    public static class ErrorMessage {
-
-        public final String message;
-
-        public final int code;
-
-        public ErrorMessage(@Nonnull Integer code, @Nonnull String message) {
-            this.code=code;
-            this.message = message;
-        }
-
-        @JsonProperty("errors")
-        private final List<Map<String,String>> errors = new ArrayList<Map<String, String>>();
-
-        @JsonIgnore
-        public ErrorMessage add(Map<String, String> error){
-            errors.add(ImmutableMap.copyOf(error));
-            return this;
-        }
-
-        @JsonIgnore
-        public Iterator<Map<String,String>> getErrors(){
-            return new Iterator<Map<String, String>>() {
-                @Override
-                public boolean hasNext() {
-                    return errors.iterator().hasNext();
-                }
-
-                @Override
-                public Map<String, String> next() {
-                    return errors.iterator().next();
-                }
-
-                @Override
-                public void remove() {
-                    throw new UnsupportedOperationException();
-                }
-            };
-        }
-    }
-
     /** Convenience exception classes modeled after HTTP exceptions */
     public static class NotFoundException extends ServiceException{
 
@@ -128,10 +65,10 @@ public class ServiceException extends RuntimeException implements HttpResponse {
         }
 
         public NotFoundException(ErrorMessage errorMessage) {
-            super(NOT_FOUND, errorMessage.message);
+            super(NOT_FOUND, errorMessage, null);
         }
         public NotFoundException(ErrorMessage errorMessage, Throwable throwable ) {
-            super(NOT_FOUND, errorMessage.message, throwable);
+            super(NOT_FOUND, errorMessage, throwable);
         }
     }
 
@@ -146,10 +83,10 @@ public class ServiceException extends RuntimeException implements HttpResponse {
         }
 
         public ForbiddenException(ErrorMessage errorMessage) {
-            super(FORBIDDEN, errorMessage.message);
+            super(FORBIDDEN, errorMessage, null);
         }
         public ForbiddenException(ErrorMessage errorMessage, Throwable throwable ) {
-            super(FORBIDDEN, errorMessage.message, throwable);
+            super(FORBIDDEN, errorMessage, throwable);
         }
     }
 
@@ -164,10 +101,10 @@ public class ServiceException extends RuntimeException implements HttpResponse {
         }
 
         public UnauthorizedException(ErrorMessage errorMessage) {
-            super(UNAUTHORIZED, errorMessage.message);
+            super(UNAUTHORIZED, errorMessage, null);
         }
         public UnauthorizedException(ErrorMessage errorMessage, Throwable throwable ) {
-            super(UNAUTHORIZED, errorMessage.message, throwable);
+            super(UNAUTHORIZED, errorMessage, throwable);
         }
     }
 
@@ -182,10 +119,10 @@ public class ServiceException extends RuntimeException implements HttpResponse {
         }
 
         public BadRequestExpception(ErrorMessage errorMessage) {
-            super(BAD_REQUEST, errorMessage.message);
+            super(BAD_REQUEST, errorMessage, null);
         }
         public BadRequestExpception(ErrorMessage errorMessage, Throwable throwable ) {
-            super(BAD_REQUEST, errorMessage.message, throwable);
+            super(BAD_REQUEST, errorMessage, throwable);
         }
     }
 
@@ -200,7 +137,7 @@ public class ServiceException extends RuntimeException implements HttpResponse {
         }
 
         public UnprocessableEntityException(ErrorMessage errorMessage) {
-            super(UNPROCESSABLE_ENTITY, errorMessage.message);
+            super(UNPROCESSABLE_ENTITY, errorMessage, null);
         }
         public UnprocessableEntityException(ErrorMessage errorMessage, Throwable throwable ) {
             super(UNPROCESSABLE_ENTITY, errorMessage.message, throwable);
@@ -218,10 +155,10 @@ public class ServiceException extends RuntimeException implements HttpResponse {
         }
 
         public ConflictException(ErrorMessage errorMessage) {
-            super(CONFLICT, errorMessage.message);
+            super(CONFLICT, errorMessage, null);
         }
         public ConflictException(ErrorMessage errorMessage, Throwable throwable ) {
-            super(CONFLICT, errorMessage.message, throwable);
+            super(CONFLICT, errorMessage, throwable);
         }
     }
 
@@ -236,10 +173,10 @@ public class ServiceException extends RuntimeException implements HttpResponse {
         }
 
         public TooManyRequestsException(ErrorMessage errorMessage) {
-            super(TOO_MANY_REQUESTS, errorMessage.message);
+            super(TOO_MANY_REQUESTS, errorMessage, null);
         }
         public TooManyRequestsException(ErrorMessage errorMessage, Throwable throwable ) {
-            super(TOO_MANY_REQUESTS, errorMessage.message, throwable);
+            super(TOO_MANY_REQUESTS, errorMessage, throwable);
         }
     }
 
@@ -254,10 +191,10 @@ public class ServiceException extends RuntimeException implements HttpResponse {
         }
 
         public UnexpectedErrorException(ErrorMessage errorMessage) {
-            super(INTERNAL_SERVER_ERROR, errorMessage.message);
+            super(INTERNAL_SERVER_ERROR, errorMessage, null);
         }
         public UnexpectedErrorException(ErrorMessage errorMessage, Throwable throwable ) {
-            super(INTERNAL_SERVER_ERROR, errorMessage.message, throwable);
+            super(INTERNAL_SERVER_ERROR, errorMessage, throwable);
         }
     }
 
@@ -272,10 +209,10 @@ public class ServiceException extends RuntimeException implements HttpResponse {
         }
 
         public NotImplementedException(ErrorMessage errorMessage) {
-            super(NOT_IMPLEMENTED, errorMessage.message);
+            super(NOT_IMPLEMENTED, errorMessage, null);
         }
         public NotImplementedException(ErrorMessage errorMessage, Throwable throwable ) {
-            super(NOT_IMPLEMENTED, errorMessage.message, throwable);
+            super(NOT_IMPLEMENTED, errorMessage, throwable);
         }
     }
 
@@ -291,10 +228,10 @@ public class ServiceException extends RuntimeException implements HttpResponse {
         }
 
         public UnsupportedMediaTypeException(ErrorMessage errorMessage) {
-            super(UNSUPPORTED_MEDIA_TYPE, errorMessage.message);
+            super(UNSUPPORTED_MEDIA_TYPE, errorMessage, null);
         }
         public UnsupportedMediaTypeException(ErrorMessage errorMessage, Throwable throwable ) {
-            super(UNSUPPORTED_MEDIA_TYPE, errorMessage.message, throwable);
+            super(UNSUPPORTED_MEDIA_TYPE, errorMessage, throwable);
         }
     }
 
@@ -309,10 +246,28 @@ public class ServiceException extends RuntimeException implements HttpResponse {
         }
 
         public MethodNotAllowedException(ErrorMessage errorMessage) {
-            super(METHOD_NOT_ALLOWED, errorMessage.message);
+            super(METHOD_NOT_ALLOWED, errorMessage, null);
         }
         public MethodNotAllowedException(ErrorMessage errorMessage, Throwable throwable ) {
-            super(METHOD_NOT_ALLOWED, errorMessage.message, throwable);
+            super(METHOD_NOT_ALLOWED, errorMessage, throwable);
+        }
+    }
+
+    public static class PreconditionRequired extends ServiceException{
+
+        public PreconditionRequired(String message) {
+            super(PRECONDITION_REQUIRED, message);
+        }
+
+        public PreconditionRequired(String message, Throwable throwable ) {
+            super(PRECONDITION_REQUIRED, message, throwable);
+        }
+
+        public PreconditionRequired(ErrorMessage errorMessage) {
+            super(PRECONDITION_REQUIRED, errorMessage, null);
+        }
+        public PreconditionRequired(ErrorMessage errorMessage, Throwable throwable ) {
+            super(PRECONDITION_REQUIRED, errorMessage, throwable);
         }
     }
     public static final int BAD_REQUEST = 400;
@@ -323,6 +278,7 @@ public class ServiceException extends RuntimeException implements HttpResponse {
     public static final int UNSUPPORTED_MEDIA_TYPE = 415;
     public static final int CONFLICT = 409;
     public static final int UNPROCESSABLE_ENTITY = 422;
+    public static final int PRECONDITION_REQUIRED = 428;
     public static final int TOO_MANY_REQUESTS = 429;
     public static final int INTERNAL_SERVER_ERROR = 500;
     public static final int NOT_IMPLEMENTED = 501;

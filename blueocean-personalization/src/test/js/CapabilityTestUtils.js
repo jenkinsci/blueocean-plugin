@@ -19,7 +19,7 @@ export class CapabilityTestUtils {
      * @param capabilities
      */
     bindCapability(className, ...capabilities) {
-        store._store[className] = [className, ...capabilities];
+        store._localStore[className] = [className, ...capabilities];
     }
 
     /**
@@ -34,8 +34,8 @@ export class CapabilityTestUtils {
         const classMap = augmenter._findClassesInTree(data);
 
         for (const className of Object.keys(classMap)) {
-            if (!store._store[className]) {
-                store._store[className] = [className];
+            if (!store._localStore[className]) {
+                store._localStore[className] = [className];
             }
         }
 
@@ -46,6 +46,6 @@ export class CapabilityTestUtils {
      * Unbinds all capabilities previously registered.
      */
     unbindAll() {
-        store._store = {};
+        store._localStore = {};
     }
 }

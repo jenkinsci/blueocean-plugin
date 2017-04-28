@@ -6,6 +6,7 @@ import es6Promise from 'es6-promise'; es6Promise.polyfill();
 import sinon from 'sinon';
 
 import { CapabilityStore } from '../../../src/js/capability/CapabilityStore';
+import { jenkinsNS } from '../../../src/js/storage';
 
 const mockCapabilityApi = {
     fetchCapabilities: (classNames) => {
@@ -33,6 +34,9 @@ describe('CapabilityStore', () => {
     beforeEach(() => {
         capabilityStore = new CapabilityStore(mockCapabilityApi);
         fetchCapabilitiesSpy.reset();
+        // Clear the localStorage namespace, making sure the test
+        // REST API calls are not interfered with.
+        jenkinsNS.clear();
     });
 
     it('resolves capabilities for a single class', (done) => {

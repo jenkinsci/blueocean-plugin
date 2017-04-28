@@ -1,0 +1,130 @@
+.BlueOceanLogo,
+.BlueOceanLogo:hover {
+    display: flex;
+    color: white;
+    text-decoration: none;
+    align-items: center;
+    font-size: 18px;
+
+    position:relative;
+    top:-1px;  // To shift apparent text baseline up
+
+    svg {
+        height: 20px;
+        fill: white;
+        top: 1px;
+        position:relative;
+    }
+}
+
+.ContentPageHeader,
+.ResultPageHeader {
+    color:white;
+
+    a, a:hover {
+        color:white;
+    }
+}
+
+.ContentPageHeader-user {
+
+    display: flex;
+    height: 100%;
+    padding-left: 1em;
+
+    * {
+        margin-left: 1em;
+    }
+
+    .btn-sign-in {
+        background: none;
+        min-width: 0;
+        border-color: rgba(0,0,0,0);
+    }
+
+    .btn-sign-in:hover {
+        border-color: white;
+    }
+
+    .btn-sign-up {
+        background: none;
+        min-width: 0;
+        border-color: white;
+    }
+
+    .user-component {
+        display: inline-block;
+        align-items: center;
+        height: 100%;
+
+        &.icon {
+            padding-top: 13px;
+            svg {
+                fill: white;
+                width: 24px;
+                height: 24px;
+            }
+        }
+        &.button-bar {
+            padding-top: 11px;
+        }
+    }
+}
+
+.ResultPageHeader-run {
+    padding-left: 1em;
+    display:flex;
+    align-items: center;
+
+    &>*+* {
+        margin-left: 1em;
+    }
+
+    button {
+        min-width:0;
+        color:white;
+        border-color: white;
+    }
+
+    button:hover {
+        color:white;
+        border-color: white;
+    }
+}
+
+.ContentPageHeader-main,
+.ResultPageHeader-main {
+    display:flex;
+    align-items: center;
+    height:100%;
+
+    &>*+* {
+        margin-left:10px;
+    }
+}
+
+.ResultPageHeader-indicator {
+    margin-right: 10px;
+    height: 24px; // NFI why we need this :(
+}
+
+.ResultPageHeader-title {
+
+    display:flex;
+    align-items: center;
+
+    a {
+        text-decoration:underline;
+    }
+}
+
+.ResultPageHeader-close {
+    margin-left: 24px;
+    cursor: pointer;
+    stroke: none;
+    fill: white;
+
+    &:hover {
+        stroke: white;
+    }
+}

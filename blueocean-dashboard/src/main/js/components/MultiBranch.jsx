@@ -1,115 +1,72 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView, Table } from '@jenkins-cd/design-language';
+import { Table } from '@jenkins-cd/design-language';
+import { capable, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+import { observer } from 'mobx-react';
+
 import Branches from './Branches';
-import { RunsRecord } from './records';
-import {
-    actions,
-    currentBranches as branchSelector,
-    createSelector,
-    connect,
-} from '../redux';
-import PageLoading from './PageLoading';
-import { pipelineBranchesUnsupported } from './PipelinePage';
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
+import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
+import { UnsupportedPlaceholder } from './placeholder/UnsupportedPlaceholder';
 
-const { object, array, func, string, any } = PropTypes;
 
-const EmptyState = ({ repoName }) => (
-    <main>
-        <EmptyStateView iconName="branch">
-            <h1>Branch out</h1>
+const { object, string, any, func } = PropTypes;
 
-            <p>
-                Create a branch in the repository <em>{repoName}</em> and
-                Jenkins will start testing your changes.
-            </p>
 
-            <p>
-                Give it a try and become a hero to your team.
-            </p>
-
-            <button>Enable</button>
-        </EmptyStateView>
-    </main>
-);
-
-const NotSupported = () => (
-    <main>
-        <EmptyStateView>
-            <h1>Branches are unsupported</h1>
-            <p>
-            Branch builds only work with the <i>Multibranch Pipeline</i> job type.
-            This is just one of the many reasons to switch to Jenkins Pipeline.
-            </p>
-            <a href="https://jenkins.io/doc/book/pipeline-as-code/" target="_blank">Learn more</a>
-        </EmptyStateView>
-    </main>
-);
-
-EmptyState.propTypes = {
-    repoName: string,
-};
-
+@observer
 export class MultiBranch extends Component {
     componentWillMount() {
-        if (this.context.pipeline && this.context.params && !pipelineBranchesUnsupported(this.context.pipeline)) {
-            this.props.fetchBranches({
-                organizationName: this.context.params.organization,
-                pipelineName: this.context.params.pipeline,
-            });
+        if (this.props.pipeline && this.context.params && capable(this.props.pipeline, MULTIBRANCH_PIPELINE)) {
+            const { organization, pipeline } = this.context.params;
+            this.pager = this.context.pipelineService.branchPager(organization, pipeline);
         }
     }
-
-    componentWillUnmount() {
-        this.props.clearBranchData();
-    }
-
 
     render() {
-        const { branches } = this.props;
+        const { t, locale, pipeline } = this.props;
 
-        if (!branches || (!branches.$pending && pipelineBranchesUnsupported(this.context.pipeline))) {
-            return (<NotSupported />);
+        if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
+            const childProps = {
+                title: t('pipelinedetail.placeholder.unsupported.branches.title'),
+                message: t('pipelinedetail.placeholder.unsupported.branches.message'),
+                linkText: t('pipelinedetail.placeholder.unsupported.branches.linktext'),
+                linkHref: t('pipelinedetail.placeholder.unsupported.branches.linkhref'),
+            };
+
+            return (<UnsupportedPlaceholder {...childProps} />);
         }
 
-        if (branches.$failed) {
-            return <div>ERROR: {branches.$failed}</div>;
+        const branches = this.pager.data;
+
+        if (!this.pager.pending && !branches.length) {
+            return <NoBranchesPlaceholder t={t} />;
         }
 
-        if (!branches.$pending && !branches.length) {
-            return (<EmptyState repoName={this.context.params.pipeline} />);
-        }
+        const head = 'pipelinedetail.branches.header';
+
+        const statusHeader = t(`${head}.status`, { defaultValue: 'Status' });
+        const healthHeader = t(`${head}.health`, { defaultValue: 'Health' });
+        const commitHeader = t(`${head}.commit`, { defaultValue: 'Commit' });
+        const branchHeader = t(`${head}.branch`, { defaultValue: 'Branch' });
+        const messageHeader = t(`${head}.message`, { defaultValue: 'Message' });
+        const completedHeader = t(`${head}.completed`, { defaultValue: 'Completed' });
 
         const headers = [
-            'Health',
-            'Status',
-            { label: 'Branch', className: 'branch' },
-            { label: 'Last commit', className: 'lastcommit' },
-            { label: 'Latest message', className: 'message' },
-            { label: 'Completed', className: 'completed' },
+            healthHeader,
+            statusHeader,
+            { label: branchHeader, className: 'branch' },
+            { label: commitHeader, className: 'lastcommit' },
+            { label: messageHeader, className: 'message' },
+            { label: completedHeader, className: 'completed' },
             { label: '', className: 'run' },
         ];
 
         return (
             <main>
                 <article>
-                    {branches.$pending && <PageLoading />}
-                    <Table className="multibranch-table fixed"
-                      headers={headers}
-                    >
-                        {branches.length > 0 && branches.map((run, index) => {
-                            const result = new RunsRecord(run);
-                            return (<Branches
-                              key={index}
-                              data={result}
-                            />);
-                        })
-                        }
+                    <Table className="multibranch-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
+                        {branches.length > 0 && branches.map((branch, index) => <Branches pipeline={pipeline} key={index} data={branch} t={t} locale={locale} />)}
                     </Table>
-                    {branches.$pager &&
-                        <button disabled={branches.$pending || !branches.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => branches.$pager.fetchMore()}>
-                             {branches.$pending ? 'Loading...' : 'Show More'}
-                        </button>
-                    }
+                    <ShowMoreButton pager={this.pager} />
                 </article>
                 {this.props.children}
             </main>
@@ -120,16 +77,14 @@ export class MultiBranch extends Component {
 MultiBranch.contextTypes = {
     config: object.isRequired,
     params: object.isRequired,
-    pipeline: object,
+    pipelineService: object.isRequired,
 };
 
 MultiBranch.propTypes = {
-    branches: array,
-    fetchBranches: func,
-    clearBranchData: func,
     children: any,
+    t: func,
+    locale: string,
+    pipeline: object,
 };
 
-const selectors = createSelector([branchSelector], (branches) => ({ branches }));
-
-export default connect(selectors, actions)(MultiBranch);
+export default MultiBranch;

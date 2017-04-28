@@ -32,8 +32,10 @@ public abstract class Pageables {
      */
     public static <T> Iterator<T> slice(Iterator<T> base, int start, int limit) {
         // fast-forward
-        if (Iterators.skip(base,start)!=start)
-            throw new ArrayIndexOutOfBoundsException();
+        int skipped = Iterators.skip(base,start);
+        if (skipped < start){ //already at the end, nothing to return
+                Iterators.emptyIterator();
+        }
         return Iterators.limit(base, limit);
     }
 

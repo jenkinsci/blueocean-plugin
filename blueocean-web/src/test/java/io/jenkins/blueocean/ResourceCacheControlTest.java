@@ -78,4 +78,17 @@ public class ResourceCacheControlTest {
         Mockito.when(servletRequest.getPathInfo()).thenReturn("/a/bc.js");
         resourceCacheControl.doFilter(servletRequest, servletResponse, filterChain);
         Mockito.verify(servletResponse, Mockito.never()).setHeader("Cache-Control", "public, max-age=31536000");
-    }}
+    }
+
+    @Test
+    public void test_getPathInfo_null_JENKINS_40116() throws IOException, ServletException {
+        Mockito.when(servletRequest.getPathInfo()).thenReturn(null);
+        Assert.assertFalse(resourceCacheControl.isCacheableResourceRequest(servletRequest));
+    }
+
+    @Test
+    public void test_getPathInfo_not_null_JENKINS_40116() throws IOException, ServletException {
+        Mockito.when(servletRequest.getPathInfo()).thenReturn("/a/b/c.js");
+        Assert.assertTrue(resourceCacheControl.isCacheableResourceRequest(servletRequest));
+    }
+}

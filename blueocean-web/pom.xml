@@ -5,26 +5,28 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.0.0-b09-SNAPSHOT</version>
+        <version>1.1.0-beta-3-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean-web</artifactId>
     <packaging>hpi</packaging>
 
-    <name>Module :: BlueOcean :: Web module</name>
+    <name>Web for Blue Ocean</name>
 
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
 
     <dependencies>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-rest</artifactId>
+        </dependency>
+        <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>metrics</artifactId>
-            <version>3.0.9</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>variant</artifactId>
-            <version>1.0</version>
         </dependency>
 
         <!-- test scope deps -->

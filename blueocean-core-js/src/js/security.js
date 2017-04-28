@@ -2,6 +2,9 @@
  * Created by cmeyers on 9/16/16.
  */
 
+import config from './config';
+import { User } from './User';
+
 /**
  * Returns a key of permissions functions that each return boolean to indicate authorization.
  * Usage:
@@ -17,12 +20,23 @@ const permit = (subject) => {
 
     return {
         read: () => checkPermissions('read'),
+        configure: () => checkPermissions('configure'),
         create: () => checkPermissions('create'),
         start: () => checkPermissions('start'),
         stop: () => checkPermissions('stop'),
     };
 };
 
+function isSecurityEnabled() {
+    return !!config.getSecurityConfig().enabled;
+}
+
+function isAnonymousUser() {
+    return User.current().isAnonymous();
+}
+
 export default {
     permit,
+    isSecurityEnabled,
+    isAnonymousUser,
 };

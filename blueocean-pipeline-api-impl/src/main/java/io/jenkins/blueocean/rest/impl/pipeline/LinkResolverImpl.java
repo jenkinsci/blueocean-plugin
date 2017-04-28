@@ -3,12 +3,14 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import hudson.Extension;
 import hudson.model.Queue;
 import hudson.model.Run;
+import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.model.BluePipelineNode;
+import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Resource;
-import io.jenkins.blueocean.service.embedded.rest.BluePipelineFactory;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -39,6 +41,8 @@ public class LinkResolverImpl extends LinkResolver {
                     return r.getLink().rel("steps/" + flowNode.getId());
                 }
             }
+        }else if(modelObject instanceof BluePipelineNode || modelObject instanceof BluePipelineStep){
+            return ((Resource) modelObject).getLink();
         }
         return null;
     }

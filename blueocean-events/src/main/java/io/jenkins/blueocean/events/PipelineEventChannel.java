@@ -32,7 +32,7 @@ public interface PipelineEventChannel {
 
     /**
      * The event names.
-     * @see org.jenkins.pubsub.EventProps.Jenkins#jenkins_event
+     * @see org.jenkinsci.plugins.pubsub.EventProps.Jenkins#jenkins_event
      */
     enum Event {
         pipeline_start,
@@ -40,6 +40,7 @@ public interface PipelineEventChannel {
         pipeline_block_start,
         pipeline_block_end,
         pipeline_step,
+        pipeline_stage,
     }
 
     /**
@@ -53,5 +54,6 @@ public interface PipelineEventChannel {
         pipeline_step_flownode_id,
         pipeline_step_stage_name,
         pipeline_step_stage_id,
+        pipeline_step_is_paused,
     }
 }

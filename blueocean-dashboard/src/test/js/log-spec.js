@@ -3,27 +3,22 @@ import { assert } from 'chai';
 import { shallow } from 'enzyme';
 import configureMockStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
-import nock from 'nock';
 import { TestUtils } from '@jenkins-cd/blueocean-core-js';
 TestUtils.patchFetchNoJWT();
 
-import {
-    actions,
-    ACTION_TYPES,
-    steps as stepsSelector,
-} from '../../main/js/redux';
-
-import { runNodesSuccess, runNodesFail, runNodesRunning } from './runNodes';
-import { firstFinishedSecondRunning } from './runNodes-firstFinishedSecondRunning';
-import { firstRunning } from './runNodes-firstRunning';
-import { finishedMultipleFailure } from './runNodes-finishedMultipleFailure';
-import { queuedAborted } from './runNodes-QueuedAborted';
+import { runNodesSuccess, runNodesFail, runNodesRunning } from './data/runs/nodes/runNodes';
+import { firstFinishedSecondRunning } from './data/runs/nodes/runNodes-firstFinishedSecondRunning';
+import { firstRunning } from './data/runs/nodes/runNodes-firstRunning';
+import { finishedMultipleFailure } from './data/runs/nodes/runNodes-finishedMultipleFailure';
+import { queuedAborted } from './data/runs/nodes/runNodes-QueuedAborted';
 import { getNodesInformation } from './../../main/js/util/logDisplayHelper';
 import runningFailing from './data/steps/failingRunningSteps';
+import { poststagefail } from './data/runs/nodes/poststagefail';
+import { nullNodes } from './data/runs/nodes/nodesAllNull';
 
 
-import Step from '../../main/js/components/Step';
-import Steps from '../../main/js/components/Steps';
+import Step from '../../main/js/components/karaoke/components/Step';
+import Steps from '../../main/js/components/karaoke/components/Steps';
 
 const middlewares = [thunk];
 const mockStore = configureMockStore(middlewares);
@@ -38,8 +33,13 @@ const assertResult = (item, {finished = true, failed = false, errors = 0, runnin
 describe("Logic test of different runs", () => {
     it('running and failing', () => {
        const stagesInformationRunningFailing = getNodesInformation(runningFailing);
-        console.log(stagesInformationRunningFailing.model[2].isFocused, true);
+       assert.equal(stagesInformationRunningFailing.model[2].isFocused, true);
     });
+    it('post error stage', () => {
+       const stagesInformationRunningFailing = getNodesInformation(poststagefail);
+       assert.equal(stagesInformationRunningFailing.model[0].isFocused, true);
+    });
+
     it("handles aborted job that only had been in queue but never build", () => {
         const stagesInformationQueuedAborted = getNodesInformation(queuedAborted);
         assert.equal(stagesInformationQueuedAborted.hasResultsForSteps, false);
@@ -65,6 +65,16 @@ describe("Logic test of different runs", () => {
                 {finished: false, failed: null, running: index === 2 ? 3 : 1}
             ));
     });
+    it("handles all null", () => {
+        const stagesInfo = getNodesInformation(nullNodes);
+        assertResult(stagesInfo, {
+            finished: false,
+            failed: null,
+            running: 0,
+            errors: 0,
+        });
+       assert.equal(stagesInfo.model[0].isFocused, true);
+    });
 });
 
 describe("React component test of different runs", () => {
@@ -72,18 +82,13 @@ describe("React component test of different runs", () => {
         const wrapper = shallow(
             <Steps nodeInformation={getNodesInformation(runNodesSuccess)}/>);
         assert.isNotNull(wrapper);
-        assert.equal(wrapper.find('Node').length, runNodesSuccess.length)
+        assert.equal(wrapper.find('Step').length, runNodesSuccess.length)
     });
     it("handles error", () => {
         const wrapper = shallow(
             <Steps nodeInformation={getNodesInformation(runNodesFail)}/>);
         assert.isNotNull(wrapper);
-        assert.equal(wrapper.find('Node').length, runNodesFail.length)
-    });
-    it("handles error node", () => {
-        const wrapper = shallow(
-            <Step location={{}} node={getNodesInformation(runNodesFail).model[2]}/>);
-        assert.isNotNull(wrapper);
+        assert.equal(wrapper.find('Step').length, runNodesFail.length)
     });
 });
 /*

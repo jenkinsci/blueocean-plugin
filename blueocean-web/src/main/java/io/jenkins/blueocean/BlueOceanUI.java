@@ -1,8 +1,14 @@
 package io.jenkins.blueocean;
 
 import hudson.ExtensionList;
+import hudson.Main;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Root of Blue Ocean UI
@@ -10,10 +16,11 @@ import java.util.List;
  * @author Kohsuke Kawaguchi
  */
 public class BlueOceanUI {
-    private final String urlBase;
+    private static final Logger logger = LoggerFactory.getLogger(BlueOceanUI.class);
 
-    public BlueOceanUI(String rootPath) {
-        this.urlBase = rootPath;
+    private volatile BlueOceanUIProvider provider;
+
+    public BlueOceanUI() {
         ResourceCacheControl.install();
     }
 
@@ -35,10 +42,58 @@ public class BlueOceanUI {
      * The base of all BlueOcean URLs (underneath wherever Jenkins itself is deployed).
      */
     public String getUrlBase() {
-        return urlBase;
+        setBlueOceanUIProvider();
+        if(provider == null){
+            logger.error("BlueOceanUIProvider extension not found");
+            return null;
+        }
+        return provider.getUrlBasePrefix();
+    }
+    
+    /**
+     * Have some slightly different behavior in development mode
+     */
+    public boolean isDevelopmentMode() {
+        return Main.isDevelopmentMode || System.getProperty("hudson.hpi.run") != null; // TODO why isDevelopmentMode == false
+    }
+
+    /**
+     * Get the language associated with the current page.
+     * @return The language string.
+     */
+    public String getLang() {
+        StaplerRequest currentRequest = Stapler.getCurrentRequest();
+
+        if (currentRequest != null) {
+            Locale locale = currentRequest.getLocale();
+            if (locale != null) {
+                return locale.toString();
+            }
+        }
+
+        return null;
     }
 
     public List<BluePageDecorator> getPageDecorators(){
         return BluePageDecorator.all();
+    }
+
+    public long getNow() {
+         return System.currentTimeMillis();
+    }
+
+    private void setBlueOceanUIProvider(){
+        BlueOceanUIProvider boui = provider;
+        if(boui == null){
+            synchronized (this){
+                boui = provider;
+                if(boui == null){
+                    for(BlueOceanUIProvider p: BlueOceanUIProvider.all()){
+                        provider = boui = p;
+                        return;
+                    }
+                }
+            }
+        }
     }
 }

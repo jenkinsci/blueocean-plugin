@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { createRenderer } from 'react-addons-test-utils';
+import { shallow } from 'enzyme';
 import { assert } from 'chai';
 import sd from 'skin-deep';
 
@@ -9,20 +10,23 @@ import { latestRuns as data } from './data/runs/latestRuns';
 
 const pr = data.filter((run) => run.pullRequest);
 
+const t = () => {};
+
 describe('PullRequest should render', () => {
     let tree = null;
     beforeEach(() => {
         const immData = new RunsRecord(pr[0]);
-        tree = sd.shallowRender(<PullRequest pr={immData} />,{
+        tree = sd.shallowRender(<PullRequest t={t} pr={immData} pipeline={{}} />,{
             router: {},
-            pipeline: {},
             location: {},
         });
     });
 
     it('does renders the PullRequest with data', () => {
-        const result = tree.everySubTree('td');
-        assert.equal(result.length, 6);
+        const PRCols = tree.everySubTree('CellLink');
+        const tds = tree.everySubTree('td');
+        assert.equal(PRCols.length, 5);
+        assert.equal(tds.length, 1);
         assert.equal(data.length, 2);
         assert.equal(pr.length, 1);
         const im = new RunsRecord(pr[0]);
@@ -33,7 +37,7 @@ describe('PullRequest should render', () => {
 describe('PullRequest should not render', () => {
     let tree = null;
     beforeEach(() => {
-        tree = sd.shallowRender(<PullRequest />);
+        tree = sd.shallowRender(<PullRequest t={t}/>);
     });
 
     it('does renders the PullRequest without data', () => {
@@ -42,22 +46,23 @@ describe('PullRequest should not render', () => {
 });
 
 describe('PullRequest', () => {
-    it('opens correctly', (done) => {
+    it('opens correctly', () => {
         const immData = new RunsRecord(pr[0]);
-        const tree = sd.shallowRender(<PullRequest pr={immData} />, {
-                router: {push: function(url) {
-                    assert(url.pathname == '/organizations/jenkins/asdf%2Fblah/detail/PR-6/1/pipeline', "Incorrect URL for pull request");
-                    done();
-                }
-            },
-            pipeline: {
-                fullName: 'asdf/blah',
-                organization: 'jenkins',
-            },
-            location: {},
-        });
-        
-        let tr = tree.subTree('tr');
-        tr.props.onClick();
+        const pipeline = {
+            fullName: 'asdf/blah',
+            organization: 'jenkins',
+        };
+        const tree = shallow(
+            <PullRequest
+              t={t}
+              pr={immData}
+              pipeline={pipeline}
+            />
+        );
+
+        const row = tree.find('CellRow').shallow();
+        const cells = row.find('CellLink');
+        const cell = cells.at(0);
+        assert.equal(cell.props().linkUrl, '/organizations/jenkins/asdf%2Fblah/detail/PR-6/1/pipeline');
     });
 });

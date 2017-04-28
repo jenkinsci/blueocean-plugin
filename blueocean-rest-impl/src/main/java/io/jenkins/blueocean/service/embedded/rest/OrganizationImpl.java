@@ -1,16 +1,23 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import hudson.ExtensionList;
+import hudson.model.Action;
+import hudson.model.ItemGroup;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.rest.ApiHead;
+import io.jenkins.blueocean.rest.OrganizationRoute;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserContainer;
+import io.jenkins.blueocean.rest.model.GenericResource;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.DELETE;
 import org.kohsuke.stapler.verb.PUT;
 
@@ -22,27 +29,39 @@ import java.io.IOException;
  * @author Vivek Pandey
  * @author Kohsuke Kawaguchi
  */
-public class OrganizationImpl extends BlueOrganization {
+public class OrganizationImpl extends BlueOrganization implements OrganizationResolver.ItemGroupProvider {
+    private final String name;
+    /**
+     * Everything in this {@link ItemGroup} is considered to belong to this organization.
+     */
+    private final ItemGroup group;
+
     private final UserContainerImpl users = new UserContainerImpl(this);
 
-    /**
-     * In embedded mode, there's only one organization
-     */
-    public static final OrganizationImpl INSTANCE = new OrganizationImpl();
-
-    private OrganizationImpl() {
+    public OrganizationImpl(String name, ItemGroup group) {
+        this.name = name;
+        this.group = group;
     }
 
     /**
      * In embedded mode, there's only one organization
      */
     public String getName() {
-        return Jenkins.getInstance().getDisplayName().toLowerCase();
+        return name;
+    }
+
+    public ItemGroup getGroup() {
+        return group;
+    }
+
+    @Override
+    public String getDisplayName() {
+        return "Jenkins";
     }
 
     @Override
     public BluePipelineContainer getPipelines() {
-        return new PipelineContainerImpl(Jenkins.getInstance());
+        return new PipelineContainerImpl(group);
     }
 
     @WebMethod(name="") @DELETE
@@ -77,7 +96,7 @@ public class OrganizationImpl extends BlueOrganization {
         if(user == null){
             throw new ServiceException.NotFoundException("No authenticated user found");
         }
-        return new UserImpl(user,new UserContainerImpl(OrganizationImpl.INSTANCE));
+        return new UserImpl(user,new UserContainerImpl(this));
     }
 
     @Override
@@ -85,4 +104,39 @@ public class OrganizationImpl extends BlueOrganization {
         return ApiHead.INSTANCE().getLink().rel("organizations/"+getName());
     }
 
+    /**
+     * Give plugins chance to handle this API route.
+     *
+     * @param route URL path that needs handling. e.g. for requested url /rest/organizations/:id/xyz,  route param value will be 'xyz'
+     * @return stapler object that can handle give route. Could be null
+     */
+    public Object getDynamic(String route){
+        //First look for OrganizationActions
+        for(OrganizationRoute organizationRoute: ExtensionList.lookup(OrganizationRoute.class)){
+            if(organizationRoute.getUrlName() != null && organizationRoute.getUrlName().equals(route)){
+                return wrap(organizationRoute);
+            }
+        }
+
+        // No OrganizationRoute found, now lookup in available actions from Jenkins instance serving root
+        for(Action action:Jenkins.getInstance().getActions()) {
+            String urlName = action.getUrlName();
+            if (urlName != null && urlName.equals(route)) {
+                return wrap(action);
+            }
+        }
+        return null;
+    }
+
+    private Object wrap(Object action){
+        if (isExportedBean(action.getClass())) {
+            return action;
+        } else {
+            return new GenericResource<>(action);
+        }
+    }
+
+    private boolean isExportedBean(Class clz){
+        return clz.getAnnotation(ExportedBean.class) != null;
+    }
 }

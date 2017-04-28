@@ -248,7 +248,7 @@ describe("pipeline graph data converter /", () => {
             it("produces the correct result", () => {
                 let result = convertJenkinsNodeGraph(testData, isCompleted);
                 assert(Array.isArray(result), "result should be array");
-                assert.equal(result.length, 6, "result.length");
+                assert.equal(result.length, 8, "result.length");
 
                 assert.equal(result[0].name, "First", "result[0].name");
                 assert.equal(result[0].id, "3", "result[0].id");
@@ -285,13 +285,28 @@ describe("pipeline graph data converter /", () => {
                 assert(Array.isArray(result[4].children), "result[4].children should be array");
                 assert.equal(result[4].children.length, 0, "result[4] should have no children");
 
-                assert.equal(result[5].name, "Unknown-Null", "result[5].name");
-                assert.equal(result[5].id, "33", "result[5].id");
-                const expectedResultForNullInput = isCompleted ? validResultValues.not_built : validResultValues.queued;
-                assert.equal(result[5].state, expectedResultForNullInput, "result[5].state");
-                assert.equal(result[5].completePercent, 0, "result[5].completePercent");
+                assert.equal(result[5].name, "Banana is Unstable", "result[5].name");
+                assert.equal(result[5].id, "129", "result[5].id");
+                assert.equal(result[5].state, validResultValues.unstable, "result[5].state");
+                assert.equal(result[5].completePercent, 100, "result[5].completePercent");
                 assert(Array.isArray(result[5].children), "result[5].children should be array");
                 assert.equal(result[5].children.length, 0, "result[5] should have no children");
+
+                assert.equal(result[6].name, "Banana is Aborted", "result[6].name");
+                assert.equal(result[6].id, "150", "result[6].id");
+                assert.equal(result[6].state, validResultValues.aborted, "result[6].state");
+                assert.equal(result[6].completePercent, 100, "result[6].completePercent");
+                assert(Array.isArray(result[6].children), "result[6].children should be array");
+                assert.equal(result[6].children.length, 0, "result[6] should have no children");
+
+
+                assert.equal(result[7].name, "Unknown-Null", "result[7].name");
+                assert.equal(result[7].id, "33", "result[7].id");
+                const expectedResultForNullInput = isCompleted ? validResultValues.not_built : validResultValues.queued;
+                assert.equal(result[7].state, expectedResultForNullInput, "result[7].state");
+                assert.equal(result[7].completePercent, 0, "result[7].completePercent");
+                assert(Array.isArray(result[7].children), "result[7].children should be array");
+                assert.equal(result[7].children.length, 0, "result[7] should have no children");
             });
         }
     });

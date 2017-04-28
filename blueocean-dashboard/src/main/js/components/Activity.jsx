@@ -1,142 +1,163 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView, Table } from '@jenkins-cd/design-language';
-import { RunButton } from '@jenkins-cd/blueocean-core-js';
+import { Table } from '@jenkins-cd/design-language';
+import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+import { observer } from 'mobx-react';
+
 import Runs from './Runs';
-import { RunRecord, ChangeSetRecord } from './records';
-import {
-    actions,
-    currentRuns as currentRunsSelector,
-    createSelector,
-    connect,
-} from '../redux';
+import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
-import { capabilityStore } from './Capability';
+import { buildPipelineUrl } from '../util/UrlUtils';
+import { ColumnFilter } from './ColumnFilter';
+import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
+import {
+    NoRunsDefaultPlaceholder,
+    NoRunsMultibranchPlaceholder,
+    NoRunsForBranchPlaceholder,
+} from './placeholder/NoRunsPlaceholder';
 
-const { object, array, func, string, bool } = PropTypes;
 
-const EmptyState = ({ repoName, pipeline, showRunButton, onNavigation }) => (
-    <main>
-        <EmptyStateView iconName="shoes">
-            <h1>Ready, get set...</h1>
+const { object, array, func, string } = PropTypes;
 
-            <p>
-                Hmm, looks like there are no runs in this pipeline’s history.
-            </p>
 
-            <p>
-                Commit to the repository <em>{repoName}</em> or run the pipeline manually.
-            </p>
-
-        { showRunButton &&
-            <RunButton
-              runnable={pipeline}
-              buttonType="run-only"
-              runLabel="Run Now"
-              onNavigation={onNavigation}
-            />
-        }
-        </EmptyStateView>
-    </main>
-);
-
-EmptyState.propTypes = {
-    repoName: string,
-    pipeline: object,
-    showRunButton: bool,
-    onNavigation: func,
-};
-
+@observer
 export class Activity extends Component {
     componentWillMount() {
-        if (this.context.config && this.context.params) {
-            const {
-                params: {
-                    pipeline,
-                    organization,
-                },
-                config = {},
-            } = this.context;
-
-            config.pipeline = pipeline;
-            config.organization = organization;
-            this.props.fetchRuns(config);
+        if (this.context.params) {
+            const organization = this.context.params.organization;
+            const pipeline = this.context.params.pipeline;
+            const branch = this._branchFromProps(this.props);
+            this.pager = this.context.activityService.activityPager(organization, pipeline, branch);
         }
     }
 
-    render() {
-        const { runs, pipeline } = this.props;
+    componentWillReceiveProps(newProps) {
+        if (this.props.params && this._branchFromProps(this.props) !== this._branchFromProps(newProps)) {
+            const organization = newProps.params.organization;
+            const pipeline = newProps.params.pipeline;
+            const branch = this._branchFromProps(newProps);
+            this.pager = this.context.activityService.activityPager(organization, pipeline, branch);
+        }
+    }
 
-        if (!runs || !pipeline || pipeline.$pending) {
+    _branchFromProps(props) {
+        return ((props.location || {}).query || {}).branch;
+    }
+
+    navigateToBranch(branch) {
+        const organization = this.context.params.organization;
+        const pipeline = this.context.params.pipeline;
+        const baseUrl = buildPipelineUrl(organization, pipeline);
+        let activitiesURL = `${baseUrl}/activity`;
+        if (branch) {
+            activitiesURL += '?branch=' + encodeURIComponent(branch);
+        }
+        this.context.router.push(activitiesURL);
+    }
+
+    render() {
+        const { pipeline, t, locale } = this.props;
+        const runs = this.pager.data;
+        const isLoading = this.pager.pending;
+
+        if (!pipeline) {
             return null;
         }
+        const branch = this._branchFromProps(this.props);
 
-        const { capabilities } = this.props;
-        const isMultiBranchPipeline = capabilities[pipeline._class].contains(MULTIBRANCH_PIPELINE);
-
-        // Only show the Run button for non multi-branch pipelines.
-        // Multi-branch pipelines have the Run/play button beside them on
-        // the Branches/PRs tab.
-        const showRunButton = !isMultiBranchPipeline;
+        const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
+        const hasBranches = pipeline.branchNames && !!pipeline.branchNames.length;
 
         const onNavigation = (url) => {
             this.context.location.pathname = url;
             this.context.router.push(this.context.location);
         };
 
-        if (runs.$success && !runs.length) {
-            return (<EmptyState repoName={this.context.params.pipeline} showRunButton={showRunButton} pipeline={pipeline} />);
+        const latestRun = runs && runs[0];
+        // Only show the Run button for non multi-branch pipelines.
+        // Multi-branch pipelines have the Run/play button beside them on
+        // the Branches/PRs tab.
+        const runButton = !isMultiBranchPipeline && (
+            <RunButton
+                buttonType="run-only"
+                innerButtonClasses="btn-secondary"
+                runnable={pipeline}
+                latestRun={latestRun}
+                onNavigation={onNavigation}
+            />
+        );
+
+        if (!isLoading) {
+            if (isMultiBranchPipeline && !hasBranches) {
+                return <NoBranchesPlaceholder t={t} />;
+            }
+            if (!runs || !runs.length) {
+                if (!isMultiBranchPipeline) {
+                    return <NoRunsDefaultPlaceholder t={t} runButton={runButton} />;
+                } else if (!branch) {
+                    const { params } = this.context;
+                    const branchesUrl = buildPipelineUrl(params.organization, params.pipeline, 'branches');
+                    return <NoRunsMultibranchPlaceholder t={t} branchName={branch} branchesUrl={branchesUrl} />;
+                }
+            }
         }
 
-        const latestRun = runs[0];
+        const showTable = branch || (runs && runs.length > 0);
+        const head = 'pipelinedetail.activity.header';
+
+        const status = t(`${head}.status`, { defaultValue: 'Status' });
+        const runHeader = t(`${head}.run`, { defaultValue: 'Run' });
+        const commit = t(`${head}.commit`, { defaultValue: 'Commit' });
+        const message = t(`${head}.message`, { defaultValue: 'Message' });
+        const duration = t(`${head}.duration`, { defaultValue: 'Duration' });
+        const completed = t(`${head}.completed`, { defaultValue: 'Completed' });
+        const branchText = t(`${head}.branch`, { defaultValue: 'Branch' });
+
+        const branchFilter = isMultiBranchPipeline && (<ColumnFilter placeholder={branchText} value={branch}
+            onChange={b => this.navigateToBranch(b)}
+            options={pipeline.branchNames.map(b => decodeURIComponent(b)).sort()}
+        />);
 
         const headers = isMultiBranchPipeline ? [
-            'Status',
-            'Build',
-            'Commit',
-            { label: 'Branch', className: 'branch' },
-            { label: 'Message', className: 'message' },
-            { label: 'Duration', className: 'duration' },
-            { label: 'Completed', className: 'completed' },
+            status,
+            runHeader,
+            commit,
+            { label: branchFilter, className: 'branch' },
+            { label: message, className: 'message' },
+            { label: duration, className: 'duration' },
+            { label: completed, className: 'completed' },
             { label: '', className: 'actions' },
         ] : [
-            'Status',
-            'Build',
-            'Commit',
-            { label: 'Message', className: 'message' },
-            { label: 'Duration', className: 'duration' },
-            { label: 'Completed', className: 'completed' },
+            status,
+            runHeader,
+            commit,
+            { label: message, className: 'message' },
+            { label: duration, className: 'duration' },
+            { label: completed, className: 'completed' },
             { label: '', className: 'actions' },
         ];
 
         return (<main>
             <article className="activity">
-                { showRunButton &&
-                <RunButton
-                  runnable={pipeline}
-                  latestRun={latestRun}
-                  buttonType="run-only"
-                  onNavigation={onNavigation}
-                />
-                }
-                {runs.length > 0 &&
-                <Table className="activity-table fixed" headers={headers}>
+                { runButton }
+                { showTable &&
+                <Table className="activity-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding key={branch}>
                     {
-                        runs.map((run, index) => {
+                        runs.length > 0 && runs.map((run, index) => {
                             const changeset = run.changeSet;
                             let latestRecord = {};
+
                             if (changeset && changeset.length > 0) {
-                                latestRecord = new ChangeSetRecord(changeset[
-                                    Object.keys(changeset)[changeset.length - 1]
-                                ]);
+                                latestRecord = new ChangeSetRecord(changeset[changeset.length - 1]);
                             }
 
                             return (
                                 <Runs {...{
-                                    key: index,
+                                    t,
+                                    locale,
                                     run,
                                     pipeline,
+                                    key: index,
                                     changeset: latestRecord,
-                                    result: new RunRecord(run),
                                 }}
                                 />
                             );
@@ -144,10 +165,11 @@ export class Activity extends Component {
                     }
                 </Table>
                 }
-                {runs.$pager && runs.length > 0 &&
-                <button disabled={runs.$pending || !runs.$pager.hasMore} className="btn-show-more btn-secondary" onClick={() => runs.$pager.fetchMore()}>
-                    {runs.$pending ? 'Loading...' : 'Show More'}
-                </button>
+                { !isLoading && !runs.length && branch &&
+                    <NoRunsForBranchPlaceholder t={t} branchName={branch} />
+                }
+                { runs && runs.length > 0 &&
+                  <ShowMoreButton pager={this.pager} />
                 }
             </article>
         </main>);
@@ -157,18 +179,18 @@ export class Activity extends Component {
 Activity.contextTypes = {
     params: object.isRequired,
     location: object.isRequired,
-    pipeline: object,
     config: object.isRequired,
     router: object.isRequired,
+    activityService: object.isRequired,
 };
 
 Activity.propTypes = {
     runs: array,
     pipeline: object,
-    capabilities: object,
-    fetchRuns: func,
+    locale: string,
+    t: func,
+    params: object,
+    location: object.isRequired,
 };
 
-const selectors = createSelector([currentRunsSelector], (runs) => ({ runs }));
-
-export default connect(selectors, actions)(capabilityStore(props => props.pipeline._class)(Activity));
+export default Activity;

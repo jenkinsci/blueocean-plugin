@@ -6,7 +6,6 @@ import keymirror from 'keymirror';
 import Immutable from 'immutable';
 import { createSelector } from 'reselect';
 
-import { AnonUser, User } from '../model/User';
 import { FavoritesSortHelper } from '../util/SortUtils';
 import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';
 
@@ -16,12 +15,10 @@ const { Record, List } = Immutable;
 const sortHelper = new FavoritesSortHelper();
 
 export const FavoritesState = Record({
-    user: null,
     favorites: null,
 });
 
 export const ACTION_TYPES = keymirror({
-    SET_USER: null,
     SET_FAVORITES: null,
     SORT_FAVORITES: null,
     TOGGLE_FAVORITE: null,
@@ -33,12 +30,6 @@ function clone(json) {
 }
 
 const actionHandlers = {
-    [ACTION_TYPES.SET_USER](state, { payload }) {
-        const user = payload instanceof Error ?
-            new AnonUser() :
-            new User(payload);
-        return state.set('user', user);
-    },
     [ACTION_TYPES.SET_FAVORITES](state, { payload }) {
         const favoriteList = new List(payload);
         const sortedList = sortHelper.applyStandardSort(favoriteList);
@@ -100,7 +91,6 @@ const actionHandlers = {
 };
 
 const favoritesStore = state => state.favoritesStore;
-export const userSelector = createSelector([favoritesStore], store => store.user);
 export const favoritesSelector = createSelector([favoritesStore], store => store.favorites);
 
 // reducer

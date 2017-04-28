@@ -1,4 +1,5 @@
 import keymirror from 'keymirror';
+import { capable } from '@jenkins-cd/blueocean-core-js';
 
 export const RESULTS = keymirror({
     UNKNOWN: null,
@@ -8,36 +9,43 @@ export const RESULTS = keymirror({
 
 export const STATES = keymirror({
     RUNNING: null,
+    PAUSED: null,
     FINISHED: null,
 });
 
+function isRunningNode(item) {
+    return item.state === STATES.RUNNING || item.state === STATES.PAUSED;
+}
+
 export const getNodesInformation = (nodes) => {
-  // calculation of information about stages
-  // nodes in Runing state
+    // calculation of information about stages
+    // nodes in Runing state
     const runningNodes = nodes
-    .filter((item) => item.state === STATES.RUNNING && (!item.edges || item.edges.length < 2))
-    .map((item) => item.id);
-  // nodes with error result
+        .filter((item) => isRunningNode(item) && (!item.edges || item.edges.length < 2))
+        .map((item) => item.id);
+    // nodes with error result
     const errorNodes = nodes
-    .filter((item) => item.result === RESULTS.FAILURE)
-    .map((item) => item.id);
-  // nodes without information
+        .filter((item) => item.result === RESULTS.FAILURE)
+        .map((item) => item.id);
+    const queuedNodes = nodes
+        .filter((item) => item.state === null && item.result === null)
+        .map((item) => item.id);
+    // nodes without information
     const hasResultsForSteps = nodes
-        .filter((item) => item.state === null && item.result === null).length !== nodes.length;
-  // principal model mapper
+            .filter((item) => item.state === null && item.result === null).length !== nodes.length;
+    // principal model mapper
     let wasFocused = false; // we only want one node to be focused if any
     let parallelNodes = [];
     let parent;
-    // FIXME: this assumaption is not 100% correct since a job that is in queue would be marked as finished since
-    // there will be no running nodes yet!
-    const finished = runningNodes.length === 0;
+    // a job that is in queue would be marked as finished since
+    // there will be no running nodes yet, that is why we check for that
+    const finished = runningNodes.length === 0 && queuedNodes.length !== nodes.length;
     const error = !(errorNodes.length === 0);
     const model = nodes.map((item, index) => {
-        const hasFailingNode = item.edges ? item.edges
-          .filter((itemError) => errorNodes.indexOf(itemError.id) > -1).length > 0 : false;
+        const hasFailingNode = item.edges && item.edges.length >= 2 ? item.edges
+            .filter((itemError) => errorNodes.indexOf(itemError.id) > -1).length > 0 : false;
         const isFailingNode = errorNodes.indexOf(item.id) > -1;
-        const isRunningNode = runningNodes.indexOf(item.id) > -1;
-
+        const isRunning = runningNodes.indexOf(item.id) > -1;
         /*
          * are we in a node that indicates that we have parallel nodes?
          */
@@ -51,26 +59,32 @@ export const getNodesInformation = (nodes) => {
             // remove the match from the array
             parallelNodes.splice(indexParallel, 1);
         }
-
-        // FIXME: TS I need to talk to cliffMeyers how we can refactor the following code to use capabilities
-        // the problem I see ATM is that we would need to ask the c-API everytime for each action, whether this
-        // action has the capability for logging
-        const hasLogs = item.actions ? item.actions
-                .filter(action => action._class === 'org.jenkinsci.plugins.workflow.support.actions.LogActionImpl').length > 0
-            : false;
+        const logActions = item.actions ? item.actions
+            .filter(action => capable(action, 'org.jenkinsci.plugins.workflow.actions.LogAction')) : [];
+        const hasLogs = logActions.length > 0;
+        const isCompleted = item.result !== 'UNKNOWN' && item.result !== null;
+        const computedResult = isCompleted ? item.result : item.state;
+        const isInputStep = item.input && item.input !== null;
+        const key = index + isRunning + computedResult;
         const modelItem = {
-            key: index,
+            _links: item._links,
+            key: key || undefined,
             id: item.id,
             edges: item.edges,
             displayName: item.displayName,
             title: item.displayName || `runId: ${item.id}`,
-            durationInMillis: item.durationInMillis,
-            startTime: item.startTime,
-            result: item.result,
-            state: item.state,
+            durationInMillis: item.durationInMillis || undefined,
+            startTime: item.startTime || undefined,
+            result: item.result || undefined,
+            state: item.state || undefined,
             hasLogs,
+            logUrl: hasLogs ? logActions[0]._links.self.href : undefined,
             isParallel,
             parent,
+            isRunning,
+            isCompleted,
+            computedResult,
+            isInputStep,
         };
         // do not set the parent node in parallel, since we already have this information
         if (!isParallel) {
@@ -80,20 +94,27 @@ export const getNodesInformation = (nodes) => {
             modelItem.estimatedDurationInMillis = item.estimatedDurationInMillis;
             modelItem.isMultiBranch = true;
         }
-        if ((isRunningNode || (isFailingNode && !hasFailingNode && finished)) && !wasFocused) {
+        if ((isRunning || (isFailingNode && !hasFailingNode && finished)) && !wasFocused) {
             wasFocused = true;
             modelItem.isFocused = true;
         }
+        if (isInputStep) {
+            modelItem.input = item.input;
+        }
         return modelItem;
     });
-
-  // creating the response object
+    // in case we have all null we will focuse the first node since we assume that this would
+    // be the next node to be started
+    if (queuedNodes.length === nodes.length && !wasFocused && model[0]) {
+        model[0].isFocused = true;
+    }
+    // creating the response object
     const information = {
         isFinished: finished,
         hasResultsForSteps,
         model,
     };
-  // on not finished we return null and not a bool since we do not know the result yet
+    // on not finished we return null and not a bool since we do not know the result yet
     if (!finished) {
         information.isError = null;
     } else {

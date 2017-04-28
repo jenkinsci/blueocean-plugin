@@ -19,10 +19,21 @@ class FavoritesSseListener {
 
         this.store = store;
         this.sseBus = sseBus;
-        this.sseBus.subscribeToJob(
-            jobListener,
-            (event) => this._filterJobs(event)
-        );
+        try {
+            this.sseBus.subscribeToJob(
+                jobListener,
+                (event) => this._filterJobs(event)
+            );
+        } catch (e) {
+            if (!this.sseBus.connection && (!global.window || !global.window.EventSource)) {
+                // This should only happen in tests i.e no browser/window, EventSource etc.
+                // Maybe we could add something to the SSE gateway API that auto enables the
+                // headless client in this situation.
+                console.warn('SSE connection failed. Push notifications to Favorites will not work.');
+            } else {
+                throw e;
+            }
+        }
     }
 
     _filterJobs(event) {

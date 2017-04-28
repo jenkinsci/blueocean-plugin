@@ -2,7 +2,7 @@
 Blue Ocean is a Jenkins project that aspires to be well known and loved by Jenkins users. 
 Thus, similar contributing guidelines apply as to Jenkins itself. 
 
-For information on contributing to Jenkins, check out the https://wiki.jenkins-ci.org/display/JENKINS/contributing and https://wiki.jenkins-ci.org/display/JENKINS/Extend+Jenkins wiki pages over at the official https://wiki.jenkins-ci.org. They will help you get started with contributing to Jenkins.
+For information on contributing to Jenkins, check out the https://wiki.jenkins-ci.org/display/JENKINS/Beginners+Guide+to+Contributing and https://wiki.jenkins-ci.org/display/JENKINS/Extend+Jenkins wiki pages over at the official https://wiki.jenkins-ci.org. They will help you get started with contributing to Jenkins.
 
 
 ## Changes and pull requests

@@ -50,7 +50,7 @@ public class JsonConverter{
         try {
             return om.writeValueAsString(value);
         } catch (JsonProcessingException e) {
-            throw new RuntimeException(String.format("Failed to convert %s to json", value.toString()));
+            throw new RuntimeException(String.format("Failed to convert %s to json", value.toString()), e);
         }
     }
 
@@ -60,7 +60,6 @@ public class JsonConverter{
         mapper.configure(SerializationFeature.INDENT_OUTPUT, true);
         mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
         mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-
         return mapper;
     }
 }

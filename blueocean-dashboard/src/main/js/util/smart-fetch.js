@@ -7,7 +7,7 @@ import { capabilityAugmenter as augmenter } from '@jenkins-cd/blueocean-core-js'
 /**
  * How many records to fetch by default
  */
-export const defaultPageSize = 25;
+export const defaultPageSize = 5;
 
 /**
  * Freezes an object and all child properties
@@ -140,25 +140,27 @@ class Pager {
             Fetch.fetchJSON(url) // Fetch data
             .then(data => augmenter.augmentCapabilities(data))
             .then(successAndFreeze)) // add success field & freeze graph
-            .then((data) => {
-                debugLog(' -- success: ', url, data);
-                // fetched an extra to test if more
-                const hasMore = data.length > limit;
-                const outData = assignObj(concatenator(this, existingData, data));
-                outData.$success = true;
-                outData.$pager = Object.assign(this, {
-                    current: first,
-                    hasMore,
-                    currentData: outData,
-                    startIndex: existingData.length > 0 ? this.startIndex : first,
-                });
-                Object.freeze(outData); // children are already frozen, only shallow freeze here
-                onData(outData);
-            })
-            .catch(err => {
-                debugLog(' -- error: ', url, err);
-                onData(assignObj(concatenator(this, existingData), { $failed: err }));
-            });
+            .then(
+                (data) => {
+                    debugLog(' -- success: ', url, data);
+                    // fetched an extra to test if more
+                    const hasMore = data.length > limit;
+                    const outData = assignObj(concatenator(this, existingData, data));
+                    outData.$success = true;
+                    outData.$pager = Object.assign(this, {
+                        current: first,
+                        hasMore,
+                        currentData: outData,
+                        startIndex: existingData.length > 0 ? this.startIndex : first,
+                    });
+                    Object.freeze(outData); // children are already frozen, only shallow freeze here
+                    onData(outData);
+                },
+                err => {
+                    debugLog(' -- error: ', url, err);
+                    onData(assignObj(concatenator(this, existingData), { $failed: err }));
+                }
+            );
     }
 }
 
@@ -171,7 +173,7 @@ function defaultArrayConcatenator(pager, existing, incoming) {
         return [];
     }
     if (!incoming) {
-        return [].concat(existing);
+        return existing.slice();
     }
     return existing.concat(incoming.length > pager.pageSize ? incoming.slice(0, -1) : incoming);
 }

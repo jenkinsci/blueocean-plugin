@@ -1,162 +1,80 @@
 import React, { Component, PropTypes } from 'react';
-import { ResultItem, StatusIndicator, EmptyStateView } from '@jenkins-cd/design-language';
-import moment from 'moment';
+import { TestSummary } from './TestSummary';
+// needs to be loaded since the moment lib will use require which in run time will fail
+import 'moment/min/locales.min';
+import TestCaseResultRow from './TestCaseResultRow';
 
 /* eslint-disable max-len */
 
-const ConsoleLog = ({ text, className, key = 'console' }) =>
-    <div className={`${className} console-log insert-line-numbers`}>
-        {text.trim().split('\n').map((line, idx) =>
-            <div className="line" id={`#${key}-L${idx}`} key={`#${key}-L${idx}`}>{line}</div>
-        )}
-    </div>;
-
-ConsoleLog.propTypes = {
-    text: PropTypes.string,
-    className: PropTypes.string,
-    key: PropTypes.string,
-};
-
-const TestCaseResultRow = (props) => {
-    const t = props.testCase;
-    const duration = moment.duration(Number(t.duration), 'milliseconds').humanize();
-
-    let testDetails = null;
-    
-    if (t.errorStackTrace) {
-        testDetails = (<div>
-            <div className="test-details">
-                <div className="test-detail-text" style={{ display: 'none' }}>
-                    {duration}
-                </div>
-            </div>
-            <div className="test-console">
-                <h4>Error</h4>
-                <ConsoleLog className="error-message" text={t.errorDetails} key={`${t}-message`} />
-                <h4>Output</h4>
-                <ConsoleLog className="stack-trace" text={t.errorStackTrace} key={`${t}-stack-trace`} />
-            </div>
-        </div>);
-    }
-    
-    let statusIndicator = null;
-    switch (t.status) {
-    case 'REGRESSION':
-    case 'FAILED':
-        statusIndicator = StatusIndicator.validResultValues.failure;
-        break;
-    case 'SKIPPED':
-        statusIndicator = StatusIndicator.validResultValues.unstable;
-        break;
-    case 'FIXED':
-    case 'PASSED':
-        statusIndicator = StatusIndicator.validResultValues.success;
-        break;
-    default:
-    }
-    
-    return (<ResultItem
-      result={statusIndicator}
-      expanded={false}
-      label={`${t.name} - ${t.className}`}
-      onExpand={null}
-      extraInfo={duration}
-    >
-        { testDetails }
-    </ResultItem>);
-};
-
-TestCaseResultRow.propTypes = {
-    testCase: PropTypes.object,
-};
-
-export default class TestResult extends Component {
+export default class TestResults extends Component {
 
     render() {
-        const testResults = this.props.testResults;
-        const suites = this.props.testResults.suites;
-        const tests = [].concat.apply([], suites.map(t => t.cases));
-        
-        // one of 5 possible statuses: PASSED, FIXED, SKIPPED, FAILED, REGRESSION  see: hudson.tasks.junit.CaseResult$Status :(
-        const fixed = tests.filter(t => t.status === 'FIXED');
+        const { t: translation, tests, locale, run } = this.props;
+
+        const fixed = tests.filter(t => t.state === 'FIXED');
         const skipped = tests.filter(t => t.status === 'SKIPPED');
-        const newFailures = tests.filter(t => (t.age <= 1 && t.status === 'FAILED') || t.status === 'REGRESSION');
+        const newFailures = tests.filter(t => (t.age <= 1 && t.status === 'FAILED') || t.state === 'REGRESSION');
         const existingFailures = tests.filter(t => t.age > 1 && t.status === 'FAILED');
 
-        let passBlock = null;
         let newFailureBlock = null;
         let existingFailureBlock = null;
         let fixedBlock = null;
         let skippedBlock = null;
-        let summaryBlock = null;
-        
-        if (testResults.failCount === 0) {
-            passBlock = (
-                <EmptyStateView iconName="done_all">
-                    <h1 style={{ marginTop: '2.4rem' }}>All tests are passing</h1>
-                    <p>Nice one! All {testResults.passCount} tests for this pipeline are passing.</p>
-                    <p>How's the serenity?</p>
-                </EmptyStateView>
-            );
-        } else {
-            summaryBlock = (
-                <div className="test-summary">
-                    <div className={`new-passed count-${fixed.length}`}>
-                        <div className="count">{fixed.length}</div>
-                        <label>Fixed</label>
-                    </div>
-                    <div className={`new-failed count-${newFailures.length}`}>
-                        <div className="count">{newFailures.length}</div>
-                        <label>New Failures</label>
-                    </div>
-                    <div className={`failed count-${testResults.failCount}`}>
-                        <div className="count">{testResults.failCount}</div>
-                        <label>Failures</label>
-                    </div>
-                    <div className={`passed count-${testResults.passCount}`}>
-                        <div className="count">{testResults.passCount}</div>
-                        <label>Passing</label>
-                    </div>
-                    <div className={`skipped count-${testResults.skipCount}`}>
-                        <div className="count">{testResults.skipCount}</div>
-                        <label>Skipped</label>
-                    </div>
-                </div>
-            );
 
-            if (newFailures.length > 0) {
-                newFailureBlock = (<div className="test-result-block new-failure-block">
-                    <h4>New failing - {newFailures.length}</h4>
-                    {newFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} />)}
-                </div>);
-            }
+        const summaryBlock = (
+            <TestSummary
+                translate={translation}
+                passing={run.testSummary.passed}
+                fixed={run.testSummary.fixed}
+                failuresNew={run.testSummary.regressions}
+                failuresExisting={run.testSummary.existingFailed}
+                skipped={run.testSummary.skipped}
+            />
+        );
 
-            if (existingFailures.length > 0) {
-                existingFailureBlock = (<div className="test-result-block existing-failure-block">
-                    <h4>Existing failures - {existingFailures.length}</h4>
-                    {existingFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} />)}
-                </div>);
-            }
+        if (newFailures.length > 0) {
+            newFailureBlock = (<div className="test-result-block new-failure-block">
+                <h4>{translation('rundetail.testResults.results.errors.new.count', {
+                    0: run.testSummary.regressions,
+                    defaultValue: 'New failing - {0}',
+                })}</h4>
+                {newFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} translation={translation} locale={locale} />)}
+            </div>);
+        }
 
-            if (skipped.length > 0) {
-                skippedBlock = (<div className="test-result-block skipped-block">
-                    <h4>Skipped - {skipped.length}</h4>
-                    {skipped.map((t, i) => <TestCaseResultRow key={i} testCase={t} />)}
-                </div>);
-            }
+        if (existingFailures.length > 0) {
+            existingFailureBlock = (<div className="test-result-block existing-failure-block">
+                <h4>{translation('rundetail.testResults.results.errors.existing.count', {
+                    0: run.testSummary.existingFailed,
+                    defaultValue: 'Existing failures - {0}',
+                })}</h4>
+                {existingFailures.map((t, i) => <TestCaseResultRow key={i} testCase={t} translation={translation} locale={locale} />)}
+            </div>);
+        }
+
+        if (skipped.length > 0) {
+            skippedBlock = (<div className="test-result-block skipped-block">
+                <h4>{translation('rundetail.testResults.results.skipped.count', {
+                    0: run.testSummary.skipped,
+                    defaultValue: 'Skipped - {0}',
+                })}</h4>
+                {skipped.map((t, i) => <TestCaseResultRow key={i} testCase={t} translation={translation} locale={locale} />)}
+            </div>);
         }
 
         // always show fixed, whether showing totals or the encouraging message
         if (fixed.length > 0) {
             fixedBlock = (<div className="test-result-block fixed-block">
-                <h4>Fixed</h4>
-                {fixed.map((t, i) => <TestCaseResultRow key={i} testCase={t} />)}
+                <h4>{translation('rundetail.testResults.results.fixed', {
+                    0: run.testSummary.fixed,
+                    defaultValue: 'Fixed – {0}',
+                })}</h4>
+                {fixed.map((t, i) => <TestCaseResultRow key={i} testCase={t} translation={translation} locale={locale} />)}
             </div>);
         }
 
         return (
             <div>
-                {passBlock}
                 {summaryBlock}
                 {newFailureBlock}
                 {existingFailureBlock}
@@ -167,6 +85,9 @@ export default class TestResult extends Component {
     }
 }
 
-TestResult.propTypes = {
-    testResults: PropTypes.object,
+TestResults.propTypes = {
+    run: PropTypes.object,
+    tests: PropTypes.array,
+    t: PropTypes.func,
+    locale: PropTypes.string,
 };

@@ -1,39 +1,71 @@
 import React, { Component, PropTypes } from 'react';
-import {
-    ModalView,
-    ModalBody,
-    ModalHeader,
-    PageTabs,
-    TabLink,
-} from '@jenkins-cd/design-language';
+import { TabLink } from '@jenkins-cd/design-language';
+import { i18nTranslator, ReplayButton, RunButton, logging } from '@jenkins-cd/blueocean-core-js';
+import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 
-import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
+import { Icon } from '@jenkins-cd/react-material-icons';
 
 import {
-    actions,
-    currentRun as runSelector,
-    isMultiBranch as isMultiBranchSelector,
-    previous as previousSelector,
-    createSelector,
-    connect,
-} from '../redux';
-
-import {
+    rootPath,
     buildOrganizationUrl,
     buildPipelineUrl,
     buildRunDetailsUrl,
+    buildClassicConfigUrl,
 } from '../util/UrlUtils';
-
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
-import PageLoading from './PageLoading';
+import { FullScreen } from './FullScreen';
+import { Paths, capable, locationService, Security } from '@jenkins-cd/blueocean-core-js';
+import { observer } from 'mobx-react';
 
 const { func, object, any, string } = PropTypes;
 
+const { rest: RestPaths } = Paths;
+const logger = logging.logger('io.jenkins.blueocean.dashboard.RunDetails');
+
+const translate = i18nTranslator('blueocean-dashboard');
+const webTranslate = i18nTranslator('blueocean-web');
+
+const classicConfigLink = (pipeline) => {
+    let link = null;
+    if (Security.permit(pipeline).configure()) {
+        let url = buildClassicConfigUrl(pipeline);
+        link = (
+            <a href={ url } target="_blank" style={ { height: '24px' } }>
+                <Icon size={ 24 } icon="settings" style={ { fill: '#fff' } } />
+            </a>
+        );
+    }
+    return link;
+};
+
+const classicJobRunLink = (pipeline, branch, runId) => {
+    let runUrl;
+    if (pipeline.branchNames) {
+        runUrl = `${rootPath(pipeline.fullName)}job/${encodeURIComponent(branch)}/${encodeURIComponent(runId)}`;
+    } else {
+        runUrl = `${rootPath(pipeline.fullName)}${encodeURIComponent(runId)}`;
+    }
+    return (
+        <a className="rundetails_exit_to_app" href={ runUrl } style={ { height: '24px' } } title={webTranslate('go.to.classic', { defaultValue: 'Go to classic' })}>
+            <Icon size={ 24 } icon="exit_to_app" style={ { fill: '#fff' } } />
+        </a>
+    );
+};
+
+@observer
 class RunDetails extends Component {
 
+    constructor(props) {
+        super(props);
+        this.state = { isVisible: true };
+    }
+
     componentWillMount() {
-        this._fetchRun(this.props, true);
+        this._fetchRun(this.props);
+        this.opener = locationService.previous;
+        this.initialHistoryLength = history.length;
     }
 
     componentWillReceiveProps(nextProps) {
@@ -42,47 +74,50 @@ class RunDetails extends Component {
         }
 
         // in some cases the route params might have actually changed (such as 'runId' during a Re-run) so re-fetch
-        // also don't update the 'previous route' otherwise closing the modal will try to navigate back to last run
-        this._fetchRun(nextProps, false);
+        this._fetchRun(nextProps);
     }
 
-    _fetchRun(props, storePreviousRoute) {
-        if (props.isMultiBranch === null) {
-            return; // multiple redux selectors haven't completed
-        }
+    _fetchRun(props) {
+        this.isMultiBranch = capable(this.props.pipeline, MULTIBRANCH_PIPELINE);
+
         if (this.context.config && this.context.params) {
-            props.fetchRun({
+            this.href = RestPaths.run({
                 organization: props.params.organization,
                 pipeline: props.params.pipeline,
-                branch: props.isMultiBranch && props.params.branch,
+                branch: this.isMultiBranch && props.params.branch,
                 runId: props.params.runId,
             });
 
-            if (storePreviousRoute) {
-                this.opener = props.previous;
-            }
+            this.context.activityService.fetchActivity(this.href, { useCache: true });
         }
     }
 
     _didRunChange(oldParams, newParams) {
         return oldParams.organization !== newParams.organization ||
-                oldParams.pipeline !== newParams.pipeline ||
-                oldParams.branch !== newParams.branch ||
-                oldParams.runId !== newParams.runId;
+            oldParams.pipeline !== newParams.pipeline ||
+            oldParams.branch !== newParams.branch ||
+            oldParams.runId !== newParams.runId;
     }
 
-    navigateToOrganization() {
+    navigateToOrganization = () => {
         const { organization } = this.props.pipeline;
+        const { location } = this.context;
         const organizationUrl = buildOrganizationUrl(organization);
-        this.context.router.push(organizationUrl);
-    }
-    navigateToPipeline() {
+        location.pathname = organizationUrl;
+        this.context.router.push(location);
+    };
+
+    navigateToPipeline = () => {
         const { organization, fullName } = this.props.pipeline;
+        const { location } = this.context;
         const pipelineUrl = buildPipelineUrl(organization, fullName);
-        this.context.router.push(pipelineUrl);
-    }
-    navigateToChanges() {
+        location.pathname = pipelineUrl;
+        this.context.router.push(location);
+    };
+
+    navigateToChanges = () => {
         const {
+            location,
             params: {
                 organization,
                 pipeline,
@@ -92,98 +127,127 @@ class RunDetails extends Component {
         } = this.context;
 
         const changesUrl = buildRunDetailsUrl(organization, pipeline, branch, runId, 'changes');
-        this.context.router.push(changesUrl);
-    }
+        location.pathname = changesUrl;
+        this.context.router.push(location);
+    };
+
+    closeButtonClicked = () => {
+        this.setState({ isVisible: false });
+    };
+
+    afterClose = () => {
+        const { router, params } = this.context;
+        if (this.opener) {
+            // step back in the history to the item that's prior to initial load of RunDetails
+            const offsetToInitialRoute = this.initialHistoryLength - history.length;
+            router.go(offsetToInitialRoute - 1);
+        } else {
+            // back to the 'Activity' tab (using 'replace' to discard history item for RunDetails)
+            const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
+            router.replace(fallbackUrl);
+        }
+    };
+
     render() {
+        const run = this.context.activityService.getActivity(this.href);
         // early out
         if (!this.context.params
-            || !this.props.run
-            || this.props.isMultiBranch === null) {
+            || !run) {
             return null;
         }
 
-        if (this.props.run.$pending || this.context.pipeline.$pending) {
-            return <PageLoading />;
+        const { router, location, params } = this.context;
+        const { pipeline, setTitle, t, locale } = this.props;
+        const { isVisible } = this.state;
+
+        if (!run || !pipeline) {
+            this.props.setTitle(translate('common.pager.loading', { defaultValue: 'Loading...' }));
+            return null;
         }
 
-        const { router, location, params, pipeline = {} } = this.context;
-
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
-
-        const { run, setTitle } = this.props;
+        logger.debug('params', params.organization, params.pipeline, params.branch, params.runId);
         const currentRun = new RunRecord(run);
-        const status = currentRun.getComputedResult() || '';
+        const computedTitle = `${currentRun.organization} / ${pipeline.fullName} / ${params.pipeline === params.branch ? '' : `${params.branch} / `} #${currentRun.id}`;
+        setTitle(computedTitle);
 
         const switchRunDetails = (newUrl) => {
             location.pathname = newUrl;
             router.push(location);
         };
 
-        setTitle(`${currentRun.organization} / ${pipeline.fullName} #${currentRun.id}`);
 
-        const afterClose = () => {
-            const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
-            location.pathname = this.opener || fallbackUrl;
-            // reset query
-            /*
-            FIXME: reset query when you go back, we may want to store the whole location object in previous so we have a perfect prev.
-            this.opener would then be location and we the above location = this.opener || {pathname: fallbackUrl]
-             */
-            location.query = null;
-            router.push(location);
-        };
+        const base = { base: baseUrl };
+
+        const tabs = [
+            <TabLink to="/pipeline" { ...base }>{ t('rundetail.header.tab.pipeline', {
+                defaultValue: 'Pipeline',
+            }) }</TabLink>,
+            <TabLink to="/changes" { ...base }>{ t('rundetail.header.tab.changes', {
+                defaultValue: 'Changes',
+            }) }</TabLink>,
+            <TabLink to="/tests" { ...base }>{ t('rundetail.header.tab.tests', {
+                defaultValue: 'Tests',
+            }) }</TabLink>,
+            <TabLink to="/artifacts" { ...base }>{ t('rundetail.header.tab.artifacts', {
+                defaultValue: 'Artifacts',
+            }) }</TabLink>,
+        ];
+
+        const iconButtons = [
+            <ReplayButton className="icon-button dark"
+                          runnable={ this.props.pipeline }
+                          latestRun={ currentRun }
+                          onNavigation={ switchRunDetails }
+                          autoNavigate
+            />,
+            <RunButton className="icon-button dark"
+                       runnable={ this.props.pipeline }
+                       latestRun={ currentRun }
+                       buttonType="stop-only"
+            />,
+            <Extensions.Renderer extensionPoint="jenkins.blueocean.rundetails.top.widgets"
+                filter={dataType(currentRun)}
+                pipeline={pipeline}
+                run={currentRun}
+                back={() => this.navigateToPipeline()}
+            />,
+            classicConfigLink(pipeline),
+            classicJobRunLink(pipeline, params.branch, params.runId),
+        ];
 
         return (
-            <ModalView
-              isVisible
-              transitionClass="expand-in"
-              transitionDuration={150}
-              result={status}
-              {...{ afterClose }}
-            >
-                <ModalHeader>
-                    <div>
-                        <RunDetailsHeader
-                          pipeline={pipeline}
-                          data={currentRun}
-                          onOrganizationClick={() => this.navigateToOrganization()}
-                          onNameClick={() => this.navigateToPipeline()}
-                          onAuthorsClick={() => this.navigateToChanges()}
-                        />
-                        <PageTabs base={baseUrl}>
-                            <TabLink to="/pipeline">Pipeline</TabLink>
-                            <TabLink to="/changes">Changes</TabLink>
-                            <TabLink to="/tests">Tests</TabLink>
-                            <TabLink to="/artifacts">Artifacts</TabLink>
-                        </PageTabs>
+            <FullScreen isVisible={ isVisible } afterClose={ this.afterClose } onDismiss={ this.closeButtonClicked }>
 
-                        <div className="button-bar">
-                            <ReplayButton
-                              className="dark"
-                              runnable={this.props.pipeline}
-                              latestRun={currentRun}
-                              onNavigation={switchRunDetails}
-                              autoNavigate
-                            />
+                <RunDetailsHeader
+                    t={ t }
+                    locale={ locale }
+                    pipeline={ pipeline }
+                    data={ currentRun }
+                    runButton={ iconButtons }
+                    topNavLinks={ tabs }
+                    onOrganizationClick={ this.navigateToOrganization }
+                    onNameClick={ this.navigateToPipeline }
+                    onAuthorsClick={ this.navigateToChanges }
+                    onCloseClick={ this.closeButtonClicked }
+                    isMultiBranch={ this.isMultiBranch }
+                />
 
-                            <RunButton
-                              className="dark"
-                              runnable={this.props.pipeline}
-                              latestRun={currentRun}
-                              buttonType="stop-only"
-                            />
-                        </div>
-                    </div>
-                </ModalHeader>
-                <ModalBody>
-                    <div>
-                        {run.$success && React.cloneElement(
-                            this.props.children,
-                            { baseUrl, result: currentRun, ...this.props }
-                        )}
-                    </div>
-                </ModalBody>
-            </ModalView>
+                <div className="RunDetails-content">
+                    { run && React.cloneElement(
+                        this.props.children,
+                        {
+                            locale: translate.lng,
+                            baseUrl,
+                            t: translate,
+                            result: currentRun,
+                            isMultiBranch: this.isMultiBranch,
+                            ...this.props,
+                        }
+                    ) }
+                </div>
+
+            </FullScreen>
         );
     }
 }
@@ -193,7 +257,7 @@ RunDetails.contextTypes = {
     params: object,
     router: object.isRequired, // From react-router
     location: object.isRequired, // From react-router
-    pipeline: object,
+    activityService: object.isRequired,
 };
 
 RunDetails.propTypes = {
@@ -201,15 +265,10 @@ RunDetails.propTypes = {
     params: any,
     pipeline: object,
     run: object,
-    isMultiBranch: any,
-    fetchRun: func,
-    getPipeline: func,
     previous: string,
     setTitle: func,
+    locale: string,
+    t: func,
 };
 
-const selectors = createSelector(
-    [runSelector, isMultiBranchSelector, previousSelector],
-    (run, isMultiBranch, previous) => ({ run, isMultiBranch, previous }));
-
-export default connect(selectors, actions)(RunDetails);
+export default RunDetails;

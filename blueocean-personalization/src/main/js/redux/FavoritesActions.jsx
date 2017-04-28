@@ -1,42 +1,24 @@
 /**
  * Created by cmeyers on 7/6/16.
  */
-import { UrlConfig, Fetch } from '@jenkins-cd/blueocean-core-js';
-import { capabilityAugmenter as augmenter } from '@jenkins-cd/blueocean-core-js';
+import { UrlConfig, Fetch, AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter as augmenter, ToastService, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 import { ACTION_TYPES } from './FavoritesStore';
 import { cleanSlashes } from '../util/UrlUtils';
 
+const translator = i18nTranslator('blueocean-personalization');
 const fetchFlags = {
-    [ACTION_TYPES.SET_USER]: false,
     [ACTION_TYPES.SET_FAVORITES]: false,
 };
 
 export const actions = {
-    fetchUser() {
-        return (dispatch) => {
-            const baseUrl = UrlConfig.getBlueOceanAppURL();
-            const url = cleanSlashes(`${baseUrl}/rest/organizations/jenkins/user/`);
-
-            if (fetchFlags[ACTION_TYPES.SET_USER]) {
-                return null;
-            }
-
-            fetchFlags[ACTION_TYPES.SET_USER] = true;
-
-            return dispatch(actions.generateData(
-                { url },
-                ACTION_TYPES.SET_USER
-            ));
-        };
-    },
-
     fetchFavorites(user) {
         return (dispatch) => {
             const baseUrl = UrlConfig.getBlueOceanAppURL();
             const username = user.id;
-            const url = cleanSlashes(`${baseUrl}/rest/users/${username}/favorites/`);
-
+            const organization = AppConfig.getOrganizationName();
+            const url = cleanSlashes(`${baseUrl}/rest/organizations/${organization}/users/${username}/favorites/`);
             if (fetchFlags[ACTION_TYPES.SET_FAVORITES]) {
                 return null;
             }
@@ -105,6 +87,15 @@ export const actions = {
                 });
             })
             .catch((error) => {
+                const responseBody = error.responseBody;
+                if (responseBody && responseBody.code && responseBody.message) {
+                    ToastService.newToast({
+                        style: 'error',
+                        caption: translator('Favoriting Error'),
+                        text: translator(responseBody.message),
+                    });
+                }
+
                 fetchFlags[actionType] = false;
                 console.error(error); // eslint-disable-line no-console
                 // call again with no payload so actions handle missing data

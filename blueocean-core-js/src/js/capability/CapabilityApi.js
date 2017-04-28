@@ -29,7 +29,7 @@ export class CapabilityApi {
             ),
         };
 
-        return Fetch.fetchJSON(classesUrl, { fetchOptions });
+        return Fetch.fetchJSON(classesUrl, { disableCapabilites: true, fetchOptions });
     }
 
 }

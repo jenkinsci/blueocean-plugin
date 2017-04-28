@@ -1,54 +1,74 @@
 .pipeline-card {
     display: flex;
     align-items: center;
-    border-radius: 4px;
+    border-radius: 3px;
     color: white;
-    min-width: 400px;
-    padding: 15px;
     cursor: pointer;
+    height: 40px;
+    padding-left: 24px;
+    padding-right: 24px;
+    min-width: 550px;
 
     a {
         color: white;
         cursor: pointer;
     }
-    
-    .svgResultStatus {
-        min-width: 20px;
-    }
 
-    .name, .branch, .commit {
+    .name, .branch, .commit, .time {
         margin-left: 10px;
     }
 
-    .branch, .commit {
+    .branch, .commit, .time {
         display: flex;
         align-items: center;
+        flex-grow: 0;
+        overflow: hidden;
+    }
+
+    .commit, .time {
+        flex-basis: 150px;
+        flex-shrink: 2;
     }
 
     .name {
-        width: 55%;
+        flex-grow: 1;
+        flex-shrink: 4;
+        flex-basis: 300px;
+
+        overflow: hidden;
+        white-space: nowrap;
+
+        * {
+            //max-width:100%;
+            flex-wrap: nowrap;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+        }
     }
 
     .branch {
-        width: 45%;
+        flex-basis: 200px;
+        flex-shrink: 3;
     }
 
-    .commit {
-        min-width: 100px;
-    }
-
-    .name, .branchText, .commitId {
-        min-height: 18px;
-    }
-
-    .commitId {
+    .branchText, .commitId, .timeText {
         margin: 0 0 0 5px;
+
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
     }
 
     .actions {
-        min-width: 95px;
+        display: flex;
         margin-left: 10px;
-        text-align: right;
+        justify-content: flex-end;
+        flex-direction: row;
+        align-items: center;
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-basis: (24px * 3) + (8px * 2); // 3 Icons, 2 spaces
     }
 
     .action-item {
@@ -58,13 +78,7 @@
 
     .svg-icon {
         fill: white;
-    }
-
-    // remove empty space to attain centered vertical alignment
-    .run, .actions {
-        > * {
-            vertical-align: bottom;
-        }
+        flex-shrink: 0;
     }
 
     .action-item.stop-button {
@@ -105,5 +119,37 @@
         circle {
             stroke: white;
         }
+    }
+
+    * > .Dialog {
+        color: black;
+        text-align: left;
+    }
+
+    .actions > *+* {
+        margin-left:8px;
+    }
+
+    /*
+        FIXME: The following are hacks around wrapper components in core-js that are screwing up sizing. See:
+         - blueocean-core-js/src/js/components/LiveStatusIndicator.jsx
+         - blueocean-core-js/src/js/parameter/ParametersRunButton.jsx
+    */
+
+    >*:first-child {
+        // This is the status icon
+        flex-grow: 0;
+        flex-shrink: 0;
+        flex-basis: 20px;
+        height: 20px;
+        width: 20px;
+        overflow: hidden;
+    }
+
+    .actions > * {
+        height: 24px;
+        width: 24px;
+        flex-basis: 24px;
+        overflow: hidden;
     }
 }

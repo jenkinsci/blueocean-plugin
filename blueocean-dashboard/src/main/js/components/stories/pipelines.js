@@ -14,6 +14,7 @@ storiesOf('pipelines', module)
           headers={['Name', 'Status', 'Branches', 'Pull Requests', '']}
         >
             <PipelineRowItem
+              t={(key) => key}
               pipeline={new PipelineRecord({
                   displayName: 'moreBeersSuccess',
                   name: 'morebeersSuccess',
@@ -29,6 +30,7 @@ storiesOf('pipelines', module)
               })}
             />
             <PipelineRowItem
+              t={(key) => key}
               pipeline={new PipelineRecord({
                   displayName: 'moreBeers',
                   name: 'morebeers',

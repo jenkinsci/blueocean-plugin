@@ -3,25 +3,21 @@
  */
 
 import React, { Component, PropTypes } from 'react';
-import { Icon } from 'react-material-icons-blue';
+import { Icon } from '@jenkins-cd/react-material-icons';
 
-import { capable, RunApi as runApi, ToastUtils } from '../index';
+import { RunApi as runApi, ToastUtils } from '../index';
 import Security from '../security';
+import i18nTranslator from '../i18n/i18n';
 
 const { permit } = Security;
+const translate = i18nTranslator('blueocean-web');
 
 const stopProp = (event) => {
     event.stopPropagation();
 };
 
-const CAPABILITY_MULTIBRANCH_PIPELINE = 'io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline';
-const CAPABILITY_MULTIBRANCH_BRANCH = 'io.jenkins.blueocean.rest.model.BlueBranch';
-const CAPABILITY_SIMPLE_PIPELINE = 'org.jenkinsci.plugins.workflow.job.WorkflowJob';
-const PIPELINE_CAPABILITIES = [CAPABILITY_SIMPLE_PIPELINE, CAPABILITY_MULTIBRANCH_PIPELINE, CAPABILITY_MULTIBRANCH_BRANCH];
-
-function isRunFailed(run) {
-    const failureResults = ['FAILURE', 'ABORTED'];
-    return !!(run && run.result && failureResults.indexOf(run.result.toUpperCase()) !== -1);
+function isRunFinished(run) {
+    return !!(run && run.state === 'FINISHED');
 }
 
 /**
@@ -38,7 +34,7 @@ export class ReplayButton extends Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        const statusChanged = isRunFailed(this.props.latestRun) !== isRunFailed(nextProps.latestRun);
+        const statusChanged = isRunFinished(this.props.latestRun) !== isRunFinished(nextProps.latestRun);
 
         if (statusChanged) {
             this.setState({
@@ -57,7 +53,7 @@ export class ReplayButton extends Component {
         });
 
         runApi.replayRun(this.props.latestRun)
-            .then(runInfo => ToastUtils.createRunStartedToast(this.props.runnable, runInfo, this.props.onNavigation))
+            .then(run => ToastUtils.createRunStartedToast(this.props.runnable, run, this.props.onNavigation))
             .then(runDetailsUrl => this._afterReplayStarted(runDetailsUrl));
     }
 
@@ -76,15 +72,16 @@ export class ReplayButton extends Component {
         const outerClassNames = outerClass.split(' ');
         const innerButtonClass = outerClassNames.indexOf('icon-button') === -1 ? 'btn inverse' : '';
 
-        const isFailed = isRunFailed(this.props.latestRun);
-        const isPipeline = capable(this.props.runnable, PIPELINE_CAPABILITIES);
+        const isFinished = isRunFinished(this.props.latestRun);
+        const isReplayable = this.props.latestRun.replayable;
         const hasPermission = permit(this.props.runnable).start();
 
-        const replayLabel = 'Re-run';
+        const replayLabel = translate('run.rerun');
 
-        if (!isFailed || !isPipeline || !hasPermission) {
+        if (!isFinished || !isReplayable || !hasPermission) {
             return null;
         }
+
 
         return (
             <div className={`replay-button-component ${outerClass}`} onClick={(event => stopProp(event))}>

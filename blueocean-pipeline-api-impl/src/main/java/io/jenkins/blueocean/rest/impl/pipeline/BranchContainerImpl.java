@@ -2,7 +2,6 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.collect.Ordering;
 import hudson.model.Job;
-
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -32,6 +31,15 @@ public class BranchContainerImpl extends BluePipelineContainer {
             BranchImpl pipeline1 = (BranchImpl)_pipeline1;
             BranchImpl pipeline2 = (BranchImpl)_pipeline2;
 
+            // If one pipeline isnt the primary there is no need to go further
+            if(pipeline1.getBranch().isPrimary() && !pipeline2.getBranch().isPrimary()) {
+                return -1;
+            }
+
+            if(!pipeline1.getBranch().isPrimary() && pipeline2.getBranch().isPrimary()) {
+                return 1;
+            }
+
             // If One pipeline isnt a favorite there is no need to go further.
             if(pipeline1.isFavorite() && !pipeline2.isFavorite()) {
                 return -1;
@@ -54,7 +62,7 @@ public class BranchContainerImpl extends BluePipelineContainer {
             }
 
             //If neither have runs, lets just order by name.
-            if(latestRun1 == null && latestRun2 == null) {
+            if(latestRun1 == null) {
                 return pipeline1.getName().compareTo(pipeline2.getName());
             }
 
@@ -70,7 +78,7 @@ public class BranchContainerImpl extends BluePipelineContainer {
             }
 
             // If both jobs have ended, lets order by the one that ended last.
-            if(endTime1 != null && endTime2 != null) {
+            if(endTime1 != null) {
                 if(endTime1.getTime() > endTime2.getTime()) {
                     return -1;
                 }
@@ -119,7 +127,7 @@ public class BranchContainerImpl extends BluePipelineContainer {
     //TODO: implement rest of the methods
     @Override
     public BluePipeline get(String name) {
-        Job job = pipeline.mbp.getBranch(name);
+        Job job = pipeline.mbp.getItem(name);
         if(job != null){
             return new BranchImpl(job, getLink());
         }

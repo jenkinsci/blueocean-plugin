@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 
@@ -17,6 +18,8 @@ public abstract class BlueUser extends Resource {
     public static final String FULL_NAME="fullName";
     public static final String EMAIL="email";
     public static final String FAVORITES = "favorites";
+    private static final String PERMISSION = "permission";
+    private static final String AVATAR = "avatar";
 
     /**
      * @return The id of the user
@@ -37,5 +40,12 @@ public abstract class BlueUser extends Resource {
     // restricted to authorized users only
     public abstract String getEmail();
 
+    @Exported(name = AVATAR)
+    public abstract String getAvatar();
+
+    @Navigable
     public abstract BlueFavoriteContainer getFavorites();
+
+    @Exported(name = PERMISSION, inline = true)
+    public abstract BlueUserPermission getPermission();
 }

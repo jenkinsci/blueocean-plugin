@@ -1,18 +1,25 @@
 import React, { Component, PropTypes } from 'react';
-const { object, node } = PropTypes;
+import { pipelineService, activityService } from '@jenkins-cd/blueocean-core-js';
+import {
+    actions,
+    allPipelines as allPipelinesSelector,
+    organizationPipelines as organizationPipelinesSelector,
+    connect,
+    createSelector,
+} from './redux';
 
 class Dashboard extends Component {
 
+    constructor(props) {
+        super(props);
+        this._context = {};
+        this._context.pipelineService = pipelineService;
+        this._context.activityService = activityService;
+    }
     getChildContext() {
-        const {
-            params,
-            location,
-        } = this.props;
-
-        return {
-            params,
-            location,
-        };
+        this._context.params = this.props.params;
+        this._context.location = this.props.location;
+        return this._context;
     }
 
     render() {
@@ -21,14 +28,19 @@ class Dashboard extends Component {
 }
 
 Dashboard.propTypes = {
-    params: object, // From react-router
-    children: node, // From react-router
-    location: object, // From react-router
+    params: PropTypes.object, // From react-router
+    children: PropTypes.node, // From react-router
+    location: PropTypes.object, // From react-router
 };
 
 Dashboard.childContextTypes = {
-    params: object, // From react-router
-    location: object, // From react-router
+    params: PropTypes.object, // From react-router
+    location: PropTypes.object, // From react-router
+    pipelineService: PropTypes.object,
+    activityService: PropTypes.object,
 };
 
-export default Dashboard;
+const selectors = createSelector([allPipelinesSelector, organizationPipelinesSelector],
+    (allPipelines, organizationPipelines) => ({ allPipelines, organizationPipelines }));
+
+export default connect(selectors, actions)(Dashboard);

@@ -1,9 +1,12 @@
 import { assert } from 'chai';
 import React from 'react';
 import sd from 'skin-deep';
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 import { latestRuns } from './data/runs/latestRuns';
 import RunDetailsChanges from '../../main/js/components/RunDetailsChanges';
+
+const t = i18nTranslator('blueocean-dashboard');
 
 describe('RunDetailsChanges', () => {
     let component;
@@ -13,7 +16,7 @@ describe('RunDetailsChanges', () => {
     describe('empty runs / bad data', () => {
         before(() => {
             component = (
-                <RunDetailsChanges />
+                <RunDetailsChanges t={t} />
             );
             tree = sd.shallowRender(component);
             output = tree.getRenderOutput();
@@ -28,6 +31,7 @@ describe('RunDetailsChanges', () => {
         before(() => {
             component = (
                 <RunDetailsChanges
+                  t={t}
                   result={{ changeSet: [] }}
                 />
             );
@@ -35,8 +39,8 @@ describe('RunDetailsChanges', () => {
             output = tree.getRenderOutput();
         });
 
-        it('renders EmptyStateView', () => {
-            assert.equal(output.type.name, 'EmptyState');
+        it('renders NoChangesPlaceholder', () => {
+            assert.equal(output.type.name, 'NoChangesPlaceholder');
         });
     });
 
@@ -45,6 +49,7 @@ describe('RunDetailsChanges', () => {
             const runs = latestRuns.map(run => (run.latestRun));
             component = (
                 <RunDetailsChanges
+                  t={t}
                   result={runs[0]}
                 />
             );

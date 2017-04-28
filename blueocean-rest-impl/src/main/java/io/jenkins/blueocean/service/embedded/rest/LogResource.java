@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Strings;
 import hudson.console.AnnotatedLargeText;
 import io.jenkins.blueocean.commons.ServiceException;
 import org.kohsuke.stapler.AcceptHeader;
@@ -10,8 +9,10 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.framework.io.CharSpool;
 import org.kohsuke.stapler.framework.io.LineEndNormalizingWriter;
 
+import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.io.Reader;
 import java.io.Writer;
 
 /**
@@ -21,8 +22,15 @@ public class LogResource{
     public static final long DEFAULT_LOG_THREASHOLD = 150;
 
     private final AnnotatedLargeText logText;
+    private final Reader appenderLogReader;
+
     public LogResource(AnnotatedLargeText log) {
+        this(log, LogAppender.DEFAULT);
+    }
+
+    public LogResource(@Nonnull AnnotatedLargeText log, @Nonnull LogAppender logAppender) {
         this.logText = log;
+        this.appenderLogReader = logAppender.getLog();
     }
 
     public void doIndex(StaplerRequest req, StaplerResponse rsp, @Header("Accept") AcceptHeader accept){
@@ -37,16 +45,9 @@ public class LogResource{
                 rsp.setHeader("Content-Disposition", "attachment; filename=log.txt");
             }
 
-            switch (accept.select("text/plain","text/html")) {
-                case "text/html":
-                    rsp.setContentType("text/html;charset=UTF-8");
-                    rsp.setStatus(HttpServletResponse.SC_OK);
-                    req.setAttribute("html", Boolean.valueOf(true));
-                    break;
-                case "text/plain":
-                    rsp.setContentType("text/plain;charset=UTF-8");
-                    rsp.setStatus(HttpServletResponse.SC_OK);
-            }
+            rsp.setContentType("text/plain;charset=UTF-8");
+            rsp.setStatus(HttpServletResponse.SC_OK);
+
             writeLogs(req, rsp);
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException("Failed to get logText: " + e.getMessage(), e);
@@ -72,14 +73,22 @@ public class LogResource{
         CharSpool spool = new CharSpool();
 
         long r = logText.writeLogTo(offset,spool);
-        rsp.addHeader("X-Text-Size",String.valueOf(r));
-        if(!logText.isComplete()) {
-            rsp.addHeader("X-More-Data", "true");
-        }
 
         Writer w = createWriter(req, rsp, r - offset);
         spool.writeTo(new LineEndNormalizingWriter(w));
+        if(!logText.isComplete()) {
+            rsp.addHeader("X-More-Data", "true");
+        }else{
+            int text = appenderLogReader.read();
+            while(text != -1){
+                w.write(text);
+                r++;
+                text = appenderLogReader.read();
+            }
+        }
+        rsp.addHeader("X-Text-Size",String.valueOf(r));
         w.close();
+
     }
 
     private Writer createWriter(StaplerRequest req, StaplerResponse rsp, long size) throws IOException {

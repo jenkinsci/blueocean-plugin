@@ -10,7 +10,6 @@ import { RunButton } from '../../../src/js/components/RunButton';
 
 describe('RunButton', () => {
     let pipeline;
-
     beforeEach(() => {
         pipeline = utils.clone(require('../data/pipeline-1.json'));
     });

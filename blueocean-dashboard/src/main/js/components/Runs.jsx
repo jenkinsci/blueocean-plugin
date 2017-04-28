@@ -1,110 +1,134 @@
 import React, { Component, PropTypes } from 'react';
+import { CommitHash, ReadableDate, TimeDuration } from '@jenkins-cd/design-language';
 import {
-    CommitHash, ReadableDate, LiveStatusIndicator, TimeDuration,
-}
-    from '@jenkins-cd/design-language';
-import { ReplayButton, RunButton } from '@jenkins-cd/blueocean-core-js';
-
-import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
-
+    LiveStatusIndicator,
+    logging,
+    ReplayButton,
+    RunButton,
+    TimeHarmonizer as timeHarmonizer,
+} from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
-import moment from 'moment';
+
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
+import { CellLink, CellRow } from './CellLink';
+import RunMessageCell from './RunMessageCell';
+import RunIdCell from './RunIdCell';
 
-const { object, string, any } = PropTypes;
-
+const logger = logging.logger('io.jenkins.blueocean.dashboard.Runs');
 /*
  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/PR-demo/runs
  */
-export default class Runs extends Component {
+export class Runs extends Component {
     constructor(props) {
         super(props);
         this.state = { isVisible: false };
     }
+
     render() {
         // early out
-        if (!this.props.result || !this.context.pipeline) {
+        if (!this.props.run || !this.props.pipeline) {
             return null;
         }
+        const { router, location } = this.context;
+
+        const { run, changeset, pipeline, t, locale, getTimes } = this.props;
+
+        const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
+        const isRunning = () => run.state === 'RUNNING' || run.state === 'PAUSED' || run.state === 'QUEUED';
         const {
-            context: {
-                router,
-                location,
-                pipeline: {
-                    _class: pipelineClass,
-                    fullName,
-                    organization,
-                },
-            },
-            props: {
-                result: {
-                    durationInMillis,
-                    estimatedDurationInMillis,
-                    pipeline,
-                    id,
-                    result,
-                    state,
-                    startTime,
-                    endTime,
-                    commitId,
-                },
-                changeset,
-            },
-        } = this;
+            durationInMillis,
+            endTime,
+            startTime,
+        } = getTimes({
+            result: resultRun,
+            durationInMillis: run.durationInMillis,
+            startTime: run.startTime,
+            endTime: run.endTime,
+        });
+        logger.warn('time:', {
+            runDuration: run,
+            durationInMillis,
+            endTime,
+            startTime,
+            isRunning: isRunning(),
+        });
 
-        const resultRun = result === 'UNKNOWN' ? state : result;
-        const running = resultRun === 'RUNNING';
-        const durationMillis = !running ?
-            durationInMillis :
-            moment().diff(moment(startTime));
-
-        const open = () => {
-            const pipelineName = decodeURIComponent(pipeline);
-            location.pathname = buildRunDetailsUrl(organization, fullName, pipelineName, id, 'pipeline');
-            router.push(location);
-        };
+        const runDetailsUrl = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'pipeline');
 
         const openRunDetails = (newUrl) => {
             location.pathname = newUrl;
             router.push(location);
         };
 
-        return (<tr key={id} onClick={open} id={`${pipeline}-${id}`} >
-            <td>
-                <LiveStatusIndicator result={resultRun} startTime={startTime}
-                  estimatedDuration={estimatedDurationInMillis}
+        return (
+        <CellRow id={`${pipeline.name}-${run.id}`} linkUrl={runDetailsUrl}>
+            <CellLink>
+                <LiveStatusIndicator
+                  durationInMillis={durationInMillis}
+                  result={resultRun}
+                  startTime={startTime}
+                  estimatedDuration={run.estimatedDurationInMillis}
                 />
-            </td>
-            <td>{id}</td>
-            <td><CommitHash commitId={commitId} /></td>
-            <IfCapability className={pipelineClass} capability={MULTIBRANCH_PIPELINE} >
-                <td>{decodeURIComponent(pipeline)}</td>
+            </CellLink>
+            <CellLink><RunIdCell run={run} /></CellLink>
+            <CellLink><CommitHash commitId={run.commitId} /></CellLink>
+            <IfCapability className={pipeline._class} capability={MULTIBRANCH_PIPELINE} >
+                <CellLink linkUrl={runDetailsUrl}>{decodeURIComponent(run.pipeline)}</CellLink>
             </IfCapability>
-            <td>{changeset && changeset.msg || '-'}</td>
-            <td><TimeDuration millis={durationMillis} liveUpdate={running} /></td>
-            <td><ReadableDate date={endTime} liveUpdate /></td>
+            <CellLink><RunMessageCell run={run} /></CellLink>
+            <CellLink>
+                <TimeDuration
+                  millis={durationInMillis}
+                  updatePeriod={1000}
+                  liveUpdate={isRunning()}
+                  locale={locale}
+                  displayFormat={t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' })}
+                  liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
+                  hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
+                />
+            </CellLink>
+            <CellLink>
+                <ReadableDate
+                  date={endTime}
+                  liveUpdate
+                  locale={locale}
+                  shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                  longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
+                />
+            </CellLink>
             <td>
-                <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" />
-                <RunButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} buttonType="stop-only" />
-                { /* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */ }
-                <IfCapability className={pipelineClass} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
-                    <ReplayButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} onNavigation={openRunDetails} />
-                </IfCapability>
+                <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" {...t} />
+                <RunButton
+                  className="icon-button"
+                  runnable={this.props.pipeline}
+                  latestRun={this.props.run}
+                  buttonType="stop-only"
+                />
+                <ReplayButton className="icon-button" runnable={pipeline} latestRun={run} onNavigation={openRunDetails} />
             </td>
-        </tr>);
+        </CellRow>
+        );
     }
 }
 
+const { object, string, any, func } = PropTypes;
+
 Runs.propTypes = {
-    run: PropTypes.object,
-    pipeline: PropTypes.object,
+    run: object,
+    pipeline: object,
     result: any.isRequired, // FIXME: create a shape
     data: string,
+    locale: string,
     changeset: object.isRequired,
+    t: func,
+    getTimes: func,
 };
 Runs.contextTypes = {
-    pipeline: object,
+    config: object.isRequired,
     router: object.isRequired, // From react-router
     location: object,
 };
+
+export default timeHarmonizer(Runs);

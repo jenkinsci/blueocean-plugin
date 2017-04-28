@@ -1,95 +1,129 @@
 import React, { Component, PropTypes } from 'react';
-import { CommitHash, ReadableDate } from '@jenkins-cd/design-language';
-import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
-import { RunButton } from '@jenkins-cd/blueocean-core-js';
+import { CommitHash, ReadableDate, WeatherIcon } from '@jenkins-cd/design-language';
+import { LiveStatusIndicator, RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
+import { observer } from 'mobx-react';
+import { CellLink, CellRow } from './CellLink';
+import RunMessageCell from './RunMessageCell';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
-const { object } = PropTypes;
+function sortByOrdinal(extensions, done) {
+    const sorted = extensions.sort((a, b) => {
+        if (a.ordinal || b.ordinal) {
+            if (!a.ordinal) return 1;
+            if (!b.ordinal) return -1;
+            if (a.ordinal < b.ordinal) return -1;
+            return 1;
+        }
+        return a.pluginId.localeCompare(b.pluginId);
+    });
+    done(sorted);
+}
 
-const stopProp = (event) => event.stopPropagation();
-
+function noRun(branch, openRunDetails, t, store) {
+    return (<tr>
+                <td></td>
+                <td></td>
+                <td>{decodeURIComponent(branch.name)}</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td className="actions">
+                    <RunButton
+                      className="icon-button"
+                      runnable={branch}
+                      onNavigation={openRunDetails}
+                    />
+                    <Extensions.Renderer
+                      extensionPoint="jenkins.pipeline.branches.list.action"
+                      filter={sortByOrdinal}
+                      pipeline={branch }
+                      store={store}
+                      {...t}
+                    />
+                </td>
+            </tr>);
+}
+@observer
 export default class Branches extends Component {
     constructor(props) {
         super(props);
         this.state = { isVisible: false };
     }
     render() {
-        const { data } = this.props;
+        const { data: branch, pipeline, t, locale } = this.props;
         // early out
-        if (!data || !this.context.pipeline) {
+        if (!branch || !pipeline) {
             return null;
         }
-        const {
-            context: {
-                router,
-                location,
-                pipeline: {
-                    fullName,
-                    organization,
-                    },
-                },
-            } = this;
-        const {
-            latestRun: { id, result, startTime, endTime, changeSet, state, commitId, estimatedDurationInMillis },
-            weatherScore,
-            name: branchName,
-        } = data;
 
-        const cleanBranchName = decodeURIComponent(branchName);
-        const url = buildRunDetailsUrl(organization, fullName, cleanBranchName, id, 'pipeline');
-
-        const open = () => {
-            location.pathname = url;
-            router.push(location);
-        };
-
+        const { router, location } = this.context;
         const openRunDetails = (newUrl) => {
             location.pathname = newUrl;
             router.push(location);
         };
-
-        const { msg } = changeSet[0] || {};
-
+        const latestRun = branch.latestRun;
+        if (!latestRun) {
+            return noRun(branch, openRunDetails, t, this.context.store);
+        }
+        const cleanBranchName = decodeURIComponent(branch.name);
+        const runDetailsUrl = buildRunDetailsUrl(branch.organization, pipeline.fullName, cleanBranchName, latestRun.id, 'pipeline');
         return (
-            <tr key={cleanBranchName} onClick={open} id={`${cleanBranchName}-${id}`} >
-                <td><WeatherIcon score={weatherScore} /></td>
-                <td onClick={open}>
-                    <LiveStatusIndicator result={result === 'UNKNOWN' ? state : result}
-                      startTime={startTime} estimatedDuration={estimatedDurationInMillis}
+            <CellRow linkUrl={runDetailsUrl} id={`${cleanBranchName}-${latestRun.id}`}>
+                <CellLink disableDefaultPadding>
+                    <WeatherIcon score={branch.weatherScore} />
+                </CellLink>
+                <CellLink>
+                    <LiveStatusIndicator
+                      durationInMillis={latestRun.durationInMillis}
+                      result={latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result}
+                      startTime={latestRun.startTime}
+                      estimatedDuration={latestRun.estimatedDurationInMillis}
                     />
-                </td>
-                <td>{cleanBranchName}</td>
-                <td><CommitHash commitId={commitId} /></td>
-                <td>{msg || '-'}</td>
-                <td><ReadableDate date={endTime} liveUpdate /></td>
-                { /* suppress all click events from extension points */ }
-                <td className="actions" onClick={(event) => stopProp(event)}>
+                </CellLink>
+                <CellLink>{cleanBranchName}</CellLink>
+                <CellLink><CommitHash commitId={latestRun.commitId} /></CellLink>
+                <CellLink><RunMessageCell run={latestRun} /></CellLink>
+                <CellLink>
+                    <ReadableDate
+                      date={latestRun.endTime}
+                      liveUpdate
+                      locale={locale}
+                      shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                      longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
+                    />
+                </CellLink>
+                <td className="actions">
                     <RunButton
                       className="icon-button"
-                      runnable={data}
-                      latestRun={data.latestRun}
+                      runnable={branch}
+                      latestRun={branch.latestRun}
                       onNavigation={openRunDetails}
                     />
                     <Extensions.Renderer
                       extensionPoint="jenkins.pipeline.branches.list.action"
-                      pipeline={data}
+                      filter={sortByOrdinal}
+                      pipeline={branch }
                       store={this.context.store}
+                      {...t}
                     />
                 </td>
-            </tr>
+            </CellRow>
         );
     }
 }
 
+const { func, object, string } = PropTypes;
 Branches.propTypes = {
     data: object.isRequired,
+    t: func,
+    locale: string,
+    pipeline: object,
 };
 
 Branches.contextTypes = {
     store: object,
-    pipeline: object,
     router: object.isRequired, // From react-router
     location: object,
 };

@@ -9,15 +9,14 @@ import hudson.ExtensionPoint;
  * @author Vivek Pandey
  */
 public abstract class JwtTokenDecorator implements ExtensionPoint {
-
-
-    /** Decorates {@link JwtToken}
+    /**
+     * Called right before {@link JwtToken} is signed.
+     *
+     * This is an opportunity to add additional claim/header into the token.
      *
      * @param token token to be decorated
-     *
-     * @return returns decorated token
      */
-    public abstract JwtToken decorate(JwtToken token);
+    public abstract void decorate(JwtToken token);
 
     /**
      * Returns all the registered {@link JwtTokenDecorator}s

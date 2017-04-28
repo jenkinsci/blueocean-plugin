@@ -1,9 +1,12 @@
 {
-  "extends": "@jenkins-cd/jenkins/react",
+  "parser": "babel-eslint",
+  "extends": [ "@jenkins-cd/jenkins/react"],
   "rules": {
     "react/jsx-no-bind": 0,
+    "react/jsx-indent-props": 0,
     "eqeqeq": ["error", "smart"],
     "no-unused-vars": [2, {"varsIgnorePattern": "^React$"}],
+    "prefer-template": 1,
     "max-len": [1, 160, 4]
   }
 }

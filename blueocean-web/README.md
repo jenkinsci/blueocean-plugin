@@ -1,21 +1,14 @@
 # Web middleware
 
-This module mostly contains middleware for serving up "/blue" GUI. 
-In general, you shouldn't need to modify stuff in for plugins or features as it is infrastructure. Move along. 
+This module mostly contains middleware for serving up "/blue" GUI.
+In general, you shouldn't need to modify stuff in for plugins or features as it is infrastructure. Move along.
 
-Look for blueocean.js for excitement. 
+Look for blueocean.js for excitement.
 
 ## how this works with Javascript
 
-Jenkins-js-modules and friends are used to power this. Look in `src/main/js` in any plugin. 
+All runtime JavaScript artifacts are generated during the build and added to the plugin HPI.
 
-If you wish to make changes to blueocean.js in this plugin, then you will need to install gulp (http://gulpjs.com/), and then run `cd blueocean && mvn hpi:run` in a separate terminal. 
-
-Then run:
-
-``` 
-$ gulp bundle:watch
-```
-
-(or run gulp, after each change) in this directory. This will pick up any changes. 
-If you are editing any other UI modules, run the same in their respective directories. 
+If you wish to make JavaScript changes during development and have them picked while using the HPI plugin (`mvn hpi:run`),
+then you will need to run `npm run bundle` after each change. Alternative, you can run `npm run bundle:watch` to "watch"
+for changes and automatically run `npm run bundle`. This applies to all Blue Ocean modules/plugins.
