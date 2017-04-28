@@ -14,7 +14,7 @@ describe('RunDetailsChanges', () => {
     let output;
 
     describe('empty runs / bad data', () => {
-        before(() => {
+        beforeAll(() => {
             component = (
                 <RunDetailsChanges t={t} />
             );
@@ -28,7 +28,7 @@ describe('RunDetailsChanges', () => {
     });
 
     describe('empty changeSet', () => {
-        before(() => {
+        beforeAll(() => {
             component = (
                 <RunDetailsChanges
                   t={t}
@@ -45,7 +45,7 @@ describe('RunDetailsChanges', () => {
     });
 
     describe('valid changeSet', () => {
-        before(() => {
+        beforeAll(() => {
             const runs = latestRuns.map(run => (run.latestRun));
             component = (
                 <RunDetailsChanges

@@ -11,7 +11,7 @@ describe("pipeline graph data converter /", () => {
 
     let jsonDir = null;
 
-    before(() => {
+    beforeAll(() => {
         jsonDir = path.resolve(__dirname, "../json/pipeline-graph-converter/");
     });
 
@@ -42,7 +42,7 @@ describe("pipeline graph data converter /", () => {
         let testDataJSON = null;
         let testData = null;
 
-        before(() => {
+        beforeAll(() => {
             testDataJSON = fs.readFileSync(path.resolve(jsonDir, "single-node.json"));
         });
 
@@ -71,7 +71,7 @@ describe("pipeline graph data converter /", () => {
         let testDataJSON = null;
         let testData = null;
 
-        before(() => {
+        beforeAll(() => {
             testDataJSON = fs.readFileSync(path.resolve(jsonDir, "three-nodes.json"));
         });
 
@@ -114,7 +114,7 @@ describe("pipeline graph data converter /", () => {
         let testDataJSON = null;
         let testData = null;
 
-        before(() => {
+        beforeAll(() => {
             testDataJSON = fs.readFileSync(path.resolve(jsonDir, "pipeline-nodes-example.json"));
         });
 
@@ -174,7 +174,7 @@ describe("pipeline graph data converter /", () => {
         let testDataJSON = null;
         let testData = null;
 
-        before(() => {
+        beforeAll(() => {
             testDataJSON = fs.readFileSync(path.resolve(jsonDir, "ends-with-parallel.json"));
         });
 
@@ -226,7 +226,7 @@ describe("pipeline graph data converter /", () => {
         let testDataJSON = null;
         let testData = null;
 
-        before(() => {
+        beforeAll(() => {
             testDataJSON = fs.readFileSync(path.resolve(jsonDir, "every-result.json"));
         });
 
