@@ -87,7 +87,6 @@
     "displayName": "failure-project",
     "estimatedDurationInMillis": 30,
     "fullName": "failure-project",
-    "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/failure-project/runs/8/",
     "latestRun": {
         "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
         "_links": {
@@ -280,7 +279,6 @@
     "displayName": "freestyle-failure-1m",
     "estimatedDurationInMillis": 60046,
     "fullName": "freestyle-jobs/freestyle-failure-1m",
-    "lastSuccessfulRun": null,
     "latestRun": {
         "_class": "io.jenkins.blueocean.service.embedded.rest.FreeStyleRunImpl",
         "_links": {
@@ -417,7 +415,6 @@
     "displayName": "freestyle-success-10m",
     "estimatedDurationInMillis": 600010,
     "fullName": "freestyle-jobs/freestyle-success-10m",
-    "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-10m/runs/31/",
     "latestRun": {
         "_class": "io.jenkins.blueocean.service.embedded.rest.FreeStyleRunImpl",
         "_links": {
@@ -564,7 +561,6 @@
     "displayName": "freestyle-success-1m",
     "estimatedDurationInMillis": 60029,
     "fullName": "freestyle-jobs/freestyle-success-1m",
-    "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-1m/runs/119/",
     "latestRun": {
         "_class": "io.jenkins.blueocean.service.embedded.rest.FreeStyleRunImpl",
         "_links": {
@@ -701,7 +697,6 @@
     "displayName": "freestyle-success-5m",
     "estimatedDurationInMillis": 240032,
     "fullName": "freestyle-jobs/freestyle-success-5m",
-    "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/freestyle-jobs/pipelines/freestyle-success-5m/runs/58/",
     "latestRun": {
         "_class": "io.jenkins.blueocean.service.embedded.rest.FreeStyleRunImpl",
         "_links": {
@@ -1138,7 +1133,6 @@
     "displayName": "pipeline-failure-1m",
     "estimatedDurationInMillis": 40025,
     "fullName": "simple-pipeline-jobs/pipeline-failure-1m",
-    "lastSuccessfulRun": null,
     "latestRun": {
         "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
         "_links": {
@@ -1383,7 +1377,6 @@
     "displayName": "pipeline-never-run",
     "estimatedDurationInMillis": -1,
     "fullName": "simple-pipeline-jobs/pipeline-never-run",
-    "lastSuccessfulRun": null,
     "latestRun": null,
     "name": "pipeline-never-run",
     "organization": "jenkins",
@@ -1473,7 +1466,6 @@
     "displayName": "pipeline-success-1m",
     "estimatedDurationInMillis": 68251,
     "fullName": "simple-pipeline-jobs/pipeline-success-1m",
-    "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/runs/107/",
     "latestRun": {
         "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
         "_links": {

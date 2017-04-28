@@ -31,7 +31,6 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
-import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.DELETE;
@@ -92,16 +91,6 @@ public class AbstractPipelineImpl extends BluePipeline {
     @Override
     public Long getEstimatedDurationInMillis() {
         return job.getEstimatedDuration();
-    }
-
-    @Override
-    public String getLastSuccessfulRun() {
-        if(job.getLastSuccessfulBuild() != null){
-            String id = job.getLastSuccessfulBuild().getId();
-
-            return Stapler.getCurrentRequest().getRootPath()+getLink().getHref()+"runs/"+id+"/";
-        }
-        return null;
     }
 
     @Override

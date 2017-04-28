@@ -385,20 +385,20 @@ public class PipelineApiTest extends PipelineBaseTest {
         WorkflowRun b2 = job2.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b2);
 
-        List<Map> pipelines = get("/organizations/jenkins/pipelines/", List.class);
+        List<Map> pipelines = get("/organizations/jenkins/pipelines/?tree=*[*]", List.class);
         Assert.assertEquals(2, pipelines.size());
 
         validateBrokenAction((List<Map>) pipelines.get(0).get("actions"));
 
-        Map pipeline = get("/organizations/jenkins/pipelines/pipeline1/");
+        Map pipeline = get("/organizations/jenkins/pipelines/pipeline1/?tree=*[*]");
         validatePipeline(job1, pipeline);
         validateBrokenAction((List<Map>) pipeline.get("actions"));
 
-        List<Map> runs = get("/organizations/jenkins/pipelines/pipeline1/runs/", List.class);
+        List<Map> runs = get("/organizations/jenkins/pipelines/pipeline1/runs/?tree=*[*]", List.class);
         Assert.assertEquals(1, runs.size());
         validateBrokenAction((List<Map>) pipelines.get(0).get("actions"));
 
-        Map resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1");
+        Map resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/?tree=*[*]");
         validateBrokenAction((List<Map>) resp.get("actions"));
         validateRun(b1, resp);
     }
