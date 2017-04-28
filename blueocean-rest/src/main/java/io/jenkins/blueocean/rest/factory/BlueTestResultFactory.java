@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.factory;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.ExtensionPoint;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.Reachable;
@@ -25,7 +26,7 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
      */
     public static final class Result {
 
-        private static final Result NOT_FOUND = new Result(null, null);
+        private static final Result NOT_FOUND = new Result(ImmutableList.<BlueTestResult>of(), null);
 
         @Nullable
         public final Iterable<BlueTestResult> results;
@@ -51,6 +52,7 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
          * @param results to report
          * @return result
          */
+        @SuppressFBWarnings(value = "SF_SWITCH_NO_DEFAULT", justification = "Its ok in this case")
         public static Result of(Iterable<BlueTestResult> results) {
             long skipped = 0;
             long passed = 0;
@@ -112,6 +114,11 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
                 summary = summary.tally(result.summary);
             }
         }
-        return summary.getTotal() == 0 ? Result.notFound() : Result.of(results, summary);
+        // Never send back an empty summary
+        if (summary.getTotal() == 0) {
+            summary = null;
+            results = null;
+        }
+        return Result.of(results, summary);
     }
 }

@@ -4,6 +4,7 @@ import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.base.Preconditions;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Cause;
 import hudson.model.Item;
 import hudson.model.TaskListener;
@@ -30,6 +31,7 @@ import jenkins.scm.api.SCMRevision;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.SCMSourceCriteria;
 import jenkins.scm.api.SCMSourceEvent;
+import jenkins.scm.api.SCMSourceOwner;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
@@ -67,6 +69,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
     }
 
     @SuppressWarnings("unchecked")
+    @SuppressFBWarnings(value = "REC_CATCH_EXCEPTION", justification = "Runtime exception is thrown from the catch block")
     @Override
     public BluePipeline create(Reachable parent) throws IOException {
         Preconditions.checkNotNull(parent, "Parent passed is null");
@@ -83,7 +86,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                 orgName = (String) scmConfig.getConfig().get("orgName");
             }
             credentialId = scmConfig.getCredentialId();
-            if (scmConfig != null && scmConfig.getConfig().get("repos") instanceof List) {
+            if (scmConfig.getConfig().get("repos") instanceof List) {
                 for (String r : (List<String>) scmConfig.getConfig().get("repos")) {
                     repos.add(r);
                 }
@@ -378,8 +381,9 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
 
         @Override
         public boolean isMatch(@Nonnull SCMSource source) {
-            return ((GitHubSCMSource)source).getRepository().equals(getSourceName()) &&
-                    source.getOwner().getFullName().equals(project.getFullName());
+            SCMSourceOwner sourceOwner = source.getOwner();
+            return ((GitHubSCMSource)source).getRepository().equals(getSourceName()) && sourceOwner != null
+                     && sourceOwner.getFullName().equals(project.getFullName());
         }
 
         @Nonnull

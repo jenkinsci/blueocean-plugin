@@ -217,7 +217,7 @@ public class GithubScmContentProvider extends ScmContentProvider {
         return null;
     }
 
-    private class ScmParamsFromItem {
+    private static class ScmParamsFromItem {
         private final String apiUrl;
         private final String owner;
         private final String repo;

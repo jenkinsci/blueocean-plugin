@@ -1,7 +1,7 @@
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
 
-import InputStep from '../InputStep';
+import InputStep from '../karaoke/components/InputStep';
 import { step } from './data/step';
 
 storiesOf('InputStep', module)

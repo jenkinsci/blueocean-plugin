@@ -1,13 +1,11 @@
-// @flow
-
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/react-material-icons';
-import { logging, TimeManager, AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { AppConfig, logging, ResultPageHeader, TimeManager } from '@jenkins-cd/blueocean-core-js';
 import { ExpandablePath, ReadableDate, TimeDuration } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
-import { ResultPageHeader } from '@jenkins-cd/blueocean-core-js';
 import { Link } from 'react-router';
 import { buildPipelineUrl } from '../util/UrlUtils';
+import RunIdCell from './RunIdCell';
 
 class RunDetailsHeader extends Component {
 
@@ -23,14 +21,14 @@ class RunDetailsHeader extends Component {
         const isRunning = () => run.isRunning() || run.isPaused() || run.isQueued();
         // we need to make sure that we calculate with the correct time offset
         const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
-        const { durationMillis } = RunDetailsHeader.timeManager.harmonizeTimes({
+        const { durationInMillis } = RunDetailsHeader.timeManager.harmonizeTimes({
             startTime: run.startTime,
             durationInMillis: run.durationInMillis,
             isRunning: isRunning(),
         }, skewMillis);
-        this.durationMillis = durationMillis;
+        this.durationInMillis = durationInMillis;
     }
-    
+
     render() {
         const {
             data: run,
@@ -51,7 +49,7 @@ class RunDetailsHeader extends Component {
         const status = run.getComputedResult().toLowerCase();
         const estimatedDurationInMillis = run.estimatedDurationInMillis;
 
-        const durationMillis = run.durationInMillis; // Duration does not skew :)
+        const durationInMillis = run.durationInMillis; // Duration does not skew :)
 
         // we need to make sure that we calculate with the correct time offset
         const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
@@ -64,7 +62,7 @@ class RunDetailsHeader extends Component {
             endTime: run.endTime,
             startTime: run.startTime,
         }, skewMillis);
-        RunDetailsHeader.logger.debug('timeq:', { startTime, endTime, durationMillis });
+        RunDetailsHeader.logger.debug('timeq:', { startTime, endTime, durationInMillis });
 
         // pipeline name
         const displayName = decodeURIComponent(run.pipeline);
@@ -88,7 +86,7 @@ class RunDetailsHeader extends Component {
                 <a className="path-link" onClick={ onNameClick }>
                     <ExpandablePath path={ fullDisplayName } hideFirst className="dark-theme" iconSize={ 20 } />
                 </a>
-                <span>&nbsp;#{ run.id }</span>
+                <span>&nbsp;<RunIdCell run={run}/></span>
             </h1>
         );
 
@@ -130,7 +128,7 @@ class RunDetailsHeader extends Component {
             <div>
                 <Icon size={ 16 } icon="timelapse" style={ { fill: '#fff' } } />
                 <TimeDuration
-                    millis={ isRunning() ? this.durationMillis : durationMillis }
+                    millis={ isRunning() ? this.durationInMillis : durationInMillis }
                     liveUpdate={ isRunning() }
                     updatePeriod={ 1000 }
                     locale={ locale }
@@ -154,6 +152,9 @@ class RunDetailsHeader extends Component {
             </div>
         );
 
+        const causeMessage = (run && run.causes.length > 0 && run.causes[0].shortDescription) || null;
+        const cause = (<div className="causes">{causeMessage}</div>);
+
         return (
             <ResultPageHeader startTime={ startTime }
                               estimatedDurationInMillis={ estimatedDurationInMillis }
@@ -172,8 +173,9 @@ class RunDetailsHeader extends Component {
                     { durationDetails }
                     { endTimeDetails }
                 </div>
-                <div className="RunDetailsHeader-authors">
+                <div className="RunDetailsHeader-messages">
                     <ChangeSetToAuthors changeSet={ changeSet } onAuthorsClick={ onAuthorsClick } t={ t } />
+                    { cause }
                 </div>
             </ResultPageHeader>
         );

@@ -7,12 +7,12 @@ import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException.BadRequestExpception;
 import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
+import io.jenkins.blueocean.rest.factory.BlueTestResultFactory.Result;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
 import io.jenkins.blueocean.rest.model.BlueTestResult.State;
 import io.jenkins.blueocean.rest.model.BlueTestResult.Status;
 import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
-import io.jenkins.blueocean.rest.factory.BlueTestResultFactory.Result;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -105,7 +105,7 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
         }
     }
 
-    class StatusPredicate implements Predicate<BlueTestResult> {
+    static class StatusPredicate implements Predicate<BlueTestResult> {
 
         private final Status status;
 

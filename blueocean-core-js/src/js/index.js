@@ -20,7 +20,6 @@ import {
 } from './services/index';
 import * as stringUtil from './stringUtil';
 import { disableMocksForI18n, enableMocksForI18n } from './i18n/i18n';
-import LiveStatusIndicator from './components/LiveStatusIndicator';
 
 // export i18n provider
 export i18nTranslator, { defaultLngDetector } from './i18n/i18n';
@@ -88,6 +87,7 @@ export { toastService as ToastService };
 
 const runApi = new RunApi();
 export { runApi as RunApi };
+export { BunkerService } from './services/BunkerService';
 
 export const pagerService = new PagerService();
 export const sseService = new SSEService(sseConnection);
@@ -100,14 +100,18 @@ sseService.registerHandler(defaultSSEhandler.handleEvents);
 
 // Export some debugging stuff client code may need
 
+import { enableMocksForI18n, disableMocksForI18n } from './i18n/i18n';
+
 export const DEBUG = {
     enableMocksForI18n,
     disableMocksForI18n,
 };
 
+export { TimeManager } from './utils/TimeManager';
 export { BunkerService } from './services/BunkerService';
-export { TimeManager } from './utils/serverBrowserTimeHarmonize';
 
+export { TimeHarmonizer, TimeHarmonizerUtil } from './components/TimeHarmonizer';
+import LiveStatusIndicator from './components/LiveStatusIndicator';
 export { TimeHarmonizer } from './components/TimeHarmonizer';
 export { LiveStatusIndicator };
 export {

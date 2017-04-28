@@ -7,11 +7,11 @@ import hudson.model.Run;
 import hudson.tasks.junit.TestResultAction;
 import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
 import io.jenkins.blueocean.rest.model.BlueTestResult.State;
 import io.jenkins.blueocean.rest.model.BlueTestResult.Status;
 import io.jenkins.blueocean.service.embedded.rest.BlueTestResultContainerImpl;
-import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import org.junit.Test;
 import org.jvnet.hudson.test.TestExtension;
 

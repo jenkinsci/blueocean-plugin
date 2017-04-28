@@ -64,7 +64,7 @@ public class BlueJUnitTestResult extends BlueTestResult {
                 state = State.REGRESSION;
                 break;
             case FIXED:
-                state = State.REGRESSION;
+                state = State.FIXED;
                 break;
             default:
                 state = State.UNKNOWN;

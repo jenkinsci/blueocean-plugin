@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.factory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Item;
@@ -68,6 +69,7 @@ public abstract class BluePipelineFactory implements ExtensionPoint {
     /**
      * Returns the immediate child of 'context' that is also the ancestor of 'target'
      */
+    @SuppressFBWarnings(value = "EC_UNRELATED_TYPES_USING_POINTER_EQUALITY", justification = "Folder/MBP etc. are Item and ItemGroup")
     protected static Item findNextStep(ItemGroup context, Item target) {
         Item i = null;
         while (context!=target) {

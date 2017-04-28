@@ -11,7 +11,7 @@ import {
     paginateUrl,
 } from '../util/UrlUtils';
 import findAndUpdate from '../util/find-and-update';
-import { Fetch, FetchFunctions } from '@jenkins-cd/blueocean-core-js';
+import { Fetch, FetchFunctions, AppConfig } from '@jenkins-cd/blueocean-core-js';
 const debugLog = require('debug')('blueocean-actions-js:debug');
 
 /**
@@ -34,6 +34,7 @@ function _mapQueueToPsuedoRun(run) {
             enQueueTime: run.queuedTime,
             organization: run.organization,
             changeSet: [],
+            causeOfBlockage: run.causeOfBlockage,
             _item: run,
         };
     }
@@ -287,8 +288,9 @@ export const actions = {
     fetchAllPipelines() {
         return (dispatch) => {
             // Note: this is including folders, which we can't deal with, so exclude them with the ?filter=no-folders
+            const organization = AppConfig.getOrganizationName();
             const url =
-                `${UrlConfig.getRestRoot()}/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
+                `${UrlConfig.getRestRoot()}/search/?q=type:pipeline;organization:${organization};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
             return paginate({ urlProvider: paginateUrl(url) })
             .then(data => {
                 dispatch({

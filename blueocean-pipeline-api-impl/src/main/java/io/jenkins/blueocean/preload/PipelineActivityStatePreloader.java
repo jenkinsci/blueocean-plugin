@@ -30,6 +30,7 @@ import io.jenkins.blueocean.commons.RESTFetchPreloader;
 import io.jenkins.blueocean.commons.stapler.Export;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
 import jenkins.model.Jenkins;
@@ -62,8 +63,8 @@ public class PipelineActivityStatePreloader extends RESTFetchPreloader {
             // It's a pipeline page. Let's prefetch the pipeline activity and add them to the page,
             // saving the frontend the overhead of requesting them.
 
-            Container<Resource> activitiesContainer = pipeline.getActivities();
-            Iterator<Resource> activitiesIterator = activitiesContainer.iterator(0, DEFAULT_LIMIT);
+            Container<BlueRun> activitiesContainer = pipeline.getRuns();
+            Iterator<BlueRun> activitiesIterator = activitiesContainer.iterator(0, DEFAULT_LIMIT);
             JSONArray activities = new JSONArray();
 
             while(activitiesIterator.hasNext()) {
