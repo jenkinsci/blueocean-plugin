@@ -13,6 +13,7 @@ import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
 import { CellLink, CellRow } from './CellLink';
+import RunMessageCell from './RunMessageCell';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.Runs');
 /*
@@ -60,9 +61,6 @@ export class Runs extends Component {
             router.push(location);
         };
 
-        // If there is no changeset, show the first cause otherwise show nothing (-)
-        const message = changeset && changeset.msg || (run.causes.length > 0 && run.causes[0].shortDescription) || '-';
-
         return (
         <CellRow id={`${pipeline.name}-${run.id}`} linkUrl={runDetailsUrl}>
             <CellLink>
@@ -78,7 +76,7 @@ export class Runs extends Component {
             <IfCapability className={pipeline._class} capability={MULTIBRANCH_PIPELINE} >
                 <CellLink linkUrl={runDetailsUrl}>{decodeURIComponent(run.pipeline)}</CellLink>
             </IfCapability>
-            <CellLink>{message}</CellLink>
+            <CellLink><RunMessageCell run={run} /></CellLink>
             <CellLink>
                 <TimeDuration
                   millis={durationInMillis}
