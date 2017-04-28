@@ -5,7 +5,7 @@ import {
     logging,
     ReplayButton,
     RunButton,
-    TimeHarmonizer as timeHarmonizer,
+    TimeHarmonizer as timeHarmonizer
 } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
@@ -14,6 +14,7 @@ import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
 import { CellLink, CellRow } from './CellLink';
 import RunMessageCell from './RunMessageCell';
+import RunIdCell from './RunIdCell';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.Runs');
 /*
@@ -71,7 +72,7 @@ export class Runs extends Component {
                   estimatedDuration={run.estimatedDurationInMillis}
                 />
             </CellLink>
-            <CellLink>{run.id}</CellLink>
+            <CellLink><RunIdCell run={run} /></CellLink>
             <CellLink><CommitHash commitId={run.commitId} /></CellLink>
             <IfCapability className={pipeline._class} capability={MULTIBRANCH_PIPELINE} >
                 <CellLink linkUrl={runDetailsUrl}>{decodeURIComponent(run.pipeline)}</CellLink>

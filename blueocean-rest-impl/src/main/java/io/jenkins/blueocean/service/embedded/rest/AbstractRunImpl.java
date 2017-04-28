@@ -78,6 +78,18 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
+    public String getName() {
+        String defaultName = "#"+run.getNumber();
+        String displayName = run.getDisplayName();
+        return defaultName.equals(displayName) ? null : displayName;
+    }
+
+    @Override
+    public String getDescription() {
+        return run.getDescription();
+    }
+
+    @Override
     public Date getStartTime() {
         return new Date(run.getStartTimeInMillis());
     }

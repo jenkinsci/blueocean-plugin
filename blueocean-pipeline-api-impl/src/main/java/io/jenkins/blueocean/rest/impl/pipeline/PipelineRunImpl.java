@@ -48,15 +48,9 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW
  */
 @Capability(JENKINS_WORKFLOW_RUN)
 public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
-    public static final String CAUSE_OF_BLOCKAGE = "causeOfBlockage";
     private static final Logger logger = LoggerFactory.getLogger(PipelineRunImpl.class);
     public PipelineRunImpl(WorkflowRun run, Link parent) {
         super(run, parent);
-    }
-
-    @Exported(name = "description")
-    public String getDescription() {
-        return run.getDescription();
     }
 
     @Exported(name = Branch.BRANCH, inline = true)

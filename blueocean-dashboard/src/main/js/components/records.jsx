@@ -79,6 +79,7 @@ export class RunRecord extends Record({
     enQueueTime: null,
     endTime: null,
     estimatedDurationInMillis: null,
+    name: null,
     description: null,
     id: null,
     organization: null,
