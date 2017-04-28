@@ -182,11 +182,6 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     }
 
     @Override
-    public String getLastSuccessfulRun() {
-        return null;
-    }
-
-    @Override
     @Navigable
     public BluePipelineContainer getBranches() {
         return new BranchContainerImpl(this, getLink().rel("branches"));
