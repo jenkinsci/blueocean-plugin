@@ -119,7 +119,7 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
         }
     }
 
-    class StatePredicate implements Predicate<BlueTestResult> {
+    static class StatePredicate implements Predicate<BlueTestResult> {
         private final State state;
 
         StatePredicate(State state) {
