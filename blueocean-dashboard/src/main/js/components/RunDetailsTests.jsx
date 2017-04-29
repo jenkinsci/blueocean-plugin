@@ -42,7 +42,7 @@ NoTestsPlaceholder.propTypes = {
  */
 export class RunDetailsTests extends Component {
 
-    componentDidMount() {
+    componentWillMount() {
         this.testService = new TestService(pagerService);
     }
 
