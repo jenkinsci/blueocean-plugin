@@ -27,7 +27,7 @@ describe('Branches should render', () => {
         expect(hash).to.have.length(1);
         assert.equal(hash.text(), '09794ca');
 
-        const message = wrapper.find('.message');
+        const message = wrapper.find('.RunMessageCell');
         expect(message).to.have.length(1);
         assert.equal(message.text(), 'Update Jenkinsfile ');
     });
