@@ -8,7 +8,6 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueUser;
-import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 import java.io.IOException;
@@ -28,9 +27,9 @@ import java.util.Collection;
 @ExportedBean
 public class ChangeSetResource extends BlueChangeSetEntry {
     private final ChangeLogSet.Entry changeSet;
-    private final Link parent;
+    private final Reachable parent;
 
-    public ChangeSetResource(Entry changeSet, Link parent) {
+    public ChangeSetResource(Entry changeSet, Reachable parent) {
         this.changeSet = changeSet;
         this.parent = parent;
     }
@@ -82,6 +81,6 @@ public class ChangeSetResource extends BlueChangeSetEntry {
 
     @Override
     public Link getLink() {
-        return parent.rel("changeset/"+getCommitId());
+        return parent.getLink().rel("changeset/"+getCommitId());
     }
 }
