@@ -20,7 +20,6 @@ export default class TestCaseResultRow extends Component {
     }
 
     render() {
-        console.log('row render');
         const { testCase: t, translation, locale = 'en', testService } = this.props;
         moment.locale(locale);
         const duration = moment.duration(Number(t.duration), 'milliseconds').humanize();

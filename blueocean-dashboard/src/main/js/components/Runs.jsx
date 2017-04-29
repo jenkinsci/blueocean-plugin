@@ -5,7 +5,7 @@ import {
     logging,
     ReplayButton,
     RunButton,
-    TimeHarmonizer as timeHarmonizer,
+    TimeHarmonizer as timeHarmonizer
 } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
@@ -33,7 +33,7 @@ export class Runs extends Component {
         }
         const { router, location } = this.context;
 
-        const { run, changeset, pipeline, t, locale, getTimes } = this.props;
+        const { run, pipeline, t, locale, getTimes } = this.props;
 
         const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
         const isRunning = () => run.state === 'RUNNING' || run.state === 'PAUSED' || run.state === 'QUEUED';
@@ -121,7 +121,6 @@ Runs.propTypes = {
     result: any.isRequired, // FIXME: create a shape
     data: string,
     locale: string,
-    changeset: object.isRequired,
     t: func,
     getTimes: func,
 };
