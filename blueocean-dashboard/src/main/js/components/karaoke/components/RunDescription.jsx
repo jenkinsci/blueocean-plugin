@@ -16,5 +16,5 @@ export default class RunDescription extends Component {
                 <Alerts title={this.props.t('rundetail.pipeline.description')} message={this.props.run.description} />
             </div>
         );
-    };
+    }
 }
