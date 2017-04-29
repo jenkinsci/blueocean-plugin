@@ -58,7 +58,7 @@ export default class TestCaseResultRow extends Component {
         };
 
         this.stdout = this.logService.getStdOut(t);
-        this.stderr = testService.testLogs().getStdErr(t);
+        this.stderr = this.logService.getStdErr(t);
 
         const testDetails = showTestCase ?
             <TestDetails
