@@ -48,17 +48,22 @@ export class RunDetailsTests extends Component {
 
     render() {
         const { t, locale } = this.props;
-        return (
-            <div className="test-results-container">
-                <TestResults
-                    locale={locale}
-                    t={t}
-                    pipeline={this.props.pipeline}
-                    run={this.props.result}
-                    testService={this.testService}
-                />
-            </div>
-        );
+
+        if (this.props.pipeline.testSummary) {
+            return (
+                <div className="test-results-container">
+                    <TestResults
+                        locale={locale}
+                        t={t}
+                        pipeline={this.props.pipeline}
+                        run={this.props.result}
+                        testService={this.testService}
+                    />
+                </div>
+            );
+        } else {
+            return <NoTestsPlaceholder t={this.props.t} />
+        }
     }
 }
 
