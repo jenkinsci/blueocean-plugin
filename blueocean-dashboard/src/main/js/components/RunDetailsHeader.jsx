@@ -86,7 +86,7 @@ class RunDetailsHeader extends Component {
                 <a className="path-link" onClick={ onNameClick }>
                     <ExpandablePath path={ fullDisplayName } hideFirst className="dark-theme" iconSize={ 20 } />
                 </a>
-                <span>&nbsp;<RunIdCell run={run}/></span>
+                <span>&nbsp;<RunIdCell run={run} /></span>
             </h1>
         );
 

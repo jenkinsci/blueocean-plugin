@@ -7,6 +7,8 @@ import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.verb.GET;
 
+import static hudson.Util.rawEncode;
+
 public abstract class BlueTestResult extends Resource {
 
     public static final String STATUS = "status";
@@ -50,7 +52,7 @@ public abstract class BlueTestResult extends Resource {
 
     @Exported(name = ID)
     public final String getId() {
-        return Util.rawEncode(this.getClass().getName()) + ":" + Util.rawEncode(getUniqueId());
+        return rawEncode(this.getClass().getName()) + ":" + rawEncode(getUniqueId());
     }
 
     @Exported(name = AGE)
@@ -79,6 +81,6 @@ public abstract class BlueTestResult extends Resource {
 
     @Override
     public Link getLink() {
-        return parent.rel("tests/" + Util.rawEncode(getId()));
+        return parent.rel("tests/" + rawEncode(getId()));
     }
 }

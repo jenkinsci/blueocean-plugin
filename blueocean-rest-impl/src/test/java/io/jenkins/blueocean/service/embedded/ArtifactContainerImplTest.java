@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.service.embedded;
 
 
-import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Run;
 import hudson.tasks.ArtifactArchiver;
