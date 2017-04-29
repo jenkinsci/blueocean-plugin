@@ -32,7 +32,7 @@ export default class RunDetailsTests extends Component {
         const { t, locale } = this.props;
 
         let result;
-        if (this.props.result.testSummary) {
+        if (this.props.result.testSummary.total || this.props.result.testSummary.total > 0) {
             result = (
                 <div className="test-results-container">
                     <TestResults
