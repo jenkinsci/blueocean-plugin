@@ -13,43 +13,41 @@ export default class TestLogService extends BunkerService {
     loadStdOut(test) {
         if (this.hasItem(test)) return;
         Fetch.fetch(test._links.stdout.href)
-            .then(res => res.text())
+            .then(res => res.text(), (e) => {
+                if (e.response.status === 404) {
+                    this.setItem(new Item(test, null, true));
+                }
+            })
             .then((data) => {
                 this.setItem(new Item(test, data, true));
-            })
-            .catch(TestLogService.ignoreNotFound);
+            });
     }
 
     loadStdErr(test) {
         if (this.hasItem(test)) return;
         Fetch.fetch(test._links.stderr.href)
-            .then(res => res.text())
+            .then(res => res.text(), (e) => {
+                if (e.response.status === 404) {
+                    this.setItem(new Item(test, null, false));
+                }
+            })
             .then((data) => {
                 this.setItem(new Item(test, data, false));
-            })
-            .catch(TestLogService.ignoreNotFound);
+            });
     }
 
     getStdOut(test) {
-        console.log('get out');
         const item = this.getItem(test._links.stdout.href);
-        return item && item.value && item.value.log;
+        return item && item.value;
     }
 
     getStdErr(test) {
-        console.log('get err');
         const item = this.getItem(test._links.stderr.href);
-        return item && item.value && item.value.log;
+        return item && item.value;
     }
 
     bunkerKey(data) {
         const links = data.value.test._links;
         return data.value.isStdOut ? links.stdout.href : links.stderr.href;
-    }
-
-    static ignoreNotFound(e) {
-        if (e.response.status !== 404) {
-            throw e;
-        }
     }
 }

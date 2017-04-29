@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.Extension;
 import hudson.model.Queue;
+import hudson.model.Result;
 import hudson.model.Run;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
@@ -68,19 +69,18 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         return PullRequest.get(run.getParent());
     }
 
+    /**
+     * @return all changeSets since the last successful run
+     */
     @Override
     public Container<BlueChangeSetEntry> getChangeSet() {
-        Map<String, BlueChangeSetEntry> m = new LinkedHashMap<>();
-        int cnt = 0;
-        for (ChangeLogSet<? extends Entry> cs : run.getChangeSets()) {
-            for (ChangeLogSet.Entry e : cs) {
-                cnt++;
-                String id = e.getCommitId();
-                if (id == null) id = String.valueOf(cnt);
-                m.put(id, new ChangeSetResource(e, this));
-            }
+        LinkedHashMap<String, BlueChangeSetEntry> changeSets = new LinkedHashMap<>();
+        collectChangeSetEntries(changeSets, run);
+        WorkflowRun previousRun = this.run;
+        while (meetRequirements((previousRun = previousRun.getPreviousBuild()))) {
+            collectChangeSetEntries(changeSets, previousRun);
         }
-        return Containers.fromResourceMap(getLink(),m);
+        return Containers.fromResourceMap(getLink(),changeSets);
     }
 
     @Override
@@ -181,6 +181,30 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
             }
         }
         return null;
+    }
+
+    /**
+     * @param changeSets to populate
+     * @param run to collect changesets from
+     */
+    private void collectChangeSetEntries(LinkedHashMap<String, BlueChangeSetEntry> changeSets, WorkflowRun run) {
+        int cnt = 0;
+        for (ChangeLogSet<? extends Entry> cs : run.getChangeSets()) {
+            for (Entry e : cs) {
+                cnt++;
+                String id = e.getCommitId();
+                if (id == null) id = String.valueOf(cnt);
+                changeSets.put(id, new ChangeSetResource(e, getLink(run.getId())));
+            }
+        }
+    }
+
+    /**
+     * @param run to test
+     * @return runs that are not null and not successful
+     */
+    private static boolean meetRequirements(WorkflowRun run) {
+        return run != null && run.getResult() != Result.SUCCESS;
     }
 
     @Extension(ordinal = 1)

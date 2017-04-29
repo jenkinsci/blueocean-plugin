@@ -17,6 +17,7 @@ import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
+import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -270,10 +271,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public Link getLink() {
-        if(parent == null){
-            return org.getLink().rel(String.format("pipelines/%s/runs/%s", run.getParent().getName(), getId()));
-        }
-        return parent.rel("runs/"+getId());
+        return getLink(getId());
     }
 
     private boolean isCompletedOrAborted(){
@@ -284,6 +282,17 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public Links getLinks() {
         return super.getLinks().add("parent", parent);
+    }
+
+    /**
+     * @param id
+     * @return
+     */
+    protected Link getLink(String id) {
+        if(parent == null){
+            return org.getLink().rel(String.format("pipelines/%s/runs/%s", run.getParent().getName(), id));
+        }
+        return parent.rel("runs/"+getId());
     }
 
     public static class BlueCauseImpl extends BlueCause {

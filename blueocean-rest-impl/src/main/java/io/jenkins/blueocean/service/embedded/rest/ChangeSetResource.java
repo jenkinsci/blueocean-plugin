@@ -28,9 +28,9 @@ import java.util.Collection;
 @ExportedBean
 public class ChangeSetResource extends BlueChangeSetEntry {
     private final ChangeLogSet.Entry changeSet;
-    private final Reachable parent;
+    private final Link parent;
 
-    public ChangeSetResource(Entry changeSet, Reachable parent) {
+    public ChangeSetResource(Entry changeSet, Link parent) {
         this.changeSet = changeSet;
         this.parent = parent;
     }
@@ -82,6 +82,6 @@ public class ChangeSetResource extends BlueChangeSetEntry {
 
     @Override
     public Link getLink() {
-        return parent.getLink().rel("changeset/"+getCommitId());
+        return parent.rel("changeset/"+getCommitId());
     }
 }

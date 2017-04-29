@@ -3,6 +3,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import hudson.model.FreeStyleProject;
 import hudson.model.Label;
 import hudson.model.Queue;
+import hudson.model.Result;
 import hudson.model.Run;
 import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
@@ -37,6 +38,57 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         super.setup();
         sampleRepo.init();
     }
+
+    @Test
+    public void testWorkflowChangeSets() throws Exception {
+        sampleRepo.write("Jenkinsfile", "node { echo 'hello world' }");
+        sampleRepo.git("add", "Jenkinsfile");
+        sampleRepo.git("commit", "--message=init");
+
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+            new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+
+        mp.scheduleBuild2(0).getFuture().get();
+        WorkflowJob job = mp.getItem("master");
+
+        WorkflowRun run = runAndWait(job);
+        j.assertBuildStatusSuccess(run);
+
+        sampleRepo.write("Jenkinsfile", "foo");
+        sampleRepo.git("commit", "-a", "-m \"bad commit 1\"");
+
+        run = runAndWait(job);
+        j.assertBuildStatus(Result.FAILURE, run);
+
+        sampleRepo.write("Jenkinsfile", "bar");
+        sampleRepo.git("commit", "-a", "-m \"bad commit 2\"");
+
+        run = runAndWait(job);
+        j.assertBuildStatus(Result.FAILURE, run);
+
+        sampleRepo.write("Jenkinsfile", "node { echo 'hello world' }");
+        sampleRepo.git("commit", "-a", "-m \"bad commit 2\"");
+
+        run = runAndWait(job);
+        j.assertBuildStatusSuccess(run);
+
+        Map r = request().get("/organizations/jenkins/pipelines/p/branches/master/runs/"+run.getId()+"/").build(Map.class);
+        PipelineRunImpl pipelineRun = new PipelineRunImpl(run, null);
+        pipelineRun.getChangeSet();
+        assertEquals(pipelineRun.getCommitId(), r.get("commitId"));
+    }
+
+    private WorkflowRun runAndWait(WorkflowJob job1) throws InterruptedException, java.util.concurrent.ExecutionException {
+        WorkflowRun b1 = job1.scheduleBuild2(0).waitForStart();
+        j.waitForCompletion(b1);
+        return b1;
+    }
+
     //Disabled, see JENKINS-36453
     //@Test
     public void replayRunTest() throws Exception {
@@ -96,8 +148,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
         mp.scheduleBuild2(0).getFuture().get();
         WorkflowJob job1 = mp.getItem("master");
-        WorkflowRun b1 = job1.scheduleBuild2(0).waitForStart();
-        j.waitForCompletion(b1);
+        WorkflowRun b1 = runAndWait(job1);
         j.assertBuildStatusSuccess(b1);
 
         sampleRepo.write("file1", "");

@@ -15,6 +15,8 @@ export default class TestCaseResultRow extends Component {
     };
 
     componentWillMount() {
+        this.stdout = null;
+        this.stderr = null;
         this.setState({ isFocused: false, attemptedFetchForStdOutStdErr: false });
         this.logService = this.props.testService.testLogs();
     }
@@ -44,18 +46,28 @@ export default class TestCaseResultRow extends Component {
             if (!t._links) {
                 return;
             }
-            this.logService.loadStdOut(t);
-            this.logService.loadStdErr(t);
+            if (!this.stdout) {
+                this.logService.loadStdOut(t);
+            }
+            if (!this.stderr) {
+                this.logService.loadStdErr(t);
+            }
         };
         const onCollapse = () => {
             this.setState({ isFocused: false });
         };
 
-        const stdout = this.logService.getStdOut(t);
-        const stderr = testService.testLogs().getStdErr(t);
+        this.stdout = this.logService.getStdOut(t);
+        this.stderr = testService.testLogs().getStdErr(t);
 
         const testDetails = showTestCase ?
-            <TestDetails test={ t } duration={ duration } stdout={ stdout } stderr={ stderr } translation={ translation } /> : null;
+            <TestDetails
+                test={ t }
+                duration={ duration }
+                stdout={ this.stdout && this.stdout.log ? this.stdout.log : null }
+                stderr={ this.stderr && this.stderr.log ? this.stderr.log : null }
+                translation={ translation }
+            /> : null;
         return (
             <ResultItem
                 result={ statusIndicator }
