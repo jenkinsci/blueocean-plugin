@@ -22,8 +22,10 @@ public class BranchContainerImpl extends BluePipelineContainer {
 
 
     /**
-     * Orders branches with most recent activity first. Favorited branches are always at the top, also in recent
-     * order.
+     * Orders by:
+     * - Default branch
+     * - Favourites ordered by last run time
+     * - All other branches ordered by last run time
      */
     private static final Comparator<BluePipeline> BRANCH_COMPARITOR = new Comparator<BluePipeline>() {
         @Override
