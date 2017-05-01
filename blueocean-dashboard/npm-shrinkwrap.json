@@ -3,14 +3,14 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.109",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.109",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.109.tgz"
+      "version": "0.0.109-SNAPSHOT-ivan",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.109-SNAPSHOT-ivan",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.109-SNAPSHOT-ivan.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.127",
-      "from": "@jenkins-cd/design-language@0.0.127",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.127.tgz"
+      "version": "0.0.128-SNAPSHOT-ivan1",
+      "from": "@jenkins-cd/design-language@0.0.128-SNAPSHOT-ivan1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.128-SNAPSHOT-ivan1.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -24,6 +24,12 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.56.tgz",
       "dev": true,
       "dependencies": {
+        "gulp-runner": {
+          "version": "1.0.1",
+          "from": "gulp-runner@>=1.0.0 <2.0.0",
+          "resolved": "https://registry.npmjs.org/gulp-runner/-/gulp-runner-1.0.1.tgz",
+          "dev": true
+        },
         "underscore.string": {
           "version": "3.3.4",
           "from": "underscore.string@3.3.4",
@@ -4064,12 +4070,6 @@
       "resolved": "https://registry.npmjs.org/gulp-mocha/-/gulp-mocha-3.0.1.tgz",
       "dev": true
     },
-    "gulp-runner": {
-      "version": "0.1.4",
-      "from": "gulp-runner@>=0.1.4 <0.2.0",
-      "resolved": "https://registry.npmjs.org/gulp-runner/-/gulp-runner-0.1.4.tgz",
-      "dev": true
-    },
     "gulp-util": {
       "version": "3.0.7",
       "from": "gulp-util@>=3.0.6 <4.0.0",
@@ -4326,7 +4326,7 @@
     },
     "inherits": {
       "version": "2.0.3",
-      "from": "inherits@>=2.0.0 <3.0.0",
+      "from": "inherits@>=2.0.1 <2.1.0",
       "resolved": "https://registry.npmjs.org/inherits/-/inherits-2.0.3.tgz"
     },
     "ini": {
@@ -4700,7 +4700,7 @@
     },
     "js-yaml": {
       "version": "3.7.0",
-      "from": "js-yaml@>=3.6.0 <4.0.0",
+      "from": "js-yaml@>=3.5.1 <4.0.0",
       "resolved": "https://registry.npmjs.org/js-yaml/-/js-yaml-3.7.0.tgz"
     },
     "jsbn": {
@@ -5618,7 +5618,7 @@
     },
     "minimatch": {
       "version": "3.0.3",
-      "from": "minimatch@>=2.0.0 <3.0.0||>=3.0.0 <4.0.0",
+      "from": "minimatch@>=3.0.2 <4.0.0",
       "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.3.tgz"
     },
     "minimist": {
@@ -5704,7 +5704,7 @@
     },
     "ms": {
       "version": "0.7.2",
-      "from": "ms@>=0.7.1 <0.8.0",
+      "from": "ms@0.7.2",
       "resolved": "https://registry.npmjs.org/ms/-/ms-0.7.2.tgz"
     },
     "multimatch": {
@@ -5956,7 +5956,7 @@
     },
     "object-assign": {
       "version": "4.1.0",
-      "from": "object-assign@>=4.1.0 <5.0.0",
+      "from": "object-assign@>=4.0.1 <5.0.0",
       "resolved": "https://registry.npmjs.org/object-assign/-/object-assign-4.1.0.tgz"
     },
     "object-inspect": {
@@ -7663,7 +7663,7 @@
     },
     "through": {
       "version": "2.3.8",
-      "from": "through@>=2.3.4 <2.4.0",
+      "from": "through@>=2.3.6 <3.0.0",
       "resolved": "https://registry.npmjs.org/through/-/through-2.3.8.tgz"
     },
     "through2": {
@@ -8345,7 +8345,7 @@
     },
     "xtend": {
       "version": "4.0.1",
-      "from": "xtend@>=4.0.1 <5.0.0",
+      "from": "xtend@>=4.0.0 <5.0.0",
       "resolved": "https://registry.npmjs.org/xtend/-/xtend-4.0.1.tgz"
     },
     "yargs": {
