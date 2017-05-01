@@ -80,12 +80,6 @@ public abstract class BluePipelineFolder extends BluePipeline {
 
     @Override
     @Exported(skipNull = true)
-    public String getLastSuccessfulRun() {
-        return null;
-    }
-
-    @Override
-    @Exported(skipNull = true)
     public Long getEstimatedDurationInMillis() {
         return null;
     }

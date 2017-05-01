@@ -1,15 +1,20 @@
 import React, { Component, PropTypes } from 'react';
+import { CommitHash, ReadableDate, TimeDuration } from '@jenkins-cd/design-language';
 import {
-    CommitHash, ReadableDate, TimeDuration,
-}
-    from '@jenkins-cd/design-language';
-import { logging, ReplayButton, RunButton, LiveStatusIndicator, TimeHarmonizer as timeHarmonizer } from '@jenkins-cd/blueocean-core-js';
+    LiveStatusIndicator,
+    logging,
+    ReplayButton,
+    RunButton,
+    TimeHarmonizer as timeHarmonizer,
+} from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
-import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
-import { CellRow, CellLink } from './CellLink';
+import { CellLink, CellRow } from './CellLink';
+import RunMessageCell from './RunMessageCell';
+import RunIdCell from './RunIdCell';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.Runs');
 /*
@@ -28,12 +33,12 @@ export class Runs extends Component {
         }
         const { router, location } = this.context;
 
-        const { run, changeset, pipeline, t, locale, getTimes } = this.props;
+        const { run, pipeline, t, locale, getTimes } = this.props;
 
         const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
         const isRunning = () => run.state === 'RUNNING' || run.state === 'PAUSED' || run.state === 'QUEUED';
         const {
-            durationMillis,
+            durationInMillis,
             endTime,
             startTime,
         } = getTimes({
@@ -44,7 +49,7 @@ export class Runs extends Component {
         });
         logger.warn('time:', {
             runDuration: run,
-            durationMillis,
+            durationInMillis,
             endTime,
             startTime,
             isRunning: isRunning(),
@@ -61,21 +66,21 @@ export class Runs extends Component {
         <CellRow id={`${pipeline.name}-${run.id}`} linkUrl={runDetailsUrl}>
             <CellLink>
                 <LiveStatusIndicator
-                  durationInMillis={durationMillis}
+                  durationInMillis={durationInMillis}
                   result={resultRun}
                   startTime={startTime}
                   estimatedDuration={run.estimatedDurationInMillis}
                 />
             </CellLink>
-            <CellLink>{run.id}</CellLink>
+            <CellLink><RunIdCell run={run} /></CellLink>
             <CellLink><CommitHash commitId={run.commitId} /></CellLink>
             <IfCapability className={pipeline._class} capability={MULTIBRANCH_PIPELINE} >
                 <CellLink linkUrl={runDetailsUrl}>{decodeURIComponent(run.pipeline)}</CellLink>
             </IfCapability>
-            <CellLink>{changeset && changeset.msg || '-'}</CellLink>
+            <CellLink><RunMessageCell run={run} /></CellLink>
             <CellLink>
                 <TimeDuration
-                  millis={durationMillis}
+                  millis={durationInMillis}
                   updatePeriod={1000}
                   liveUpdate={isRunning()}
                   locale={locale}
@@ -101,10 +106,7 @@ export class Runs extends Component {
                   latestRun={this.props.run}
                   buttonType="stop-only"
                 />
-                { /* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */ }
-                <IfCapability className={pipeline._class} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
-                    <ReplayButton className="icon-button" runnable={pipeline} latestRun={run} onNavigation={openRunDetails} />
-                </IfCapability>
+                <ReplayButton className="icon-button" runnable={pipeline} latestRun={run} onNavigation={openRunDetails} />
             </td>
         </CellRow>
         );
@@ -119,7 +121,6 @@ Runs.propTypes = {
     result: any.isRequired, // FIXME: create a shape
     data: string,
     locale: string,
-    changeset: object.isRequired,
     t: func,
     getTimes: func,
 };

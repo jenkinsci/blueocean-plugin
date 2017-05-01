@@ -35,6 +35,7 @@ exports.bundle = function() {
             extensionsJSON.hpiPluginId = maven.getArtifactId();
         }
 
+        // TODO: Hmmm this should prob be extending the `i18nBundles` if it already exists.
         if (!extensionsJSON.i18nBundles) {
             extensionsJSON.i18nBundles = findI18nBundles();
         }

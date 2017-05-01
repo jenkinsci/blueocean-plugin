@@ -1,152 +1,221 @@
 import { prepareMount } from './util/EnzymeUtils';
-prepareMount();
-
 import React from 'react';
 import { assert } from 'chai';
-import { shallow, mount } from 'enzyme';
+import { mount } from 'enzyme';
 
 import TestResults from '../../main/js/components/testing/TestResults.jsx';
 
 import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+prepareMount();
 
 const t = i18nTranslator('blueocean-dashboard');
 
-describe("TestResults", () => {
-    const testResults1 = {
-        "_class": "hudson.tasks.junit.TestResult",
-        "duration": 0.008,
-        "empty": false,
-        "failCount": 4,
-        "passCount": 9,
-        "skipCount": 3,
-        "suites": [
-            {
-                "cases": [
-                    { "age": 0, "className": "failure.TestThisWillFailAbunch", "duration": 0.002, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest3", "skipped": false, "skippedMessage": null, "status": "PASSED", "stderr": null, "stdout": null },
-                    { "age": 0, "className": "failure.TestThisWillFailAbunch", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest4", "skipped": false, "skippedMessage": null, "status": "PASSED", "stderr": null, "stdout": null },
-                    { "age": 4, "className": "failure.TestThisWillFailAbunch", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 7, "name": "aFailingTest2", "skipped": true, "skippedMessage": null, "status": "SKIPPED", "stderr": null, "stdout": null },
-                    { "age": 4, "className": "failure.TestThisWillFailAbunch", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 7, "name": "aFailingTest3", "skipped": true, "skippedMessage": null, "status": "SKIPPED", "stderr": null, "stdout": null },
-                    { "age": 0, "className": "failure.TestThisWillFailAbunch", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aFailingTest4", "skipped": false, "skippedMessage": null, "status": "FIXED", "stderr": null, "stdout": null },
-                    { "age": 1, "className": "failure.TestThisWillFailAbunch", "duration": 0.003, "errorDetails": "<some exception here>", "failedSince": 7, "name": "aFailingTest", "skipped": false, "skippedMessage": null, "status": "FAILED", "stderr": null, "stdout": null },
-                    { "age": 4, "className": "failure.TestThisWillFailAbunch", "duration": 0.001, "errorDetails": null, "errorStackTrace": null, "failedSince": 7, "name": "aNewFailingTest31", "skipped": true, "skippedMessage": null, "status": "SKIPPED", "stderr": null, "stdout": null }
-                ],
-                "duration": 0.008,
-                "id": null,
-                "name": "failure.TestThisWillFailAbunch",
-                "stderr": null,
-                "stdout": null,
-                "timestamp": null
-            },
-            {
-                "cases": [
-                    { "age": 0, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest2", "skipped": false, "skippedMessage": null, "status": "PASSED", "stderr": null, "stdout": null },
-                    { "age": 0, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest3", "skipped": false, "skippedMessage": null, "status": "PASSED", "stderr": null, "stdout": null },
-                    { "age": 0, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest4", "skipped": false, "skippedMessage": null, "status": "PASSED", "stderr": null, "stdout": null },
-                    { "age": 4, "className": "failure.TestThisWillFailAbunch", "duration": 0.003, "errorDetails": "<some exception here>", "failedSince": 7, "name": "aFailingTest", "skipped": false, "skippedMessage": null, "status": "FAILED", "stderr": null, "stdout": null },
-                    { "age": 4, "className": "failure.TestThisWillFailAbunch", "duration": 0.003, "errorDetails": "<some exception here>", "failedSince": 7, "name": "aFailingTest", "skipped": false, "skippedMessage": null, "status": "FAILED", "stderr": null, "stdout": null },
-                ],
-                "duration": 0,
-                "id": null,
-                "name": "failure.TestThisWontFail",
-                "stderr": null,
-                "stdout": null,
-                "timestamp": null
-            }
-        ]
+describe('TestResults', () => {
+
+    const pipeline = {
+        organization: 'myteam'
     };
 
-    it("Test fixed included", () => {
-        let wrapper = shallow(<TestResults t={t} testResults={testResults1} />);
+    class MockTestService {
 
-        const fixed = wrapper.find('.new-passed .count').text();
-        assert.equal(fixed, 1);
+        constructor({regressions, existingFailed, skipped, fixed}) {
+            this.regressions = regressions || [];
+            this.existingfailed = existingFailed || [];
+            this.skipped = skipped || [];
+            this.fixed = fixed || [];
+        }
 
-        const failed = wrapper.find('.failed .count').text();
-        assert.equal(failed, 4);
+        newRegressionsPager(pipeline, run) {
+            return {
+                data: this.regressions
+            };
+        }
 
-        const skipped = wrapper.find('.skipped .count').text();
-        assert.equal(skipped, 3);
+        newExistingFailedPager(pipeline, run) {
+            return {
+                data: this.existingfailed
+            };
+        }
 
-        const newFailed = wrapper.find('.new-failed .count').text();
-        assert.equal(newFailed, 1);
-    });
+        newSkippedPager(pipeline, run) {
+            return {
+                data: this.skipped
+            };
+        }
 
-    it("Handles REGRESSION case", () => {
-        var failures = {
-            "_class": "hudson.tasks.junit.TestResult",
-            "duration": 0.008, "empty": false, "failCount": 3, "passCount": 0, "skipCount": 0, "suites": [
-                {
-                    "duration": 0, "id": null, "name": "failure.TestThisWontFail", "stderr": null, "stdout": null, "timestamp": null, "cases": [
-                        { "age": 5, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest2", "skipped": false, "skippedMessage": null, "status": "FAILED", "stderr": null, "stdout": null },
-                        { "age": 2, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest3", "skipped": false, "skippedMessage": null, "status": "REGRESSION", "stderr": null, "stdout": null },
-                        { "age": 1, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest4", "skipped": false, "skippedMessage": null, "status": "FAILED", "stderr": null, "stdout": null },
-                    ],
-                }]
+        newFixedPager(pipeline, run) {
+            return {
+                data: this.fixed
+            };
+        }
+
+        testLogs() {
+            return {
+                loadStdOut: () => {},
+                loadStdErr: () => {},
+                getStdOut: () => { return null; },
+                getStdErr: () => { return null; },
+            }
+        }
+    }
+
+    it('Test fixed included', () => {
+        const skipped = [
+            { age: 4, name: 'failure.TestThisWillFailAbunch', duration: 0.001, status: 'SKIPPED' },
+            { age: 4, name: 'failure.TestThisWillFailAbunch', duration: 0, status: 'SKIPPED' },
+            { age: 4, name: 'failure.TestThisWillFailAbunch', duration: 0, status: 'SKIPPED' },
+        ];
+        const fixed = [
+            { age: 0, name: 'failure.TestThisWillFailAbunch', duration: 0, status: 'PASSED', state: 'FIXED' },
+        ];
+        const existingFailed = [
+            { age: 1, name: 'failure.TestThisWillFailAbunch', duration: 0.003, errorDetails: '<some exception here>', status: 'FAILED' },
+            { age: 4, name: 'failure.TestThisWillFailAbunch', duration: 0.003, errorDetails: '<some exception here>', status: 'FAILED' },
+            { age: 4, name: 'failure.TestThisWillFailAbunch', duration: 0.003, errorDetails: '<some exception here>', status: 'FAILED' },
+        ];
+
+        const run = {
+            testSummary: {
+                existingFailed: 3,
+                failed: 0,
+                fixed: 1,
+                passed: 10,
+                regressions: 0,
+                skipped: 3,
+                total: 16,
+            },
+            '_links': {
+                tests: {
+                    href: '/pipeline/runs/1/tests'
+                }
+            }
         };
 
-        let wrapper = shallow(<TestResults t={t} testResults={failures} />);
+        const testService = new MockTestService({fixed: fixed, skipped: skipped, existingFailed: existingFailed});
+
+        const wrapper = mount(<TestResults t={t} run={run} testService={testService} pipeline={pipeline} />);
+        const output = wrapper.html();
+        assert(output.indexOf('summary.failing_title') >= 0, 'should show failing title');
+        assert(output.indexOf('new-failure-block') === -1, 'should not have failure block');
+        assert(output.indexOf('existing-failure-block') >= 0, 'should find existing failure block');
+        assert(output.indexOf('fixed-block') >= 0, 'should find a fixed block');
+        assert(output.indexOf('skipped-block') >= 0, 'should find a skipped blocks');
+    });
+
+    it('Handles REGRESSION case', () => {
+        const existingFailed = [
+            { age: 5, name: 'failure.TestThisWontFail - aPassingTest2', duration: 0, status: 'FAILED', state: 'UNKNOWN' },
+            { age: 1, name: 'failure.TestThisWontFail - aPassingTest4', duration: 0, status: 'FAILED', state: 'UNKNOWN' },
+        ];
+        const regressions = [
+            { age: 2, name: 'failure.TestThisWontFail - aPassingTest3', duration: 0, status: 'FAILED', state: 'REGRESSION' }
+        ];
+
+        const testService = new MockTestService({regressions: regressions, existingFailed: existingFailed});
+
+        const run = {
+            testSummary: {
+                existingFailed: 1,
+                failed: 3,
+                fixed: 0,
+                passed: 0,
+                regressions: 2,
+                skipped: 0,
+                total: 3,
+            },
+            '_links': {
+                tests: {
+                    href: '/pipeline/runs/1/tests'
+                }
+            }
+        };
+
+        const wrapper = mount(<TestResults t={t} run={run} testService={testService} pipeline={pipeline} />);
         const newFailed = wrapper.find('.new-failure-block h4').text();
-        assert.equal(newFailed, 'New failing - 2');
+        assert.equal(newFailed, 'rundetail.tests.results.errors.new.count');
 
         const failed = wrapper.find('.existing-failure-block h4').text();
-        assert.equal(failed, 'Existing failures - 1');
+        assert.equal(failed, 'rundetail.tests.results.errors.existing.count');
     });
 
-    it("All passing shown", () => {
-        let wrapper = shallow(<TestResults t={t} testResults={testResults1} />);
-        let isDone = wrapper.html().indexOf('done_all') > 0;
-        assert(!isDone, "Done all found, when shouldn't have been");
+    it('All passing shown', () => {
+        const testService = new MockTestService({});
 
-        var success = {
-            "_class": "hudson.tasks.junit.TestResult",
-            "duration": 0.008, "empty": false, "failCount": 0, "passCount": 3, "skipCount": 0, "suites": [
-                {
-                    "duration": 0, "id": null, "name": "failure.TestThisWontFail", "stderr": null, "stdout": null, "timestamp": null, "cases": [
-                        { "age": 0, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest2", "skipped": false, "skippedMessage": null, "status": "PASSED", "stderr": null, "stdout": null },
-                        { "age": 0, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest3", "skipped": false, "skippedMessage": null, "status": "PASSED", "stderr": null, "stdout": null },
-                        { "age": 0, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest4", "skipped": false, "skippedMessage": null, "status": "PASSED", "stderr": null, "stdout": null },
-                    ],
-                }]
+        const run = {
+            testSummary: {
+                existingFailed: 0,
+                failed: 0,
+                fixed: 0,
+                passed: 3,
+                regressions: 0,
+                skipped: 0,
+                total: 3,
+            },
+            '_links': {
+                tests: {
+                    href: '/pipeline/runs/1/tests'
+                }
+            }
         };
 
-        wrapper = shallow(<TestResults t={t} testResults={success} />);
-        let html = wrapper.html();
-        assert(html.indexOf('done_all') > 0, "Done all not found, when should be");
-        assert(html.indexOf('fixed-block') < 0, "No fixed tests!");
+        const wrapper = mount(<TestResults t={t} run={run} testService={testService} pipeline={pipeline} />);
+        const output = wrapper.html();
+        assert(output.indexOf('summary.passing_title') >= 0, 'should show all passing title');
+        assert(output.indexOf('-failure-block') < 0, 'should not find any failure blocks');
+        assert(output.indexOf('fixed-block') < 0, 'should not find a fixed block');
+        assert(output.indexOf('skipped-block') < 0, 'should not find a skipped blocks');
     });
 
-    it("All passing and fixed shown", () => {
-        var successWithFixed = {
-            "_class": "hudson.tasks.junit.TestResult",
-            "duration": 0.008, "empty": false, "failCount": 0, "passCount": 3, "skipCount": 0, "suites": [
-                {
-                    "duration": 0, "id": null, "name": "failure.TestThisWontFail", "stderr": null, "stdout": null, "timestamp": null, "cases": [
-                        { "age": 0, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest2", "skipped": false, "skippedMessage": null, "status": "FIXED", "stderr": null, "stdout": null },
-                        { "age": 0, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest3", "skipped": false, "skippedMessage": null, "status": "PASSED", "stderr": null, "stdout": null },
-                        { "age": 0, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": null, "failedSince": 0, "name": "aPassingTest4", "skipped": false, "skippedMessage": null, "status": "PASSED", "stderr": null, "stdout": null },
-                    ],
-                }]
+    it('All passing and fixed shown', () => {
+        const fixed = [
+            {name: 'failure.TestThisWontFail - aPassingTest2', duration: 0, age: 0, status: 'PASSED', state: 'FIXED' },
+        ];
+        const run = {
+            testSummary: {
+                existingFailed: 0,
+                failed: 0,
+                fixed: 1,
+                passed: 3,
+                regressions: 0,
+                skipped: 0,
+                total: 3,
+            },
         };
+        const testService = new MockTestService({passed: fixed});
 
-        let wrapper = shallow(<TestResults t={t} testResults={successWithFixed} />);
-        let html = wrapper.html();
-        assert(html.indexOf('done_all') > 0, "Done all not found, when should be");
-        assert(html.indexOf('fixed-block') > 0, "Should have fixed tests!");
+        const wrapper = mount(<TestResults t={t} run={run} testService={testService} pipeline={pipeline} />);
+        const output = wrapper.html();
+        assert(output.indexOf('summary.passing_after_fixes_title') >= 0, 'should show passing with fixes title');
+        assert(output.indexOf('-failure-block') < 0, 'should not find any failure blocks');
+        assert(output.indexOf('fixed-block') >= 0, 'should find a fixed block');
+        assert(output.indexOf('skipped-block') < 0, 'should not find a skipped blocks');
     });
 
-    it("unstable renders with no error message", () => {
-        var unstableWithNoMsg = {
-            "_class": "hudson.tasks.junit.TestResult",
-            "duration": 0.008, "empty": false, "failCount": 1, "passCount": 3, "skipCount": 0, "suites": [
-                {
-                    "duration": 0, "id": null, "name": "failure.TestThisWontFail", "stderr": null, "stdout": null, "timestamp": null, "cases": [
-                        { "age": 0, "className": "failure.TestThisWontFail", "duration": 0, "errorDetails": null, "errorStackTrace": 'aa', "failedSince": 0, "name": "aPassingTest2", "skipped": false, "skippedMessage": null, "status": "FAILED", "stderr": null, "stdout": null },
-                    ],
-                }]
+    it('unstable renders with no error message', () => {
+        const existingFailed = [
+            { age: 0, name: 'failure.TestThisWontFail - aPassingTest2', duration: 0, errorDetails: null, errorStackTrace: 'aa', status: 'FAILED' },
+        ];
+        const run = {
+            testSummary: {
+                existingFailed: 1,
+                failed: 0,
+                fixed: 0,
+                passed: 0,
+                regressions: 0,
+                skipped: 0,
+                total: 1,
+            },
+            '_links': {
+                tests: {
+                    href: '/pipeline/runs/1/tests'
+                }
+            }
         };
+        const testService = new MockTestService({existingFailed: existingFailed});
         // Lets mount it to that it renders children.
-        let wrapper = mount(<TestResults t={t} testResults={unstableWithNoMsg} />);
+        const wrapper = mount(<TestResults t={t} run={run} testService={testService} pipeline={pipeline} />);
 
+        console.log(wrapper.html());
         // Expend the test result
         wrapper.find('.result-item-head').simulate('click');
 

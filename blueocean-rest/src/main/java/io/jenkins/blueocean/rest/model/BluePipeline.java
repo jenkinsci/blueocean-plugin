@@ -34,7 +34,6 @@ public abstract class BluePipeline extends Resource {
     public static final String WEATHER_SCORE ="weatherScore";
     public static final String LATEST_RUN = "latestRun";
     public static final String ESTIMATED_DURATION = "estimatedDurationInMillis";
-    public static final String LAST_SUCCESSFUL_RUN = "lastSuccessfulRun";
     public static final String ACTIONS = "actions";
     public static final String PERMISSIONS= "permissions";
 
@@ -100,10 +99,6 @@ public abstract class BluePipeline extends Resource {
     @Exported(name = LATEST_RUN, inline = true)
     public abstract BlueRun getLatestRun();
 
-    @Exported(name= LAST_SUCCESSFUL_RUN)
-    public abstract String getLastSuccessfulRun();
-
-
     /**
      * @return Estiamated duration based on last pipeline runs. -1 is returned if there is no estimate available.
      *
@@ -131,12 +126,6 @@ public abstract class BluePipeline extends Resource {
      */
     @Navigable
     public abstract BlueQueueContainer getQueue();
-
-    /**
-     * @return Gives paginated concatenation of {#getQueue()} and {#getRuns()}, in that order
-     */
-    @Navigable
-    public abstract Container<Resource> getActivities();
 
     /**
      * List of build parameters

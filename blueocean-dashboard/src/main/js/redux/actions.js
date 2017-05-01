@@ -1,11 +1,17 @@
 import keymirror from 'keymirror';
-import { fetch as smartFetch, paginate, applyFetchMarkers } from '../util/smart-fetch';
+import { applyFetchMarkers, fetch as smartFetch, paginate } from '../util/smart-fetch';
 import { State } from '../components/records';
 import UrlConfig from '../config';
 import { getNodesInformation } from '../util/logDisplayHelper';
-import { calculateStepsBaseUrl, calculateLogUrl, calculateNodeBaseUrl, paginateUrl, getRestUrl } from '../util/UrlUtils';
+import {
+    calculateLogUrl,
+    calculateNodeBaseUrl,
+    calculateStepsBaseUrl,
+    getRestUrl,
+    paginateUrl,
+} from '../util/UrlUtils';
 import findAndUpdate from '../util/find-and-update';
-import { Fetch, FetchFunctions } from '@jenkins-cd/blueocean-core-js';
+import { Fetch, FetchFunctions, AppConfig } from '@jenkins-cd/blueocean-core-js';
 const debugLog = require('debug')('blueocean-actions-js:debug');
 
 /**
@@ -28,6 +34,7 @@ function _mapQueueToPsuedoRun(run) {
             enQueueTime: run.queuedTime,
             organization: run.organization,
             changeSet: [],
+            causeOfBlockage: run.causeOfBlockage,
             _item: run,
         };
     }
@@ -71,7 +78,6 @@ export const ACTION_TYPES = keymirror({
     SET_CURRENT_BRANCHES_DATA: null,
     CLEAR_CURRENT_BRANCHES_DATA: null,
     CLEAR_CURRENT_PULL_REQUEST_DATA: null,
-    SET_TEST_RESULTS: null,
     SET_STEPS: null,
     SET_NODE: null,
     SET_NODES: null,
@@ -137,9 +143,6 @@ export const actionHandlers = {
     },
     [ACTION_TYPES.SET_CURRENT_PULL_REQUEST_DATA](state, { payload }): State {
         return state.set('pullRequests', payload);
-    },
-    [ACTION_TYPES.SET_TEST_RESULTS](state, { payload }): State {
-        return state.set('testResults', payload === undefined ? {} : payload);
     },
     [ACTION_TYPES.SET_STEPS](state, { payload }): State {
         const steps = { ...state.steps } || {};
@@ -246,7 +249,7 @@ export const actions = {
     clearPipelineData() {
         return (dispatch) => dispatch({ type: ACTION_TYPES.CLEAR_PIPELINE_DATA });
     },
-    
+
     /**
      * Returns cached global pipeline list or causes a fetch
      */
@@ -285,8 +288,9 @@ export const actions = {
     fetchAllPipelines() {
         return (dispatch) => {
             // Note: this is including folders, which we can't deal with, so exclude them with the ?filter=no-folders
+            const organization = AppConfig.getOrganizationName();
             const url =
-                `${UrlConfig.getRestRoot()}/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
+                `${UrlConfig.getRestRoot()}/search/?q=type:pipeline;organization:${organization};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
             return paginate({ urlProvider: paginateUrl(url) })
             .then(data => {
                 dispatch({
@@ -819,26 +823,5 @@ export const actions = {
             }
             return null;
         };
-    },
-
-    fetchTestResults(run) {
-        return (dispatch) => {
-            const baseUrl = UrlConfig.getJenkinsRootURL();
-            const url = `${baseUrl}${run._links.self.href}testReport/result`;
-
-            return smartFetch(url, data =>
-                dispatch({
-                    type: ACTION_TYPES.SET_TEST_RESULTS,
-                    payload: data,
-                }));
-        };
-    },
-
-    resetTestDetails() {
-        return (dispatch) =>
-            dispatch({
-                type: ACTION_TYPES.SET_TEST_RESULTS,
-                payload: null,
-            });
     },
 };

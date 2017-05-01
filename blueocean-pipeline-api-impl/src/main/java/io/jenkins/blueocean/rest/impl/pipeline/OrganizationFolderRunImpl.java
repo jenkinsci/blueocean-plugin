@@ -1,8 +1,8 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.cloudbees.hudson.plugins.folder.computed.FolderComputation;
-import hudson.model.Cause;
 import hudson.model.CauseAction;
+import hudson.model.Result;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
@@ -10,8 +10,9 @@ import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
-import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
+import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.service.embedded.rest.LogResource;
 import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
@@ -62,6 +63,16 @@ public class OrganizationFolderRunImpl extends BlueRun {
     }
 
     @Override
+    public String getName() {
+        return null;
+    }
+
+    @Override
+    public String getDescription() {
+        return null;
+    }
+
+    @Override
     public Date getStartTime() {
         return folderComputation.getTimestamp().getTime();
     }
@@ -103,8 +114,9 @@ public class OrganizationFolderRunImpl extends BlueRun {
 
     @Override
     public BlueRunResult getResult() {
-        return folderComputation.getResult() != null
-                ? BlueRun.BlueRunResult.valueOf(folderComputation.getResult().toString())
+        Result result = folderComputation.getResult();
+        return result != null
+                ? BlueRun.BlueRunResult.valueOf(result.toString())
                 : BlueRunResult.UNKNOWN;
     }
 
@@ -149,15 +161,40 @@ public class OrganizationFolderRunImpl extends BlueRun {
     }
 
     @Override
+    public BlueTestResultContainer getTests() {
+        return null;
+    }
+
+    @Override
+    public BlueTestSummary getTestSummary() {
+        return null;
+    }
+
+    @Override
     public Object getLog() {
         return new LogResource(folderComputation.getLogText());
     }
 
     @Override
-    public BlueQueueItem replay() {
-        if(pipeline.folder.isBuildable()) {
-            return new QueueItemImpl(pipeline.folder.scheduleBuild2(0,new CauseAction(new Cause.UserIdCause())), pipeline, 1);
+    public Collection<BlueCause> getCauses() {
+        return null;
+    }
+
+    @Override
+    public String getCauseOfBlockage() {
+        return null;
+    }
+
+    @Override
+    public BlueRun replay() {
+        if(isReplayable()) {
+            return new QueueItemImpl(pipeline.folder.scheduleBuild2(0,new CauseAction(new hudson.model.Cause.UserIdCause())), pipeline, 1).toRun();
         }
         return null;
+    }
+
+    @Override
+    public boolean isReplayable() {
+        return pipeline.folder.isBuildable();
     }
 }

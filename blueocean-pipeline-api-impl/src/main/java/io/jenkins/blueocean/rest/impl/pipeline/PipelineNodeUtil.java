@@ -52,8 +52,9 @@ public class PipelineNodeUtil {
 
     @Nonnull
     public static String getDisplayName(@Nonnull FlowNode node) {
-        return node.getAction(ThreadNameAction.class) != null
-            ? node.getAction(ThreadNameAction.class).getThreadName()
+        ThreadNameAction threadNameAction = node.getAction(ThreadNameAction.class);
+        return threadNameAction != null
+            ? threadNameAction.getThreadName()
             : node.getDisplayName();
     }
 
@@ -177,7 +178,7 @@ public class PipelineNodeUtil {
         return null;
     }
 
-    public static Predicate<FlowNode> isLoggable = new Predicate<FlowNode>() {
+    public static final Predicate<FlowNode> isLoggable = new Predicate<FlowNode>() {
         @Override
         public boolean apply(@Nullable FlowNode input) {
             if(input == null)
