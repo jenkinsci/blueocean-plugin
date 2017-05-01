@@ -1,13 +1,10 @@
 import React, { Component, PropTypes } from 'react';
-import {
-    CommitHash,
-    ReadableDate,
-    WeatherIcon,
-} from '@jenkins-cd/design-language';
-import { RunButton, LiveStatusIndicator } from '@jenkins-cd/blueocean-core-js';
+import { CommitHash, ReadableDate, WeatherIcon } from '@jenkins-cd/design-language';
+import { LiveStatusIndicator, RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
-import { CellRow, CellLink } from './CellLink';
+import { CellLink, CellRow } from './CellLink';
+import RunMessageCell from './RunMessageCell';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
@@ -72,8 +69,6 @@ export default class Branches extends Component {
         }
         const cleanBranchName = decodeURIComponent(branch.name);
         const runDetailsUrl = buildRunDetailsUrl(branch.organization, pipeline.fullName, cleanBranchName, latestRun.id, 'pipeline');
-
-        const { msg } = (latestRun.changeSet && latestRun.changeSet.length > 0) ? (latestRun.changeSet[latestRun.changeSet.length - 1] || {}) : {};
         return (
             <CellRow linkUrl={runDetailsUrl} id={`${cleanBranchName}-${latestRun.id}`}>
                 <CellLink disableDefaultPadding>
@@ -89,7 +84,7 @@ export default class Branches extends Component {
                 </CellLink>
                 <CellLink>{cleanBranchName}</CellLink>
                 <CellLink><CommitHash commitId={latestRun.commitId} /></CellLink>
-                <CellLink>{msg || '-'}</CellLink>
+                <CellLink><RunMessageCell run={latestRun} /></CellLink>
                 <CellLink>
                     <ReadableDate
                       date={latestRun.endTime}

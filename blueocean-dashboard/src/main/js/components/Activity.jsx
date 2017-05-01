@@ -15,8 +15,8 @@ import { ColumnFilter } from './ColumnFilter';
 import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
 import {
     NoRunsDefaultPlaceholder,
-    NoRunsMultibranchPlaceholder,
     NoRunsForBranchPlaceholder,
+    NoRunsMultibranchPlaceholder
 } from './placeholder/NoRunsPlaceholder';
 
 import Extensions from '@jenkins-cd/js-extensions';

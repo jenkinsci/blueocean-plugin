@@ -5,6 +5,8 @@ import { shallow } from 'enzyme';
 import { Activity } from '../../main/js/components/Activity.jsx';
 import { CapabilityRecord } from '../../main/js/components/Capability.jsx';
 
+import { pipelines } from './data/pipelines/pipelinesSingle';
+
 
 const
   data = [
@@ -21,7 +23,8 @@ const
       "startTime": "2016-03-04T13:59:53.374+0100",
       "state": "FINISHED",
       "type": "WorkflowRun",
-      "commitId": "444196ac6afbd3e417f1d46ebfb3c4f0aac0c165"
+      "commitId": "444196ac6afbd3e417f1d46ebfb3c4f0aac0c165",
+      "causes": [{"_class": "jenkins.branch.BranchIndexingCause", "shortDescription": "Branch indexing"}],
     },
     {
       "changeSet": [],
@@ -36,7 +39,8 @@ const
       "startTime": "2016-03-04T13:59:54.138+0100",
       "state": "FINISHED",
       "type": "WorkflowRun",
-      "commitId": "f8eeb35c03e52c17c27824fa77fa6b0f03a93625"
+      "commitId": "f8eeb35c03e52c17c27824fa77fa6b0f03a93625",
+      "causes": [{"_class": "jenkins.branch.BranchIndexingCause", "shortDescription": "Branch indexing"}],
     },
     {
       "changeSet": [
@@ -74,7 +78,8 @@ const
       "startTime": "2016-03-04T14:18:55.490+0100",
       "state": "FINISHED",
       "type": "WorkflowRun",
-      "commitId": "746cf27525b7b1d615de408ca86786613ccf7548"
+      "commitId": "746cf27525b7b1d615de408ca86786613ccf7548",
+      "causes": [{"_class": "jenkins.branch.BranchIndexingCause", "shortDescription": "Branch indexing"}],
     },
     {
       "changeSet": [
@@ -112,7 +117,8 @@ const
       "startTime": "2016-03-04T14:28:09.322+0100",
       "state": "FINISHED",
       "type": "WorkflowRun",
-      "commitId": "a2f0801fec8bad98663f0df5e9110261820e8c4e"
+      "commitId": "a2f0801fec8bad98663f0df5e9110261820e8c4e",
+      "causes": [{"_class": "jenkins.branch.BranchIndexingCause", "shortDescription": "Branch indexing"}],
     },
     {
       "changeSet": [],
@@ -127,73 +133,77 @@ const
       "startTime": "2016-03-09T16:01:23.767+0100",
       "state": "FINISHED",
       "type": "WorkflowRun",
-      "commitId": "a2f0801fec8bad98663f0df5e9110261820e8c4e"
+      "commitId": "a2f0801fec8bad98663f0df5e9110261820e8c4e",
+      "causes": [{"_class": "jenkins.branch.BranchIndexingCause", "shortDescription": "Branch indexing"}],
     }
   ];
 
 const context = {
-  params: {},
-  config: {
-      getServerBrowserTimeSkewMillis: () => 0
-  },
-      activityService: {
+    params: {},
+    config: {
+        getServerBrowserTimeSkewMillis: () => 0,
+    },
+    activityService: {
         activityPager() {
-          return {
-            data: data
-          }
-        }
-      }
+            return { data: data };
+        },
+    },
 };
 
 const contextNoData = {
-  params: {},
-  config: {
-      getServerBrowserTimeSkewMillis: () => 0
-  },
-      activityService: {
+    params: {},
+    config: {
+        getServerBrowserTimeSkewMillis: () => 0,
+    },
+    activityService: {
         activityPager() {
-          return {
-            data: [],
-            pending: true,
-          }
-        }
-      }
+            return {
+                data: [],
+                pending: true,
+            };
+        },
+    },
 };
-const pipeline = {
-  _class: "some.class"
-};
+const pipeline = pipelines[0];
 
 const capabilities = {
-  'some.class': new CapabilityRecord({})
+    'some.class': new CapabilityRecord({}),
 };
 data.$success = true; // fetch flag
 
 const t = () => {};
 
-describe("Activity", () => {
+describe('Activity', () => {
+    it('render the Activity with data', () => {
+        const wrapper = shallow(<Activity t={t} runs={data} pipeline={pipeline} capabilities={capabilities} />, { context });
 
-  it("render the Activity with data", () => {
-    const wrapper =  shallow(<Activity t={ ()=>{} } runs={data} pipeline={pipeline} capabilities={capabilities}/>, { context });
+        // does data renders?
+        assert.isNotNull(wrapper);
+        assert.equal(wrapper.find('NewComponent').length, data.length);
+    });
 
-    // does data renders?
-    assert.isNotNull(wrapper);
-    // TODO: assert.equal(wrapper.find('NewComponent').length, data.length)
-  });
-
-  it("does not render without data", () => {
-    const wrapper =  shallow(<Activity pipeline={pipeline}  t={ ()=>{} } capabilities={capabilities}/>, { context: contextNoData});
-    assert.equal(wrapper.find('NewComponent').length, 0)
-
-  });
+    it('does not render without data', () => {
+        const wrapper = shallow(<Activity pipeline={pipeline} t={ () => {} } capabilities={capabilities} />, { context: contextNoData });
+        assert.equal(wrapper.find('NewComponent').length, 0);
+    });
 });
 
 describe('Pipeline -> Activity List', () => {
-    it('should not duplicate changeset messages', () => {
-
-        const wrapper =  shallow(<Activity t={ ()=>{} } runs={data} pipeline={pipeline} capabilities={capabilities} />, { context });
-
+    it('should contain cause', () => {
+        const wrapper = shallow(<Activity t={t} runs={data} pipeline={pipeline} capabilities={capabilities} />, { context });
         assert.isNotNull(wrapper);
+        const runs = wrapper.find('NewComponent');
+        assert.isNotNull(runs);
+        const run1 = runs.at(0).html(); // has cause
+        const run3 = runs.at(2).html(); // has changeset
 
+        assert(run1.indexOf('Branch indexing') >= 0, 'should have cause message');
+        assert(run3.indexOf('Update Jenkinsfile') >= 0, 'should have changset message');
+    });
+
+    it('should not duplicate changeset messages', () => {
+        const wrapper = shallow(<Activity t={t} runs={data} pipeline={pipeline} capabilities={capabilities} />, { context });
+        assert.isNotNull(wrapper);
         const runs = wrapper.find('NewComponent');
         assert.isNotNull(runs);
 
