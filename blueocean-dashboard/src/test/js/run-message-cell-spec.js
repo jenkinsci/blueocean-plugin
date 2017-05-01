@@ -3,15 +3,18 @@ import { expect } from 'chai';
 import { render } from 'enzyme';
 import RunMessageCell from '../../main/js/components/RunMessageCell';
 
+const t = (m) => { return m; };
+
 describe('RunMessageCell', () => {
 
     it('displays description', () => {
         const run =  { description: 'The cake is a lie' };
-        const cell = render(<RunMessageCell run={run} />);
+        const cell = render(<RunMessageCell run={run} t={t} />);
         expect(cell.text()).to.equal('The cake is a lie');
     });
 
-    it('displays changeSet', () => {
+    // TODO: mock i18n
+    it('displays with multiple commits', () => {
         const run =  {
             'changeSet':[{
                 'msg': 'Oops',
@@ -19,8 +22,18 @@ describe('RunMessageCell', () => {
                 'msg': 'fix bug',
             }]
         };
-        const cell = render(<RunMessageCell run={run} />);
-        expect(cell.text()).to.equal('fix bug');
+        const cell = render(<RunMessageCell run={run} t={t} />);
+        expect(cell.text()).to.equal('fix bug lozenge.commit');
+    });
+
+    it('displays with single commit', () => {
+        const run =  {
+            'changeSet':[{
+                'msg': 'Oops',
+            }]
+        };
+        const cell = render(<RunMessageCell run={run} t={t} />);
+        expect(cell.text()).to.equal('Oops');
     });
 
     it('displays cause', () => {
@@ -30,12 +43,12 @@ describe('RunMessageCell', () => {
                 { shortDescription: 'Have some cake' },
             ]
         };
-        const cell = render(<RunMessageCell run={run} />);
+        const cell = render(<RunMessageCell run={run} t={t} />);
         expect(cell.text()).to.equal('Cake is delicious');
     });
 
     it('displays nothing', () => {
-        const cell = render(<RunMessageCell run={null} />);
+        const cell = render(<RunMessageCell run={null} t={t} />);
         expect(cell.text()).to.equal('–');
     });
 });
