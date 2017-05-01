@@ -2,12 +2,9 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Predicate;
 import hudson.ExtensionList;
-import hudson.FilePath;
 import hudson.console.AnnotatedLargeText;
 import hudson.model.Action;
-import hudson.model.FileParameterValue;
-import hudson.model.ParameterDefinition;
-import hudson.model.ParameterValue;
+import hudson.model.Failure;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
@@ -17,10 +14,8 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
 import io.jenkins.blueocean.service.embedded.rest.LogAppender;
 import io.jenkins.blueocean.service.embedded.rest.LogResource;
-import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
-import org.acegisecurity.Authentication;
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -33,14 +28,13 @@ import org.kohsuke.stapler.framework.io.ByteBuffer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import javax.servlet.ServletException;
 import java.io.IOException;
 import java.io.Reader;
 import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 /**
@@ -192,88 +186,26 @@ public class PipelineStepImpl extends BluePipelineStep {
             if(body.get(ABORT_ELEMENT) != null && body.getBoolean(ABORT_ELEMENT)){
                 return execution.doAbort();
             }
-
-            //XXX: execution.doProceed(request) expects submitted form, otherwise we could have simply used it
+            
             preSubmissionCheck(execution);
-
-            Object o = parseValue(execution, JSONArray.fromObject(body.get(PARAMETERS_ELEMENT)), request);
-
-            HttpResponse response =  execution.proceed(o);
+            Object v = body.get(PARAMETERS_ELEMENT);
+            JSONArray params =  v != null ? JSONArray.fromObject(body.get(PARAMETERS_ELEMENT)) : null;
+            HttpResponse response = execution.proceed(params, request);
             for(PipelineInputStepListener listener: ExtensionList.lookup(PipelineInputStepListener.class)){
                 listener.onStepContinue(execution.getInput(), run);
             }
             return response;
-        } catch (IOException | InterruptedException | TimeoutException e) {
+        } catch (IOException | InterruptedException | TimeoutException | ServletException e) {
             throw new ServiceException.UnexpectedErrorException("Error processing Input Submit request."+e.getMessage());
         }
     }
 
-    //TODO: InputStepException.preSubmissionCheck() is private, remove it after its made public
     private void preSubmissionCheck(InputStepExecution execution){
-        if (execution.isSettled()) {
-            throw new ServiceException.BadRequestExpception("This input has been already given");
+        try{
+            execution.preSubmissionCheck();
+        }catch (Failure e){
+            throw new ServiceException.BadRequestExpception(e.getMessage(), e);
         }
-
-        if(!canSubmit(execution.getInput())){
-            throw new ServiceException.BadRequestExpception("You need to be "+ execution.getInput().getSubmitter() +" to submit this");
-        }
-    }
-
-    private Object parseValue(InputStepExecution execution, JSONArray parameters, StaplerRequest request) throws IOException, InterruptedException {
-        Map<String, Object> mapResult = new HashMap<String, Object>();
-
-        InputStep input = execution.getInput();
-        for(Object o: parameters){
-            JSONObject p = (JSONObject) o;
-            String name = (String) p.get(NAME_ELEMENT);
-
-            if(name == null){
-                throw new ServiceException.BadRequestExpception("name is required parameter element");
-            }
-
-            ParameterDefinition d=null;
-            for (ParameterDefinition def : input.getParameters()) {
-                if (def.getName().equals(name))
-                    d = def;
-            }
-            if (d == null)
-                throw new ServiceException.BadRequestExpception("No such parameter definition: " + name);
-
-            ParameterValue v = d.createValue(request, p);
-            if (v == null) {
-                continue;
-            }
-            mapResult.put(name, convert(name, v));
-        }
-        // If a destination value is specified, push the submitter to it.
-        String valueName = input.getSubmitterParameter();
-        if (valueName != null && !valueName.isEmpty()) {
-            Authentication a = Jenkins.getAuthentication();
-            mapResult.put(valueName, a.getName());
-        }
-        switch (mapResult.size()) {
-            case 0:
-                return null;    // no value if there's no parameter
-            case 1:
-                return mapResult.values().iterator().next();
-            default:
-                return mapResult;
-        }
-    }
-
-
-    private Object convert(String name, ParameterValue v) throws IOException, InterruptedException {
-        if (v instanceof FileParameterValue) {
-            FileParameterValue fv = (FileParameterValue) v;
-            FilePath fp = new FilePath(node.getRun().getRootDir()).child(name);
-            fp.copyFrom(fv.getFile());
-            return fp;
-        } else {
-            return v.getValue();
-        }
-    }
-    private boolean canSubmit(InputStep inputStep){
-        return inputStep.canSubmit();
     }
 
     @Override
