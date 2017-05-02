@@ -63,6 +63,16 @@ public class OrganizationFolderRunImpl extends BlueRun {
     }
 
     @Override
+    public String getName() {
+        return null;
+    }
+
+    @Override
+    public String getDescription() {
+        return null;
+    }
+
+    @Override
     public Date getStartTime() {
         return folderComputation.getTimestamp().getTime();
     }

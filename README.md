@@ -118,7 +118,9 @@ Ask for help in #jenkins-ci or on the mailing list if you are working on a plugi
 
 #### Tools needed
 
-*Maven* is used for most building. The project is configured to grab all the tools you need from the JavaScript ecosystem to get started. 
+*Maven* is used for most building - install Maven and JDK8 (ideally).
+
+As npm packages are used node-gyp may be involved and this can require some tools installed to build native dependencies (native components are not used at runtime) - see https://www.npmjs.com/package/node-gyp for instructions for your platform
 
 If you are working on the Javascript, you will need node installed, look at the version in the pom.xml for the minimum version required.
 
