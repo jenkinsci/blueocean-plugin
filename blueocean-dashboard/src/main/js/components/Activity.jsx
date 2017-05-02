@@ -99,10 +99,6 @@ export class Activity extends Component {
         const branch = this._branchFromProps(this.props);
 
         const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
-        // console.log('              pipeline', pipeline); // TODO: RM
-        // console.log('        ._capabilities', '\n' + pipeline._capabilities.join('\n')); // TODO: RM
-        // console.log('  MULTIBRANCH_PIPELINE', MULTIBRANCH_PIPELINE); // TODO: RM
-        // console.log(' isMultiBranchPipeline', isMultiBranchPipeline); // TODO: RM
         const hasBranches = pipeline.branchNames && !!pipeline.branchNames.length;
 
         const onNavigation = (url) => {
@@ -142,7 +138,6 @@ export class Activity extends Component {
         const showTable = branch || (runs && runs.length > 0);
         const head = 'pipelinedetail.activity.header';
 
-        // TODO: Postfix these var names
         const status = t(`${head}.status`, { defaultValue: 'Status' });
         const runHeader = t(`${head}.run`, { defaultValue: 'Run' });
         const commit = t(`${head}.commit`, { defaultValue: 'Commit' });
@@ -172,9 +167,6 @@ export class Activity extends Component {
         if (isMultiBranchPipeline) {
             columns.push(JTable.column(160, branchFilter, false));
         }
-
-        console.log('actionExtensionCount', actionExtensionCount); // TODO:RM
-        console.log('actionsInRowCount', actionsInRowCount); // TODO:RM
 
         columns.push(
             JTable.column(480, message, true),

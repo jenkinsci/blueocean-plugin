@@ -139,4 +139,4 @@ Runs.contextTypes = {
     location: object,
 };
 
-export default TimeHarmonizer(Runs);
+export default timeHarmonizer(Runs);
