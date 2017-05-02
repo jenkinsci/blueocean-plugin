@@ -86,7 +86,7 @@ export class Runs extends Component {
             <IfCapability className={pipeline._class} capability={MULTIBRANCH_PIPELINE} >
                 <CellLink linkUrl={runDetailsUrl}>{decodeURIComponent(run.pipeline)}</CellLink>
             </IfCapability>
-            <CellLink><RunMessageCell run={run} /></CellLink>
+            <CellLink><RunMessageCell run={run} t={t} /></CellLink>
             <CellLink>
                 <TimeDuration
                   millis={durationInMillis}
