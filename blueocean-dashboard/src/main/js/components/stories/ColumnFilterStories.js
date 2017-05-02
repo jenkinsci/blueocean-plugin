@@ -38,11 +38,26 @@ const people = ["Homer Simpson", "Marge Simpson", "Bart Simpson", "Lisa Simpson"
     "Ralph Wiggum", "Groundskeeper Willie", "Wiseguy", "Rainier Wolfcastle", "Artie Ziff"];
 
 function basic() {
+
+    const nestedDivStyle = {
+        border: "solid 1px #ccc",
+        padding: "1em",
+        width: "20em",
+        overflow: "hidden"
+    };
+
+    const spacingStyle = {
+        padding: "50em 5em"
+    };
+
     return wrap(
         <section>
             <h1>Basic</h1>
             <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab alias aliquam asperiores consequuntur eius esse fuga illum incidunt iure labore maiores maxime, neque officia omnis provident sequi sunt temporibus ullam!</p>
-            <ColumnFilter placeholder="Placeholder" options={people} onChange={columnFilterChange}/>
+            <div style={nestedDivStyle}>
+                <ColumnFilter placeholder="Placeholder" options={people} onChange={columnFilterChange}/>
+            </div>
+            <p style={spacingStyle}>Spacing for scrolling</p>
         </section>
     );
 }

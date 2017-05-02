@@ -6,6 +6,8 @@ import { Dropdown } from '@jenkins-cd/design-language';
 
 /**
  * Simple column filter
+ *
+ * FIXME: Replace react-autocomplete which is broken WRT scrolling, with JDL dropdown
  */
 export class ColumnFilter extends Component {
     constructor(props) {
@@ -61,8 +63,14 @@ export class ColumnFilter extends Component {
         const { placeholder, options } = this.props;
         const { value, focused } = this.state;
 
+        const wrapperStyle = {
+            display: 'inline-block',
+            width: '100%'
+        };
+
         return (<div className={`ColumnFilter ${value ? '' : 'empty'} ${focused ? 'focused' : ''}`}>
             <Autocomplete
+                wrapperStyle={wrapperStyle}
                 ref="autocomplete"
                 value={value}
                 inputProps={{
