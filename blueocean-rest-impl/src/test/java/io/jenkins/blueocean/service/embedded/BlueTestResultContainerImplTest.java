@@ -30,6 +30,26 @@ public class BlueTestResultContainerImplTest extends BaseTest {
     private BlueTestResultContainerImpl container;
 
     @Test
+    public void testsFilteredByState() throws Exception {
+        List<BlueTestResult> allResults = Lists.newArrayList(container.iterator());
+        List<BlueTestResult> regressions = Lists.newArrayList(BlueTestResultContainerImpl.filterByState(allResults, State.REGRESSION.name()));
+        assertEquals(2, regressions.size());
+        for (BlueTestResult tr : regressions) {
+            assertEquals(State.REGRESSION, tr.getTestState());
+        }
+    }
+
+    @Test
+    public void testsFilteredByStatus() throws Exception {
+        List<BlueTestResult> allResults = Lists.newArrayList(container.iterator());
+        List<BlueTestResult> allSkipped = Lists.newArrayList(BlueTestResultContainerImpl.filterByStatus(allResults, Status.SKIPPED.name()));
+        assertEquals(2, allSkipped.size());
+        for (BlueTestResult tr : allSkipped) {
+            assertEquals(Status.SKIPPED, tr.getStatus());
+        }
+    }
+
+    @Test
     public void testGetTestExists() throws Exception {
         boolean caught = false;
         try {

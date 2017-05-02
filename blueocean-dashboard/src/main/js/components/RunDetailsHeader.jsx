@@ -5,6 +5,7 @@ import { ExpandablePath, ReadableDate, TimeDuration } from '@jenkins-cd/design-l
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import { Link } from 'react-router';
 import { buildPipelineUrl } from '../util/UrlUtils';
+import RunIdCell from './RunIdCell';
 
 class RunDetailsHeader extends Component {
 
@@ -85,7 +86,7 @@ class RunDetailsHeader extends Component {
                 <a className="path-link" onClick={ onNameClick }>
                     <ExpandablePath path={ fullDisplayName } hideFirst className="dark-theme" iconSize={ 20 } />
                 </a>
-                <span>&nbsp;#{ run.id }</span>
+                <span>&nbsp;<RunIdCell run={run} /></span>
             </h1>
         );
 

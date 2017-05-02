@@ -3,11 +3,10 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import hudson.Extension;
 import hudson.model.Queue;
 import hudson.model.Run;
-import hudson.plugins.git.Revision;
-import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
@@ -21,12 +20,12 @@ import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
-import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.ChangeSetResource;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import io.jenkins.blueocean.service.embedded.rest.StoppableRun;
 import jenkins.model.Jenkins;
+import jenkins.scm.api.SCMRevisionAction;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
@@ -49,10 +48,14 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW
  */
 @Capability(JENKINS_WORKFLOW_RUN)
 public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
-    public static final String CAUSE_OF_BLOCKAGE = "causeOfBlockage";
     private static final Logger logger = LoggerFactory.getLogger(PipelineRunImpl.class);
     public PipelineRunImpl(WorkflowRun run, Link parent) {
         super(run, parent);
+    }
+
+    @Exported(name = "description")
+    public String getDescription() {
+        return run.getDescription();
     }
 
     @Exported(name = Branch.BRANCH, inline = true)
@@ -155,13 +158,9 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
 
     @Exported(name = "commitId")
     public String getCommitId() {
-        BuildData data = run.getAction(BuildData.class);
-
+        SCMRevisionAction data = run.getAction(SCMRevisionAction.class);
         if (data != null){
-            Revision revision = data.getLastBuiltRevision();
-            if(revision != null){
-                return revision.getSha1String();
-            }
+            return data.getRevision().toString();
         }
         return null;
     }

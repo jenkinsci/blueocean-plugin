@@ -29,6 +29,8 @@ public abstract class BlueRun extends Resource {
     public static final String ORGANIZATION="organization";
     public static final String ID="id";
     public static final String PIPELINE="pipeline";
+    public static final String NAME = "name";
+    public static final String DESCRIPTION = "description";
     public static final String START_TIME="startTime";
     public static final String END_TIME="endTime";
     public static final String ENQUEUE_TIME="enQueueTime";
@@ -70,6 +72,11 @@ public abstract class BlueRun extends Resource {
     @Exported(name = PIPELINE)
     public abstract String getPipeline();
 
+    @Exported(name = NAME)
+    public abstract String getName();
+
+    @Exported(name = DESCRIPTION)
+    public abstract String getDescription();
 
     /**
      * @return Build execution start time inside executor

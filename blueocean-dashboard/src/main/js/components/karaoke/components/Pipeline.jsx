@@ -1,13 +1,14 @@
 import React, { Component, PropTypes } from 'react';
-import { logging, sseConnection, calculateLogView } from '@jenkins-cd/blueocean-core-js';
+import { calculateLogView, logging, sseConnection } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
-import { QueuedState, NoSteps } from './QueuedState';
+import { NoSteps, QueuedState } from './QueuedState';
 import { KaraokeService } from '../index';
 import LogToolbar from './LogToolbar';
 import Steps from './Steps';
 import FreeStyle from './FreeStyle';
+import RunDescription from './RunDescription';
 
 import { KaraokeConfig } from '../';
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pipeline');
@@ -235,6 +236,7 @@ export default class Pipeline extends Component {
         const logFileName = this.pager.nodes !== undefined ? augmenter.getNodesLogFileName(this.pager.currentNode) : augmenter.generalLogFileName;
         logger.debug('displayName', this.pager.currentNode.displayName, 'logging info', logUrl, logFileName);
         return (<div>
+            { <RunDescription run={this.props.run} t={t} /> }
             { this.pager.nodes !== undefined &&
                 <Extensions.Renderer
                     extensionPoint="jenkins.pipeline.run.result"

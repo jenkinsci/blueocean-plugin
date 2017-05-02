@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.107",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.107",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.107.tgz"
+      "version": "0.0.109",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.109",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.109.tgz"
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.127",

@@ -34,6 +34,16 @@ public class QueuedBlueRun extends BlueRun {
     }
 
     @Override
+    public String getName() {
+        return null;
+    }
+
+    @Override
+    public String getDescription() {
+        return null;
+    }
+
+    @Override
     public String getOrganization() {
         return item.getOrganization();
     }
