@@ -5,12 +5,19 @@
     "@jenkins-cd/blueocean-core-js": {
       "version": "0.0.109",
       "from": "@jenkins-cd/blueocean-core-js@0.0.109",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.109.tgz"
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.109.tgz",
+      "dependencies": {
+        "@jenkins-cd/design-language": {
+          "version": "0.0.127",
+          "from": "@jenkins-cd/design-language@0.0.127",
+          "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.127.tgz"
+        }
+      }
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.127",
-      "from": "@jenkins-cd/design-language@0.0.127",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.127.tgz"
+      "version": "0.0.128",
+      "from": "@jenkins-cd/design-language@0.0.128",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.128.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
