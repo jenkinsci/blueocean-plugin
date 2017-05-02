@@ -12,7 +12,7 @@ export default class RunMessageCell extends Component {
         const t = this.props.t;
         let message;
         if (run && run.description) {
-            message = (<span className="RunMessageCell" title={run.description}>{run.description}</span>);
+            message = (<span className="RunMessageCell" title={run.description}><span className="RunMessageCellInner">{run.description}</span></span>);
         } else if (run && run.changeSet && run.changeSet.length > 0) {
             const commitMsg = run.changeSet[run.changeSet.length - 1].msg;
             if (run.changeSet.length > 1) {
