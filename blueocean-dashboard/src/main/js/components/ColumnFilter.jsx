@@ -2,6 +2,8 @@ import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/react-material-icons';
 import Autocomplete from 'react-autocomplete';
 
+import { Dropdown } from '@jenkins-cd/design-language';
+
 /**
  * Simple column filter
  */
@@ -100,5 +102,5 @@ ColumnFilter.propTypes = {
     placeholder: PropTypes.string,
     onChange: PropTypes.func,
     value: PropTypes.object,
-    options: PropTypes.object,
+    options: PropTypes.array,
 };
