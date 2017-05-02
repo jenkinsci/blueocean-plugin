@@ -71,6 +71,9 @@ export class DefaultSSEHandler {
         }
     }
     queueEnter(event) {
+        if (!this._isValidQueueEvent(event)) {
+            return;
+        }
         // Ignore the event if there's no branch name. Usually indicates
         // that the event is wrt MBP indexing.
         if (event.job_ismultibranch && !event.blueocean_job_branch_name) {
@@ -86,6 +89,9 @@ export class DefaultSSEHandler {
     }
 
     queueLeft(event) {
+        if (!this._isValidQueueEvent(event)) {
+            return;
+        }
         const id = event.blueocean_queue_item_expected_build_number;
         const href = `${event.blueocean_job_rest_url}runs/${id}/`;
         if (event.job_run_status === 'CANCELLED') {
@@ -130,5 +136,18 @@ export class DefaultSSEHandler {
             }
             this.pipelineService.updateLatestRun(run);
         });
+    }
+
+    _isValidQueueEvent(event) {
+        // Ignore the event if there's no branch name. Usually indicates
+        // that the event is wrt MBP indexing.
+        if (event.job_ismultibranch && !event.blueocean_job_branch_name) {
+            return false;
+        }
+        // Sometimes we can't match the queue item so we have to skip this event
+        if (!event.blueocean_queue_item_expected_build_number) {
+            return false;
+        }
+        return true;
     }
 }
