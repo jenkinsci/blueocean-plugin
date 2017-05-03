@@ -23,6 +23,8 @@ export default {
             }
 
             config.jenkinsRootURL = headElement.getAttribute('data-rooturl');
+            config.resourceUrl = headElement.getAttribute('data-resurl');
+
             config.isLoaded = true;
         } catch (e) {
             // headless escape
@@ -83,6 +85,13 @@ export default {
             this.loadUrls();
         }
         return (typeof config.jenkinsRootURL === 'string' ? config.jenkinsRootURL : '/jenkins');
+    },
+
+    getResourceURL() {
+        if (!config.isLoaded) {
+            this.loadUrls();
+        }
+        return (typeof config.resourceUrl === 'string' ? config.resourceUrl : '/jenkins/static');
     },
 
     getServerBrowserTimeSkewMillis() {
