@@ -154,9 +154,6 @@ export class Activity extends Component {
             />
         );
 
-        // TODO: Replace TableHeaderRow because we have a filter (or add component as label support)
-        // TODO: count the extensions on extensionPoint="jenkins.pipeline.activity.list.action"
-
         // Build up our column metadata
         const columns = [
             JTable.column(60, status, false),

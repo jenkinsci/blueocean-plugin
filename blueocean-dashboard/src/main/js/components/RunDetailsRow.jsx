@@ -18,8 +18,8 @@ import Extensions from '@jenkins-cd/js-extensions';
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
 import {buildRunDetailsUrl} from '../util/UrlUtils';
 import IfCapability from './IfCapability';
+import RunMessageCell from './RunMessageCell';
 
-// const logger = logging.logger('io.jenkins.blueocean.dashboard.Runs');
 
 // TODO: Clean up imports and shit
 
@@ -84,7 +84,7 @@ class RunDetailsRow extends Component {
                 <TableCell>{run.id}</TableCell>
                 <TableCell><CommitHash commitId={run.commitId}/></TableCell>
                 { isMultibranch && <TableCell linkUrl={runDetailsUrl}>{decodeURIComponent(run.pipeline)}</TableCell> }
-                <TableCell>{changeset && changeset.msg || '-'}</TableCell>
+                <TableCell><RunMessageCell run={run} t={t} /></TableCell>
                 <TableCell>
                     <TimeDuration millis={durationMillis}
                                   updatePeriod={1000}

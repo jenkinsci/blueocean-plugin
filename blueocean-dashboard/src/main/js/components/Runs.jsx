@@ -127,7 +127,7 @@ const { object, string, any, func } = PropTypes;
 Runs.propTypes = {
     run: object,
     pipeline: object,
-    result: any.isRequired, // FIXME: create a shape
+    result: any.isRequired, 
     data: string,
     locale: string,
     t: func,
