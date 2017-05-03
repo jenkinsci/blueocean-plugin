@@ -4,7 +4,7 @@
 properties([buildDiscarder(logRotator(artifactNumToKeepStr: '20', numToKeepStr: '20'))])
 
 node {
-
+  stage 'Setup'
   deleteDir()
   checkout scm
   sh 'docker build -t blueocean_build_env --build-arg GID=$(id -g ${USER}) --build-arg UID=$(id -u ${USER}) - < Dockerfile.build'
@@ -16,6 +16,7 @@ node {
   docker.image('blueocean_build_env').inside {
     withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
       try {
+        stage 'Building BlueOcean'
         sh 'npm --prefix ./blueocean-core-js install'
         sh 'npm --prefix ./blueocean-core-js run gulp'
         sh "mvn clean install -B -DcleanNode -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
@@ -30,6 +31,7 @@ node {
         
         stage 'ATH'
         dir('acceptance-tests') {
+          sh 'npm install'
           sh "./run.sh -a=../blueocean/ --no-selenium"
         }
         step([$class: 'JUnitResultArchiver', testResults: 'acceptance-tests/target/surefire-reports/TEST-*.xml'])
