@@ -1,12 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 
-export default class RunIdCell extends Component {
-    propTypes = {
-        run: PropTypes.object,
-    };
-
-    render() {
-        const identifier = this.props.run.name ? this.props.run.name : this.props.run.id;
-        return (<span title={identifier}>{identifier}</span>);
-    }
+function RunIdCell({run}) {
+    const identifier = run.name ? run.name : run.id;
+    return <span title={identifier}>{identifier}</span>;
 }
+
+RunIdCell.propTypes = {
+    run: PropTypes.object,
+};

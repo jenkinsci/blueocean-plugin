@@ -1,12 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import {
-    Table,
     JTable,
     TableHeaderRow,
 } from '@jenkins-cd/design-language';
 import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
-import Runs from './Runs';
 import { RunDetailsRow } from './RunDetailsRow';
 import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
@@ -155,6 +153,7 @@ export class Activity extends Component {
         );
 
         // Build up our column metadata
+
         const columns = [
             JTable.column(60, status, false),
             JTable.column(60, runHeader, false),
@@ -172,28 +171,9 @@ export class Activity extends Component {
             JTable.column((actionExtensionCount + actionsInRowCount) * 24, '', false),
         );
 
-        const headers = isMultiBranchPipeline ? [ // TODO: Remove this old stuff, once I'm sure the classNames aren't needed and have bneen cleaned up from styles
-            status,
-            runHeader,
-            commit,
-            { label: React.cloneElement(branchFilter), className: 'branch' },    // <-- Only diff
-            { label: message, className: 'message' },
-            { label: duration, className: 'duration' },
-            { label: completed, className: 'completed' },
-            { label: '', className: 'actions' },
-        ] : [
-            status,
-            runHeader,
-            commit,
-            { label: message, className: 'message' },
-            { label: duration, className: 'duration' },
-            { label: completed, className: 'completed' },
-            { label: '', className: 'actions' },
-        ];
-
         // Build main display table
 
-        const runsTable = runs.length && (
+        const runsTable = showTable && (
                 <JTable columns={columns} className="activity-table">
                     <TableHeaderRow />
                     {
@@ -212,49 +192,16 @@ export class Activity extends Component {
                 </JTable>
             );
 
-
-
         return (<main>
             <article className="activity">
                 { runButton }
-
                 { runsTable }
-
-                { showTable &&
-                <Table className="activity-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding key={branch}>
-                    {
-                        runs.length > 0 && runs.map((run, index) => {
-                            const changeset = run.changeSet;
-                            let latestRecord = {};
-
-                            if (changeset && changeset.length > 0) {
-                                latestRecord = new ChangeSetRecord(changeset[changeset.length - 1]);
-                            }
-
-                            return (
-                                <Runs {...{
-                                    t,
-                                    locale,
-                                    run,
-                                    pipeline,
-                                    key: index,
-                                    changeset: latestRecord,
-                                }}
-                                />
-                            );
-                        })
-                        }
-                    </Table>
-                }
                 { !isLoading && !runs.length && branch &&
                     <NoRunsForBranchPlaceholder t={t} branchName={branch} />
                 }
                 { runs && runs.length > 0 &&
                   <ShowMoreButton pager={this.pager} />
                 }
-
-                <div style={{padding: '35em 2em'}}>This section intentionally left blank ;-)</div>
-                {/* TODO: Remove this :) */}
             </article>
         </main>);
     }
