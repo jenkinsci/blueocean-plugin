@@ -13,7 +13,7 @@ node {
 
   sh "./acceptance-tests/runner/scripts/start-selenium.sh"
 
-  docker.image('blueocean_build_env').inside {
+  docker.image('blueocean_build_env').inside("--net=container:blueo-selenium") {
     withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
       try {
         stage 'Building BlueOcean'
