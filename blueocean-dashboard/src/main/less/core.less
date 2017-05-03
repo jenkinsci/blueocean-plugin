@@ -297,9 +297,9 @@ code div a.btn-secondary.inverse:hover{
     }
 }
 
-// FIXME This is probably still not ideal. Belongs in JDL, also.
+// FIXME: Remove this once all <table> usages are converted
 .u-table-lr-indents {
-    .cell-link, // TODO: Do we need this?
+    .cell-link, 
     td, th {
         &:first-child {
             padding-left: 1rem;
@@ -383,10 +383,4 @@ a.pipelineRedirectLink svg {
     label {
         font-weight: bold;
     }
-}
-
-// TODO: Remove these!
-tr:nth-child(even) td:nth-child(even),
-tr:nth-child(odd) td:nth-child(odd) {
-    background: rgba(0128,0,255,0.1);
 }

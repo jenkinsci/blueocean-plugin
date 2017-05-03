@@ -20,11 +20,8 @@ import {buildRunDetailsUrl} from '../util/UrlUtils';
 import IfCapability from './IfCapability';
 import RunMessageCell from './RunMessageCell';
 
-
-// TODO: Clean up imports and shit
-
 /*
- http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/PR-demo/runs
+ Rest source: http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/{PIPELINE_NAME}/runs
  */
 
 class RunDetailsRow extends Component {
