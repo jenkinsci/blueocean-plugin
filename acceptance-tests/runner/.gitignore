@@ -1,0 +1,23 @@
+#Ignore all dot files
+.idea/
+*.iml
+*.ipr
+*.iws
+
+**/.settings/
+**/.project
+**/.classpath
+
+selenium-debug.log
+
+target/
+work
+
+bin/
+
+node/
+node_modules/
+npm-debug.log
+
+docs/
+.vscode/

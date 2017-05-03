@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>io.jenkins.blueocean</groupId>
+  <artifactId>blueocean-acceptance-tests-parrent</artifactId>
+  <version>2.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <name>Blue Ocean Parent</name>
+
+  <modules>
+    <module>fake-securitly-realm-plugin</module>
+    <module>runtime-deps</module>
+  </modules>
+</project>
