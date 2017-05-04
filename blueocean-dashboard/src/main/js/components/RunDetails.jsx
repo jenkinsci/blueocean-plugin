@@ -13,7 +13,6 @@ import {
     buildClassicConfigUrl,
 } from '../util/UrlUtils';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
-import Extensions from '@jenkins-cd/js-extensions';
 
 import { ExtensionPoint, ExtensionList } from 'blueocean-js-extensions';
 
@@ -197,13 +196,13 @@ class RunDetails extends Component {
             <TabLink to="/changes" { ...base }>{ t('rundetail.header.tab.changes', {
                 defaultValue: 'Changes',
             }) }</TabLink>,
-                            {/* Instead of doing this, we should decorate data coming back
-                                to emulate the way actions work. By using classes as extension
-                                points, we can define whichever methods we need to obtain different
-                                views as react components */}
-                            {this.runDetailsLinks.filter(d => d.isApplicable(currentRun)).map(d =>
-                                <TabLink to={d.url()}>{d.name()}</TabLink>
-                            )},
+            /* Instead of doing this, we should decorate data coming back
+                to emulate the way actions work. By using classes as extension
+                points, we can define whichever methods we need to obtain different
+                views as react components */
+            this.runDetailsLinks.filter(d => d.isApplicable(currentRun)).map(d =>
+                <TabLink to={d.url()}>{d.name()}</TabLink>
+            ),
             <TabLink to="/artifacts" { ...base }>{ t('rundetail.header.tab.artifacts', {
                 defaultValue: 'Artifacts',
             }) }</TabLink>,

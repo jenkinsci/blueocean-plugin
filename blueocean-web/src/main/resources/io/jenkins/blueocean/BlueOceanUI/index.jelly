@@ -39,6 +39,8 @@
             <link rel="stylesheet" type="text/css" href="${assetsPath}/jdl/css/jenkins-design-language.css" />
             <link rel="stylesheet" type="text/css" href="${assetsPath}/corejs/css/blueocean-core-js.css" />
 
+            <link rel="stylesheet" type="text/css" href="${rootURL}/${j.getAdjuncts('').rootURL}/io/jenkins/blueocean/blueocean.css" />
+            
             <!-- Inject headers from other extensions. See BluePageDecorator.java -->
             <j:forEach var="pd" items="${it.pageDecorators}">
                 <st:include it="${pd}" page="header.jelly" optional="true" />
@@ -77,8 +79,10 @@
             <!--
             The following Stapler adjunct adds the blueocean JavaScript bundle, as well
             as the blueocean CSS. See gulpfile.js.
+            <script src="/jenkins/blue/res/3c35/js"></script>
             -->
             <st:adjunct includes="io.jenkins.blueocean.blueocean"/>
+            
         </body>
 
     </html>

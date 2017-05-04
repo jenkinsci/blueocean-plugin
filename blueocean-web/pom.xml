@@ -27,8 +27,14 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>variant</artifactId>
-        </dependency>
-
+	        </dependency>
+	
+		<dependency>
+			<groupId>com.google.javascript</groupId>
+			<artifactId>closure-compiler</artifactId>
+			<version>1.0-SNAPSHOT</version> <!-- build locally, shaded -->
+		</dependency>
+		
         <!-- test scope deps -->
         <dependency>
             <groupId>org.mockito</groupId>
@@ -38,6 +44,14 @@
     </dependencies>
 
     <build>
+    	<resources>
+    		<resource>
+    			<directory>src/main/resources</directory>
+    			<includes>
+    				<include>**/*</include>
+    			</includes>
+    		</resource>
+    	</resources>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
