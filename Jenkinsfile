@@ -32,7 +32,7 @@ node {
         stage 'ATH'
         sh 'cd acceptance-tests && npm install'
         sh "cd acceptance-tests && ./run.sh -a=../blueocean/ --no-selenium"
-        step([$class: 'JUnitResultArchiver', testResults: 'acceptance-tests/target/surefire-reports/TEST-*.xml'])
+        step([$class: 'JUnitResultArchiver', testResults: 'acceptance-tests/target/surefire-reports/*.xml'])
         
       } catch(err) {
         currentBuild.result = "FAILURE"
