@@ -42,7 +42,7 @@ node {
         }
       } finally {
         sendhipchat()
-        sh "./acceptance-tests/runner/scripts/start-selenium.sh"
+        sh "./acceptance-tests/runner/scripts/stop-selenium.sh"
         deleteDir()
       }
     }
