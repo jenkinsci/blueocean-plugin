@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 import {
     CommitHash,
     ReadableDate,
@@ -7,7 +7,6 @@ import {
     TableCell,
 } from '@jenkins-cd/design-language';
 import {
-    logging,
     ReplayButton,
     RunButton,
     LiveStatusIndicator,
@@ -16,7 +15,7 @@ import {
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
-import {buildRunDetailsUrl} from '../util/UrlUtils';
+import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
 import RunMessageCell from './RunMessageCell';
 
@@ -30,16 +29,14 @@ class RunDetailsRow extends Component {
     static actionItemsCount = 2;
 
     openRunDetails = (newURL) => {
-        const {router, location} = this.context;
+        const { router, location } = this.context;
         location.pathname = newURL;
         router.push(location);
     };
 
     render() {
-
         const {
             run,
-            changeset,
             pipeline,
             t,
             locale,
@@ -57,7 +54,7 @@ class RunDetailsRow extends Component {
 
         const {
             durationMillis,
-            endTime, 
+            endTime,
             startTime,
         } = getTimes({
             result: resultRun,
@@ -79,7 +76,7 @@ class RunDetailsRow extends Component {
                     />
                 </TableCell>
                 <TableCell>{run.id}</TableCell>
-                <TableCell><CommitHash commitId={run.commitId}/></TableCell>
+                <TableCell><CommitHash commitId={run.commitId} /></TableCell>
                 { isMultibranch && <TableCell linkUrl={runDetailsUrl}>{decodeURIComponent(run.pipeline)}</TableCell> }
                 <TableCell><RunMessageCell run={run} t={t} /></TableCell>
                 <TableCell>
@@ -137,5 +134,5 @@ RunDetailsRow.contextTypes = {
 const harmonized = timeHarmonizer(RunDetailsRow);
 harmonized.actionItemsCount = RunDetailsRow.actionItemsCount;
 
-export {harmonized as RunDetailsRow};
+export { harmonized as RunDetailsRow };
 

@@ -2,8 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/react-material-icons';
 import Autocomplete from 'react-autocomplete';
 
-import { Dropdown } from '@jenkins-cd/design-language';
-
 /**
  * Simple column filter
  *
@@ -65,7 +63,7 @@ export class ColumnFilter extends Component {
 
         const wrapperStyle = {
             display: 'inline-block',
-            width: '100%'
+            width: '100%',
         };
 
         return (<div className={`ColumnFilter ${value ? '' : 'empty'} ${focused ? 'focused' : ''}`}>

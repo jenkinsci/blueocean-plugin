@@ -14,7 +14,7 @@ import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
 import {
     NoRunsDefaultPlaceholder,
     NoRunsForBranchPlaceholder,
-    NoRunsMultibranchPlaceholder
+    NoRunsMultibranchPlaceholder,
 } from './placeholder/NoRunsPlaceholder';
 
 import Extensions from '@jenkins-cd/js-extensions';
@@ -39,16 +39,6 @@ export class Activity extends Component {
         actionExtensionCount: 0,
     };
 
-    // Figure out how many extensions we have for the action buttons column so we can size it appropriately
-    _countExtensions() {
-        Extensions.store.getExtensions('jenkins.pipeline.activity.list.action', extensions => {
-            const count = extensions && typeof(extensions.length) === 'number' ? extensions.length : 0;
-            if (count !== this.state.actionExtensionCount) {
-                this.setState({ actionExtensionCount: count });
-            }
-        });
-    }
-
     componentWillMount() {
         if (this.context.params) {
             const organization = this.context.params.organization;
@@ -66,6 +56,16 @@ export class Activity extends Component {
             const branch = this._branchFromProps(newProps);
             this.pager = this.context.activityService.activityPager(organization, pipeline, branch);
         }
+    }
+
+    // Figure out how many extensions we have for the action buttons column so we can size it appropriately
+    _countExtensions() {
+        Extensions.store.getExtensions('jenkins.pipeline.activity.list.action', extensions => {
+            const count = extensions && typeof(extensions.length) === 'number' ? extensions.length : 0;
+            if (count !== this.state.actionExtensionCount) {
+                this.setState({ actionExtensionCount: count });
+            }
+        });
     }
 
     _branchFromProps(props) {

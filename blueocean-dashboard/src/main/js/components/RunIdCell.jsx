@@ -1,6 +1,6 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 
-function RunIdCell({run}) {
+function RunIdCell({ run }) {
     const identifier = run.name ? run.name : run.id;
     return <span title={identifier}>{identifier}</span>;
 }
