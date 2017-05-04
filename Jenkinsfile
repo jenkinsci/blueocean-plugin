@@ -20,6 +20,7 @@ node {
         sh 'npm --prefix ./blueocean-core-js install'
         sh 'npm --prefix ./blueocean-core-js run gulp'
         sh "mvn clean install -B -DcleanNode -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
+        step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
         step([$class: 'ArtifactArchiver', artifacts: '*/target/*.hpi'])
       
         stage 'Sanity check dependancies'
@@ -31,6 +32,7 @@ node {
         stage 'ATH'
         sh 'cd acceptance-tests && npm install'
         sh "cd acceptance-tests && ./run.sh -a=../blueocean/ --no-selenium"
+        step([$class: 'JUnitResultArchiver', testResults: 'acceptance-tests/target/surefire-reports/*.xml'])
         
       } catch(err) {
         currentBuild.result = "FAILURE"
@@ -39,7 +41,6 @@ node {
             currentBuild.result = "ABORTED"
         }
       } finally {
-        step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
         sendhipchat()
         sh "./acceptance-tests/runner/scripts/stop-selenium.sh"
         deleteDir()
