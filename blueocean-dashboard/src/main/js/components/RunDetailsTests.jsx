@@ -1,94 +1,53 @@
 import React, { Component, PropTypes } from 'react';
-import { EmptyStateView } from '@jenkins-cd/design-language';
-import Extensions, { dataType } from '@jenkins-cd/js-extensions';
-import Markdown from 'react-remarkable';
-import { actions as selectorActions, testResults as testResultsSelector,
-    connect, createSelector } from '../redux';
+import { pagerService } from '@jenkins-cd/blueocean-core-js';
+
+import TestResults from './testing/TestResults';
+import TestService from './testing/TestService';
+import NoTestsPlaceholder from './testing/NoTestsPlaceholder';
 
 /**
  * Displays a list of tests from the supplied build run property.
  */
-export class RunDetailsTests extends Component {
-    componentWillMount() {
-        this.props.fetchTestResults(
-            this.props.result
-        );
-    }
+export default class RunDetailsTests extends Component {
 
-    componentWillUnmount() {
-        this.props.resetTestDetails();
+    propTypes = {
+        params: PropTypes.object,
+        pipeline: PropTypes.object,
+        isMultiBranch: PropTypes.bool,
+        result: PropTypes.object,
+        fetchTypeInfo: PropTypes.func,
+        t: PropTypes.func,
+        locale: PropTypes.string,
+    };
+
+    contextTypes = {
+        config: PropTypes.object.isRequired,
+    };
+
+    componentWillMount() {
+        this.testService = new TestService(pagerService);
     }
 
     render() {
-        const { testResults, t, locale } = this.props;
+        const { t, locale } = this.props;
 
-        if (!testResults || testResults.$pending) {
-            return null;
+        let result;
+        if (this.props.result.testSummary.total || this.props.result.testSummary.total > 0) {
+            result = (
+                <div className="test-results-container">
+                    <TestResults
+                        locale={locale}
+                        t={t}
+                        pipeline={this.props.pipeline}
+                        run={this.props.result}
+                        testService={this.testService}
+                    />
+                </div>
+            );
+        } else {
+            result = (<NoTestsPlaceholder t={this.props.t} />);
         }
-
-        if (testResults.$failed) {
-            return (<EmptyStateView tightSpacing>
-                 <Markdown>
-                    {t('EmptyState.tests', {
-                        defaultValue: 'There are no tests archived for this run.\n\n',
-                    })}
-                </Markdown>
-            </EmptyStateView>);
-        }
-
-        const percentComplete = testResults.passCount /
-            (testResults.passCount + testResults.failCount);
-
-        return (<div className="test-results-container">
-            <div className="test=result-summary" style={{ display: 'none' }}>
-                <div className={`test-result-bar ${percentComplete}%`}></div>
-                <div className="test-result-passed">{t('rundetail.tests.passed', {
-                    0: testResults.passCount,
-                    defaultValue: 'Passed {0}',
-                })}</div>
-                <div className="test-result-failed">{t('rundetail.tests.failed', {
-                    0: testResults.failCount,
-                    defaultValue: 'Failed {0}',
-                })}</div>
-                <div className="test-result-skipped">{t('rundetail.tests.skipped', {
-                    0: testResults.skipCount,
-                    defaultValue: 'Skipped {0}',
-                })}</div>
-                <div className="test-result-duration">{t('rundetail.tests.duration', {
-                    0: testResults.duration,
-                    defaultValue: 'Duration {0}',
-                })}</div>
-            </div>
-
-            <Extensions.Renderer
-              extensionPoint="jenkins.test.result"
-              filter={dataType(testResults)}
-              testResults={testResults}
-              locale={locale}
-              t={t}
-              run={this.props.result}
-            />
-        </div>);
+        return result;
     }
 }
 
-RunDetailsTests.propTypes = {
-    params: PropTypes.object,
-    isMultiBranch: PropTypes.bool,
-    result: PropTypes.object,
-    testResults: PropTypes.object,
-    resetTestDetails: PropTypes.func,
-    fetchTestResults: PropTypes.func,
-    fetchTypeInfo: PropTypes.func,
-    t: PropTypes.func,
-    locale: PropTypes.string,
-};
-
-RunDetailsTests.contextTypes = {
-    config: PropTypes.object.isRequired,
-};
-
-const selectors = createSelector([testResultsSelector],
-    (testResults) => ({ testResults }));
-
-export default connect(selectors, selectorActions)(RunDetailsTests);

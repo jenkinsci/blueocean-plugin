@@ -1,30 +1,10 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.annotation.Nonnull;
-
-import org.apache.commons.lang3.StringUtils;
-import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
-import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
-import org.jenkinsci.plugins.pubsub.MessageException;
-import org.jenkinsci.plugins.pubsub.PubsubBus;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
-
+import com.google.common.base.Preconditions;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Cause;
 import hudson.model.Item;
 import hudson.model.TaskListener;
@@ -51,6 +31,26 @@ import jenkins.scm.api.SCMRevision;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.SCMSourceCriteria;
 import jenkins.scm.api.SCMSourceEvent;
+import jenkins.scm.api.SCMSourceOwner;
+import org.apache.commons.lang3.StringUtils;
+import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
+import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
+import org.jenkinsci.plugins.pubsub.MessageException;
+import org.jenkinsci.plugins.pubsub.PubsubBus;
+import org.kohsuke.stapler.DataBoundConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * @author Vivek Pandey
@@ -69,8 +69,11 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
     }
 
     @SuppressWarnings("unchecked")
+    @SuppressFBWarnings(value = "REC_CATCH_EXCEPTION", justification = "Runtime exception is thrown from the catch block")
     @Override
     public BluePipeline create(Reachable parent) throws IOException {
+        Preconditions.checkNotNull(parent, "Parent passed is null");
+        Preconditions.checkNotNull(getName(), "Name provided was null");
 
         String apiUrl = null;
         String orgName = getName(); //default
@@ -83,7 +86,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                 orgName = (String) scmConfig.getConfig().get("orgName");
             }
             credentialId = scmConfig.getCredentialId();
-            if (scmConfig != null && scmConfig.getConfig().get("repos") instanceof List) {
+            if (scmConfig.getConfig().get("repos") instanceof List) {
                 for (String r : (List<String>) scmConfig.getConfig().get("repos")) {
                     repos.add(r);
                 }
@@ -98,7 +101,9 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
         }
 
         Item item = Jenkins.getInstance().getItemByFullName(orgName);
+        boolean creatingNewItem = item == null;
         try {
+
             if(credentialId != null) {
                 validateCredentialId(credentialId, apiUrl);
             }
@@ -148,6 +153,13 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                         }
                     }
 
+                    // Add any existing discovered repos
+                    for (MultiBranchProject<?,?> p : organizationFolder.getItems()) {
+                        if (!repos.contains(p.getName())) {
+                            repos.add(p.getName());
+                        }
+                    }
+
                     if (credentialId == null) {
                         credentialId = gitHubSCMNavigator.getScanCredentialsId();
                     }
@@ -179,27 +191,42 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                         }
                     });
                 }else {
+                    gitHubSCMNavigator.setPattern(".*");
                     organizationFolder.scheduleBuild(new Cause.UserIdCause());
                 }
+                organizationFolder.save();
                 return githubOrganizationFolder;
             }
         } catch (Exception e){
-            String msg = String.format("Error creating pipeline %s: %s",getName(),e.getMessage());
-            logger.error(msg, e);
-            if(item != null) {
-                try {
-                    item.delete();
-                } catch (InterruptedException e1) {
-                    logger.error(String.format("Error creating pipeline %s: %s",getName(),e1.getMessage()), e1);
-                    throw new ServiceException.UnexpectedErrorException("Error cleaning up pipeline " + getName() + " due to error: " + e.getMessage(), e);
-                }
-            }
-            if(e instanceof ServiceException){
-                throw (ServiceException)e;
-            }
-            throw new ServiceException.UnexpectedErrorException(msg, e);
+            return cleanupOnError(e, getName(), item, creatingNewItem);
         }
         return null;
+    }
+
+    /**
+     * Throws the correct exception for the REST API when there is an error.
+     * Removes the item if this process was creating the item.
+     * @param e exception
+     * @param item being created or updated
+     * @param creatingNewItem if this item is a new item created by this process or not
+     * @return created pipeline
+     * @throws IOException if the item has failed deletion
+     */
+    static BluePipeline cleanupOnError(Exception e, String name, Item item, boolean creatingNewItem) throws IOException {
+        String msg = String.format("Error creating pipeline %s: %s",name,e.getMessage());
+        logger.error(msg, e);
+        if(item != null && creatingNewItem) {
+            try {
+                item.delete();
+            } catch (InterruptedException e1) {
+                logger.error(String.format("Error creating pipeline %s: %s",name,e1.getMessage()), e1);
+                throw new ServiceException.UnexpectedErrorException("Error cleaning up pipeline " + name + " due to error: " + e.getMessage(), e);
+            }
+        }
+        if(e instanceof ServiceException){
+            throw (ServiceException)e;
+        }
+        throw new ServiceException.UnexpectedErrorException(msg, e);
     }
 
     private void sendOrganizationScanCompleteEvent(final Item item, final OrganizationFolder orgFolder) {
@@ -354,8 +381,9 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
 
         @Override
         public boolean isMatch(@Nonnull SCMSource source) {
-            return ((GitHubSCMSource)source).getRepository().equals(getSourceName()) &&
-                    source.getOwner().getFullName().equals(project.getFullName());
+            SCMSourceOwner sourceOwner = source.getOwner();
+            return ((GitHubSCMSource)source).getRepository().equals(getSourceName()) && sourceOwner != null
+                     && sourceOwner.getFullName().equals(project.getFullName());
         }
 
         @Nonnull

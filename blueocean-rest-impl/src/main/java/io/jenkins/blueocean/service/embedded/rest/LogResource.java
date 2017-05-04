@@ -9,6 +9,7 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.framework.io.CharSpool;
 import org.kohsuke.stapler.framework.io.LineEndNormalizingWriter;
 
+import javax.annotation.Nonnull;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.Reader;
@@ -27,7 +28,7 @@ public class LogResource{
         this(log, LogAppender.DEFAULT);
     }
 
-    public LogResource(AnnotatedLargeText log, LogAppender logAppender) {
+    public LogResource(@Nonnull AnnotatedLargeText log, @Nonnull LogAppender logAppender) {
         this.logText = log;
         this.appenderLogReader = logAppender.getLog();
     }

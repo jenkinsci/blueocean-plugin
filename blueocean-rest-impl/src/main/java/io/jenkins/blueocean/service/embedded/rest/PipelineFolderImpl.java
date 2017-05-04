@@ -8,16 +8,18 @@ import hudson.model.Item;
 import hudson.model.ItemGroup;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
 import io.jenkins.blueocean.rest.model.BlueIcon;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineFolder;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
-import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
 import org.kohsuke.stapler.json.JsonBody;
 
@@ -31,18 +33,19 @@ import java.util.Map;
  * @author Vivek Pandey
  */
 public class PipelineFolderImpl extends BluePipelineFolder {
-
+    protected final BlueOrganization org;
     private final ItemGroup folder;
     protected final Link parent;
 
     public PipelineFolderImpl(ItemGroup folder, Link parent) {
+        this.org = OrganizationResolver.getInstance().getContainingOrg(folder);
         this.folder = folder;
         this.parent = parent;
     }
 
     @Override
     public String getOrganization() {
-        return OrganizationImpl.INSTANCE.getName();
+        return org.getName();
     }
 
     @Override
@@ -71,11 +74,6 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     @Override
     public Collection<BlueActionProxy> getActions() {
         return Collections.emptyList();
-    }
-
-    @Override
-    public Container<Resource> getActivities() {
-        return null;
     }
 
     @Override
@@ -134,11 +132,11 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public Link getLink() {
-        return OrganizationImpl.INSTANCE.getLink().rel("pipelines").rel(AbstractPipelineImpl.getRecursivePathFromFullName(this));
+        return org.getLink().rel("pipelines").rel(AbstractPipelineImpl.getRecursivePathFromFullName(this));
     }
 
     @Extension(ordinal = -10)
-    public static class PipelineFactoryImpl extends BluePipelineFactory{
+    public static class PipelineFactoryImpl extends BluePipelineFactory {
 
         @Override
         public PipelineFolderImpl getPipeline(Item item, Reachable parent) {
@@ -173,18 +171,14 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public Iterable<String> getPipelineFolderNames() {
-        Iterable<BluePipeline> pipelines = getPipelines();
-        if(pipelines != null) {
-            return Iterables.transform(getPipelines(), new Function<BluePipeline, String>() {
-                @Override
-                public String apply(@Nullable BluePipeline input) {
-                    if (input != null && input instanceof BluePipelineFolder) {
-                        return input.getName();
-                    }
-                    return null;
+        return Iterables.transform(getPipelines(), new Function<BluePipeline, String>() {
+            @Override
+            public String apply(@Nullable BluePipeline input) {
+                if (input != null && input instanceof BluePipelineFolder) {
+                    return input.getName();
                 }
-            });
-        }
-        return Collections.emptyList();
+                return null;
+            }
+        });
     }
 }

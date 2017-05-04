@@ -3,7 +3,7 @@
 HERE=$(dirname $0)
 cd $HERE
 
-BLUEOCEAN_VERSION=$(git for-each-ref --count=1 --sort=-taggerdate refs/tags/blueocean-parent-\*  | awk '{print $3 }' | sed 's/refs\/tags\/blueocean-parent-//')
+BLUEOCEAN_VERSION=$(git for-each-ref --sort=-taggerdate refs/tags/blueocean-parent-\*  | grep -v 'beta' | head -1 |awk '{print $3 }' | sed 's/refs\/tags\/blueocean-parent-//')
 
 # Check if the image already exists
 if docker pull jenkinsci/blueocean:$BLUEOCEAN_VERSION; then

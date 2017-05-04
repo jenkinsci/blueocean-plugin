@@ -1,4 +1,5 @@
 import Utils from '../utils';
+import AppConfig from '../config';
 
 export class SSEService {
     constructor(connection) {
@@ -10,7 +11,7 @@ export class SSEService {
         if (!this.jobListener) {
             this.jobListener = this.connection.subscribe('job', (event) => {
                 this._handleJobEvent(event);
-            });
+            }, { jenkins_org: AppConfig.getOrganizationName() });
         }
     }
 

@@ -8,7 +8,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
-import io.jenkins.blueocean.service.embedded.rest.QueueContainerImpl;
+import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import jenkins.model.Jenkins;
 
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ public class MultiBranchPipelineQueueContainer extends BlueQueueContainer {
             if(item != null && item.task instanceof Job){
                 Job job = ((Job) item.task);
                 if(job.getParent() != null && job.getParent().getFullName().equals(multiBranchPipeline.mbp.getFullName())) {
-                    return QueueContainerImpl.getQueuedItem(item, job);
+                    return QueueUtil.getQueuedItem(item, job);
                 }
             }
         }catch (NumberFormatException e){
@@ -58,7 +58,7 @@ public class MultiBranchPipelineQueueContainer extends BlueQueueContainer {
         List<BlueQueueItem> queueItems = Lists.newArrayList();
         for(Object o: multiBranchPipeline.mbp.getItems()) {
             if(o instanceof Job) {
-                queueItems.addAll(QueueContainerImpl.getQueuedItems((Job)o));
+                queueItems.addAll(QueueUtil.getQueuedItems((Job)o));
             }
         }
         return queueItems.iterator();

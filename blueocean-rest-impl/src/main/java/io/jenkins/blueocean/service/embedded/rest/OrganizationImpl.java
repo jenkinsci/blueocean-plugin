@@ -2,11 +2,13 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.ExtensionList;
 import hudson.model.Action;
+import hudson.model.ItemGroup;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.OrganizationRoute;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -27,21 +29,29 @@ import java.io.IOException;
  * @author Vivek Pandey
  * @author Kohsuke Kawaguchi
  */
-public class OrganizationImpl extends BlueOrganization {
-    public final static String DEFAULT_ORG_NAME = "jenkins";
+public class OrganizationImpl extends BlueOrganization implements OrganizationResolver.ItemGroupProvider {
+    private final String name;
+    /**
+     * Everything in this {@link ItemGroup} is considered to belong to this organization.
+     */
+    private final ItemGroup group;
 
     private final UserContainerImpl users = new UserContainerImpl(this);
 
-    /**
-     * In embedded mode, there's only one organization
-     */
-    public static final OrganizationImpl INSTANCE = new OrganizationImpl();
+    public OrganizationImpl(String name, ItemGroup group) {
+        this.name = name;
+        this.group = group;
+    }
 
     /**
      * In embedded mode, there's only one organization
      */
     public String getName() {
-        return DEFAULT_ORG_NAME;
+        return name;
+    }
+
+    public ItemGroup getGroup() {
+        return group;
     }
 
     @Override
@@ -51,7 +61,7 @@ public class OrganizationImpl extends BlueOrganization {
 
     @Override
     public BluePipelineContainer getPipelines() {
-        return new PipelineContainerImpl(Jenkins.getInstance());
+        return new PipelineContainerImpl(group);
     }
 
     @WebMethod(name="") @DELETE
@@ -86,7 +96,7 @@ public class OrganizationImpl extends BlueOrganization {
         if(user == null){
             throw new ServiceException.NotFoundException("No authenticated user found");
         }
-        return new UserImpl(user,new UserContainerImpl(OrganizationImpl.INSTANCE));
+        return new UserImpl(user,new UserContainerImpl(this));
     }
 
     @Override
@@ -110,7 +120,8 @@ public class OrganizationImpl extends BlueOrganization {
 
         // No OrganizationRoute found, now lookup in available actions from Jenkins instance serving root
         for(Action action:Jenkins.getInstance().getActions()) {
-            if (action.getUrlName() != null && action.getUrlName().equals(route)) {
+            String urlName = action.getUrlName();
+            if (urlName != null && urlName.equals(route)) {
                 return wrap(action);
             }
         }

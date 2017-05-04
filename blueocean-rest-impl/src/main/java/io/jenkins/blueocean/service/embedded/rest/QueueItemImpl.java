@@ -1,13 +1,21 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import hudson.model.Item;
 import hudson.model.Queue;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
+import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueRun.BlueCause;
+import io.jenkins.blueocean.rest.model.BlueRun.BlueRunResult;
+import io.jenkins.blueocean.rest.model.BlueRun.BlueRunState;
+import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl.BlueCauseImpl;
 import jenkins.model.Jenkins;
 
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -27,7 +35,7 @@ public class QueueItemImpl extends BlueQueueItem {
             pipeline.getLink());
     }
 
-    public QueueItemImpl(Queue.Item item, String name, int expectedBuildNumber, Link self, Link parent) {
+    QueueItemImpl(Queue.Item item, String name, int expectedBuildNumber, Link self, Link parent) {
         this.item = item;
         this.pipelineName = name;
         this.expectedBuildNumber = expectedBuildNumber;
@@ -42,7 +50,12 @@ public class QueueItemImpl extends BlueQueueItem {
 
     @Override
     public String getOrganization() {
-        return OrganizationImpl.INSTANCE.getName();
+        if (item.task instanceof Item) {
+            Item i = (Item) item.task;
+            return OrganizationResolver.getInstance().getContainingOrg(i).getName();
+        } else {
+            return null;
+        }
     }
 
     @Override
@@ -70,8 +83,18 @@ public class QueueItemImpl extends BlueQueueItem {
     }
 
     @Override
+    public Collection<BlueCause> getCauses() {
+        return BlueCauseImpl.getCauses(item.getCauses());
+    }
+
+    @Override
     public String getCauseOfBlockage() {
         return item.getCauseOfBlockage().toString();
+    }
+
+    @Override
+    public BlueRun toRun() {
+        return new QueuedBlueRun(BlueRunState.QUEUED, BlueRunResult.UNKNOWN, this, parent);
     }
 
     @Override

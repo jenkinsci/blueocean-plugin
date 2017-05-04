@@ -265,8 +265,9 @@ public class BlueUrlTokenizer {
     }
 
     public boolean lastPartIs(@Nonnull UrlPart urlPart, @Nonnull String value) {
-        if (this.lastPart == urlPart) {
-            return getPart(this.lastPart).equals(value);
+        if (this.lastPart != null && this.lastPart == urlPart) {
+            String part = getPart(this.lastPart);
+            return part != null && part.equals(value);
         }
         return false;
     }

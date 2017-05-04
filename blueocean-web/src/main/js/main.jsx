@@ -43,7 +43,7 @@ function loginOrLogout(t) {
 // then show it anyway.
 const AdminLink = (props) => {
     const { t } = props;
-    
+
     const user = User.current();
     const showLink = !Security.isSecurityEnabled() || user && user.isAdministrator;
 
@@ -78,9 +78,13 @@ class App extends Component {
         });
 
         const topNavLinks = [
-            <Link query={location.query} to="/pipelines">{pipeCaption}</Link>,
+            <Extensions.Renderer extensionPoint="jenkins.blueocean.top.pipelines">
+                <Link query={location.query} to="/pipelines">{pipeCaption}</Link>
+            </Extensions.Renderer>,
             <Extensions.Renderer extensionPoint="jenkins.blueocean.top.links"/>,
-            <AdminLink t={translate} />,
+            <Extensions.Renderer extensionPoint="jenkins.blueocean.top.admin">
+                <AdminLink t={translate} />
+            </Extensions.Renderer>,
         ];
 
         let classicUrl = toClassicJobPage(window.location.pathname);
@@ -100,12 +104,16 @@ class App extends Component {
         }
 
         const userComponents = [
-            <div className="user-component icon" title={translate('go.to.classic', { defaultValue: 'Go to classic' })}>
-                <a className="main_exit_to_app" href={classicUrl}><Icon icon="exit_to_app" /></a>
-            </div>,
-            <div className="user-component button-bar layout-small inverse">
-                { loginOrLogout(translate) }
-            </div>
+            <Extensions.Renderer extensionPoint="jenkins.blueocean.top.go.classic">
+                <div className="user-component icon" title={translate('go.to.classic', { defaultValue: 'Go to classic' })}>
+                    <a className="main_exit_to_app" href={classicUrl}><Icon icon="exit_to_app" /></a>
+                </div>
+            </Extensions.Renderer>,
+            <Extensions.Renderer extensionPoint="jenkins.blueocean.top.login">
+                <div className="user-component button-bar layout-small inverse">
+                    { loginOrLogout(translate) }
+                </div>
+            </Extensions.Renderer>
         ];
 
         const homeURL = config.getAppURLBase();

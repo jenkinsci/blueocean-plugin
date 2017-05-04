@@ -10,7 +10,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.0.0-rc2-SNAPSHOT</version>
+  <version>1.1.0-beta-3-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean Parent</name>
@@ -22,6 +22,8 @@
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <node.version>6.4.0</node.version>
     <npm.version>3.10.3</npm.version>
+    <findbugs-maven-plugin.version>3.0.4</findbugs-maven-plugin.version>
+    <findbugs.failOnError>true</findbugs.failOnError>
   </properties>
 
   <scm>
@@ -126,6 +128,19 @@
     </pluginRepository>
   </pluginRepositories>
 
+  <dependencies>
+      <dependency>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-core</artifactId>
+          <scope>test</scope>
+      </dependency>
+  </dependencies>
+
   <dependencyManagement>
     <dependencies>
 
@@ -211,7 +226,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-autofavorite</artifactId>
-            <version>0.6</version>
+            <version>0.7</version>
         </dependency>
 
         <!-- TODO: should be moved out of blueocean repo as separate plugin -->
@@ -230,12 +245,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>branch-api</artifactId>
-            <version>2.0.8</version>
+            <version>2.0.9</version>
         </dependency>
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-model-definition</artifactId>
-            <version>1.1.1</version>
+            <version>1.1.3</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -245,7 +260,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-api</artifactId>
-            <version>2.12</version>
+            <version>2.13</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -260,7 +275,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-branch-source</artifactId>
-            <version>2.0.4</version>
+            <version>2.0.5</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -275,12 +290,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-durable-task-step</artifactId>
-            <version>2.10</version>
+            <version>2.11</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-support</artifactId>
-            <version>2.13</version>
+            <version>2.14</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -300,7 +315,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-input-step</artifactId>
-            <version>2.5</version>
+            <version>2.7</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -310,24 +325,24 @@
         <dependency>
             <groupId>com.coravy.hudson.plugins.github</groupId>
             <artifactId>github</artifactId>
-            <version>1.26.1</version>
+            <version>1.27.0</version>
         </dependency>
 
         <!-- Other -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-display-url</artifactId>
-            <version>1.5.1</version>
+            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>scm-api</artifactId>
-            <version>2.1.0</version>
+            <version>2.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>git</artifactId>
-            <version>3.1.0</version>
+            <version>3.3.0</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -337,7 +352,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-folder</artifactId>
-            <version>6.0.2</version>
+            <version>6.0.3</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.main</groupId>
@@ -347,7 +362,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>matrix-project</artifactId>
-            <version>1.8</version>
+            <version>1.10</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.main</groupId>
@@ -408,7 +423,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>mailer</artifactId>
-            <version>1.19</version>
+            <version>1.20</version>
         </dependency>
         <dependency>
             <groupId>org.bitbucket.b_c</groupId>
@@ -422,10 +437,10 @@
         </dependency>
         <dependency>
           <groupId>io.jenkins.blueocean</groupId>
-          <artifactId>blueocean-pipeline-editor</artifactId>        
-          <version>0.2-rc1</version>
+          <artifactId>blueocean-pipeline-editor</artifactId>
+          <version>0.2.0</version>
         </dependency>
-        
+
 
         <!-- Needed for blueocean-display-url plugin -->
         <dependency>
@@ -445,7 +460,7 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
-            <version>2.7.16</version>
+            <version>2.8.9</version>
             <scope>test</scope>
         </dependency>
 
@@ -453,7 +468,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>token-macro</artifactId>
-            <version>2.0</version>
+            <version>2.1</version>
         </dependency>
         <dependency>
             <!--
@@ -481,6 +496,17 @@
                   <artifactId>maven-javadoc-plugin</artifactId>
                   <version>2.10.4</version>
               </plugin>
+              <plugin>
+                  <groupId>org.codehaus.mojo</groupId>
+                  <artifactId>findbugs-maven-plugin</artifactId>
+                  <version>${findbugs-maven-plugin.version}</version>
+                  <configuration>
+                      <effort>Max</effort>
+                      <threshold>Default</threshold>
+                      <xmlOutput>true</xmlOutput>
+                      <findbugsXmlOutput>false</findbugsXmlOutput>
+                  </configuration>
+              </plugin>
           </plugins>
       </pluginManagement>
     <plugins>
@@ -488,14 +514,6 @@
         <!-- TODO: java8 signature doesn't exist yet -->
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>animal-sniffer-maven-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>
-        </configuration>
-      </plugin>
-      <plugin>
-        <!-- No use worrying about this while we make such drastic changes left & right in every commit -->
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>findbugs-maven-plugin</artifactId>
         <configuration>
           <skip>true</skip>
         </configuration>
@@ -508,6 +526,59 @@
                 <disabledTestInjection>true</disabledTestInjection>
             </configuration>
         </plugin>
+        <plugin>
+            <groupId>org.jacoco</groupId>
+            <artifactId>jacoco-maven-plugin</artifactId>
+            <version>0.7.9</version>
+            <configuration>
+                <haltOnFailure>false</haltOnFailure>
+                <destFile>${project.build.directory}/code-coverage/jacoco.exec</destFile>
+                <!-- Sets the path to the file which contains the execution data. -->
+                <dataFile>${project.build.directory}/code-coverage/jacoco.exec</dataFile>
+                <!-- Sets the output directory for the code coverage report. -->
+                <outputDirectory>${project.build.directory}/code-coverage/report</outputDirectory>
+                <propertyName>surefireArgLine</propertyName>
+            </configuration>
+
+            <executions>
+                <execution>
+                    <id>jacoco-initialize</id>
+                    <goals>
+                        <goal>prepare-agent</goal>
+                    </goals>
+                </execution>
+                <execution>
+                    <id>jacoco-check</id>
+                    <phase>test</phase>
+                    <goals>
+                        <goal>report</goal>
+                        <goal>check</goal>
+                    </goals>
+                    <configuration>
+                        <excludes>
+                            <exclude>io/jenkins/blueocean/commons/stapler/export/**/*</exclude>
+                        </excludes>
+                        <rules>
+                            <rule>
+                                <element>BUNDLE</element>
+                                <limits>
+                                    <limit>
+                                        <counter>INSTRUCTION</counter>
+                                        <value>COVEREDRATIO</value>
+                                        <minimum>0.90</minimum>
+                                    </limit>
+                                    <limit>
+                                        <counter>CLASS</counter>
+                                        <value>MISSEDCOUNT</value>
+                                        <maximum>0</maximum>
+                                    </limit>
+                                </limits>
+                            </rule>
+                        </rules>
+                    </configuration>
+                </execution>
+            </executions>
+        </plugin>
 
         <!--
         TODO: Remove/review this as part of solving https://issues.jenkins-ci.org/browse/JENKINS-38888
@@ -515,6 +586,7 @@
         -->
         <plugin>
             <artifactId>maven-surefire-plugin</artifactId>
+            <version>2.19.1</version>
             <configuration>
                 <systemProperties>
                     <property>
@@ -527,10 +599,16 @@
                 <!--
                 The following line is the one that's a must. Without it, with get jacoco complexity failures.
                 -->
-                <argLine>-Djava.awt.headless=true</argLine>
+                <argLine>${surefireArgLine} -Djava.awt.headless=true</argLine>
+                <rerunFailingTestsCount>0</rerunFailingTestsCount>
             </configuration>
         </plugin>
 
+        <!-- run findbugs on all modules -->
+        <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>findbugs-maven-plugin</artifactId>
+        </plugin>
     </plugins>
   </build>
 </project>

@@ -36,6 +36,10 @@ node {
         
       } catch(err) {
         currentBuild.result = "FAILURE"
+
+        if (err.toString().contains('AbortException')) {
+            currentBuild.result = "ABORTED"
+        }
       } finally {
         sendhipchat()
         sh "./acceptance-tests/runner/scripts/start-selenium.sh"
@@ -53,7 +57,7 @@ def sendhipchat() {
     if(currentBuild.result == null) {
       res = "SUCCESS"
     }
-    message = "${env.JOB_NAME} #${env.BUILD_NUMBER}, status: ${res} (<a href='${currentBuild.absoluteUrl}'>Open</a>)"
+    message = "${env.JOB_NAME} #${env.BUILD_NUMBER}, status: ${res} (<a href='${env.RUN_DISPLAY_URL}'>Open</a>)"
     color = null
     if(currentBuild.result == "UNSTABLE") {
         color = "YELLOW"
@@ -61,6 +65,8 @@ def sendhipchat() {
         color = "GREEN"
     } else if(currentBuild.result == "FAILURE") {
         color = "RED"
+    } else if(currentBuild.result == "ABORTED") {
+        color = "GRAY"
     }
     if(color != null) {
         hipchatSend message: message, color: color

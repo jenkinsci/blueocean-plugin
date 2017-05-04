@@ -86,7 +86,7 @@ public class BranchContainerImplTest extends PipelineBaseTest {
         Map o1 = (Map)l2.get(0);
         Map o3 = (Map)l2.get(1);
 
-        Assert.assertEquals(o.get("name"), o1.get("name"));
+        Assert.assertEquals(o2.get("name"), o1.get("name"));
     }
 
     private void setupScm() throws Exception {
@@ -140,6 +140,7 @@ public class BranchContainerImplTest extends PipelineBaseTest {
         ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
         sampleRepo.write("file", "subsequent content234");
         sampleRepo.git("commit", "--all", "--message=tweaked4");
+        sampleRepo.git("checkout", "master");
     }
 
 }
