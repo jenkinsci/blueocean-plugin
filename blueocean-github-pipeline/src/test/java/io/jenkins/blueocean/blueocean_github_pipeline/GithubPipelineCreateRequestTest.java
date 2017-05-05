@@ -50,7 +50,7 @@ public class GithubPipelineCreateRequestTest {
     }
 
     @Test
-    public  void testSendOrganizationScanCompleteEvent() throws Exception {
+    public  void test_sendOrganizationScanCompleteEvent() throws Exception {
         PubsubBus pubsubBus = Mockito.mock(PubsubBus.class);
         PowerMockito.mockStatic(PubsubBus.class);
         Mockito.when(PubsubBus.getBus()).thenReturn(pubsubBus);
@@ -75,6 +75,33 @@ public class GithubPipelineCreateRequestTest {
         Whitebox.invokeMethod(pipelineCreateRequest, "_sendOrganizationScanCompleteEvent", item, organizationFolder);
         Mockito.verify(pubsubBus, Mockito.atLeastOnce()).publish(Mockito.any(SimpleMessage.class));
     }
+
+    @Test
+    public  void testSendOrganizationScanCompleteEvent() throws Exception {
+        PubsubBus pubsubBus = Mockito.mock(PubsubBus.class);
+        PowerMockito.mockStatic(PubsubBus.class);
+        Mockito.when(PubsubBus.getBus()).thenReturn(pubsubBus);
+        Mockito.doNothing().when(pubsubBus).publish(Mockito.any(SimpleMessage.class));
+
+        Item item = Mockito.mock(Item.class);
+        OrganizationFolder organizationFolder = PowerMockito.mock(OrganizationFolder.class);
+        MultiBranchProject mbp = Mockito.mock(MultiBranchProject.class);
+        Mockito.when(mbp.getName()).thenReturn("PR-demo");
+
+        Mockito.when(organizationFolder.getName()).thenReturn("cloudbeers");
+        Mockito.when(organizationFolder.getItem("cloudbeers")).thenReturn(mbp);
+
+        PowerMockito.spy(GithubPipelineCreateRequest.class);
+
+        JSONObject config = new JSONObject();
+        config.put("repos", ImmutableList.of("PR-demo"));
+        config.put("orgName", ImmutableList.of("cloudbeers"));
+        GithubPipelineCreateRequest pipelineCreateRequest = new GithubPipelineCreateRequest("cloudbeers",
+                new BlueScmConfig(null, "12345", config));
+
+        Whitebox.invokeMethod(pipelineCreateRequest, "sendOrganizationScanCompleteEvent", item, organizationFolder);
+    }
+
 
     @Test
     public  void testSendMultibranchIndexingCompleteEvent() throws Exception {
