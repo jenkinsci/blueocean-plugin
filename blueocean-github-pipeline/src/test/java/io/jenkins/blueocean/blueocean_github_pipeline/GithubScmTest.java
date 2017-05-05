@@ -23,6 +23,8 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -33,6 +35,7 @@ import java.io.ByteArrayInputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
+import static io.jenkins.blueocean.rest.impl.pipeline.scm.Scm.CREDENTIAL_ID;
 import static org.powermock.api.mockito.PowerMockito.*;
 
 
@@ -40,7 +43,8 @@ import static org.powermock.api.mockito.PowerMockito.*;
  * @author Vivek Pandey
  */
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({GithubScm.class, Jenkins.class, Authentication.class, User.class, Secret.class, CredentialsMatchers.class, CredentialsProvider.class})
+@PrepareForTest({GithubScm.class, Jenkins.class, Authentication.class, User.class, Secret.class,
+        CredentialsMatchers.class, CredentialsProvider.class, Stapler.class})
 @PowerMockIgnore({"javax.crypto.*", "javax.security.*"})
 public class GithubScmTest {
 
@@ -107,45 +111,7 @@ public class GithubScmTest {
 
         String accessToken = "12345";
 
-        //Mock Credentials
-        UsernamePasswordCredentialsImpl credentials = mock(UsernamePasswordCredentialsImpl.class);
-        whenNew(UsernamePasswordCredentialsImpl.class).withAnyArguments().thenReturn(credentials);
-        when(credentials.getId()).thenReturn(githubScm.getId());
-        when(credentials.getUsername()).thenReturn("joe");
-
-        Secret secret = mock(Secret.class);
-        when(secret.getPlainText()).thenReturn(accessToken);
-        when(credentials.getPassword()).thenReturn(secret);
-        CredentialsMatcher credentialsMatcher = mock(CredentialsMatcher.class);
-        mockStatic(CredentialsMatchers.class);
-        mockStatic(CredentialsProvider.class);
-        when(CredentialsMatchers.withId(
-                githubScm.getId())).thenReturn(credentialsMatcher);
-
-        BlueOceanDomainRequirement blueOceanDomainRequirement = mock(BlueOceanDomainRequirement.class);
-        whenNew(BlueOceanDomainRequirement.class).withNoArguments().thenReturn(blueOceanDomainRequirement);
-
-        when(CredentialsProvider.class, "lookupCredentials",
-                StandardUsernamePasswordCredentials.class, jenkins, authentication,  blueOceanDomainRequirement)
-                .thenReturn(Lists.newArrayList(credentials));
-
-        when(CredentialsMatchers.class, "firstOrNull", Lists.newArrayList(credentials), credentialsMatcher).thenReturn(credentials);
-
-        when(CredentialsMatchers.allOf(credentialsMatcher)).thenReturn(credentialsMatcher);
-
-        //Mock credentials Domain
-        Domain domain = mock(Domain.class);
-        when(domain.getName()).thenReturn(GithubScm.DOMAIN_NAME);
-
-        //Mock credentials Store
-        CredentialsStore credentialsStore = mock(CredentialsStore.class);
-        when(credentialsStore.hasPermission(CredentialsProvider.CREATE)).thenReturn(true);
-        when(credentialsStore.hasPermission(CredentialsProvider.UPDATE)).thenReturn(true);
-        when(credentialsStore.getDomainByName(GithubScm.DOMAIN_NAME)).thenReturn(domain);
-
-        when(CredentialsProvider.class, "lookupStores", user).thenReturn(Lists.newArrayList(credentialsStore));
-
-        when(credentialsStore.updateCredentials(domain,credentials,credentials)).thenReturn(true);
+        mockCredentials("joe", accessToken, githubScm.getId(), GithubScm.DOMAIN_NAME);
 
         HttpURLConnection httpURLConnectionMock = mock(HttpURLConnection.class);
         doNothing().when(httpURLConnectionMock).connect();
@@ -163,5 +129,57 @@ public class GithubScmTest {
         githubScm.validateAndCreate(req);
         String id = githubScm.getCredentialId();
         Assert.assertEquals(githubScm.getId(), id);
+    }
+
+    @Test
+    public void getOrganizations(){
+        mockStatic(Stapler.class);
+        StaplerRequest staplerRequest = mock(StaplerRequest.class);
+        when(Stapler.getCurrentRequest()).thenReturn(staplerRequest);
+
+        when(staplerRequest.getParameter(CREDENTIAL_ID)).thenReturn("12345");
+
+    }
+
+    void mockCredentials(String userId, String accessToken, String credentialId, String domainName) throws Exception {
+        //Mock Credentials
+        UsernamePasswordCredentialsImpl credentials = mock(UsernamePasswordCredentialsImpl.class);
+        whenNew(UsernamePasswordCredentialsImpl.class).withAnyArguments().thenReturn(credentials);
+        when(credentials.getId()).thenReturn(credentialId);
+        when(credentials.getUsername()).thenReturn(userId);
+
+        Secret secret = mock(Secret.class);
+        when(secret.getPlainText()).thenReturn(accessToken);
+        when(credentials.getPassword()).thenReturn(secret);
+        CredentialsMatcher credentialsMatcher = mock(CredentialsMatcher.class);
+        mockStatic(CredentialsMatchers.class);
+        mockStatic(CredentialsProvider.class);
+        when(CredentialsMatchers.withId(
+                credentialId)).thenReturn(credentialsMatcher);
+
+        BlueOceanDomainRequirement blueOceanDomainRequirement = mock(BlueOceanDomainRequirement.class);
+        whenNew(BlueOceanDomainRequirement.class).withNoArguments().thenReturn(blueOceanDomainRequirement);
+
+        when(CredentialsProvider.class, "lookupCredentials",
+                StandardUsernamePasswordCredentials.class, jenkins, authentication,  blueOceanDomainRequirement)
+                .thenReturn(Lists.newArrayList(credentials));
+
+        when(CredentialsMatchers.class, "firstOrNull", Lists.newArrayList(credentials), credentialsMatcher).thenReturn(credentials);
+
+        when(CredentialsMatchers.allOf(credentialsMatcher)).thenReturn(credentialsMatcher);
+
+        //Mock credentials Domain
+        Domain domain = mock(Domain.class);
+        when(domain.getName()).thenReturn(domainName);
+
+        //Mock credentials Store
+        CredentialsStore credentialsStore = mock(CredentialsStore.class);
+        when(credentialsStore.hasPermission(CredentialsProvider.CREATE)).thenReturn(true);
+        when(credentialsStore.hasPermission(CredentialsProvider.UPDATE)).thenReturn(true);
+        when(credentialsStore.getDomainByName(domainName)).thenReturn(domain);
+
+        when(CredentialsProvider.class, "lookupStores", user).thenReturn(Lists.newArrayList(credentialsStore));
+
+        when(credentialsStore.updateCredentials(domain,credentials,credentials)).thenReturn(true);
     }
 }

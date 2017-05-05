@@ -1,6 +1,14 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.plugins.credentials.domains.Domain;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.common.FileSource;
+import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
+import com.github.tomakehurst.wiremock.extension.Parameters;
+import com.github.tomakehurst.wiremock.extension.ResponseTransformer;
+import com.github.tomakehurst.wiremock.http.Request;
+import com.github.tomakehurst.wiremock.http.Response;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
@@ -8,14 +16,19 @@ import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.BeforeClass;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static io.jenkins.blueocean.blueocean_github_pipeline.GithubScm.GITHUB_API_URL_PROPERTY;
 import static org.junit.Assert.*;
 
 /**
@@ -23,17 +36,59 @@ import static org.junit.Assert.*;
  */
 public class GithubApiTest extends PipelineBaseTest {
 
-    private static final String accessToken = System.getProperty("GITHUB_ACCESS_TOKEN");
+    private User user;
+    private String githubApiUrl;
+    private final String accessToken = "12345";
 
-    @BeforeClass
-    public static void checkAccessToken() {
-        Assume.assumeTrue("GITHUB_ACCESS_TOKEN jvm property not set, ignoring test", accessToken != null);
+    @Rule
+    public WireMockRule githubApi = new WireMockRule(wireMockConfig().
+            dynamicPort().dynamicHttpsPort()
+            .usingFilesUnderClasspath("api")
+            .extensions(
+                    new ResponseTransformer() {
+                        @Override
+                        public Response transform(Request request, Response response, FileSource files,
+                                                  Parameters parameters) {
+                            if ("application/json"
+                                    .equals(response.getHeaders().getContentTypeHeader().mimeTypePart())) {
+                                return Response.Builder.like(response)
+                                        .but()
+                                        .body(response.getBodyAsString()
+                                                .replace("https://api.github.com/",
+                                                        "http://localhost:" + githubApi.port() + "/")
+                                        )
+                                        .build();
+                            }
+                            return response;
+                        }
+
+                        @Override
+                        public String getName() {
+                            return "url-rewrite";
+                        }
+
+                    })
+    );
+
+    @Before
+    @Override
+    public void setup() throws Exception {
+        super.setup();
+        //setup github api mock with WireMock
+        new File("src/test/resources/api/mappings").mkdirs();
+        new File("src/test/resources/api/__files").mkdirs();
+        githubApi.enableRecordMappings(new SingleRootFileSource("src/test/resources/api/mappings"),
+                new SingleRootFileSource("src/test/resources/api/__files"));
+        githubApi.stubFor(
+                WireMock.get(urlMatching(".*")).atPriority(10).willReturn(aResponse().proxiedFrom("https://api.github.com/")));
+
+        this.user = login("vivek", "Vivek Pandey", "vivek.pandey@gmail.com");
+        this.githubApiUrl = String.format("http://localhost:%s",githubApi.port());
+        System.setProperty(GITHUB_API_URL_PROPERTY, githubApiUrl);
     }
 
     @Test
     public void validateGithubToken() throws IOException, UnirestException {
-        User user = login();
-
         //check credentialId of this SCM, should be null
         Map r = new RequestBuilder(baseUrl)
                 .status(200)
@@ -79,8 +134,6 @@ public class GithubApiTest extends PipelineBaseTest {
 
     @Test
     public void validateGithubEnterpriseToken() throws IOException, UnirestException {
-        User user = login();
-
         //check credentialId of this SCM, should be null
         Map r = new RequestBuilder(baseUrl)
                 .status(200)
@@ -93,8 +146,6 @@ public class GithubApiTest extends PipelineBaseTest {
 
     @Test
     public void getOrganizationsAndRepositories() throws Exception {
-        User user = login();
-
         //check credentialId of this SCM, should be null
         Map r = new RequestBuilder(baseUrl)
                 .data(ImmutableMap.of("accessToken", accessToken))
@@ -121,7 +172,7 @@ public class GithubApiTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/?credentialId=" + credentialId + "&pageSize=10&pageNumber=3")
+                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/?credentialId=" + credentialId + "&pageSize=10&page=1")
                 .header(Scm.X_CREDENTIAL_ID, credentialId + "sdsdsd") //it must be ignored as credentialId query parameter overrides it.
                 .build(Map.class);
 
@@ -134,10 +185,10 @@ public class GithubApiTest extends PipelineBaseTest {
         resp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/game-of-life/?credentialId=" + credentialId)
+                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/RunMyProcess-task/?credentialId=" + credentialId)
                 .header(Scm.X_CREDENTIAL_ID, credentialId + "sdsdsd") //it must be ignored as credentialId query parameter overrides it.
                 .build(Map.class);
 
-        assertEquals("game-of-life", resp.get("name"));
+        assertEquals("RunMyProcess-task", resp.get("name"));
     }
 }

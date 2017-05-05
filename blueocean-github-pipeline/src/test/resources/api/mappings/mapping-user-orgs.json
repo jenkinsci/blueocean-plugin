@@ -1,0 +1,28 @@
+{
+  "request" : {
+    "url" : "/user/orgs",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-user-vivek-orgs.json",
+    "headers" : {
+      "Server" : "GitHub.com",
+      "Date" : "Fri, 05 May 2017 16:59:08 GMT",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Status" : "200 OK",
+      "X-GitHub-Media-Type" : "github.v3; format=json",
+      "X-RateLimit-Limit" : "60",
+      "X-RateLimit-Remaining" : "59",
+      "X-RateLimit-Reset" : "1494007148",
+      "Access-Control-Expose-Headers" : "ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval",
+      "Access-Control-Allow-Origin" : "*",
+      "Content-Security-Policy" : "default-src 'none'",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "deny",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-GitHub-Request-Id" : "D60C:219A7:17B5D18:1EB8097:590CAF5C"
+    }
+  }
+}

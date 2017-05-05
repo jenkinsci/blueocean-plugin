@@ -1,0 +1,67 @@
+[
+  {
+    "login": "jruby",
+    "id": 55687,
+    "url": "https://api.github.com/orgs/jruby",
+    "repos_url": "https://api.github.com/orgs/jruby/repos",
+    "events_url": "https://api.github.com/orgs/jruby/events",
+    "hooks_url": "https://api.github.com/orgs/jruby/hooks",
+    "issues_url": "https://api.github.com/orgs/jruby/issues",
+    "members_url": "https://api.github.com/orgs/jruby/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/jruby/public_members{/member}",
+    "avatar_url": "https://avatars1.githubusercontent.com/u/55687?v=3",
+    "description": null
+  },
+  {
+    "login": "jenkinsci",
+    "id": 107424,
+    "url": "https://api.github.com/orgs/jenkinsci",
+    "repos_url": "https://api.github.com/orgs/jenkinsci/repos",
+    "events_url": "https://api.github.com/orgs/jenkinsci/events",
+    "hooks_url": "https://api.github.com/orgs/jenkinsci/hooks",
+    "issues_url": "https://api.github.com/orgs/jenkinsci/issues",
+    "members_url": "https://api.github.com/orgs/jenkinsci/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/jenkinsci/public_members{/member}",
+    "avatar_url": "https://avatars3.githubusercontent.com/u/107424?v=3",
+    "description": "Jenkins is an open source automation server with an unparalleled plugin ecosystem to support practically every tool as part of your delivery pipelines"
+  },
+  {
+    "login": "cloudbees",
+    "id": 235526,
+    "url": "https://api.github.com/orgs/cloudbees",
+    "repos_url": "https://api.github.com/orgs/cloudbees/repos",
+    "events_url": "https://api.github.com/orgs/cloudbees/events",
+    "hooks_url": "https://api.github.com/orgs/cloudbees/hooks",
+    "issues_url": "https://api.github.com/orgs/cloudbees/issues",
+    "members_url": "https://api.github.com/orgs/cloudbees/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/cloudbees/public_members{/member}",
+    "avatar_url": "https://avatars0.githubusercontent.com/u/235526?v=3",
+    "description": ""
+  },
+  {
+    "login": "stapler",
+    "id": 700341,
+    "url": "https://api.github.com/orgs/stapler",
+    "repos_url": "https://api.github.com/orgs/stapler/repos",
+    "events_url": "https://api.github.com/orgs/stapler/events",
+    "hooks_url": "https://api.github.com/orgs/stapler/hooks",
+    "issues_url": "https://api.github.com/orgs/stapler/issues",
+    "members_url": "https://api.github.com/orgs/stapler/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/stapler/public_members{/member}",
+    "avatar_url": "https://avatars2.githubusercontent.com/u/700341?v=3",
+    "description": null
+  },
+  {
+    "login": "CloudBees-community",
+    "id": 1225740,
+    "url": "https://api.github.com/orgs/CloudBees-community",
+    "repos_url": "https://api.github.com/orgs/CloudBees-community/repos",
+    "events_url": "https://api.github.com/orgs/CloudBees-community/events",
+    "hooks_url": "https://api.github.com/orgs/CloudBees-community/hooks",
+    "issues_url": "https://api.github.com/orgs/CloudBees-community/issues",
+    "members_url": "https://api.github.com/orgs/CloudBees-community/members{/member}",
+    "public_members_url": "https://api.github.com/orgs/CloudBees-community/public_members{/member}",
+    "avatar_url": "https://avatars3.githubusercontent.com/u/1225740?v=3",
+    "description": null
+  }
+]
