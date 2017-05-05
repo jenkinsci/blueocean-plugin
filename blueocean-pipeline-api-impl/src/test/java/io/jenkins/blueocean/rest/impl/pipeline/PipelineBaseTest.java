@@ -588,19 +588,22 @@ public abstract class PipelineBaseTest{
         return p;
     }
 
-    protected User login() throws IOException {
+    protected User login(String userId, String fullName, String email) throws IOException {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
 
-        hudson.model.User bob = j.jenkins.getUser("bob");
+        hudson.model.User bob = j.jenkins.getUser(userId);
 
-        bob.setFullName("Bob Smith");
-        bob.addProperty(new Mailer.UserProperty("bob@jenkins-ci.org"));
+        bob.setFullName(fullName);
+        bob.addProperty(new Mailer.UserProperty(email));
 
 
         UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
 
         SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
         return bob;
+    }
+    protected User login() throws IOException {
+        return login("bob", "Bob Smith", "bob@jenkins-ci.org");
     }
 
 }
