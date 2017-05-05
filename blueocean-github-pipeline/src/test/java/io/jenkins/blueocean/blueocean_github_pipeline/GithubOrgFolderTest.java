@@ -33,18 +33,9 @@ import org.jenkinsci.plugins.github_branch_source.Connector;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
-import org.kohsuke.github.GHMyself;
-import org.kohsuke.github.GHRateLimit;
-import org.kohsuke.github.GitHub;
-import org.kohsuke.github.GitHubBuilder;
-import org.kohsuke.github.RateLimitHandler;
-import org.powermock.api.mockito.PowerMockito;
 
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Collections;
 import java.util.Map;
 
@@ -52,15 +43,11 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.Assert.*;
-import static org.powermock.api.mockito.PowerMockito.*;
 
 
 /**
  * @author Vivek Pandey
  */
-//@RunWith(PowerMockRunner.class)
-//@PrepareForTest({GithubScm.class, GitHub.class, GitHubBuilder.class})
-//@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*"})
 public class GithubOrgFolderTest extends PipelineBaseTest {
 
     private User user;
@@ -133,7 +120,6 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
 
         assertEquals(orgFolderName, resp.get("name"));
         assertEquals("io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganizationFolder", resp.get("_class"));
-
 
         TopLevelItem item = j.getInstance().getItem(orgFolderName);
         assertNotNull(item);
@@ -321,11 +307,9 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
         assertEquals("System Github Access Token", c.getDescription());
     }
 
-    String createGithubCredential(User user) throws UnirestException {
-//        Assume.assumeTrue("Need github accesstoken. Run test with -DGITHUB_ACCESS_TOKEN=... , ignoring test", System.getProperty("GITHUB_ACCESS_TOKEN") != null);
-        String accessToken = "12345";
+    private String createGithubCredential(User user) throws UnirestException {
         Map r = new RequestBuilder(baseUrl)
-                .data(ImmutableMap.of("accessToken", accessToken))
+                .data(ImmutableMap.of("accessToken", "12345"))
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .put("/organizations/jenkins/scm/github/validate/")
@@ -333,38 +317,5 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
 
         assertEquals("github", r.get("credentialId"));
         return "github";
-    }
-
-    private void mockGithubClient(String userId) throws Exception {
-
-        HttpURLConnection httpURLConnectionMock = mock(HttpURLConnection.class);
-        doNothing().when(httpURLConnectionMock).connect();
-
-        URL urlMock = mock(URL.class);
-        whenNew(URL.class).withAnyArguments().thenReturn(urlMock);
-        when(urlMock.openConnection()).thenReturn(httpURLConnectionMock);
-        when(httpURLConnectionMock.getHeaderField("X-OAuth-Scopes")).thenReturn("user:email,repo");
-        when(httpURLConnectionMock.getResponseCode()).thenReturn(200);
-
-        String githubUser = String.format("{\n  \"login\": \"%s\",\n  \"id\": 1, \"email\": \"%s@example.com\", \"created_at\": \"2008-01-14T04:33:35Z\"}", userId, userId);
-
-        when(httpURLConnectionMock.getInputStream()).thenReturn(new ByteArrayInputStream(githubUser.getBytes("UTF-8")));
-
-        GitHub gh = mock(GitHub.class);
-        GitHubBuilder builder = PowerMockito.mock(GitHubBuilder.class);
-        mockStatic(GitHub.class);
-        mockStatic(GitHubBuilder.class);
-        when(GitHubBuilder.fromEnvironment()).thenReturn(builder);
-        when(builder.withEndpoint("https://api.github.com")).thenReturn(builder);
-        when(builder.withOAuthToken("accessToken")).thenReturn(builder);
-        when(builder.withRateLimitHandler(RateLimitHandler.FAIL)).thenReturn(builder);
-        when(builder.build()).thenReturn(gh);
-        GHMyself me = mock(GHMyself.class);
-        when(gh.getMyself()).thenReturn(me);
-        when(me.getLogin()).thenReturn(userId);
-        doNothing().when(gh).checkApiUrlValidity();
-
-        GHRateLimit ghRateLimit = mock(GHRateLimit.class);
-
     }
 }
