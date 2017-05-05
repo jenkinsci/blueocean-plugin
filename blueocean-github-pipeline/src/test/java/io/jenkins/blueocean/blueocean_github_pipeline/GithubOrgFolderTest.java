@@ -42,6 +42,7 @@ import java.util.Map;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
+import static io.jenkins.blueocean.blueocean_github_pipeline.GithubScm.GITHUB_API_URL_PROPERTY;
 import static org.junit.Assert.*;
 
 
@@ -96,9 +97,8 @@ public class GithubOrgFolderTest extends PipelineBaseTest {
                 WireMock.get(urlMatching(".*")).atPriority(10).willReturn(aResponse().proxiedFrom("https://api.github.com/")));
 
         this.user = login("vivek", "Vivek Pandey", "vivek.pandey@gmail.com");
-        githubApiUrl = String.format("http://localhost:%s",githubApi.port());
-        System.setProperty("blueocena.github.url", githubApiUrl);
-
+        this.githubApiUrl = String.format("http://localhost:%s",githubApi.port());
+        System.setProperty(GITHUB_API_URL_PROPERTY, githubApiUrl);
     }
 
     @Test

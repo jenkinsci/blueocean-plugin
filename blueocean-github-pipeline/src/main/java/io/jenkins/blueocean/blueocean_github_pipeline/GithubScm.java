@@ -61,6 +61,9 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
  * @author Vivek Pandey
  */
 public class GithubScm extends Scm {
+    //Used by tests to mock github
+    static final String GITHUB_API_URL_PROPERTY = "blueocean.github.url";
+
     static final String DEFAULT_API_URI = "https://api.github.com";
     private static final String ID = "github";
 
@@ -94,7 +97,7 @@ public class GithubScm extends Scm {
 
     @Override
     public @Nonnull String getUri() {
-        String url = System.getProperty("blueocena.github.url");
+        String url = System.getProperty(GITHUB_API_URL_PROPERTY);
         String githubUrl = (url != null) ? url : DEFAULT_API_URI;
         return githubUrl;
     }
