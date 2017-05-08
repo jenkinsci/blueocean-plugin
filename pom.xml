@@ -28,6 +28,7 @@
     <guava.version>11.0.1</guava.version>
     <jacoco.version>0.7.9</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
+    <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
   </properties>
 
   <scm>
@@ -598,6 +599,7 @@
             <artifactId>maven-hpi-plugin</artifactId>
             <configuration>
                 <disabledTestInjection>true</disabledTestInjection>
+                <dependencyResolution>${hpi.dependencyResolution}</dependencyResolution>
             </configuration>
         </plugin>
         <plugin>
@@ -649,7 +651,7 @@
                                 <element>BUNDLE</element>
                                 <limits>
                                     <limit>
-                                        <counter>INSTRUCTION</counter>
+                                        <counter>LINE</counter>
                                         <value>COVEREDRATIO</value>
                                         <minimum>0.70</minimum>
                                     </limit>
