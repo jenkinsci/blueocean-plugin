@@ -9,6 +9,8 @@
     "lint:fix": "jjsbuilder --tasks lint --fixLint",
     "lint:watch": "jjsbuilder --tasks lint:watch --continueOnLint",
     "test": "jjsbuilder --tasks test",
+    "test:fast": "jjsbuilder --tasks test",
+    "test:debug": "node --debug-brk ./node_modules/.bin/jjsbuilder --tasks test",
     "test:watch": "jjsbuilder --tasks test:watch",
     "bundle": "jjsbuilder --tasks bundle",
     "bundle:watch": "jjsbuilder --tasks bundle:watch",
@@ -18,6 +20,7 @@
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
     "@jenkins-cd/js-builder": "0.0.52",
+    "@jenkins-cd/js-builder-jest": "0.0.1",
     "@kadira/storybook": "2.20.1",
     "babel": "6.5.2",
     "babel-core": "6.17.0",

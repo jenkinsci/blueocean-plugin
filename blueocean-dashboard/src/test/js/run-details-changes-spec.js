@@ -8,6 +8,9 @@ import RunDetailsChanges from '../../main/js/components/RunDetailsChanges';
 
 const t = i18nTranslator('blueocean-dashboard');
 
+import { mockExtensionsForI18n } from './mock-extensions-i18n';
+mockExtensionsForI18n();
+
 describe('RunDetailsChanges', () => {
     let component;
     let tree;

@@ -9,6 +9,9 @@ import { Pipelines } from '../../main/js/components/Pipelines.jsx';
 import { pipelines } from './data/pipelines/pipelinesSingle';
 import { pipelinesDupName } from './data/pipelines/pipelinesTwoJobsSameName';
 
+import { mockExtensionsForI18n } from './mock-extensions-i18n';
+// mockExtensionsForI18n();
+
 const resultArrayHeaders = ['Name', 'Status', 'Branches', 'Pull Requests', ''];
 
 describe('Pipelines', () => {

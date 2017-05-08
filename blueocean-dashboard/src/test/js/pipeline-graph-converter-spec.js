@@ -5,6 +5,11 @@ import path from 'path';
 import {convertJenkinsNodeGraph} from '../../main/js/components/PipelineRunGraph.jsx';
 
 import {StatusIndicator} from '@jenkins-cd/design-language';
+
+
+import { mockExtensionsForI18n } from './mock-extensions-i18n';
+mockExtensionsForI18n();
+
 const validResultValues = StatusIndicator.validResultValues;
 
 describe("pipeline graph data converter /", () => {

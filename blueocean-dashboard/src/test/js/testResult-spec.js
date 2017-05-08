@@ -5,6 +5,9 @@ import {mount, shallow} from "enzyme";
 
 import TestResults from "../../main/js/components/testing/TestResults.jsx";
 
+import { mockExtensionsForI18n } from './mock-extensions-i18n';
+mockExtensionsForI18n();
+
 import {i18nTranslator} from "@jenkins-cd/blueocean-core-js";
 prepareMount();
 

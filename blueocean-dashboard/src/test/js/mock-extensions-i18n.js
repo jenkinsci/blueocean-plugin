@@ -16,18 +16,20 @@
 
 import { store, classMetadataStore } from '@jenkins-cd/js-extensions';
 
-store.init({
-    extensionData: [
-        {
-            "extensions": [],
-            "hpiPluginId": "blueocean-dashboard",
-            "hpiPluginVer": "1.1"
-        },
-        {
-            "extensions": [],
-            "hpiPluginId": "blueocean-web",
-            "hpiPluginVer": "1.1"
-        }
-    ],
-    classMetadataStore: classMetadataStore
-});
+export function mockExtensionsForI18n() {
+    store.init({
+        extensionData: [
+            {
+                "extensions": [],
+                "hpiPluginId": "blueocean-dashboard",
+                "hpiPluginVer": "1.1"
+            },
+            {
+                "extensions": [],
+                "hpiPluginId": "blueocean-web",
+                "hpiPluginVer": "1.1"
+            }
+        ],
+        classMetadataStore: classMetadataStore
+    });
+}
