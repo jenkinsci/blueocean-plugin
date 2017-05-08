@@ -89,6 +89,9 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
                             ErrorMessage.Error.ErrorCodes.INVALID.toString(),
                             "No domain in user credentials found for credentialId: "+ scmConfig.getCredentialId())));
             }
+            if (StringUtils.isEmpty(scmConfig.getUri())) {
+                throw new ServiceException.BadRequestExpception("uri not specified");
+            }
             if(domain.test(new BlueOceanDomainRequirement())) { //this is blueocean specific domain
                 project.addProperty(
                     new BlueOceanCredentialsProvider.FolderPropertyImpl(authenticatedUser.getId(),
