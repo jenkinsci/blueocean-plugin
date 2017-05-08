@@ -3,21 +3,14 @@
   "version": "0.0.2-unpublished",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.111",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.111",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.111.tgz",
-      "dependencies": {
-        "@jenkins-cd/design-language": {
-          "version": "0.0.128",
-          "from": "@jenkins-cd/design-language@0.0.128",
-          "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.128.tgz"
-        }
-      }
+      "version": "0.0.112-SNAPSHOT-jm-a",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.112-SNAPSHOT-jm-a",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.112-SNAPSHOT-jm-a.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.128",
-      "from": "@jenkins-cd/design-language@0.0.128",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.128.tgz"
+      "version": "0.0.129-SNAPSHOT-jm-a",
+      "from": "@jenkins-cd/design-language@0.0.129-SNAPSHOT-jm-a",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.129-SNAPSHOT-jm-a.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
