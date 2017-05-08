@@ -1,6 +1,7 @@
 #!/bin/bash
 
-./stop-selenium.sh
+SCRIPT_DIR=$(dirname $0)
+$SCRIPT_DIR/stop-selenium.sh
 
 echo ""
 echo " Starting Selenium Docker container..."
