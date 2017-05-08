@@ -66,7 +66,7 @@ class RunDetailsRow extends Component {
         const isRunning = run.state === 'RUNNING' || run.state === 'PAUSED' || run.state === 'QUEUED';
 
         return (
-            <TableRow useRollover columns={columns}>
+            <TableRow linkTo={runDetailsUrl} columns={columns}>
                 <TableCell>
                     <LiveStatusIndicator
                         durationInMillis={durationMillis}
@@ -77,7 +77,7 @@ class RunDetailsRow extends Component {
                 </TableCell>
                 <TableCell>{run.id}</TableCell>
                 <TableCell><CommitHash commitId={run.commitId} /></TableCell>
-                { isMultibranch && <TableCell linkUrl={runDetailsUrl}>{decodeURIComponent(run.pipeline)}</TableCell> }
+                { isMultibranch && <TableCell>{decodeURIComponent(run.pipeline)}</TableCell> }
                 <TableCell><RunMessageCell run={run} t={t} /></TableCell>
                 <TableCell>
                     <TimeDuration millis={durationMillis}
