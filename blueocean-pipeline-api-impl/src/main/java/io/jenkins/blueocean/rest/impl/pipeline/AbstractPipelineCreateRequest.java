@@ -11,7 +11,6 @@ import io.jenkins.blueocean.rest.model.BluePipelineCreateRequest;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
-import org.kohsuke.stapler.DataBoundConstructor;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -23,7 +22,6 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
 
     protected final BlueScmConfig scmConfig;
 
-    @DataBoundConstructor
     public AbstractPipelineCreateRequest(String name, BlueScmConfig scmConfig) {
         setName(name);
         this.scmConfig = scmConfig;

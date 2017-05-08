@@ -22,7 +22,6 @@ import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMSource;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
-import org.kohsuke.stapler.DataBoundConstructor;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -35,7 +34,6 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
 
     private static final String DESCRIPTOR_NAME = "org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject";
 
-    @DataBoundConstructor
     public AbstractMultiBranchCreateRequest(String name, BlueScmConfig scmConfig) {
         super(name, scmConfig);
     }
