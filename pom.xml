@@ -113,6 +113,7 @@
     <module>blueocean-jwt</module>
     <module>blueocean-github-pipeline</module>
     <module>blueocean-git-pipeline</module>
+    <module>blueocean-svn-pipeline</module>
   </modules>
 
   <repositories>
@@ -238,6 +239,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-git-pipeline</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-svn-pipeline</artifactId>
             <version>${project.version}</version>
         </dependency>
 
