@@ -6,6 +6,7 @@ import hudson.model.TopLevelItem;
 import hudson.model.TopLevelItemDescriptor;
 import hudson.security.ACL;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.model.BluePipelineCreateRequest;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;

@@ -1,7 +1,6 @@
-package io.jenkins.blueocean.pipeline.creation;
+package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.rest.Reachable;
-import io.jenkins.blueocean.rest.model.BluePipeline;
 
 import javax.annotation.CheckForNull;
 import java.io.IOException;
