@@ -5,7 +5,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
-import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
+import io.jenkins.blueocean.pipeline.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import org.junit.Assert;
 import org.junit.Assume;

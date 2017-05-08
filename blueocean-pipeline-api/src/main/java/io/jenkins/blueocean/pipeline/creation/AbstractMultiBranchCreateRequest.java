@@ -1,7 +1,6 @@
-package io.jenkins.blueocean.rest.impl.pipeline;
+package io.jenkins.blueocean.pipeline.creation;
 
 import com.cloudbees.plugins.credentials.domains.Domain;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import hudson.model.Failure;
 import hudson.model.TopLevelItem;
@@ -9,10 +8,12 @@ import hudson.model.User;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ErrorMessage.Error;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.pipeline.credential.BlueOceanCredentialsProvider;
+import io.jenkins.blueocean.pipeline.credential.BlueOceanDomainRequirement;
+import io.jenkins.blueocean.pipeline.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Reachable;
-import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
-import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
-import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
+import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import jenkins.branch.BranchSource;
@@ -20,7 +21,7 @@ import jenkins.branch.MultiBranchProject;
 import jenkins.branch.MultiBranchProjectDescriptor;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMSource;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 
 import javax.annotation.Nonnull;
@@ -41,14 +42,12 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
     @Override
     @SuppressWarnings("unchecked")
     public BluePipeline create(Reachable parent) throws IOException {
-        Preconditions.checkNotNull(parent, "Parent passed is null");
-        Preconditions.checkNotNull(getName(), "Name provided was null");
         validateInternal(getName(), scmConfig);
         MultiBranchProject project = createMultiBranchProject();
         assignCredentialToProject(scmConfig, project);
         SCMSource source = createSource(project, scmConfig);
         project.getSourcesList().add(new BranchSource(source));
-        return new MultiBranchPipelineImpl(project);
+        return BluePipelineFactory.getPipelineInstance(project, OrganizationResolver.getInstance().getContainingOrg(project.getItemGroup()));
     }
 
     /**

@@ -4,7 +4,7 @@ import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.google.common.collect.Lists;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ErrorMessage.Error;
-import io.jenkins.blueocean.rest.impl.pipeline.AbstractMultiBranchCreateRequest;
+import io.jenkins.blueocean.pipeline.creation.AbstractMultiBranchCreateRequest;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;

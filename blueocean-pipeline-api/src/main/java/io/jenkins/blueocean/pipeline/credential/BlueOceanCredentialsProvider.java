@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.rest.impl.pipeline.credential;
+package io.jenkins.blueocean.pipeline.credential;
 
 import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import com.cloudbees.hudson.plugins.folder.AbstractFolderProperty;
@@ -20,7 +20,7 @@ import hudson.model.User;
 import hudson.security.ACL;
 import hudson.security.Permission;
 import hudson.util.ListBoxModel;
-import io.jenkins.blueocean.rest.impl.pipeline.Messages;
+import io.jenkins.blueocean.pipeline.credential.Messages;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;

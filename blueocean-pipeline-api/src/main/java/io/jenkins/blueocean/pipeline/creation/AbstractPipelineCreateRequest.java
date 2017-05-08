@@ -1,15 +1,14 @@
-package io.jenkins.blueocean.rest.impl.pipeline;
+package io.jenkins.blueocean.pipeline.creation;
 
 import hudson.model.Item;
-import hudson.model.ItemGroup;
 import hudson.model.Items;
 import hudson.model.TopLevelItem;
 import hudson.model.TopLevelItemDescriptor;
 import hudson.security.ACL;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.model.BluePipelineCreateRequest;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import jenkins.model.Jenkins;
+import jenkins.model.ModifiableTopLevelItemGroup;
 import org.acegisecurity.Authentication;
 
 import javax.annotation.Nonnull;
@@ -39,7 +38,7 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
             throw new ServiceException.BadRequestExpception(String.format("Failed to create pipeline: %s, descriptor %s is not found", name, descriptorName));
         }
 
-        ItemGroup p = Jenkins.getInstance();
+        ModifiableTopLevelItemGroup p = getParent();
         if(!descriptor.isApplicableIn(p)){
             throw new ServiceException.ForbiddenException(
                     String.format("Failed to create pipeline: %s. pipeline can't be created in Jenkins root folder", name));
@@ -48,6 +47,10 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
         if(!acl.hasCreatePermission(a, p, descriptor)){
             throw new ServiceException.ForbiddenException("Missing permission: " +Item.CREATE.group.title+"/"+Item.CREATE.name + Item.CREATE + "/" + descriptor.getDisplayName());
         }
-        return Jenkins.getInstance().createProject(descriptor, name, true);
+        return p.createProject(descriptor, name, true);
+    }
+
+    protected ModifiableTopLevelItemGroup getParent() {
+        return Jenkins.getInstance();
     }
 }
