@@ -7,11 +7,11 @@ import hudson.model.Run;
 import hudson.tasks.junit.TestResultAction;
 import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
 import io.jenkins.blueocean.rest.model.BlueTestResult.State;
 import io.jenkins.blueocean.rest.model.BlueTestResult.Status;
 import io.jenkins.blueocean.service.embedded.rest.BlueTestResultContainerImpl;
-import io.jenkins.blueocean.service.embedded.rest.BlueTestResultFactory;
 import org.junit.Test;
 import org.jvnet.hudson.test.TestExtension;
 
@@ -28,6 +28,26 @@ public class BlueTestResultContainerImplTest extends BaseTest {
     static int testsToReturn = 12;
 
     private BlueTestResultContainerImpl container;
+
+    @Test
+    public void testsFilteredByState() throws Exception {
+        List<BlueTestResult> allResults = Lists.newArrayList(container.iterator());
+        List<BlueTestResult> regressions = Lists.newArrayList(BlueTestResultContainerImpl.filterByState(allResults, State.REGRESSION.name()));
+        assertEquals(2, regressions.size());
+        for (BlueTestResult tr : regressions) {
+            assertEquals(State.REGRESSION, tr.getTestState());
+        }
+    }
+
+    @Test
+    public void testsFilteredByStatus() throws Exception {
+        List<BlueTestResult> allResults = Lists.newArrayList(container.iterator());
+        List<BlueTestResult> allSkipped = Lists.newArrayList(BlueTestResultContainerImpl.filterByStatus(allResults, Status.SKIPPED.name()));
+        assertEquals(2, allSkipped.size());
+        for (BlueTestResult tr : allSkipped) {
+            assertEquals(Status.SKIPPED, tr.getStatus());
+        }
+    }
 
     @Test
     public void testGetTestExists() throws Exception {

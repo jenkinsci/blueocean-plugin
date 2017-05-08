@@ -255,16 +255,6 @@ public abstract class BaseTest {
         Assert.assertEquals(p.getDisplayName(), resp.get("displayName"));
         Assert.assertEquals(p.getFullName(), resp.get("fullName"));
         Assert.assertEquals(p.getBuildHealth().getScore(), resp.get("weatherScore"));
-        if(p.getLastSuccessfulBuild() != null){
-            Run b = p.getLastSuccessfulBuild();
-            String s = baseUrl + "/organizations/jenkins/pipelines/" +
-                p.getName() + "/runs/" + b.getId()+"/";
-
-            Assert.assertEquals(s, resp.get("lastSuccessfulRun"));
-
-        }else{
-            Assert.assertNull(resp.get("lastSuccessfulRun"));
-        }
 
         if(p.getLastBuild() != null){
             Run r = p.getLastBuild();
@@ -280,7 +270,6 @@ public abstract class BaseTest {
         Assert.assertEquals(folder.getName(), resp.get("name"));
         Assert.assertEquals(folder.getDisplayName(), resp.get("displayName"));
         Assert.assertEquals(folder.getFullName(), resp.get("fullName"));
-        Assert.assertNull(resp.get("lastSuccessfulRun"));
         Assert.assertEquals(folder.getAllJobs().size(), resp.get("numberOfPipelines"));
         Assert.assertEquals(folder.getAllJobs().size(), resp.get("numberOfPipelines"));
     }

@@ -1,7 +1,8 @@
-package io.jenkins.blueocean.service.embedded.rest;
+package io.jenkins.blueocean.rest.factory;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.ExtensionPoint;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.Reachable;
@@ -51,6 +52,7 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
          * @param results to report
          * @return result
          */
+        @SuppressFBWarnings(value = "SF_SWITCH_NO_DEFAULT", justification = "Its ok in this case")
         public static Result of(Iterable<BlueTestResult> results) {
             long skipped = 0;
             long passed = 0;

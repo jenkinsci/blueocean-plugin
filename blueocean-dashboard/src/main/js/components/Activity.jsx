@@ -11,8 +11,8 @@ import { ColumnFilter } from './ColumnFilter';
 import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
 import {
     NoRunsDefaultPlaceholder,
-    NoRunsMultibranchPlaceholder,
     NoRunsForBranchPlaceholder,
+    NoRunsMultibranchPlaceholder
 } from './placeholder/NoRunsPlaceholder';
 
 
@@ -114,7 +114,7 @@ export class Activity extends Component {
 
         const branchFilter = isMultiBranchPipeline && (<ColumnFilter placeholder={branchText} value={branch}
             onChange={b => this.navigateToBranch(b)}
-            options={pipeline.branchNames.map(b => decodeURIComponent(b)).sort()}
+            options={pipeline.branchNames.map(b => decodeURIComponent(b))}
         />);
 
         const headers = isMultiBranchPipeline ? [

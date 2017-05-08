@@ -3,6 +3,8 @@ package io.jenkins.blueocean.commons.stapler;
 import hudson.ExtensionList;
 import hudson.PluginWrapper;
 import hudson.model.Action;
+import hudson.model.Item;
+import hudson.model.Run;
 import io.jenkins.blueocean.commons.stapler.export.DataWriter;
 import io.jenkins.blueocean.commons.stapler.export.ExportConfig;
 import io.jenkins.blueocean.commons.stapler.export.ExportInterceptor;
@@ -158,6 +160,9 @@ public class Export {
                     printError(model.getClass(), e);
                     return SKIP;
                 }
+            } else if (model instanceof Item || model instanceof Run) {
+                // We should skip any models that are Jenkins Item or Run objects as these are known to be evil
+                return SKIP;
             }
             return ExportInterceptor.DEFAULT.getValue(property, model, config);
         }

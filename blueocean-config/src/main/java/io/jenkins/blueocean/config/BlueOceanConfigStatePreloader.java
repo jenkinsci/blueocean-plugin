@@ -4,6 +4,7 @@ import hudson.Extension;
 import hudson.security.AuthorizationStrategy;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import hudson.security.SecurityRealm;
+import hudson.util.VersionNumber;
 import io.jenkins.blueocean.auth.jwt.JwtTokenServiceEndpoint;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import io.jenkins.blueocean.commons.PageStatePreloader;
@@ -36,7 +37,8 @@ public class BlueOceanConfigStatePreloader extends PageStatePreloader {
     public String getStateJson() {
         StringWriter writer = new StringWriter();
         Jenkins jenkins = Jenkins.getInstance();
-        String version = Jenkins.getVersion() != null ? Jenkins.getVersion().toString() : Jenkins.VERSION;
+        VersionNumber versionNumber = Jenkins.getVersion();
+        String version = versionNumber != null ? versionNumber.toString() : Jenkins.VERSION;
 
         AuthorizationStrategy authorizationStrategy = jenkins.getAuthorizationStrategy();
         boolean allowAnonymousRead = true;

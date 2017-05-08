@@ -2,12 +2,12 @@
 # yarn lockfile v1
 
 
-"@jenkins-cd/blueocean-core-js@0.0.99":
-  version "0.0.99"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.99.tgz#1e69286c8ab9f9db319859f5a368768291487956"
+"@jenkins-cd/blueocean-core-js@0.0.111":
+  version "0.0.111"
+  resolved "https://repo.jenkins-ci.org/api/npm/npm/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.111.tgz#72fcab4d37323dd87e333efb5191de9c87942346"
   dependencies:
-    "@jenkins-cd/design-language" "0.0.127"
-    "@jenkins-cd/js-extensions" "0.0.33"
+    "@jenkins-cd/design-language" "0.0.128"
+    "@jenkins-cd/js-extensions" "0.0.35"
     "@jenkins-cd/js-modules" "0.0.8"
     "@jenkins-cd/logging" "0.0.6"
     "@jenkins-cd/react-material-icons" "1.0.0"
@@ -26,9 +26,9 @@
     react-remarkable "1.1.1"
     react-router "2.3.0"
 
-"@jenkins-cd/design-language@0.0.127":
-  version "0.0.127"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/@jenkins-cd/design-language/-/design-language-0.0.127.tgz#87d86f1dca53b09c5c33955c55a05e5d0d61fb7c"
+"@jenkins-cd/design-language@0.0.128":
+  version "0.0.128"
+  resolved "https://repo.jenkins-ci.org/api/npm/npm/@jenkins-cd/design-language/-/design-language-0.0.128.tgz#4cc792d50abdf1227538b8f45e8e26dcd439f6fa"
   dependencies:
     "@jenkins-cd/react-material-icons" "1.0.0"
     lodash.debounce "4.0.8"
@@ -44,9 +44,9 @@
   dependencies:
     eslint-config-airbnb "6.0.2"
 
-"@jenkins-cd/js-builder@0.0.52":
-  version "0.0.52"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/@jenkins-cd/js-builder/-/js-builder-0.0.52.tgz#bf9f3f01d49ea976408307a43ce2ad6190bcea0e"
+"@jenkins-cd/js-builder@0.0.56":
+  version "0.0.56"
+  resolved "https://repo.jenkins-ci.org/api/npm/npm/@jenkins-cd/js-builder/-/js-builder-0.0.56.tgz#17de4177adbb5aff321399151992dd70b5dd54b2"
   dependencies:
     "@jenkins-cd/eslint-config-jenkins" "0.0.2"
     babel-preset-es2015 "^6.5.0"
@@ -66,7 +66,7 @@
     gulp-jasmine "^2.0.1"
     gulp-jshint "^2.x"
     gulp-less "^1.3.6"
-    gulp-runner "^0.1.4"
+    gulp-runner "^1.0.0"
     gulp-util "^3.0.6"
     handlebars "^3.0.3"
     jasmine-reporters "^2.0.6"
@@ -81,9 +81,9 @@
     vinyl-source-stream "^1.1.0"
     xml2js "^0.4.9"
 
-"@jenkins-cd/js-extensions@0.0.33":
-  version "0.0.33"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/@jenkins-cd/js-extensions/-/js-extensions-0.0.33.tgz#9b5e1f0474fb90b59bc26f4d6fd720176e123296"
+"@jenkins-cd/js-extensions@0.0.35":
+  version "0.0.35"
+  resolved "https://repo.jenkins-ci.org/api/npm/npm/@jenkins-cd/js-extensions/-/js-extensions-0.0.35.tgz#137421df0402aa0a1216395d564750417bc6ebd7"
   dependencies:
     envify "3.4.1"
     js-yaml "^3.6.0"
@@ -97,6 +97,12 @@
   resolved "https://repo.jenkins-ci.org/api/npm/npm/@jenkins-cd/logging/-/logging-0.0.6.tgz#6686805ce6619fb738736087b9b208a48e14e9bd"
   dependencies:
     "@jenkins-cd/storage" "^0.0.6"
+
+"@jenkins-cd/preferences@0.0.4":
+  version "0.0.4"
+  resolved "https://repo.jenkins-ci.org/api/npm/npm/@jenkins-cd/preferences/-/preferences-0.0.4.tgz#742f81806165c81e2feaea083054a367f7293b9e"
+  dependencies:
+    "@jenkins-cd/storage" "0.0.6"
 
 "@jenkins-cd/react-material-icons@1.0.0":
   version "1.0.0"
@@ -452,14 +458,6 @@ asn1.js@1.0.3:
   optionalDependencies:
     bn.js "^1.0.0"
 
-asn1.js@^4.0.0:
-  version "4.9.1"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/asn1.js/-/asn1.js-4.9.1.tgz#48ba240b45a9280e94748990ba597d216617fd40"
-  dependencies:
-    bn.js "^4.0.0"
-    inherits "^2.0.1"
-    minimalistic-assert "^1.0.0"
-
 asn1@0.1.11:
   version "0.1.11"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/asn1/-/asn1-0.1.11.tgz#559be18376d08a4ec4dbe80877d27818639b2df7"
@@ -555,7 +553,7 @@ babel-code-frame@^6.11.0, babel-code-frame@^6.16.0, babel-code-frame@^6.22.0:
     esutils "^2.0.2"
     js-tokens "^3.0.0"
 
-babel-core@6.17.0, babel-core@^6.0.14, babel-core@^6.11.4:
+babel-core@6.17.0, babel-core@^6.11.4:
   version "6.17.0"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/babel-core/-/babel-core-6.17.0.tgz#6c4576447df479e241e58c807e4bc7da4db7f425"
   dependencies:
@@ -581,7 +579,7 @@ babel-core@6.17.0, babel-core@^6.0.14, babel-core@^6.11.4:
     slash "^1.0.0"
     source-map "^0.5.0"
 
-babel-core@^6.24.1:
+babel-core@^6.0.14, babel-core@^6.24.1:
   version "6.24.1"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/babel-core/-/babel-core-6.24.1.tgz#8c428564dce1e1f41fb337ec34f4c3b022b5ad83"
   dependencies:
@@ -1342,10 +1340,6 @@ bn.js@^1.0.0:
   version "1.3.0"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/bn.js/-/bn.js-1.3.0.tgz#0db4cbf96f8f23b742f5bcb9d1aa7a9994a05e83"
 
-bn.js@^4.0.0, bn.js@^4.1.0, bn.js@^4.1.1, bn.js@^4.4.0:
-  version "4.11.6"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/bn.js/-/bn.js-4.11.6.tgz#53344adb14617a13f6e8dd2ce28905d1c0ba3215"
-
 body-parser@^1.15.2:
   version "1.17.1"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/body-parser/-/body-parser-1.17.1.tgz#75b3bc98ddd6e7e0d8ffe750dfaca5c66993fa47"
@@ -1401,10 +1395,6 @@ brfs@^1.4.3:
     static-module "^1.1.0"
     through2 "^2.0.0"
 
-brorand@^1.0.1:
-  version "1.1.0"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/brorand/-/brorand-1.1.0.tgz#12c25efe40a45e3c323eb8675a0a0ce57b22371f"
-
 browser-pack@^5.0.1:
   version "5.0.1"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/browser-pack/-/browser-pack-5.0.1.tgz#4197719b20c6e0aaa09451c5111e53efb6fbc18d"
@@ -1449,51 +1439,6 @@ browserify-aes@0.4.0:
   resolved "https://repo.jenkins-ci.org/api/npm/npm/browserify-aes/-/browserify-aes-0.4.0.tgz#067149b668df31c4b58533e02d01e806d8608e2c"
   dependencies:
     inherits "^2.0.1"
-
-browserify-aes@^1.0.0, browserify-aes@^1.0.4:
-  version "1.0.6"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/browserify-aes/-/browserify-aes-1.0.6.tgz#5e7725dbdef1fd5930d4ebab48567ce451c48a0a"
-  dependencies:
-    buffer-xor "^1.0.2"
-    cipher-base "^1.0.0"
-    create-hash "^1.1.0"
-    evp_bytestokey "^1.0.0"
-    inherits "^2.0.1"
-
-browserify-cipher@^1.0.0:
-  version "1.0.0"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/browserify-cipher/-/browserify-cipher-1.0.0.tgz#9988244874bf5ed4e28da95666dcd66ac8fc363a"
-  dependencies:
-    browserify-aes "^1.0.4"
-    browserify-des "^1.0.0"
-    evp_bytestokey "^1.0.0"
-
-browserify-des@^1.0.0:
-  version "1.0.0"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/browserify-des/-/browserify-des-1.0.0.tgz#daa277717470922ed2fe18594118a175439721dd"
-  dependencies:
-    cipher-base "^1.0.1"
-    des.js "^1.0.0"
-    inherits "^2.0.1"
-
-browserify-rsa@^4.0.0:
-  version "4.0.1"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/browserify-rsa/-/browserify-rsa-4.0.1.tgz#21e0abfaf6f2029cf2fafb133567a701d4135524"
-  dependencies:
-    bn.js "^4.1.0"
-    randombytes "^2.0.1"
-
-browserify-sign@^4.0.0:
-  version "4.0.4"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/browserify-sign/-/browserify-sign-4.0.4.tgz#aa4eb68e5d7b658baa6bf6a57e630cbd7a93d298"
-  dependencies:
-    bn.js "^4.1.1"
-    browserify-rsa "^4.0.0"
-    create-hash "^1.1.0"
-    create-hmac "^1.1.2"
-    elliptic "^6.0.0"
-    inherits "^2.0.1"
-    parse-asn1 "^5.0.0"
 
 browserify-transform-tools@^1.4.2:
   version "1.7.0"
@@ -1584,10 +1529,6 @@ buffer-equal@0.0.1:
 buffer-shims@~1.0.0:
   version "1.0.0"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/buffer-shims/-/buffer-shims-1.0.0.tgz#9978ce317388c649ad8793028c3477ef044a8b51"
-
-buffer-xor@^1.0.2:
-  version "1.0.3"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/buffer-xor/-/buffer-xor-1.0.3.tgz#26e61ed1422fb70dd42e6e36729ed51d855fe8d9"
 
 buffer@^3.4.3:
   version "3.6.0"
@@ -1720,12 +1661,6 @@ chokidar@^1.0.0:
     readdirp "^2.0.0"
   optionalDependencies:
     fsevents "^1.0.0"
-
-cipher-base@^1.0.0, cipher-base@^1.0.1:
-  version "1.0.3"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/cipher-base/-/cipher-base-1.0.3.tgz#eeabf194419ce900da3018c207d212f2a6df0a07"
-  dependencies:
-    inherits "^2.0.1"
 
 circular-json@^0.3.1:
   version "0.3.1"
@@ -2005,29 +1940,6 @@ core-util-is@~1.0.0:
   version "1.0.2"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/core-util-is/-/core-util-is-1.0.2.tgz#b5fd54220aa2bc5ab57aab7140c940754503c1a7"
 
-create-ecdh@^4.0.0:
-  version "4.0.0"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/create-ecdh/-/create-ecdh-4.0.0.tgz#888c723596cdf7612f6498233eebd7a35301737d"
-  dependencies:
-    bn.js "^4.1.0"
-    elliptic "^6.0.0"
-
-create-hash@^1.1.0, create-hash@^1.1.1:
-  version "1.1.2"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/create-hash/-/create-hash-1.1.2.tgz#51210062d7bb7479f6c65bb41a92208b1d61abad"
-  dependencies:
-    cipher-base "^1.0.1"
-    inherits "^2.0.1"
-    ripemd160 "^1.0.0"
-    sha.js "^2.3.6"
-
-create-hmac@^1.1.0, create-hmac@^1.1.2:
-  version "1.1.4"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/create-hmac/-/create-hmac-1.1.4.tgz#d3fb4ba253eb8b3f56e39ea2fbcb8af747bd3170"
-  dependencies:
-    create-hash "^1.1.0"
-    inherits "^2.0.1"
-
 cryptiles@0.2.x:
   version "0.2.2"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/cryptiles/-/cryptiles-0.2.2.tgz#ed91ff1f17ad13d3748288594f8a48a0d26f325c"
@@ -2040,7 +1952,7 @@ cryptiles@2.x.x:
   dependencies:
     boom "2.x.x"
 
-crypto-browserify@3.3.0:
+crypto-browserify@3.3.0, crypto-browserify@^3.0.0:
   version "3.3.0"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/crypto-browserify/-/crypto-browserify-3.3.0.tgz#b9fc75bb4a0ed61dcf1cd5dae96eb30c9c3e506c"
   dependencies:
@@ -2048,21 +1960,6 @@ crypto-browserify@3.3.0:
     pbkdf2-compat "2.0.1"
     ripemd160 "0.2.0"
     sha.js "2.2.6"
-
-crypto-browserify@^3.0.0:
-  version "3.11.0"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/crypto-browserify/-/crypto-browserify-3.11.0.tgz#3652a0906ab9b2a7e0c3ce66a408e957a2485522"
-  dependencies:
-    browserify-cipher "^1.0.0"
-    browserify-sign "^4.0.0"
-    create-ecdh "^4.0.0"
-    create-hash "^1.1.0"
-    create-hmac "^1.1.0"
-    diffie-hellman "^5.0.0"
-    inherits "^2.0.1"
-    pbkdf2 "^3.0.3"
-    public-encrypt "^4.0.0"
-    randombytes "^2.0.0"
 
 css-color-names@0.0.4:
   version "0.0.4"
@@ -2301,13 +2198,6 @@ deps-sort@^2.0.0:
     subarg "^1.0.0"
     through2 "^2.0.0"
 
-des.js@^1.0.0:
-  version "1.0.0"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/des.js/-/des.js-1.0.0.tgz#c074d2e2aa6a8a9a07dbd61f9a15c2cd83ec8ecc"
-  dependencies:
-    inherits "^2.0.1"
-    minimalistic-assert "^1.0.0"
-
 destroy@~1.0.4:
   version "1.0.4"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/destroy/-/destroy-1.0.4.tgz#978857442c44749e4206613e37946205826abd80"
@@ -2335,14 +2225,6 @@ diff@1.4.0:
   version "1.4.0"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/diff/-/diff-1.4.0.tgz#7f28d2eb9ee7b15a97efd89ce63dcfdaa3ccbabf"
 
-diffie-hellman@^5.0.0:
-  version "5.0.2"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/diffie-hellman/-/diffie-hellman-5.0.2.tgz#b5835739270cfe26acf632099fded2a07f209e5e"
-  dependencies:
-    bn.js "^4.1.0"
-    miller-rabin "^4.0.0"
-    randombytes "^2.0.0"
-
 doctrine@^1.2.2:
   version "1.5.0"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/doctrine/-/doctrine-1.5.0.tgz#379dce730f6166f76cefa4e6707a159b02c5a6fa"
@@ -2365,11 +2247,7 @@ domain-browser@^1.1.1, domain-browser@~1.1.0:
   version "1.1.7"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/domain-browser/-/domain-browser-1.1.7.tgz#867aa4b093faa05f1de08c06f4d7b21fdf8698bc"
 
-domelementtype@1:
-  version "1.3.0"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/domelementtype/-/domelementtype-1.3.0.tgz#b17aed82e8ab59e52dd9c19b1756e0fc187204c2"
-
-domelementtype@~1.1.1:
+domelementtype@1, domelementtype@~1.1.1:
   version "1.1.3"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/domelementtype/-/domelementtype-1.1.3.tgz#bd28773e2642881aec51544924299c5cd822185b"
 
@@ -2437,18 +2315,6 @@ electron-to-chromium@^1.2.7:
 element-class@^0.2.0:
   version "0.2.2"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/element-class/-/element-class-0.2.2.tgz#9d3bbd0767f9013ef8e1c8ebe722c1402a60050e"
-
-elliptic@^6.0.0:
-  version "6.4.0"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/elliptic/-/elliptic-6.4.0.tgz#cac9af8762c85836187003c8dfe193e5e2eae5df"
-  dependencies:
-    bn.js "^4.4.0"
-    brorand "^1.0.1"
-    hash.js "^1.0.0"
-    hmac-drbg "^1.0.0"
-    inherits "^2.0.1"
-    minimalistic-assert "^1.0.0"
-    minimalistic-crypto-utils "^1.0.0"
 
 emojis-list@^2.0.0:
   version "2.1.0"
@@ -2782,12 +2648,6 @@ event-emitter@~0.3.5:
 events@^1.0.0, events@^1.1.1, events@~1.1.0:
   version "1.1.1"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/events/-/events-1.1.1.tgz#9ebdb7635ad099c70dcc4c2a1f5004288e8bd924"
-
-evp_bytestokey@^1.0.0:
-  version "1.0.0"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/evp_bytestokey/-/evp_bytestokey-1.0.0.tgz#497b66ad9fef65cd7c08a6180824ba1476b66e53"
-  dependencies:
-    create-hash "^1.1.1"
 
 exenv@1.2.0:
   version "1.2.0"
@@ -3368,13 +3228,13 @@ gulp-mocha@3.0.1:
     temp "^0.8.3"
     through "^2.3.4"
 
-gulp-runner@^0.1.4:
-  version "0.1.4"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/gulp-runner/-/gulp-runner-0.1.4.tgz#8aa012bcc49c11ce4d204926db138286b0192e24"
+gulp-runner@^1.0.0:
+  version "1.0.1"
+  resolved "https://repo.jenkins-ci.org/api/npm/npm/gulp-runner/-/gulp-runner-1.0.1.tgz#7204045d5534fbc300076304e6f45cb08499cefe"
   dependencies:
     decamelize "^1.0.0"
     extend "^3.0.0"
-    gulp "^3.9.0"
+    gulp "^3.9.1"
 
 gulp-util@^3.0.0, gulp-util@^3.0.6:
   version "3.0.8"
@@ -3399,7 +3259,7 @@ gulp-util@^3.0.0, gulp-util@^3.0.6:
     through2 "^2.0.0"
     vinyl "^0.5.0"
 
-gulp@3.9.1, gulp@^3.9.0:
+gulp@3.9.1, gulp@^3.9.0, gulp@^3.9.1:
   version "3.9.1"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/gulp/-/gulp-3.9.1.tgz#571ce45928dd40af6514fc4011866016c13845b4"
   dependencies:
@@ -3469,12 +3329,6 @@ has@^1.0.0, has@^1.0.1:
   dependencies:
     function-bind "^1.0.2"
 
-hash.js@^1.0.0, hash.js@^1.0.3:
-  version "1.0.3"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/hash.js/-/hash.js-1.0.3.tgz#1332ff00156c0a0ffdd8236013d07b77a0451573"
-  dependencies:
-    inherits "^2.0.1"
-
 hawk@1.1.1:
   version "1.1.1"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/hawk/-/hawk-1.1.1.tgz#87cd491f9b46e4e2aeaca335416766885d2d1ed9"
@@ -3501,14 +3355,6 @@ history@^2.0.1:
     invariant "^2.0.0"
     query-string "^3.0.0"
     warning "^2.0.0"
-
-hmac-drbg@^1.0.0:
-  version "1.0.1"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/hmac-drbg/-/hmac-drbg-1.0.1.tgz#d2745701025a6c775a6c545793ed502fc0c649a1"
-  dependencies:
-    hash.js "^1.0.3"
-    minimalistic-assert "^1.0.0"
-    minimalistic-crypto-utils "^1.0.1"
 
 hoek@0.9.x:
   version "0.9.1"
@@ -4643,13 +4489,6 @@ micromatch@^2.1.5, micromatch@^2.3.7:
     parse-glob "^3.0.4"
     regex-cache "^0.4.2"
 
-miller-rabin@^4.0.0:
-  version "4.0.0"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/miller-rabin/-/miller-rabin-4.0.0.tgz#4a62fb1d42933c05583982f4c716f6fb9e6c6d3d"
-  dependencies:
-    bn.js "^4.0.0"
-    brorand "^1.0.1"
-
 mime-db@~1.27.0:
   version "1.27.0"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/mime-db/-/mime-db-1.27.0.tgz#820f572296bbd20ec25ed55e5b5de869e5436eb1"
@@ -4692,10 +4531,6 @@ minifyify@^7.1.0:
 minimalistic-assert@^1.0.0:
   version "1.0.0"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/minimalistic-assert/-/minimalistic-assert-1.0.0.tgz#702be2dda6b37f4836bcb3f5db56641b64a1d3d3"
-
-minimalistic-crypto-utils@^1.0.0, minimalistic-crypto-utils@^1.0.1:
-  version "1.0.1"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/minimalistic-crypto-utils/-/minimalistic-crypto-utils-1.0.1.tgz#f6c00c1c0b082246e5c4d99dfb8c7c083b2b582a"
 
 "minimatch@2 || 3", minimatch@^3.0.0, minimatch@^3.0.2, minimatch@^3.0.3, minimatch@~3.0.2:
   version "3.0.3"
@@ -5147,16 +4982,6 @@ parents@^1.0.0, parents@^1.0.1:
   dependencies:
     path-platform "~0.11.15"
 
-parse-asn1@^5.0.0:
-  version "5.1.0"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/parse-asn1/-/parse-asn1-5.1.0.tgz#37c4f9b7ed3ab65c74817b5f2480937fbf97c712"
-  dependencies:
-    asn1.js "^4.0.0"
-    browserify-aes "^1.0.0"
-    create-hash "^1.1.0"
-    evp_bytestokey "^1.0.0"
-    pbkdf2 "^3.0.3"
-
 parse-filepath@^1.0.1:
   version "1.0.1"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/parse-filepath/-/parse-filepath-1.0.1.tgz#159d6155d43904d16c10ef698911da1e91969b73"
@@ -5233,12 +5058,6 @@ path-to-regexp@0.1.7:
 pbkdf2-compat@2.0.1:
   version "2.0.1"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/pbkdf2-compat/-/pbkdf2-compat-2.0.1.tgz#b6e0c8fa99494d94e0511575802a59a5c142f288"
-
-pbkdf2@^3.0.3:
-  version "3.0.9"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/pbkdf2/-/pbkdf2-3.0.9.tgz#f2c4b25a600058b3c3773c086c37dbbee1ffe693"
-  dependencies:
-    create-hmac "^1.1.2"
 
 pem-jwk@1.5.1:
   version "1.5.1"
@@ -5601,16 +5420,6 @@ prr@~0.0.0:
   version "0.0.0"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/prr/-/prr-0.0.0.tgz#1a84b85908325501411853d0081ee3fa86e2926a"
 
-public-encrypt@^4.0.0:
-  version "4.0.0"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/public-encrypt/-/public-encrypt-4.0.0.tgz#39f699f3a46560dd5ebacbca693caf7c65c18cc6"
-  dependencies:
-    bn.js "^4.1.0"
-    browserify-rsa "^4.0.0"
-    create-hash "^1.1.0"
-    parse-asn1 "^5.0.0"
-    randombytes "^2.0.1"
-
 punycode@1.3.2:
   version "1.3.2"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/punycode/-/punycode-1.3.2.tgz#9653a036fb7c1ee42342f2325cceefea3926c48d"
@@ -5673,10 +5482,6 @@ randomatic@^1.1.3:
   dependencies:
     is-number "^2.0.2"
     kind-of "^3.0.2"
-
-randombytes@^2.0.0, randombytes@^2.0.1:
-  version "2.0.3"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/randombytes/-/randombytes-2.0.3.tgz#674c99760901c3c4112771a31e521dc349cc09ec"
 
 range-parser@^1.0.3, range-parser@~1.2.0:
   version "1.2.0"
@@ -6156,10 +5961,6 @@ ripemd160@0.2.0:
   version "0.2.0"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/ripemd160/-/ripemd160-0.2.0.tgz#2bf198bde167cacfa51c0a928e84b68bbe171fce"
 
-ripemd160@^1.0.0:
-  version "1.0.1"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/ripemd160/-/ripemd160-1.0.1.tgz#93a4bbd4942bc574b69a8fa57c71de10ecca7d6e"
-
 run-async@^0.1.0:
   version "0.1.0"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/run-async/-/run-async-0.1.0.tgz#c8ad4a5e110661e402a7d21b530e009f25f8e389"
@@ -6246,7 +6047,7 @@ sha.js@2.2.6:
   version "2.2.6"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/sha.js/-/sha.js-2.2.6.tgz#17ddeddc5f722fb66501658895461977867315ba"
 
-sha.js@^2.3.6, sha.js@~2.4.4:
+sha.js@~2.4.4:
   version "2.4.8"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/sha.js/-/sha.js-2.4.8.tgz#37068c2c476b6baf402d14a49c67f597921f634f"
   dependencies:
@@ -6838,14 +6639,14 @@ ua-parser-js@^0.7.9:
   version "0.7.12"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/ua-parser-js/-/ua-parser-js-0.7.12.tgz#04c81a99bdd5dc52263ea29d24c6bf8d4818a4bb"
 
-uglify-js@^2.6.1:
-  version "2.8.22"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/uglify-js/-/uglify-js-2.8.22.tgz#d54934778a8da14903fa29a326fb24c0ab51a1a0"
+uglify-js@^2.6.1, uglify-js@~2.7.3:
+  version "2.7.5"
+  resolved "https://repo.jenkins-ci.org/api/npm/npm/uglify-js/-/uglify-js-2.7.5.tgz#4612c0c7baaee2ba7c487de4904ae122079f2ca8"
   dependencies:
+    async "~0.2.6"
     source-map "~0.5.1"
-    yargs "~3.10.0"
-  optionalDependencies:
     uglify-to-browserify "~1.0.0"
+    yargs "~3.10.0"
 
 uglify-js@~2.2.5:
   version "2.2.5"
@@ -6861,15 +6662,6 @@ uglify-js@~2.3:
     async "~0.2.6"
     optimist "~0.3.5"
     source-map "~0.1.7"
-
-uglify-js@~2.7.3:
-  version "2.7.5"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/uglify-js/-/uglify-js-2.7.5.tgz#4612c0c7baaee2ba7c487de4904ae122079f2ca8"
-  dependencies:
-    async "~0.2.6"
-    source-map "~0.5.1"
-    uglify-to-browserify "~1.0.0"
-    yargs "~3.10.0"
 
 uglify-to-browserify@~1.0.0:
   version "1.0.2"

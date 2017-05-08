@@ -18,7 +18,7 @@ import java.util.Locale;
 public class BlueOceanUI {
     private static final Logger logger = LoggerFactory.getLogger(BlueOceanUI.class);
 
-    private BlueOceanUIProvider provider;
+    private volatile BlueOceanUIProvider provider;
 
     public BlueOceanUI() {
         ResourceCacheControl.install();
@@ -49,7 +49,7 @@ public class BlueOceanUI {
         }
         return provider.getUrlBasePrefix();
     }
-    
+
     /**
      * Have some slightly different behavior in development mode
      */
@@ -67,7 +67,7 @@ public class BlueOceanUI {
         if (currentRequest != null) {
             Locale locale = currentRequest.getLocale();
             if (locale != null) {
-                return locale.toString();
+                return locale.toLanguageTag();
             }
         }
 

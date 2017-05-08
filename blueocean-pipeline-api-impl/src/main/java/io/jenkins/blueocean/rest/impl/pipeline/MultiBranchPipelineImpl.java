@@ -1,5 +1,8 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
@@ -182,11 +185,6 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     }
 
     @Override
-    public String getLastSuccessfulRun() {
-        return null;
-    }
-
-    @Override
     @Navigable
     public BluePipelineContainer getBranches() {
         return new BranchContainerImpl(this, getLink().rel("branches"));
@@ -194,12 +192,12 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     @Override
     public Collection<String> getBranchNames() {
-        Collection<Job> jobs =  mbp.getAllJobs();
-        List<String> branches = new ArrayList<>();
-        for(Job j : jobs){
-            branches.add(j.getName());
-        }
-        return branches;
+        return Collections2.transform(ImmutableList.copyOf(this.getBranches().iterator()), new Function<BluePipeline, String>() {
+            @Override
+            public String apply(BluePipeline input) {
+                return input.getName();
+            }
+        });
     }
 
     private int countRunStatus(Result result, boolean pullRequests){

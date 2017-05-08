@@ -8,9 +8,9 @@
   dependencies:
     eslint-config-airbnb "6.0.2"
 
-"@jenkins-cd/js-builder@0.0.52":
-  version "0.0.52"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/@jenkins-cd/js-builder/-/js-builder-0.0.52.tgz#bf9f3f01d49ea976408307a43ce2ad6190bcea0e"
+"@jenkins-cd/js-builder@0.0.56":
+  version "0.0.56"
+  resolved "https://repo.jenkins-ci.org/api/npm/npm/@jenkins-cd/js-builder/-/js-builder-0.0.56.tgz#17de4177adbb5aff321399151992dd70b5dd54b2"
   dependencies:
     "@jenkins-cd/eslint-config-jenkins" "0.0.2"
     babel-preset-es2015 "^6.5.0"
@@ -30,7 +30,7 @@
     gulp-jasmine "^2.0.1"
     gulp-jshint "^2.x"
     gulp-less "^1.3.6"
-    gulp-runner "^0.1.4"
+    gulp-runner "^1.0.0"
     gulp-util "^3.0.6"
     handlebars "^3.0.3"
     jasmine-reporters "^2.0.6"
@@ -1918,13 +1918,13 @@ gulp-match@^1.0.3:
   dependencies:
     minimatch "^3.0.3"
 
-gulp-runner@^0.1.4:
-  version "0.1.4"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/gulp-runner/-/gulp-runner-0.1.4.tgz#8aa012bcc49c11ce4d204926db138286b0192e24"
+gulp-runner@^1.0.0:
+  version "1.0.1"
+  resolved "https://repo.jenkins-ci.org/api/npm/npm/gulp-runner/-/gulp-runner-1.0.1.tgz#7204045d5534fbc300076304e6f45cb08499cefe"
   dependencies:
     decamelize "^1.0.0"
     extend "^3.0.0"
-    gulp "^3.9.0"
+    gulp "^3.9.1"
 
 gulp-util@^3.0.0, gulp-util@^3.0.6:
   version "3.0.8"
@@ -1949,7 +1949,7 @@ gulp-util@^3.0.0, gulp-util@^3.0.6:
     through2 "^2.0.0"
     vinyl "^0.5.0"
 
-gulp@3.9.1, gulp@^3.9.0:
+gulp@3.9.1, gulp@^3.9.0, gulp@^3.9.1:
   version "3.9.1"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/gulp/-/gulp-3.9.1.tgz#571ce45928dd40af6514fc4011866016c13845b4"
   dependencies:
@@ -2934,13 +2934,7 @@ object.omit@^2.0.0:
     for-own "^0.1.4"
     is-extendable "^0.1.1"
 
-once@^1.3.0:
-  version "1.4.0"
-  resolved "https://repo.jenkins-ci.org/api/npm/npm/once/-/once-1.4.0.tgz#583b1aa775961d4b113ac17d9c50baef9dd76bd1"
-  dependencies:
-    wrappy "1"
-
-once@~1.3.0:
+once@^1.3.0, once@~1.3.0:
   version "1.3.3"
   resolved "https://repo.jenkins-ci.org/api/npm/npm/once/-/once-1.3.3.tgz#b2e261557ce4c314ec8304f3fa82663e4297ca20"
   dependencies:
