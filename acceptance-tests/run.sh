@@ -24,7 +24,7 @@
 #   e.g. ./run.sh blueocean-plugin.jpi=/Users/tfennelly/projects/blueocean/blueocean-plugin/target/blueocean-plugin.hpi
 # 
 # ------------------------------------------------------------------------------------------------------------------
-
+npm install
 assemble-plugins $AGGREGATOR_DIR
 
 # Download the jenkins war
