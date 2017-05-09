@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.rest.model;
+package io.jenkins.blueocean.pipeline.api;
 
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;

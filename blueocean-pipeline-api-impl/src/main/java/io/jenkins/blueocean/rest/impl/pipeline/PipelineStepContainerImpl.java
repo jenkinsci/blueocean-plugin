@@ -1,8 +1,8 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import io.jenkins.blueocean.pipeline.api.BluePipelineStep;
+import io.jenkins.blueocean.pipeline.api.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.model.BluePipelineStep;
-import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 
 import java.util.Iterator;

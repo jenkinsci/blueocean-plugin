@@ -1,7 +1,13 @@
-package io.jenkins.blueocean.rest.model;
+package io.jenkins.blueocean.pipeline.api;
 
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
+import io.jenkins.blueocean.rest.model.BlueActionProxy;
+import io.jenkins.blueocean.rest.model.BlueInputStep;
+import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueRun.BlueRunResult;
+import io.jenkins.blueocean.rest.model.BlueRun.BlueRunState;
+import io.jenkins.blueocean.rest.model.Resource;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.WebMethod;
@@ -21,7 +27,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE_ST
  * @author Vivek Pandey
  */
 @Capability(BLUE_PIPELINE_STEP)
-public abstract class BluePipelineStep extends Resource{
+public abstract class BluePipelineStep extends Resource {
     public static final String DISPLAY_NAME="displayName";
     public static final String RESULT = "result";
     public static final String START_TIME="startTime";
@@ -37,10 +43,10 @@ public abstract class BluePipelineStep extends Resource{
     public abstract String getDisplayName();
 
     @Exported(name = RESULT)
-    public abstract BlueRun.BlueRunResult getResult();
+    public abstract BlueRunResult getResult();
 
     @Exported(name=STATE)
-    public abstract BlueRun.BlueRunState getStateObj();
+    public abstract BlueRunState getStateObj();
 
     public abstract Date getStartTime();
 

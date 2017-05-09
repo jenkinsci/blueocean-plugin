@@ -190,24 +190,12 @@ public abstract class BlueRun extends Resource {
     public abstract BlueArtifactContainer getArtifacts();
 
     /**
-     * @return Serves .../runs/{rundId}/nodes/ and provides pipeline execution nodes
-     * @see BluePipelineNode
-     */
-    public abstract BluePipelineNodeContainer getNodes();
-
-    /**
      *
      * @return Gives Actions associated with this Run
      */
     @Navigable
     @Exported(name = ACTIONS, inline = true)
     public abstract Collection<BlueActionProxy> getActions();
-
-    /**
-     * @return Gives steps from pipeline. The list of steps must not include stages, this is because stage could be
-     * interpreted as step as its StepAtomNode and implementation of this API must ensure not to include it.
-     */
-    public abstract BluePipelineStepContainer getSteps();
 
     /**
      * @return Gives tests in this run

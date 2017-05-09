@@ -17,8 +17,6 @@ import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
-import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
-import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
@@ -173,16 +171,6 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public BlueArtifactContainer getArtifacts() {
        return new ArtifactContainerImpl(run, this);
-    }
-
-    @Override
-    public BluePipelineNodeContainer getNodes() {
-        return null; // default
-    }
-
-    @Override
-    public BluePipelineStepContainer getSteps() {
-        return null;
     }
 
     @Override

@@ -6,8 +6,6 @@ import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
-import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
-import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
@@ -130,18 +128,8 @@ public class QueuedBlueRun extends BlueRun {
     }
 
     @Override
-    public BluePipelineNodeContainer getNodes() {
-        return null;
-    }
-
-    @Override
     public Collection<BlueActionProxy> getActions() {
         return ImmutableList.of();
-    }
-
-    @Override
-    public BluePipelineStepContainer getSteps() {
-        return null;
     }
 
     @Override

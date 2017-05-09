@@ -1,9 +1,9 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.pipeline.api.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import jenkins.branch.MultiBranchProject;

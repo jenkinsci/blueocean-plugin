@@ -2,7 +2,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.io.CountingOutputStream;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.model.BluePipelineStep;
+import io.jenkins.blueocean.pipeline.api.BluePipelineStep;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.kohsuke.stapler.AcceptHeader;
 import org.kohsuke.stapler.Header;

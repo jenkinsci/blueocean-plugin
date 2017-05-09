@@ -1,8 +1,8 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import io.jenkins.blueocean.pipeline.api.BluePipelineNode;
+import io.jenkins.blueocean.pipeline.api.BluePipelineStep;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.model.BluePipelineNode;
-import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 
 import java.util.List;
@@ -16,7 +16,7 @@ public interface NodeGraphBuilder {
     /** Gives all pipeline nodes DAG graph */
     List<FlowNodeWrapper> getPipelineNodes();
 
-    /** Gives DAG graph as list of {@link io.jenkins.blueocean.rest.model.BluePipelineNode} */
+    /** Gives DAG graph as list of {@link BluePipelineNode} */
     List<BluePipelineNode> getPipelineNodes(Link parent);
 
     /** Gives all the steps inside given nodeId */
