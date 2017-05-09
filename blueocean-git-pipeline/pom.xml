@@ -34,6 +34,11 @@
       <artifactId>blueocean-rest-impl</artifactId>
       <scope>test</scope>
     </dependency>
+      <dependency>
+      <groupId>io.jenkins.blueocean</groupId>
+      <artifactId>blueocean-pipeline-api-impl</artifactId>
+      <scope>test</scope>
+    </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>blueocean-pipeline-api-impl</artifactId>
