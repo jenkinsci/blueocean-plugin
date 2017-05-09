@@ -16,6 +16,10 @@ export default {
         return `${this.apiRoot()}/search/?q=type:pipeline;organization:${encodeURIComponent(organizationName)};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
     },
 
+    searchPipelines(searchText) {
+        return `${this.apiRoot()}/search/?startsWith:${encodeURIComponent(searchText)};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
+    },
+
     allPipelines() {
         return `${this.apiRoot()}/search/?q=type:pipeline;organization:${AppConfig.getOrganizationName()};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
     },

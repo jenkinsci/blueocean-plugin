@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { Page, Table } from '@jenkins-cd/design-language';
+import { Page, Table, TextInput } from '@jenkins-cd/design-language';
 import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
@@ -24,11 +24,28 @@ export class Pipelines extends Component {
 
     _initPager(props) {
         const org = props.params.organization;
-        if (org) {
-            this.pager = this.context.pipelineService.organiztionPipelinesPager(org);
-        } else {
-            this.pager = this.context.pipelineService.allPipelinesPager();
+        const searchText = this.state.searchText;
+
+        console.log('state', this.state);
+
+        if (searchText) {
+            this.pager = this.context.pipelineService.searchPipelinePager(searchText);
+        } else {            
+            if (org) {
+                this.pager = this.context.pipelineService.organiztionPipelinesPager(org);
+            } else {
+                this.pager = this.context.pipelineService.allPipelinesPager();
+            }
         }
+    }
+
+    constructor() {
+        super();
+        this.state = {};
+    }
+
+    onChange = (e) => {
+        this.setState({searchText: e});
     }
 
     render() {
@@ -80,6 +97,8 @@ export class Pipelines extends Component {
                             store={ this.context.store }
                             router={ this.context.router }
                         />
+                        <TextInput onChange={this.onChange}>
+                        </TextInput>
                         { showEmptyState && <DashboardPlaceholder t={translate} /> }
                         { showPipelineList &&
                         <Table
