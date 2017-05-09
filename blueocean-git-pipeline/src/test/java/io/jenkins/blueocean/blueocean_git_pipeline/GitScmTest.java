@@ -273,10 +273,10 @@ public class GitScmTest extends PipelineBaseTest {
 
         List<Map> errors = (List<Map>) resp.get("errors");
 
-        assertEquals(errors.get(0).get("field"), "name");
-        assertEquals(errors.get(0).get("code"), "MISSING");
-        assertEquals(errors.get(1).get("field"), "$class");
-        assertEquals(errors.get(1).get("code"), "MISSING");
+        assertEquals("name", errors.get(0).get("field"));
+        assertEquals("MISSING", errors.get(0).get("code"));
+        assertEquals("$class", errors.get(1).get("field"));
+        assertEquals("MISSING", errors.get(1).get("code"));
     }
 
     @Test
@@ -294,8 +294,8 @@ public class GitScmTest extends PipelineBaseTest {
 
         List<Map> errors = (List<Map>) resp.get("errors");
 
-        assertEquals(errors.get(0).get("field"), "scmConfig");
-        assertEquals(errors.get(0).get("code"), "MISSING");
+        assertEquals("scmConfig", errors.get(0).get("field"));
+        assertEquals("MISSING", errors.get(0).get("code"));
         assertNull(Jenkins.getInstance().getItem("demo"));
     }
 
@@ -354,10 +354,10 @@ public class GitScmTest extends PipelineBaseTest {
         for(Map<String,String> error:errors){
             if(error.get("field").equals("name")){
                 nameFound = true;
-                assertEquals(error.get("code"), "ALREADY_EXISTS");
+                assertEquals("ALREADY_EXISTS", error.get("code"));
             }else if(error.get("field").equals("scmConfig.credentialId")){
                 credentialIdFound = true;
-                assertEquals(error.get("code"), "NOT_FOUND");
+                assertEquals("NOT_FOUND", error.get("code"));
             }
         }
         assertTrue(nameFound);

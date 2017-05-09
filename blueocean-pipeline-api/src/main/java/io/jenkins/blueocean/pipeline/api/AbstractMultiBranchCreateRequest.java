@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.pipeline.api;
+    package io.jenkins.blueocean.pipeline.api;
 
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.collect.Lists;
@@ -8,6 +8,7 @@ import hudson.model.TopLevelItem;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ErrorMessage.Error;
+import io.jenkins.blueocean.commons.ErrorMessage.Error.ErrorCodes;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
@@ -27,6 +28,8 @@ import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -35,6 +38,9 @@ import java.util.List;
 public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineCreateRequest {
 
     private static final String DESCRIPTOR_NAME = "org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject";
+
+    private static final String ERROR_FIELD_SCM_CONFIG_URI = "scmConfig.uri";
+    private static final String ERROR_FIELD_SCM_CONFIG_NAME = "scmConfig.name";
 
     public AbstractMultiBranchCreateRequest(String name, BlueScmConfig scmConfig) {
         super(name, scmConfig);
@@ -88,8 +94,8 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
             if(domain == null){
                 throw new ServiceException.BadRequestExpception(
                     new ErrorMessage(400, "Failed to create pipeline")
-                        .add(new ErrorMessage.Error("scm.credentialId",
-                            ErrorMessage.Error.ErrorCodes.INVALID.toString(),
+                        .add(new Error("scm.credentialId",
+                            Error.ErrorCodes.INVALID.toString(),
                             "No domain in user credentials found for credentialId: "+ scmConfig.getCredentialId())));
             }
             if (StringUtils.isEmpty(scmConfig.getUri())) {
@@ -106,30 +112,59 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
 
     private void validateInternal(String name, BlueScmConfig scmConfig) {
         User authenticatedUser =  User.current();
-        if(authenticatedUser == null){
+            if(authenticatedUser == null){
             throw new ServiceException.UnauthorizedException("Must login to create a pipeline");
         }
 
-        if(scmConfig == null || scmConfig.getUri() == null){
-            throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create pipeline")
-                .add(new ErrorMessage.Error("scmConfig", ErrorMessage.Error.ErrorCodes.MISSING.toString(), "scmConfig is required")));
+        // If scmConfig is empty then we are missing the uri and name
+        if (scmConfig == null) {
+            throw fail(
+                missingScmConfigUri(),
+                missingScmConfigName()
+            );
+        }
+
+        if (scmConfig.getUri() == null) {
+            throw fail(missingScmConfigUri());
+        }
+
+        if (getName() == null) {
+            throw fail(missingScmConfigName());
         }
 
         List<Error> errors = Lists.newLinkedList(validate(name, scmConfig));
 
+        // Validate that name matches rules
         try {
             Jenkins.getInstance().getProjectNamingStrategy().checkName(getName());
         }catch (Failure f){
-            errors.add(new ErrorMessage.Error("scmConfig.name", ErrorMessage.Error.ErrorCodes.INVALID.toString(), name + "in not a valid name"));
+            errors.add(new Error(ERROR_FIELD_SCM_CONFIG_NAME, Error.ErrorCodes.INVALID.toString(), name + "in not a valid name"));
         }
 
         if(Jenkins.getInstance().getItem(name)!=null) {
-            errors.add(new ErrorMessage.Error("name",
-                ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), name + " already exists"));
+            errors.add(new Error(ERROR_FIELD_SCM_CONFIG_NAME, Error.ErrorCodes.ALREADY_EXISTS.toString(), name + " already exists"));
         }
 
         if(!errors.isEmpty()){
-            throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create Git pipeline:"+name).addAll(errors));
+            throw fail(errors);
         }
+    }
+
+    private static ServiceException fail(List<Error> errors) {
+        ErrorMessage errorMessage = new ErrorMessage(400, "Failed to create pipeline");
+        errorMessage.addAll(errors);
+        return new ServiceException.BadRequestExpception(errorMessage);
+    }
+
+    private static ServiceException fail(Error... errors) {
+        return fail(Arrays.asList(errors));
+    }
+
+    private static Error missingScmConfigUri() {
+        return new Error(ERROR_FIELD_SCM_CONFIG_URI, ErrorCodes.MISSING.toString(), ERROR_FIELD_SCM_CONFIG_URI + "is required");
+    }
+
+    private static Error missingScmConfigName() {
+        return new Error(ERROR_FIELD_SCM_CONFIG_NAME, ErrorCodes.MISSING.toString(), ERROR_FIELD_SCM_CONFIG_NAME + " is required");
     }
 }
