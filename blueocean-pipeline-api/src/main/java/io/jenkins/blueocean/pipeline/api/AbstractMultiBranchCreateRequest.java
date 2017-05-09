@@ -41,6 +41,8 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
 
     private static final String ERROR_FIELD_SCM_CONFIG_URI = "scmConfig.uri";
     private static final String ERROR_FIELD_SCM_CONFIG_NAME = "scmConfig.name";
+    private static final String ERROR_NAME = "name";
+    private static final String ERROR_FIELD_SCM_CREDENTIAL_ID = "scm.credentialId";
 
     public AbstractMultiBranchCreateRequest(String name, BlueScmConfig scmConfig) {
         super(name, scmConfig);
@@ -94,7 +96,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
             if(domain == null){
                 throw new ServiceException.BadRequestExpception(
                     new ErrorMessage(400, "Failed to create pipeline")
-                        .add(new Error("scm.credentialId",
+                        .add(new Error(ERROR_FIELD_SCM_CREDENTIAL_ID,
                             Error.ErrorCodes.INVALID.toString(),
                             "No domain in user credentials found for credentialId: "+ scmConfig.getCredentialId())));
             }
@@ -118,18 +120,15 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
 
         // If scmConfig is empty then we are missing the uri and name
         if (scmConfig == null) {
-            throw fail(
-                missingScmConfigUri(),
-                missingScmConfigName()
-            );
+            throw fail(new Error("scmConfig", ErrorCodes.MISSING.toString(), "scmConfig is required"));
         }
 
         if (scmConfig.getUri() == null) {
-            throw fail(missingScmConfigUri());
+            throw fail(new Error(ERROR_FIELD_SCM_CONFIG_URI, ErrorCodes.MISSING.toString(), ERROR_FIELD_SCM_CONFIG_URI + "is required"));
         }
 
         if (getName() == null) {
-            throw fail(missingScmConfigName());
+            throw fail(new Error(ERROR_FIELD_SCM_CONFIG_NAME, ErrorCodes.MISSING.toString(), ERROR_FIELD_SCM_CONFIG_NAME + " is required"));
         }
 
         List<Error> errors = Lists.newLinkedList(validate(name, scmConfig));
@@ -138,11 +137,11 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
         try {
             Jenkins.getInstance().getProjectNamingStrategy().checkName(getName());
         }catch (Failure f){
-            errors.add(new Error(ERROR_FIELD_SCM_CONFIG_NAME, Error.ErrorCodes.INVALID.toString(), name + "in not a valid name"));
+            errors.add(new Error(ERROR_FIELD_SCM_CONFIG_NAME, Error.ErrorCodes.INVALID.toString(),  getName() + " in not a valid name"));
         }
 
         if(Jenkins.getInstance().getItem(name)!=null) {
-            errors.add(new Error(ERROR_FIELD_SCM_CONFIG_NAME, Error.ErrorCodes.ALREADY_EXISTS.toString(), name + " already exists"));
+            errors.add(new Error(ERROR_NAME, Error.ErrorCodes.ALREADY_EXISTS.toString(), getName() + " already exists"));
         }
 
         if(!errors.isEmpty()){
@@ -158,13 +157,5 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
 
     private static ServiceException fail(Error... errors) {
         return fail(Arrays.asList(errors));
-    }
-
-    private static Error missingScmConfigUri() {
-        return new Error(ERROR_FIELD_SCM_CONFIG_URI, ErrorCodes.MISSING.toString(), ERROR_FIELD_SCM_CONFIG_URI + "is required");
-    }
-
-    private static Error missingScmConfigName() {
-        return new Error(ERROR_FIELD_SCM_CONFIG_NAME, ErrorCodes.MISSING.toString(), ERROR_FIELD_SCM_CONFIG_NAME + " is required");
     }
 }
