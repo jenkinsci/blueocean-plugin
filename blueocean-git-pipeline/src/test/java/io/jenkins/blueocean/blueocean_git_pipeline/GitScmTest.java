@@ -57,6 +57,7 @@ public class GitScmTest extends PipelineBaseTest {
     public void shouldCreateWithRemoteGitRepo() throws IOException, UnirestException {
         String accessToken = needsGithubAccessToken();
         User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
         Map resp = createCredentials(user, ImmutableMap.of("credentials", new ImmutableMap.Builder<String,Object>()
                 .put("password", accessToken)
@@ -90,6 +91,7 @@ public class GitScmTest extends PipelineBaseTest {
     @Test
     public void shouldGetForbiddenForBadCredentialIdOnCreate1() throws IOException, UnirestException {
         User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
         Map resp = createCredentials(user, ImmutableMap.of("credentials",
                 new ImmutableMap.Builder<String,Object>()
@@ -120,6 +122,7 @@ public class GitScmTest extends PipelineBaseTest {
     @Test
     public void shouldGetForbiddenForBadCredentialIdOnCreate2() throws IOException, UnirestException {
         User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
         Map resp = createCredentials(user, ImmutableMap.of("credentials", new ImmutableMap.Builder<String,Object>()
                 .put("password", "abcd")
@@ -144,7 +147,10 @@ public class GitScmTest extends PipelineBaseTest {
     }
 
     @Test
-    public void shouldGetBadRequestForBadGitUriOnCreate() throws IOException {
+    public void shouldGetBadRequestForBadGitUriOnCreate() throws Exception {
+
+        User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
         post("/organizations/jenkins/pipelines/",
                 ImmutableMap.of("name", "demo",
@@ -267,14 +273,18 @@ public class GitScmTest extends PipelineBaseTest {
 
         List<Map> errors = (List<Map>) resp.get("errors");
 
-        assertEquals(errors.get(0).get("field"), "name");
-        assertEquals(errors.get(0).get("code"), "MISSING");
-        assertEquals(errors.get(1).get("field"), "$class");
-        assertEquals(errors.get(1).get("code"), "MISSING");
+        assertEquals("name", errors.get(0).get("field"));
+        assertEquals("MISSING", errors.get(0).get("code"));
+        assertEquals("$class", errors.get(1).get("field"));
+        assertEquals("MISSING", errors.get(1).get("code"));
     }
 
     @Test
-    public void shouldFailOnValidation2(){
+    public void shouldFailOnValidation2() throws Exception {
+
+        User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
+
         Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
                 ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest"
@@ -284,8 +294,8 @@ public class GitScmTest extends PipelineBaseTest {
 
         List<Map> errors = (List<Map>) resp.get("errors");
 
-        assertEquals(errors.get(0).get("field"), "scmConfig");
-        assertEquals(errors.get(0).get("code"), "MISSING");
+        assertEquals("scmConfig", errors.get(0).get("field"));
+        assertEquals("MISSING", errors.get(0).get("code"));
         assertNull(Jenkins.getInstance().getItem("demo"));
     }
 
@@ -344,10 +354,10 @@ public class GitScmTest extends PipelineBaseTest {
         for(Map<String,String> error:errors){
             if(error.get("field").equals("name")){
                 nameFound = true;
-                assertEquals(error.get("code"), "ALREADY_EXISTS");
+                assertEquals("ALREADY_EXISTS", error.get("code"));
             }else if(error.get("field").equals("scmConfig.credentialId")){
                 credentialIdFound = true;
-                assertEquals(error.get("code"), "NOT_FOUND");
+                assertEquals("NOT_FOUND", error.get("code"));
             }
         }
         assertTrue(nameFound);
@@ -355,7 +365,10 @@ public class GitScmTest extends PipelineBaseTest {
     }
 
     @Test
-    public void shouldFailOnValidation5(){
+    public void shouldFailOnValidation5() throws Exception {
+
+        User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
         Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
                 ImmutableMap.of("name", "demo",

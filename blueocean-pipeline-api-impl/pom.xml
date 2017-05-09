@@ -11,10 +11,14 @@
     <artifactId>blueocean-pipeline-api-impl</artifactId>
     <packaging>hpi</packaging>
 
-    <name>Pipeline REST API for Blue Ocean</name>
+    <name>Pipeline implementation for Blue Ocean</name>
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
 
     <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-pipeline-api</artifactId>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-rest-impl</artifactId>

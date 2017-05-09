@@ -108,6 +108,7 @@
     <module>blueocean-i18n</module>
     <module>blueocean-web</module>
     <module>blueocean-rest</module>
+    <module>blueocean-pipeline-api</module>
     <module>blueocean-rest-impl</module>
     <module>blueocean-pipeline-api-impl</module>
     <module>blueocean-events</module>
@@ -234,6 +235,12 @@
             <groupId>io.jenkins.blueocean.rest.annotation</groupId>
             <artifactId>capability-annotation</artifactId>
             <version>1.2</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-pipeline-api</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
