@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.pipeline.credential;
+package io.jenkins.blueocean.rest.impl.pipeline.credential;
 
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 

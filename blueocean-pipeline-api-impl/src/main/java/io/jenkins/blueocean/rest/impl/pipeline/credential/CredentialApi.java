@@ -7,8 +7,6 @@ import com.cloudbees.plugins.credentials.domains.DomainSpecification;
 import com.google.common.collect.ImmutableList;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.pipeline.credential.BlueOceanDomainSpecification;
-import io.jenkins.blueocean.pipeline.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;

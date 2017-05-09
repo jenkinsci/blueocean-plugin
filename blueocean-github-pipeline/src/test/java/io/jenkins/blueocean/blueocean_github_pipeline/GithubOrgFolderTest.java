@@ -15,10 +15,10 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
-import io.jenkins.blueocean.pipeline.credential.BlueOceanCredentialsProvider;
-import io.jenkins.blueocean.pipeline.credential.BlueOceanDomainRequirement;
-import io.jenkins.blueocean.pipeline.credential.BlueOceanDomainSpecification;
-import io.jenkins.blueocean.pipeline.credential.CredentialsUtils;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainSpecification;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.github_branch_source.Connector;
@@ -30,7 +30,10 @@ import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 
 /**

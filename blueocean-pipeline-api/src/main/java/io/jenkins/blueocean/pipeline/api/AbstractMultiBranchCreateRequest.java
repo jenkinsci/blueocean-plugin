@@ -1,19 +1,20 @@
-package io.jenkins.blueocean.pipeline.creation;
+package io.jenkins.blueocean.pipeline.api;
 
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.collect.Lists;
+import hudson.model.Cause;
 import hudson.model.Failure;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ErrorMessage.Error;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.pipeline.credential.BlueOceanCredentialsProvider;
-import io.jenkins.blueocean.pipeline.credential.BlueOceanDomainRequirement;
-import io.jenkins.blueocean.pipeline.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import jenkins.branch.BranchSource;
@@ -47,6 +48,8 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
         assignCredentialToProject(scmConfig, project);
         SCMSource source = createSource(project, scmConfig);
         project.getSourcesList().add(new BranchSource(source));
+        project.save();
+        project.scheduleBuild(new Cause.UserIdCause());
         return BluePipelineFactory.getPipelineInstance(project, OrganizationResolver.getInstance().getContainingOrg(project.getItemGroup()));
     }
 
@@ -107,7 +110,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
             throw new ServiceException.UnauthorizedException("Must login to create a pipeline");
         }
 
-        if(scmConfig == null){
+        if(scmConfig == null || scmConfig.getUri() == null){
             throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create pipeline")
                 .add(new ErrorMessage.Error("scmConfig", ErrorMessage.Error.ErrorCodes.MISSING.toString(), "scmConfig is required")));
         }
