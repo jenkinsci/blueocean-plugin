@@ -1,7 +1,9 @@
 // @flow
 
 import React from 'react';
+import {Link} from 'react-router';
 import { storiesOf } from '@kadira/storybook';
+import WithContext from './WithContext';
 import {
     JTable,
     TableRow,
@@ -58,7 +60,17 @@ function container(...children) {
         margin: "1em"
     };
 
-    return React.createElement('div', {style}, ...children);
+    const ctx = {
+        router: {
+            createHref: x => "/createdHref" + x
+        }
+    };
+
+    return (
+        <WithContext context={ctx}>
+            {React.createElement('div', {style}, ...children)}
+        </WithContext>
+    );
 }
 
 function renderRow(rowData) {
@@ -149,6 +161,7 @@ function manual() {
     };
 
     return container(
+        <Link to="/relativeurl">This is in a link</Link>,
         <h3>Manual headers, row links</h3>,
         <JTable columns={columns} style={style}>
             <TableRow>
@@ -199,14 +212,14 @@ function manual() {
                 <TableCell>True</TableCell>
                 <TableCell>Charlie don't surf</TableCell>
             </TableRow>
-            <TableRow href="http://www.example.org/delta/">
+            <TableRow linkTo="/app-specific-url/foo">
                 <TableCell>False</TableCell>
                 <TableCell>False</TableCell>
                 <TableCell>False</TableCell>
                 <TableCell>False</TableCell>
                 <TableCell>False</TableCell>
                 <TableCell>True</TableCell>
-                <TableCell>YEARGH!</TableCell>
+                <TableCell>&lt;Link&gt;</TableCell>
             </TableRow>
         </JTable>,
         <h3>Some Links, some useRollover</h3>,
