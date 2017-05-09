@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>blueocean-parent</artifactId>
+    <groupId>io.jenkins.blueocean</groupId>
+    <version>1.1.0-beta-3-SNAPSHOT</version>
+  </parent>
+
+  <name>Subversion Pipeline for Blue Ocean</name>
+  <artifactId>blueocean-svn-pipeline</artifactId>
+  <packaging>hpi</packaging>
+
+  <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>blueocean-pipeline-api-impl</artifactId>
+    </dependency>
+
+    <dependency>
+       <groupId>org.jenkins-ci.plugins</groupId>
+       <artifactId>subversion</artifactId>
+       <version>2.7.2</version>
+    </dependency>
+
+    <!-- test dependencies -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>blueocean-pipeline-api-impl</artifactId>
+      <classifier>tests</classifier>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>com.mashape.unirest</groupId>
+      <artifactId>unirest-java</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+</project>

@@ -11,12 +11,12 @@ import hudson.model.User;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.impl.pipeline.AbstractPipelineCreateRequest;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
-import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineCreateRequestImpl;
 import jenkins.branch.CustomOrganizationFolderDescriptor;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
@@ -54,17 +54,14 @@ import java.util.regex.Pattern;
 /**
  * @author Vivek Pandey
  */
-public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestImpl {
+public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
 
     private static final String DESCRIPTOR = "jenkins.branch.OrganizationFolder.org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator";
     private static final Logger logger = LoggerFactory.getLogger(GithubPipelineCreateRequest.class);
 
-    private BlueScmConfig scmConfig;
-
     @DataBoundConstructor
     public GithubPipelineCreateRequest(String name, BlueScmConfig scmConfig) {
-        setName(name);
-        this.scmConfig = scmConfig;
+        super(name, scmConfig);
     }
 
     @SuppressWarnings("unchecked")
@@ -95,9 +92,6 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
         String singleRepo = repos.size() == 1 ? repos.get(0) : null;
 
         User authenticatedUser =  User.current();
-        if(authenticatedUser == null){
-            throw new ServiceException.UnauthorizedException("Must login to create a pipeline");
-        }
 
         Item item = Jenkins.getInstance().getItemByFullName(orgName);
         boolean creatingNewItem = item == null;
@@ -108,7 +102,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
             }
 
             if (item == null) {
-                item = create(Jenkins.getInstance(), getName(), DESCRIPTOR, CustomOrganizationFolderDescriptor.class);
+                item = createProject(getName(), DESCRIPTOR, CustomOrganizationFolderDescriptor.class);
             }
 
             if (item instanceof OrganizationFolder) {
