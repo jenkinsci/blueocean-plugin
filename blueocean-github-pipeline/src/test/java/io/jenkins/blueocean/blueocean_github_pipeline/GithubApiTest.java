@@ -3,13 +3,9 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import hudson.model.User;
-import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import org.junit.Assert;
-import org.junit.Assume;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -21,19 +17,9 @@ import static org.junit.Assert.*;
 /**
  * @author Vivek Pandey
  */
-public class GithubApiTest extends PipelineBaseTest {
-
-    private static final String accessToken = System.getProperty("GITHUB_ACCESS_TOKEN");
-
-    @BeforeClass
-    public static void checkAccessToken() {
-        Assume.assumeTrue("GITHUB_ACCESS_TOKEN jvm property not set, ignoring test", accessToken != null);
-    }
-
+public class GithubApiTest extends GithubMockBase {
     @Test
     public void validateGithubToken() throws IOException, UnirestException {
-        User user = login();
-
         //check credentialId of this SCM, should be null
         Map r = new RequestBuilder(baseUrl)
                 .status(200)
@@ -79,8 +65,6 @@ public class GithubApiTest extends PipelineBaseTest {
 
     @Test
     public void validateGithubEnterpriseToken() throws IOException, UnirestException {
-        User user = login();
-
         //check credentialId of this SCM, should be null
         Map r = new RequestBuilder(baseUrl)
                 .status(200)
@@ -93,8 +77,6 @@ public class GithubApiTest extends PipelineBaseTest {
 
     @Test
     public void getOrganizationsAndRepositories() throws Exception {
-        User user = login();
-
         //check credentialId of this SCM, should be null
         Map r = new RequestBuilder(baseUrl)
                 .data(ImmutableMap.of("accessToken", accessToken))
@@ -121,7 +103,7 @@ public class GithubApiTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/?credentialId=" + credentialId + "&pageSize=10&pageNumber=3")
+                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/?credentialId=" + credentialId + "&pageSize=10&page=1")
                 .header(Scm.X_CREDENTIAL_ID, credentialId + "sdsdsd") //it must be ignored as credentialId query parameter overrides it.
                 .build(Map.class);
 
@@ -134,10 +116,10 @@ public class GithubApiTest extends PipelineBaseTest {
         resp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/game-of-life/?credentialId=" + credentialId)
+                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/RunMyProcess-task/?credentialId=" + credentialId)
                 .header(Scm.X_CREDENTIAL_ID, credentialId + "sdsdsd") //it must be ignored as credentialId query parameter overrides it.
                 .build(Map.class);
 
-        assertEquals("game-of-life", resp.get("name"));
+        assertEquals("RunMyProcess-task", resp.get("name"));
     }
 }

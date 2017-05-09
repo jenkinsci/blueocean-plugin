@@ -1,15 +1,28 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
+import com.google.common.collect.ImmutableList;
 import hudson.model.Item;
 import io.jenkins.blueocean.commons.ServiceException.UnexpectedErrorException;
+import io.jenkins.blueocean.rest.model.BlueScmConfig;
+import jenkins.branch.MultiBranchProject;
+import jenkins.branch.OrganizationFolder;
+import net.sf.json.JSONObject;
+import org.jenkinsci.plugins.pubsub.PubsubBus;
+import org.jenkinsci.plugins.pubsub.SimpleMessage;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.Mockito;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.reflect.Whitebox;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.never;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({GithubPipelineCreateRequest.class,OrganizationFolder.class, PubsubBus.class})
+//@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*"})
 public class GithubPipelineCreateRequestTest {
 
     // Regression test for JENKINS-43471
@@ -35,4 +48,86 @@ public class GithubPipelineCreateRequestTest {
         }
         verify(item, never()).delete();
     }
+
+    @Test
+    public  void test_sendOrganizationScanCompleteEvent() throws Exception {
+        PubsubBus pubsubBus = Mockito.mock(PubsubBus.class);
+        PowerMockito.mockStatic(PubsubBus.class);
+        Mockito.when(PubsubBus.getBus()).thenReturn(pubsubBus);
+        Mockito.doNothing().when(pubsubBus).publish(Mockito.any(SimpleMessage.class));
+
+        Item item = Mockito.mock(Item.class);
+        OrganizationFolder organizationFolder = PowerMockito.mock(OrganizationFolder.class);
+        MultiBranchProject mbp = Mockito.mock(MultiBranchProject.class);
+        Mockito.when(mbp.getName()).thenReturn("PR-demo");
+
+        Mockito.when(organizationFolder.getName()).thenReturn("cloudbeers");
+        Mockito.when(organizationFolder.getItem("cloudbeers")).thenReturn(mbp);
+
+        PowerMockito.spy(GithubPipelineCreateRequest.class);
+
+        JSONObject config = new JSONObject();
+        config.put("repos", ImmutableList.of("PR-demo"));
+        config.put("orgName", ImmutableList.of("cloudbeers"));
+        GithubPipelineCreateRequest pipelineCreateRequest = new GithubPipelineCreateRequest("cloudbeers",
+                new BlueScmConfig(null, "12345", config));
+
+        Whitebox.invokeMethod(pipelineCreateRequest, "_sendOrganizationScanCompleteEvent", item, organizationFolder);
+        Mockito.verify(pubsubBus, Mockito.atLeastOnce()).publish(Mockito.any(SimpleMessage.class));
+    }
+
+    @Test
+    public  void testSendOrganizationScanCompleteEvent() throws Exception {
+        PubsubBus pubsubBus = Mockito.mock(PubsubBus.class);
+        PowerMockito.mockStatic(PubsubBus.class);
+        Mockito.when(PubsubBus.getBus()).thenReturn(pubsubBus);
+        Mockito.doNothing().when(pubsubBus).publish(Mockito.any(SimpleMessage.class));
+
+        Item item = Mockito.mock(Item.class);
+        OrganizationFolder organizationFolder = PowerMockito.mock(OrganizationFolder.class);
+        MultiBranchProject mbp = Mockito.mock(MultiBranchProject.class);
+        Mockito.when(mbp.getName()).thenReturn("PR-demo");
+
+        Mockito.when(organizationFolder.getName()).thenReturn("cloudbeers");
+        Mockito.when(organizationFolder.getItem("cloudbeers")).thenReturn(mbp);
+
+        PowerMockito.spy(GithubPipelineCreateRequest.class);
+
+        JSONObject config = new JSONObject();
+        config.put("repos", ImmutableList.of("PR-demo"));
+        config.put("orgName", ImmutableList.of("cloudbeers"));
+        GithubPipelineCreateRequest pipelineCreateRequest = new GithubPipelineCreateRequest("cloudbeers",
+                new BlueScmConfig(null, "12345", config));
+
+        Whitebox.invokeMethod(pipelineCreateRequest, "sendOrganizationScanCompleteEvent", item, organizationFolder);
+    }
+
+
+    @Test
+    public  void testSendMultibranchIndexingCompleteEvent() throws Exception {
+        PubsubBus pubsubBus = Mockito.mock(PubsubBus.class);
+        PowerMockito.mockStatic(PubsubBus.class);
+        Mockito.when(PubsubBus.getBus()).thenReturn(pubsubBus);
+        Mockito.doNothing().when(pubsubBus).publish(Mockito.any(SimpleMessage.class));
+
+        Item item = Mockito.mock(Item.class);
+        OrganizationFolder organizationFolder = PowerMockito.mock(OrganizationFolder.class);
+        MultiBranchProject mbp = Mockito.mock(MultiBranchProject.class);
+        Mockito.when(mbp.getName()).thenReturn("PR-demo");
+
+        Mockito.when(organizationFolder.getName()).thenReturn("cloudbeers");
+        Mockito.when(organizationFolder.getItem("cloudbeers")).thenReturn(mbp);
+
+        PowerMockito.spy(GithubPipelineCreateRequest.class);
+
+        JSONObject config = new JSONObject();
+        config.put("repos", ImmutableList.of("PR-demo"));
+        config.put("orgName", ImmutableList.of("cloudbeers"));
+        GithubPipelineCreateRequest pipelineCreateRequest = new GithubPipelineCreateRequest("cloudbeers",
+                new BlueScmConfig(null, "12345", config));
+
+        Whitebox.invokeMethod(pipelineCreateRequest, "_sendMultibranchIndexingCompleteEvent", item, organizationFolder, "cloudbeers",5);
+        Mockito.verify(pubsubBus, Mockito.atLeastOnce()).publish(Mockito.any(SimpleMessage.class));
+    }
+
 }

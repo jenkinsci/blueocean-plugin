@@ -1,0 +1,9 @@
+{
+  "ref": "refs/heads/test2",
+  "url": "https://api.github.com/repos/cloudbeers/PR-demo/git/refs/heads/test2",
+  "object": {
+    "type": "commit",
+    "sha": "c9e8148ede406f8ad89610befbdf51ba4a0ef24a",
+    "url": "https://api.github.com/repos/cloudbeers/PR-demo/git/commits/c9e8148ede406f8ad89610befbdf51ba4a0ef24a"
+  }
+}

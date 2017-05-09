@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
-import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.base.Preconditions;
@@ -338,16 +337,6 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                 validateGithubAccessToken(accessToken, apiUrl);
             }
         }
-    }
-
-    private static void deleteOnError(AbstractFolder item){
-        try {
-            item.delete();
-        } catch (InterruptedException | IOException e) {
-            throw new ServiceException.UnexpectedErrorException("Failure during cleaning up folder: " + item.getName() + ". Error: " +
-                    e.getMessage(), e);
-        }
-
     }
 
     private static void validateGithubAccessToken(String accessToken, String apiUrl) throws IOException {

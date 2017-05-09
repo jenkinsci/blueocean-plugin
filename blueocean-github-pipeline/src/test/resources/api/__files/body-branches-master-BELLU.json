@@ -1,0 +1,82 @@
+{
+  "name": "master",
+  "commit": {
+    "sha": "c9e8148ede406f8ad89610befbdf51ba4a0ef24a",
+    "commit": {
+      "author": {
+        "name": "Jesse Glick",
+        "email": "jglick@cloudbees.com",
+        "date": "2017-05-05T19:21:08Z"
+      },
+      "committer": {
+        "name": "GitHub",
+        "email": "noreply@github.com",
+        "date": "2017-05-05T19:21:08Z"
+      },
+      "message": "Merge pull request #14 from cloudbeers/win\n\nMake script run on Windows, too",
+      "tree": {
+        "sha": "bdde11e39cb43852ffb78672c3102f00093e4d1b",
+        "url": "https://api.github.com/repos/cloudbeers/PR-demo/git/trees/bdde11e39cb43852ffb78672c3102f00093e4d1b"
+      },
+      "url": "https://api.github.com/repos/cloudbeers/PR-demo/git/commits/c9e8148ede406f8ad89610befbdf51ba4a0ef24a",
+      "comment_count": 0
+    },
+    "url": "https://api.github.com/repos/cloudbeers/PR-demo/commits/c9e8148ede406f8ad89610befbdf51ba4a0ef24a",
+    "html_url": "https://github.com/cloudbeers/PR-demo/commit/c9e8148ede406f8ad89610befbdf51ba4a0ef24a",
+    "comments_url": "https://api.github.com/repos/cloudbeers/PR-demo/commits/c9e8148ede406f8ad89610befbdf51ba4a0ef24a/comments",
+    "author": {
+      "login": "jglick",
+      "id": 154109,
+      "avatar_url": "https://avatars2.githubusercontent.com/u/154109?v=3",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/jglick",
+      "html_url": "https://github.com/jglick",
+      "followers_url": "https://api.github.com/users/jglick/followers",
+      "following_url": "https://api.github.com/users/jglick/following{/other_user}",
+      "gists_url": "https://api.github.com/users/jglick/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/jglick/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/jglick/subscriptions",
+      "organizations_url": "https://api.github.com/users/jglick/orgs",
+      "repos_url": "https://api.github.com/users/jglick/repos",
+      "events_url": "https://api.github.com/users/jglick/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/jglick/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "committer": {
+      "login": "web-flow",
+      "id": 19864447,
+      "avatar_url": "https://avatars0.githubusercontent.com/u/19864447?v=3",
+      "gravatar_id": "",
+      "url": "https://api.github.com/users/web-flow",
+      "html_url": "https://github.com/web-flow",
+      "followers_url": "https://api.github.com/users/web-flow/followers",
+      "following_url": "https://api.github.com/users/web-flow/following{/other_user}",
+      "gists_url": "https://api.github.com/users/web-flow/gists{/gist_id}",
+      "starred_url": "https://api.github.com/users/web-flow/starred{/owner}{/repo}",
+      "subscriptions_url": "https://api.github.com/users/web-flow/subscriptions",
+      "organizations_url": "https://api.github.com/users/web-flow/orgs",
+      "repos_url": "https://api.github.com/users/web-flow/repos",
+      "events_url": "https://api.github.com/users/web-flow/events{/privacy}",
+      "received_events_url": "https://api.github.com/users/web-flow/received_events",
+      "type": "User",
+      "site_admin": false
+    },
+    "parents": [
+      {
+        "sha": "6a0075d288e039aa049124dbdb2608654be94f78",
+        "url": "https://api.github.com/repos/cloudbeers/PR-demo/commits/6a0075d288e039aa049124dbdb2608654be94f78",
+        "html_url": "https://github.com/cloudbeers/PR-demo/commit/6a0075d288e039aa049124dbdb2608654be94f78"
+      },
+      {
+        "sha": "d82e92949326c457b8b59e1547811933c74266bf",
+        "url": "https://api.github.com/repos/cloudbeers/PR-demo/commits/d82e92949326c457b8b59e1547811933c74266bf",
+        "html_url": "https://github.com/cloudbeers/PR-demo/commit/d82e92949326c457b8b59e1547811933c74266bf"
+      }
+    ]
+  },
+  "_links": {
+    "self": "https://api.github.com/repos/cloudbeers/PR-demo/branches/master",
+    "html": "https://github.com/cloudbeers/PR-demo/tree/master"
+  }
+}

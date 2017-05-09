@@ -1,0 +1,18 @@
+[
+  {
+    "name": "Jenkinsfile",
+    "path": "Jenkinsfile",
+    "sha": "a9b6c56ad6bc35a09c0aa7034325951bff3c3530",
+    "size": 53,
+    "url": "https://api.github.com/repos/cloudbeers/PR-demo/contents/Jenkinsfile?ref=refs/pull/20/merge",
+    "html_url": "https://github.com/cloudbeers/PR-demo/blob/refs/pull/20/merge/Jenkinsfile",
+    "git_url": "https://api.github.com/repos/cloudbeers/PR-demo/git/blobs/a9b6c56ad6bc35a09c0aa7034325951bff3c3530",
+    "download_url": "https://raw.githubusercontent.com/cloudbeers/PR-demo/refs/pull/20/merge/Jenkinsfile",
+    "type": "file",
+    "_links": {
+      "self": "https://api.github.com/repos/cloudbeers/PR-demo/contents/Jenkinsfile?ref=refs/pull/20/merge",
+      "git": "https://api.github.com/repos/cloudbeers/PR-demo/git/blobs/a9b6c56ad6bc35a09c0aa7034325951bff3c3530",
+      "html": "https://github.com/cloudbeers/PR-demo/blob/refs/pull/20/merge/Jenkinsfile"
+    }
+  }
+]
