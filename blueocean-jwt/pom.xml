@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.jenkins.blueocean</groupId>
     <artifactId>blueocean-parent</artifactId>
-    <version>1.1.0-beta-4</version>
+    <version>1.1.0-beta-5-SNAPSHOT</version>
   </parent>
 
   <artifactId>blueocean-jwt</artifactId>
