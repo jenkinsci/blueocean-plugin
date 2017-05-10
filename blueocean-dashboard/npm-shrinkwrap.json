@@ -19,9 +19,9 @@
       "dev": true
     },
     "@jenkins-cd/js-builder": {
-      "version": "0.0.57-tf-beta-1",
-      "from": "@jenkins-cd/js-builder@0.0.57-tf-beta-1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.57-tf-beta-1.tgz",
+      "version": "0.0.57",
+      "from": "@jenkins-cd/js-builder@0.0.57",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.57.tgz",
       "dev": true,
       "dependencies": {
         "glob": {
@@ -5055,9 +5055,9 @@
       "dev": true
     },
     "jsonparse": {
-      "version": "1.3.0",
+      "version": "1.3.1",
       "from": "jsonparse@>=1.2.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/jsonparse/-/jsonparse-1.3.0.tgz",
+      "resolved": "https://registry.npmjs.org/jsonparse/-/jsonparse-1.3.1.tgz",
       "dev": true
     },
     "jsonpointer": {

@@ -20,7 +20,7 @@
   "license": "MIT",
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.57-tf-beta-1",
+    "@jenkins-cd/js-builder": "0.0.57",
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/js-test": "1.2.3",
     "@jenkins-cd/logging": "0.0.6",
