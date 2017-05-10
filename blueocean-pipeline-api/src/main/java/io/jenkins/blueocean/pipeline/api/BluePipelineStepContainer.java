@@ -1,4 +1,6 @@
-package io.jenkins.blueocean.rest.model;
+package io.jenkins.blueocean.pipeline.api;
+
+import io.jenkins.blueocean.rest.model.Container;
 
 /**
  * Container for pipeline step resource

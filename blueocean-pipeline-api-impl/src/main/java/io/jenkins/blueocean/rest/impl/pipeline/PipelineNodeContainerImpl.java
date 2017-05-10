@@ -2,9 +2,9 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.model.Result;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.pipeline.api.BluePipelineNode;
+import io.jenkins.blueocean.pipeline.api.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.model.BluePipelineNode;
-import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 

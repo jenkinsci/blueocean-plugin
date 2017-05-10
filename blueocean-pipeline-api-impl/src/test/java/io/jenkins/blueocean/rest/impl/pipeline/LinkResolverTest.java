@@ -2,9 +2,9 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import hudson.model.FreeStyleProject;
 import hudson.model.Project;
+import io.jenkins.blueocean.pipeline.api.BluePipelineStep;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
-import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;

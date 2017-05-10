@@ -2,12 +2,12 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Predicate;
 import hudson.model.Action;
+import io.jenkins.blueocean.pipeline.api.BluePipelineNode;
+import io.jenkins.blueocean.pipeline.api.BluePipelineStep;
+import io.jenkins.blueocean.pipeline.api.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueInputStep;
-import io.jenkins.blueocean.rest.model.BluePipelineNode;
-import io.jenkins.blueocean.rest.model.BluePipelineStep;
-import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
 import org.jenkinsci.plugins.workflow.actions.LogAction;

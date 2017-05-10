@@ -6,16 +6,16 @@ import hudson.model.Run;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.pipeline.api.BlueMultiBranchPipeline.Branch;
+import io.jenkins.blueocean.pipeline.api.BlueMultiBranchPipeline.PullRequest;
+import io.jenkins.blueocean.pipeline.api.BluePipelineNodeContainer;
+import io.jenkins.blueocean.pipeline.api.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.Branch;
-import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.PullRequest;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
-import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
-import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
@@ -53,16 +53,17 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         super(run, parent);
     }
 
-    @Exported(name = "description")
-    public String getDescription() {
-        return run.getDescription();
-    }
-
+    /**
+     * @return branch metadata of run
+     */
     @Exported(name = Branch.BRANCH, inline = true)
     public Branch getBranch() {
         return Branch.getBranch(run.getParent());
     }
 
+    /**
+     * @return pull request metadata of run or null if run isn't of a pull request
+     */
     @Exported(name = PullRequest.PULL_REQUEST, inline = true)
     public PullRequest getPullRequest() {
         return PullRequest.get(run.getParent());
@@ -130,7 +131,10 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         return replayAction != null && replayAction.isEnabled();
     }
 
-    @Override
+    /**
+     * @return Serves .../runs/{rundId}/nodes/ and provides pipeline execution nodes
+     * @see io.jenkins.blueocean.pipeline.api.BluePipelineNode
+     */
     @Navigable
     public BluePipelineNodeContainer getNodes() {
         if (run != null) {
@@ -139,7 +143,10 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         return null;
     }
 
-    @Override
+    /**
+     * @return Gives steps from pipeline. The list of steps must not include stages, this is because stage could be
+     * interpreted as step as its StepAtomNode and implementation of this API must ensure not to include it.
+     */
     @Navigable
     public BluePipelineStepContainer getSteps() {
         return new PipelineStepContainerImpl(run, getLink());
