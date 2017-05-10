@@ -1,4 +1,4 @@
-    package io.jenkins.blueocean.pipeline.api;
+package io.jenkins.blueocean.pipeline.api;
 
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.collect.Lists;
@@ -29,7 +29,6 @@ import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
