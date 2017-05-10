@@ -22,7 +22,6 @@ import static org.mockito.Mockito.*;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({GithubPipelineCreateRequest.class,OrganizationFolder.class, PubsubBus.class})
-//@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*"})
 public class GithubPipelineCreateRequestTest {
 
     // Regression test for JENKINS-43471
@@ -69,7 +68,7 @@ public class GithubPipelineCreateRequestTest {
         JSONObject config = new JSONObject();
         config.put("repos", ImmutableList.of("PR-demo"));
         config.put("orgName", ImmutableList.of("cloudbeers"));
-        GithubPipelineCreateRequest pipelineCreateRequest = new GithubPipelineCreateRequest("cloudbeers",
+        GithubPipelineCreateRequest pipelineCreateRequest = new GithubPipelineCreateRequest("cloudbeers", "jenkins",
                 new BlueScmConfig(null, "12345", config));
 
         Whitebox.invokeMethod(pipelineCreateRequest, "_sendOrganizationScanCompleteEvent", item, organizationFolder);
@@ -96,7 +95,7 @@ public class GithubPipelineCreateRequestTest {
         JSONObject config = new JSONObject();
         config.put("repos", ImmutableList.of("PR-demo"));
         config.put("orgName", ImmutableList.of("cloudbeers"));
-        GithubPipelineCreateRequest pipelineCreateRequest = new GithubPipelineCreateRequest("cloudbeers",
+        GithubPipelineCreateRequest pipelineCreateRequest = new GithubPipelineCreateRequest("cloudbeers", "jenkins",
                 new BlueScmConfig(null, "12345", config));
 
         Whitebox.invokeMethod(pipelineCreateRequest, "sendOrganizationScanCompleteEvent", item, organizationFolder);
@@ -123,7 +122,7 @@ public class GithubPipelineCreateRequestTest {
         JSONObject config = new JSONObject();
         config.put("repos", ImmutableList.of("PR-demo"));
         config.put("orgName", ImmutableList.of("cloudbeers"));
-        GithubPipelineCreateRequest pipelineCreateRequest = new GithubPipelineCreateRequest("cloudbeers",
+        GithubPipelineCreateRequest pipelineCreateRequest = new GithubPipelineCreateRequest("cloudbeers", "jenkins",
                 new BlueScmConfig(null, "12345", config));
 
         Whitebox.invokeMethod(pipelineCreateRequest, "_sendMultibranchIndexingCompleteEvent", item, organizationFolder, "cloudbeers",5);
