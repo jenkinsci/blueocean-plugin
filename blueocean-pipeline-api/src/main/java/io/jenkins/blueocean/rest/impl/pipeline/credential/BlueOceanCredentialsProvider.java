@@ -20,6 +20,7 @@ import hudson.model.User;
 import hudson.security.ACL;
 import hudson.security.Permission;
 import hudson.util.ListBoxModel;
+import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.pipeline.credential.Messages;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
