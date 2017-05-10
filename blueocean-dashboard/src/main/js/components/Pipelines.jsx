@@ -14,17 +14,6 @@ const translate = i18nTranslator('blueocean-dashboard');
 
 @observer
 export class Pipelines extends Component {
-    _initPager() {
-        const org = this.props.params.organization ? this.props.params.organization : AppConfig.getOrganizationName();
-        const searchText = this.state.searchText;
-
-        if (searchText) {
-            this.pager = this.context.pipelineService.searchPipelinesPager(searchText, org);
-        } else {
-            this.pager = this.context.pipelineService.allPipelinesPager();
-        }
-    }
-
     constructor() {
         super();
         this.state = {};
@@ -34,8 +23,15 @@ export class Pipelines extends Component {
         clearTimeout(this.debounce);
 
         this.debounce = setTimeout(() => {
-            this.setState({searchText: e});
+            this.setState({ searchText: e });
         }, 200);
+    }
+
+    _initPager() {
+        const org = this.props.params.organization ? this.props.params.organization : AppConfig.getOrganizationName();
+        const searchText = this.state.searchText;
+
+        this.pager = this.context.pipelineService.pipelinesPager(org, searchText);
     }
 
     render() {
@@ -77,8 +73,7 @@ export class Pipelines extends Component {
                                 { organization && orgLink }
                             </h1>
                         </Extensions.Renderer>
-                        <TextInput className="search-pipelines-input" placeholder="Search pipelines..." onChange={this.onChange}>
-                        </TextInput>
+                        <TextInput className="search-pipelines-input" placeholder="Search pipelines..." onChange={this.onChange} />
                     </div>
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
                         <CreatePipelineLink />

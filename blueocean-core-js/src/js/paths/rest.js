@@ -12,12 +12,11 @@ export default {
         return '/blue/rest';
     },
 
-    searchPipelines(searchText, organizationName) {
-        return `${this.apiRoot()}/search/?q=type:pipeline;organization:${encodeURIComponent(organizationName)};startsWith:${encodeURIComponent(searchText)};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
-    },
+    pipelines(organizationName, searchText) {
+        const startsWith = searchText ? `;startsWith:${encodeURIComponent(searchText)}` : '';
+        const organization = organizationName ? `;organization:${encodeURIComponent(organizationName)}` : '';
 
-    allPipelines() {
-        return `${this.apiRoot()}/search/?q=type:pipeline;organization:${AppConfig.getOrganizationName()};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
+        return `${this.apiRoot()}/search/?q=type:pipeline${organization}${startsWith};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
     },
 
     runs(organization, pipeline, branch) {

@@ -25,28 +25,16 @@ export class PipelineService extends BunkerService {
     }
 
     /**
-     * Gets pager for /blue/pipelines
-     *
-     * @returns {Pager}
-     */
-    allPipelinesPager() {
-        return this.pagerService.getPager({
-            key: 'PipelinesAll',
-            lazyPager: () => new Pager(RestPaths.allPipelines(), 25, this),
-        });
-    }
-
-    /**
      * Gets pager for /blue/organization/:organization/pipelines
      *
      * @param {searchText} search text for filtering pipelines by name.
      * @param {organization} organization organization pager belongs to.
      * @returns {Pager}
      */
-    searchPipelinesPager(searchText, organization) {
+    pipelinesPager(organization, searchText) {
         return this.pagerService.getPager({
-            key: `searchPipelinesPager/${searchText}`,
-            lazyPager: () => new Pager(RestPaths.searchPipelines(searchText, organization), 25, this),
+            key: `searchPipelinesPager/${searchText}/${organization}`,
+            lazyPager: () => new Pager(RestPaths.pipelines(organization, searchText), 25, this),
         });
     }
 
