@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.pipeline.api;
+package io.jenkins.blueocean.scm.api;
 
 import hudson.model.Item;
 import hudson.model.Items;

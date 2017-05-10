@@ -3,7 +3,7 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
+import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import org.junit.Assert;
 import org.junit.Test;
