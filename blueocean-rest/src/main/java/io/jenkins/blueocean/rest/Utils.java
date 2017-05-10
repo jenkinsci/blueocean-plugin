@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -7,6 +8,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -51,5 +53,17 @@ public class Utils {
 
     public static String ensureTrailingSlash(@Nonnull String path){
         return path.charAt(path.length()-1) == '/' ? path : path+"/";
+    }
+
+    // We can't use guava Iterators.skip() as it's removed ver 13.0 onwards and core
+    // enforces ver 11.0.1. So we use our own
+    public static <T> int skip(Iterator<T> base, int offset){
+        Preconditions.checkArgument(base != null);
+        Preconditions.checkArgument(offset >= 0);
+        int i;
+        for (i = 0; i < offset && base.hasNext(); i++) {
+            base.next();
+        }
+        return i;
     }
 }

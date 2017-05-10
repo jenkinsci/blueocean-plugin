@@ -32,7 +32,6 @@ import org.kohsuke.github.GHOrganization;
 import org.kohsuke.github.GHUser;
 import org.kohsuke.github.GitHub;
 import org.kohsuke.github.GitHubBuilder;
-import org.kohsuke.github.HttpConnector;
 import org.kohsuke.github.HttpException;
 import org.kohsuke.github.RateLimitHandler;
 import org.kohsuke.stapler.HttpResponse;
@@ -62,6 +61,9 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
  * @author Vivek Pandey
  */
 public class GithubScm extends Scm {
+    //Used by tests to mock github
+    static final String GITHUB_API_URL_PROPERTY = "blueocean.github.url";
+
     static final String DEFAULT_API_URI = "https://api.github.com";
     private static final String ID = "github";
 
@@ -95,7 +97,9 @@ public class GithubScm extends Scm {
 
     @Override
     public @Nonnull String getUri() {
-        return DEFAULT_API_URI;
+        String url = System.getProperty(GITHUB_API_URL_PROPERTY);
+        String githubUrl = (url != null) ? url : DEFAULT_API_URI;
+        return githubUrl;
     }
 
     public String getCredentialDomainName(){
@@ -223,7 +227,6 @@ public class GithubScm extends Scm {
                 }
             }
 
-
             //Now we know the token is valid. Lets find credential
             StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(getId(), StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
 
@@ -248,7 +251,7 @@ public class GithubScm extends Scm {
     }
 
     static HttpURLConnection connect(String apiUrl, String accessToken) throws IOException {
-        HttpURLConnection connection = HttpConnector.DEFAULT.connect(new URL(apiUrl));
+        HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
 
         connection.setDoOutput(true);
         connection.setRequestMethod("GET");

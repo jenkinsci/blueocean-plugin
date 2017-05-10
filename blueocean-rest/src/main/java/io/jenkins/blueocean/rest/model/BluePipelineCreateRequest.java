@@ -10,7 +10,7 @@ import java.io.IOException;
  *
  * @author Vivek Pandey
  */
-public abstract class BluePipelineCreateRequest{
+public abstract class BluePipelineCreateRequest {
 
     private String name;
 

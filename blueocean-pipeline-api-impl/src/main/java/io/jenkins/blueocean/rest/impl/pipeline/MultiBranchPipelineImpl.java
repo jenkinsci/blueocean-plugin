@@ -3,7 +3,6 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.Item;
@@ -14,6 +13,7 @@ import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.Utils;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BlueFavoriteResolver;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
@@ -68,7 +68,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     public MultiBranchPipelineImpl(MultiBranchProject mbp) {
         this.mbp = mbp;
-        this.org = OrganizationResolver.getInstance().getContainingOrg((ItemGroup)mbp);
+        this.org = OrganizationResolver.getInstance().getContainingOrg((ItemGroup) mbp);
         this.self = org.getLink().rel("pipelines").rel(PipelineImpl.getRecursivePathFromFullName(this));
     }
 
@@ -80,7 +80,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     @Override
     public BlueFavorite favorite(@JsonBody BlueFavoriteAction favoriteAction) {
-        if(favoriteAction == null) {
+        if (favoriteAction == null) {
             throw new ServiceException.BadRequestExpception("Must provide pipeline name");
         }
         Job job = PrimaryBranch.resolve(mbp);
@@ -88,7 +88,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
             throw new ServiceException.BadRequestExpception("no default branch to favorite");
         }
         FavoriteUtil.toggle(favoriteAction, job);
-        return new FavoriteImpl(new BranchImpl(job,getLink().rel("branches")), getLink().rel("favorite"));
+        return new FavoriteImpl(new BranchImpl(job, getLink().rel("branches")), getLink().rel("favorite"));
     }
 
     @Override
@@ -123,17 +123,17 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     }
 
     @Override
-    public int getTotalNumberOfBranches(){
+    public int getTotalNumberOfBranches() {
         return countJobs(false);
     }
 
     @Override
-    public int getNumberOfFailingBranches(){
+    public int getNumberOfFailingBranches() {
         return countRunStatus(Result.FAILURE, false);
     }
 
     @Override
-    public int getNumberOfSuccessfulBranches(){
+    public int getNumberOfSuccessfulBranches() {
         return countRunStatus(Result.SUCCESS, false);
     }
 
@@ -168,7 +168,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     }
 
     @Override
-    public Integer getWeatherScore(){
+    public Integer getWeatherScore() {
         Job j = PrimaryBranch.resolve(mbp);
         return j == null ? 100 : j.getBuildHealth().getScore();
     }
@@ -200,14 +200,14 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         });
     }
 
-    private int countRunStatus(Result result, boolean pullRequests){
+    private int countRunStatus(Result result, boolean pullRequests) {
         Collection<Job> jobs = mbp.getAllJobs();
-        int count=0;
-        for(Job j:jobs){
-            if(pullRequests && isPullRequest(j) || !pullRequests && !isPullRequest(j)) {
+        int count = 0;
+        for (Job j : jobs) {
+            if (pullRequests && isPullRequest(j) || !pullRequests && !isPullRequest(j)) {
                 j.getBuildStatusUrl();
                 Run run = j.getLastBuild();
-                if (run!=null && run.getResult() == result) {
+                if (run != null && run.getResult() == result) {
                     count++;
                 }
             }
@@ -219,8 +219,8 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         Collection<Job> jobs = mbp.getAllJobs();
         int counter = 0;
 
-        for(Job job: jobs){
-            if(pullRequests && isPullRequest(job) || !pullRequests && !isPullRequest(job)) {
+        for (Job job : jobs) {
+            if (pullRequests && isPullRequest(job) || !pullRequests && !isPullRequest(job)) {
                 counter += 1;
             }
         }
@@ -278,11 +278,11 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                     sortBranchesByLatestRun(branches);
                 }
 
-                for(final BluePipeline b: branches) {
-                    Iterator<BlueRun> it = b.getRuns().iterator(0,MAX_MBP_RUNS_ROWS);
+                for (final BluePipeline b : branches) {
+                    Iterator<BlueRun> it = b.getRuns().iterator(0, MAX_MBP_RUNS_ROWS);
                     int count = 0;
-                    Iterators.skip(it, start);
-                    while(it.hasNext() && count++ < limit){
+                    Utils.skip(it, start);
+                    while (it.hasNext() && count++ < limit) {
                         c.add(it.next());
                     }
                 }
@@ -297,36 +297,36 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                 return c.iterator();
             }
 
-            private boolean retry(boolean[] retries){
+            private boolean retry(boolean[] retries) {
                 //if at least one of the branch needs retry we will retry it
-                for(boolean r: retries){
-                    if(r){
+                for (boolean r : retries) {
+                    if (r) {
                         return true;
                     }
                 }
                 return false;
             }
 
-            private int computeLimit(boolean[] retries, int limit){
+            private int computeLimit(boolean[] retries, int limit) {
                 //if at least one of the branch needs retry we will retry it
-                int count=0;
-                for(boolean r: retries){
-                    if(r){
+                int count = 0;
+                for (boolean r : retries) {
+                    if (r) {
                         count++;
                     }
                 }
-                if(count == 0){
+                if (count == 0) {
                     return 0;
                 }
-                return limit/count > 0 ? limit/count : 1;
+                return limit / count > 0 ? limit / count : 1;
             }
 
             private int collectRuns(List<BluePipeline> branches, List<BlueRun> runs,
-                                    boolean[] retries, int remainingCount, int[] startIndexes, int[] limits){
+                                    boolean[] retries, int remainingCount, int[] startIndexes, int[] limits) {
                 int count = 0;
-                for (int i=0; i < branches.size(); i++) {
+                for (int i = 0; i < branches.size(); i++) {
                     BluePipeline b = branches.get(i);
-                    if(!retries[i]){
+                    if (!retries[i]) {
                         continue;
                     }
                     Iterator<BlueRun> it = b.getRuns().iterator(startIndexes[i], limits[i]);
@@ -338,8 +338,8 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                     }
                     if (lcount < limits[i]) { //if its less than l
                         retries[i] = false; //iterator already exhausted so lets not retry next time
-                    }else{
-                        startIndexes[i] = startIndexes[i]+lcount; //set the new start index for next time
+                    } else {
+                        startIndexes[i] = startIndexes[i] + lcount; //set the new start index for next time
                     }
                 }
                 return count;
@@ -353,7 +353,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         };
     }
 
-    static void sortBranchesByLatestRun(List<BluePipeline> branches){
+    static void sortBranchesByLatestRun(List<BluePipeline> branches) {
         Collections.sort(branches, new Comparator<BluePipeline>() {
             @Override
             public int compare(BluePipeline o1, BluePipeline o2) {
@@ -394,11 +394,11 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         @Override
         public Resource resolve(Item context, Reachable parent, Item target) {
             if (context instanceof MultiBranchProject) {
-                if (context==target)
-                    return getPipeline(context,parent);
-                if (context==target.getParent()) {
+                if (context == target)
+                    return getPipeline(context, parent);
+                if (context == target.getParent()) {
                     // target is a branch
-                    return getPipeline(context,parent).getBranches().get(target.getName());
+                    return getPipeline(context, parent).getBranches().get(target.getName());
                 }
             }
             return null;
@@ -410,13 +410,13 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     public static class FavoriteResolverImpl extends BlueFavoriteResolver {
         @Override
         public BlueFavorite resolve(Item item, Reachable parent) {
-            if(item instanceof MultiBranchProject){
+            if (item instanceof MultiBranchProject) {
                 MultiBranchProject project = (MultiBranchProject) item;
                 Job job = PrimaryBranch.resolve(project);
-                if(job != null){
+                if (job != null) {
                     Resource resource = BluePipelineFactory.resolve(job);
                     Link l = LinkResolver.resolveLink(project);
-                    if(l != null) {
+                    if (l != null) {
                         return new FavoriteImpl(resource, l.rel("favorite"));
                     }
                 }
