@@ -93,7 +93,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
             items = getAllItems(org);
         }
         items = ContainerFilter.filter(items);
-        final Iterator<BluePipeline> pipelineIterator = new PipelineContainerImpl()
+        final Iterator<BluePipeline> pipelineIterator = new PipelineContainerImpl(org)
             .getPipelines(items);
         final List<BluePipeline> pipelines = new ArrayList<>();
         String pipeline = q.param(getType());
