@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.rest.impl.pipeline.credential;
+package io.jenkins.blueocean.credential;
 
 import com.cloudbees.plugins.credentials.Credentials;
 import com.cloudbees.plugins.credentials.CredentialsMatchers;

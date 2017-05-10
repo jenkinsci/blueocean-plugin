@@ -17,7 +17,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-pipeline-api</artifactId>
+            <artifactId>blueocean-pipeline-scm-api</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
