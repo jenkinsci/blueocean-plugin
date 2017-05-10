@@ -1,35 +1,35 @@
-    package io.jenkins.blueocean.pipeline.api;
+package io.jenkins.blueocean.pipeline.api;
 
-    import com.cloudbees.plugins.credentials.domains.Domain;
-    import com.google.common.collect.Lists;
-    import hudson.model.Cause;
-    import hudson.model.Failure;
-    import hudson.model.TopLevelItem;
-    import hudson.model.User;
-    import io.jenkins.blueocean.commons.ErrorMessage;
-    import io.jenkins.blueocean.commons.ErrorMessage.Error;
-    import io.jenkins.blueocean.commons.ErrorMessage.Error.ErrorCodes;
-    import io.jenkins.blueocean.commons.ServiceException;
-    import io.jenkins.blueocean.credential.CredentialsUtils;
-    import io.jenkins.blueocean.rest.Reachable;
-    import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-    import io.jenkins.blueocean.rest.factory.OrganizationResolver;
-    import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
-    import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
-    import io.jenkins.blueocean.rest.model.BluePipeline;
-    import io.jenkins.blueocean.rest.model.BlueScmConfig;
-    import jenkins.branch.BranchSource;
-    import jenkins.branch.MultiBranchProject;
-    import jenkins.branch.MultiBranchProjectDescriptor;
-    import jenkins.model.Jenkins;
-    import jenkins.scm.api.SCMSource;
-    import org.apache.commons.lang.StringUtils;
-    import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import com.cloudbees.plugins.credentials.domains.Domain;
+import com.google.common.collect.Lists;
+import hudson.model.Cause;
+import hudson.model.Failure;
+import hudson.model.TopLevelItem;
+import hudson.model.User;
+import io.jenkins.blueocean.commons.ErrorMessage;
+import io.jenkins.blueocean.commons.ErrorMessage.Error;
+import io.jenkins.blueocean.commons.ErrorMessage.Error.ErrorCodes;
+import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.credential.CredentialsUtils;
+import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
+import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.model.BlueScmConfig;
+import jenkins.branch.BranchSource;
+import jenkins.branch.MultiBranchProject;
+import jenkins.branch.MultiBranchProjectDescriptor;
+import jenkins.model.Jenkins;
+import jenkins.scm.api.SCMSource;
+import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 
-    import javax.annotation.Nonnull;
-    import java.io.IOException;
-    import java.util.Arrays;
-    import java.util.List;
+import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Creates {@link MultiBranchProject}s with a single {@link SCMSource}
