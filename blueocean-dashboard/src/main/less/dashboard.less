@@ -1,0 +1,51 @@
+.jenkins-pipeline-header {
+    display: inline-block;
+}
+
+.search-pipelines-input {
+    background-color: transparent;
+    background-image: url(data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIxOCIgaGVpZ2h0PSIxOCIgdmlld0JveD0iMCAwIDE4IDE4Ij48cGF0aCBkPSJNMTIuNiAxMS40MWgtLjc5NWwtLjI3NS0uMjc0QTYuNDM4IDYuNDM4IDAgMCAwIDEzLjEgNi45MWE2LjUgNi41IDAgMSAwLTYuNSA2LjUgNi40NiA2LjQ2IDAgMCAwIDQuMjI1LTEuNTY0bC4yNzUuMjc1di43OWw1IDQuOTkgMS40OS0xLjQ5em0tNiAwYTQuNSA0LjUgMCAxIDEgMC05IDQuNSA0LjUgMCAwIDEgMCA5eiIgZmlsbD0iI2ZmZiIvPjwvc3ZnPg==);
+    background-repeat: no-repeat;
+    margin-left: 25px;
+
+    input.TextInput-control {
+        border: none;
+        color: #ffffff;
+        font-size: 18px;
+        padding-top: 0px;
+        padding-bottom: 0px;
+        padding-left: 25px;
+        cursor: pointer;
+
+        &::-webkit-input-placeholder {
+            color: transparent;
+        }
+        &::-moz-placeholder {
+            color: transparent;
+        }
+        &:-ms-input-placeholder {
+            color: transparent;
+        }
+
+        &[value=""] {
+            width: 20px;
+            padding-left: 20px;
+        }
+
+        &:focus {
+            padding-left: 25px;
+            width: auto;
+            cursor: inherit;
+
+            &::-webkit-input-placeholder {
+                color: rgba(255, 255, 255, 0.4);
+            }
+            &::-moz-placeholder {
+                color: rgba(255, 255, 255, 0.4);
+            }
+            &:-ms-input-placeholder {
+                color: rgba(255, 255, 255, 0.4);
+            }
+        }
+    }
+}

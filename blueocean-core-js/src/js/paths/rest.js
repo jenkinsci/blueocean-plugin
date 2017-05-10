@@ -12,12 +12,8 @@ export default {
         return '/blue/rest';
     },
 
-    organizationPipelines(organizationName) {
-        return `${this.apiRoot()}/search/?q=type:pipeline;organization:${encodeURIComponent(organizationName)};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
-    },
-
-    searchPipelines(searchText) {
-        return `${this.apiRoot()}/search/?startsWith:${encodeURIComponent(searchText)};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
+    searchPipelines(searchText, organizationName) {
+        return `${this.apiRoot()}/search/?q=type:pipeline;organization:${encodeURIComponent(organizationName)};startsWith:${encodeURIComponent(searchText)};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
     },
 
     allPipelines() {

@@ -14,28 +14,14 @@ const translate = i18nTranslator('blueocean-dashboard');
 
 @observer
 export class Pipelines extends Component {
-    componentWillMount() {
-        this._initPager(this.props);
-    }
-
-    componentWillReceiveProps(nextProps) {
-        this._initPager(nextProps);
-    }
-
-    _initPager(props) {
-        const org = props.params.organization;
+    _initPager() {
+        const org = this.props.params.organization ? this.props.params.organization : AppConfig.getOrganizationName();
         const searchText = this.state.searchText;
 
-        console.log('state', this.state);
-
         if (searchText) {
-            this.pager = this.context.pipelineService.searchPipelinePager(searchText);
-        } else {            
-            if (org) {
-                this.pager = this.context.pipelineService.organiztionPipelinesPager(org);
-            } else {
-                this.pager = this.context.pipelineService.allPipelinesPager();
-            }
+            this.pager = this.context.pipelineService.searchPipelinesPager(searchText, org);
+        } else {
+            this.pager = this.context.pipelineService.allPipelinesPager();
         }
     }
 
@@ -45,10 +31,16 @@ export class Pipelines extends Component {
     }
 
     onChange = (e) => {
-        this.setState({searchText: e});
+        clearTimeout(this.debounce);
+
+        this.debounce = setTimeout(() => {
+            this.setState({searchText: e});
+        }, 200);
     }
 
     render() {
+        this._initPager();
+
         const pipelines = this.pager.data;
         const { organization, location = { } } = this.context.params;
 
@@ -61,7 +53,7 @@ export class Pipelines extends Component {
             </Link> : '';
 
         const showPipelineList = pipelines && pipelines.length > 0;
-        const showEmptyState = !this.pager.pending && (!pipelines || !pipelines.length);
+        const showEmptyState = !this.pager.pending && !this.state.searchText && (!pipelines || !pipelines.length);
 
         const headers = [
             { label: translate('home.pipelineslist.header.name', { defaultValue: 'Name' }), className: 'name-col' },
@@ -85,6 +77,8 @@ export class Pipelines extends Component {
                                 { organization && orgLink }
                             </h1>
                         </Extensions.Renderer>
+                        <TextInput className="search-pipelines-input" placeholder="Search pipelines..." onChange={this.onChange}>
+                        </TextInput>
                     </div>
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
                         <CreatePipelineLink />
@@ -97,8 +91,6 @@ export class Pipelines extends Component {
                             store={ this.context.store }
                             router={ this.context.router }
                         />
-                        <TextInput onChange={this.onChange}>
-                        </TextInput>
                         { showEmptyState && <DashboardPlaceholder t={translate} /> }
                         { showPipelineList &&
                         <Table
@@ -140,6 +132,7 @@ Pipelines.contextTypes = {
 
 Pipelines.propTypes = {
     setTitle: func,
+    params: object,
 };
 
 export default documentTitle(Pipelines);
