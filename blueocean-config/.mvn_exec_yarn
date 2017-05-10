@@ -1,0 +1,1 @@
+Simple marker file to tell maven to execute yarn (and node) build profiles.
