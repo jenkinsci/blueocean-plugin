@@ -40,6 +40,8 @@ const contextFailed = {
     }
 };
 describe("PipelinePage", () => {
+  beforeAll(() => mockExtensionsForI18n());
+
   const pipeline = {
     'displayName': 'beers',
     'name': 'beers',

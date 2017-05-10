@@ -12,6 +12,8 @@ import { mockExtensionsForI18n } from './mock-extensions-i18n';
 mockExtensionsForI18n();
 
 describe('RunDetailsChanges', () => {
+    beforeAll(() => mockExtensionsForI18n());
+
     let component;
     let tree;
     let output;
