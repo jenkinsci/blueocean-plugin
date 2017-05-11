@@ -62,6 +62,8 @@ describe('Pipelines', () => {
                 { context },
             );
 
+            throw new Error('all i do is fail.');
+
             assert.equal(wrapper.find('PipelineRowItem').length, 2);
         });
     });
