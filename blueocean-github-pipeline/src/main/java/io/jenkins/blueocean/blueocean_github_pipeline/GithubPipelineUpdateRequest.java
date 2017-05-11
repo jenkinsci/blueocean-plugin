@@ -45,7 +45,7 @@ public class GithubPipelineUpdateRequest extends BluePipelineUpdateRequest {
             throw new ServiceException.UnauthorizedException("User is not authenticated");
         }
         Item item = Jenkins.getInstance().getItemByFullName(pipeline.getFullName());
-        if(item instanceof OrganizationFolder){
+        if(item != null && item instanceof OrganizationFolder){
             OrganizationFolder folder = (OrganizationFolder) item;
 
             GitHubSCMNavigator gitHubSCMNavigator = getNavigator(folder);
@@ -54,7 +54,9 @@ public class GithubPipelineUpdateRequest extends BluePipelineUpdateRequest {
                 folder.getNavigators().replace(gitHubSCMNavigator);
                 folder.scheduleBuild(new Cause.UserIdCause());
             }
+            item.save();
         }
+
         return pipeline;
     }
 
@@ -75,10 +77,12 @@ public class GithubPipelineUpdateRequest extends BluePipelineUpdateRequest {
         for(SCMNavigator navigator: folder.getNavigators()){
             if(navigator instanceof GitHubSCMNavigator){
                 GitHubSCMNavigator scmNavigator = (GitHubSCMNavigator) navigator;
-                if(scmNavigator.getApiUri()!= null && !scmNavigator.getApiUri().equals(apiUrl)){
+                String scmApiUri = scmNavigator.getApiUri();
+                if(scmApiUri != null && !scmApiUri.equals(apiUrl)){
                     apiUrl = scmNavigator.getApiUri();
                 }
-                if(scmNavigator.getScanCredentialsId() != null && !scmNavigator.getScanCredentialsId().equals(credentialId)){
+                String credId = scmNavigator.getScanCredentialsId();
+                if(credId != null && !credId.equals(credentialId)){
                     credentialId = scmNavigator.getScanCredentialsId();
                 }
                 if(!scmNavigator.getRepoOwner().equals(orgName)){

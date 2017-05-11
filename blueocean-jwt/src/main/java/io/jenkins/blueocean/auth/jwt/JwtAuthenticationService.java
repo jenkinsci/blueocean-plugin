@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.auth.jwt;
 
 import hudson.ExtensionPoint;
-import hudson.model.RootAction;
+import hudson.model.UnprotectedRootAction;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.GET;
@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
  *
  * @author Vivek Pandey
  */
-public abstract class JwtAuthenticationService implements RootAction, ExtensionPoint{
+public abstract class JwtAuthenticationService implements UnprotectedRootAction, ExtensionPoint{
 
     @Override
     public String getUrlName() {
@@ -30,21 +30,22 @@ public abstract class JwtAuthenticationService implements RootAction, ExtensionP
      *
      * @return JWT if there is authenticated user or if  anonymous user has at least READ permission, otherwise 401
      *         error code is returned
-     *
-     *  @see JwtToken
      */
     @GET
     @WebMethod(name = "token")
     public abstract JwtToken getToken(@Nullable @QueryParameter("expiryTimeInMins") Integer expiryTimeInMins,
-                                      @Nullable  @QueryParameter("maxExpiryTimeInMins") Integer maxExpiryTimeInMins);
+                                          @Nullable  @QueryParameter("maxExpiryTimeInMins") Integer maxExpiryTimeInMins);
 
     /**
-     *  Gives Json web key. See https://tools.ietf.org/html/rfc7517
+     * Binds Json web key to the URL space.
      *
      * @param keyId keyId of the key
      *
-     * @return JWK reponse
+     * @return JWK response
+     * @see <a href="https://tools.ietf.org/html/rfc7517">the spec</a>
      */
     @GET
-    public abstract JwkService getJwks(String keyId);
+    public SigningPublicKey getJwks(String keyId) {
+        return JwtSigningKeyProvider.toPublicKey(keyId);
+    }
 }

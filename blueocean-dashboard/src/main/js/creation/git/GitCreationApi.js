@@ -1,5 +1,5 @@
 import es6Promise from 'es6-promise'; es6Promise.polyfill();
-import { capabilityAugmenter, Fetch, UrlConfig, Utils } from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter, Fetch, UrlConfig, Utils, AppConfig } from '@jenkins-cd/blueocean-core-js';
 
 import { Enum } from '../flow2/Enum';
 
@@ -40,14 +40,16 @@ export default class GitCreationApi {
 
     constructor(fetch) {
         this._fetch = fetch || Fetch.fetchJSON;
+        this.organization = AppConfig.getOrganizationName();
     }
 
     createPipeline(repositoryUrl, credentialId, name) {
         const path = UrlConfig.getRestBaseURL();
-        const createUrl = Utils.cleanSlashes(`${path}/organizations/jenkins/pipelines`);
+        const createUrl = Utils.cleanSlashes(`${path}/organizations/${this.organization}/pipelines`);
 
         const requestBody = {
             name,
+            organization: this.organization,
             $class: 'io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest',
             scmConfig: {
                 uri: repositoryUrl,
@@ -107,7 +109,7 @@ export default class GitCreationApi {
 
     checkPipelineNameAvailable(name) {
         const path = UrlConfig.getRestBaseURL();
-        const checkUrl = Utils.cleanSlashes(`${path}/organizations/jenkins/pipelines/${name}`);
+        const checkUrl = Utils.cleanSlashes(`${path}/organizations/${this.organization}/pipelines/${name}`);
 
         const fetchOptions = {
             method: 'GET',

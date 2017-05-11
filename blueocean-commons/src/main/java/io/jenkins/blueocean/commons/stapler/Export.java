@@ -3,6 +3,8 @@ package io.jenkins.blueocean.commons.stapler;
 import hudson.ExtensionList;
 import hudson.PluginWrapper;
 import hudson.model.Action;
+import hudson.model.Item;
+import hudson.model.Run;
 import io.jenkins.blueocean.commons.stapler.export.DataWriter;
 import io.jenkins.blueocean.commons.stapler.export.ExportConfig;
 import io.jenkins.blueocean.commons.stapler.export.ExportInterceptor;
@@ -20,8 +22,10 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.net.HttpURLConnection;
 
@@ -29,20 +33,57 @@ public class Export {
 
     private static final Logger logger = LoggerFactory.getLogger(Export.class);
 
-    static ModelBuilder MODEL_BUILDER = new ModelBuilder();
+    private static ModelBuilder MODEL_BUILDER = new ModelBuilder();
 
+    /**
+     * Serialize the supplied object to JSON and return as a {@link String}.
+     * @param object The object to serialize.
+     * @return The JSON as a {@link String}.
+     * @throws IOException Error serializing model object.
+     */
+    @Nonnull
+    public static String toJson(@Nonnull Object object) throws IOException {
+        try (StringWriter writer = new StringWriter()) {
+            toJson(object, writer);
+            return writer.toString();
+        }
+    }
+
+    /**
+     * Serialize the supplied object to JSON and write to the supplied {@link Writer}.
+     * @param object The object to serialize.
+     * @param writer The writer to output to.
+     * @throws IOException Error serializing model object.
+     */
+    @SuppressWarnings("unchecked")
+    public static void toJson(@Nonnull Object object, @Nonnull Writer writer) throws IOException {
+        Model model = new ModelBuilder().get(object.getClass());
+        model.writeTo(object, Flavor.JSON.createDataWriter(object, writer, createExportConfig()));
+        writer.flush();
+    }
+
+    /**
+     * @param req request
+     * @param rsp response
+     * @param bean to serve
+     * @throws IOException if cannot be written
+     * @throws ServletException if something goes wrong processing the request
+     */
     public static void doJson(StaplerRequest req, StaplerResponse rsp, Object bean) throws IOException, ServletException {
         if (req.getParameter("jsonp") == null || permit(req, bean)) {
             rsp.setHeader("X-Jenkins", Jenkins.VERSION);
             rsp.setHeader("X-Jenkins-Session", Jenkins.SESSION_HASH);
-            ExportConfig exportConfig = new ExportConfig()
+            ExportConfig exportConfig = createExportConfig()
                     .withFlavor(req.getParameter("jsonp") == null ? Flavor.JSON : Flavor.JSONP)
-                    .withExportInterceptor(new BlueOceanExportInterceptor())
                     .withPrettyPrint(req.hasParameter("pretty")).withSkipIfFail(true);
             serveExposedBean(req, rsp, bean, exportConfig);
         } else {
             rsp.sendError(HttpURLConnection.HTTP_FORBIDDEN, "jsonp forbidden; implement jenkins.security.SecureRequester");
         }
+    }
+
+    private static ExportConfig createExportConfig() {
+        return new ExportConfig().withExportInterceptor(new BlueOceanExportInterceptor());
     }
 
     private static boolean permit(StaplerRequest req, Object bean) {
@@ -119,6 +160,9 @@ public class Export {
                     printError(model.getClass(), e);
                     return SKIP;
                 }
+            } else if (model instanceof Item || model instanceof Run) {
+                // We should skip any models that are Jenkins Item or Run objects as these are known to be evil
+                return SKIP;
             }
             return ExportInterceptor.DEFAULT.getValue(property, model, config);
         }

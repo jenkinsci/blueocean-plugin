@@ -1,26 +1,23 @@
 package io.jenkins.blueocean.service.embedded;
 
-import com.google.common.hash.HashCode;
-import com.google.common.hash.Hashing;
 import com.google.inject.Binder;
 import com.google.inject.Inject;
 import com.google.inject.Module;
 import hudson.Extension;
 import hudson.model.UnprotectedRootAction;
-import hudson.remoting.Base64;
 import io.jenkins.blueocean.BlueOceanUI;
+import io.jenkins.blueocean.BlueOceanUIProvider;
+import io.jenkins.blueocean.auth.jwt.impl.JwtAuthenticationFilter;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
+import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import jenkins.model.Jenkins;
-import org.acegisecurity.Authentication;
-import org.acegisecurity.context.SecurityContext;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.context.SecurityContextImpl;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
 
-import java.nio.charset.StandardCharsets;
-import java.util.Random;
+import javax.annotation.Nonnull;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -28,7 +25,6 @@ import java.util.Random;
 @Extension
 public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy {
     private static final String URL_BASE="blue";
-    private static final Long randomBits = new Random().nextLong();
 
     private final boolean enableJWT = BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION;
 
@@ -59,31 +55,17 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
         StaplerRequest request = Stapler.getCurrentRequest();
 
         if(request.getOriginalRestOfPath().startsWith("/rest/")) {
-            if(enableJWT) {
-                Authentication tokenAuthentication = JwtAuthenticationToken.create(request);
-
-                //create a new context and set it to holder to not clobber existing context
-                SecurityContext securityContext = new SecurityContextImpl();
-                securityContext.setAuthentication(tokenAuthentication);
-                SecurityContextHolder.setContext(securityContext);
-
-                //TODO: implement this as filter, see PluginServletFilter to clear the context
-            } else {
-                HashCode hashCode = Hashing.sha1()
-                    .newHasher()
-                    .putString(Jenkins.getAuthentication().getName(), StandardCharsets.UTF_8)
-                    .putLong(randomBits)
-                    .hash();
-
-                // Base64 encode to ensure no non-ASCII characters get into the header
-                String refresherToken = Base64.encode(hashCode.asBytes());
-                Stapler.getCurrentResponse().setHeader("X-Blueocean-Refresher", refresherToken);
+            if (enableJWT && !JwtAuthenticationFilter.didRequestHaveValidatedJwtToken()) {
+                throw new ServiceException.UnauthorizedException("Unauthorized: Jwt token verification failed, no valid authentication instance found");
             }
         }else{
             //If user doesn't have overall Jenkins read permission then return 403, which results in classic UI redirecting
             // user to login page
             Jenkins.getInstance().checkPermission(Jenkins.READ);
         }
+
+        // frontend uses this to determine when to reload
+        Stapler.getCurrentResponse().setHeader("X-Blueocean-Refresher", Jenkins.SESSION_HASH);
 
         return app;
     }
@@ -94,7 +76,29 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
 
         @Override
         public void configure(Binder binder) {
-            binder.bind(BlueOceanUI.class).toInstance(new BlueOceanUI(URL_BASE));
+            binder.bind(BlueOceanUI.class).toInstance(new BlueOceanUI());
+        }
+    }
+
+    @Extension(ordinal = -9999)
+    public static class BlueOceanUIProviderImpl extends BlueOceanUIProvider {
+        @Override
+        public String getRootUrl() {
+            return Jenkins.getInstance().getRootUrl();
+        }
+
+        @Nonnull
+        @Override
+        public String getUrlBasePrefix() {
+            return URL_BASE;
+        }
+
+        @Nonnull
+        @Override
+        public String getLandingPagePath() {
+            BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(Jenkins.getInstance());
+            String orgName = organization != null ? organization.getName() : "jenkins";
+            return String.format("/organizations/%s/pipelines/", orgName);
         }
     }
 }

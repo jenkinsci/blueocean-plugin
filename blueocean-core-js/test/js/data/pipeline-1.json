@@ -83,7 +83,6 @@
     "displayName": "pipeline-success-1m",
     "estimatedDurationInMillis": 68399,
     "fullName": "simple-pipeline-jobs/pipeline-success-1m",
-    "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/simple-pipeline-jobs/pipelines/pipeline-success-1m/runs/113/",
     "latestRun": {
         "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl",
         "_links": {
@@ -237,7 +236,8 @@
         "startTime": "2016-09-15T16:51:56.790-0400",
         "state": "FINISHED",
         "type": "WorkflowRun",
-        "commitId": null
+        "commitId": null,
+        "replayable": true
     },
     "name": "pipeline-success-1m",
     "numberOfQueuedPipelines": 0,

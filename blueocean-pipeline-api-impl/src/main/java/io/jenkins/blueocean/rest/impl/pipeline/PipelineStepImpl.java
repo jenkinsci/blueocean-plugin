@@ -21,7 +21,6 @@ import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
-import org.acegisecurity.GrantedAuthority;
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -94,10 +93,11 @@ public class PipelineStepImpl extends BluePipelineStep {
 
     @Override
     public Object getLog() {
-        if(PipelineNodeUtil.isLoggable.apply(node.getNode())){
+        LogAction logAction = node.getNode().getAction(LogAction.class);
+        if(logAction != null){
             final String errorLog = node.blockError();
             if(errorLog != null){
-                return new LogResource(node.getNode().getAction(LogAction.class).getLogText(), new LogAppender() {
+                return new LogResource(logAction.getLogText(), new LogAppender() {
                     @Nonnull
                     @Override
                     public Reader getLog() {
@@ -105,7 +105,7 @@ public class PipelineStepImpl extends BluePipelineStep {
                     }
                 });
             }
-            return new LogResource(node.getNode().getAction(LogAction.class).getLogText());
+            return new LogResource(logAction.getLogText());
         }else{
             return getLogResource(node);
         }
@@ -150,8 +150,9 @@ public class PipelineStepImpl extends BluePipelineStep {
 
     @Override
     public BlueInputStep getInputStep() {
-        if(node.getInputStep() != null){
-            return new InputStepImpl(node.getInputStep(), this);
+        InputStep inputStep = node.getInputStep();
+        if(inputStep != null){
+            return new InputStepImpl(inputStep, this);
         }
         return null;
     }
@@ -272,18 +273,7 @@ public class PipelineStepImpl extends BluePipelineStep {
         }
     }
     private boolean canSubmit(InputStep inputStep){
-
-        Authentication a = Jenkins.getAuthentication();
-        String submitter = inputStep.getSubmitter();
-        if (submitter==null || a.getName().equals(submitter)) {
-            return true;
-        }
-        for (GrantedAuthority ga : a.getAuthorities()) {
-            if (ga.getAuthority().equals(submitter)) {
-                return true;
-            }
-        }
-        return false;
+        return inputStep.canSubmit();
     }
 
     @Override

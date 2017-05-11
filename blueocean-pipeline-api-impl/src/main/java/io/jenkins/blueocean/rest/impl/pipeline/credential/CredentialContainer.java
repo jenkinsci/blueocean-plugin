@@ -3,15 +3,16 @@ package io.jenkins.blueocean.rest.impl.pipeline.credential;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.CredentialsStore;
 import hudson.Extension;
-import hudson.ExtensionList;
 import hudson.model.User;
 import io.jenkins.blueocean.rest.OrganizationRoute;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.Container;
 import jenkins.model.Jenkins;
 import org.kohsuke.stapler.export.ExportedBean;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -29,12 +30,13 @@ public class CredentialContainer extends Container<CredentialApi> implements Org
     private final Link self;
 
     public CredentialContainer() {
-        BlueOrganization organization=null;
-        for(BlueOrganization action: ExtensionList.lookup(BlueOrganization.class)){
-            organization = action;
-        };
+        BlueOrganization organization= OrganizationFactory.getInstance().getContainingOrg(Jenkins.getInstance());
         this.self = (organization != null) ? organization.getLink().rel("credentials")
-                : new Link("/organizations/jenkins/credentials/");
+                : null;
+    }
+
+    public CredentialContainer(@Nonnull Link parent) {
+        this.self = parent.rel("credentials");
     }
 
     @Override

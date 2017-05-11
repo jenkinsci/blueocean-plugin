@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.jenkins.blueocean</groupId>
     <artifactId>blueocean-parent</artifactId>
-    <version>1.0.0-rc3-SNAPSHOT</version>
+    <version>1.1.0-beta-5-SNAPSHOT</version>
   </parent>
 
   <artifactId>blueocean-commons</artifactId>
@@ -30,13 +30,6 @@
         <configuration>
           <excludePackageNames>io.jenkins.blueocean.commons.stapler.export</excludePackageNames>
         </configuration>
-      </plugin>
-      <plugin>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.18.1</version>
-          <configuration>
-            <trimStackTrace>false</trimStackTrace>
-          </configuration>
       </plugin>
     </plugins>
   </build>

@@ -392,7 +392,6 @@ Gives authenticated user, gives HTTP 404 error if there is no authenticated user
       "fullName": "pipeline1",
       "weatherScore": 100,
       "estimatedDurationInMillis": 20264,
-      "lastSuccessfulRun": "http://localhost:64106/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1",
       "latestRun": {
           "changeSet": [],
           "artifacts": [
@@ -546,7 +545,6 @@ Once this pipeline script is executed, subsequent REST call to get pipeline deta
       "estimatedDurationInMillis" : 1689,
       "fullDisplayName" : "p/master",
       "fullName" : "p/master",
-      "lastSuccessfulRun" : "http://localhost:59702/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/feature%252Fux-1/runs/1/",
       "latestRun" : {...},
       "name" : "feature%2Fux-1",
       "organization" : "jenkins",
@@ -594,7 +592,6 @@ Once this pipeline script is executed, subsequent REST call to get pipeline deta
       "displayName" : "test2",
       "estimatedDurationInMillis" : -1,
       "fullName" : "folder1/folder2/test2",
-      "lastSuccessfulRun" : null,
       "latestRun" : null,
       "name" : "test2",
       "fullName" : "test2",      
@@ -621,7 +618,6 @@ Pipelines can be nested inside folder.
       "displayName" : "test1",
       "estimatedDurationInMillis" : -1,
       "fullName" : "folder1/test1",
-      "lastSuccessfulRun" : null,
       "latestRun" : null,
       "name" : "test1",
       "organization" : "jenkins",
@@ -671,7 +667,6 @@ activity.
             "estimatedDurationInMillis": 1391,
             "name": "master",
             "weatherScore":100,
-             "lastSuccessfulRun": "http://localhost:63971/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1",
             "latestRun": {
                 "changeSet": [
                     
@@ -709,7 +704,6 @@ activity.
             "estimatedDurationInMillis": 1468,
             "name": "feature1",
             "weatherScore":100,
-            "lastSuccessfulRun": "http://localhost:64077/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/feature1/runs/1",            
             "latestRun": {
                 "changeSet": [
                     
@@ -746,7 +740,6 @@ activity.
             "estimatedDurationInMillis": 1443,
             "name": "feature2",
             "weatherScore":100,
-            "lastSuccessfulRun": "http://localhost:64077/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/feature2/runs/1",            
             "latestRun": {
                 "changeSet": [
                     
@@ -1775,7 +1768,6 @@ If favorite request is successful then the repsonse is favorited item.
           "weatherScore" : 100,
           "_class" : "io.jenkins.blueocean.service.embedded.rest.PipelineImpl",
           "fullName" : "pipeline1",
-          "lastSuccessfulRun" : null,
           "estimatedDurationInMillis" : -1
        }
     }
@@ -1850,7 +1842,6 @@ Must be authenticated.
         "displayName" : "master",
         "estimatedDurationInMillis" : 953,
         "fullName" : "p/master",
-        "lastSuccessfulRun" : "http://localhost:49669/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/master/runs/1/",
         "latestRun" : {
           "_class" : "io.jenkins.blueocean.service.embedded.rest.PipelineRunImpl",
           "_links" : {

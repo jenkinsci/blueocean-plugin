@@ -1,6 +1,7 @@
 /* eslint-disable quotes,quote-props,comma-dangle */
 export const pipelines = [
     {
+        '_class': 'some.class',
         '_links': {
             'self': {
                 '_class': 'io.jenkins.blueocean.rest.hal.Link',
@@ -20,6 +21,7 @@ export const pipelines = [
         'totalNumberOfPullRequests': 0
     },
     {
+        '_class': 'some.class',
         '_links': {
             'self': {
                 '_class': 'io.jenkins.blueocean.rest.hal.Link',

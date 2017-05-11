@@ -26,18 +26,15 @@ export class DefaultSSEHandler {
             // then a rename for the new one. This is somewhat confusing for us.
             break;
         case 'job_run_queue_buildable':
-            break;
         case 'job_run_queue_enter':
+        case 'job_run_queue_blocked':
             this.queueEnter(event);
             break;
         case 'job_run_queue_left':
             this.queueLeft(event);
             break;
-        case 'job_run_queue_blocked': {
-            break;
-        }
         case 'job_run_started': {
-            this.updateJob(event, true);
+            this.updateJob(event);
             break;
         }
         case 'job_run_ended': {
@@ -59,26 +56,18 @@ export class DefaultSSEHandler {
         ];
     }
 
-    updateJob(event, overrideQueuedState) {
+    updateJob(event) {
         // const queueId = event.job_run_queueId;
         // const queueSelf = `${event.blueocean_job_rest_url}queue/${queueId}/`;
-        const runSelf = `${event.blueocean_job_rest_url}runs/${event.jenkins_object_id}/`;
-
-        for (const key of this.branchPagerKeys(event)) {
-            const pager = this.pagerService.getPager({ key });
-            this.activityService.fetchActivity(runSelf, { overrideQueuedState }).then(d => {
-                if (pager && !pager.has(runSelf)) {
-                    pager.insert(runSelf);
-                }
-                this.pipelineService.updateLatestRun(d);
-            });
-        }
+        const href = `${event.blueocean_job_rest_url}runs/${event.jenkins_object_id}/`;
+        this._updateRun(event, href);
     }
+
     queueCancel(event) {
         if (event.job_run_status === 'CANCELLED') {
-            const queueId = event.job_run_queueId;
-            const self = `${event.blueocean_job_rest_url}queue/${queueId}/`;
-            this.activityService.removeItem(self);
+            const id = event.blueocean_queue_item_expected_build_number;
+            const href = `${event.blueocean_job_rest_url}runs/${id}/`;
+            this._removeRun(event, href);
         }
     }
     queueEnter(event) {
@@ -87,60 +76,59 @@ export class DefaultSSEHandler {
         if (event.job_ismultibranch && !event.blueocean_job_branch_name) {
             return;
         }
+        // Sometimes we can't match the queue item so we have to skip this event
+        if (!event.blueocean_queue_item_expected_build_number) {
+            return;
+        }
+        const id = event.blueocean_queue_item_expected_build_number;
+        const href = `${event.blueocean_job_rest_url}runs/${id}/`;
+        this._updateRun(event, href);
+    }
 
-        const queueId = event.job_run_queueId;
-        const self = `${event.blueocean_job_rest_url}queue/${queueId}/`;
-        const id = this.activityService.getExpectedBuildNumber(event);
+    queueLeft(event) {
+        const id = event.blueocean_queue_item_expected_build_number;
+        const href = `${event.blueocean_job_rest_url}runs/${id}/`;
+        if (event.job_run_status === 'CANCELLED') {
+            // Cancelled runs are removed from the stores. They are gone *poof*.
+            this._removeRun(event, href);
+        } else {
+            // If not cancelled then the state may be leaving the queue to execute and should be updated with latest
+            this._updateRun(event, href);
+        }
+    }
 
-        const runSelf = `${event.blueocean_job_rest_url}runs/${id}/`;
-
-        const newRun = {
-            id,
-            _links: {
-                self: {
-                    href: runSelf,
-                },
-                parent: {
-                    href: event.blueocean_job_rest_url,
-                },
-            },
-            job_run_queueId: queueId,
-            pipeline: event.blueocean_job_branch_name,
-            result: 'UNKNOWN',
-            state: 'QUEUED',
-            _item: {
-                _links: {
-                    self: {
-                        href: self,
-                    },
-                    parent: {
-                        href: event.blueocean_job_rest_url,
-                    },
-                },
-            },
-        };
-
-        this.activityService.setItem(newRun);
-        
+    /**
+     * Removes the run from the activity service and any branch pagers
+     * @param event triggering the removal
+     * @param href of the run to remove
+     * @private
+     */
+    _removeRun(event, href) {
+        this.activityService.removeItem(href);
         for (const key of this.branchPagerKeys(event)) {
             const pager = this.pagerService.getPager({ key });
             if (pager) {
-                pager.insert(runSelf);
+                pager.remove(href);
             }
         }
     }
 
-    queueLeft(event) {
-        if (event.job_run_status === 'CANCELLED') {
-            const id = this.activityService.getExpectedBuildNumber(event);
-            const runSelf = `${event.blueocean_job_rest_url}runs/${id}/`;
-            this.activityService.removeItem(runSelf);
+    /**
+     * Fetches the latest activity for this run, updates activity service and any branch pagers
+     * @param event triggering the fetch
+     * @param href of the run to add
+     * @private
+     */
+    _updateRun(event, href) {
+        this.activityService.fetchActivity(href, { useCache: false }).then((run) => {
+            this.activityService.setItem(run);
             for (const key of this.branchPagerKeys(event)) {
                 const pager = this.pagerService.getPager({ key });
-                if (pager) {
-                    pager.remove(runSelf);
+                if (pager && !pager.has(href)) {
+                    pager.insert(href);
                 }
             }
-        }
+            this.pipelineService.updateLatestRun(run);
+        });
     }
 }

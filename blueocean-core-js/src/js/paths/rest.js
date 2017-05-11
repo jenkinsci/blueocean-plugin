@@ -1,3 +1,5 @@
+import AppConfig from '../config';
+
 /**
  * This object defines rest paths
  */
@@ -15,12 +17,12 @@ export default {
     },
 
     allPipelines() {
-        return `${this.apiRoot()}/search/?q=type:pipeline;excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
+        return `${this.apiRoot()}/search/?q=type:pipeline;organization:${AppConfig.getOrganizationName()};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
     },
 
-    activities(organization, pipeline, branch) {
+    runs(organization, pipeline, branch) {
         const branchStr = branch ? `?branch=${branch}` : '';
-        return `${this.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${pipeline}/activities/${branchStr}`;
+        return `${this.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${pipeline}/runs/${branchStr}`;
     },
 
     run({ organization, pipeline, branch, runId }) {
@@ -40,9 +42,5 @@ export default {
 
     pullRequests(organization, pipeline) {
         return `${this.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${pipeline}/branches/?filter=pull-requests`;
-    },
-
-    queuedItem(organization, pipeline, queueId) {
-        return `${this.pipeline(organization, pipeline)}queue/${queueId}/`;
     },
 };
