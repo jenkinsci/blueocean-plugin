@@ -11,6 +11,7 @@ import io.jenkins.blueocean.rest.factory.OrganizationResolver;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
+import io.jenkins.blueocean.service.embedded.util.GlobMatcher;
 import jenkins.model.Jenkins;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,9 +106,10 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
                 }
             });
         }else{
+            GlobMatcher matcher = new GlobMatcher(pipeline);
             while (pipelineIterator.hasNext()) {
                 BluePipeline p = pipelineIterator.next();
-                if (!p.getName().equals(pipeline)) {
+                if (!matcher.matches(p.getName())) {
                     continue;
                 }
                 pipelines.add(p);
