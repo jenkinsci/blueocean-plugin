@@ -1,5 +1,3 @@
-import AppConfig from '../config';
-
 /**
  * This object defines rest paths
  */
