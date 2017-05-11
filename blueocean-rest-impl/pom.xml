@@ -46,7 +46,6 @@
         <dependency>
             <groupId>oro</groupId>
             <artifactId>oro</artifactId>
-            <version>2.0.8</version>
         </dependency>
 
         <!-- Test plugins -->
