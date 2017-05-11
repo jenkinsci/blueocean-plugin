@@ -7,6 +7,7 @@ import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.TopLevelItem;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
@@ -56,7 +57,7 @@ public abstract class BluePipelineFactory implements ExtensionPoint {
      * for example so that you can get its URL.
      */
     public static Resource resolve(Item item) {
-        BlueOrganization org = OrganizationResolver.getInstance().getContainingOrg(item);
+        BlueOrganization org = OrganizationFactory.getInstance().getContainingOrg(item);
         Item nextStep = findNextStep(Jenkins.getInstance(), item);
 
         for (BluePipelineFactory f : all()) {

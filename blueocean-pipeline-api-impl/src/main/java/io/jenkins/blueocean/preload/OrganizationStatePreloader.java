@@ -2,7 +2,7 @@ package io.jenkins.blueocean.preload;
 
 import hudson.Extension;
 import io.jenkins.blueocean.commons.PageStatePreloader;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import jenkins.model.Jenkins;
 import net.sf.json.util.JSONBuilder;
@@ -23,7 +23,7 @@ public class OrganizationStatePreloader extends PageStatePreloader {
 
     @Override
     public String getStateJson() {
-        BlueOrganization organization = OrganizationResolver.getInstance().of(Jenkins.getInstance());
+        BlueOrganization organization = OrganizationFactory.getInstance().of(Jenkins.getInstance());
         if(organization != null) {
             StringWriter writer = new StringWriter();
             new JSONBuilder(writer)

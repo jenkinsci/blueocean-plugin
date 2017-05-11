@@ -747,7 +747,7 @@ public class PipelineApiTest extends BaseTest {
     }
 
     @TestExtension(value = "testOrganizationFolder")
-    public static class TestOrganizationResolverImpl extends OrganizationResolverImpl {
+    public static class TestOrganizationFactoryImpl extends OrganizationFactoryImpl {
         private OrganizationImpl instance = new OrganizationImpl("TestOrg", Jenkins.getInstance().getItem("/TestOrgFolder", Jenkins.getInstance(), MockFolder.class));
 
         @Override
