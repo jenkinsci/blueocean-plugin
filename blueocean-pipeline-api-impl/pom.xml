@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.1.0-beta-4-SNAPSHOT</version>
+        <version>1.1.0-beta-5-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean-pipeline-api-impl</artifactId>
@@ -17,7 +17,7 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-pipeline-api</artifactId>
+            <artifactId>blueocean-pipeline-scm-api</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

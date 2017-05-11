@@ -16,6 +16,7 @@ import hudson.model.CauseAction;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.Item;
+import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.ParametersAction;
 import hudson.model.ParametersDefinitionProperty;
@@ -34,19 +35,23 @@ import hudson.tasks.junit.TestResultAction;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
+import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import jenkins.model.Jenkins;
 import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestBuilder;
+import org.jvnet.hudson.test.TestExtension;
 import org.jvnet.hudson.test.ToolInstallations;
 import org.kohsuke.stapler.export.Exported;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -703,6 +708,72 @@ public class PipelineApiTest extends BaseTest {
         resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/?tree=*[*]", Map.class);
         actions = (List<Map>) resp.get("actions");
         Assert.assertEquals(2, actions.size());
+    }
+
+    /**
+     * Tests the API when the organization root is a folder instead of the root jenkins. That organization should only
+     * see the elements under that folder.
+     */
+    @Test
+    public void testOrganizationFolder() throws IOException, ExecutionException, InterruptedException {
+
+        FreeStyleProject jobOutSideOrg = j.createFreeStyleProject("pipelineOutsideOrg");
+
+        MockFolder orgFolder = j.createFolder("TestOrgFolder");
+        MockFolder folderOnOrg = orgFolder.createProject(MockFolder.class, "folderOnOrg");
+
+        FreeStyleProject jobOnRootOrg = orgFolder.createProject(FreeStyleProject.class, "jobOnRootOrg");
+        FreeStyleProject jobOnFolder = folderOnOrg.createProject(FreeStyleProject.class, "jobOnFolder");
+
+        List<Map> pipelines = get("/search/?q=type:pipeline;organization:TestOrg;excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject", List.class);
+
+        //Only what's inside the org folder should be returned
+        Assert.assertEquals(3, pipelines.size());
+
+        //The full name should not contain the organization folder name
+        for (Map map : pipelines) {
+            Assert.assertEquals("TestOrg", map.get("organization"));
+
+            if (map.get("name").equals("folderOnOrg")) {
+                map.get("fullDisplayName").equals("folderOnOrg");
+            } else if (map.get("name").equals("jobOnRootOrg")) {
+                map.get("fullDisplayName").equals("jobOnFolder");
+            } else if (map.get("name").equals("jobOnFolder")) {
+                map.get("fullDisplayName").equals("folderOnOrg/jobOnFolder");
+            } else {
+                Assert.fail("Item " + map.get("name") + " shouldn't be present");
+            }
+        }
+    }
+
+    @TestExtension(value = "testOrganizationFolder")
+    public static class TestOrganizationResolverImpl extends OrganizationResolverImpl {
+        private OrganizationImpl instance = new OrganizationImpl("TestOrg", Jenkins.getInstance().getItem("/TestOrgFolder", Jenkins.getInstance(), MockFolder.class));
+
+        @Override
+        public OrganizationImpl get(String name) {
+            if (instance != null) {
+                if (instance.getName().equals(name)) {
+                    System.out.println("" + name + " Intance returned " + instance);
+                    return instance;
+                }
+            }
+            System.out.println("" + name + " no instance found");
+            return null;
+        }
+
+        @Override
+        public Collection<BlueOrganization> list() {
+            return Collections.singleton((BlueOrganization) instance);
+        }
+
+        @Override
+        public OrganizationImpl of(ItemGroup group) {
+            if (group == instance.getGroup()) {
+                return instance;
+            }
+            return null;
+        }
     }
 
 }

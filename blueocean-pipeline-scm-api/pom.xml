@@ -5,13 +5,13 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.1.0-beta-4-SNAPSHOT</version>
+        <version>1.1.0-beta-5-SNAPSHOT</version>
     </parent>
 
-    <artifactId>blueocean-pipeline-api</artifactId>
+    <artifactId>blueocean-pipeline-scm-api</artifactId>
     <packaging>hpi</packaging>
 
-    <name>Pipeline REST API for Blue Ocean</name>
+    <name>Pipeline SCM API for Blue Ocean</name>
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
 
     <dependencies>

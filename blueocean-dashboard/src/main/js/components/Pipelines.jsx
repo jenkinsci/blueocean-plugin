@@ -82,7 +82,7 @@ export class Pipelines extends Component {
                 <PipelineRowItem
                     t={ translate }
                     key={ key } pipeline={ pipeline }
-                    showOrganization={ AppConfig.showOrg() }
+                    showOrganization={ AppConfig.showOrg() && !organization }
                 />
             );
         });
@@ -121,7 +121,6 @@ export class Pipelines extends Component {
                                 { pipelineRows }
                             </JTable>
                         )}
-
                         { pipelines && <ShowMoreButton pager={this.pager} /> }
                     </article>
                 </main>

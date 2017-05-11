@@ -19,6 +19,7 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.OrganizationResolver.ItemGroupProvider;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
@@ -142,22 +143,45 @@ public class AbstractPipelineImpl extends BluePipeline {
     }
 
     /**
-     * Returns full display name. Each display name is separated by '/' and each display name is url encoded.
-     *
+     * Returns full display name. Each display name is separated by '/' and each display name is url encoded. If the
+     * item is inside an org, it will be looked up.
+     * 
      * @param parent parent folder
      * @param displayName URL encoded display name. Caller must pass urlencoded name
      *
      * @return full display name
      */
     public static String getFullDisplayName(@Nonnull ItemGroup parent, @Nullable String displayName){
-        String name = parent.getDisplayName();
-        if(name.length() == 0 ) return displayName;
+        return getFullDisplayName(OrganizationResolver.getInstance().getContainingOrg(parent), parent, displayName);
+    }
 
-        if(name.length() > 0  && parent instanceof AbstractItem) {
-            if(displayName == null){
-                return getFullDisplayName(((AbstractItem)parent).getParent(), String.format("%s", Util.rawEncode(name)));
-            }else {
-                return getFullDisplayName(((AbstractItem) parent).getParent(), String.format("%s/%s", Util.rawEncode(name),displayName));
+    /**
+     * Returns full display name. Each display name is separated by '/' and each display name is url encoded.
+     *
+     * @param org the organization the item belongs to
+     * @param parent parent folder
+     * @param displayName URL encoded display name. Caller must pass urlencoded name
+     *
+     * @return full display name
+     */
+    public static String getFullDisplayName(@Nullable BlueOrganization org, @Nonnull ItemGroup parent, @Nullable String displayName) {
+        //Stop if we are on an org and reached the top
+        if (org != null && org instanceof ItemGroupProvider) {
+            ItemGroup group = ((ItemGroupProvider) org).getGroup();
+            if (group == parent) {
+                return displayName;
+            }
+        }
+
+        String name = parent.getDisplayName();
+        if (name.length() == 0)
+            return displayName;
+
+        if (name.length() > 0 && parent instanceof AbstractItem) {
+            if (displayName == null) {
+                return getFullDisplayName(((AbstractItem) parent).getParent(), String.format("%s", Util.rawEncode(name)));
+            } else {
+                return getFullDisplayName(((AbstractItem) parent).getParent(), String.format("%s/%s", Util.rawEncode(name), displayName));
             }
         }
         return displayName;
