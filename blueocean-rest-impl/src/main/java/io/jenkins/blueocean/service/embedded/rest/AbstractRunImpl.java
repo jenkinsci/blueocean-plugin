@@ -1,12 +1,16 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Collections2;
 import hudson.model.Action;
+import hudson.model.CauseAction;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
@@ -22,6 +26,7 @@ import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.GenericResource;
 import org.kohsuke.stapler.QueryParameter;
 
+import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Date;
 
@@ -38,7 +43,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     public AbstractRunImpl(T run, Link parent) {
         this.run = run;
         this.parent = parent;
-        this.org = OrganizationResolver.getInstance().getContainingOrg(run);
+        this.org = OrganizationFactory.getInstance().getContainingOrg(run);
     }
 
     //TODO: It serializes jenkins Run model children, enable this code after fixing it
@@ -73,6 +78,18 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
+    public String getName() {
+        String defaultName = "#"+run.getNumber();
+        String displayName = run.getDisplayName();
+        return defaultName.equals(displayName) ? null : displayName;
+    }
+
+    @Override
+    public String getDescription() {
+        return run.getDescription();
+    }
+
+    @Override
     public Date getStartTime() {
         return new Date(run.getStartTimeInMillis());
     }
@@ -95,7 +112,8 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public BlueRunResult getResult() {
-        return run.getResult() != null ? BlueRunResult.valueOf(run.getResult().toString()) : BlueRunResult.UNKNOWN;
+        Result result = run.getResult();
+        return result != null ? BlueRunResult.valueOf(result.toString()) : BlueRunResult.UNKNOWN;
     }
 
 
@@ -138,8 +156,18 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
+    public Collection<BlueCause> getCauses() {
+        return BlueCauseImpl.getCauses(this.run);
+    }
+
+    @Override
     public String getCauseOfBlockage() {
         return null;
+    }
+
+    @Override
+    public boolean isReplayable() {
+        return false;
     }
 
     @Override
@@ -249,11 +277,48 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     private boolean isCompletedOrAborted(){
-        return run.getResult()!= null && (run.getResult() == Result.ABORTED || run.getResult().isCompleteBuild());
+        Result result = run.getResult();
+        return result != null && (result == Result.ABORTED || result.isCompleteBuild());
     }
 
     @Override
     public Links getLinks() {
         return super.getLinks().add("parent", parent);
+    }
+
+    public static class BlueCauseImpl extends BlueCause {
+
+        private final hudson.model.Cause cause;
+
+        BlueCauseImpl(hudson.model.Cause cause) {
+            this.cause = cause;
+        }
+
+        @Override
+        public String getShortDescription() {
+            return cause.getShortDescription();
+        }
+
+        @Override
+        public Object getCause() {
+            return cause;
+        }
+
+        static Collection<BlueCause> getCauses(Run run) {
+            CauseAction action = run.getAction(CauseAction.class);
+            if (action == null) {
+                return null;
+            }
+            return getCauses(action.getCauses());
+        }
+
+        static Collection<BlueCause> getCauses(Collection<hudson.model.Cause> causes) {
+            return Collections2.transform(causes, new Function<hudson.model.Cause, BlueCause>() {
+                @Override
+                public BlueCause apply(@Nullable hudson.model.Cause input) {
+                    return new BlueCauseImpl(input);
+                }
+            });
+        }
     }
 }

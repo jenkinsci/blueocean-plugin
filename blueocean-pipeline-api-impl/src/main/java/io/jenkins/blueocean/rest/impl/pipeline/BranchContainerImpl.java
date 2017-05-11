@@ -22,8 +22,10 @@ public class BranchContainerImpl extends BluePipelineContainer {
 
 
     /**
-     * Orders branches with most recent activity first. Favorited branches are always at the top, also in recent
-     * order.
+     * Orders by:
+     * - Default branch
+     * - Favourites ordered by last run time
+     * - All other branches ordered by last run time
      */
     private static final Comparator<BluePipeline> BRANCH_COMPARITOR = new Comparator<BluePipeline>() {
         @Override
@@ -62,7 +64,7 @@ public class BranchContainerImpl extends BluePipelineContainer {
             }
 
             //If neither have runs, lets just order by name.
-            if(latestRun1 == null && latestRun2 == null) {
+            if(latestRun1 == null) {
                 return pipeline1.getName().compareTo(pipeline2.getName());
             }
 
@@ -78,7 +80,7 @@ public class BranchContainerImpl extends BluePipelineContainer {
             }
 
             // If both jobs have ended, lets order by the one that ended last.
-            if(endTime1 != null && endTime2 != null) {
+            if(endTime1 != null) {
                 if(endTime1.getTime() > endTime2.getTime()) {
                     return -1;
                 }

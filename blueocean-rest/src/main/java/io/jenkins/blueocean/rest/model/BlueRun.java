@@ -6,6 +6,7 @@ import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.POST;
 import org.kohsuke.stapler.verb.PUT;
 
@@ -28,6 +29,8 @@ public abstract class BlueRun extends Resource {
     public static final String ORGANIZATION="organization";
     public static final String ID="id";
     public static final String PIPELINE="pipeline";
+    public static final String NAME = "name";
+    public static final String DESCRIPTION = "description";
     public static final String START_TIME="startTime";
     public static final String END_TIME="endTime";
     public static final String ENQUEUE_TIME="enQueueTime";
@@ -38,8 +41,10 @@ public abstract class BlueRun extends Resource {
     public static final String RESULT = "result";
     public static final String STATE = "state";
     public static final String CAUSE_OF_BLOCKAGE = "causeOfBlockage";
-    public static final String ACTIONS = "actions";
+    public static final String REPLAYABLE = "replayable";
     public static final String TEST_SUMMARY = "testSummary";
+    public static final String ACTIONS = "actions";
+    public static final String CAUSES = "causes";
 
     public static final int DEFAULT_BLOCKING_STOP_TIMEOUT_IN_SECS=10;
 
@@ -67,6 +72,11 @@ public abstract class BlueRun extends Resource {
     @Exported(name = PIPELINE)
     public abstract String getPipeline();
 
+    @Exported(name = NAME)
+    public abstract String getName();
+
+    @Exported(name = DESCRIPTION)
+    public abstract String getDescription();
 
     /**
      * @return Build execution start time inside executor
@@ -183,7 +193,6 @@ public abstract class BlueRun extends Resource {
      * @return Serves .../runs/{rundId}/nodes/ and provides pipeline execution nodes
      * @see BluePipelineNode
      */
-    @Navigable
     public abstract BluePipelineNodeContainer getNodes();
 
     /**
@@ -198,7 +207,6 @@ public abstract class BlueRun extends Resource {
      * @return Gives steps from pipeline. The list of steps must not include stages, this is because stage could be
      * interpreted as step as its StepAtomNode and implementation of this API must ensure not to include it.
      */
-    @Navigable
     public abstract BluePipelineStepContainer getSteps();
 
     /**
@@ -234,8 +242,31 @@ public abstract class BlueRun extends Resource {
     @POST @TreeResponse @WebMethod(name = "replay")
     public abstract BlueRun replay();
 
+    /**
+     * @return cause of the run being created
+     */
+    @Exported(name = CAUSES, inline = true)
+    public abstract Collection<BlueCause> getCauses();
+
+    /**
+     * @return cause of what is blocking this run
+     */
     @Exported(name = CAUSE_OF_BLOCKAGE)
     public abstract String getCauseOfBlockage();
+
+    /**
+     * @return if the run will allow a replay
+     */
+    @Exported(name = REPLAYABLE)
+    public abstract boolean isReplayable();
+
+    @ExportedBean
+    public static abstract class BlueCause {
+        public abstract String getShortDescription();
+
+        @Exported(name="cause", merge = true)
+        public abstract Object getCause();
+    }
 
     public enum BlueRunState {
         QUEUED,

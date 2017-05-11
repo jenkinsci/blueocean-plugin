@@ -39,7 +39,6 @@ public class FavoriteContainerImpl extends BlueFavoriteContainer {
     @Override
     public Iterator<BlueFavorite> iterator() {
         List<BlueFavorite> favorites = new ArrayList<>();
-        Jenkins j = Jenkins.getInstance();
 
         for(final Item favorite: Favorites.getFavorites(user.user)){
             if(favorite instanceof AbstractFolder) {

@@ -1,11 +1,13 @@
 package io.jenkins.blueocean.rest.factory;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.TopLevelItem;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
@@ -55,7 +57,7 @@ public abstract class BluePipelineFactory implements ExtensionPoint {
      * for example so that you can get its URL.
      */
     public static Resource resolve(Item item) {
-        BlueOrganization org = OrganizationResolver.getInstance().getContainingOrg(item);
+        BlueOrganization org = OrganizationFactory.getInstance().getContainingOrg(item);
         Item nextStep = findNextStep(Jenkins.getInstance(), item);
 
         for (BluePipelineFactory f : all()) {
@@ -68,6 +70,7 @@ public abstract class BluePipelineFactory implements ExtensionPoint {
     /**
      * Returns the immediate child of 'context' that is also the ancestor of 'target'
      */
+    @SuppressFBWarnings(value = "EC_UNRELATED_TYPES_USING_POINTER_EQUALITY", justification = "Folder/MBP etc. are Item and ItemGroup")
     protected static Item findNextStep(ItemGroup context, Item target) {
         Item i = null;
         while (context!=target) {

@@ -1,22 +1,22 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
-import com.cloudbees.hudson.plugins.folder.AbstractFolder;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.base.Preconditions;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Cause;
 import hudson.model.Item;
 import hudson.model.TaskListener;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
-import io.jenkins.blueocean.rest.impl.pipeline.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
-import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineCreateRequestImpl;
+import io.jenkins.blueocean.scm.api.AbstractPipelineCreateRequest;
 import jenkins.branch.CustomOrganizationFolderDescriptor;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
@@ -30,6 +30,7 @@ import jenkins.scm.api.SCMRevision;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.SCMSourceCriteria;
 import jenkins.scm.api.SCMSourceEvent;
+import jenkins.scm.api.SCMSourceOwner;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
@@ -53,20 +54,18 @@ import java.util.regex.Pattern;
 /**
  * @author Vivek Pandey
  */
-public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestImpl {
+public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
 
     private static final String DESCRIPTOR = "jenkins.branch.OrganizationFolder.org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator";
     private static final Logger logger = LoggerFactory.getLogger(GithubPipelineCreateRequest.class);
 
-    private BlueScmConfig scmConfig;
-
     @DataBoundConstructor
-    public GithubPipelineCreateRequest(String name, BlueScmConfig scmConfig) {
-        setName(name);
-        this.scmConfig = scmConfig;
+    public GithubPipelineCreateRequest(String name, String organization, BlueScmConfig scmConfig) {
+        super(name, organization, scmConfig);
     }
 
     @SuppressWarnings("unchecked")
+    @SuppressFBWarnings(value = "REC_CATCH_EXCEPTION", justification = "Runtime exception is thrown from the catch block")
     @Override
     public BluePipeline create(Reachable parent) throws IOException {
         Preconditions.checkNotNull(parent, "Parent passed is null");
@@ -83,7 +82,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
                 orgName = (String) scmConfig.getConfig().get("orgName");
             }
             credentialId = scmConfig.getCredentialId();
-            if (scmConfig != null && scmConfig.getConfig().get("repos") instanceof List) {
+            if (scmConfig.getConfig().get("repos") instanceof List) {
                 for (String r : (List<String>) scmConfig.getConfig().get("repos")) {
                     repos.add(r);
                 }
@@ -93,9 +92,6 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
         String singleRepo = repos.size() == 1 ? repos.get(0) : null;
 
         User authenticatedUser =  User.current();
-        if(authenticatedUser == null){
-            throw new ServiceException.UnauthorizedException("Must login to create a pipeline");
-        }
 
         Item item = Jenkins.getInstance().getItemByFullName(orgName);
         boolean creatingNewItem = item == null;
@@ -106,7 +102,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
             }
 
             if (item == null) {
-                item = create(Jenkins.getInstance(), getName(), DESCRIPTOR, CustomOrganizationFolderDescriptor.class);
+                item = createProject(getName(), DESCRIPTOR, CustomOrganizationFolderDescriptor.class);
             }
 
             if (item instanceof OrganizationFolder) {
@@ -337,16 +333,6 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
         }
     }
 
-    private static void deleteOnError(AbstractFolder item){
-        try {
-            item.delete();
-        } catch (InterruptedException | IOException e) {
-            throw new ServiceException.UnexpectedErrorException("Failure during cleaning up folder: " + item.getName() + ". Error: " +
-                    e.getMessage(), e);
-        }
-
-    }
-
     private static void validateGithubAccessToken(String accessToken, String apiUrl) throws IOException {
         try {
             HttpURLConnection connection =  GithubScm.connect(apiUrl+"/user", accessToken);
@@ -378,8 +364,9 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequestIm
 
         @Override
         public boolean isMatch(@Nonnull SCMSource source) {
-            return ((GitHubSCMSource)source).getRepository().equals(getSourceName()) &&
-                    source.getOwner().getFullName().equals(project.getFullName());
+            SCMSourceOwner sourceOwner = source.getOwner();
+            return ((GitHubSCMSource)source).getRepository().equals(getSourceName()) && sourceOwner != null
+                     && sourceOwner.getFullName().equals(project.getFullName());
         }
 
         @Nonnull

@@ -3,10 +3,10 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import hudson.Extension;
 import hudson.model.Queue;
 import hudson.model.Run;
-import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
@@ -25,6 +25,7 @@ import io.jenkins.blueocean.service.embedded.rest.ChangeSetResource;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import io.jenkins.blueocean.service.embedded.rest.StoppableRun;
 import jenkins.model.Jenkins;
+import jenkins.scm.api.SCMRevisionAction;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
@@ -47,10 +48,14 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW
  */
 @Capability(JENKINS_WORKFLOW_RUN)
 public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
-    public static final String CAUSE_OF_BLOCKAGE = "causeOfBlockage";
     private static final Logger logger = LoggerFactory.getLogger(PipelineRunImpl.class);
     public PipelineRunImpl(WorkflowRun run, Link parent) {
         super(run, parent);
+    }
+
+    @Exported(name = "description")
+    public String getDescription() {
+        return run.getDescription();
     }
 
     @Exported(name = Branch.BRANCH, inline = true)
@@ -94,11 +99,15 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     @Override
     public BlueRun replay() {
         ReplayAction replayAction = run.getAction(ReplayAction.class);
-        if(replayAction == null) {
+        if(!isReplayable(replayAction)) {
             throw new ServiceException.BadRequestExpception("This run does not support replay");
         }
 
         Queue.Item item = replayAction.run2(replayAction.getOriginalScript(), replayAction.getOriginalLoadedScripts());
+
+        if(item == null){
+            throw new ServiceException.UnexpectedErrorException("Run was not added to queue.");
+        }
 
         BlueQueueItem queueItem = QueueUtil.getQueuedItem(item, run.getParent());
         WorkflowRun replayedRun = QueueUtil.getRun(run.getParent(), item.getId());
@@ -112,6 +121,17 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     }
 
     @Override
+    public boolean isReplayable() {
+        ReplayAction replayAction = run.getAction(ReplayAction.class);
+        return isReplayable(replayAction);
+    }
+
+    private boolean isReplayable(ReplayAction replayAction) {
+        return replayAction != null && replayAction.isEnabled();
+    }
+
+    @Override
+    @Navigable
     public BluePipelineNodeContainer getNodes() {
         if (run != null) {
             return new PipelineNodeContainerImpl(run, getLink());
@@ -120,6 +140,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     }
 
     @Override
+    @Navigable
     public BluePipelineStepContainer getSteps() {
         return new PipelineStepContainerImpl(run, getLink());
     }
@@ -137,15 +158,11 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
 
     @Exported(name = "commitId")
     public String getCommitId() {
-        BuildData data = run.getAction(BuildData.class);
-
-        if (data == null
-            || data.getLastBuiltRevision() == null
-            || data.getLastBuiltRevision().getSha1String() == null) {
-            return null;
-        } else {
-            return data.getLastBuiltRevision().getSha1String();
+        SCMRevisionAction data = run.getAction(SCMRevisionAction.class);
+        if (data != null){
+            return data.getRevision().toString();
         }
+        return null;
     }
 
     @Override
@@ -154,7 +171,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
             if (i.task instanceof ExecutorStepExecution.PlaceholderTask) {
                 ExecutorStepExecution.PlaceholderTask task = (ExecutorStepExecution.PlaceholderTask) i.task;
                 Run r = task.runForDisplay();
-                if (r.equals(run)) {
+                if (r != null && r.equals(run)) {
                     String cause = i.getCauseOfBlockage().getShortDescription();
                     if (task.getCauseOfBlockage() != null) {
                         cause = task.getCauseOfBlockage().getShortDescription();

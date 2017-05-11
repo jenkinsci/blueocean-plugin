@@ -9,13 +9,11 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import com.mashape.unirest.request.GetRequest;
 import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
-import hudson.Util;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.model.User;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.JsonConverter;
-import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
 import org.acegisecurity.adapters.PrincipalAcegiUserToken;
 import org.acegisecurity.context.SecurityContextHolder;
@@ -272,7 +270,6 @@ public abstract class PipelineBaseTest{
         Assert.assertEquals("jenkins", resp.get("organization"));
         Assert.assertEquals(p.getName(), resp.get("name"));
         Assert.assertEquals(p.getDisplayName(), resp.get("displayName"));
-        Assert.assertNull(resp.get("lastSuccessfulRun"));
         Assert.assertEquals(numBranches, resp.get("totalNumberOfBranches"));
         if(numOfFailingBranches >= 0) {
             Assert.assertEquals(numOfFailingBranches, resp.get("numberOfFailingBranches"));
@@ -289,20 +286,6 @@ public abstract class PipelineBaseTest{
         Assert.assertEquals(p.getDisplayName(), resp.get("displayName"));
         Assert.assertEquals(p.getFullName(), resp.get("fullName"));
         Assert.assertEquals(p.getBuildHealth().getScore(), resp.get("weatherScore"));
-        if(p.getLastSuccessfulBuild() != null){
-            Run b = p.getLastSuccessfulBuild();
-            String s = baseUrl + "/organizations/jenkins/pipelines/" +
-                p.getName() + "/runs/" + b.getId()+"/";
-            if(p instanceof WorkflowJob && p.getParent() instanceof MultiBranchProject){
-                s = baseUrl + "/organizations/jenkins/pipelines/" +
-                    ((MultiBranchProject) p.getParent()).getName() +"/branches/"+ Util.rawEncode(p.getName())+"/runs/" + b.getId()+"/";
-            }
-            Assert.assertEquals(s, resp.get("lastSuccessfulRun"));
-
-        }else{
-            Assert.assertNull(resp.get("lastSuccessfulRun"));
-        }
-
         if(p.getLastBuild() != null){
             Run r = p.getLastBuild();
             validateRun(r, (Map) resp.get("latestRun"), "FINISHED");
@@ -605,19 +588,22 @@ public abstract class PipelineBaseTest{
         return p;
     }
 
-    protected User login() throws IOException {
+    protected User login(String userId, String fullName, String email) throws IOException {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
 
-        hudson.model.User bob = j.jenkins.getUser("bob");
+        hudson.model.User bob = j.jenkins.getUser(userId);
 
-        bob.setFullName("Bob Smith");
-        bob.addProperty(new Mailer.UserProperty("bob@jenkins-ci.org"));
+        bob.setFullName(fullName);
+        bob.addProperty(new Mailer.UserProperty(email));
 
 
         UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
 
         SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
         return bob;
+    }
+    protected User login() throws IOException {
+        return login("bob", "Bob Smith", "bob@jenkins-ci.org");
     }
 
 }

@@ -9,7 +9,7 @@ import hudson.model.ItemGroup;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
@@ -38,7 +38,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     protected final Link parent;
 
     public PipelineFolderImpl(ItemGroup folder, Link parent) {
-        this.org = OrganizationResolver.getInstance().getContainingOrg(folder);
+        this.org = OrganizationFactory.getInstance().getContainingOrg(folder);
         this.folder = folder;
         this.parent = parent;
     }
@@ -171,18 +171,14 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public Iterable<String> getPipelineFolderNames() {
-        Iterable<BluePipeline> pipelines = getPipelines();
-        if(pipelines != null) {
-            return Iterables.transform(getPipelines(), new Function<BluePipeline, String>() {
-                @Override
-                public String apply(@Nullable BluePipeline input) {
-                    if (input != null && input instanceof BluePipelineFolder) {
-                        return input.getName();
-                    }
-                    return null;
+        return Iterables.transform(getPipelines(), new Function<BluePipeline, String>() {
+            @Override
+            public String apply(@Nullable BluePipeline input) {
+                if (input != null && input instanceof BluePipelineFolder) {
+                    return input.getName();
                 }
-            });
-        }
-        return Collections.emptyList();
+                return null;
+            }
+        });
     }
 }

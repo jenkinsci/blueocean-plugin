@@ -3,16 +3,19 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.model.Item;
 import hudson.model.Queue;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueRun.BlueCause;
 import io.jenkins.blueocean.rest.model.BlueRun.BlueRunResult;
 import io.jenkins.blueocean.rest.model.BlueRun.BlueRunState;
+import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl.BlueCauseImpl;
 import jenkins.model.Jenkins;
 
+import java.util.Collection;
 import java.util.Date;
 
 /**
@@ -49,7 +52,7 @@ public class QueueItemImpl extends BlueQueueItem {
     public String getOrganization() {
         if (item.task instanceof Item) {
             Item i = (Item) item.task;
-            return OrganizationResolver.getInstance().getContainingOrg(i).getName();
+            return OrganizationFactory.getInstance().getContainingOrg(i).getName();
         } else {
             return null;
         }
@@ -77,6 +80,11 @@ public class QueueItemImpl extends BlueQueueItem {
         }
 
         Jenkins.getInstance().getQueue().cancel(item);
+    }
+
+    @Override
+    public Collection<BlueCause> getCauses() {
+        return BlueCauseImpl.getCauses(item.getCauses());
     }
 
     @Override

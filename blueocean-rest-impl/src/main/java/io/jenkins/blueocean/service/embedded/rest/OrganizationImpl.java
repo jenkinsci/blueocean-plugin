@@ -5,10 +5,9 @@ import hudson.model.Action;
 import hudson.model.ItemGroup;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.OrganizationRoute;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -16,12 +15,12 @@ import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserContainer;
 import io.jenkins.blueocean.rest.model.GenericResource;
 import jenkins.model.Jenkins;
+import jenkins.model.ModifiableTopLevelItemGroup;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.DELETE;
-import org.kohsuke.stapler.verb.PUT;
 
-import java.io.IOException;
+import javax.annotation.Nonnull;
 
 /**
  * {@link BlueOrganization} implementation for the embedded use.
@@ -29,16 +28,16 @@ import java.io.IOException;
  * @author Vivek Pandey
  * @author Kohsuke Kawaguchi
  */
-public class OrganizationImpl extends BlueOrganization implements OrganizationResolver.ItemGroupProvider {
+public class OrganizationImpl extends AbstractOrganization{
     private final String name;
     /**
      * Everything in this {@link ItemGroup} is considered to belong to this organization.
      */
-    private final ItemGroup group;
+    private final ModifiableTopLevelItemGroup group;
 
     private final UserContainerImpl users = new UserContainerImpl(this);
 
-    public OrganizationImpl(String name, ItemGroup group) {
+    public OrganizationImpl(String name, ModifiableTopLevelItemGroup group) {
         this.name = name;
         this.group = group;
     }
@@ -50,7 +49,9 @@ public class OrganizationImpl extends BlueOrganization implements OrganizationRe
         return name;
     }
 
-    public ItemGroup getGroup() {
+    @Nonnull
+    @Override
+    public ModifiableTopLevelItemGroup getGroup() {
         return group;
     }
 
@@ -67,18 +68,6 @@ public class OrganizationImpl extends BlueOrganization implements OrganizationRe
     @WebMethod(name="") @DELETE
     public void delete() {
         throw new ServiceException.NotImplementedException("Not implemented yet");
-    }
-
-    @WebMethod(name="") @PUT
-    public void update(@JsonBody OrganizationImpl given) throws IOException {
-        given.validate();
-        throw new ServiceException.NotImplementedException("Not implemented yet");
-//        getXmlFile().write(given);
-    }
-
-    private void validate() {
-//        if (name.length()<2)
-//            throw new IllegalArgumentException("Invalid name: "+name);
     }
 
     /**
@@ -120,7 +109,8 @@ public class OrganizationImpl extends BlueOrganization implements OrganizationRe
 
         // No OrganizationRoute found, now lookup in available actions from Jenkins instance serving root
         for(Action action:Jenkins.getInstance().getActions()) {
-            if (action.getUrlName() != null && action.getUrlName().equals(route)) {
+            String urlName = action.getUrlName();
+            if (urlName != null && urlName.equals(route)) {
                 return wrap(action);
             }
         }

@@ -7,6 +7,7 @@ import com.cloudbees.plugins.credentials.domains.DomainSpecification;
 import com.google.common.collect.ImmutableList;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -72,11 +73,15 @@ public class CredentialApi extends Resource {
 
         CredentialsStoreAction.DomainWrapper domainWrapper = credentialStoreAction.getDomain(domainName);
 
-        if(domainWrapper != null){
-            return new CreateResponse(
-                    new CredentialApi.Credential(
-                            domainWrapper.getCredential(credentials.getId()),
-                            getLink().rel("domains").rel(domainName).rel("credentials")));
+
+        if(domainWrapper != null) {
+            CredentialsStoreAction.CredentialsWrapper credentialsWrapper = domainWrapper.getCredential(credentials.getId());
+            if (credentialsWrapper != null){
+                return new CreateResponse(
+                        new CredentialApi.Credential(
+                                credentialsWrapper,
+                                getLink().rel("domains").rel(domainName).rel("credentials")));
+            }
         }
 
         //this should never happen
@@ -166,7 +171,12 @@ public class CredentialApi extends Resource {
 
         @Override
         public Credential get(String name) {
-            return new Credential(domainWrapper.getCredential(name), self);
+            CredentialsStoreAction.CredentialsWrapper credetialsWrapper = domainWrapper.getCredential(name);
+            if(credetialsWrapper != null) {
+                return new Credential(credetialsWrapper, self);
+            }
+            throw new ServiceException.NotFoundException(String.format("Credential %s not found in domain %s", name,
+                    domainWrapper.getFullName()));
         }
 
         @POST

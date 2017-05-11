@@ -23,13 +23,14 @@
  */
 package io.jenkins.blueocean;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.ModelObject;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
@@ -133,11 +134,11 @@ public class BlueOceanWebURLBuilder {
     }
 
     private static String getOrgPrefix(Item i) {
-        return getBlueHome() + "/organizations/" + OrganizationResolver.getInstance().getContainingOrg(i).getName();
+        return getBlueHome() + "/organizations/" + OrganizationFactory.getInstance().getContainingOrg(i).getName();
     }
 
     private static String getOrgPrefix(ItemGroup i) {
-        return getBlueHome() + "/organizations/" + OrganizationResolver.getInstance().getContainingOrg(i).getName();
+        return getBlueHome() + "/organizations/" + OrganizationFactory.getInstance().getContainingOrg(i).getName();
     }
 
 
@@ -192,6 +193,7 @@ public class BlueOceanWebURLBuilder {
         private Resource blueModelObject;
         private String blueUiUrl;
 
+        @SuppressFBWarnings(value = "URF_UNREAD_FIELD", justification = "Reference to Jenkins job, probably kept for future use")
         public BlueOceanModelMapping(Object classJenkinsModelObject, Resource blueModelObject, String blueUiUrl) {
             this.classJenkinsModelObject = classJenkinsModelObject;
             this.blueModelObject = blueModelObject;

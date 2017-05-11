@@ -41,7 +41,6 @@ const noLatestRun = [{
         "estimatedDurationInMillis": 390126,
         "fullDisplayName": "jdl2/docker-test",
         "fullName": "jdl2/docker-test",
-        "lastSuccessfulRun": "http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/jdl2/branches/docker-test/runs/3/",
         "name": "docker-test",
         "organization": "jenkins",
         "weatherScore": 100,
