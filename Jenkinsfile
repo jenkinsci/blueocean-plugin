@@ -30,7 +30,7 @@ node {
         stage 'Archive results'
         
         stage 'ATH'
-        sh "cd acceptance-tests && ./run.sh -a=../blueocean/ --no-selenium"
+        sh "cd acceptance-tests && ./run.sh -a=../blueocean/ --no-selenium --settings=settings.xml"
         step([$class: 'JUnitResultArchiver', testResults: 'acceptance-tests/target/surefire-reports/*.xml'])
         
       } catch(err) {
