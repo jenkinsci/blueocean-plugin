@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.factory.organization;
 
-import hudson.model.ModifiableItemGroup;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import jenkins.model.ModifiableTopLevelItemGroup;
 
@@ -17,7 +16,7 @@ import javax.annotation.Nonnull;
 public abstract class AbstractOrganization extends BlueOrganization{
 
     /**
-     * Gives the {@link ModifiableItemGroup} associated with this organization
+     * Gives the {@link ModifiableTopLevelItemGroup} associated with this organization
      */
     public @Nonnull abstract ModifiableTopLevelItemGroup getGroup();
 }

@@ -71,16 +71,18 @@ public abstract class OrganizationFactory implements ExtensionPoint {
     }
 
     public final BlueOrganization getContainingOrg(Item i) {
-        if (i instanceof ItemGroup)
-            return getContainingOrg((ItemGroup)i);
-        else
+        if (i instanceof ItemGroup) {
+            return getContainingOrg((ItemGroup) i);
+        } else {
             return getContainingOrg(i.getParent());
+        }
     }
 
     public static OrganizationFactory getInstance() {
         OrganizationFactory r = ExtensionList.lookup(OrganizationFactory.class).get(0);
-        if (r==null)
+        if (r==null) {
             throw new AssertionError("No OrganizationFactory is installed");
+        }
         return r;
     }
 

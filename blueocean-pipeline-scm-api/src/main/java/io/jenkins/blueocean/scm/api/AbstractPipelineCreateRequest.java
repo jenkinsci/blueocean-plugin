@@ -57,7 +57,7 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
         String organization = getOrganization();
         ModifiableTopLevelItemGroup parent =  OrganizationFactory.getItemGroup(getOrganization());
         if(parent == null){
-            throw new ServiceException.BadRequestExpception("Invalid Jenkins organization. " + organization + ". Not found");
+            throw new ServiceException.BadRequestExpception("Invalid Jenkins organization. " + organization);
         }
 
         return parent;

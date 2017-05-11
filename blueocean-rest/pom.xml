@@ -78,7 +78,7 @@
                                         <allowedImport>hudson.ExtensionList</allowedImport>
                                         <allowedImport>hudson.model.Item</allowedImport>
                                         <allowedImport>hudson.model.ItemGroup</allowedImport>
-                                        <allowedImport>hudson.model.ModifiableItemGroup</allowedImport>
+                                        <allowedImport>jenkins.model.ModifiableTopLevelItemGroup</allowedImport>
                                         <allowedImport>hudson.model.TopLevelItem</allowedImport>
                                         <allowedImport>jenkins.model.Jenkins</allowedImport>
                                         <allowedImport>hudson.Util</allowedImport>

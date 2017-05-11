@@ -5,7 +5,6 @@ import hudson.model.Action;
 import hudson.model.ItemGroup;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.commons.stapler.JsonBody;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.OrganizationRoute;
 import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
@@ -20,10 +19,8 @@ import jenkins.model.ModifiableTopLevelItemGroup;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.DELETE;
-import org.kohsuke.stapler.verb.PUT;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 
 /**
  * {@link BlueOrganization} implementation for the embedded use.
@@ -71,18 +68,6 @@ public class OrganizationImpl extends AbstractOrganization{
     @WebMethod(name="") @DELETE
     public void delete() {
         throw new ServiceException.NotImplementedException("Not implemented yet");
-    }
-
-    @WebMethod(name="") @PUT
-    public void update(@JsonBody OrganizationImpl given) throws IOException {
-        given.validate();
-        throw new ServiceException.NotImplementedException("Not implemented yet");
-//        getXmlFile().write(given);
-    }
-
-    private void validate() {
-//        if (name.length()<2)
-//            throw new IllegalArgumentException("Invalid name: "+name);
     }
 
     /**
