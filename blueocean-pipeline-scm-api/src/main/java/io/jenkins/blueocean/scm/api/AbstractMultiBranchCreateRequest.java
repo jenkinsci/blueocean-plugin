@@ -13,7 +13,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.model.BluePipeline;
@@ -57,7 +57,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
         project.getSourcesList().add(new BranchSource(source));
         project.save();
         project.scheduleBuild(new Cause.UserIdCause());
-        return BluePipelineFactory.getPipelineInstance(project, OrganizationResolver.getInstance().getContainingOrg(project.getItemGroup()));
+        return BluePipelineFactory.getPipelineInstance(project, OrganizationFactory.getInstance().getContainingOrg(project.getItemGroup()));
     }
 
     /**

@@ -5,7 +5,7 @@ import com.cloudbees.plugins.credentials.CredentialsStore;
 import hudson.Extension;
 import hudson.model.User;
 import io.jenkins.blueocean.rest.OrganizationRoute;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.Container;
@@ -30,7 +30,7 @@ public class CredentialContainer extends Container<CredentialApi> implements Org
     private final Link self;
 
     public CredentialContainer() {
-        BlueOrganization organization= OrganizationResolver.getInstance().getContainingOrg(Jenkins.getInstance());
+        BlueOrganization organization= OrganizationFactory.getInstance().getContainingOrg(Jenkins.getInstance());
         this.self = (organization != null) ? organization.getLink().rel("credentials")
                 : null;
     }

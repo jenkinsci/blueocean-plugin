@@ -3,7 +3,7 @@ package io.jenkins.blueocean.service.embedded;
 import com.google.common.collect.ImmutableList;
 import hudson.Extension;
 import hudson.model.ItemGroup;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import jenkins.model.Jenkins;
@@ -12,13 +12,13 @@ import org.apache.commons.lang.StringUtils;
 import java.util.Collection;
 
 /**
- * Default implementation of {@link OrganizationResolver} for a master is to have everything in
+ * Default implementation of {@link OrganizationFactory} for a master is to have everything in
  * one organization called "jenkins"
  *
  * @author Kohsuke Kawaguchi
  */
 @Extension(ordinal=-100)    // low ordinal to ensure this comes in the very last
-public class OrganizationResolverImpl extends OrganizationResolver {
+public class OrganizationResolverImpl extends OrganizationFactory {
     private static final String ORGANIZATION_NAME = StringUtils.defaultIfBlank(
             System.getProperty("BLUE_ORGANIZATION_NAME"),"jenkins");
 

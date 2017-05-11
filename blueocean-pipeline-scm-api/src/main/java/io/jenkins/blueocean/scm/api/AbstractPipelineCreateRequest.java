@@ -1,13 +1,12 @@
 package io.jenkins.blueocean.scm.api;
 
 import hudson.model.Item;
-import hudson.model.ItemGroup;
 import hudson.model.Items;
 import hudson.model.TopLevelItem;
 import hudson.model.TopLevelItemDescriptor;
 import hudson.security.ACL;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BluePipelineCreateRequest;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import jenkins.model.Jenkins;
@@ -56,15 +55,11 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
 
     protected ModifiableTopLevelItemGroup getParent() {
         String organization = getOrganization();
-        ItemGroup parent =  OrganizationResolver.getItemGroup(getOrganization());
+        ModifiableTopLevelItemGroup parent =  OrganizationFactory.getItemGroup(getOrganization());
         if(parent == null){
             throw new ServiceException.BadRequestExpception("Invalid Jenkins organization. " + organization + ". Not found");
         }
 
-        if(!(parent instanceof ModifiableTopLevelItemGroup)){
-            throw new ServiceException.BadRequestExpception("Invalid Jenkins organization. " + organization + ". Not instance of ModifiableTopLevelItemGroup");
-        }
-
-        return (ModifiableTopLevelItemGroup) parent;
+        return parent;
     }
 }

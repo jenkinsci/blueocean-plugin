@@ -28,7 +28,7 @@ import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Queue;
 import hudson.model.Run;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
@@ -72,7 +72,7 @@ public class BlueMessageEnricher extends MessageEnricher {
             }
             Link jobUrl = LinkResolver.resolveLink(jobChannelItem);
 
-            BlueOrganization org = OrganizationResolver.getInstance().getContainingOrg(jobChannelItem);
+            BlueOrganization org = OrganizationFactory.getInstance().getContainingOrg(jobChannelItem);
             if (org!=null) {
                 message.set(EventProps.Jenkins.jenkins_org, org.getName());
             }

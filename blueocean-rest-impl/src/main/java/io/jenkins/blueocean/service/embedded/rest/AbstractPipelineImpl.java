@@ -18,7 +18,7 @@ import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
@@ -57,7 +57,7 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     protected AbstractPipelineImpl(Job job) {
         this.job = job;
-        this.org = OrganizationResolver.getInstance().getContainingOrg(job);
+        this.org = OrganizationFactory.getInstance().getContainingOrg(job);
     }
 
     @Override
