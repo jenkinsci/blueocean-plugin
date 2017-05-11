@@ -18,7 +18,7 @@ import java.util.Collection;
  * @author Kohsuke Kawaguchi
  */
 @Extension(ordinal=-100)    // low ordinal to ensure this comes in the very last
-public class OrganizationResolverImpl extends OrganizationFactory {
+public class OrganizationFactoryImpl extends OrganizationFactory {
     private static final String ORGANIZATION_NAME = StringUtils.defaultIfBlank(
             System.getProperty("BLUE_ORGANIZATION_NAME"),"jenkins");
 
@@ -27,11 +27,11 @@ public class OrganizationResolverImpl extends OrganizationFactory {
      */
     private final OrganizationImpl instance;
 
-    public OrganizationResolverImpl() {
+    public OrganizationFactoryImpl() {
         this(ORGANIZATION_NAME);
     }
 
-    public OrganizationResolverImpl(String name) {
+    public OrganizationFactoryImpl(String name) {
         this.instance = new OrganizationImpl(name, Jenkins.getInstance());
     }
 
