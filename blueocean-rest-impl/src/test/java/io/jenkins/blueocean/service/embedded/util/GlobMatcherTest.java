@@ -40,4 +40,11 @@ public class GlobMatcherTest {
         assertTrue(matcher.matches("A Folder/Folder/Pipeline"));
         assertFalse(matcher.matches("A Folder/Sub/Pipeline"));
     }
+
+    @Test
+    public void testMatchesOnPathLowerCase() throws Exception {
+        GlobMatcher matcher = new GlobMatcher("a*/f*/p*");
+        assertTrue(matcher.matches("A Folder/Folder/Pipeline"));
+        assertFalse(matcher.matches("A Folder/Sub/Pipeline"));
+    }
 }
