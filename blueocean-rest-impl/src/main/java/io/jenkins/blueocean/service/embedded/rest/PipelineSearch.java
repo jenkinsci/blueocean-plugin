@@ -106,13 +106,15 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
                 }
             });
         }else{
-            GlobMatcher matcher = new GlobMatcher(pipeline);
+            GlobMatcher matcher = pipeline.contains("*") ? new GlobMatcher(pipeline) : null;
             while (pipelineIterator.hasNext()) {
                 BluePipeline p = pipelineIterator.next();
-                if (!matcher.matches(p.getName())) {
-                    continue;
+                // If using glob syntax try to match using the glob matcher otherwise fall back to equality check
+                if (matcher != null && matcher.matches(p.getName())) {
+                    pipelines.add(p);
+                } else if (pipeline.equals(p.getName())) {
+                    pipelines.add(p);
                 }
-                pipelines.add(p);
             }
             return Pageables.wrap(pipelines);
         }
