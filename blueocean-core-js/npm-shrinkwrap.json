@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.112-SNAPSHOT",
+  "version": "0.0.113-tf-beta-1",
   "dependencies": {
     "@jenkins-cd/design-language": {
       "version": "0.0.128",
@@ -14,14 +14,14 @@
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.35",
-      "from": "@jenkins-cd/js-extensions@0.0.35",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.35.tgz"
+      "version": "0.0.36-tf-beta-2",
+      "from": "@jenkins-cd/js-extensions@0.0.36-tf-beta-2",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.36-tf-beta-2.tgz"
     },
     "@jenkins-cd/js-modules": {
-      "version": "0.0.8",
-      "from": "@jenkins-cd/js-modules@0.0.8",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.8.tgz"
+      "version": "0.0.10-tf-beta-3",
+      "from": "@jenkins-cd/js-modules@0.0.10-tf-beta-3",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.10-tf-beta-3.tgz"
     },
     "@jenkins-cd/logging": {
       "version": "0.0.6",
