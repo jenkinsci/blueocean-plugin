@@ -12,25 +12,7 @@ In debian:
 apt-get install libxml2-utils libssl-dev 
 ```
 
-# Building
-
-To build:
-
-```sh
-mvn clean install -DskipTests
-```
-
-For now, you __must__ build with the `-DskipTests` switch. We'll be able to change this once the Blue Ocean
-plugins are in the Update Center.
-
-
 # Running
-Builds directly on the main Jenkins [acceptance-test-harness](https://github.com/jenkinsci/acceptance-test-harness),
-so running it works as per the instructions on the README.md there.
-
-> __NOTE:__ If you are not running dev mode, we assume a running selenium instance! See above how to start selenium manually.
-
-We also added a shortcut script for easy running:
 
 ```sh
 ./run.sh -a=<aggregator-plugin-path>
