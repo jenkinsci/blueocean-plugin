@@ -72,7 +72,7 @@ export default class Branches extends Component {
         }
         const cleanBranchName = decodeURIComponent(branch.name);
         const runDetailsUrl = buildRunDetailsUrl(branch.organization, pipeline.fullName, cleanBranchName, latestRun.id, 'pipeline');
-        const historyButtonUrl = `${buildPipelineUrl(branch.organization, pipeline.fullName)}/activity?branch=${branch.name}`;
+        const historyButtonUrl = `${buildPipelineUrl(branch.organization, pipeline.fullName)}/activity?branch=${encodeURIComponent(branch.name)}`;
         return (
             <CellRow linkUrl={runDetailsUrl} id={`${cleanBranchName}-${latestRun.id}`}>
                 <CellLink disableDefaultPadding>
