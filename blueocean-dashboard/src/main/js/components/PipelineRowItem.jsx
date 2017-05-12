@@ -7,14 +7,16 @@ import { capable, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 import { MATRIX_PIPELINE } from '../Capabilities';
 import { Icon } from '@jenkins-cd/react-material-icons';
 
-function generateRedirectLink(pipeline) {
+function generateRedirectLink(pipeline, organization) {
     if (capable(pipeline, MATRIX_PIPELINE)) {
+        const fullDisplayPath = organization ? `${organization}/${pipeline.fullDisplayName}` : pipeline.fullDisplayName;
+    
         return (<a
           className="pipelineRedirectLink"
           href={`${UrlConfig.getJenkinsRootURL()}${pipeline._links.self.href}`}
           target="_blank"
         >
-            {pipeline.fullDisplayName}<Icon size={24} icon="exit_to_app" />
+                <ExpandablePath path={fullDisplayPath} /><Icon size={24} icon="exit_to_app" />
         </a>);
     }
 
@@ -94,7 +96,7 @@ export class PipelineRowItem extends Component {
             <tr data-name={name} data-organization={organization}>
                 <td>
                     {
-                        generateRedirectLink(pipeline) ||
+                        generateRedirectLink(pipeline, showOrganization ? organization : null) ||
                         <Link to={activitiesURL} query={location.query}>
                             <ExpandablePath path={fullDisplayPath} />
                         </Link>

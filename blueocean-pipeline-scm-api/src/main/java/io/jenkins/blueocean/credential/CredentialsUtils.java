@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.rest.impl.pipeline.credential;
+package io.jenkins.blueocean.credential;
 
 import com.cloudbees.plugins.credentials.Credentials;
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
@@ -18,7 +18,7 @@ import com.google.common.collect.Iterables;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
-import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang.StringUtils;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;

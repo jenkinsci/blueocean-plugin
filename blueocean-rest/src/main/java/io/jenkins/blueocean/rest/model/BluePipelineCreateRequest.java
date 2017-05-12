@@ -10,9 +10,10 @@ import java.io.IOException;
  *
  * @author Vivek Pandey
  */
-public abstract class BluePipelineCreateRequest{
+public abstract class BluePipelineCreateRequest {
 
     private String name;
+    private String organization;
 
     /** Name of the pipeline */
     public @CheckForNull String getName(){
@@ -21,6 +22,15 @@ public abstract class BluePipelineCreateRequest{
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    /* Jenkins organization */
+    public String getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(String organization) {
+        this.organization = organization;
     }
 
     /**

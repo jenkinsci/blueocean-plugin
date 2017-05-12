@@ -18,7 +18,8 @@ import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
@@ -57,7 +58,7 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     protected AbstractPipelineImpl(Job job) {
         this.job = job;
-        this.org = OrganizationResolver.getInstance().getContainingOrg(job);
+        this.org = OrganizationFactory.getInstance().getContainingOrg(job);
     }
 
     @Override
@@ -142,22 +143,45 @@ public class AbstractPipelineImpl extends BluePipeline {
     }
 
     /**
-     * Returns full display name. Each display name is separated by '/' and each display name is url encoded.
-     *
+     * Returns full display name. Each display name is separated by '/' and each display name is url encoded. If the
+     * item is inside an org, it will be looked up.
+     * 
      * @param parent parent folder
      * @param displayName URL encoded display name. Caller must pass urlencoded name
      *
      * @return full display name
      */
     public static String getFullDisplayName(@Nonnull ItemGroup parent, @Nullable String displayName){
-        String name = parent.getDisplayName();
-        if(name.length() == 0 ) return displayName;
+        return getFullDisplayName(OrganizationFactory.getInstance().getContainingOrg(parent), parent, displayName);
+    }
 
-        if(name.length() > 0  && parent instanceof AbstractItem) {
-            if(displayName == null){
-                return getFullDisplayName(((AbstractItem)parent).getParent(), String.format("%s", Util.rawEncode(name)));
-            }else {
-                return getFullDisplayName(((AbstractItem) parent).getParent(), String.format("%s/%s", Util.rawEncode(name),displayName));
+    /**
+     * Returns full display name. Each display name is separated by '/' and each display name is url encoded.
+     *
+     * @param org the organization the item belongs to
+     * @param parent parent folder
+     * @param displayName URL encoded display name. Caller must pass urlencoded name
+     *
+     * @return full display name
+     */
+    public static String getFullDisplayName(@Nullable BlueOrganization org, @Nonnull ItemGroup parent, @Nullable String displayName) {
+        //Stop if we are on an org and reached the top
+        if (org != null && org instanceof AbstractOrganization) {
+            ItemGroup group = ((AbstractOrganization) org).getGroup();
+            if (group == parent) {
+                return displayName;
+            }
+        }
+
+        String name = parent.getDisplayName();
+        if (name.length() == 0)
+            return displayName;
+
+        if (name.length() > 0 && parent instanceof AbstractItem) {
+            if (displayName == null) {
+                return getFullDisplayName(((AbstractItem) parent).getParent(), String.format("%s", Util.rawEncode(name)));
+            } else {
+                return getFullDisplayName(((AbstractItem) parent).getParent(), String.format("%s/%s", Util.rawEncode(name), displayName));
             }
         }
         return displayName;
