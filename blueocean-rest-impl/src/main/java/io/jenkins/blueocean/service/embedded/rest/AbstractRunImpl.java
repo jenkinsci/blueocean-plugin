@@ -10,7 +10,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
@@ -43,7 +43,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     public AbstractRunImpl(T run, Link parent) {
         this.run = run;
         this.parent = parent;
-        this.org = OrganizationResolver.getInstance().getContainingOrg(run);
+        this.org = OrganizationFactory.getInstance().getContainingOrg(run);
     }
 
     //TODO: It serializes jenkins Run model children, enable this code after fixing it

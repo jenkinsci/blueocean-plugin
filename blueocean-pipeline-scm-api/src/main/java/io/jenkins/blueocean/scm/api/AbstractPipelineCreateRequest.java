@@ -6,6 +6,7 @@ import hudson.model.TopLevelItem;
 import hudson.model.TopLevelItemDescriptor;
 import hudson.security.ACL;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BluePipelineCreateRequest;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import jenkins.model.Jenkins;
@@ -22,8 +23,9 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
 
     protected final BlueScmConfig scmConfig;
 
-    public AbstractPipelineCreateRequest(String name, BlueScmConfig scmConfig) {
+    public AbstractPipelineCreateRequest(String name, String organization, BlueScmConfig scmConfig) {
         setName(name);
+        setOrganization(organization);
         this.scmConfig = scmConfig;
     }
 
@@ -52,6 +54,12 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
     }
 
     protected ModifiableTopLevelItemGroup getParent() {
-        return Jenkins.getInstance();
+        String organization = getOrganization();
+        ModifiableTopLevelItemGroup parent =  OrganizationFactory.getItemGroup(getOrganization());
+        if(parent == null){
+            throw new ServiceException.BadRequestExpception("Invalid Jenkins organization. " + organization);
+        }
+
+        return parent;
     }
 }

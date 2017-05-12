@@ -9,7 +9,7 @@ import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
@@ -43,7 +43,7 @@ public class PipelineContainerImpl extends BluePipelineContainer {
 
     public PipelineContainerImpl(ItemGroup itemGroup, Reachable parent) {
         this.itemGroup = itemGroup instanceof Jenkins ? new PermissionFilteredItemGroup((Jenkins) itemGroup) : itemGroup;
-        this.org = OrganizationResolver.getInstance().getContainingOrg(itemGroup);
+        this.org = OrganizationFactory.getInstance().getContainingOrg(itemGroup);
         if(parent!=null){
             this.self = parent.getLink().rel("pipelines");
         }else{
