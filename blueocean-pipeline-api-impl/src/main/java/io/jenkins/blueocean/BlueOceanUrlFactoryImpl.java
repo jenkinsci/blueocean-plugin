@@ -5,6 +5,7 @@ import hudson.model.Action;
 import hudson.model.ModelObject;
 import io.jenkins.blueocean.rest.factory.BlueOceanUrlAction;
 import io.jenkins.blueocean.rest.factory.BlueOceanUrlFactory;
+import jenkins.model.Jenkins;
 import jenkins.model.TransientActionFactory;
 
 import javax.annotation.Nonnull;
@@ -16,6 +17,9 @@ import java.util.Collections;
  */
 @Extension(ordinal = -9999)
 public class BlueOceanUrlFactoryImpl extends BlueOceanUrlFactory{
+    public BlueOceanUrlFactoryImpl() {
+        Jenkins.getInstance().getActions().add(new BlueOceanUrlActionImpl());
+    }
 
     @Nonnull
     @Override

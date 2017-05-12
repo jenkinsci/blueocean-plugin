@@ -1,16 +1,16 @@
 package io.jenkins.blueocean.rest.factory;
 
-import hudson.model.RootAction;
+import hudson.model.Action;
 
 import javax.annotation.Nonnull;
 
 /**
- * {@link RootAction} to provide BlueOcean Url for a Jenkins model in context.
+ * {@link Action} to provide BlueOcean Url for a Jenkins model in context.
  *
  * @author Vivek Pandey
  * @see BlueOceanUrlFactory
  */
-public interface BlueOceanUrlAction extends RootAction {
+public interface BlueOceanUrlAction extends Action {
     /**
      * Gives BlueOcean URL for Jenkins model object in context.
      *
