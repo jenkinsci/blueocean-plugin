@@ -39,16 +39,11 @@ import io.jenkins.blueocean.rest.model.Resource;
 import jenkins.model.ModifiableTopLevelItemGroup;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
-import org.kohsuke.stapler.Ancestor;
-import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
 
-import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
-import java.util.List;
 
 /**
  * Utility class for constructing Blue Ocean UI URLs.
@@ -56,47 +51,9 @@ import java.util.List;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 @Restricted(NoExternalUse.class)
-public class BlueOceanWebURLBuilder {
+public final class BlueOceanWebURLBuilder {
 
     private BlueOceanWebURLBuilder() {
-    }
-
-    /**
-     * Get the {@link TryBlueOceanURLs} instance for the {@link ModelObject}
-     * associated with the current Stapler request.
-     *
-     * @return The {@link TryBlueOceanURLs} instance for the current classic
-     * Jenkins page. The URL to the Blue Ocean homepage is returned if a more
-     * appropriate URL is not found.
-     */
-    public static @Nonnull TryBlueOceanURLs getTryBlueOceanURLs() {
-        StaplerRequest staplerRequest = Stapler.getCurrentRequest();
-        List<Ancestor> list = staplerRequest.getAncestors();
-
-        // reverse iterate on the list of ancestors, looking for a
-        // Blue Ocean page we can link onto.
-        for (int i = list.size() - 1; i >= 0; i--) {
-            Ancestor ancestor = list.get(i);
-            Object object = ancestor.getObject();
-
-            if (object instanceof ModelObject) {
-                String blueUrl = toBlueOceanURL((ModelObject) object);
-                if (blueUrl != null) {
-                    if (object instanceof Item) {
-                        return new TryBlueOceanURLs(blueUrl, ((Item) object).getUrl());
-                    } else if (object instanceof Run) {
-                        return new TryBlueOceanURLs(blueUrl, ((Run) object).getUrl());
-                    } else {
-                        return new TryBlueOceanURLs(blueUrl);
-                    }
-                } else if (object instanceof Item) {
-                    return new TryBlueOceanURLs(getBlueHome(), ((Item) object).getUrl());
-                }
-            }
-        }
-
-        // Otherwise just return Blue Ocean home.
-        return new TryBlueOceanURLs(getBlueHome());
     }
 
     /**
@@ -107,10 +64,10 @@ public class BlueOceanWebURLBuilder {
      * @return The most appropriate Blue Ocean web URL for the supplied Jenkins
      * {@link ModelObject}, or {@code null} if no URL can be constructed.
      */
-    public static @CheckForNull String toBlueOceanURL(@Nonnull ModelObject classicModelObject) {
+    public static @Nonnull String toBlueOceanURL(@Nonnull ModelObject classicModelObject) {
         BlueOrganization organization = getOrganization(classicModelObject);
         if(organization == null){ //no organization, best we can do is to land user on landing page
-            return getBlueHome();
+            return getLandingPagePath();
         }
         String organizationName = organization.getName();
         if (classicModelObject instanceof ModifiableTopLevelItemGroup){
@@ -138,7 +95,14 @@ public class BlueOceanWebURLBuilder {
                 return getOrgPrefix(organizationName) + "/" + encodeURIComponent(((BluePipeline) blueResource).getFullName()) + "/branches";
             }
         }
-        return null;
+        return getLandingPagePath();
+    }
+
+    public static String getLandingPagePath(){
+        for(BlueOceanUIProvider p:BlueOceanUIProvider.all()){
+            return String.format("%s%s",getBlueHome(), p.getLandingPagePath());
+        }
+        return getBlueHome();
     }
 
     private static BlueOrganization getOrganization(ModelObject modelObject ){
@@ -158,7 +122,10 @@ public class BlueOceanWebURLBuilder {
     }
 
     private static String getBlueHome() {
-        return "blue";
+        for(BlueOceanUIProvider p:BlueOceanUIProvider.all()){
+            return p.getUrlBasePrefix();
+        }
+        return "blue"; //fallback, but this statement will not get executed as there is a default provider
     }
 
     private static BlueOceanModelMapping getPipelineModelMapping(Job job, String organizationName) {
