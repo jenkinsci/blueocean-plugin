@@ -99,7 +99,7 @@ export class Pipelines extends Component {
                                     <PipelineRowItem
                                         t={ translate }
                                         key={ key } pipeline={ pipeline }
-                                        showOrganization={ AppConfig.showOrg() }
+                                        showOrganization={ AppConfig.showOrg() && !organization }
                                     />
                                 );
                             })

@@ -3,7 +3,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.Extension;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.ApiHead;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueOrganizationContainer;
@@ -21,15 +21,16 @@ public class OrganizationContainerImpl extends BlueOrganizationContainer {
 
     @Override
     public BlueOrganization get(String name) {
-        BlueOrganization o = OrganizationResolver.getInstance().get(name);
+        BlueOrganization o = OrganizationFactory.getInstance().get(name);
         if (o==null)
             throw new ServiceException.NotFoundException(String.format("Organization %s not found",name));
         return o;
     }
 
     @Override
+    @SuppressWarnings("unchecked")
     public Iterator<BlueOrganization> iterator() {
-        return (Iterator)OrganizationResolver.getInstance().list().iterator();
+        return OrganizationFactory.getInstance().list().iterator();
     }
 
     @Override

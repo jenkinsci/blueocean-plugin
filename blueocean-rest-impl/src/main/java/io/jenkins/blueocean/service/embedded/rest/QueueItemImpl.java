@@ -3,7 +3,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 import hudson.model.Item;
 import hudson.model.Queue;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BluePipeline;
@@ -52,7 +52,7 @@ public class QueueItemImpl extends BlueQueueItem {
     public String getOrganization() {
         if (item.task instanceof Item) {
             Item i = (Item) item.task;
-            return OrganizationResolver.getInstance().getContainingOrg(i).getName();
+            return OrganizationFactory.getInstance().getContainingOrg(i).getName();
         } else {
             return null;
         }

@@ -7,10 +7,11 @@ import hudson.model.ItemGroup;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.OmniSearch;
 import io.jenkins.blueocean.rest.Query;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
+import io.jenkins.blueocean.service.embedded.util.GlobMatcher;
 import jenkins.model.Jenkins;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -93,7 +94,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
             items = getAllItems(org);
         }
         items = ContainerFilter.filter(items);
-        final Iterator<BluePipeline> pipelineIterator = new PipelineContainerImpl()
+        final Iterator<BluePipeline> pipelineIterator = new PipelineContainerImpl(org)
             .getPipelines(items);
         final List<BluePipeline> pipelines = new ArrayList<>();
         String pipeline = q.param(getType());
@@ -105,12 +106,15 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
                 }
             });
         }else{
+            GlobMatcher matcher = pipeline.contains("*") ? new GlobMatcher(pipeline) : null;
             while (pipelineIterator.hasNext()) {
                 BluePipeline p = pipelineIterator.next();
-                if (!p.getName().equals(pipeline)) {
-                    continue;
+                // If using glob syntax try to match using the glob matcher otherwise fall back to equality check
+                if (matcher != null && matcher.matches(p.getName())) {
+                    pipelines.add(p);
+                } else if (pipeline.equals(p.getName())) {
+                    pipelines.add(p);
                 }
-                pipelines.add(p);
             }
             return Pageables.wrap(pipelines);
         }
@@ -138,7 +142,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
     private ItemGroup org(Query q) {
         String org = q.param(ORGANIZATION_PARAM);
         if (org==null)  return Jenkins.getInstance();
-        ItemGroup group = OrganizationResolver.getItemGroup(org);
+        ItemGroup group = OrganizationFactory.getItemGroup(org);
         if (group==null) {
             throw new ServiceException.BadRequestExpception(
                 String.format("Organization %s not found. Query parameter %s value: %s is invalid. ", org,ORGANIZATION_PARAM,org));
