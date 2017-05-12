@@ -19,6 +19,14 @@ import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
 import RunMessageCell from './RunMessageCell';
 
+// Intercept click events so they don't bubble back to containing components
+function cancelClick(e) {
+    // TODO: Find other things doing the same and merge this
+    e.stopPropagation();
+    e.preventDefault();
+    console.log('ignoring click'); // TODO: RM
+}
+
 /*
  Rest source: http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/{PIPELINE_NAME}/runs
  */
@@ -29,6 +37,9 @@ class RunDetailsRow extends Component {
     static actionItemsCount = 2;
 
     openRunDetails = (newURL) => {
+        console.log('openRunDetails'); // TODO: RM
+        alert('kaboom'); // TODO: rm
+        return; // TODO: RM
         const { router, location } = this.context;
         location.pathname = newURL;
         router.push(location);
@@ -97,7 +108,7 @@ class RunDetailsRow extends Component {
                                   longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
                     />
                 </TableCell>
-                <TableCell className="TableCell--actions">
+                <TableCell className="TableCell--actions" onClick={cancelClick}>
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" {...t} />
                     <RunButton
                         className="icon-button"
