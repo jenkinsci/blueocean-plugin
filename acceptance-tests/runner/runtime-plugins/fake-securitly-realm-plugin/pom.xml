@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.jenkins-ci.plugins</groupId>
+    <artifactId>plugin</artifactId>
+    <version>2.11</version>
+    <relativePath/>
+  </parent>
+  <groupId>org.jenkins-ci.plugins</groupId>
+  <artifactId>fake-realm</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>hpi</packaging>
+
+  <properties>
+    <!-- Baseline Jenkins version you use to build the plugin. Users must have this version or newer to run. -->
+    <jenkins.version>1.625.3</jenkins.version>
+    <!-- Other properties you may want to use:
+         ~ java.level: set to 6 if your jenkins.version <= 1.611
+         ~ jenkins-test-harness.version: Jenkins Test Harness version you use to test the plugin. For Jenkins version >= 1.580.1 use JTH 2.0 or higher.
+         ~ hpi-plugin.version: The HPI Maven Plugin version used by the plugin..
+         ~ stapler-plugin.version: The Stapler Maven plugin version required by the plugin.
+    -->
+  </properties>
+
+  <name>Fake realm plugin</name>
+  <description>TODO</description>
+  <url>https://wiki.jenkins-ci.org/display/JENKINS/TODO+Plugin</url>
+
+  <!-- The default licence for Jenkins OSS Plugins is MIT. Substitute for the applicable one if needed. -->
+
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://opensource.org/licenses/MIT</url>
+    </license>
+  </licenses>
+
+  <!-- If you want this to appear on the wiki page:
+  <developers>
+    <developer>
+      <id>bhacker</id>
+      <name>Bob Q. Hacker</name>
+      <email>bhacker@nowhere.net</email>
+    </developer>
+  </developers>
+  -->
+  <!-- Assuming you want to host on @jenkinsci:
+  <scm>
+    <connection>scm:git:git://github.com/jenkinsci/${project.artifactId}-plugin.git</connection>
+    <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
+    <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
+  </scm>
+   -->
+  <repositories>
+    <repository>
+      <id>repo.jenkins-ci.org</id>
+      <url>https://repo.jenkins-ci.org/public/</url>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>repo.jenkins-ci.org</id>
+      <url>https://repo.jenkins-ci.org/public/</url>
+    </pluginRepository>
+  </pluginRepositories>
+ <dependencies>
+   <dependency>
+     <groupId>org.jenkins-ci.main</groupId>
+     <artifactId>jenkins-test-harness</artifactId>
+     <version>2.15</version>
+   </dependency>
+ </dependencies>
+
+</project>
