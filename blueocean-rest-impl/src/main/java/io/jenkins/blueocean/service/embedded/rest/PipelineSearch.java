@@ -1,8 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Predicate;
-import com.google.common.base.Strings;
-import com.google.common.collect.Iterators;
 import hudson.Extension;
 import hudson.Plugin;
 import hudson.model.Item;
@@ -18,7 +15,6 @@ import jenkins.model.Jenkins;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -44,7 +40,6 @@ import java.util.List;
  */
 @Extension
 public class PipelineSearch extends OmniSearch<BluePipeline>{
-    private static final String STARTSWITH_PARAM="startsWith";
     private static final String EXCLUDED_FROM_FLATTENING_PARAM ="excludedFromFlattening";
     private static final String ORGANIZATION_PARAM="organization";
 
@@ -58,7 +53,6 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
     @Override
     public Pageable<BluePipeline> search(Query q) {
         String s = q.param(EXCLUDED_FROM_FLATTENING_PARAM);
-        String startsWithParam = q.param(STARTSWITH_PARAM);
         ItemGroup org = org(q);
 
         List<Class> excludeList=new ArrayList<>();
@@ -104,36 +98,12 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
         final List<BluePipeline> pipelines = new ArrayList<>();
         String pipeline = q.param(getType());
         if(pipeline == null) {
-            if (Strings.isNullOrEmpty(startsWithParam)) {
-                return Pageables.wrap(new Iterable<BluePipeline>() {
-                    @Override
-                    public Iterator<BluePipeline> iterator() {
-                        return pipelineIterator;
-                    }
-                });
-            } else {
-                final String startsWithLower = startsWithParam.toLowerCase();
-
-                return Pageables.wrap(new Iterable<BluePipeline>() {
-                    @Override
-                    public Iterator<BluePipeline> iterator() {
-                        return Iterators.filter(pipelineIterator, new Predicate<BluePipeline>() {
-                            @Override
-                            public boolean apply(@Nullable BluePipeline bluePipeline) {
-                                if (bluePipeline == null) {
-                                    return false;
-                                }
-
-                                if (bluePipeline.getDisplayName().toLowerCase().startsWith(startsWithLower)) {
-                                    return true;
-                                }
-
-                                return false;
-                            }
-                        });
-                    }
-                });
-            }
+            return Pageables.wrap(new Iterable<BluePipeline>() {
+                @Override
+                public Iterator<BluePipeline> iterator() {
+                    return pipelineIterator;
+                }
+            });
         }else{
             while (pipelineIterator.hasNext()) {
                 BluePipeline p = pipelineIterator.next();
