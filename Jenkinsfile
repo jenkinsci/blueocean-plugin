@@ -26,11 +26,10 @@ node {
         stage 'Sanity check dependancies'
         sh "node ./bin/checkdeps.js"
         stage 'Sanity check shrinkwrap'
-        sh "node ./bin/checkshrinkwrap.js"
-        stage 'Archive results'
+        sh "node ./bin/checkshrinkwrap.js"        
         
         stage 'ATH'
-        sh "cd acceptance-tests && ./run.sh -a=../blueocean/ --no-selenium --settings='-s ../settings.xml'"
+        sh "cd acceptance-tests && ./run.sh -a=../blueocean/ --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
         step([$class: 'JUnitResultArchiver', testResults: 'acceptance-tests/target/surefire-reports/*.xml'])
         
       } catch(err) {
