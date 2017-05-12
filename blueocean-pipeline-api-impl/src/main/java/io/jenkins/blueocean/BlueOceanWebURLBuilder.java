@@ -35,6 +35,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
+import jenkins.model.ModifiableTopLevelItemGroup;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.Ancestor;
@@ -128,6 +129,8 @@ public class BlueOceanWebURLBuilder {
             if (blueResource instanceof BlueMultiBranchPipeline) {
                 return getOrgPrefix(item) + "/" + encodeURIComponent(((BluePipeline) blueResource).getFullName()) + "/branches";
             }
+        } else if (classicModelObject instanceof ModifiableTopLevelItemGroup){
+            return getOrgPrefix((ModifiableTopLevelItemGroup)classicModelObject);
         }
 
         return null;
