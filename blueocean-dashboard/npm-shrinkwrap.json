@@ -19,9 +19,9 @@
       "dev": true
     },
     "@jenkins-cd/js-builder": {
-      "version": "0.0.52",
-      "from": "@jenkins-cd/js-builder@0.0.52",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.52.tgz",
+      "version": "0.0.57",
+      "from": "@jenkins-cd/js-builder@0.0.57",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.57.tgz",
       "dev": true,
       "dependencies": {
         "glob": {
@@ -4142,9 +4142,9 @@
       "dev": true
     },
     "gulp-runner": {
-      "version": "0.1.4",
-      "from": "gulp-runner@>=0.1.4 <0.2.0",
-      "resolved": "https://registry.npmjs.org/gulp-runner/-/gulp-runner-0.1.4.tgz",
+      "version": "1.0.1",
+      "from": "gulp-runner@>=1.0.0 <2.0.0",
+      "resolved": "https://registry.npmjs.org/gulp-runner/-/gulp-runner-1.0.1.tgz",
       "dev": true
     },
     "gulp-util": {
