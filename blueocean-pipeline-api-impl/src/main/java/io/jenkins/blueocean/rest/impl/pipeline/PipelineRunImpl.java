@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.model.Queue;
 import hudson.model.Run;
@@ -11,6 +10,7 @@ import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.Branch;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.PullRequest;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
@@ -27,7 +27,6 @@ import io.jenkins.blueocean.service.embedded.rest.StoppableRun;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMRevisionAction;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
-import org.jenkinsci.plugins.workflow.cps.replay.ReplayCause;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
@@ -50,7 +49,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW
 @Capability(JENKINS_WORKFLOW_RUN)
 public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     private static final Logger logger = LoggerFactory.getLogger(PipelineRunImpl.class);
-    public PipelineRunImpl(WorkflowRun run, Reachable parent) {
+    public PipelineRunImpl(WorkflowRun run, Link parent) {
         super(run, parent);
     }
 
@@ -71,28 +70,17 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
 
     @Override
     public Container<BlueChangeSetEntry> getChangeSet() {
-        // If this run is a replay then return the changesets from the original run
-        ReplayCause replayCause = run.getCause(ReplayCause.class);
-        if (replayCause != null) {
-            Run run = replayCause.getRun();
-            if (run == null) {
-                return Containers.fromResourceMap(getLink(), ImmutableMap.<String, BlueChangeSetEntry>of());
-            } else {
-                return AbstractRunImpl.getBlueRun(run, parent).getChangeSet();
+        Map<String, BlueChangeSetEntry> m = new LinkedHashMap<>();
+        int cnt = 0;
+        for (ChangeLogSet<? extends Entry> cs : run.getChangeSets()) {
+            for (ChangeLogSet.Entry e : cs) {
+                cnt++;
+                String id = e.getCommitId();
+                if (id == null) id = String.valueOf(cnt);
+                m.put(id, new ChangeSetResource(e, this));
             }
-        } else {
-            Map<String, BlueChangeSetEntry> m = new LinkedHashMap<>();
-            int cnt = 0;
-            for (ChangeLogSet<? extends Entry> cs : run.getChangeSets()) {
-                for (ChangeLogSet.Entry e : cs) {
-                    cnt++;
-                    String id = e.getCommitId();
-                    if (id == null) id = String.valueOf(cnt);
-                    m.put(id, new ChangeSetResource(e, this));
-                }
-            }
-            return Containers.fromResourceMap(getLink(), m);
         }
+        return Containers.fromResourceMap(getLink(),m);
     }
 
     @Override
@@ -201,7 +189,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         @Override
         public BlueRun getRun(Run run, Reachable parent) {
             if(run instanceof WorkflowRun) {
-                return new PipelineRunImpl((WorkflowRun) run, parent);
+                return new PipelineRunImpl((WorkflowRun) run, parent.getLink());
             }
             return null;
         }
