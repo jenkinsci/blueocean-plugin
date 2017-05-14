@@ -39,25 +39,13 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     protected final T run;
     protected final BlueOrganization org;
 
-    protected final Link parent;
-    public AbstractRunImpl(T run, Link parent) {
+    protected final Reachable parent;
+    public AbstractRunImpl(T run, Reachable parent) {
         this.run = run;
         this.parent = parent;
         this.org = OrganizationFactory.getInstance().getContainingOrg(run);
     }
 
-    //TODO: It serializes jenkins Run model children, enable this code after fixing it
-//    /**
-//     * Allow properties reachable through {@link Run} to be exposed upon request (via the tree parameter).
-//     */
-//    @Exported
-//    public T getRun() {
-//        return run;
-//    }
-
-    /**
-     * Subtype should return
-     */
     public Container<BlueChangeSetEntry> getChangeSet() {
         return null;
     }
@@ -206,7 +194,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
                 return blueRun;
             }
         }
-        return new AbstractRunImpl<>(r, parent.getLink());
+        return new AbstractRunImpl<>(r, parent);
     }
 
     @Override
@@ -273,7 +261,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         if(parent == null){
             return org.getLink().rel(String.format("pipelines/%s/runs/%s", run.getParent().getName(), getId()));
         }
-        return parent.rel("runs/"+getId());
+        return parent.getLink().rel("runs/"+getId());
     }
 
     private boolean isCompletedOrAborted(){
@@ -283,7 +271,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public Links getLinks() {
-        return super.getLinks().add("parent", parent);
+        return super.getLinks().add("parent", parent.getLink());
     }
 
     public static class BlueCauseImpl extends BlueCause {
