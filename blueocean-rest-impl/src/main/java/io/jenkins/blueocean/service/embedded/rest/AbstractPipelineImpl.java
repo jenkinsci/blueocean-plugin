@@ -18,8 +18,8 @@ import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver.ItemGroupProvider;
+import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
@@ -58,7 +58,7 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     protected AbstractPipelineImpl(Job job) {
         this.job = job;
-        this.org = OrganizationResolver.getInstance().getContainingOrg(job);
+        this.org = OrganizationFactory.getInstance().getContainingOrg(job);
     }
 
     @Override
@@ -152,7 +152,7 @@ public class AbstractPipelineImpl extends BluePipeline {
      * @return full display name
      */
     public static String getFullDisplayName(@Nonnull ItemGroup parent, @Nullable String displayName){
-        return getFullDisplayName(OrganizationResolver.getInstance().getContainingOrg(parent), parent, displayName);
+        return getFullDisplayName(OrganizationFactory.getInstance().getContainingOrg(parent), parent, displayName);
     }
 
     /**
@@ -166,8 +166,8 @@ public class AbstractPipelineImpl extends BluePipeline {
      */
     public static String getFullDisplayName(@Nullable BlueOrganization org, @Nonnull ItemGroup parent, @Nullable String displayName) {
         //Stop if we are on an org and reached the top
-        if (org != null && org instanceof ItemGroupProvider) {
-            ItemGroup group = ((ItemGroupProvider) org).getGroup();
+        if (org != null && org instanceof AbstractOrganization) {
+            ItemGroup group = ((AbstractOrganization) org).getGroup();
             if (group == parent) {
                 return displayName;
             }

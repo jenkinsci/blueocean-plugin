@@ -2009,10 +2009,6 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         List<Map> stepsResp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
 
-        Assert.assertEquals("RUNNING", stepsResp.get(0).get("state"));
-        Assert.assertEquals("UNKNOWN", stepsResp.get(0).get("result"));
-        Assert.assertEquals("13", stepsResp.get(0).get("id"));
-
         Assert.assertEquals("PAUSED", stepsResp.get(2).get("state"));
         Assert.assertEquals("UNKNOWN", stepsResp.get(2).get("result"));
         Assert.assertEquals("12", stepsResp.get(2).get("id"));

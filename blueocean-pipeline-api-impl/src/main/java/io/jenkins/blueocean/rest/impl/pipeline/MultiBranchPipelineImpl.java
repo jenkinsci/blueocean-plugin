@@ -17,7 +17,7 @@ import io.jenkins.blueocean.rest.Utils;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BlueFavoriteResolver;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
@@ -68,7 +68,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     public MultiBranchPipelineImpl(MultiBranchProject mbp) {
         this.mbp = mbp;
-        this.org = OrganizationResolver.getInstance().getContainingOrg((ItemGroup) mbp);
+        this.org = OrganizationFactory.getInstance().getContainingOrg((ItemGroup) mbp);
         this.self = org.getLink().rel("pipelines").rel(PipelineImpl.getRecursivePathFromFullName(this));
     }
 

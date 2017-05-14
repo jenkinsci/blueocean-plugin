@@ -62,12 +62,12 @@
                                         <allowedImport>hudson.Util</allowedImport>
                                     </allowedImports>
                                     <excludedClasses>
-                                        <excludedClass>io.jenkins.blueocean.rest.factory.*</excludedClass>
+                                        <excludedClass>io.jenkins.blueocean.rest.factory.**</excludedClass>
                                     </excludedClasses>
                                 </restrictImports>
                                 <!-- Factory package is allowed to import Jenkins models -->
                                 <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
-                                    <basePackage>io.jenkins.blueocean.rest.factory</basePackage>
+                                    <basePackage>io.jenkins.blueocean.rest.factory.**</basePackage>
                                     <bannedImports>
                                         <bannedImport>jenkins.**</bannedImport>
                                         <bannedImport>hudson.**</bannedImport>
@@ -78,9 +78,11 @@
                                         <allowedImport>hudson.ExtensionList</allowedImport>
                                         <allowedImport>hudson.model.Item</allowedImport>
                                         <allowedImport>hudson.model.ItemGroup</allowedImport>
+                                        <allowedImport>jenkins.model.ModifiableTopLevelItemGroup</allowedImport>
                                         <allowedImport>hudson.model.TopLevelItem</allowedImport>
                                         <allowedImport>jenkins.model.Jenkins</allowedImport>
                                         <allowedImport>hudson.Util</allowedImport>
+                                        <allowedImport>hudson.model.Run</allowedImport>
                                     </allowedImports>
                                 </restrictImports>
                             </rules>

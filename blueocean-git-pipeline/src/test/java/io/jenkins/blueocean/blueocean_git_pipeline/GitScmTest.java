@@ -79,6 +79,7 @@ public class GitScmTest extends PipelineBaseTest {
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
+                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", "https://github.com/vivek/test-no-jenkins-file.git",
                                 "credentialId", credentialId)
@@ -111,6 +112,7 @@ public class GitScmTest extends PipelineBaseTest {
 
         post("/organizations/jenkins/pipelines/",
                 ImmutableMap.of("name", "demo",
+                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
                                 "credentialId", credentialId)
@@ -139,6 +141,7 @@ public class GitScmTest extends PipelineBaseTest {
 
         post("/organizations/jenkins/pipelines/",
                 ImmutableMap.of("name", "demo",
+                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
                                 "credentialId", credentialId)
@@ -154,6 +157,7 @@ public class GitScmTest extends PipelineBaseTest {
 
         post("/organizations/jenkins/pipelines/",
                 ImmutableMap.of("name", "demo",
+                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", "/sdsd/sdsd/sdsd")
                 ), 400);
@@ -190,6 +194,7 @@ public class GitScmTest extends PipelineBaseTest {
 
         put("/organizations/jenkins/pipelines/"+mbp+"/",
                 ImmutableMap.of("name", mbp,
+                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineUpdateRequest",
                         "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
                                 "credentialId", credentialId)
@@ -254,6 +259,7 @@ public class GitScmTest extends PipelineBaseTest {
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
+                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
                 ))
@@ -277,6 +283,8 @@ public class GitScmTest extends PipelineBaseTest {
         assertEquals("MISSING", errors.get(0).get("code"));
         assertEquals("$class", errors.get(1).get("field"));
         assertEquals("MISSING", errors.get(1).get("code"));
+        assertEquals("organization", errors.get(2).get("field"));
+        assertEquals("MISSING", errors.get(2).get("code"));
     }
 
     @Test
@@ -287,6 +295,7 @@ public class GitScmTest extends PipelineBaseTest {
 
         Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
                 ImmutableMap.of("name", "demo",
+                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest"
                 ), 400);
 
@@ -307,6 +316,7 @@ public class GitScmTest extends PipelineBaseTest {
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
+                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of()))
                 .build(Map.class);
@@ -331,6 +341,7 @@ public class GitScmTest extends PipelineBaseTest {
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
+                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
                 ))
@@ -344,6 +355,7 @@ public class GitScmTest extends PipelineBaseTest {
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
+                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl(),
                                 "credentialId", "sdsdsd"))).build(Map.class);
@@ -372,6 +384,7 @@ public class GitScmTest extends PipelineBaseTest {
 
         Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
                 ImmutableMap.of("name", "demo",
+                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl(), "credentialId", "sdsdsd")
                 ), 400);
@@ -388,6 +401,7 @@ public class GitScmTest extends PipelineBaseTest {
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
+                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl()))).build(Map.class);
 

@@ -155,7 +155,20 @@ public class PipelineApiTest extends BaseTest {
             && classes.contains("io.jenkins.blueocean.rest.model.BluePipeline")
             && classes.contains("io.jenkins.blueocean.rest.model.BluePipelineFolder")
             && classes.contains("com.cloudbees.hudson.plugins.folder.AbstractFolder"));
+    }
 
+    @Test
+    public void testUnknownClassCapabilities(){
+        Map response = get("/classes/blah12345/");
+        assertNotNull(response);
+        assertEquals(0, ((List)response.get("classes")).size());
+
+        response = post("/classes/", ImmutableMap.of("q", ImmutableList.of("blah12345",TestPipelineImpl.class.getName())));
+        assertNotNull(response);
+        Map cap = (Map) response.get("map");
+        assertEquals(2, cap.size());
+        Map d  = (Map) cap.get("blah12345");
+        assertEquals(0, ((List)d.get("classes")).size());
     }
 
     @Test
@@ -747,7 +760,7 @@ public class PipelineApiTest extends BaseTest {
     }
 
     @TestExtension(value = "testOrganizationFolder")
-    public static class TestOrganizationResolverImpl extends OrganizationResolverImpl {
+    public static class TestOrganizationFactoryImpl extends OrganizationFactoryImpl {
         private OrganizationImpl instance = new OrganizationImpl("TestOrg", Jenkins.getInstance().getItem("/TestOrgFolder", Jenkins.getInstance(), MockFolder.class));
 
         @Override

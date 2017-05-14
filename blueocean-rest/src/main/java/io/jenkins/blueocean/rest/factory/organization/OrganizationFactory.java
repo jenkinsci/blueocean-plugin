@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.rest.factory;
+package io.jenkins.blueocean.rest.factory.organization;
 
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
@@ -6,8 +6,9 @@ import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
+import jenkins.model.ModifiableTopLevelItemGroup;
 
-import javax.annotation.Nullable;
+import javax.annotation.CheckForNull;
 import java.util.Collection;
 
 /**
@@ -27,7 +28,7 @@ import java.util.Collection;
  *
  * @author Kohsuke Kawaguchi
  */
-public abstract class OrganizationResolver implements ExtensionPoint {
+public abstract class OrganizationFactory implements ExtensionPoint {
     /**
      * Looks up an organization by its name.
      *
@@ -70,30 +71,27 @@ public abstract class OrganizationResolver implements ExtensionPoint {
     }
 
     public final BlueOrganization getContainingOrg(Item i) {
-        if (i instanceof ItemGroup)
-            return getContainingOrg((ItemGroup)i);
-        else
+        if (i instanceof ItemGroup) {
+            return getContainingOrg((ItemGroup) i);
+        } else {
             return getContainingOrg(i.getParent());
+        }
     }
 
-    public static OrganizationResolver getInstance() {
-        OrganizationResolver r = ExtensionList.lookup(OrganizationResolver.class).get(0);
-        if (r==null)
-            throw new AssertionError("No OrganizationResolver is installed");
+    public static OrganizationFactory getInstance() {
+        OrganizationFactory r = ExtensionList.lookup(OrganizationFactory.class).get(0);
+        if (r==null) {
+            throw new AssertionError("No OrganizationFactory is installed");
+        }
         return r;
     }
 
-    @Nullable
-    @SuppressWarnings("unchecked")
-    public static ItemGroup<? extends Item> getItemGroup(String org) {
-        BlueOrganization blueOrganization = OrganizationResolver.getInstance().get(org);
-        if (blueOrganization instanceof ItemGroupProvider) {
-            return ((ItemGroupProvider)blueOrganization).getGroup();
+    @CheckForNull
+    public static ModifiableTopLevelItemGroup getItemGroup(String org) {
+        BlueOrganization blueOrganization = OrganizationFactory.getInstance().get(org);
+        if (blueOrganization instanceof AbstractOrganization) {
+            return ((AbstractOrganization)blueOrganization).getGroup();
         }
         return null;
-    }
-
-    public interface ItemGroupProvider {
-        ItemGroup getGroup();
     }
 }

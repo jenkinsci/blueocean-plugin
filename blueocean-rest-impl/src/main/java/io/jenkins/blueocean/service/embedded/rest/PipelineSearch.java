@@ -7,7 +7,7 @@ import hudson.model.ItemGroup;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.OmniSearch;
 import io.jenkins.blueocean.rest.Query;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
@@ -138,7 +138,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
     private ItemGroup org(Query q) {
         String org = q.param(ORGANIZATION_PARAM);
         if (org==null)  return Jenkins.getInstance();
-        ItemGroup group = OrganizationResolver.getItemGroup(org);
+        ItemGroup group = OrganizationFactory.getItemGroup(org);
         if (group==null) {
             throw new ServiceException.BadRequestExpception(
                 String.format("Organization %s not found. Query parameter %s value: %s is invalid. ", org,ORGANIZATION_PARAM,org));
