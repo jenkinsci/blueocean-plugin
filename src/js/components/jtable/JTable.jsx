@@ -13,6 +13,7 @@ export type ColumnDescription = {
 };
 
 type Props = {
+    onClick?: Function,
     className?: string,
     children?: ReactChildren,
     columns: Array<ColumnDescription>,
@@ -105,7 +106,8 @@ export class JTable extends Component {
         const {
             className,
             children,
-            style
+            style,
+            onClick
         } = this.props;
 
         const columns = this.state.columns;
@@ -130,7 +132,8 @@ export class JTable extends Component {
 
         const newProps = {
             className: classNames.join(' '),
-            style: style
+            style,
+            onClick
         };
 
         return React.createElement('div', newProps, ...newChildren);
@@ -138,6 +141,7 @@ export class JTable extends Component {
 }
 
 JTable.propTypes = {
+    onClick: PropTypes.func,
     className: PropTypes.string,
     children: PropTypes.node,
     style: PropTypes.object,

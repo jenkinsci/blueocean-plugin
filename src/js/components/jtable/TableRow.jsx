@@ -11,6 +11,7 @@ import {
 import type {ColumnDescription} from './JTable';
 
 type Props = {
+    onClick?: Function,
     className?: string,
     children?: ReactChildren,
     href?: string,
@@ -137,6 +138,7 @@ export class TableRow extends Component {
 }
 
 TableRow.propTypes = {
+    onClick: PropTypes.func,
     className: PropTypes.string,
     children: PropTypes.node,
     onClick: PropTypes.func,

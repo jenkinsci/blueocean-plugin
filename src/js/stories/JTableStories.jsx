@@ -73,10 +73,22 @@ function container(...children) {
     );
 }
 
+function rowClicked(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    console.log('rowClicked');
+}
+
+function cellClicked(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    console.log('cellClicked');
+}
+
 function renderRow(rowData) {
     const key = rowData[1] + rowData[0];
     return (
-        <TableRow key={key}>{ rowData.map(renderCell) }</TableRow>
+        <TableRow onClick={rowClicked} key={key}>{ rowData.map(renderCell) }</TableRow>
     );
 }
 
@@ -164,7 +176,7 @@ function manual() {
         <Link to="/relativeurl">This is in a link</Link>,
         <h3>Manual headers, row links</h3>,
         <JTable columns={columns} style={style}>
-            <TableRow>
+            <TableRow onClick={rowClicked}>
                 <TableHeader>X</TableHeader>
                 <TableHeader>Y</TableHeader>
                 <TableHeader>AND</TableHeader>
@@ -179,7 +191,7 @@ function manual() {
             {
                 null // Make sure we can have optional rows, as well as optional columns!
             }
-            <TableRow href="http://www.example.org/alpha/">
+            <TableRow onClick={rowClicked} href="http://www.example.org/alpha/">
                 <TableCell>True</TableCell>
                 <TableCell>True</TableCell>
                 <TableCell>True</TableCell>
@@ -191,7 +203,7 @@ function manual() {
                 <TableCell>False</TableCell>
                 <TableCell>Alpha</TableCell>
             </TableRow>
-            <TableRow href="http://www.example.org/bravo/">
+            <TableRow onClick={rowClicked} href="http://www.example.org/bravo/">
                 <TableCell>True</TableCell>
                 <TableCell>False</TableCell>
                 <TableCell>False</TableCell>
@@ -203,7 +215,7 @@ function manual() {
                 <TableCell>True</TableCell>
                 <TableCell>this space intentionally left blank</TableCell>
             </TableRow>
-            <TableRow href="http://www.example.org/charlie/">
+            <TableRow onClick={rowClicked} href="http://www.example.org/charlie/">
                 <TableCell>False</TableCell>
                 <TableCell>True</TableCell>
                 <TableCell>False</TableCell>
@@ -212,14 +224,14 @@ function manual() {
                 <TableCell>True</TableCell>
                 <TableCell>Charlie don't surf</TableCell>
             </TableRow>
-            <TableRow linkTo="/app-specific-url/foo">
-                <TableCell>False</TableCell>
-                <TableCell>False</TableCell>
-                <TableCell>False</TableCell>
-                <TableCell>False</TableCell>
-                <TableCell>False</TableCell>
-                <TableCell>True</TableCell>
-                <TableCell>&lt;Link&gt;</TableCell>
+            <TableRow onClick={rowClicked} linkTo="/app-specific-url/foo">
+                <TableCell onClick={cellClicked}>False</TableCell>
+                <TableCell onClick={cellClicked}>False</TableCell>
+                <TableCell onClick={cellClicked}>False</TableCell>
+                <TableCell onClick={cellClicked}>False</TableCell>
+                <TableCell onClick={cellClicked}>False</TableCell>
+                <TableCell onClick={cellClicked}>True</TableCell>
+                <TableCell onClick={cellClicked}>&lt;Link&gt;</TableCell>
             </TableRow>
         </JTable>,
         <h3>Some Links, some useRollover</h3>,

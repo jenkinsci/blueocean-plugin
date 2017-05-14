@@ -13,7 +13,8 @@ export class TableCell extends Component {
             style,
             title,
             className,
-            children
+            children,
+            onClick
         } = this.props;
 
         const classNames = ['JTable-cell'];
@@ -25,7 +26,8 @@ export class TableCell extends Component {
         const outerProps = {
             className: classNames.join(' '),
             style,
-            title
+            title,
+            onClick
         };
 
         if (typeof title === 'undefined' && typeof children === 'string') {
@@ -43,6 +45,7 @@ export class TableCell extends Component {
 }
 
 TableCell.propTypes = {
+    onClick: PropTypes.func,
     style: PropTypes.object,
     title: PropTypes.string,
     className: PropTypes.string,
