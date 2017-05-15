@@ -40,7 +40,7 @@ public class BlueOceanUrlActionImpl implements BlueOceanUrlAction {
 
     @Override
     public String getIconFileName() {
-        return null;
+        return "/plugin/blueocean-pipeline-api-impl/images/48x48/blueocean.png";
     }
 
     @Override
