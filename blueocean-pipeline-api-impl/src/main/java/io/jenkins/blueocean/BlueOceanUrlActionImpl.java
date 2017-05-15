@@ -3,8 +3,11 @@ package io.jenkins.blueocean;
 import hudson.Extension;
 import hudson.model.ModelObject;
 import io.jenkins.blueocean.rest.factory.BlueOceanUrlAction;
+import io.jenkins.blueocean.rest.factory.BlueOceanUrlMapper;
 
 import javax.annotation.Nonnull;
+
+import static io.jenkins.blueocean.BlueOceanUrlMapperImpl.getLandingPagePath;
 
 /**
  * @author Vivek Pandey
@@ -25,10 +28,14 @@ public class BlueOceanUrlActionImpl implements BlueOceanUrlAction {
     @Override
     public String getUrl() {
         if(modelObject != null) {
-            return BlueOceanWebURLBuilder.toBlueOceanURL(modelObject);
-        }else{
-            return BlueOceanWebURLBuilder.getLandingPagePath();
+            for(BlueOceanUrlMapper mapper: BlueOceanUrlMapper.all()){
+                String url = mapper.getUrl(modelObject);
+                if(url != null){
+                    return url;
+                }
+            }
         }
+        return getLandingPagePath();
     }
 
     @Override

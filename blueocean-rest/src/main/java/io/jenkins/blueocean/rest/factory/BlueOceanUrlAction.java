@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
  */
 public interface BlueOceanUrlAction extends Action {
     /**
-     * Gives BlueOcean URL for Jenkins model object in context.
+     * Gives BlueOcean URL for underlying Jenkins model object in context.
      *
      * If there is no mapping it's up to implementation to provide a default landing page.
      * @return URL corresponding to the Jenkins model

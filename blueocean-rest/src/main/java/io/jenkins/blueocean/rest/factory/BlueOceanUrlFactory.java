@@ -20,7 +20,7 @@ public abstract class BlueOceanUrlFactory implements ExtensionPoint{
      * @param object Jenkins {@link ModelObject}
      * @return BlueOceanAction
      */
-    public abstract @Nonnull BlueOceanUrlAction get(ModelObject object);
+    public abstract @Nonnull BlueOceanUrlAction get(@Nonnull ModelObject object);
 
     public static ExtensionList<BlueOceanUrlFactory> all(){
         return ExtensionList.lookup(BlueOceanUrlFactory.class);
