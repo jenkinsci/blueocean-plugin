@@ -44,8 +44,8 @@ node {
       }
     }
   }
-  sh "./acceptance-tests/runner/scripts/stop-selenium.sh"   
   }
+  sh "./acceptance-tests/runner/scripts/stop-selenium.sh"
 }
 
 
