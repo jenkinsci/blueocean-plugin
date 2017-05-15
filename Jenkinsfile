@@ -40,12 +40,11 @@ node {
         }
       } finally {
         sendhipchat()
-        sh "./acceptance-tests/runner/scripts/stop-selenium.sh"
         deleteDir()
       }
     }
   }
-
+  sh "./acceptance-tests/runner/scripts/stop-selenium.sh"   
   }
 }
 
