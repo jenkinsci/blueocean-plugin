@@ -12,7 +12,7 @@ export default class ResourceLoadTracker {
         // Key:     Extension point name.
         // Value:   An array of CSS adjunct URLs that need to be activated when the extension point is rendered.
         this.pointCSSs = {};
-    
+
         // Active CSS.
         // Key:     CSS URL.
         // Value:   Counter of the number of mounted Extension Points that need the CSS to be active.
@@ -20,7 +20,7 @@ export default class ResourceLoadTracker {
         //               counter gets back to zero, the CSS can be removed from the page.
         this.activeCSSs = {};
     }
-    
+
     /**
      * Initialize the loader with the extension point information.
      * @param extensionPointList The Extension point list. An array containing ExtensionPoint
@@ -31,23 +31,23 @@ export default class ResourceLoadTracker {
         // Reset - for testing.
         this.pointCSSs = {};
         this.activeCSSs = {};
-    
+
         // Iterate through each plugin /jenkins-js-extension.json
         for(var i1 = 0; i1 < extensionPointList.length; i1++) {
             var pluginMetadata = extensionPointList[i1];
             var extensions = pluginMetadata.extensions; // All the extensions defined on the plugin
             var pluginCSS = pluginMetadata.extensionCSS; // The plugin CSS URL (adjunct URL).
-    
+
             // Iterate through the ExtensionPoints defined in each plugin
             for (var i2 = 0; i2 < extensions.length; i2++) {
                 var extensionPoint = extensions[i2].extensionPoint; // The extension point name.
                 var pointCSS = this.pointCSSs[extensionPoint]; // The current list of CSS URLs for the named extension point.
-    
+
                 if (!pointCSS) {
                     pointCSS = [];
                     this.pointCSSs[extensionPoint] = pointCSS;
                 }
-    
+
                 // Add the plugin CSS if it's not already in the list.
                 if (pointCSS.indexOf(pluginCSS) === -1) {
                     pointCSS.push(pluginCSS);
@@ -55,7 +55,7 @@ export default class ResourceLoadTracker {
             }
         }
     }
-    
+
     /**
      * Called when a Jenkins ExtensionPoint is mounted.
      * <p/>
@@ -65,15 +65,28 @@ export default class ResourceLoadTracker {
      *
      * @param extensionPointName The extension point name.
      */
-    onMount(extensionPointName) {
+    onMount(extensionPointName, callback) {
         const pointCSS = this.pointCSSs[extensionPointName];
         if (pointCSS) {
-            for (var i = 0; i < pointCSS.length; i++) {
-                this._requireCSS(pointCSS[i]);
+            let counter = 0;
+
+            function onLoad() {
+                counter++;
+                if (counter === pointCSS.length) {
+                    callback();
+                }
             }
+
+            for (var i = 0; i < pointCSS.length; i++) {
+                this._requireCSS(pointCSS[i], () => {
+                    onLoad();
+                });
+            }
+        } else {
+            callback();
         }
     }
-    
+
     /**
      * Called when a Jenkins ExtensionPoint is unmounted.
      * <p/>
@@ -92,16 +105,18 @@ export default class ResourceLoadTracker {
         }
     }
 
-    _requireCSS(url) {
+    _requireCSS(url, onload) {
         if (!this.activeCSSs[url]) {
-            this._addCSS(url);
+            this._addCSS(url, onload);
             this.activeCSSs[url] = true;
+        } else {
+            onload();
         }
     }
 
     _unrequireCSS(url) {
         var activeCount = this.activeCSSs[url];
-    
+
         if (!activeCount) {
             // Huh?
             console.warn('Unexpected call to deactivate an inactive Jenkins Extension Point CSS: ' + url);
@@ -118,18 +133,25 @@ export default class ResourceLoadTracker {
             }
         }
     }
-    
-    _addCSS(url) {
+
+    _addCSS(url, onload) {
         const cssURLPrefix = jsModules.getAdjunctURL();
-        jsModules.addCSSToPage(cssURLPrefix + '/' + url);
+        const cssURL = cssURLPrefix + '/' + url;
+
+        jsModules.addCSSToPage(cssURL);
+
+        const linkElId = jsModules.toCSSId(cssURL);
+        const linkEl = document.getElementById(linkElId);
+
+        linkEl.onload = onload;
     }
-    
+
     _removeCSS(url) {
         const cssURLPrefix = jsModules.getAdjunctURL();
         const cssURL = cssURLPrefix + '/' + url;
         const linkElId = jsModules.toCSSId(cssURL);
         const linkEl = document.getElementById(linkElId);
-    
+
         if (linkEl) {
             linkEl.parentNode.removeChild(linkEl);
         }
