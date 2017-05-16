@@ -12,10 +12,10 @@ node {
   configFileProvider([configFile(fileId: 'blueocean-maven-settings', targetLocation: 'settings.xml')]) {
 
   sh "./acceptance-tests/runner/scripts/start-selenium.sh"
-
+  try {
+      
   docker.image('blueocean_build_env').inside("--net=container:blueo-selenium") {
     withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
-      try {
         stage 'Building BlueOcean'
         sh 'npm --prefix ./blueocean-core-js install'
         sh 'npm --prefix ./blueocean-core-js run gulp'
@@ -32,7 +32,11 @@ node {
         sh "cd acceptance-tests && ./run.sh -a=../blueocean/ --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
         step([$class: 'JUnitResultArchiver', testResults: 'acceptance-tests/target/surefire-reports/*.xml'])
         
-      } catch(err) {
+     
+    }
+  }
+  }
+     } catch(err) {
         currentBuild.result = "FAILURE"
 
         if (err.toString().contains('AbortException')) {
@@ -40,12 +44,11 @@ node {
         }
       } finally {
         sendhipchat()
+        sh "pwd"
+        sh "./acceptance-tests/runner/scripts/stop-selenium.sh"
         deleteDir()
       }
-    }
-  }
-  }
-  sh "./acceptance-tests/runner/scripts/stop-selenium.sh"
+  
 }
 
 
