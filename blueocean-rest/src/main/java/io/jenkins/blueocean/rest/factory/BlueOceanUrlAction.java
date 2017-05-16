@@ -8,7 +8,7 @@ import javax.annotation.Nonnull;
  * {@link Action} to provide BlueOcean Url for a Jenkins model in context.
  *
  * @author Vivek Pandey
- * @see BlueOceanUrlFactory
+ * @see BlueOceanUrlActionFactory
  */
 public interface BlueOceanUrlAction extends Action {
     /**

@@ -8,12 +8,12 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 /**
- * {@link hudson.ExtensionPoint} to provide BlueOcean URL for Jenkins model object
+ * {@link hudson.ExtensionPoint} to provide {@link BlueOceanUrlAction} for Jenkins model object
  *
  * @author Vivek Pandey
  * @see BlueOceanUrlAction
  */
-public abstract class BlueOceanUrlFactory implements ExtensionPoint{
+public abstract class BlueOceanUrlActionFactory implements ExtensionPoint{
     /**
      * Gives {@link BlueOceanUrlAction} for given {@link ModelObject}.
      *
@@ -22,12 +22,12 @@ public abstract class BlueOceanUrlFactory implements ExtensionPoint{
      */
     public abstract @Nonnull BlueOceanUrlAction get(@Nonnull ModelObject object);
 
-    public static ExtensionList<BlueOceanUrlFactory> all(){
-        return ExtensionList.lookup(BlueOceanUrlFactory.class);
+    public static ExtensionList<BlueOceanUrlActionFactory> all(){
+        return ExtensionList.lookup(BlueOceanUrlActionFactory.class);
     }
 
-    public @CheckForNull static BlueOceanUrlFactory getFirst(){
-        for(BlueOceanUrlFactory f: all()){
+    public @CheckForNull static BlueOceanUrlActionFactory getFirst(){
+        for(BlueOceanUrlActionFactory f: all()){
             return f;
         }
         return null;

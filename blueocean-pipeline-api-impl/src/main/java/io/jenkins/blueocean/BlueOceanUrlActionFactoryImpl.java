@@ -3,7 +3,7 @@ package io.jenkins.blueocean;
 import hudson.Extension;
 import hudson.model.ModelObject;
 import io.jenkins.blueocean.rest.factory.BlueOceanUrlAction;
-import io.jenkins.blueocean.rest.factory.BlueOceanUrlFactory;
+import io.jenkins.blueocean.rest.factory.BlueOceanUrlActionFactory;
 import jenkins.model.Jenkins;
 
 import javax.annotation.Nonnull;
@@ -12,8 +12,8 @@ import javax.annotation.Nonnull;
  * @author Vivek Pandey
  */
 @Extension(ordinal = -9999)
-public class BlueOceanUrlFactoryImpl extends BlueOceanUrlFactory{
-    public BlueOceanUrlFactoryImpl() {
+public class BlueOceanUrlActionFactoryImpl extends BlueOceanUrlActionFactory {
+    public BlueOceanUrlActionFactoryImpl() {
         Jenkins.getInstance().getActions().add(new BlueOceanUrlActionImpl());
     }
 

@@ -230,6 +230,7 @@ public class BlueOceanWebURLBuilderTest {
             return modelObject instanceof FreeStyleProject ? "/customerUrlMapper/"+((FreeStyleProject)modelObject).getName() : null;
         }
     }
+    
     @Test
     public void testCustomerUrlMapper() throws Exception{
         FreeStyleProject freestyleProject = jenkinsRule.createProject(FreeStyleProject.class, "freestyle1");
