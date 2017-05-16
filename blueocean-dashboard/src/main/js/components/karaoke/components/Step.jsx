@@ -77,11 +77,6 @@ export class Step extends Component {
     }
 
     render() {
-        // early out
-        if (this.pager.pending) {
-            logger.debug('pending returning null');
-            return null;
-        }
         const { step, locale, router, location, t, scrollToBottom } = this.props;
         if (step === undefined || !step) {
             return null;
