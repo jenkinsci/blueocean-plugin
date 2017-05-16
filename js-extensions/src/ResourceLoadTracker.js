@@ -142,8 +142,11 @@ export default class ResourceLoadTracker {
 
         const linkElId = jsModules.toCSSId(cssURL);
         const linkEl = document.getElementById(linkElId);
-
-        linkEl.onload = onload;
+        if (linkEl) {
+            linkEl.onload = onload;
+        } else {
+            onload();
+        }
     }
 
     _removeCSS(url) {
