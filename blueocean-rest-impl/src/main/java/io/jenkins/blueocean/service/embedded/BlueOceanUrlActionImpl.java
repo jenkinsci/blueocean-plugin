@@ -1,4 +1,4 @@
-package io.jenkins.blueocean;
+package io.jenkins.blueocean.service.embedded;
 
 import hudson.Extension;
 import hudson.model.ModelObject;
@@ -6,8 +6,6 @@ import io.jenkins.blueocean.rest.factory.BlueOceanUrlAction;
 import io.jenkins.blueocean.rest.factory.BlueOceanUrlMapper;
 
 import javax.annotation.Nonnull;
-
-import static io.jenkins.blueocean.BlueOceanUrlMapperImpl.getLandingPagePath;
 
 /**
  * @author Vivek Pandey
@@ -35,12 +33,12 @@ public class BlueOceanUrlActionImpl implements BlueOceanUrlAction {
                 }
             }
         }
-        return getLandingPagePath();
+        return BlueOceanUrlMapperImpl.getLandingPagePath();
     }
 
     @Override
     public String getIconFileName() {
-        return "/plugin/blueocean-pipeline-api-impl/images/48x48/blueocean.png";
+        return "/plugin/blueocean-rest-impl/images/48x48/blueocean.png";
     }
 
     @Override

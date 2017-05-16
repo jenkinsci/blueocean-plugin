@@ -1,4 +1,4 @@
-package io.jenkins.blueocean;
+package io.jenkins.blueocean.service.embedded;
 
 import hudson.Extension;
 import hudson.model.ModelObject;

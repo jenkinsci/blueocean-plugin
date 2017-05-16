@@ -1,11 +1,13 @@
-package io.jenkins.blueocean;
+package io.jenkins.blueocean.service.embedded;
 
+import com.cloudbees.hudson.plugins.folder.computed.ComputedFolder;
 import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.ModelObject;
 import hudson.model.Run;
+import io.jenkins.blueocean.BlueOceanUIProvider;
 import io.jenkins.blueocean.rest.factory.BlueOceanUrlMapper;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
@@ -13,9 +15,7 @@ import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
-import jenkins.branch.MultiBranchProject;
 import jenkins.model.ModifiableTopLevelItemGroup;
-import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -54,8 +54,8 @@ public class BlueOceanUrlMapperImpl extends BlueOceanUrlMapper {
                 // encoded and re-encode to do the full monty. Nasty :)
                 return baseUrl +"/" + encodeURIComponent(blueResource.getFullName())+"/detail/" + encodeURIComponent(decodeURIComponent(job.getName())) + "/" + encodeURIComponent(run.getId());
             }
-        } else if(modelObject instanceof MultiBranchProject){
-            Resource bluePipeline = BluePipelineFactory.resolve((MultiBranchProject)modelObject);
+        } else if(modelObject instanceof Item){
+            Resource bluePipeline = BluePipelineFactory.resolve((Item)modelObject);
             if(bluePipeline instanceof BlueMultiBranchPipeline){
                 return getPipelineUrl(baseUrl, (BluePipeline) bluePipeline);
             }
@@ -73,19 +73,32 @@ public class BlueOceanUrlMapperImpl extends BlueOceanUrlMapper {
 
     private @CheckForNull BluePipeline getJobResource(ModelObject modelObject){
         BluePipeline blueResource = null;
-        if(isBranch(modelObject)){
-            blueResource = (BluePipeline) BluePipelineFactory
-                    .resolve((MultiBranchProject)((WorkflowJob) modelObject).getParent());
-        } else if(modelObject instanceof Job) {
-            blueResource = (BluePipeline) BluePipelineFactory
-                    .resolve((Job)modelObject);
+        if(modelObject instanceof Job){
+            ItemGroup parent = ((Job) modelObject).getParent();
+            if(parent instanceof ComputedFolder){
+                blueResource =  (BluePipeline) BluePipelineFactory
+                        .resolve((ComputedFolder)parent);
+                if(blueResource instanceof BlueMultiBranchPipeline){
+                    return blueResource;
+                }
+            }else {
+                blueResource =  (BluePipeline) BluePipelineFactory
+                        .resolve((Job)modelObject);
+            }
         }
         return blueResource;
     }
 
     private boolean isBranch(ModelObject modelObject){
-        return modelObject instanceof WorkflowJob &&
-                ((WorkflowJob) modelObject).getParent() instanceof MultiBranchProject;
+        if(modelObject instanceof Job){
+            ItemGroup parent = ((Job) modelObject).getParent();
+            if(parent instanceof ComputedFolder){
+                BluePipeline blueResource = (BluePipeline) BluePipelineFactory
+                        .resolve((Job)modelObject);
+                return (blueResource instanceof BlueMultiBranchPipeline);
+            }
+        }
+        return false;
     }
 
     static String getLandingPagePath(){
