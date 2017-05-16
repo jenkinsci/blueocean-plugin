@@ -27,6 +27,7 @@ import hudson.Util;
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
 import hudson.model.ItemGroup;
+import hudson.model.ModelObject;
 import hudson.model.TopLevelItem;
 import hudson.model.TopLevelItemDescriptor;
 import io.jenkins.blueocean.rest.factory.BlueOceanUrlMapper;
@@ -54,6 +55,7 @@ import org.jvnet.hudson.test.TestExtension;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 
+import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.File;
 import java.io.IOException;
@@ -186,7 +188,6 @@ public class BlueOceanWebURLBuilderTest {
         }
     }
 
-
     @TestExtension(value = "testOrg")
     public static class TestOrganizationFactoryImpl extends OrganizationFactoryImpl {
         private OrganizationImpl instance = new OrganizationImpl("testorg", TestOrg.INSTANCE);
@@ -219,6 +220,21 @@ public class BlueOceanWebURLBuilderTest {
     public void testOrg() throws IOException, ExecutionException, InterruptedException {
         String blueOceanURL = urlMapper.getUrl(TestOrg.INSTANCE);
         assertURL("blue/organizations/testorg", blueOceanURL);
+    }
+
+    @TestExtension("testCustomerUrlMapper")
+    public static class TestUrlMapper extends BlueOceanUrlMapper{
+
+        @Override
+        public String getUrl(@Nonnull ModelObject modelObject) {
+            return modelObject instanceof FreeStyleProject ? "/customerUrlMapper/"+((FreeStyleProject)modelObject).getName() : null;
+        }
+    }
+    @Test
+    public void testCustomerUrlMapper() throws Exception{
+        FreeStyleProject freestyleProject = jenkinsRule.createProject(FreeStyleProject.class, "freestyle1");
+        String url = urlMapper.getUrl(freestyleProject);
+        assertEquals("/customerUrlMapper/freestyle1", url);
     }
 
     @Test
