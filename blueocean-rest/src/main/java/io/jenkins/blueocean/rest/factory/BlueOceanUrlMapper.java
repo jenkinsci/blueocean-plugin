@@ -3,13 +3,12 @@ package io.jenkins.blueocean.rest.factory;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.ModelObject;
-import io.jenkins.blueocean.rest.model.Resource;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 /**
- * Maps BlueOcean {@link Resource} to a front end URL
+ * Maps Jenkins {@link ModelObject} to BlueOcean front end URL
  *
  * @author Vivek Pandey
  */
