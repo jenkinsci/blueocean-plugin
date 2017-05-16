@@ -111,8 +111,9 @@ export class Activity extends Component {
         const duration = t(`${head}.duration`, { defaultValue: 'Duration' });
         const completed = t(`${head}.completed`, { defaultValue: 'Completed' });
         const branchText = t(`${head}.branch`, { defaultValue: 'Branch' });
+        const decodedBranchName = decodeURIComponent(branch);
 
-        const branchFilter = isMultiBranchPipeline && (<ColumnFilter placeholder={branchText} value={branch}
+        const branchFilter = isMultiBranchPipeline && (<ColumnFilter placeholder={branchText} value={decodedBranchName}
             onChange={b => this.navigateToBranch(b)}
             options={pipeline.branchNames.map(b => decodeURIComponent(b))}
         />);
