@@ -4,6 +4,7 @@ import { Page, Table, TextInput } from '@jenkins-cd/design-language';
 import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
+import debounce from 'lodash.debounce';
 
 import { documentTitle } from './DocumentTitle';
 import CreatePipelineLink from './CreatePipelineLink';
@@ -19,13 +20,9 @@ export class Pipelines extends Component {
         this.state = {};
     }
 
-    onChange = (e) => {
-        clearTimeout(this.debounce);
-
-        this.debounce = setTimeout(() => {
-            this.setState({ searchText: e });
-        }, 200);
-    }
+    onChange = debounce( e => {
+        this.setState({ searchText: e });
+    }, 200);
 
     _initPager() {
         const org = this.props.params.organization ? this.props.params.organization : AppConfig.getOrganizationName();
@@ -73,7 +70,7 @@ export class Pipelines extends Component {
                                 { organization && orgLink }
                             </h1>
                         </Extensions.Renderer>
-                        <TextInput className="search-pipelines-input" placeholder="Search pipelines..." onChange={this.onChange} />
+                        <TextInput className="search-pipelines-input" iconLeft="search" placeholder="Search pipelines..." onChange={this.onChange} />
                     </div>
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
                         <CreatePipelineLink />

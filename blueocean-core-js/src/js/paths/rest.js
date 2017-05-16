@@ -11,10 +11,13 @@ export default {
     },
 
     pipelines(organizationName, searchText) {
-        const startsWith = searchText ? `;startsWith:${encodeURIComponent(searchText)}` : '';
-        const organization = organizationName ? `;organization:${encodeURIComponent(organizationName)}` : '';
+        let searchTextQuery = '';
 
-        return `${this.apiRoot()}/search/?q=type:pipeline${organization}${startsWith};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
+        if (searchText) {
+            searchTextQuery = ('*' + searchText + '*').replace('/', '*/*').replace('**', '*');
+        }
+
+        return `${this.apiRoot()}/search/?q=type:pipeline;pipeline:${encodeURIComponent(searchTextQuery)};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
     },
 
     runs(organization, pipeline, branch) {
