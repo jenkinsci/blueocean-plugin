@@ -11,14 +11,14 @@ export default {
     },
 
     pipelines(organizationName, searchText) {
-        const organization = organizationName ? ';organization:${organizationName}' : '';
+        const organization = organizationName ? `;organization:${encodeURIComponent(organizationName)}` : '';
         let searchTextQuery = '';
 
         if (searchText) {
             searchTextQuery = ('*' + searchText + '*').replace('/', '*/*').replace('**', '*');
         }
 
-        return `${this.apiRoot()}/search/?q=type:pipeline${encodeURIComponent(organization)};pipeline:${encodeURIComponent(searchTextQuery)};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
+        return `${this.apiRoot()}/search/?q=type:pipeline${organization};pipeline:${encodeURIComponent(searchTextQuery)};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
     },
 
     runs(organization, pipeline, branch) {
