@@ -73,6 +73,7 @@
                                         <bannedImport>hudson.**</bannedImport>
                                     </bannedImports>
                                     <allowedImports>
+                                        <allowedImport>hudson.model.RootAction</allowedImport>
                                         <allowedImport>hudson.model.Action</allowedImport>
                                         <allowedImport>hudson.model.ModelObject</allowedImport>
                                         <allowedImport>hudson.Extension</allowedImport>

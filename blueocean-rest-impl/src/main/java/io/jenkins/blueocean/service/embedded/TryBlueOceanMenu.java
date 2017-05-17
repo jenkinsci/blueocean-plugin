@@ -6,7 +6,9 @@ package io.jenkins.blueocean.service.embedded;
 
 import hudson.Extension;
 import hudson.model.Action;
+import hudson.model.Actionable;
 import hudson.model.ModelObject;
+import io.jenkins.blueocean.rest.factory.BlueOceanUrlAction;
 import io.jenkins.blueocean.rest.factory.BlueOceanUrlActionFactory;
 import jenkins.model.TransientActionFactory;
 
@@ -39,9 +41,17 @@ public class TryBlueOceanMenu extends TransientActionFactory<ModelObject> {
     @Nonnull
     @Override
     public Collection<? extends Action> createFor(@Nonnull ModelObject target) {
+        // we do not report actions as it might appear multiple times, we simply add it to Actionable
         BlueOceanUrlActionFactory f = getFirst();
         if(f != null){
-            return Collections.singleton(f.get(target));
+            if(target instanceof Actionable){
+                BlueOceanUrlAction a = f.get(target);
+                try {
+                    ((Actionable) target).replaceAction(a);
+                }catch (UnsupportedOperationException e){
+                    return Collections.singleton(a);
+                }
+            }
         }
         return Collections.emptyList();
     }
