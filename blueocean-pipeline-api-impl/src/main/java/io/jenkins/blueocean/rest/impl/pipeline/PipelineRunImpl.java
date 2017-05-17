@@ -74,7 +74,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         // If this run is a replay then return the changesets from the original run
         ReplayCause replayCause = run.getCause(ReplayCause.class);
         if (replayCause != null) {
-            Run run = replayCause.getRun();
+            Run run = this.run.getParent().getBuildByNumber(replayCause.getOriginalNumber());
             if (run == null) {
                 return Containers.fromResourceMap(getLink(), ImmutableMap.<String, BlueChangeSetEntry>of());
             } else {
