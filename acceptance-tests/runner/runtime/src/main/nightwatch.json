@@ -1,0 +1,38 @@
+{
+  "src_folders": [
+    "src/test/js"
+  ],
+  "output_folder": "target/surefire-reports",
+  "custom_commands_path": "src/main/js/custom_commands",
+  "custom_assertions_path": "src/main/js/custom_assertions",
+  "globals_path": "src/main/js/globals.js",
+  "page_objects_path": [
+    "src/main/js/page_objects/classic_jenkins",
+    "src/main/js/page_objects/blueocean"
+  ],
+  "screenshots": {
+    "enabled": true,
+    "on_failure": true,
+    "on_error": true,
+    "path": "target/screenshots"
+  },
+  "selenium": {
+    "start_process": false,
+    "server_path": "bin/selenium-server-standalone-2.53.1.jar",
+    "log_path": "",
+    "host": "127.0.0.1",
+    "port": 4444
+  },
+  "test_settings": {
+    "default": {
+      "launch_url": "",
+      "selenium_port": 4444,
+      "selenium_host": "localhost",
+      "desiredCapabilities": {
+        "browserName": "firefox",
+        "javascriptEnabled": true,
+        "acceptSslCerts": true
+      }
+    }
+  }
+}
