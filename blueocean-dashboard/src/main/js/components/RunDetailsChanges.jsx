@@ -51,7 +51,7 @@ export default class RunDetailsChanges extends Component {
 
         const { changeSet } = result;
 
-        if (!changeSet || !changeSet.length) {
+        if (!changeSet || !changeSet.length || !changeSet.map) {
             return <NoChangesPlaceholder t={t} />;
         }
 
