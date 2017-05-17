@@ -15,20 +15,19 @@ const translate = i18nTranslator('blueocean-dashboard');
 
 @observer
 export class Pipelines extends Component {
-    constructor() {
-        super();
-        this.state = {};
-    }
-
     onChange = debounce( e => {
-        this.setState({ searchText: e });
+        this.context.router.push(`${this.props.location.pathname}?search=${encodeURIComponent(e)}`);
     }, 200);
 
     _initPager() {
         const org = this.props.params.organization ? this.props.params.organization : AppConfig.getOrganizationName();
-        const searchText = this.state.searchText;
+        const searchText = this.getSearchText();
 
         this.pager = this.context.pipelineService.pipelinesPager(org, searchText);
+    }
+
+    getSearchText() {
+        return this.props.location.query.search;
     }
 
     render() {
@@ -46,7 +45,7 @@ export class Pipelines extends Component {
             </Link> : '';
 
         const showPipelineList = pipelines && pipelines.length > 0;
-        const showEmptyState = !this.pager.pending && !this.state.searchText && (!pipelines || !pipelines.length);
+        const showEmptyState = !this.pager.pending && !this.getSearchText() && (!pipelines || !pipelines.length);
 
         const headers = [
             { label: translate('home.pipelineslist.header.name', { defaultValue: 'Name' }), className: 'name-col' },
@@ -70,7 +69,7 @@ export class Pipelines extends Component {
                                 { organization && orgLink }
                             </h1>
                         </Extensions.Renderer>
-                        <TextInput className="search-pipelines-input" iconLeft="search" placeholder="Search pipelines..." onChange={this.onChange} />
+                        <TextInput className="search-pipelines-input" iconLeft="search" defaultValue={this.getSearchText()} placeholder="Search pipelines..." onChange={this.onChange} />
                     </div>
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
                         <CreatePipelineLink />
@@ -125,6 +124,8 @@ Pipelines.contextTypes = {
 Pipelines.propTypes = {
     setTitle: func,
     params: object,
+    router: object,
+    location: object,
 };
 
 export default documentTitle(Pipelines);
