@@ -2,7 +2,6 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
-import com.google.common.collect.ImmutableMap;
 import hudson.model.Action;
 import hudson.model.CauseAction;
 import hudson.model.Result;
@@ -28,6 +27,7 @@ import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.GenericResource;
 import org.kohsuke.stapler.QueryParameter;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Date;
@@ -48,8 +48,9 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         this.org = OrganizationFactory.getInstance().getContainingOrg(run);
     }
 
+    @Nonnull
     public Container<BlueChangeSetEntry> getChangeSet() {
-        return Containers.fromResourceMap(getLink(), ImmutableMap.<String, BlueChangeSetEntry>of());
+        return Containers.empty(getLink());
     }
 
     @Override

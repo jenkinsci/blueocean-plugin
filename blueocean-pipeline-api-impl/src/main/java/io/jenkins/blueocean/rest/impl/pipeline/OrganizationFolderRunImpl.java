@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.cloudbees.hudson.plugins.folder.computed.FolderComputation;
-import com.google.common.collect.ImmutableMap;
 import hudson.model.CauseAction;
 import hudson.model.Result;
 import io.jenkins.blueocean.rest.Reachable;
@@ -20,6 +19,7 @@ import io.jenkins.blueocean.service.embedded.rest.LogResource;
 import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
 import org.kohsuke.stapler.QueryParameter;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Date;
 
@@ -79,9 +79,10 @@ public class OrganizationFolderRunImpl extends BlueRun {
         return folderComputation.getTimestamp().getTime();
     }
 
+    @Nonnull
     @Override
     public Container<BlueChangeSetEntry> getChangeSet() {
-        return Containers.fromResourceMap(getLink(), ImmutableMap.<String, BlueChangeSetEntry>of());
+        return Containers.empty(getLink());
     }
 
     @Override

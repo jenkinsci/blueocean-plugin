@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
@@ -16,6 +15,7 @@ import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import org.kohsuke.stapler.export.Exported;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Date;
 
@@ -70,9 +70,10 @@ public class QueuedBlueRun extends BlueRun {
         return null;
     }
 
+    @Nonnull
     @Override
     public Container<BlueChangeSetEntry> getChangeSet() {
-        return Containers.fromResourceMap(getLink(), ImmutableMap.<String, BlueChangeSetEntry>of());
+        return Containers.empty(getLink());
     }
 
     @Override
