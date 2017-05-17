@@ -110,9 +110,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
             while (pipelineIterator.hasNext()) {
                 BluePipeline p = pipelineIterator.next();
                 // If using glob syntax try to match using the glob matcher otherwise fall back to equality check
-                if (matcher != null && matcher.matches(p.getName())) {
-                    pipelines.add(p);
-                } else if (pipeline.equals(p.getName())) {
+                if (matcher != null && matcher.matches(p.getFullName())) {
                     pipelines.add(p);
                 }
             }
