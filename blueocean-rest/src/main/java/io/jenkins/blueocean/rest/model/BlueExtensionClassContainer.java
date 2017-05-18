@@ -24,7 +24,7 @@ public abstract class BlueExtensionClassContainer implements ApiRoutable, Extens
      * Gives {@link BlueExtensionClass} for the given class name
      *
      * @param name name of the class
-     * @return {@link BlueExtensionClass} for the given class name
+     * @return {@link BlueExtensionClass} for the given class name, null if not found
      */
     public abstract BlueExtensionClass get(String name);
 

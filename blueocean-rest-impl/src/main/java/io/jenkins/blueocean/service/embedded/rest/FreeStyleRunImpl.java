@@ -7,13 +7,13 @@ import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
-import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import org.kohsuke.stapler.QueryParameter;
 
+import javax.annotation.Nonnull;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -26,11 +26,12 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_FREE_STY
  */
 @Capability(JENKINS_FREE_STYLE_BUILD)
 public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
-    public FreeStyleRunImpl(FreeStyleBuild run, Link parent) {
+    public FreeStyleRunImpl(FreeStyleBuild run, Reachable parent) {
         super(run, parent);
     }
 
     @Override
+    @Nonnull
     public Container<BlueChangeSetEntry> getChangeSet() {
 
         Map<String, BlueChangeSetEntry> m = new LinkedHashMap<>();
@@ -60,7 +61,7 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
         @Override
         public BlueRun getRun(Run run, Reachable parent) {
             if (run instanceof FreeStyleBuild) {
-                return new FreeStyleRunImpl((FreeStyleBuild)run, parent.getLink());
+                return new FreeStyleRunImpl((FreeStyleBuild)run, parent);
             }
             return null;
         }

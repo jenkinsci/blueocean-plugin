@@ -44,6 +44,7 @@ import jenkins.model.Jenkins;
 import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hudson.test.ExtractResourceSCM;
+import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestBuilder;
 import org.jvnet.hudson.test.TestExtension;
@@ -155,7 +156,20 @@ public class PipelineApiTest extends BaseTest {
             && classes.contains("io.jenkins.blueocean.rest.model.BluePipeline")
             && classes.contains("io.jenkins.blueocean.rest.model.BluePipelineFolder")
             && classes.contains("com.cloudbees.hudson.plugins.folder.AbstractFolder"));
+    }
 
+    @Test
+    public void testUnknownClassCapabilities(){
+        Map response = get("/classes/blah12345/");
+        assertNotNull(response);
+        assertEquals(0, ((List)response.get("classes")).size());
+
+        response = post("/classes/", ImmutableMap.of("q", ImmutableList.of("blah12345",TestPipelineImpl.class.getName())));
+        assertNotNull(response);
+        Map cap = (Map) response.get("map");
+        assertEquals(2, cap.size());
+        Map d  = (Map) cap.get("blah12345");
+        assertEquals(0, ((List)d.get("classes")).size());
     }
 
     @Test
@@ -715,15 +729,23 @@ public class PipelineApiTest extends BaseTest {
      * see the elements under that folder.
      */
     @Test
+    @Issue({ "JENKINS-44176", "JENKINS-44270" })
     public void testOrganizationFolder() throws IOException, ExecutionException, InterruptedException {
 
-        FreeStyleProject jobOutSideOrg = j.createFreeStyleProject("pipelineOutsideOrg");
+        FreeStyleProject jobOutSideOrg = j.createFreeStyleProject("pipelineOutsideOrgName");
+        jobOutSideOrg.setDisplayName("pipelineOutsideOrg Display Name");
 
-        MockFolder orgFolder = j.createFolder("TestOrgFolder");
-        MockFolder folderOnOrg = orgFolder.createProject(MockFolder.class, "folderOnOrg");
+        MockFolder orgFolder = j.createFolder("TestOrgFolderName");
+        orgFolder.setDisplayName("TestOrgFolderName Display Name");
 
-        FreeStyleProject jobOnRootOrg = orgFolder.createProject(FreeStyleProject.class, "jobOnRootOrg");
-        FreeStyleProject jobOnFolder = folderOnOrg.createProject(FreeStyleProject.class, "jobOnFolder");
+        MockFolder folderOnOrg = orgFolder.createProject(MockFolder.class, "folderOnOrgName");
+        folderOnOrg.setDisplayName("folderOnOrg Display Name");
+
+        FreeStyleProject jobOnRootOrg = orgFolder.createProject(FreeStyleProject.class, "jobOnRootOrgName");
+        jobOnRootOrg.setDisplayName("jobOnRootOrg Display Name");
+
+        FreeStyleProject jobOnFolder = folderOnOrg.createProject(FreeStyleProject.class, "jobOnFolderName");
+        jobOnFolder.setDisplayName("jobOnFolder Display Name");
 
         List<Map> pipelines = get("/search/?q=type:pipeline;organization:TestOrg;excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject", List.class);
 
@@ -731,24 +753,38 @@ public class PipelineApiTest extends BaseTest {
         Assert.assertEquals(3, pipelines.size());
 
         //The full name should not contain the organization folder name
+        Map links;
         for (Map map : pipelines) {
             Assert.assertEquals("TestOrg", map.get("organization"));
-
-            if (map.get("name").equals("folderOnOrg")) {
-                map.get("fullDisplayName").equals("folderOnOrg");
-            } else if (map.get("name").equals("jobOnRootOrg")) {
-                map.get("fullDisplayName").equals("jobOnFolder");
-            } else if (map.get("name").equals("jobOnFolder")) {
-                map.get("fullDisplayName").equals("folderOnOrg/jobOnFolder");
+            if (map.get("name").equals("folderOnOrgName")) {
+                map.get("fullDisplayName").equals("folderOnOrg%20Display%20Name");
+                map.get("fullName").equals("folderOnOrgName");
+                checkLinks((Map) map.get("_links"), "/blue/rest/organizations/TestOrg/pipelines/folderOnOrgName/");
+            } else if (map.get("name").equals("jobOnRootOrgName")) {
+                map.get("fullDisplayName").equals("jobOnRootOrg%20Display%20Name");
+                map.get("fullName").equals("jobOnRootOrgName");
+                checkLinks((Map) map.get("_links"), "/blue/rest/organizations/TestOrg/pipelines/jobOnRootOrgName/");
+            } else if (map.get("name").equals("jobOnFolderName")) {
+                map.get("fullDisplayName").equals("folderOnOrg%20Display%20Name/jobOnFolder%20Display%20Name");
+                map.get("fullName").equals("folderOnOrgName/jobOnFolderName");
+                checkLinks((Map) map.get("_links"), "/blue/rest/organizations/TestOrg/pipelines/folderOnOrgName/pipelines/jobOnFolderName/");
             } else {
                 Assert.fail("Item " + map.get("name") + " shouldn't be present");
             }
         }
     }
 
+    private void checkLinks(Map links, String startWith) {
+        for (Object link : links.values()) {
+            Map linkMap = (Map) link;
+            String href = ((String) linkMap.get("href"));
+            Assert.assertTrue("Link should start with " + startWith + " but was " + href, href.startsWith(startWith));
+        }
+    }
+
     @TestExtension(value = "testOrganizationFolder")
     public static class TestOrganizationFactoryImpl extends OrganizationFactoryImpl {
-        private OrganizationImpl instance = new OrganizationImpl("TestOrg", Jenkins.getInstance().getItem("/TestOrgFolder", Jenkins.getInstance(), MockFolder.class));
+        private OrganizationImpl instance = new OrganizationImpl("TestOrg", Jenkins.getInstance().getItem("/TestOrgFolderName", Jenkins.getInstance(), MockFolder.class));
 
         @Override
         public OrganizationImpl get(String name) {
