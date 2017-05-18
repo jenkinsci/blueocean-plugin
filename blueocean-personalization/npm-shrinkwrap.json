@@ -33,7 +33,7 @@
     },
     "@jenkins-cd/js-builder-jest": {
       "version": "0.0.1",
-      "from": "https://registry.npmjs.org/@jenkins-cd/js-builder-jest/-/js-builder-jest-0.0.1.tgz",
+      "from": "@jenkins-cd/js-builder-jest@latest",
       "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder-jest/-/js-builder-jest-0.0.1.tgz",
       "dev": true,
       "dependencies": {
@@ -4824,15 +4824,15 @@
       "dev": true,
       "dependencies": {
         "debug": {
-          "version": "2.6.6",
+          "version": "2.6.7",
           "from": "debug@>=2.6.3 <3.0.0",
-          "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.6.tgz",
+          "resolved": "https://registry.npmjs.org/debug/-/debug-2.6.7.tgz",
           "dev": true
         },
         "ms": {
-          "version": "0.7.3",
-          "from": "ms@0.7.3",
-          "resolved": "https://registry.npmjs.org/ms/-/ms-0.7.3.tgz",
+          "version": "2.0.0",
+          "from": "ms@2.0.0",
+          "resolved": "https://registry.npmjs.org/ms/-/ms-2.0.0.tgz",
           "dev": true
         },
         "rimraf": {
@@ -4868,9 +4868,9 @@
           "dev": true
         },
         "uglify-js": {
-          "version": "2.8.23",
+          "version": "2.8.26",
           "from": "uglify-js@>=2.6.0 <3.0.0",
-          "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-2.8.23.tgz",
+          "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-2.8.26.tgz",
           "dev": true,
           "optional": true,
           "dependencies": {
