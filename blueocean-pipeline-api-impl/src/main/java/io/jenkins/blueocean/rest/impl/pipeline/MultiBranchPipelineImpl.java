@@ -114,12 +114,12 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     @Override
     public String getFullName() {
-        return mbp.getFullName();
+        return AbstractPipelineImpl.getFullName(org, mbp);
     }
 
     @Override
     public String getFullDisplayName() {
-        return AbstractPipelineImpl.getFullDisplayName(mbp, null);
+        return AbstractPipelineImpl.getFullDisplayName(org, mbp);
     }
 
     @Override
