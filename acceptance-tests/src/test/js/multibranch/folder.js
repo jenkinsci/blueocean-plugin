@@ -89,7 +89,7 @@ module.exports = {
             blueMultiBranchPipeline.assertBasicLayoutOkay();
 
             blueMultiBranchPipeline.click('@exitToClassicWidget');
-            browser.waitForElementVisible('#open-blueocean-in-context');
+            browser.useXpath().waitForElementVisible("//a[contains(@class, 'task-link') and text()='Open Blue Ocean']");
             browser.url(function (response) {
                 response.value.endsWith('/aFolder/job/bFolder/job/cFolder/job/MBPInFolderTree/');
             });
@@ -107,7 +107,7 @@ module.exports = {
             bluePipelineRunDetail.assertBasicLayoutOkay();
 
             bluePipelineRunDetail.click('@exitToClassicWidget');
-            browser.waitForElementVisible('#open-blueocean-in-context');
+            browser.useXpath().waitForElementVisible("//a[contains(@class, 'task-link') and text()='Open Blue Ocean']");
             browser.url(function (response) {
                 response.value.endsWith('/job/aFolder/job/bFolder/job/cFolder/job/MBPInFolderTree/job/feature%2F1/1/');
             });

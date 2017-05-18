@@ -1,6 +1,6 @@
 exports.command = function (checkfor) {
-    this.waitForElementVisible('#open-blueocean-in-context');
-    this.click('#open-blueocean-in-context');
+    this.useXpath().waitForElementVisible("//a[contains(@class, 'task-link') and text()='Open Blue Ocean']");
+    this.useXpath().click("//a[contains(@class, 'task-link') and text()='Open Blue Ocean']");
     if (checkfor) {
         this.waitForElementVisible(checkfor);
     }
