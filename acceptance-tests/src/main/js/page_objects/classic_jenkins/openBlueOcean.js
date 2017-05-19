@@ -20,7 +20,6 @@ module.exports.commands = [{
 
     visible: function () {
         var self = this;
-        //self.api.refresh();
         self.waitForElementVisible('@openLink');
     }
 }];
