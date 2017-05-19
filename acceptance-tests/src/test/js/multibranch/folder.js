@@ -66,7 +66,7 @@ module.exports = {
 
         // make sure the open blue ocean button works. In this case,
         // it should bring the browser to the run details page for the first run.
-        browser.openBlueOcean();
+        browser.page.openBlueOcean().open();
         browser.assert.urlEndsWith('/blue/organizations/jenkins/aFolder%2FbFolder%2FcFolder%2FMBPInFolderTree/detail/master/1/pipeline');
 
         browser.url(function (response) {
@@ -92,7 +92,7 @@ module.exports = {
             blueMultiBranchPipeline.assertBasicLayoutOkay();
 
             blueMultiBranchPipeline.click('@exitToClassicWidget');
-            browser.useXpath().waitForElementVisible("//a[contains(@class, 'task-link') and text()='Open Blue Ocean']").useCss();
+            browser.page.openBlueOcean().visible();
             browser.url(function (response) {
                 response.value.endsWith('/aFolder/job/bFolder/job/cFolder/job/MBPInFolderTree/');
             });
@@ -110,7 +110,7 @@ module.exports = {
             bluePipelineRunDetail.assertBasicLayoutOkay();
 
             bluePipelineRunDetail.click('@exitToClassicWidget');
-            browser.useXpath().waitForElementVisible("//a[contains(@class, 'task-link') and text()='Open Blue Ocean']").useCss();
+            browser.page.openBlueOcean().visible();
             browser.url(function (response) {
                 response.value.endsWith('/job/aFolder/job/bFolder/job/cFolder/job/MBPInFolderTree/job/feature%2F1/1/');
             });
