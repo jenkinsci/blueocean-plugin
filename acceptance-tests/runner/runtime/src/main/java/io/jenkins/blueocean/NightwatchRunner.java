@@ -72,11 +72,7 @@ public class NightwatchRunner {
         }
     }
     
-    public static void runIntegrationSpec(String testFile) throws TaskRunnerException {
-        if (testFile != null) {
-            run(String.format("--test %s", "../../src/test/js/" + testFile));
-        } else {
-            run("");
-        }
+    public static void runIntegrationSpec() throws TaskRunnerException {
+        run("");
     }
 }
