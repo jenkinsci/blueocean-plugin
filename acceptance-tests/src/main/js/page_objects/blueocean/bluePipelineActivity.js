@@ -10,6 +10,11 @@ const pageHelper = require('../../util/pageHelper');
 //oh man, I miss es6 import :(
 const sanityCheck = pageHelper.sanityCheck;
 
+function activityRowSelector(pipeline, runId) {
+    // Fixme: Can we parameterise the "elements" below?
+    return `.activity-table .JTable-row[data-pipeline='${pipeline}'][data-runid='${runId}']`;
+}
+
 module.exports = {
     elements: {
         pipelinesNav: '.Header-topNav nav a[href="/blue/pipelines"]',
@@ -65,13 +70,22 @@ module.exports.commands = [{
         this.waitForElementVisible('@emptyStateShoes');
     },
     /**
-     * Wait for a specific run to appear in the activity table as a success
-     * @param runName name of the job
+     * Wait for a specific run to appear in the activity table
+     * @param pipeline name of the pipeline
+     * @param runId id of the run
      */
-    waitForRunSuccessVisible: function(runName) {
-        this.waitForElementVisible('.activity-table tr#' + runName);
-        this.waitForElementVisible('.activity-table tr#' + runName + ' svg.svgResultStatus');
-        this.waitForElementPresent('.activity-table tr#' + runName + ' svg circle.success');
+    waitForRunVisible: function(pipeline, runId) {
+        this.waitForElementVisible(activityRowSelector(pipeline, runId));
+    },
+    /**
+     * Wait for a specific run to appear in the activity table as a success
+     * @param pipeline name of the pipeline
+     * @param runId id of the run
+     */
+    waitForRunSuccessVisible: function(pipeline, runId) {
+        this.waitForRunVisible(pipeline, runId);
+        const resultRowSelector = activityRowSelector(pipeline, runId);
+        this.waitForElementVisible(`${resultRowSelector} .success`);
     },
     /**
      * Wait for a specific run to appear in the activity table as a failure

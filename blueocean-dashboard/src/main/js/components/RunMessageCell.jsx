@@ -35,7 +35,7 @@ export default class RunMessageCell extends Component {
             }
         } else if (showCauses) {
             // Last cause is always more significant than the first
-            const cause = run.causes[run.causes.length-1].shortDescription;
+            const cause = run.causes[run.causes.length - 1].shortDescription;
             message = (<span className="RunMessageCell" title={cause}><span className="RunMessageCellInner">{cause}</span></span>);
         } else {
             message = (<span className="RunMessageCell"><span className="RunMessageCellInner">–</span></span>);

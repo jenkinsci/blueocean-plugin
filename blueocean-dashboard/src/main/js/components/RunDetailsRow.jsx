@@ -37,9 +37,6 @@ class RunDetailsRow extends Component {
     static actionItemsCount = 2;
 
     openRunDetails = (newURL) => {
-        console.log('openRunDetails'); // TODO: RM
-        alert('kaboom'); // TODO: rm
-        return; // TODO: RM
         const { router, location } = this.context;
         location.pathname = newURL;
         router.push(location);
@@ -75,9 +72,18 @@ class RunDetailsRow extends Component {
         });
 
         const isRunning = run.state === 'RUNNING' || run.state === 'PAUSED' || run.state === 'QUEUED';
+        const branchName = isMultibranch && decodeURIComponent(run.pipeline);
+        const dataProps = {
+            'data-pipeline': pipeline.name,
+            'data-runid': run.id,
+        };
+
+        if (isMultibranch) {
+            dataProps['data-branch'] = branchName;
+        }
 
         return (
-            <TableRow linkTo={runDetailsUrl} columns={columns}>
+            <TableRow linkTo={runDetailsUrl} columns={columns} {...dataProps}>
                 <TableCell>
                     <LiveStatusIndicator
                         durationInMillis={durationMillis}
@@ -88,7 +94,7 @@ class RunDetailsRow extends Component {
                 </TableCell>
                 <TableCell>{run.id}</TableCell>
                 <TableCell><CommitHash commitId={run.commitId} /></TableCell>
-                { isMultibranch && <TableCell>{decodeURIComponent(run.pipeline)}</TableCell> }
+                { isMultibranch && <TableCell>{branchName}</TableCell> }
                 <TableCell><RunMessageCell run={run} t={t} /></TableCell>
                 <TableCell>
                     <TimeDuration millis={durationMillis}
