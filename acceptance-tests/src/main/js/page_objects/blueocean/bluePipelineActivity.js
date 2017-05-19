@@ -91,10 +91,13 @@ module.exports.commands = [{
      * Wait for a specific run to appear in the activity table as a failure
      * @param runName name of the job
      */
-    waitForRunFailureVisible: function(runName) {
-        this.waitForElementVisible('.activity-table tr#' + runName);
-        this.waitForElementVisible('.activity-table tr#' + runName + ' svg.svgResultStatus');
-        this.waitForElementPresent('.activity-table tr#' + runName + ' svg circle.failure');
+    waitForRunFailureVisible: function(pipeline, runId) {
+        this.waitForRunVisible(pipeline, runId);
+        const resultRowSelector = activityRowSelector(pipeline, runId);
+        this.waitForElementVisible(`${resultRowSelector} .failure`);
+        // this.waitForElementVisible('.activity-table tr#' + runName);
+        // this.waitForElementVisible('.activity-table tr#' + runName + ' svg.svgResultStatus');
+        // this.waitForElementPresent('.activity-table tr#' + runName + ' svg circle.failure'); TODO: RM
     },    
 
     /**
