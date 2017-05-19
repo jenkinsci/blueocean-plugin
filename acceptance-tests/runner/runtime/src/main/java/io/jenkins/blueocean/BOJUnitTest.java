@@ -28,6 +28,8 @@ import org.junit.Before;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
@@ -51,6 +53,15 @@ public abstract class BOJUnitTest extends AbstractJUnitTest {
             host = host.trim();
             jenkinsUrl = jenkinsUrl.replace("127.0.0.1", host);
             jenkinsUrl = jenkinsUrl.replace("localhost", host);
+        } else {
+            try {
+                String ip = InetAddress.getLocalHost().getHostAddress();
+                jenkinsUrl = jenkinsUrl.replace("127.0.0.1", ip);
+                jenkinsUrl = jenkinsUrl.replace("localhost", ip);
+
+            } catch (UnknownHostException e) {
+
+            }
         }
 
         return jenkinsUrl;

@@ -19,7 +19,7 @@ exports.elements = {
         locateStrategy: 'xpath',
     },
     executer: {
-        selector: '//span[text()="Started by anonymous user"]',
+        selector: '//span[contains(text(),"Started by")]',
         locateStrategy: 'xpath',
     },
     builds: '#buildHistory .build-row-cell .icon-blue'

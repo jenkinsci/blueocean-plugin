@@ -9,6 +9,7 @@ module.exports = {
      * @param browser
      */
     'Step 01': function (browser) {
+        browser.login();
         const pipelinesCreate = browser.page.pipelineCreate().navigate();
         // we have used the noStages script as basis
         pipelinesCreate.createPipeline(JOB, 'stagesFailing.groovy');
@@ -53,48 +54,48 @@ module.exports = {
                 // however if the browser is too quick there can still be two open
                 this.assert.equal(codeCollection.value.length <= 2, true);
             });
-            
+
 
         });
-        
+
     },
-    
-    /** 
+
+    /**
      * Check that the failed item shows up and has a replay icon
      */
     'Step 04' : function(browser) {
         var blueActivityPage = browser.page.bluePipelineActivity().forJob(JOB, 'jenkins');
         blueActivityPage.waitForRunFailureVisible(JOB + '-1');
-        blueActivityPage.waitForElementVisible('.replay-button');         
+        blueActivityPage.waitForElementVisible('.replay-button');
     },
-    
-    /** 
+
+    /**
      * As it has failed, we can rerun the job, check that it runs, and then result is still failure.
      */
     'Step 05' : function(browser) {
         const blueRunDetailPage = browser.page.bluePipelineRunDetail().forRun(JOB, 'jenkins', 1);
-        
+
         //click the re run button
-        blueRunDetailPage.waitForElementVisible('.result-item.failure.expanded');          
-        blueRunDetailPage.clickReRunButton();        
-        blueRunDetailPage.waitForElementNotPresent('.result-item.failure.expanded');  
-        
+        blueRunDetailPage.waitForElementVisible('.result-item.failure.expanded');
+        blueRunDetailPage.clickReRunButton();
+        blueRunDetailPage.waitForElementNotPresent('.result-item.failure.expanded');
+
         //Ccheck that it runs and we could stop if if we want to
         blueRunDetailPage.waitForElementVisible('.progress-spinner');
         blueRunDetailPage.waitForElementPresent('.stop-button');
-        
-        //check that we see a stage graph: 
-        blueRunDetailPage.waitForElementVisible('.progress-spinner.running');                           
-        blueRunDetailPage.waitForElementVisible('.BasicHeader--running')        
-        blueRunDetailPage.waitForElementVisible('.pipeline-node-selected');                  
-        blueRunDetailPage.waitForElementVisible('.download-log-button');                  
-        blueRunDetailPage.waitForElementVisible('.pipeline-selection-highlight');                    
-        blueRunDetailPage.waitForElementVisible('.pipeline-connector');     
+
+        //check that we see a stage graph:
+        blueRunDetailPage.waitForElementVisible('.progress-spinner.running');
+        blueRunDetailPage.waitForElementVisible('.BasicHeader--running')
+        blueRunDetailPage.waitForElementVisible('.pipeline-node-selected');
+        blueRunDetailPage.waitForElementVisible('.download-log-button');
+        blueRunDetailPage.waitForElementVisible('.pipeline-selection-highlight');
+        blueRunDetailPage.waitForElementVisible('.pipeline-connector');
         blueRunDetailPage.waitForElementVisible('.pipeline-node-hittarget');
-        
+
         // this will show up when it has finished replaying
         blueRunDetailPage.waitForElementVisible('.replay-button');
-        blueRunDetailPage.waitForElementVisible('.result-item.failure.expanded');          
+        blueRunDetailPage.waitForElementVisible('.result-item.failure.expanded');
 
     }
 };
