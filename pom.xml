@@ -28,6 +28,8 @@
     <guava.version>11.0.1</guava.version>
     <jacoco.version>0.7.9</jacoco.version>
     <jacoco.haltOnFailure>false</jacoco.haltOnFailure>
+    <jacoco.line.coverage>0.70</jacoco.line.coverage>
+    <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
   </properties>
 
@@ -595,9 +597,79 @@
                       <findbugsXmlOutput>false</findbugsXmlOutput>
                   </configuration>
               </plugin>
+              <plugin>
+                  <groupId>org.jacoco</groupId>
+                  <artifactId>jacoco-maven-plugin</artifactId>
+                  <version>${jacoco.version}</version>
+                  <configuration>
+                      <haltOnFailure>${jacoco.haltOnFailure}</haltOnFailure>
+                      <destFile>${project.build.directory}/code-coverage/jacoco.exec</destFile>
+                      <!-- Sets the path to the file which contains the execution data. -->
+                      <dataFile>${project.build.directory}/code-coverage/jacoco.exec</dataFile>
+                      <!-- Sets the output directory for the code coverage report. -->
+                      <outputDirectory>${project.build.directory}/code-coverage/report</outputDirectory>
+                  </configuration>
+
+                  <executions>
+                      <execution>
+                          <id>default-instrument</id>
+                          <goals>
+                              <goal>instrument</goal>
+                          </goals>
+                      </execution>
+                      <execution>
+                          <id>default-restore-instrumented-classes</id>
+                          <goals>
+                              <goal>restore-instrumented-classes</goal>
+                          </goals>
+                      </execution>
+
+                      <execution>
+                          <id>default-report</id>
+                          <phase>prepare-package</phase>
+                          <goals>
+                              <goal>report</goal>
+                          </goals>
+                      </execution>
+
+                      <execution>
+                          <id>jacoco-check</id>
+                          <goals>
+                              <goal>check</goal>
+                          </goals>
+                          <configuration>
+                              <excludes>
+                                  <exclude>io/jenkins/blueocean/commons/stapler/export/**/*</exclude>
+                              </excludes>
+                              <rules>
+                                  <rule>
+                                      <element>BUNDLE</element>
+                                      <limits>
+                                          <limit>
+                                              <counter>LINE</counter>
+                                              <value>COVEREDRATIO</value>
+                                              <minimum>${jacoco.line.coverage}</minimum>
+                                          </limit>
+                                          <limit>
+                                              <counter>CLASS</counter>
+                                              <value>MISSEDCOUNT</value>
+                                              <maximum>${jacoco.missedclass.coverage}</maximum>
+                                          </limit>
+                                      </limits>
+                                  </rule>
+                              </rules>
+                          </configuration>
+                      </execution>
+                  </executions>
+              </plugin>
           </plugins>
       </pluginManagement>
     <plugins>
+      <plugin>
+          <groupId>org.jacoco</groupId>
+          <artifactId>jacoco-maven-plugin</artifactId>
+          <version>${jacoco.version}</version>
+      </plugin>
       <plugin>
         <!-- TODO: java8 signature doesn't exist yet -->
         <groupId>org.codehaus.mojo</groupId>
@@ -614,71 +686,6 @@
                 <disabledTestInjection>true</disabledTestInjection>
                 <dependencyResolution>${hpi.dependencyResolution}</dependencyResolution>
             </configuration>
-        </plugin>
-        <plugin>
-            <groupId>org.jacoco</groupId>
-            <artifactId>jacoco-maven-plugin</artifactId>
-            <version>${jacoco.version}</version>
-            <configuration>
-                <haltOnFailure>${jacoco.haltOnFailure}</haltOnFailure>
-                <destFile>${project.build.directory}/code-coverage/jacoco.exec</destFile>
-                <!-- Sets the path to the file which contains the execution data. -->
-                <dataFile>${project.build.directory}/code-coverage/jacoco.exec</dataFile>
-                <!-- Sets the output directory for the code coverage report. -->
-                <outputDirectory>${project.build.directory}/code-coverage/report</outputDirectory>
-            </configuration>
-
-            <executions>
-                <execution>
-                    <id>default-instrument</id>
-                    <goals>
-                        <goal>instrument</goal>
-                    </goals>
-                </execution>
-                <execution>
-                    <id>default-restore-instrumented-classes</id>
-                    <goals>
-                        <goal>restore-instrumented-classes</goal>
-                    </goals>
-                </execution>
-
-                <execution>
-                    <id>default-report</id>
-                    <phase>prepare-package</phase>
-                    <goals>
-                        <goal>report</goal>
-                    </goals>
-                </execution>
-
-                <execution>
-                    <id>jacoco-check</id>
-                    <goals>
-                        <goal>check</goal>
-                    </goals>
-                    <configuration>
-                        <excludes>
-                            <exclude>io/jenkins/blueocean/commons/stapler/export/**/*</exclude>
-                        </excludes>
-                        <rules>
-                            <rule>
-                                <element>BUNDLE</element>
-                                <limits>
-                                    <limit>
-                                        <counter>LINE</counter>
-                                        <value>COVEREDRATIO</value>
-                                        <minimum>0.70</minimum>
-                                    </limit>
-                                    <limit>
-                                        <counter>CLASS</counter>
-                                        <value>MISSEDCOUNT</value>
-                                        <maximum>0</maximum>
-                                    </limit>
-                                </limits>
-                            </rule>
-                        </rules>
-                    </configuration>
-                </execution>
-            </executions>
         </plugin>
 
         <!--
