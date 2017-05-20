@@ -536,6 +536,12 @@
             <version>2.6.0</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>async-http-client</artifactId>
+            <version>1.7.8</version>
+            <scope>test</scope>
+        </dependency>
 
         <!--Needed to preempt wiremock from loading ver 18, that breaks lots of things -->
         <!--<dependency>-->
