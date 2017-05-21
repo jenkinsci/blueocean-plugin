@@ -272,7 +272,7 @@ export default class Pipeline extends Component {
                 />
             }
 
-            { !this.pager.pending && !isPipelineQueued && noResultsToDisplay &&
+            { !this.pager.pending && !isPipelineQueued && !run.isRunning() && noResultsToDisplay &&
                 <NoSteps
                     translation={t}
                     titleKey="rundetail.pipeline.nosteps.message.title"
