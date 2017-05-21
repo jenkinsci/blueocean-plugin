@@ -89,7 +89,7 @@ export default class ExtensionRenderer extends React.Component {
         } = this.props;
 
         const classNames = ['ExtensionPoint', extensionPoint.replace(/\.+/g,'-')];
-        
+
         if (className) {
             classNames.push(className);
         }
@@ -192,6 +192,7 @@ ExtensionRenderer.defaultProps = {
 };
 
 ExtensionRenderer.propTypes = {
+    className: React.PropTypes.string,
     children: React.PropTypes.node,
     extensionPoint: React.PropTypes.string.isRequired,
     filter: React.PropTypes.any,
