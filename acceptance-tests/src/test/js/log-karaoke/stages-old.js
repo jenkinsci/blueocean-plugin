@@ -44,7 +44,7 @@ module.exports = {
     'Step 03': function (browser) {
         const blueActivityPage = browser.page.bluePipelineActivity().forJob(useCase.name, 'jenkins');
         // Check the run itself
-        blueActivityPage.waitForRunRunningVisible(useCase.name + '-1');
+        blueActivityPage.waitForRunRunningVisible(useCase.name, '1');
     },
 /** Check Job Blue Ocean Pipeline run detail page - karaoke*/
     'Step 04': function (browser) {

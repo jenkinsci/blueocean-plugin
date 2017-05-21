@@ -95,9 +95,6 @@ module.exports.commands = [{
         this.waitForRunVisible(pipeline, runId);
         const resultRowSelector = activityRowSelector(pipeline, runId);
         this.waitForElementVisible(`${resultRowSelector} .failure`);
-        // this.waitForElementVisible('.activity-table tr#' + runName);
-        // this.waitForElementVisible('.activity-table tr#' + runName + ' svg.svgResultStatus');
-        // this.waitForElementPresent('.activity-table tr#' + runName + ' svg circle.failure'); TODO: RM
     },    
 
     /**
@@ -114,14 +111,10 @@ module.exports.commands = [{
      * @param runName name of the job
      * @param [callback] {Function} - callback to be invoke when finished, will pass the sse event to the callback
      */
-    waitForRunRunningVisible: function(runName, callback) {
-        this.waitForElementVisible('.activity-table tr#' + runName);
-        this.waitForElementVisible('.activity-table tr#' + runName + ' svg.svgResultStatus');
-        if (callback === undefined) {
-            this.waitForElementPresent('.activity-table tr#' + runName + ' svg path.running');
-        } else {
-            this.waitForElementPresent('.activity-table tr#' + runName + ' svg path.running', callback);
-        }
+    waitForRunRunningVisible: function(pipeline, runId) {
+        this.waitForRunVisible(pipeline, runId);
+        const resultRowSelector = activityRowSelector(pipeline, runId);
+        this.waitForElementVisible(`${resultRowSelector} .running`);
     },
     /**
      * Wait for a specific run to appear in the activity table as paused
