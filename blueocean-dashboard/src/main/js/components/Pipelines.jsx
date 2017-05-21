@@ -16,7 +16,7 @@ const translate = i18nTranslator('blueocean-dashboard');
 @observer
 export class Pipelines extends Component {
     onChange = debounce( e => {
-        this.context.router.push(`${this.props.location.pathname}?search=${encodeURIComponent(e)}`);
+        this.context.router.push(`${this.props.location.pathname}${this.updateGetParam('search', e)}`);
     }, 200);
 
     _initPager() {
@@ -27,12 +27,34 @@ export class Pipelines extends Component {
     }
 
     getSearchText() {
-        return this.props.location.query.search;
+        return this.props.location.query.search ? decodeURIComponent(this.props.location.query.search) : '';
+    }
+
+    updateGetParam(paramName, newParamValue) {
+        let getParams = this.props.location.query;
+        let updatedParamsStr = '?';
+
+        for (let i in getParams) {
+            if (getParams.hasOwnProperty(i)) {
+                if (i == paramName) {
+                    updatedParamsStr += newParamValue ? `${i}=${newParamValue}&` : ``;
+                } else {
+                    updatedParamsStr += `${i}=${getParams[i]}&`;
+                }
+            }
+        }
+
+        if (!getParams.hasOwnProperty(paramName)) {
+            updatedParamsStr += `${paramName}=${newParamValue}&`;
+        }
+
+        return updatedParamsStr.slice(0, -1);
     }
 
     render() {
         this._initPager();
 
+        const fastSearchFeatureFlag = this.props.location.query.fastsearch ? decodeURIComponent(this.props.location.query.fastsearch) : '';
         const pipelines = this.pager.data;
         const { organization, location = { } } = this.context.params;
 
@@ -69,7 +91,10 @@ export class Pipelines extends Component {
                                 { organization && orgLink }
                             </h1>
                         </Extensions.Renderer>
-                        <TextInput className="search-pipelines-input" iconLeft="search" defaultValue={this.getSearchText()} placeholder="Search pipelines..." onChange={this.onChange} />
+                        
+                        {fastSearchFeatureFlag &&
+                            <TextInput className="search-pipelines-input" iconLeft="search" defaultValue={this.getSearchText()} placeholder="Search pipelines..." onChange={this.onChange} />   
+                        }
                     </div>
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
                         <CreatePipelineLink />
