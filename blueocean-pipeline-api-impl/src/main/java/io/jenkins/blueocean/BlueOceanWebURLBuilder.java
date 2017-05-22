@@ -33,8 +33,10 @@ import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl;
 import io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
+import jenkins.model.ModifiableTopLevelItemGroup;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.Ancestor;
@@ -106,8 +108,15 @@ public class BlueOceanWebURLBuilder {
      * {@link ModelObject}, or {@code null} if no URL can be constructed.
      */
     public static @CheckForNull String toBlueOceanURL(@Nonnull ModelObject classicModelObject) {
-        if (classicModelObject instanceof Job) {
-            BlueOceanModelMapping pipelineModelMapping = getPipelineModelMapping((Job) classicModelObject);
+        BlueOrganization organization = getOrganization(classicModelObject);
+        if(organization == null){ //no organization, best we can do is to land user on landing page
+            return getBlueHome();
+        }
+        String organizationName = organization.getName();
+        if (classicModelObject instanceof ModifiableTopLevelItemGroup){
+            return getOrgPrefix(organizationName);
+        } else if (classicModelObject instanceof Job) {
+            BlueOceanModelMapping pipelineModelMapping = getPipelineModelMapping((Job) classicModelObject, organizationName);
             if (pipelineModelMapping.blueModelObject instanceof BlueMultiBranchPipeline) {
                 return pipelineModelMapping.blueUiUrl + "/branches";
             } else {
@@ -116,7 +125,7 @@ public class BlueOceanWebURLBuilder {
         } else if (classicModelObject instanceof Run) {
             Run run = (Run) classicModelObject;
             Job job = run.getParent();
-            BlueOceanModelMapping pipelineModelMapping = getPipelineModelMapping(job);
+            BlueOceanModelMapping pipelineModelMapping = getPipelineModelMapping(job, organizationName);
             // The job can be created with a name that has special encoding chars in it (if created outside the UI e.g. MBP indexing),
             // specifically %. Encoding it again breaks things ala JENKINS-40137. The creation name can also
             // have spaces, even from the UI (it should prevent that). So, decode to revert anything that's already
@@ -126,27 +135,33 @@ public class BlueOceanWebURLBuilder {
             Item item = (Item) classicModelObject;
             Resource blueResource = BluePipelineFactory.resolve(item);
             if (blueResource instanceof BlueMultiBranchPipeline) {
-                return getOrgPrefix(item) + "/" + encodeURIComponent(((BluePipeline) blueResource).getFullName()) + "/branches";
+                return getOrgPrefix(organizationName) + "/" + encodeURIComponent(((BluePipeline) blueResource).getFullName()) + "/branches";
             }
         }
-
         return null;
     }
 
-    private static String getOrgPrefix(Item i) {
-        return getBlueHome() + "/organizations/" + OrganizationFactory.getInstance().getContainingOrg(i).getName();
+    private static BlueOrganization getOrganization(ModelObject modelObject ){
+        BlueOrganization organization = null;
+        if(modelObject instanceof Item){
+            organization = OrganizationFactory.getInstance().getContainingOrg((Item) modelObject);
+        }else if(modelObject instanceof ItemGroup){
+            organization = OrganizationFactory.getInstance().getContainingOrg((ItemGroup) modelObject);
+        }else if(modelObject instanceof Run){
+            organization = OrganizationFactory.getInstance().getContainingOrg(((Run) modelObject).getParent());
+        }
+        return organization;
     }
 
-    private static String getOrgPrefix(ItemGroup i) {
-        return getBlueHome() + "/organizations/" + OrganizationFactory.getInstance().getContainingOrg(i).getName();
+    private static String getOrgPrefix(String organization){
+        return String.format("%s/organizations/%s", getBlueHome(), organization);
     }
-
 
     private static String getBlueHome() {
         return "blue";
     }
 
-    private static BlueOceanModelMapping getPipelineModelMapping(Job job) {
+    private static BlueOceanModelMapping getPipelineModelMapping(Job job, String organizationName) {
         BluePipeline blueResource = (BluePipeline) BluePipelineFactory.resolve(job);
 
         if (blueResource instanceof BranchImpl) { // No abstract "Branch" type?
@@ -156,13 +171,13 @@ public class BlueOceanWebURLBuilder {
             return new BlueOceanModelMapping(
                 multibranchJob,
                 multibranchJobResource,
-                getOrgPrefix(multibranchJob) + "/" + encodeURIComponent(multibranchJobResource.getFullName())
+                getOrgPrefix(organizationName) + "/" + encodeURIComponent(multibranchJobResource.getFullName())
             );
         } else {
             return new BlueOceanModelMapping(
                 job,
                 blueResource,
-                getOrgPrefix(job) + "/" + encodeURIComponent(blueResource.getFullName())
+                getOrgPrefix(organizationName) + "/" + encodeURIComponent(blueResource.getFullName())
             );
         }
     }

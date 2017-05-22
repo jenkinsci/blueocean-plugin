@@ -25,12 +25,20 @@ package io.jenkins.blueocean;
 
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
+import hudson.model.ItemGroup;
+import hudson.model.TopLevelItem;
+import hudson.model.TopLevelItemDescriptor;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.scm.GitSampleRepoRule;
+import io.jenkins.blueocean.service.embedded.OrganizationFactoryImpl;
+import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
+import jenkins.model.ModifiableTopLevelItemGroup;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSource;
+import org.acegisecurity.AccessDeniedException;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
@@ -40,8 +48,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
+import org.jvnet.hudson.test.TestExtension;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
 
+import javax.servlet.ServletException;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.concurrent.ExecutionException;
 
 import static org.junit.Assert.assertEquals;
@@ -73,6 +89,127 @@ public class BlueOceanWebURLBuilderTest {
         assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Ffreestyle%20with%20spaces/detail/freestyle%20with%20spaces/1", blueOceanURL);
     }
 
+
+    public static class TestOrg implements ModifiableTopLevelItemGroup{
+        static TestOrg INSTANCE = new TestOrg();
+        private TestOrg() {
+        }
+
+        @Override
+        public <T extends TopLevelItem> T copy(T src, String name) throws IOException {
+            return null;
+        }
+
+        @Override
+        public TopLevelItem createProjectFromXML(String name, InputStream xml) throws IOException {
+            return null;
+        }
+
+        @Override
+        public TopLevelItem createProject(TopLevelItemDescriptor type, String name, boolean notify) throws IOException {
+            return null;
+        }
+
+        @Override
+        public TopLevelItem doCreateItem(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
+            return null;
+        }
+
+        @Override
+        public String getFullName() {
+            return "testorg";
+        }
+
+        @Override
+        public String getFullDisplayName() {
+            return "testorg";
+        }
+
+        @Override
+        public Collection<TopLevelItem> getItems() {
+            return null;
+        }
+
+        @Override
+        public String getUrl() {
+            return "testorg";
+        }
+
+        @Override
+        public String getUrlChildPrefix() {
+            return null;
+        }
+
+        @Override
+        public TopLevelItem getItem(String name) throws AccessDeniedException {
+            return null;
+        }
+
+        @Override
+        public File getRootDirFor(TopLevelItem child) {
+            return null;
+        }
+
+        @Override
+        public void onRenamed(TopLevelItem item, String oldName, String newName) throws IOException {
+
+        }
+
+        @Override
+        public void onDeleted(TopLevelItem item) throws IOException {
+
+        }
+
+        @Override
+        public String getDisplayName() {
+            return "testorg";
+        }
+
+        @Override
+        public File getRootDir() {
+            return null;
+        }
+
+        @Override
+        public void save() throws IOException {
+
+        }
+    }
+
+
+    @TestExtension(value = "testOrg")
+    public static class TestOrganizationFactoryImpl extends OrganizationFactoryImpl {
+        private OrganizationImpl instance = new OrganizationImpl("testorg", TestOrg.INSTANCE);
+
+        @Override
+        public OrganizationImpl get(String name) {
+            if (instance != null) {
+                if (instance.getName().equals(name)) {
+                    return instance;
+                }
+            }
+            return null;
+        }
+
+        @Override
+        public Collection<BlueOrganization> list() {
+            return Collections.singleton((BlueOrganization) instance);
+        }
+
+        @Override
+        public OrganizationImpl of(ItemGroup group) {
+            if (group == instance.getGroup()) {
+                return instance;
+            }
+            return null;
+        }
+    }
+
+    @Test
+    public void testOrg() throws IOException, ExecutionException, InterruptedException {
+        String blueOceanURL = BlueOceanWebURLBuilder.toBlueOceanURL(TestOrg.INSTANCE);
+        assertURL("blue/organizations/testorg", blueOceanURL);
+    }
 
     @Test
     public void getMultiBranchPipelineInsideFolder() throws Exception {
