@@ -42,6 +42,7 @@ class RunDetailsHeader extends Component {
             topNavLinks,
             runButton,
             isMultiBranch,
+            externalBranchUrl,
         } = this.props;
 
         const { fullDisplayName } = pipeline;
@@ -99,6 +100,11 @@ class RunDetailsHeader extends Component {
                 {isMultiBranch ? (
                     <span className={labelClassName}>
                         <Link to={ branchUrl }>{ displayName }</Link>
+                        { externalBranchUrl &&
+                            <a className="inline-svg" title="Opens branch in a new window" target="_blank" href={ externalBranchUrl }>
+                                <Icon size={14} icon="launch" />
+                            </a>
+                        }
                     </span>
                   ) : (
                     <span>&mdash;</span>
@@ -188,6 +194,7 @@ RunDetailsHeader.timeManager = new TimeManager();
 RunDetailsHeader.propTypes = {
     data: PropTypes.object.isRequired,
     pipeline: PropTypes.object,
+    externalBranchUrl: PropTypes.string,
     colors: PropTypes.object,
     onOrganizationClick: PropTypes.func,
     onNameClick: PropTypes.func,
