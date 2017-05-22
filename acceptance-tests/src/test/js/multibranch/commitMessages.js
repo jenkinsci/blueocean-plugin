@@ -72,7 +72,7 @@ module.exports = {
 
 
                 // Look for commit on 2nd run.
-                browser.useXpath().waitForElementVisible(`//tr[@id="${jobName}-2"]/*/a/code[text()="${commitId.slice(0,7)}"]`);
+                browser.useXpath().waitForElementVisible(`//code[text()="${commitId.slice(0,7)}"]`);
                 
                 browser.useCss();
                 blueActivityPage.assert.containsText('.RunMessageCellInner', 'somefile created');
