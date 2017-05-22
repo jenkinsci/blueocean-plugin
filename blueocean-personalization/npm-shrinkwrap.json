@@ -26,9 +26,9 @@
       "dev": true
     },
     "@jenkins-cd/js-builder": {
-      "version": "0.0.59",
-      "from": "@jenkins-cd/js-builder@0.0.59",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.59.tgz",
+      "version": "0.0.58",
+      "from": "@jenkins-cd/js-builder@0.0.58",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.58.tgz",
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
@@ -4642,9 +4642,9 @@
       "dev": true
     },
     "jasmine-core": {
-      "version": "2.6.2",
+      "version": "2.6.1",
       "from": "jasmine-core@>=2.6.0 <2.7.0",
-      "resolved": "https://registry.npmjs.org/jasmine-core/-/jasmine-core-2.6.2.tgz",
+      "resolved": "https://registry.npmjs.org/jasmine-core/-/jasmine-core-2.6.1.tgz",
       "dev": true
     },
     "jasmine-reporters": {
@@ -5588,9 +5588,9 @@
           "dev": true
         },
         "uglify-js": {
-          "version": "2.8.27",
+          "version": "2.8.23",
           "from": "uglify-js@>=2.6.1 <3.0.0",
-          "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-2.8.27.tgz",
+          "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-2.8.23.tgz",
           "dev": true
         }
       }
@@ -7376,9 +7376,9 @@
           }
         },
         "string_decoder": {
-          "version": "1.0.1",
+          "version": "1.0.0",
           "from": "string_decoder@>=1.0.0 <1.1.0",
-          "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.1.tgz",
+          "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.0.tgz",
           "dev": true
         },
         "through2": {
@@ -7446,9 +7446,9 @@
           "dev": true
         },
         "string_decoder": {
-          "version": "1.0.1",
-          "from": "string_decoder@~1.0.0",
-          "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.1.tgz",
+          "version": "1.0.0",
+          "from": "string_decoder@>=1.0.0 <1.1.0",
+          "resolved": "https://registry.npmjs.org/string_decoder/-/string_decoder-1.0.0.tgz",
           "dev": true
         }
       }
