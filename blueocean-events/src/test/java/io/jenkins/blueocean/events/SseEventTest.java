@@ -160,7 +160,7 @@ public class SseEventTest {
                         assertEquals("true", message.get(pipeline_step_is_paused));
                     }
                 }
-                if(wasPaused[0]){
+                if(wasPaused[0] && wasUnPaused[0]){ // signal finish only when both conditions are met
                     success.signal();
                 }
             }
@@ -179,6 +179,7 @@ public class SseEventTest {
             e.waitForSuspension();
         }
 
+        //Now that flow is paused, send a signal that it's un-paused
         ExtensionList<PipelineEventListener.InputStepPublisher> inputStepPublisherList =
                 ExtensionList.lookup(PipelineEventListener.InputStepPublisher.class);
         assertFalse(inputStepPublisherList.isEmpty());
