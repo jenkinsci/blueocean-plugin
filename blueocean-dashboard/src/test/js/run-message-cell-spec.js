@@ -23,7 +23,7 @@ describe('RunMessageCell', () => {
             }]
         };
         const cell = render(<RunMessageCell run={run} t={t} />);
-        expect(cell.text()).to.equal('fix bug lozenge.commit');
+        expect(cell.text()).to.equal('fix buglozenge.commit');
     });
 
     it('displays with single commit', () => {
