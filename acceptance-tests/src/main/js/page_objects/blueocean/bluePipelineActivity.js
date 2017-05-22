@@ -15,12 +15,14 @@ function activityRowSelector(pipeline, runId) {
     return `.activity-table .JTable-row[data-pipeline='${pipeline}'][data-runid='${runId}']`;
 }
 
+const activityTableEntries = '.activity-table .JTable-row[data-pipeline]';
+
 module.exports = {
     elements: {
         pipelinesNav: '.Header-topNav nav a[href="/blue/pipelines"]',
         emptyStateShoes: '.PlaceholderContent.NoRuns',
         activityTable: '.activity-table',
-        activityTableEntries: 'table.activity-table tbody tr',
+        activityTableEntries: activityTableEntries,
         runButton: 'a.run-button',
         toastOpenButton: {
             selector: '//div[@class="toast default"]/a[@class="action" and text()="Open"]',
@@ -101,11 +103,11 @@ module.exports.commands = [{
      * Wait for a specific run to appear in the activity table as unstable
      * @param runName name of the job
      */
-    waitForRunUnstableVisible: function(runName) {
-        this.waitForElementVisible('.activity-table tr#' + runName);
-        this.waitForElementVisible('.activity-table tr#' + runName + ' svg.svgResultStatus');
-        this.waitForElementPresent('.activity-table tr#' + runName + ' svg circle.unstable');
-    },  
+    waitForRunUnstableVisible: function(pipeline, runId) {
+        this.waitForRunVisible(pipeline, runId);
+        const resultRowSelector = activityRowSelector(pipeline, runId);
+        this.waitForElementVisible(`${resultRowSelector} .unstable`);
+    },
     /**
      * Wait for a specific run to appear in the activity table as running
      * @param runName name of the job
@@ -165,7 +167,7 @@ module.exports.commands = [{
         var self = this;
         const browser = this.api;
         self.waitForElementVisible('@activityTableEntries');
-        browser.elements('css selector', 'table.activity-table tbody tr', function (codeCollection) {
+        browser.elements('css selector', activityTableEntries, function (codeCollection) {
             this.assert.equal(codeCollection.value.length, expected);
         });
     },
