@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import com.google.common.collect.ImmutableMap;
 import hudson.util.AdaptedIterator;
 import io.jenkins.blueocean.rest.hal.Link;
 
@@ -126,5 +127,9 @@ public class Containers {
                 return base.values().iterator();
             }
         };
+    }
+
+    public static <T extends Resource> Container<T> empty(Link self) {
+        return Containers.fromResourceMap(self, ImmutableMap.<String, T>of());
     }
 }

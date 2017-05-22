@@ -49,7 +49,7 @@ public class BlueOceanUI {
         }
         return provider.getUrlBasePrefix();
     }
-    
+
     /**
      * Have some slightly different behavior in development mode
      */
@@ -67,7 +67,7 @@ public class BlueOceanUI {
         if (currentRequest != null) {
             Locale locale = currentRequest.getLocale();
             if (locale != null) {
-                return locale.toString();
+                return locale.toLanguageTag();
             }
         }
 

@@ -10,7 +10,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
@@ -23,9 +23,11 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.GenericResource;
 import org.kohsuke.stapler.QueryParameter;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Date;
@@ -39,27 +41,16 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     protected final T run;
     protected final BlueOrganization org;
 
-    protected final Link parent;
-    public AbstractRunImpl(T run, Link parent) {
+    protected final Reachable parent;
+    public AbstractRunImpl(T run, Reachable parent) {
         this.run = run;
         this.parent = parent;
-        this.org = OrganizationResolver.getInstance().getContainingOrg(run);
+        this.org = OrganizationFactory.getInstance().getContainingOrg(run);
     }
 
-    //TODO: It serializes jenkins Run model children, enable this code after fixing it
-//    /**
-//     * Allow properties reachable through {@link Run} to be exposed upon request (via the tree parameter).
-//     */
-//    @Exported
-//    public T getRun() {
-//        return run;
-//    }
-
-    /**
-     * Subtype should return
-     */
+    @Nonnull
     public Container<BlueChangeSetEntry> getChangeSet() {
-        return null;
+        return Containers.empty(getLink());
     }
 
     @Override
@@ -206,7 +197,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
                 return blueRun;
             }
         }
-        return new AbstractRunImpl<>(r, parent.getLink());
+        return new AbstractRunImpl<>(r, parent);
     }
 
     @Override
@@ -273,7 +264,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         if(parent == null){
             return org.getLink().rel(String.format("pipelines/%s/runs/%s", run.getParent().getName(), getId()));
         }
-        return parent.rel("runs/"+getId());
+        return parent.getLink().rel("runs/"+getId());
     }
 
     private boolean isCompletedOrAborted(){
@@ -283,7 +274,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public Links getLinks() {
-        return super.getLinks().add("parent", parent);
+        return super.getLinks().add("parent", parent.getLink());
     }
 
     public static class BlueCauseImpl extends BlueCause {

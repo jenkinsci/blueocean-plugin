@@ -1,0 +1,41 @@
+.history-button-component {
+
+    .history-button {
+        display: inline-block;
+        width: 24px;
+        height: 24px;
+        background: transparent;
+        border: 0;
+        position: relative;
+    }
+
+    // default (light) themeing
+    .svg-icon, .svg-icon-inner {
+        fill: @brand-primary;
+    }
+
+    .svg-icon:hover {
+        fill: @brand-primary-dark;
+    }
+
+    // dark themeing
+    &.dark {
+        .btn {
+            background: transparent;
+            color: white;
+            border-color: white;
+        }
+
+        .svg-icon, .svg-icon-inner {
+            fill: white;
+        }
+
+        .svg-icon:hover {
+            fill: #CCC;
+
+            .svg-icon-inner {
+                fill: #CCC;
+            }
+        }
+    }
+}

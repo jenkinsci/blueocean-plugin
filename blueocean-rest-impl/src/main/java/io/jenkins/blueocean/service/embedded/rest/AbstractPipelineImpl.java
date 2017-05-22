@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
+import hudson.Functions;
 import hudson.Util;
 import hudson.model.AbstractItem;
 import hudson.model.Item;
@@ -18,7 +19,8 @@ import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
@@ -57,7 +59,7 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     protected AbstractPipelineImpl(Job job) {
         this.job = job;
-        this.org = OrganizationResolver.getInstance().getContainingOrg(job);
+        this.org = OrganizationFactory.getInstance().getContainingOrg(job);
     }
 
     @Override
@@ -133,34 +135,63 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     @Override
     public String getFullName(){
-        return job.getFullName();
+        return getFullName(org, job);
     }
 
     @Override
     public String getFullDisplayName() {
-        return getFullDisplayName(job.getParent(), Util.rawEncode(job.getDisplayName()));
+        return getFullDisplayName(org, job);
     }
 
     /**
-     * Returns full display name. Each display name is separated by '/' and each display name is url encoded.
+     * Returns full display name relative to the <code>BlueOrganization</code> base. Each display name is separated by
+     * '/' and each display name is url encoded
      *
-     * @param parent parent folder
-     * @param displayName URL encoded display name. Caller must pass urlencoded name
+     * @param org the organization the item belongs to
+     * @param item to return the full display name of
      *
      * @return full display name
      */
-    public static String getFullDisplayName(@Nonnull ItemGroup parent, @Nullable String displayName){
-        String name = parent.getDisplayName();
-        if(name.length() == 0 ) return displayName;
+    public static String getFullDisplayName(@Nullable BlueOrganization org, @Nonnull Item item) {
+        ItemGroup<?> group = getBaseGroup(org);
+        String[] displayNames = Functions.getRelativeDisplayNameFrom(item, group).split(" » ");
 
-        if(name.length() > 0  && parent instanceof AbstractItem) {
-            if(displayName == null){
-                return getFullDisplayName(((AbstractItem)parent).getParent(), String.format("%s", Util.rawEncode(name)));
+        StringBuilder encondedDisplayName=new StringBuilder();
+        for(int i=0;i<displayNames.length;i++) {
+            if(i!=0) {
+                encondedDisplayName.append(String.format("/%s", Util.rawEncode(displayNames[i])));
             }else {
-                return getFullDisplayName(((AbstractItem) parent).getParent(), String.format("%s/%s", Util.rawEncode(name),displayName));
+                encondedDisplayName.append(String.format("%s", Util.rawEncode(displayNames[i])));
             }
         }
-        return displayName;
+        
+        return encondedDisplayName.toString();
+    }
+
+    /**
+     * Returns full name relative to the <code>BlueOrganization</code> base. Each name is separated by '/'
+     * 
+     * @param org the organization the item belongs to
+     * @param item to return the full name of
+     * @return
+     */
+    public static String getFullName(@Nullable BlueOrganization org, @Nonnull Item item) {
+        ItemGroup<?> group = getBaseGroup(org);
+        return Functions.getRelativeNameFrom(item, group);
+    }
+
+    /**
+     * Tries to obtain the base group for a <code>BlueOrganization</code>
+     * 
+     * @param org to get the base group of
+     * @return the base group
+     */
+    public static ItemGroup<?> getBaseGroup(BlueOrganization org) {
+        ItemGroup<?> group = null;
+        if (org != null && org instanceof AbstractOrganization) {
+            group = ((AbstractOrganization) org).getGroup();
+        }
+        return group;
     }
 
     @Override
@@ -168,6 +199,12 @@ public class AbstractPipelineImpl extends BluePipeline {
         return org.getLink().rel("pipelines").rel(getRecursivePathFromFullName(this));
     }
 
+    /**
+     * Calculates the recursive path for the <code>BluePipeline</code>. The path is relative to the org base
+     * 
+     * @param pipeline to get the recursive path from
+     * @return the recursive path
+     */
     public static String getRecursivePathFromFullName(BluePipeline pipeline){
         StringBuilder pipelinePath = new StringBuilder();
         String[] names = pipeline.getFullName().split("/");

@@ -4,7 +4,7 @@ import hudson.Extension;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.OmniSearch;
 import io.jenkins.blueocean.rest.Query;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
@@ -60,7 +60,7 @@ CredentialSearch extends OmniSearch<CredentialApi.Credential> {
             throw new ServiceException.BadRequestExpception("Credentials search query parameter 'organization' is required");
         }
 
-        BlueOrganization organization = OrganizationResolver.getInstance().get(org);
+        BlueOrganization organization = OrganizationFactory.getInstance().get(org);
         if(organization == null){
             throw new ServiceException.BadRequestExpception(
                     String.format("Organization %s not found. Query parameter 'organization' value: %s is invalid. ", org,org));

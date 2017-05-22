@@ -9,7 +9,7 @@ import hudson.model.ItemGroup;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-import io.jenkins.blueocean.rest.factory.OrganizationResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
@@ -38,7 +38,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     protected final Link parent;
 
     public PipelineFolderImpl(ItemGroup folder, Link parent) {
-        this.org = OrganizationResolver.getInstance().getContainingOrg(folder);
+        this.org = OrganizationFactory.getInstance().getContainingOrg(folder);
         this.folder = folder;
         this.parent = parent;
     }
@@ -63,12 +63,20 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public String getFullName() {
-        return folder.getFullName();
+        if (folder instanceof Item) {
+            return AbstractPipelineImpl.getFullName(org, (Item) folder);
+        } else {
+            return null;
+        }
     }
 
     @Override
     public String getFullDisplayName() {
-        return AbstractPipelineImpl.getFullDisplayName(folder, null);
+        if (folder instanceof Item) {
+            return AbstractPipelineImpl.getFullDisplayName(org, (Item) folder);
+        } else {
+            return folder.getDisplayName();
+        }
     }
 
     @Override
