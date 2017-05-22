@@ -65,7 +65,7 @@ Cmd.prototype.command = function () {
     });
 
     setTimeout(function() {
-        self.api.waitForElementPresent('body.open-blueocean-link-added', function() {
+        self.api.useCss().waitForElementPresent('body.open-blueocean-link-added', function() {
             self.emit('complete');
         });
     }, 10);

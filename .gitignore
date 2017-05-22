@@ -21,3 +21,4 @@ blueocean-web/src/main/webapp/assets
 .vscode
 jsconfig.json
 blueocean-core-js/nohup.out
+acceptance-tests/runner/.blueocean-ath-jenkins-url

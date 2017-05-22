@@ -20,7 +20,8 @@ describe('RunMessageCell', () => {
                 'msg': 'Oops',
             }, {
                 'msg': 'fix bug',
-            }]
+            }],
+            causes: [],
         };
         const cell = render(<RunMessageCell run={run} t={t} />);
         expect(cell.text()).to.equal('fix buglozenge.commit');
@@ -30,10 +31,25 @@ describe('RunMessageCell', () => {
         const run =  {
             'changeSet':[{
                 'msg': 'Oops',
-            }]
+            }],
+            causes: [],
         };
         const cell = render(<RunMessageCell run={run} t={t} />);
         expect(cell.text()).to.equal('Oops');
+    });
+
+    it('displays cause because more than 1 cause is more important', () => {
+            const run = {
+                'changeSet':[{
+                    'msg': 'Oops',
+                }],
+                causes: [
+                    { shortDescription: 'Cake is delicious' },
+                    { shortDescription: 'Have some cake' },
+                ]
+            };
+            const cell = render(<RunMessageCell run={run} t={t} />);
+            expect(cell.text()).to.equal('Have some cake');
     });
 
     it('displays cause', () => {
@@ -44,7 +60,7 @@ describe('RunMessageCell', () => {
             ]
         };
         const cell = render(<RunMessageCell run={run} t={t} />);
-        expect(cell.text()).to.equal('Cake is delicious');
+        expect(cell.text()).to.equal('Have some cake');
     });
 
     it('displays nothing', () => {

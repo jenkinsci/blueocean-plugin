@@ -77,11 +77,6 @@ export class Step extends Component {
     }
 
     render() {
-        // early out
-        if (this.pager.pending) {
-            logger.debug('pending returning null');
-            return null;
-        }
         const { step, locale, router, location, t, scrollToBottom } = this.props;
         if (step === undefined || !step) {
             return null;
@@ -139,7 +134,7 @@ export class Step extends Component {
             liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
             hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
         />);
-        return (<div className={logConsoleClass} key={this.pager.currentLogUrl}>
+        return (<div className={logConsoleClass}>
             <ResultItem {...{
                 extraInfo: time,
                 key: step.key,
