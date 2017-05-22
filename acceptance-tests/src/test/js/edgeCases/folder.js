@@ -54,6 +54,7 @@ module.exports = {
     },
     /** Create folder - "firstFolder"*/
     'step 01': function (browser) {
+        browser.login();
        // Initial folder create page
        const folderCreate = browser.page.folderCreate().navigate();
        // create nested folder for the project

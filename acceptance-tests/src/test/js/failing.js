@@ -9,6 +9,7 @@ module.exports = {
      * @param browser
      */
     'Step 01': function (browser) {
+        browser.login();
         const pipelinesCreate = browser.page.pipelineCreate().navigate();
         // we have used the noStages script as basis
         pipelinesCreate.createPipeline(JOB, 'noStagesFailing.groovy');
@@ -57,34 +58,34 @@ module.exports = {
             // as it has failed, should get a replay button
             blueRunDetailPage.waitForElementVisible('.replay-button');
 
-            
+
 
         });
-        
+
     },
-    
-    /** 
+
+    /**
      * Check that the failed item shows up and has a replay icon
      */
     'Step 04' : function(browser) {
         var blueActivityPage = browser.page.bluePipelineActivity().forJob(JOB, 'jenkins');
         blueActivityPage.waitForRunFailureVisible(JOB + '-1');
-        blueActivityPage.waitForElementVisible('.replay-button');        
+        blueActivityPage.waitForElementVisible('.replay-button');
     },
-    
-    /** 
+
+    /**
      * As it has failed, we can rerun the job, check that it runs, and then result is still failure.
      */
     'Step 05' : function(browser) {
         const blueRunDetailPage = browser.page.bluePipelineRunDetail().forRun(JOB, 'jenkins', 1);
-        
+
         //click the re run button
         blueRunDetailPage.clickReRunButton();
-        
+
         //Ccheck that it runs and we could stop if if we want to
         blueRunDetailPage.waitForElementVisible('.progress-spinner');
         blueRunDetailPage.waitForElementPresent('.stop-button');
-        
+
         // this will show up when it has finished replaying
         blueRunDetailPage.waitForElementVisible('.replay-button');
 
