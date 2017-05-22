@@ -39,13 +39,14 @@ node {
             currentBuild.result = "ABORTED"
         }
       } finally {
+        sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
         sendhipchat()
         deleteDir()
       }
     }
   }
   }
-  sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
+  
 }
 
 
