@@ -32,7 +32,7 @@ module.exports = {
         // validate that we have 3 activities from the previous tests
         blueActivityPage.assertActivitiesToBeEqual(1);
 
-        blueActivityPage.waitForRunSuccessVisible(`${jobName}-1`)
+        blueActivityPage.waitForRunSuccessVisible(jobName, '1');
     },
 
     'Create new commits and check activity and branches page for correct commit messages': (client) => {
@@ -68,7 +68,7 @@ module.exports = {
                 
                 // Should now be 2 runs.
                 blueActivityPage2.assertActivitiesToBeEqual(2);
-                blueActivityPage2.waitForRunSuccessVisible(`${jobName}-2`)
+                blueActivityPage2.waitForRunSuccessVisible(jobName, '2');
 
 
                 // Look for commit on 2nd run.

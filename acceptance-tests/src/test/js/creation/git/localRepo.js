@@ -37,6 +37,6 @@ module.exports = {
     'Step 02 - Check Activity Tab': !function (browser) {
         const activity = browser.page.bluePipelineActivity().forJob(jobName, 'jenkins');
         activity.assertBasicLayoutOkay();
-        activity.waitForRunSuccessVisible(jobName + '-1');
+        activity.waitForRunSuccessVisible(jobName, '1');
     }
 };

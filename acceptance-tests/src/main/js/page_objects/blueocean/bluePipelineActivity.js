@@ -123,14 +123,10 @@ module.exports.commands = [{
      * @param runName name of the job
      * @param [callback] {Function} - callback to be invoke when finished, will pass the sse event to the callback
      */
-    waitForRunPausedVisible: function(runName, callback) {
-        this.waitForElementVisible('.activity-table tr#' + runName);
-        this.waitForElementVisible('.activity-table tr#' + runName + ' svg.svgResultStatus');
-        if (callback === undefined) {
-            this.waitForElementPresent('.activity-table tr#' + runName + ' svg .paused');
-        } else {
-            this.waitForElementPresent('.activity-table tr#' + runName + ' svg .paused', callback);
-        }
+    waitForRunPausedVisible: function(pipeline, runId) {
+        this.waitForRunVisible(pipeline, runId);
+        const resultRowSelector = activityRowSelector(pipeline, runId);
+        this.waitForElementVisible(`${resultRowSelector} .paused`);
     },
 
     /**
@@ -139,7 +135,7 @@ module.exports.commands = [{
     assertStageGraphShows: function() {
       //check results look kosher:
       this.waitForElementVisible('.progress-spinner.running');                           
-      this.waitForElementVisible('.BasicHeader--running')
+      this.waitForElementVisible('.BasicHeader--running');
       
       this.waitForElementVisible('.pipeline-node-selected');                  
       this.waitForElementVisible('.download-log-button');                  
