@@ -8,8 +8,6 @@ import {
     createSelector,
 } from './redux';
 
-var foo = null;
-
 class Dashboard extends Component {
 
     constructor(props) {

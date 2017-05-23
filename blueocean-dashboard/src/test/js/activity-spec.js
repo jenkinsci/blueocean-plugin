@@ -184,7 +184,7 @@ describe('Activity', () => {
 
     it('does not render without data', () => {
         const wrapper = shallow(<Activity pipeline={pipeline} t={ () => {} } capabilities={capabilities} />, { context: contextNoData });
-        assert.equal(wrapper.find('NewComponent').length, 0);
+        assert.equal(wrapper.find('NewComponent').length, 1);
     });
 });
 
