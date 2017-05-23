@@ -22,8 +22,8 @@ import java.util.List;
 public class GitPipelineCreateRequest extends AbstractMultiBranchCreateRequest {
 
     @DataBoundConstructor
-    public GitPipelineCreateRequest(String name, String organization, BlueScmConfig scmConfig) {
-        super(name, organization, scmConfig);
+    public GitPipelineCreateRequest(String name, BlueScmConfig scmConfig) {
+        super(name, scmConfig);
     }
 
     @Override
