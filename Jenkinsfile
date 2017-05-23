@@ -35,12 +35,9 @@ node {
       } catch(err) {
         currentBuild.result = "FAILURE"
 
-        echo err.toString()
-        throw err
-
-        // if (err.toString().contains('AbortException')) {
-        // currentBuild.result = "ABORTED"
-        // }
+        if (err.toString().contains('exit code 143')) {
+          currentBuild.result = "ABORTED"
+        }
       } finally {
         sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
         sendhipchat()
