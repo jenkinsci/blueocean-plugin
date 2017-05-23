@@ -14,4 +14,4 @@ if [[ ! -d $BO_DIR ]] ; then
 fi
 
 # Hand off to regular run.sh
-./run.sh -a=$BO_DIR --dev "$@"
+./run.sh -a=$BO_DIR "$@"
