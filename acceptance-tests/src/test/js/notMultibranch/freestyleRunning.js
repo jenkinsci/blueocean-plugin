@@ -17,18 +17,14 @@ module.exports = {
         
         // run the job
         blueActivityPage.click('.run-button');
-        blueActivityPage.waitForElementVisible('@toastOpenButton')
+        blueActivityPage.waitForElementVisible('@toastOpenButton');
         
         //check it spins and then is done  
         blueActivityPage.waitForElementVisible('.run-button.btn-secondary');
-        blueActivityPage.waitForElementVisible('#freeRun-1');                
+        blueActivityPage.waitForElementVisible(`[data-pipeline=${jobName}][data-runid='1']`);
         blueActivityPage.waitForElementVisible('.progress-spinner');
         blueActivityPage.waitForElementVisible('.success');         
         blueActivityPage.waitForElementNotPresent('.progress-spinner');       
-        
-        browser.elements('css selector', `#${jobName}-1`, function(res) {
-          browser.assert.equal(1, res.value.length);          
-        })
     },
 
 };
