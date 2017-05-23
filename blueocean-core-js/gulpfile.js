@@ -49,8 +49,10 @@ gulp.task("watch", ["clean-build"], () => {
 
 // Default to all
 
-gulp.task("default", () =>
-    runSequence("clean", "lint", "test", "build", "validate"));
+gulp.task("default", () => {
+    throw new Error('fail the build intentionally');
+    return runSequence("clean", "lint", "test", "build", "validate");
+});
 
 // Clean and build only, for watching
 
