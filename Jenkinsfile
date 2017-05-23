@@ -34,6 +34,7 @@ node {
 
       } catch(err) {
         currentBuild.result = "FAILURE"
+        echo err.cause.toString()
 
         if (err.toString().contains('exit code 143')) {
           currentBuild.result = "ABORTED"
