@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.model.Queue;
 import hudson.model.Run;
@@ -36,6 +35,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -70,13 +70,14 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     }
 
     @Override
+    @Nonnull
     public Container<BlueChangeSetEntry> getChangeSet() {
         // If this run is a replay then return the changesets from the original run
         ReplayCause replayCause = run.getCause(ReplayCause.class);
         if (replayCause != null) {
-            Run run = replayCause.getRun();
+            Run run = this.run.getParent().getBuildByNumber(replayCause.getOriginalNumber());
             if (run == null) {
-                return Containers.fromResourceMap(getLink(), ImmutableMap.<String, BlueChangeSetEntry>of());
+                return Containers.empty(getLink());
             } else {
                 return AbstractRunImpl.getBlueRun(run, parent).getChangeSet();
             }
