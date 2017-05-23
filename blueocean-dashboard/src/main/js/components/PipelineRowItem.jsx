@@ -93,7 +93,7 @@ export class PipelineRowItem extends Component {
             pullRequestsLink = multiPrLabel;
         }
         return (
-            <TableRow data-name={name} data-organization={organization} columns={columns}>
+            <TableRow data-pipeline={name} data-organization={organization} columns={columns}>
                 <TableCell>
                     {
                         generateRedirectLink(pipeline, showOrganization ? organization : null) ||
