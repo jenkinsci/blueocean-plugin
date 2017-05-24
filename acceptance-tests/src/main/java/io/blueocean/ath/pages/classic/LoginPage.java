@@ -1,6 +1,7 @@
 package io.blueocean.ath.pages.classic;
 
 import io.blueocean.ath.BaseUrl;
+import io.blueocean.ath.WaitUtil;
 import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
@@ -32,6 +33,8 @@ public class LoginPage{
         PageFactory.initElements(driver, this);
     }
 
+    @Inject
+    WaitUtil wait;
     public void open() {
         driver.get(base + "/login");
         Assert.assertEquals(base + "/login", driver.getCurrentUrl());
@@ -42,11 +45,11 @@ public class LoginPage{
 
         Assert.assertTrue(loginUsername.isDisplayed());
         loginUsername.sendKeys("alice");
-        Assert.assertEquals("alice",loginUsername.getAttribute("value"));
+        Assert.assertEquals("alice", wait.until(driver -> loginUsername.getAttribute("value")));
 
         Assert.assertTrue(loginPassword.isDisplayed());
         loginPassword.sendKeys("alice");
-        Assert.assertEquals("alice",loginPassword.getAttribute("value"));
+        Assert.assertEquals("alice", wait.until(driver -> loginPassword.getAttribute("value")));
 
         loginSubmit.click();
     }

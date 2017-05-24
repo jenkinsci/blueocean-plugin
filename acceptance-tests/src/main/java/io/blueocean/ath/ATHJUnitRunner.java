@@ -1,9 +1,11 @@
 package io.blueocean.ath;
 
+import com.google.common.io.Resources;
 import com.google.inject.BindingAnnotation;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.blueocean.ath.pages.classic.LoginPage;
+import org.apache.log4j.PropertyConfigurator;
 import org.junit.internal.runners.statements.RunBefores;
 import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
