@@ -276,12 +276,6 @@ export function toClassicJobPage(pageUrl, isMultibranch = false) {
         const fullJobNameTokens = fullJobName.split('/');
         const classicJobFullName = '/job/' + fullJobNameTokens.join('/job/');
 
-        // map to job only after there is token after pipelines. For example /organizations/jenkins/pipelines/p1
-        // can be mapped to /job/p1 but /organizations/jenkins/pipelines/ should be mapped to classic dashboard '/'
-        if (fullJobName === 'pipelines' && pageUrlTokens.length === 0) {
-            return undefined;
-        }
-
         if (pageUrlTokens.length > 1) {
             // The next token being "detail" indicates that we're looking
             // at a branch.

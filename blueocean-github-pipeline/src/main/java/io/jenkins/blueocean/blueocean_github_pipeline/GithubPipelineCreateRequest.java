@@ -60,8 +60,8 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
     private static final Logger logger = LoggerFactory.getLogger(GithubPipelineCreateRequest.class);
 
     @DataBoundConstructor
-    public GithubPipelineCreateRequest(String name, BlueScmConfig scmConfig) {
-        super(name, scmConfig);
+    public GithubPipelineCreateRequest(String name, String organization, BlueScmConfig scmConfig) {
+        super(name, organization, scmConfig);
     }
 
     @SuppressWarnings("unchecked")
