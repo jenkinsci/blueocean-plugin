@@ -5,8 +5,10 @@ import hudson.model.Items;
 import hudson.model.TopLevelItem;
 import hudson.model.TopLevelItemDescriptor;
 import hudson.security.ACL;
+import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineCreateRequest;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import jenkins.model.Jenkins;
@@ -15,6 +17,7 @@ import org.acegisecurity.Authentication;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.Collection;
 
 /**
  * @author Vivek Pandey
@@ -23,11 +26,18 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
 
     protected final BlueScmConfig scmConfig;
 
-    public AbstractPipelineCreateRequest(String name, String organization, BlueScmConfig scmConfig) {
+    public AbstractPipelineCreateRequest(String name, BlueScmConfig scmConfig) {
         setName(name);
-        setOrganization(organization);
+        Collection<BlueOrganization> organizations = OrganizationFactory.getInstance().list();
+        if(organizations.isEmpty()){
+            throw new ServiceException.BadRequestExpception(new ErrorMessage(400,
+                    "Pipeline creation failed. Failed to find organization"));
+        }else {
+            setOrganization(organizations.iterator().next().getName());
+        }
         this.scmConfig = scmConfig;
     }
+
 
     protected  @Nonnull TopLevelItem createProject(String name, String descriptorName, Class<? extends TopLevelItemDescriptor> descriptorClass) throws IOException{
         ACL acl = Jenkins.getInstance().getACL();
