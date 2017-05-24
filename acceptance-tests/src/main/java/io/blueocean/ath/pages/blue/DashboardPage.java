@@ -27,14 +27,14 @@ public class DashboardPage {
     }
 
     public boolean isFavorite(String job) {
-        WebElement tr = driver.findElement(By.xpath("//tr[@data-name=\"" + job + "\"]"));
+        WebElement tr = driver.findElement(By.xpath("//*[@data-pipeline=\"" + job + "\"]"));
         WebElement favorite = tr.findElement(By.cssSelector(".Checkbox.Favorite > label > input"));
         return favorite.isSelected();
     }
+
     public void toggleFavorite(String job) {
-        WebElement tr = driver.findElement(By.xpath("//tr[@data-name=\"" + job + "\"]"));
+        WebElement tr = driver.findElement(By.xpath("//*[@data-pipeline=\"" + job + "\"]"));
         WebElement favorite = tr.findElement(By.cssSelector(".Checkbox.Favorite > label"));
         favorite.click();
     }
-
 }
