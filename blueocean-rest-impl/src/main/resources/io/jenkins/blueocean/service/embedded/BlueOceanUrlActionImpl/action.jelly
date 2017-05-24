@@ -1,0 +1,7 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout">
+    <l:task icon="${h.getIconFilePath(action)}" title="${action.displayName}"
+            href="${rootURL}/${action.urlName}"
+            permission="${app.READ}"
+    />
+</j:jelly>
