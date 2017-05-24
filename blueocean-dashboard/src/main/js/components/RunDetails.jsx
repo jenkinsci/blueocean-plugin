@@ -175,8 +175,6 @@ class RunDetails extends Component {
             location.pathname = newUrl;
             router.push(location);
         };
-        
-        const externalBranchUrl = run.branch && run.branch.url ? run.branch.url : '';
 
         const base = { base: baseUrl };
 
@@ -224,7 +222,6 @@ class RunDetails extends Component {
                     t={ t }
                     locale={ locale }
                     pipeline={ pipeline }
-                    externalBranchUrl= { externalBranchUrl }
                     data={ currentRun }
                     runButton={ iconButtons }
                     topNavLinks={ tabs }
