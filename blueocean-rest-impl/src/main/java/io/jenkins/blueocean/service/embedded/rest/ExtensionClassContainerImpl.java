@@ -8,9 +8,7 @@ import io.jenkins.blueocean.rest.model.BlueExtensionClass;
 import io.jenkins.blueocean.rest.model.BlueExtensionClassContainer;
 import io.jenkins.blueocean.rest.model.BlueExtensionClassMap;
 import jenkins.model.Jenkins;
-import org.kohsuke.stapler.QueryParameter;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -25,32 +23,6 @@ public class ExtensionClassContainerImpl extends BlueExtensionClassContainer {
     @Override
     public BlueExtensionClass get(String name) {
         return new ExtensionClassImpl(getClazz(name), this);
-    }
-
-    @Override
-    public BlueExtensionClassMap getMap(@QueryParameter("q") final String param) {
-        if(param == null || param.trim().isEmpty()){
-            return new BlueExtensionClassMap() {
-                @Override
-                public Link getLink() {
-                    return ExtensionClassContainerImpl.this.getLink();
-                }
-
-                @Override
-                public Map<String, BlueExtensionClass> getMap() {
-                    return Collections.EMPTY_MAP;
-                }
-            };
-        }
-
-        List<String> classList = new ArrayList<>();
-        for(String p:param.split(",")){
-            p = p.trim();
-            classList.add(p.trim());
-        }
-
-        return new BlueExtensionClassMapImpl(classList, ExtensionClassContainerImpl.this.getLink().rel("?q="+param));
-
     }
 
     @Override
