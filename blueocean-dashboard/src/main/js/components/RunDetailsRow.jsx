@@ -24,7 +24,6 @@ function cancelClick(e) {
     // TODO: Find other things doing the same and merge this
     e.stopPropagation();
     e.preventDefault();
-    console.log('ignoring click'); // TODO: RM
 }
 
 /*

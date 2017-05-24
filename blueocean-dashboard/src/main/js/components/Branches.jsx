@@ -9,6 +9,8 @@ import { buildPipelineUrl } from '../util/UrlUtils';
 import { Link } from 'react-router';
 import RunMessageCell from './RunMessageCell';
 
+// TODO: Remove this file
+
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
 function sortByOrdinal(extensions, done) {
@@ -48,6 +50,7 @@ function noRun(branch, openRunDetails, t, store) {
                 </td>
             </tr>);
 }
+
 @observer
 export default class Branches extends Component {
     constructor(props) {

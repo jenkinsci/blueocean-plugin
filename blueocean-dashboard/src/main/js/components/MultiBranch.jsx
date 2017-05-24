@@ -1,5 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { Table } from '@jenkins-cd/design-language';
+import {
+    JTable,
+    TableHeaderRow,
+} from '@jenkins-cd/design-language';
 import { capable, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 
@@ -8,10 +12,11 @@ import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
 import { UnsupportedPlaceholder } from './placeholder/UnsupportedPlaceholder';
 
+import {BranchDetailsRow} from './BranchDetailsRow';
 
 const { object, string, any, func } = PropTypes;
 
-
+// TODO: Rename this
 @observer
 export class MultiBranch extends Component {
     componentWillMount() {
@@ -60,9 +65,32 @@ export class MultiBranch extends Component {
             { label: '', className: 'run' },
         ];
 
+        const actionColWidth = 80; // TODO: Calc based on extensions
+
+        const columns = [
+            JTable.column(60, healthHeader, false),
+            JTable.column(60, statusHeader, false),
+            JTable.column(160, branchHeader, false),
+            JTable.column(80, commitHeader, false),
+            JTable.column(390, messageHeader, true),
+            JTable.column(100, completedHeader, false),
+            JTable.column(actionColWidth, '', false),
+        ];
+
+
         return (
             <main>
                 <article>
+
+                    <JTable columns={columns} className="multibranch-table">
+                        <TableHeaderRow />
+                        { branches.map(branch => (
+                            <BranchDetailsRow pipeline={pipeline} key={`${branch.name}-${branch.organization}`} data={branch} t={t} locale={locale} />
+                        )) }
+                    </JTable>
+
+                    <div style={{padding:'4em 2em'}}>TODO: REMOVE ME</div>
+                    
                     <Table className="multibranch-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
                         {branches.length > 0 && branches.map((branch, index) => <Branches pipeline={pipeline} key={index} data={branch} t={t} locale={locale} />)}
                     </Table>
