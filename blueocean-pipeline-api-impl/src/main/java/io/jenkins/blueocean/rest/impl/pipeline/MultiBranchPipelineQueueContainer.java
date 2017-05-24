@@ -43,7 +43,7 @@ public class MultiBranchPipelineQueueContainer extends BlueQueueContainer {
                 }
             }
         }catch (NumberFormatException e){
-            throw new ServiceException.BadRequestExpception("Invalid queue id: "+name+". Must be a number.",e);
+            throw new ServiceException.BadRequestException("Invalid queue id: "+name+". Must be a number.",e);
         }
         return null;
     }

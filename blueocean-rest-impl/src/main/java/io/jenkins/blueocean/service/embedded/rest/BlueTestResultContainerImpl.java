@@ -5,7 +5,7 @@ import com.google.common.base.Predicate;
 import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
 import hudson.model.Run;
-import io.jenkins.blueocean.commons.ServiceException.BadRequestExpception;
+import io.jenkins.blueocean.commons.ServiceException.BadRequestException;
 import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory.Result;
@@ -70,7 +70,7 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
             } else if (!isEmpty(state)) {
                 results = filterByState(resolved.results, state);
             } else {
-                throw new BadRequestExpception("must provide either 'status' or 'state' params");
+                throw new BadRequestException("must provide either 'status' or 'state' params");
             }
         } else {
             results = resolved.results.iterator();
@@ -83,14 +83,14 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
         String[] statusAtoms = StringUtils.split(status, ',');
         Predicate<BlueTestResult> predicate = Predicates.alwaysFalse();
         if (statusAtoms == null || statusAtoms.length == 0) {
-            throw new BadRequestExpception("status not provided");
+            throw new BadRequestException("status not provided");
         }
         for (String statusString : statusAtoms) {
             Status queryStatus;
             try {
                 queryStatus = Status.valueOf(statusString.toUpperCase());
             } catch (IllegalArgumentException e) {
-                throw new BadRequestExpception("bad status " + status, e);
+                throw new BadRequestException("bad status " + status, e);
             }
             predicate = Predicates.or(predicate, new StatusPredicate(queryStatus));
         }
@@ -102,7 +102,7 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
         String[] stateAtoms = StringUtils.split(state, ',');
         Predicate<BlueTestResult> predicate = Predicates.alwaysFalse();
         if (stateAtoms == null || stateAtoms.length == 0) {
-            throw new BadRequestExpception("state not provided");
+            throw new BadRequestException("state not provided");
         }
 
         for (String stateString : stateAtoms) {
@@ -110,7 +110,7 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
             try {
                 queryState = State.valueOf(stateString.toUpperCase());
             } catch (IllegalArgumentException e) {
-                throw new BadRequestExpception("bad state " + state, e);
+                throw new BadRequestException("bad state " + state, e);
             }
             predicate = Predicates.or(predicate, new StatePredicate(queryState));
         }

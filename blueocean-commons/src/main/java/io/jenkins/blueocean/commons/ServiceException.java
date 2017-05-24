@@ -108,6 +108,10 @@ public class ServiceException extends RuntimeException implements HttpResponse {
         }
     }
 
+    /**
+     * @deprecated use #BadRequestException
+     */
+    @Deprecated
     public static class BadRequestExpception extends ServiceException{
 
         public BadRequestExpception(String message) {
@@ -123,6 +127,25 @@ public class ServiceException extends RuntimeException implements HttpResponse {
         }
         public BadRequestExpception(ErrorMessage errorMessage, Throwable throwable ) {
             super(BAD_REQUEST, errorMessage, throwable);
+        }
+    }
+
+    // inheriting the deprecated one in case people are doing like `catch(BadRequestException)` so that it sill works
+    public static class BadRequestException extends BadRequestExpception {
+
+        public BadRequestException(String message) {
+            super(message);
+        }
+
+        public BadRequestException(String message, Throwable throwable ) {
+            super(message, throwable);
+        }
+
+        public BadRequestException(ErrorMessage errorMessage) {
+            super(errorMessage);
+        }
+        public BadRequestException(ErrorMessage errorMessage, Throwable throwable ) {
+            super(errorMessage, throwable);
         }
     }
 

@@ -35,7 +35,7 @@ public class GithubScmSaveFileRequest{
         if(this.content == null){
             errors.add(new ErrorMessage.Error("content",
                     ErrorMessage.Error.ErrorCodes.MISSING.toString(), "content is required parameter"));
-            throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to save file to scm").addAll(errors));
+            throw new ServiceException.BadRequestException(new ErrorMessage(400, "Failed to save file to scm").addAll(errors));
         }else {
             errors.addAll(content.validate());
         }
@@ -57,11 +57,11 @@ public class GithubScmSaveFileRequest{
                     ErrorMessage.Error.ErrorCodes.MISSING.toString(), "No scm repo found with pipeline %s, please provide content.repo parameter"));
         }
         if(errors.size() > 0) {
-            throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to save content").addAll(errors));
+            throw new ServiceException.BadRequestException(new ErrorMessage(400, "Failed to save content").addAll(errors));
         }
 
         if(!errors.isEmpty()){
-            throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to save file to scm").addAll(errors));
+            throw new ServiceException.BadRequestException(new ErrorMessage(400, "Failed to save file to scm").addAll(errors));
         }
 
         try {
@@ -187,7 +187,7 @@ public class GithubScmSaveFileRequest{
                             .withAuthorization("token " + accessToken)
                             .to(GHContent.class);
                     if (!StringUtils.isBlank(sha) && !sha.equals(ghContent.getSha())) {
-                        throw new ServiceException.BadRequestExpception(String.format("sha in request: %s is different from sha of file %s in branch %s",
+                        throw new ServiceException.BadRequestException(String.format("sha in request: %s is different from sha of file %s in branch %s",
                                 sha, content.getPath(), content.getBranch()));
                     }
                     return ghContent.getSha();

@@ -30,7 +30,7 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
         setName(name);
         Collection<BlueOrganization> organizations = OrganizationFactory.getInstance().list();
         if(organizations.isEmpty()){
-            throw new ServiceException.BadRequestExpception(new ErrorMessage(400,
+            throw new ServiceException.BadRequestException(new ErrorMessage(400,
                     "Pipeline creation failed. Failed to find organization"));
         }else {
             setOrganization(organizations.iterator().next().getName());
@@ -48,7 +48,7 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
         }
         TopLevelItemDescriptor descriptor = Items.all().findByName(descriptorName);
         if(descriptor == null || !(descriptorClass.isAssignableFrom(descriptor.getClass()))){
-            throw new ServiceException.BadRequestExpception(String.format("Failed to create pipeline: %s, descriptor %s is not found", name, descriptorName));
+            throw new ServiceException.BadRequestException(String.format("Failed to create pipeline: %s, descriptor %s is not found", name, descriptorName));
         }
 
         ModifiableTopLevelItemGroup p = getParent();
@@ -67,7 +67,7 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
         String organization = getOrganization();
         ModifiableTopLevelItemGroup parent =  OrganizationFactory.getItemGroup(getOrganization());
         if(parent == null){
-            throw new ServiceException.BadRequestExpception("Invalid Jenkins organization. " + organization);
+            throw new ServiceException.BadRequestException("Invalid Jenkins organization. " + organization);
         }
 
         return parent;

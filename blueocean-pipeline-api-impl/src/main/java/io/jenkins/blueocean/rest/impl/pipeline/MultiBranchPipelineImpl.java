@@ -82,11 +82,11 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     @Override
     public BlueFavorite favorite(@JsonBody BlueFavoriteAction favoriteAction) {
         if (favoriteAction == null) {
-            throw new ServiceException.BadRequestExpception("Must provide pipeline name");
+            throw new ServiceException.BadRequestException("Must provide pipeline name");
         }
         Job job = PrimaryBranch.resolve(mbp);
         if (job == null) {
-            throw new ServiceException.BadRequestExpception("no default branch to favorite");
+            throw new ServiceException.BadRequestException("no default branch to favorite");
         }
         FavoriteUtil.toggle(favoriteAction, job);
         return new FavoriteImpl(new BranchImpl(job, getLink().rel("branches")), getLink().rel("favorite"));
