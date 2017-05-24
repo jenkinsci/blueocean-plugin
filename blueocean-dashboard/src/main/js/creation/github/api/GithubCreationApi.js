@@ -150,7 +150,6 @@ export class GithubCreationApi {
     _buildRequestBody(credentialId, itemName, organizationName, repoNames) {
         return {
             name: itemName,
-            organization: this.organization,
             $class: 'io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest',
             scmConfig: {
                 credentialId,

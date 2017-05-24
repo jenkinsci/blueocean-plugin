@@ -28,7 +28,7 @@ module.exports = {
         // make sure the open blue ocean button works. In this case,
         // it should bring the browser to an empty pipeline activity
         // page.
-        browser.openBlueOcean();
+        browser.page.openBlueOcean().open();
         bluePipelineActivity.assertEmptyLayoutOkay('my-pipeline');
         browser.assert.urlEndsWith('/blue/organizations/jenkins/my-pipeline/activity');
 
