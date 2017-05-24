@@ -48,15 +48,20 @@ builder.bundle('src/main/js/blueocean.js')
     .inDir('target/classes/io/jenkins/blueocean')
     .less('src/main/less/blueocean.less')
     .onStartup('./src/main/js/init')
-    .export("@jenkins-cd/blueocean-core-js")
-    .export('@jenkins-cd/blueocean-core-js/dist/js/i18n/bundle-startup') // remove once JENKINS-39646 fixes back-door bundle module leakage
-    .export("@jenkins-cd/design-language")
-    .export("@jenkins-cd/js-extensions")
-    .export('react')
-    .export('react-dom')
     .export('redux')
-    .export('mobx')
     .export('mobx-react')
+    .export("immutable")
+	.export("keymirror")
+    .export("react-redux")
+    .export("redux-thunk")
+    .import('react@any', {
+        aliases: ['react/lib/React'] // in case a module requires react through the back door
+    })
+    .import('react-dom@any')
+    .import('mobx@any')
+    .import("@jenkins-cd/js-extensions@any")
+    .import("@jenkins-cd/blueocean-core-js@any")
+    .import('@jenkins-cd/design-language@any')
     .generateNoImportsBundle();
 
 //

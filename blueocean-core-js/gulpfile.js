@@ -1,5 +1,7 @@
 "use strict";
 
+process.env.SKIP_BLUE_IMPORTS = 'YES';
+
 /*
  Build file for Jenkins Blue Ocean Commons JavaScript.
  */
@@ -133,3 +135,25 @@ gulp.task("validate", () => {
         }
     }
 });
+
+
+var builder = require('@jenkins-cd/js-builder');
+
+builder.src([
+    'src/js',
+    'less']);
+
+//
+// Create the main bundle.
+//
+builder.bundle('src/js/index.js', 'blueocean-core-js.js')
+    .inDir('target/classes/io/jenkins/blueocean')
+    .less('src/less/core.less')
+    .import('react@any', {
+        aliases: ['react/lib/React'] // in case a module requires react through the back door
+    })
+    .import('react-dom@any')
+    .import("react-router@any")
+    .export("@jenkins-cd/js-extensions")
+    .export("@jenkins-cd/logging")
+    .export('mobx')
