@@ -20,7 +20,7 @@ export default class ExtensionRenderer extends React.Component {
     }
 
     componentDidMount() {
-        ExtensionRenderer.resourceLoadTracker.onMount(this.props.extensionPoint, function() {
+        ExtensionRenderer.resourceLoadTracker.onMount(this.props.extensionPoint, () => {
             this._renderAllExtensions();
         });
     }
