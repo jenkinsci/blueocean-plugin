@@ -11,12 +11,16 @@ import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
 import hudson.security.HudsonPrivateSecurityRealm;
 import hudson.security.LegacyAuthorizationStrategy;
+import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
+import io.jenkins.blueocean.rest.model.BlueQueueItem;
+import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.rest.model.scm.GitSampleRepoRule;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
+import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.metadata.ObjectMetadataAction;
@@ -42,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
@@ -1068,5 +1073,61 @@ public class MultiBranchTest extends PipelineBaseTest {
         List branches = request().get("/organizations/jenkins/pipelines/p/runs").build(List.class);
         Assert.assertEquals(0, branches.size());
 
+    }
+
+    @Test
+    public void testMultiBranchPipelineQueueContainer() throws Exception {
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        sampleRepo1.init();
+        sampleRepo1.write("Jenkinsfile", "stage 'build'\n " + "node {echo 'Building'}\n" +
+                "stage 'test'\nnode { echo 'Testing'}\n" +
+                "sleep 10000 \n" +
+                "stage 'deploy'\nnode { echo 'Deploying'}\n"
+        );
+        sampleRepo1.write("file", "initial content");
+        sampleRepo1.git("add", "Jenkinsfile");
+        sampleRepo1.git("commit", "--all", "--message=flow");
+
+        //create feature branch
+        sampleRepo1.git("checkout", "-b", "abc");
+        sampleRepo1.write("Jenkinsfile", "echo \"branch=${env.BRANCH_NAME}\"; " + "node {" +
+                "   stage ('Build'); " +
+                "   echo ('Building'); " +
+                "   stage ('Test'); sleep 10000; " +
+                "   echo ('Testing'); " +
+                "   stage ('Deploy'); " +
+                "   echo ('Deploying'); " +
+                "}");
+        ScriptApproval.get().approveSignature("method java.lang.String toUpperCase");
+        sampleRepo1.write("file", "subsequent content1");
+        sampleRepo1.git("commit", "--all", "--message=tweaked1");
+
+
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo1.toString(), "", "*", "", false),
+                new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+        scheduleAndFindBranchProject(mp);
+        Resource r = BluePipelineFactory.resolve(mp);
+        assertTrue(r instanceof MultiBranchPipelineImpl);
+
+        for (WorkflowJob job : mp.getItems()) {
+            Queue.Item item = job.getQueueItem();
+            job.setConcurrentBuild(false);
+            job.scheduleBuild2(0);
+            job.scheduleBuild2(0);
+        }
+        Queue.Item[] queueItems = Jenkins.getInstance().getQueue().getItems();
+        MultiBranchPipelineQueueContainer mbpQueueContainer =
+                new MultiBranchPipelineQueueContainer((MultiBranchPipelineImpl) r);
+        Iterator<BlueQueueItem> blueQueueItems = mbpQueueContainer.iterator(0,100);
+        if (queueItems.length > 0){
+            assertTrue(mbpQueueContainer.iterator().hasNext());
+            assertEquals("/blue/rest/organizations/jenkins/pipelines/p/queue/", mbpQueueContainer.getLink().getHref());
+            BlueQueueItem blueQueueItem = mbpQueueContainer.get(String.valueOf(queueItems[0].getId()));
+            assertNotNull(blueQueueItem);
+            assertTrue(blueQueueItems.hasNext());
+        }
     }
 }

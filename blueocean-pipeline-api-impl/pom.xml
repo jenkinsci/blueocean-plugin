@@ -14,6 +14,10 @@
     <name>Pipeline implementation for Blue Ocean</name>
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
 
+    <properties>
+        <jacoco.haltOnFailure>true</jacoco.haltOnFailure>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -132,6 +136,20 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <configuration>
+                    <excludes>
+                        <!-- Exclude scm abstract classes from code coverage, these are already covered in their implementations in
+                             blueocean-git-pipeline and blueocean-github-pipeline modules.
+                             These should move over to blueocean-rest module
+                        -->
+                        <exclude>io/jenkins/blueocean/rest/impl/pipeline/scm/**/*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>

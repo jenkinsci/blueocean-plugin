@@ -638,9 +638,6 @@
                               <goal>check</goal>
                           </goals>
                           <configuration>
-                              <excludes>
-                                  <exclude>io/jenkins/blueocean/commons/stapler/export/**/*</exclude>
-                              </excludes>
                               <rules>
                                   <rule>
                                       <element>BUNDLE</element>
