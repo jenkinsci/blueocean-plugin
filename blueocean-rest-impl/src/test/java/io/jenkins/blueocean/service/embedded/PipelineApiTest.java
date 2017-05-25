@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded;
 
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.HttpResponse;
@@ -35,11 +36,16 @@ import hudson.tasks.junit.TestResultAction;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
+import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BlueArtifact;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
+import io.jenkins.blueocean.service.embedded.rest.ArtifactContainerImpl;
+import io.jenkins.blueocean.service.embedded.rest.ContainerFilter;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
+import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import jenkins.model.Jenkins;
 import org.junit.Assert;
 import org.junit.Test;
@@ -60,10 +66,7 @@ import java.util.Stack;
 import java.util.concurrent.ExecutionException;
 
 import static junit.framework.TestCase.assertFalse;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Vivek Pandey
@@ -315,9 +318,10 @@ public class PipelineApiTest extends BaseTest {
         j.assertBuildStatusSuccess(b);
         Map resp = get("/organizations/jenkins/pipelines/pipeline4/runs/"+b.getId());
         validateRun(b,resp);
+        String log = get("/organizations/jenkins/pipelines/pipeline4/runs/"+b.getId()+"/log", String.class);
+        System.out.println(log);
+        assertNotNull(log);
     }
-
-
 
     @Test
     public void getPipelineRunLatestTest() throws Exception {
@@ -349,6 +353,22 @@ public class PipelineApiTest extends BaseTest {
 
         Map lr = resp.get(0);
         validateRun(b, lr);
+    }
+
+    @Test
+    public void shouldFailToGetRunForInvalidRunId1() throws Exception {
+        FreeStyleProject p = j.createFreeStyleProject("pipeline6");
+        p.getBuildersList().add(new Shell("echo hello!\nsleep 1"));
+        FreeStyleBuild b = p.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b);
+        get("/organizations/jenkins/pipelines/pipeline6/runs/xyz", 404, Map.class);
+    }
+
+    @Test
+    public void shouldFailToGetRunForInvalidRunId2() throws Exception {
+        FreeStyleProject p = j.createFreeStyleProject("pipeline6");
+        p.getBuildersList().add(new Shell("echo hello!\nsleep 1"));
+        get("/organizations/jenkins/pipelines/pipeline6/runs/xyz", 404, Map.class);
     }
 
     @Test
@@ -484,6 +504,14 @@ public class PipelineApiTest extends BaseTest {
 
         assertEquals(1, artifacts.size());
         assertEquals("fizz", ((Map) artifacts.get(0)).get("name"));
+
+        BlueArtifact blueArtifact = new ArtifactContainerImpl(b, new Reachable() {
+            @Override
+            public Link getLink() {
+                return new Link("/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/artifacts/");
+            }
+        }).get((String) ((Map) artifacts.get(0)).get("path"));
+        assertNotNull(blueArtifact);
     }
 
     @Test
@@ -505,6 +533,9 @@ public class PipelineApiTest extends BaseTest {
         Assert.assertEquals(3, ((Map) queue.get(1)).get("expectedBuildNumber"));
         Assert.assertEquals("Waiting for next available executor", ((Map) queue.get(0)).get("causeOfBlockage"));
         Assert.assertEquals("Waiting for next available executor", ((Map) queue.get(1)).get("causeOfBlockage"));
+
+        Run r = QueueUtil.getRun(p1, Long.parseLong((String)((Map)queue.get(0)).get("id")));
+        assertNull(r); //its not moved out of queue yet
     }
 
     @Test
@@ -712,6 +743,40 @@ public class PipelineApiTest extends BaseTest {
         assertEquals("FINISHED", resp.get("state"));
     }
 
+    public static class TestStringParameterDefinition extends StringParameterDefinition{
+
+        public TestStringParameterDefinition(String name, String defaultValue, String description) {
+            super(name, defaultValue, description);
+        }
+
+        @Override
+        public StringParameterValue getDefaultParameterValue() {
+            return null;
+        }
+    }
+
+    @Test
+    public void parameterizedFreestyleTestWithoutDefaultParam() throws Exception {
+        FreeStyleProject p = j.createFreeStyleProject("pp");
+        p.addProperty(new ParametersDefinitionProperty(new TestStringParameterDefinition("version", null, "version number")));
+        p.getBuildersList().add(new Shell("echo hello!"));
+
+        Map resp = get("/organizations/jenkins/pipelines/pp/");
+
+        List<Map<String,Object>> parameters = (List<Map<String, Object>>) resp.get("parameters");
+        assertEquals(1, parameters.size());
+        assertEquals("version", parameters.get(0).get("name"));
+        assertEquals("TestStringParameterDefinition", parameters.get(0).get("type"));
+        assertEquals("version number", parameters.get(0).get("description"));
+        assertNull(parameters.get(0).get("defaultParameterValue"));
+        validatePipeline(p, resp);
+
+        resp = post("/organizations/jenkins/pipelines/pp/runs/",
+                ImmutableMap.of("parameters",
+                        ImmutableList.of()
+                ), 400);
+    }
+
     @Test public void mavenModulesNoteListed() throws Exception {
         ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", Maven.MavenInstallation.MAVEN_21);
         MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
@@ -832,6 +897,36 @@ public class PipelineApiTest extends BaseTest {
             }
             return null;
         }
+    }
+
+    //custom filter test
+    @TestExtension("customFilter")
+    public static class ItemGroupFilter extends ContainerFilter{
+
+        private final Predicate<Item> filter = new Predicate<Item>() {
+            @Override
+            public boolean apply(Item job) {
+                return (job instanceof ItemGroup);
+            }
+        };
+        @Override
+        public String getName() {
+            return "itemgroup-only";
+        }
+
+        @Override
+        public Predicate<Item> getFilter() {
+            return filter;
+        }
+    }
+
+    @Test
+    public void customFilter() throws IOException {
+        MockFolder folder = j.createFolder("folder1");
+        Project p = folder.createProject(FreeStyleProject.class, "test1");
+        Collection<Item> items = ContainerFilter.filter(j.getInstance().getAllItems(), "itemgroup-only");
+        assertEquals(1, items.size());
+        assertEquals(folder.getFullName(), items.iterator().next().getFullName());
     }
 
 }

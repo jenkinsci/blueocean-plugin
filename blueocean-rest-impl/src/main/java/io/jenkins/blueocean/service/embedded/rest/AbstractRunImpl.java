@@ -23,9 +23,11 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.GenericResource;
 import org.kohsuke.stapler.QueryParameter;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Date;
@@ -46,8 +48,9 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         this.org = OrganizationFactory.getInstance().getContainingOrg(run);
     }
 
+    @Nonnull
     public Container<BlueChangeSetEntry> getChangeSet() {
-        return null;
+        return Containers.empty(getLink());
     }
 
     @Override

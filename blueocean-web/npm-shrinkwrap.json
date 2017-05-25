@@ -3,14 +3,14 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.113-Nicu-beta3",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.113-Nicu-beta3",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.113-Nicu-beta3.tgz"
+      "version": "0.0.113",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.113",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.113.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.130-nicu-beta",
-      "from": "@jenkins-cd/design-language@0.0.130-nicu-beta",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.130-nicu-beta.tgz"
+      "version": "0.0.128",
+      "from": "@jenkins-cd/design-language@0.0.128",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.128.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -19,15 +19,15 @@
       "dev": true
     },
     "@jenkins-cd/js-builder": {
-      "version": "0.0.57",
-      "from": "@jenkins-cd/js-builder@0.0.57",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.57.tgz",
+      "version": "0.0.59",
+      "from": "@jenkins-cd/js-builder@0.0.59",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.59.tgz",
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.36-Nicu-beta1",
-      "from": "@jenkins-cd/js-extensions@0.0.36-Nicu-beta1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.36-Nicu-beta1.tgz"
+      "version": "0.0.35",
+      "from": "@jenkins-cd/js-extensions@0.0.35",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.35.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.8",
@@ -869,9 +869,9 @@
       "resolved": "https://registry.npmjs.org/balanced-match/-/balanced-match-0.4.2.tgz"
     },
     "base62": {
-      "version": "1.2.0",
+      "version": "1.1.2",
       "from": "base62@>=1.1.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/base62/-/base62-1.2.0.tgz"
+      "resolved": "https://registry.npmjs.org/base62/-/base62-1.1.2.tgz"
     },
     "base64-js": {
       "version": "0.0.8",

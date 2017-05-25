@@ -152,7 +152,7 @@ class RunDetailsHeader extends Component {
             </div>
         );
 
-        const causeMessage = (run && run.causes.length > 0 && run.causes[0].shortDescription) || null;
+        const causeMessage = (run && run.causes.length > 0 && run.causes[run.causes.length - 1].shortDescription) || null;
         const cause = (<div className="causes">{causeMessage}</div>);
 
         return (

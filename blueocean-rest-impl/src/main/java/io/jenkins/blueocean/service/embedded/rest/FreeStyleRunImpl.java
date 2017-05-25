@@ -13,6 +13,7 @@ import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import org.kohsuke.stapler.QueryParameter;
 
+import javax.annotation.Nonnull;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -30,6 +31,7 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
     }
 
     @Override
+    @Nonnull
     public Container<BlueChangeSetEntry> getChangeSet() {
 
         Map<String, BlueChangeSetEntry> m = new LinkedHashMap<>();
