@@ -14,6 +14,10 @@
 
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
 
+  <properties>
+    <jacoco.haltOnFailure>true</jacoco.haltOnFailure>
+  </properties>
+
   <dependencies>
     <dependency>
       <groupId>${project.groupId}</groupId>
