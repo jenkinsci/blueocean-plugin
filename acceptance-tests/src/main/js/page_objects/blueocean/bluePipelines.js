@@ -31,7 +31,6 @@ module.exports.commands = [{
      */
     assertBasicLayoutOkay: function() {
         this.waitForElementVisible('@pipelinesNav');
-        this.waitForElementVisible('@newPipelineButton');
         this.waitForElementVisible('@pipelinesTable');
         this.waitForElementVisible('.Site-footer');
     },
@@ -42,7 +41,7 @@ module.exports.commands = [{
         browser.elements('css selector', '.pipelines-table tr[data-name="' + jobName + '"]', function (codeCollection) {
             this.assert.equal(codeCollection.value.length, count);
         });
-    }, 
+    },
     navigateLanguage: function(language) {
         return this.navigate(this.api.launchUrl + pipelinesUrl + '?language=' + language);
     }
