@@ -1,0 +1,123 @@
+/**
+ * Pipeline script to be used for releasing BlueOcean
+ */
+node {
+    properties([parameters([
+            choice(choices: 'Vivek Pandey:vivek.pandey@gmail.com\nMichael Neale:mneale@cloudbees.com\nJames Dumay:jdumay@cloudbees.com', description: 'Colon separated Git Username and email.', name: 'GIT_AUTHOR_AND_GIT_EMAIL'),
+            [$class: 'CredentialsParameterDefinition', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', defaultValue: '', description: 'Your GitHub credential', name: 'GITHUB_CREDENTIALS', required: true],
+            [$class: 'CredentialsParameterDefinition', credentialType: 'com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl', defaultValue: '', description: 'Your Jenkins credential', name: 'JENKINS_CREDENTIALS', required: true],
+            string(defaultValue: 'https://github.com/jenkinsci/blueocean-plugin.git', description: 'GIT repo URL', name: 'GIT_REPO_URL'),
+            string(defaultValue: 'master', description: 'GIT branch name to release', name: 'BRANCH')
+    ])])
+
+    deleteDir()
+
+    docker.image('maven:3.3-jdk-8').inside() {
+        def gitNameEmail = (env.GIT_AUTHOR_AND_GIT_EMAIL).split(':')
+        println gitNameEmail[0] + ":" + gitNameEmail[1]
+        String gitName = gitNameEmail[0]
+        String gitEmail = gitNameEmail[1]
+        withEnv(["GIT_COMMITTER_EMAIL=$gitEmail", "GIT_COMMITTER_NAME=$gitName", "GIT_AUTHOR_NAME=$gitName", "GIT_AUTHOR_EMAIL=$gitEmail"]) {
+            withCredentials([
+                    usernamePassword(credentialsId: '${JENKINS_CREDENTIALS}', passwordVariable: 'JENKINS_PASSWORD', usernameVariable: 'JENKINS_USERNAME'),
+                    usernamePassword(credentialsId: '${GITHUB_CREDENTIALS}', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USERNAME'),
+            ]) {
+                try {
+                    // checkout from git
+                    stage('Git checkout') {
+                        git url: '${GIT_REPO_URL}', branch: '${BRANCH}'
+
+                        // setup git creds
+                        sh 'echo https://$GITHUB_USERNAME:$GITHUB_TOKEN@github.com > .git-credentials'
+                        sh 'cat .git-credentials'
+                        sh "git config credential.helper 'store --file .git-credentials'"
+
+                        //Make sure local branch is tracking remote. This enables releasing off branch other than master
+                        sh 'git push -u origin $BRANCH'
+                    }
+
+                    //Sanity build and test
+                    stage('Build and test') {
+                        sh 'echo Java version: `java -version`'
+                        sh 'echo Maven version: `mvn --version`'
+                        sh 'echo Git version: `git --version`'
+
+                        sh 'mvn -T 1C  clean install'
+                    }
+
+                    //Prepare for release, release on github (tag)
+                    stage('mvn release:prepare') {
+                        writeSettingsXmlFile()
+                        sh 'mvn -s settings.xml release:prepare -B -Darguments="-DskipTests" -DautoVersionSubmodules=true -Djacoco.skip=true -Dusername=$GITHUB_USERNAME -Dpassword=$GITHUB_TOKEN'
+                    }
+
+                    //Release to maven repo
+                    stage('mvn release:perform') {
+                        sh 'mvn -s settings.xml release:perform -Djacoco.skip=true'
+                    }
+                } catch (err) {
+                    currentBuild.result = "FAILURE"
+
+                    if (err.toString().contains('AbortException')) {
+                        currentBuild.result = "ABORTED"
+                    }
+
+                } finally {
+                    deleteDir()
+                    //TODO: send notification to gitter/hipchat etc.
+                }
+            }
+        }
+    }
+}
+
+/**
+ * Writes settings.xml file
+ */
+def writeSettingsXmlFile() {
+    String content = "<settings>\n" +
+            "    <pluginGroups>\n" +
+            "        <pluginGroup>org.jenkins-ci.tools</pluginGroup>\n" +
+            "    </pluginGroups>\n" +
+            "\n" +
+            "    <servers>\n" +
+            "        <server>\n" +
+            "            <id>repo.jenkins-ci.org-releases</id>\n" +
+            "            <username>${JENKINS_USERNAME}</username>\n" +
+            "            <password>${JENKINS_PASSWORD}</password>\n" +
+            "        </server>\n" +
+            "    </servers>\n" +
+            "\n" +
+            "    <profiles>\n" +
+            "        <!-- Give access to Jenkins plugins -->\n" +
+            "        <profile>\n" +
+            "            <id>jenkins</id>\n" +
+            "            <activation>\n" +
+            "                <activeByDefault>true\n" +
+            "                </activeByDefault>\n" +
+            "            </activation>\n" +
+            "            <repositories>\n" +
+            "                <repository>\n" +
+            "                    <id>repo.jenkins-ci.org</id>\n" +
+            "                    <url>https://repo.jenkins-ci.org/public/</url>\n" +
+            "                </repository>\n" +
+            "            </repositories>\n" +
+            "            <pluginRepositories>\n" +
+            "                <pluginRepository>\n" +
+            "                    <id>repo.jenkins-ci.org</id>\n" +
+            "                    <url>https://repo.jenkins-ci.org/public/</url>\n" +
+            "                </pluginRepository>\n" +
+            "            </pluginRepositories>\n" +
+            "        </profile>\n" +
+            "    </profiles>\n" +
+            "    <mirrors>\n" +
+            "        <mirror>\n" +
+            "            <id>repo.jenkins-ci.org</id>\n" +
+            "            <url>https://repo.jenkins-ci.org/public/</url>\n" +
+            "            <mirrorOf>m.g.o-public</mirrorOf>\n" +
+            "        </mirror>\n" +
+            "    </mirrors>\n" +
+            "</settings>"
+
+    writeFile file: 'settings.xml', text: content
+}
