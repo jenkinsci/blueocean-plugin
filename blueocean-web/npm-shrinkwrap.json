@@ -3,16 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.111",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.111",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.111.tgz",
-      "dependencies": {
-        "@jenkins-cd/design-language": {
-          "version": "0.0.128",
-          "from": "@jenkins-cd/design-language@0.0.128",
-          "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.128.tgz"
-        }
-      }
+      "version": "0.0.114",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.114",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.114.tgz"
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.128",
@@ -32,14 +25,14 @@
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.35",
-      "from": "@jenkins-cd/js-extensions@0.0.35",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.35.tgz"
+      "version": "0.0.36",
+      "from": "@jenkins-cd/js-extensions@0.0.36",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.36.tgz"
     },
     "@jenkins-cd/js-modules": {
-      "version": "0.0.8",
-      "from": "@jenkins-cd/js-modules@0.0.8",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.8.tgz"
+      "version": "0.0.10",
+      "from": "@jenkins-cd/js-modules@0.0.10",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.10.tgz"
     },
     "@jenkins-cd/logging": {
       "version": "0.0.6",
@@ -52,9 +45,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/react-material-icons/-/react-material-icons-1.0.0.tgz"
     },
     "@jenkins-cd/sse-gateway": {
-      "version": "0.0.19",
-      "from": "@jenkins-cd/sse-gateway@0.0.19",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.19.tgz"
+      "version": "0.0.21",
+      "from": "@jenkins-cd/sse-gateway@0.0.21",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.21.tgz"
     },
     "@jenkins-cd/storage": {
       "version": "0.0.6",
@@ -876,9 +869,9 @@
       "resolved": "https://registry.npmjs.org/balanced-match/-/balanced-match-0.4.2.tgz"
     },
     "base62": {
-      "version": "1.1.2",
+      "version": "1.2.0",
       "from": "base62@>=1.1.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/base62/-/base62-1.1.2.tgz"
+      "resolved": "https://registry.npmjs.org/base62/-/base62-1.2.0.tgz"
     },
     "base64-js": {
       "version": "0.0.8",

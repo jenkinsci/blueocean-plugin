@@ -43,8 +43,8 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
     private static final String ERROR_NAME = "name";
     private static final String ERROR_FIELD_SCM_CREDENTIAL_ID = "scm.credentialId";
 
-    public AbstractMultiBranchCreateRequest(String name, String organization, BlueScmConfig scmConfig) {
-        super(name, organization, scmConfig);
+    public AbstractMultiBranchCreateRequest(String name, BlueScmConfig scmConfig) {
+        super(name, scmConfig);
     }
 
     @Override

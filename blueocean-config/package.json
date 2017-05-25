@@ -10,7 +10,7 @@
   "author": "Vivek Pandey <vivek.pandey@gmail.com> (https://github.com/vivek)",
   "license": "MIT",
   "dependencies": {
-    "@jenkins-cd/js-modules": "0.0.8",
+    "@jenkins-cd/js-modules": "0.0.10",
     "rollbar-browser": "1.9.2"
   },
   "devDependencies": {

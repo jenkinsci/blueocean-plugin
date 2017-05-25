@@ -49,7 +49,6 @@ export default class GitCreationApi {
 
         const requestBody = {
             name,
-            organization: this.organization,
             $class: 'io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest',
             scmConfig: {
                 uri: repositoryUrl,
