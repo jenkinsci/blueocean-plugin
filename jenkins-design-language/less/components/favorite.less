@@ -1,0 +1,73 @@
+.Favorite {
+    .Checkbox-indicator {
+        border: 0;
+        width: 24px;
+        height: 24px;
+        overflow: hidden;
+
+        .star-icon {
+            flex-shrink: 0;
+        }
+    }
+
+    // animate to a 'filled in' star
+    input[type="checkbox"]:checked + .Checkbox-indicator {
+        background: none;
+
+        .star-icon {
+            transform: translate(-264px, 0px);
+            transition: 0.3s steps(11);
+        }
+    }
+
+    // hover states for unchecked and checked
+    &:hover {
+        .star-empty {
+            fill: @brand-active;
+        }
+
+        .star-filled {
+            fill: darken(#F5A623, 20%);
+        }
+    }
+
+    &.dark-yellow {
+        .star-empty {
+            fill: #FFF;
+        }
+
+        &:hover {
+            .star-empty {
+                fill: @white-active;
+            }
+
+            .start-filled {
+                fill: darken(#F5A623, 20%);
+            }
+        }
+    }
+
+    &.dark-white {
+        // NOTE: need lowercase hex values for IE11 compat
+
+        // grab all shapes using blue or yellow so we can set them to white
+        path[fill='#4a90e2'], path[fill='#4A90E2'],
+        path[fill='#f5a623'], path[fill='#F5A623'] {
+            fill: #FFF;
+        }
+
+        circle[stroke='#f5a623'], circle[stroke='#F5A623'] {
+            stroke: #FFF;
+        }
+
+        &:hover {
+            .star-empty {
+                fill: @white-active;
+            }
+
+            .star-filled {
+                fill: @white-active;
+            }
+        }
+    }
+}

@@ -1,0 +1,807 @@
+/*!
+* Jenkins Design Language CSS Theme
+*
+* Licensed under MIT
+*/
+
+//
+// Import 3rd part CSS before JDL LESS modules.
+//
+@import (inline) "../node_modules/normalize.css/normalize.css";
+@import (inline) "../fonts/latofonts.css";
+@import (inline) "../node_modules/octicons/build/font/octicons.css";
+
+//
+// Load core variables and mixins
+// --------------------------------------------------
+@import "variables";
+@import "mixins";
+@import "icons";
+@import "components";
+@import "layouts";
+
+//
+// Base font stuffs
+// --------------------------------------------------
+
+html {
+    font-size: 62.5%; // Make 1rem == 10px
+}
+
+#root {
+    font-size: 1.4rem;
+}
+
+body {
+    color: @text-color;
+    text-rendering: optimizeSpeed;
+    font-feature-settings: "kern" on, "liga" off;
+    -moz-font-feature-settings: "kern" on, "liga" off;
+    // Want to change this? Pick a fight with i386
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    line-height: 1.2;
+}
+
+//
+// Some basics
+// --------------------------------------------------
+
+* {
+    box-sizing: border-box;
+}
+
+p {
+    margin: 1em 0;
+}
+
+// Default All headings to basically "bold and display:block"
+h1, h2, h3, h4, h5, h6 {
+  font-size: 100%;
+  font-family: @font-family-ss-light;
+  margin: 0;
+  padding: 0;
+}
+
+h1 {
+    font-size: @font-size-h1;
+    font-family: @font-family-nav;
+}
+
+h2 {
+  font-size: @font-size-h2;
+}
+
+h3 {
+  font-size: @font-size-h3;
+}
+
+h4 {
+  font-size: @font-size-h4;
+}
+
+h5 {
+  font-size: @font-size-h5;
+}
+
+h6 {
+  font-size: @font-size-h6;
+}
+
+main {
+}
+
+// Content-page body and header sizing / padding
+.u-content-page-sizing {
+    width: 100%;
+    max-width: 1200px;
+    margin-left: auto;
+    margin-right: auto;
+    padding-right: 15px;
+    padding-left: 15px;
+}
+
+// creates a series of classes to allow reuse of common brand colors
+// .status-color(haze, purple, fuchsia) yields:
+//  .haze-bg         --> background-color: purple;
+//  .haze-fill       --> fill: purple;
+//  .haze-color      --> color: purple;
+//  .haze-bg-lite    --> background-color: fuchsia;
+//  .haze-fill-lite  --> fill: fuchsia;
+//  .haze-color-lite --> color: fuchsia;
+
+.status-color(@status, @color, @color-lite) {
+    .@{status}-bg {
+        background-color: @color;
+    }
+    .@{status}-bg-lite {
+        background-color: @color-lite;
+    }
+    .@{status}-fill {
+        fill: @color;
+    }
+    .@{status}-fill-lite {
+        fill: @color-lite;
+    }
+    .@{status}-color {
+        color: @color;
+    }
+    .@{status}-color-lite {
+        color: @color-lite;
+    }
+}
+
+.status-color(success, @brand-success, @brand-success-lite);
+.status-color(info, @brand-info, @brand-info-lite);
+.status-color(running, @brand-info, @brand-info-lite);
+.status-color(failure, @brand-danger, @brand-danger-lite);
+.status-color(aborted, @brand-grey,  @brand-grey-lite);
+.status-color(unstable, @brand-warning, @brand-warning-lite);
+.status-color(not_built, @brand-grey, @brand-grey-lite);
+.status-color(queued, @brand-grey, @brand-grey-lite);
+.status-color(paused, @brand-paused, @brand-paused-lite);
+.status-color(unknown, @brand-unknown, @brand-unknown-lite);
+
+.label-danger {
+    background-color: @brand-danger;
+}
+
+.label-warning {
+    background-color: @brand-warning;
+}
+
+.label-info {
+    background-color: @brand-info;
+}
+
+.label-success {
+    background-color: @brand-success;
+}
+
+.label-primary {
+    background-color: @brand-primary;
+}
+
+a {
+    text-decoration: none;
+}
+
+.list-group-item.active > .badge,
+.nav-pills > .active > a > .badge,
+a {
+    color: @link-color;
+}
+
+a:hover {
+    color: @link-hover-color;
+    text-decoration: @link-hover-decoration;
+}
+
+a.inverse {
+    color: white;
+
+    &:hover {
+        color: white;
+    }
+}
+
+.list-group-item.active .list-group-item-text,
+.list-group-item.active:focus .list-group-item-text,
+.list-group-item.active:hover .list-group-item-text {
+    color: white;
+}
+
+.nav-pills > li.active > a,
+.nav-pills > li.active > a:focus {
+    background-color: @link-color;
+}
+
+.nav-pills > li.active > a:hover {
+    background-color: @link-hover-color;
+}
+
+.progress-bar {
+    background-color: @progress-bar-bg;
+}
+
+body {
+    font-family: @font-family-base;
+    background-color: @body-bg;
+}
+
+.browser-ie11({
+    // fix egregious vertical centering issue with Lato in IE11 by falling back to sans-serif
+    body {
+        font-family: sans-serif !important;
+    }
+});
+
+code, pre, kbd {
+    font-family: @font-family-monospace;
+}
+
+// override normalize
+button, input, optgroup, select, textarea {
+    font-family: inherit;
+}
+
+//
+// Images
+// --------------------------------------------------
+
+.thumbnail,
+.img-thumbnail {
+    .box-shadow(0 1px 2px rgba(0, 0, 0, .075));
+}
+
+//
+// Dropdowns
+// --------------------------------------------------
+
+.dropdown-menu > li > a:hover,
+.dropdown-menu > li > a:focus {
+    #gradient > .vertical(@start-color: @dropdown-link-hover-bg; @end-color: darken(@dropdown-link-hover-bg, 5%));
+    background-color: darken(@dropdown-link-hover-bg, 5%);
+}
+
+.dropdown-menu > .active > a,
+.dropdown-menu > .active > a:hover,
+.dropdown-menu > .active > a:focus {
+    #gradient > .vertical(@start-color: @dropdown-link-active-bg; @end-color: darken(@dropdown-link-active-bg, 5%));
+    background-color: darken(@dropdown-link-active-bg, 5%);
+}
+
+// Fix active state of dropdown items in collapsed mode
+@media (max-width: @grid-float-breakpoint-max) {
+    .navbar .navbar-nav .open .dropdown-menu > .active > a {
+        &,
+        &:hover,
+        &:focus {
+            color: #fff;
+            #gradient > .vertical(@start-color: @dropdown-link-active-bg; @end-color: darken(@dropdown-link-active-bg, 5%));
+        }
+    }
+}
+
+//
+// Alerts
+// --------------------------------------------------
+
+// Common styles
+.alert {
+    border: none;
+}
+
+// Mixin for generating new styles
+.alert-styles(@color; @text-color; @border-color) {
+    background-color: @color;
+    color: @text-color;
+    border-radius: 3px;
+}
+
+// Apply the mixin to the alerts
+.alert-success {
+    .alert-styles(@alert-success-bg, @alert-success-text, @alert-success-border);
+}
+
+.alert-info {
+    .alert-styles(@alert-info-bg, @alert-info-text, @alert-info-border);
+}
+
+.alert-warning {
+    .alert-styles(@alert-warning-bg, @alert-warning-text, @alert-warning-border);
+}
+
+.alert-danger {
+    .alert-styles(@alert-danger-bg, @alert-danger-text, @alert-danger-border);
+}
+
+//
+// Progress bars
+// --------------------------------------------------
+
+// Give the progress background some depth
+.progress {
+    #gradient > .vertical(@start-color: darken(@progress-bg, 4%); @end-color: @progress-bg)
+}
+
+// Mixin for generating new styles
+.progress-bar-styles(@color) {
+    #gradient > .vertical(@start-color: @color; @end-color: darken(@color, 10%));
+}
+
+// Apply the mixin to the progress bars
+.progress-bar {
+    .progress-bar-styles(@progress-bar-bg);
+}
+
+.progress-bar-success {
+    .progress-bar-styles(@progress-bar-success-bg);
+}
+
+.progress-bar-info {
+    .progress-bar-styles(@progress-bar-info-bg);
+}
+
+.progress-bar-warning {
+    .progress-bar-styles(@progress-bar-warning-bg);
+}
+
+.progress-bar-danger {
+    .progress-bar-styles(@progress-bar-danger-bg);
+}
+
+// Reset the striped class because our mixins don't do multiple gradients and
+// the above custom styles override the new `.progress-bar-striped` in v3.2.0.
+.progress-bar-striped {
+    #gradient > .striped();
+}
+
+//
+// List groups
+// --------------------------------------------------
+
+.list-group {
+    border-radius: @border-radius-base;
+    .box-shadow(0 1px 2px rgba(0, 0, 0, .075));
+}
+
+.list-group-item.active,
+.list-group-item.active:hover,
+.list-group-item.active:focus {
+    text-shadow: 0 -1px 0 darken(@list-group-active-bg, 10%);
+    #gradient > .vertical(@start-color: @list-group-active-bg; @end-color: darken(@list-group-active-bg, 7.5%));
+    border-color: darken(@list-group-active-border, 7.5%);
+
+    .badge {
+        text-shadow: none;
+    }
+}
+
+//
+// Panels
+// --------------------------------------------------
+
+// Common styles
+.panel {
+    .box-shadow(0 1px 2px rgba(0, 0, 0, .05));
+}
+
+// Mixin for generating new styles
+.panel-heading-styles(@color) {
+    background-color: @color;
+    #gradient > .vertical(@start-color: @color; @end-color: darken(@color, 5%));
+    color: white;
+    border: inherit;
+}
+
+// Apply the mixin to the panel headings only
+.panel-default > .panel-heading {
+    .panel-heading-styles(@panel-default-heading-bg);
+}
+
+.panel-primary > .panel-heading {
+    .panel-heading-styles(@panel-primary-heading-bg);
+}
+
+.panel-success > .panel-heading {
+    .panel-heading-styles(@panel-success-heading-bg);
+}
+
+.panel-info > .panel-heading {
+    .panel-heading-styles(@panel-info-heading-bg);
+}
+
+.panel-warning > .panel-heading {
+    .panel-heading-styles(@panel-warning-heading-bg);
+}
+
+.panel-danger > .panel-heading {
+    .panel-heading-styles(@panel-danger-heading-bg);
+}
+
+// Fix all the hardcoded borders set in bootstrap.css
+.panel-default {
+    border-color: @panel-default-border;
+}
+
+.panel-primary {
+    border-color: @panel-primary-border;
+}
+
+.panel-success {
+    border-color: @panel-success-border;
+}
+
+.panel-info {
+    border-color: @panel-info-border;
+}
+
+.panel-warning {
+    border-color: @panel-warning-border;
+}
+
+.panel-danger {
+    border-color: @panel-danger-border;
+}
+
+//
+// Wells
+// --------------------------------------------------
+
+.well {
+    #gradient > .vertical(@start-color: darken(@well-bg, 5%); @end-color: @well-bg);
+    border-color: darken(@well-bg, 10%);
+    @shadow: inset 0 1px 3px rgba(0, 0, 0, .05), 0 1px 0 rgba(255, 255, 255, .1);
+    .box-shadow(@shadow);
+}
+
+//
+// Code / Logs
+// --------------------------------------------------
+
+.log-header {
+    font-family: @font-family-panel;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 5px;
+}
+
+.log-header__section {
+    display: flex;
+    align-items: center;
+}
+
+.log-header__section a {
+    padding-left: 10px;
+}
+
+.download-log-button {
+    cursor: pointer;
+    opacity: 0.87000002;
+}
+
+code {
+    font-family: @font-family-monospace;
+    width: 100%;
+    min-height: 12px;
+    border: 1px solid @pre-border-color;
+    border-radius: 4px;
+    position: relative;
+    counter-reset: line;
+    font-size: 1.2rem;
+}
+
+code p:hover {
+    background-color: @pre-color-hover;
+}
+
+code p {
+    counter-increment: line;
+    margin: 0;
+    display: flex;
+    align-items: baseline;
+}
+
+code p::nth-line {
+    color: yellow !important;
+}
+
+code p a {
+    margin: 0;
+    padding: 0 15px 0 20px;
+    word-break: break-all;
+    display: inline;
+    color: @pre-color;
+}
+
+code a:hover {
+    color: @pre-color;
+    text-decoration: none;
+}
+
+code p::before {
+    color: @gray-light;
+    content: counter(line);
+    min-width: 35px; // scales < 100k then you will see an offset
+    white-space: nowrap;
+    padding-right: 1em;
+    padding-left: 10px;
+    text-align: right;
+    .user-select(none);
+}
+
+code.block {
+    background-color: @pre-bg;
+    color: @pre-color;
+    display: block;
+    padding: 0.5rem;
+    //max-height: @pre-scrollable-max-height;
+    border: solid 1px darken(@pre-bg, 20%);
+    white-space: pre-wrap;
+}
+
+code.inline {
+    display: inline-block;
+    padding: inherit;
+    white-space: pre-wrap;
+}
+
+code.hash {
+    border: 0;
+    font-size: 1.4rem;
+}
+
+//
+// Mono Icons
+// --------------------------------------------------
+
+.material-icons {
+    color: @brand-primary;
+}
+
+.material-icons.selected {
+    color: @brand-warning;
+}
+
+//
+// Layout elements
+// --------------------------------------------------
+
+.u-flex-grow {
+    flex-grow: 1;
+}
+
+main article {
+    .u-content-page-sizing;
+    padding-top: 32px;
+    padding-bottom: 32px;
+}
+
+.container-fluid {
+    padding: 0;
+}
+
+footer {
+    text-align: center;
+    margin: 1em;
+}
+
+// Modal css
+.overlayStyles {
+    position: fixed;
+    display: block;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    zIndex: 99;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.dialog {
+    width: 100%;
+    height: 100%;
+    min-width: 640px; // avoid flow issues when resizing dialogs very small
+    position: fixed;
+    top: 0;
+    left: 0;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+    border-radius: 2px;
+    z-index: 100;
+    box-shadow: 0 0 4px rgba(0, 0, 0, .14), 0 4px 8px rgba(0, 0, 0, .28);
+}
+
+.expand-in-appear {
+    .transition(all ease-out 0.15s);
+    top: 4%;
+    opacity: 0.01;
+    transform: scale(0.96);
+
+    &.expand-in-appear-active {
+        top: 0;
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.expand-in-leave {
+    .transition(all ease-out 0.1s);
+    top: 0;
+    opacity: 1;
+    transform: scale(1);
+
+    &.expand-in-leave-active {
+        top: 4%;
+        opacity: 0.01;
+        transform: scale(0.96);
+    }
+}
+
+.slideup-appear {
+    .transition(all ease-out 0.3s);
+    top: 75%;
+    opacity: 0.01;
+
+    &.slideup-appear-active {
+        top: 0;
+        opacity: 1;
+    }
+}
+
+.slideup-leave {
+    .transition(all ease-out 0.3s);
+    top: 0;
+    opacity: 1;
+
+    &.slideup-leave-active {
+        top: 75%;
+        opacity: 0.01;
+    }
+}
+
+.fadein-appear {
+    .transition(opacity ease-out 1s);
+    opacity: 0.01;
+
+    &.fadein-appear-active {
+        opacity: 1;
+    }
+}
+
+.dialog .header {
+    color: #ffffff;
+    font-weight: normal;
+    line-height: 20px;
+    font-size: 1.6rem;
+}
+
+.dialog .header-content {
+    padding: 0 50px 0 50px;
+}
+
+.dialog .header {
+    &.success {
+        background-color: @brand-success;
+    }
+
+    &.failure {
+        background-color: @brand-danger;
+    }
+
+    &.unstable {
+        background-color: @brand-warning;
+    }
+
+    &.info, &.running {
+        background-color: @brand-info;
+    }
+
+    &.not_built {
+        background-color: @brand-grey;
+    }
+
+    &.queued, &.aborted {
+        background-color: @brand-grey-lite;
+    }
+
+    &.paused {
+        background-color: @brand-paused;
+    }
+
+    &.unknown {
+        background-color: @brand-unknown;
+    }
+}
+
+.dialog .content {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    padding: 25px 50px 25px 50px;
+    background-color: @modal-content-bg;
+}
+
+.header .title {
+    margin-top: 0
+}
+
+.header .closeButton {
+    cursor: pointer;
+    text-decoration: none;
+    position: absolute;
+    font-size: 3em;
+    color: #ffffff;
+    right: 10px;
+    top: 10px;
+}
+
+.spin {
+    -webkit-animation-name: spin;
+    -webkit-animation-duration: 4000ms;
+    -webkit-animation-iteration-count: infinite;
+    -webkit-animation-timing-function: linear;
+    -moz-animation-name: spin;
+    -moz-animation-duration: 4000ms;
+    -moz-animation-iteration-count: infinite;
+    -moz-animation-timing-function: linear;
+    -ms-animation-name: spin;
+    -ms-animation-duration: 4000ms;
+    -ms-animation-iteration-count: infinite;
+    -ms-animation-timing-function: linear;
+
+    animation-name: spin;
+    animation-duration: 4000ms;
+    animation-iteration-count: infinite;
+    animation-timing-function: linear;
+}
+
+@-ms-keyframes spin {
+    from {
+        -ms-transform: rotate(0deg);
+    }
+    to {
+        -ms-transform: rotate(360deg);
+    }
+}
+
+@-moz-keyframes spin {
+    from {
+        -moz-transform: rotate(0deg);
+    }
+    to {
+        -moz-transform: rotate(360deg);
+    }
+}
+
+@-webkit-keyframes spin {
+    from {
+        -webkit-transform: rotate(0deg);
+    }
+    to {
+        -webkit-transform: rotate(360deg);
+    }
+}
+
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.left {
+    float: left;
+}
+
+.right {
+    float: right;
+}
+
+.clickIndicator {
+    cursor: pointer;
+}
+
+.Site {
+    display: flex;
+    min-height: 100vh;
+    flex-direction: column;
+}
+
+#outer {
+    flex: 1;
+}
+
+.development-footer {
+    padding-bottom: 10px;
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: rgb(119, 119, 119);
+}

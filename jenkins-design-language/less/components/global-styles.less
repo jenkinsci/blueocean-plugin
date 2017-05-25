@@ -1,0 +1,45 @@
+@control-border-color: rgba(73, 73, 73, 0.5);
+
+.control-border {
+    border: 1px solid @control-border-color;
+    border-radius: 3px;
+}
+
+.focus-rect {
+    box-shadow: inset 0 0 2px 3px rgba(0, 0, 0, 0.2);
+}
+
+.ie11-focus-rect {
+    // needs a slightly different focus rect in some instances in order to center itself properly
+    box-shadow: inset 0 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.focus-styles {
+    outline: 0;
+    .focus-rect;
+}
+
+.u-disabled {
+    opacity: 0.4;
+    cursor: auto;
+}
+
+.u-error-color {
+    color: @brand-danger;
+}
+
+.u-error-border {
+    border-color: @brand-danger;
+}
+
+// visually hide an element (such as radio/checkbox) but leave it accessible
+.cloak {
+    border: 0;
+    clip: rect(0, 0, 0, 0);
+    height: 1px;
+    margin: -1px;
+    overflow: hidden;
+    padding: 0;
+    position: absolute;
+    width: 1px;
+}
