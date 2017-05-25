@@ -19,9 +19,9 @@
       "dev": true
     },
     "@jenkins-cd/js-builder": {
-      "version": "0.0.57",
-      "from": "@jenkins-cd/js-builder@0.0.57",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.57.tgz",
+      "version": "0.0.59",
+      "from": "@jenkins-cd/js-builder@0.0.59",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.59.tgz",
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
