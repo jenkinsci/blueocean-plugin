@@ -29,7 +29,7 @@ describe('Branches should render', () => {
 
         const message = wrapper.find('.RunMessageCell');
         expect(message).to.have.length(1);
-        assert.equal(message.text(), 'Update Jenkinsfile ');
+        assert.equal(message.text(), 'Update Jenkinsfile');
     });
 });
 
