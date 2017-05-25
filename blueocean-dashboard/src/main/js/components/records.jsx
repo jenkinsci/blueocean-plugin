@@ -70,7 +70,7 @@ export const branchDetailsRecord = Record({
     branch: {
         url: null,
         isPrimary: false,
-    }
+    },
 });
 
 export class RunRecord extends Record({
