@@ -176,7 +176,6 @@ class RunDetails extends Component {
             router.push(location);
         };
 
-
         const base = { base: baseUrl };
 
         const tabs = [

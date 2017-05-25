@@ -66,6 +66,13 @@ export const TestSummaryRecord = Record({
     },
 });
 
+export const branchDetailsRecord = Record({
+    branch: {
+        url: null,
+        isPrimary: false,
+    },
+});
+
 export class RunRecord extends Record({
     _class: null,
     _capabilities: [],
@@ -94,6 +101,7 @@ export class RunRecord extends Record({
     pullRequest: PullRequestRecord,
     testSummary: TestSummaryRecord,
     replayable: null,
+    branch: branchDetailsRecord,
 }) {
     isQueued() {
         return this.state === 'QUEUED';
