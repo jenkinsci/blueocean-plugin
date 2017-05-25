@@ -16,7 +16,7 @@ const capabilities = {
 };
 
 describe('Branches should render', () => {
-    // beforeAll(() => mockExtensionsForI18n());
+    beforeAll(() => mockExtensionsForI18n());
 
     it('renders the Branches', () => {
         const pipeline = new PipelineRecord(pipelines[0]);
