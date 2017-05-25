@@ -13,6 +13,9 @@
 
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
 
+    <properties>
+        <jacoco.haltOnFailure>true</jacoco.haltOnFailure>
+    </properties>
     <dependencies>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -26,6 +29,17 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-pipeline-api-impl</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>async-http-client</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-pipeline-api-impl</artifactId>
+            <classifier>tests</classifier>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
-
 </project>

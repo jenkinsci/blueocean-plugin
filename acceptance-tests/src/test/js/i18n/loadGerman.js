@@ -8,11 +8,12 @@ const newButtonSelector = '.btn-new-pipeline';
 module.exports = {
     /** Load it in German */
     'Step 01': function (browser) {
+        browser.login();
         var bluePipelines = browser.page.bluePipelines().navigateLanguage("de");
         bluePipelines.waitForElementVisible(newButtonSelector);
         browser.getText(newButtonSelector, function(response) {
             browser.assert.equal(response.value, 'Neue Pipeline');
-        });        
+        });
     },
 
     /** Load it in The Queens English, God Bless The Queen */
@@ -21,7 +22,7 @@ module.exports = {
         bluePipelines.waitForElementVisible(newButtonSelector);
         browser.getText(newButtonSelector, function(response) {
             browser.assert.equal(response.value, 'New Pipeline');
-        });        
+        });
     },
-    
+
 };

@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.111",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.111",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.111.tgz"
+      "version": "0.0.114",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.114",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.114.tgz"
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.128",
@@ -19,9 +19,9 @@
       "dev": true
     },
     "@jenkins-cd/js-builder": {
-      "version": "0.0.57",
-      "from": "@jenkins-cd/js-builder@0.0.57",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.57.tgz",
+      "version": "0.0.59",
+      "from": "@jenkins-cd/js-builder@0.0.59",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.59.tgz",
       "dev": true,
       "dependencies": {
         "glob": {
@@ -40,7 +40,7 @@
     },
     "@jenkins-cd/js-builder-jest": {
       "version": "0.0.1",
-      "from": "@jenkins-cd/js-builder-jest@latest",
+      "from": "@jenkins-cd/js-builder-jest@0.0.1",
       "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder-jest/-/js-builder-jest-0.0.1.tgz",
       "dev": true,
       "dependencies": {
@@ -53,14 +53,14 @@
       }
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.35",
-      "from": "@jenkins-cd/js-extensions@0.0.35",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.35.tgz"
+      "version": "0.0.36",
+      "from": "@jenkins-cd/js-extensions@0.0.36",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.36.tgz"
     },
     "@jenkins-cd/js-modules": {
-      "version": "0.0.8",
-      "from": "@jenkins-cd/js-modules@0.0.8",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.8.tgz"
+      "version": "0.0.10",
+      "from": "@jenkins-cd/js-modules@0.0.10",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.10.tgz"
     },
     "@jenkins-cd/logging": {
       "version": "0.0.6",
@@ -78,9 +78,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/react-material-icons/-/react-material-icons-1.0.0.tgz"
     },
     "@jenkins-cd/sse-gateway": {
-      "version": "0.0.19",
-      "from": "@jenkins-cd/sse-gateway@0.0.19",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.19.tgz"
+      "version": "0.0.21",
+      "from": "@jenkins-cd/sse-gateway@0.0.21",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.21.tgz"
     },
     "@jenkins-cd/storage": {
       "version": "0.0.6",
@@ -1245,9 +1245,9 @@
       "resolved": "https://registry.npmjs.org/balanced-match/-/balanced-match-0.4.2.tgz"
     },
     "base62": {
-      "version": "1.1.2",
+      "version": "1.2.0",
       "from": "base62@>=1.1.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/base62/-/base62-1.1.2.tgz"
+      "resolved": "https://registry.npmjs.org/base62/-/base62-1.2.0.tgz"
     },
     "base64-js": {
       "version": "0.0.8",
@@ -2988,10 +2988,18 @@
       "dev": true,
       "dependencies": {
         "glob": {
-          "version": "7.1.1",
+          "version": "7.1.2",
           "from": "glob@>=7.0.3 <8.0.0",
-          "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.1.tgz",
-          "dev": true
+          "resolved": "https://registry.npmjs.org/glob/-/glob-7.1.2.tgz",
+          "dev": true,
+          "dependencies": {
+            "minimatch": {
+              "version": "3.0.4",
+              "from": "minimatch@>=3.0.4 <4.0.0",
+              "resolved": "https://registry.npmjs.org/minimatch/-/minimatch-3.0.4.tgz",
+              "dev": true
+            }
+          }
         }
       }
     },
@@ -4922,9 +4930,9 @@
       "dev": true,
       "dependencies": {
         "async": {
-          "version": "2.4.0",
+          "version": "2.4.1",
           "from": "async@>=2.1.4 <3.0.0",
-          "resolved": "https://registry.npmjs.org/async/-/async-2.4.0.tgz",
+          "resolved": "https://registry.npmjs.org/async/-/async-2.4.1.tgz",
           "dev": true
         }
       }
@@ -4996,15 +5004,15 @@
           "dev": true
         },
         "handlebars": {
-          "version": "4.0.8",
+          "version": "4.0.10",
           "from": "handlebars@>=4.0.3 <5.0.0",
-          "resolved": "https://registry.npmjs.org/handlebars/-/handlebars-4.0.8.tgz",
+          "resolved": "https://registry.npmjs.org/handlebars/-/handlebars-4.0.10.tgz",
           "dev": true
         },
         "uglify-js": {
-          "version": "2.8.23",
+          "version": "2.8.27",
           "from": "uglify-js@>=2.6.0 <3.0.0",
-          "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-2.8.23.tgz",
+          "resolved": "https://registry.npmjs.org/uglify-js/-/uglify-js-2.8.27.tgz",
           "dev": true,
           "optional": true,
           "dependencies": {
