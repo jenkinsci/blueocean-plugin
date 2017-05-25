@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.113-tf-beta-1",
+  "version": "0.0.114-SNAPSHOT",
   "dependencies": {
     "@jenkins-cd/design-language": {
       "version": "0.0.128",
@@ -14,14 +14,14 @@
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.36-tf-beta-2",
-      "from": "@jenkins-cd/js-extensions@0.0.36-tf-beta-2",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.36-tf-beta-2.tgz"
+      "version": "0.0.36",
+      "from": "@jenkins-cd/js-extensions@0.0.36",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.36.tgz"
     },
     "@jenkins-cd/js-modules": {
-      "version": "0.0.10-tf-beta-3",
-      "from": "@jenkins-cd/js-modules@0.0.10-tf-beta-3",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.10-tf-beta-3.tgz"
+      "version": "0.0.10",
+      "from": "@jenkins-cd/js-modules@0.0.10",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.10.tgz"
     },
     "@jenkins-cd/logging": {
       "version": "0.0.6",
@@ -1070,9 +1070,9 @@
       "resolved": "https://registry.npmjs.org/balanced-match/-/balanced-match-0.4.2.tgz"
     },
     "base62": {
-      "version": "1.1.2",
+      "version": "1.2.0",
       "from": "base62@>=1.1.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/base62/-/base62-1.1.2.tgz"
+      "resolved": "https://registry.npmjs.org/base62/-/base62-1.2.0.tgz"
     },
     "base64-arraybuffer": {
       "version": "0.1.2",
