@@ -1,0 +1,158 @@
+// Mixin for generating btn styles
+.btn-styles(@btn-color; @btn-border; @btn-text; @hover-color; @active-color) {
+    display: inline-block;
+    border: solid 1px @btn-border;
+    border-radius: 3px;
+
+    text-align: center;
+    text-decoration: none;
+
+    background-color: @btn-color;
+    color: @btn-text;
+    cursor: pointer;
+
+    &:hover, &.hover {
+        color: @btn-text;
+        background-color: @hover-color;
+        text-decoration: none;
+    }
+
+    &:focus, &.focus {
+        .focus-styles;
+    }
+
+    &:active, &.active {
+        background-color: @active-color;
+    }
+
+    &.disabled,
+    &[disabled],
+    fieldset[disabled] & {
+        &,
+        &:hover,
+        &:focus,
+        &.focus,
+        &:active,
+        &.active {
+            .u-disabled;
+            background-color: @btn-color;
+        }
+    }
+}
+
+// Apply the mixin to the buttons
+button, .btn, .btn-default, .btn-primary {
+    // TODO: need to derive hover and active from @brand-primary
+    .btn-styles(
+        @btn-primary-bg,
+        @btn-primary-border,
+        @btn-primary-color,
+        #3080de,
+        #2171ce
+    );
+
+    .Button-medium;
+
+    .layout-small & {
+        .Button-small;
+    }
+
+    .layout-large & {
+        .Button-large;
+    }
+}
+
+// "link button" styling
+a.btn-link {
+    .btn-styles(
+        transparent,
+        transparent,
+        @brand-primary,
+        fade(@brand-primary, 8%),
+        fade(@brand-primary, 18%)
+    );
+
+    text-align: left;
+}
+
+.btn-secondary {
+    .btn-styles(
+        transparent,
+        fade(@brand-primary, 50%),
+        @btn-primary-border,
+        fade(@brand-primary, 8%),
+        fade(@brand-primary, 18%)
+    );
+}
+
+.btn-danger {
+    // TODO: need hover and actives
+    .btn-styles(
+        @btn-danger-bg,
+        @btn-danger-border,
+        @btn-danger-color,
+        @btn-danger-bg,
+        @btn-danger-bg
+    );
+}
+
+.btn-secondary.btn-danger {
+    .btn-styles(
+        transparent,
+        fade(@btn-danger-bg, 50%),
+        @btn-danger-bg,
+        fade(@btn-danger-bg, 8%),
+        fade(@btn-danger-bg, 18%)
+    );
+}
+
+// inverse buttons
+button, .btn, .btn-default, .btn-primary, .btn-secondary, .btn-danger, a.btn-link {
+    &.inverse, .inverse &, .inverse-background & {
+        .btn-styles(
+            transparent,
+            #fff,
+            #fff,
+            fade(#fff, 10%),
+            fade(#fff, 20%)
+        );
+
+        &:focus, &.focus {
+            .focus-styles;
+            // TODO: need real style; using 0.4 here
+            box-shadow: inset 0 0 1px 3px rgba(255, 255, 255, 0.4);
+        }
+    }
+}
+
+// monochrome buttons
+button, .btn, .btn-default, .btn-primary, .btn-secondary {
+    &.monochrome {
+        .btn-styles(transparent, @gray-light, @text-color, @gray-lighter, @gray-lighter);
+    }
+}
+
+// button sizing
+button, .btn, .btn-default, .btn-primary, .btn-secondary, .btn-danger, a.btn-link {
+    .Button-medium;
+
+    .layout-small & {
+        .Button-small;
+    }
+
+    .layout-large & {
+        .Button-large;
+    }
+}
+
+.Button-small {
+    padding: 5px 10px;
+}
+
+.Button-medium {
+    padding: 6px 20px;
+}
+
+.Button-large {
+    padding: 8px 24px;
+}

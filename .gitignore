@@ -21,3 +21,8 @@ blueocean-web/src/main/webapp/assets
 .vscode
 jsconfig.json
 blueocean-core-js/nohup.out
+dist
+reports
+/website/storybook
+/website/component-docs/doc*
+/website-build

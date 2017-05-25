@@ -1,0 +1,93 @@
+
+
+td, th {
+    padding: 0; // Browser default is 1px
+}
+
+.jdl-table {
+
+    //--------------------------------------
+    //  Basics
+    //--------------------------------------
+
+    border-collapse: collapse;
+    width: 100%;
+
+    td, th {
+        text-align: left;
+    }
+
+    th {
+        font-family: @font-family-headings;
+        font-weight: normal;
+    }
+
+    a {
+        color: @text-color;
+    }
+
+    //--------------------------------------
+    //  Util styles
+    //--------------------------------------
+
+    &.u-fixed {
+        table-layout: fixed;
+    }
+
+    // Highlight row on mouseover for selectable tables
+
+    &.u-highlight-rows {
+        tbody tr:hover {
+            cursor: pointer;
+            background-color: rgba(148, 147, 147, 0.1);
+        }
+    }
+
+    // Default padding. Applied via classname for easy removal / reuse
+
+    &.u-table-padding td, // For standard tables
+    &.u-table-padding th,
+    td.u-table-padding, // apply to specific cells via className
+    th.u-table-padding {
+
+        padding: 0.5rem 0;
+
+        &:first-child {
+            padding-left: 1rem;
+        }
+
+        &:last-child {
+            padding-right: 1rem;
+        }
+    }
+
+    // Single-line cells, no text wrapping. Applied via classname for easy removal / reuse
+
+    &.u-single-line td,  // For standard tables
+    &.u-single-line th,
+    td.u-single-line, // apply to specific cells via className
+    th.u-single-line {
+        .text-overflow();
+    }
+
+    //--------------------------------------
+    //  Head / Body divider
+    //--------------------------------------
+
+    &.u-table-padding tr.jdl-table-divider, // Applies whether default padding is on or not
+    tr.jdl-table-divider {
+
+        td {
+            padding: 0.5rem 0;
+        }
+
+        hr {
+            height: 1px;
+            color: @text-color;
+            background: @text-color;
+            border: none;
+            font-size: 0;
+            opacity: 0.5;
+        }
+    }
+}
