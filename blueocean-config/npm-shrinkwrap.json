@@ -15,9 +15,9 @@
       "dev": true
     },
     "@jenkins-cd/js-modules": {
-      "version": "0.0.10-tf-beta-3",
-      "from": "@jenkins-cd/js-modules@0.0.10-tf-beta-3",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.10-tf-beta-3.tgz"
+      "version": "0.0.10",
+      "from": "@jenkins-cd/js-modules@0.0.10",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.10.tgz"
     },
     "acorn": {
       "version": "1.2.2",
