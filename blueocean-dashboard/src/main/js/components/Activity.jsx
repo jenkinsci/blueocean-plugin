@@ -12,7 +12,7 @@ import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
 import {
     NoRunsDefaultPlaceholder,
     NoRunsForBranchPlaceholder,
-    NoRunsMultibranchPlaceholder
+    NoRunsMultibranchPlaceholder,
 } from './placeholder/NoRunsPlaceholder';
 
 
