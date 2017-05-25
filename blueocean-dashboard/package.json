@@ -17,7 +17,7 @@
   },
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.59",
+    "@jenkins-cd/js-builder": "0.0.60-SNAPSHOT-4",
     "@kadira/storybook": "2.20.1",
     "babel": "6.5.2",
     "babel-core": "6.17.0",
@@ -35,13 +35,14 @@
     "mocha": "3.1.0",
     "nock": "8.0.0",
     "react-addons-test-utils": "15.3.2",
+    "reactify": "1.1.1",
     "redux-mock-store": "1.2.1",
     "skin-deep": "0.16.0"
   },
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": "0.0.113",
     "@jenkins-cd/design-language": "0.0.128",
-    "@jenkins-cd/js-extensions": "0.0.35",
+    "@jenkins-cd/js-extensions": "0.0.36-SNAPSHOT-2",
     "@jenkins-cd/js-modules": "0.0.8",
     "@jenkins-cd/preferences": "0.0.4",
     "@jenkins-cd/react-material-icons": "1.0.0",
@@ -63,19 +64,21 @@
     "react-i18next": "1.10.1",
     "react-redux": "4.4.5",
     "react-remarkable": "1.1.1",
-    "react-router": "2.3.0",
+    "react-router": "2.8.1",
     "redux": "3.6.0",
     "redux-thunk": "2.1.0",
     "reselect": "2.5.4"
   },
   "jenkinscd": {
-    "import": [
-      "immutable",
-      "keymirror",
-      "react-redux",
-      "react-router",
-      "redux-thunk",
+    "export": [
       "reselect"
+    ],
+    "import": [
+      "immutable@any",
+      "keymirror@any",
+      "react-redux@any",
+      "react-router@any",
+      "redux-thunk@any"
     ]
   }
 }

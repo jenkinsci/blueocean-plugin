@@ -22,6 +22,10 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-core-js</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-web</artifactId>
         </dependency>
         <dependency>
@@ -152,6 +156,7 @@
                         //
                         // Link in other sub-modules. Add as needed.
                         //
+                        linkHPI('blueocean-core-js');
                         linkHPI('blueocean-web');
                         linkHPI('blueocean-dashboard');
                         linkHPI('blueocean-personalization');

@@ -106,6 +106,8 @@
   </developers>
 
   <modules>
+    <module>blueocean-maven-plugin</module>
+    <module>blueocean-core-js</module>
     <module>blueocean-commons</module>
     <module>blueocean-i18n</module>
     <module>blueocean-web</module>
@@ -194,6 +196,12 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-i18n</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-core-js</artifactId>
             <version>${project.version}</version>
         </dependency>
 
