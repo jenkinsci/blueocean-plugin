@@ -11,7 +11,6 @@ export class PipelineRecord extends Record({
     displayName: '',
     estimatedDurationInMillis: 0,
     fullName: '',
-    lastSuccessfulRun: null,
     latestRun: null,
     name: '',
     numberOfFailingBranches: 0,
@@ -67,17 +66,27 @@ export const TestSummaryRecord = Record({
     },
 });
 
+export const branchDetailsRecord = Record({
+    branch: {
+        url: null,
+        isPrimary: false,
+    },
+});
+
 export class RunRecord extends Record({
     _class: null,
     _capabilities: [],
     _links: null,
-    changeSet: ChangeSetRecord,
+    changeSet: [],
+    causes: [],
     causeOfBlockage: null,
     artifacts: null,
     durationInMillis: null,
     enQueueTime: null,
     endTime: null,
     estimatedDurationInMillis: null,
+    name: null,
+    description: null,
     id: null,
     organization: null,
     pipeline: null,
@@ -91,6 +100,8 @@ export class RunRecord extends Record({
     artifactsZipFile: null,
     pullRequest: PullRequestRecord,
     testSummary: TestSummaryRecord,
+    replayable: null,
+    branch: branchDetailsRecord,
 }) {
     isQueued() {
         return this.state === 'QUEUED';

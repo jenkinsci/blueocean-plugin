@@ -1,0 +1,386 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>org.jenkins-ci</groupId>
+    <artifactId>jenkins</artifactId>
+    <version>1.32</version>
+  </parent>
+
+  <artifactId>bluecoean-acceptance-test</artifactId>
+  <version>1.0-SNAPSHOT</version>
+
+  <name>Blue Ocean Acceptance Tests</name>
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>http://opensource.org/licenses/MIT</url>
+    </license>
+  </licenses>
+
+  <properties>
+    <!-- https://github.com/jenkinsci/acceptance-test-harness -->
+    <jenkins.acceptance.testharness.version>1.30</jenkins.acceptance.testharness.version>
+    <node.version>6.4.0</node.version>
+    <npm.version>3.10.3</npm.version>
+  </properties>
+
+  <repositories>
+    <repository>
+      <id>repo.jenkins-ci.org</id>
+      <url>http://repo.jenkins-ci.org/public/</url>
+    </repository>
+  </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>repo.jenkins-ci.org</id>
+      <url>http://repo.jenkins-ci.org/public/</url>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.jenkins-ci</groupId>
+      <artifactId>acceptance-test-harness</artifactId>
+      <version>${jenkins.acceptance.testharness.version}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.github.detro.ghostdriver</groupId>
+          <artifactId>phantomjsdriver</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.codeborne</groupId>
+      <artifactId>phantomjsdriver</artifactId>
+      <version>1.3.0</version>
+    </dependency>
+    <dependency>
+      <groupId>com.github.eirslett</groupId>
+      <artifactId>frontend-plugin-core</artifactId>
+      <version>1.0</version>
+      <exclusions>
+        <exclusion>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+  </dependencies>
+
+  <!--
+    The following build and profile configs were copied
+    directly from https://github.com/jenkinsci/acceptance-test-harness
+    All of this might not be needed. In any case, I'd imagine there
+    will be requests by community members to move the BO tests in with
+    the main acceptance tests in https://github.com/jenkinsci/acceptance-test-harness.
+  -->
+  
+  <profiles>
+    <profile>
+      <id>BROWSER</id>
+      <activation>
+        <property>
+          <name>BROWSER</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <environmentVariables>
+                <BROWSER>${BROWSER}</BROWSER>
+              </environmentVariables>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>JENKINS_WAR</id>
+      <activation>
+        <property>
+          <name>JENKINS_WAR</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <environmentVariables>
+                <JENKINS_WAR>${JENKINS_WAR}</JENKINS_WAR>
+              </environmentVariables>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>LOCAL_SNAPSHOTS</id>
+      <activation>
+        <property>
+          <name>LOCAL_SNAPSHOTS</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <environmentVariables>
+                <LOCAL_SNAPSHOTS>${LOCAL_SNAPSHOTS}</LOCAL_SNAPSHOTS>
+              </environmentVariables>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <!-- TODO could be laboriously repeated for $TYPE, etc. (seems Maven provides no generic way to do this) -->
+
+    <profile>
+      <id>runTests</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <includes>
+                <include>**/*Test.java</include>
+              </includes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>runDevRunner</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <includes>
+                <include>**/DevRunner.java</include>
+              </includes>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <!--
+       Node/NPM download, install and initialize.
+    -->
+    <profile>
+      <id>node-classifier-linux</id>
+      <activation>
+        <os>
+          <family>Linux</family>
+          <arch>amd64</arch>
+        </os>
+      </activation>
+      <properties>
+        <node.download.file>node-v${node.version}-linux-x64.tar.gz</node.download.file>
+        <node.download.classifier />
+      </properties>
+    </profile>
+    <profile>
+      <id>node-classifier-mac</id>
+      <activation>
+        <os>
+          <family>mac</family>
+        </os>
+      </activation>
+      <properties>
+        <node.download.file>node-v${node.version}-darwin-x64.tar.gz</node.download.file>
+        <node.download.classifier />
+      </properties>
+    </profile>
+    <profile>
+      <id>node-classifier-windows</id>
+      <activation>
+        <os>
+          <family>windows</family>
+          <arch>x64</arch>
+        </os>
+      </activation>
+      <properties>
+        <node.download.file>win-x64/node.exe</node.download.file>
+        <node.download.classifier>/x64</node.download.classifier>
+      </properties>
+    </profile>
+    <profile>
+      <id>node-classifier-windows-amd64</id>
+      <activation>
+        <os>
+          <family>windows</family>
+          <arch>amd64</arch>
+        </os>
+      </activation>
+      <properties>
+        <node.download.file>win-x64/node.exe</node.download.file>
+        <node.download.classifier>/x64</node.download.classifier>
+      </properties>
+    </profile>
+    <profile>
+      <id>node-classifier-windows-x86</id>
+      <activation>
+        <os>
+          <family>windows</family>
+          <arch>x86</arch>
+        </os>
+      </activation>
+      <properties>
+        <node.download.file>win-x86/node.exe</node.download.file>
+        <node.download.classifier />
+      </properties>
+    </profile>
+
+    <profile>
+      <id>clean-node</id>
+      <activation>
+        <property>
+          <name>cleanNode</name>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-clean-plugin</artifactId>
+            <configuration>
+              <filesets>
+                <fileset>
+                  <directory>node</directory>
+                  <followSymlinks>false</followSymlinks>
+                </fileset>
+                <fileset>
+                  <directory>node_modules</directory>
+                  <followSymlinks>false</followSymlinks>
+                </fileset>
+              </filesets>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>    
+    
+  </profiles>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.2</version>
+        <configuration>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>appassembler-maven-plugin</artifactId>
+        <version>1.8</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>assemble</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <programs>
+            <program>
+              <mainClass>org.jenkinsci.test.acceptance.server.JenkinsControllerPoolProcess</mainClass>
+              <id>jut-server</id>
+            </program>
+          </programs>
+        </configuration>
+      </plugin>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <!--
+            tests are used to test JE, not the acceptance test harness,
+            so there's no point in running tests during a release of the harness
+          -->
+          <arguments>-DskipTests</arguments>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>com.googlecode.maven-download-plugin</groupId>
+        <artifactId>download-maven-plugin</artifactId>
+        <version>1.2.1</version>
+        <executions>
+          <execution>
+            <id>get-node</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+              <url>https://nodejs.org/dist/v${node.version}/${node.download.file}</url>
+              <unpack>false</unpack>
+              <outputDirectory>
+                ${project.build.directory}/frontend/v${node.version}${node.download.classifier}
+              </outputDirectory>
+            </configuration>
+          </execution>
+          <execution>
+            <id>get-npm</id>
+            <phase>initialize</phase>
+            <goals>
+              <goal>wget</goal>
+            </goals>
+            <configuration>
+              <url>http://registry.npmjs.org/npm/-/npm-${npm.version}.tgz</url>
+              <unpack>false</unpack>
+              <outputDirectory>${project.build.directory}/frontend/</outputDirectory>
+              <outputFileName>npm-${npm.version}.tgz</outputFileName>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.github.eirslett</groupId>
+        <artifactId>frontend-maven-plugin</artifactId>
+        <version>0.0.23</version>
+
+        <executions>
+
+          <execution>
+            <phase>initialize</phase>
+            <id>install node and npm</id>
+            <goals>
+              <goal>install-node-and-npm</goal>
+            </goals>
+            <configuration>
+              <nodeVersion>v${node.version}</nodeVersion>
+              <npmVersion>${npm.version}</npmVersion>
+              <!-- Use the pre-download node and npm packages. See download-maven-plugin config above. -->
+              <downloadRoot>${project.baseUri}target/frontend/</downloadRoot>
+            </configuration>
+          </execution>
+
+          <execution>
+            <phase>initialize</phase>
+            <id>npm install</id>
+            <goals>
+              <goal>npm</goal>
+            </goals>
+            <configuration>
+              <arguments>install</arguments>
+            </configuration>
+          </execution>
+
+        </executions>
+      </plugin>
+    </plugins>
+  </build>  
+</project>

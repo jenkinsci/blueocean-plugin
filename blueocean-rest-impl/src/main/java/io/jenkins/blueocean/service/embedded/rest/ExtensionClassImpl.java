@@ -25,7 +25,9 @@ public class ExtensionClassImpl extends BlueExtensionClass {
     @Override
     public Collection<String> getClasses() {
         List<String> classes = new ArrayList<>();
-        collectSuperClasses(classes, baseClass);
+        if(baseClass != null) {
+            collectSuperClasses(classes, baseClass);
+        }
         return classes;
     }
 

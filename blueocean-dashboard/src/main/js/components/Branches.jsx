@@ -1,13 +1,13 @@
 import React, { Component, PropTypes } from 'react';
-import {
-    CommitHash,
-    ReadableDate,
-    WeatherIcon,
-} from '@jenkins-cd/design-language';
-import { RunButton, LiveStatusIndicator } from '@jenkins-cd/blueocean-core-js';
+import { CommitHash, ReadableDate, WeatherIcon } from '@jenkins-cd/design-language';
+import { LiveStatusIndicator, RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 import { CellRow, CellLink } from './CellLink';
+import { Icon } from '@jenkins-cd/react-material-icons';
+import { buildPipelineUrl } from '../util/UrlUtils';
+import { Link } from 'react-router';
+import RunMessageCell from './RunMessageCell';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 
@@ -72,8 +72,7 @@ export default class Branches extends Component {
         }
         const cleanBranchName = decodeURIComponent(branch.name);
         const runDetailsUrl = buildRunDetailsUrl(branch.organization, pipeline.fullName, cleanBranchName, latestRun.id, 'pipeline');
-
-        const { msg } = (latestRun.changeSet && latestRun.changeSet.length > 0) ? (latestRun.changeSet[latestRun.changeSet.length - 1] || {}) : {};
+        const historyButtonUrl = `${buildPipelineUrl(branch.organization, pipeline.fullName)}/activity?branch=${encodeURIComponent(branch.name)}`;
         return (
             <CellRow linkUrl={runDetailsUrl} id={`${cleanBranchName}-${latestRun.id}`}>
                 <CellLink disableDefaultPadding>
@@ -89,7 +88,7 @@ export default class Branches extends Component {
                 </CellLink>
                 <CellLink>{cleanBranchName}</CellLink>
                 <CellLink><CommitHash commitId={latestRun.commitId} /></CellLink>
-                <CellLink>{msg || '-'}</CellLink>
+                <CellLink><RunMessageCell run={latestRun} t={t} /></CellLink>
                 <CellLink>
                     <ReadableDate
                       date={latestRun.endTime}
@@ -100,12 +99,20 @@ export default class Branches extends Component {
                     />
                 </CellLink>
                 <td className="actions">
+
                     <RunButton
                       className="icon-button"
                       runnable={branch}
                       latestRun={branch.latestRun}
                       onNavigation={openRunDetails}
                     />
+
+                    <div className="history-button-component">
+                        <Link to={historyButtonUrl} className="materials-icons history-button">
+                            <Icon size={24} icon="history" />
+                        </Link>
+                    </div>
+
                     <Extensions.Renderer
                       extensionPoint="jenkins.pipeline.branches.list.action"
                       filter={sortByOrdinal}

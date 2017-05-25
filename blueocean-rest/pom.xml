@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.jenkins.blueocean</groupId>
     <artifactId>blueocean-parent</artifactId>
-    <version>1.1.0-beta-3-SNAPSHOT</version>
+    <version>1.1.0-beta-5-SNAPSHOT</version>
   </parent>
 
   <artifactId>blueocean-rest</artifactId>
@@ -62,25 +62,30 @@
                                         <allowedImport>hudson.Util</allowedImport>
                                     </allowedImports>
                                     <excludedClasses>
-                                        <excludedClass>io.jenkins.blueocean.rest.factory.*</excludedClass>
+                                        <excludedClass>io.jenkins.blueocean.rest.factory.**</excludedClass>
                                     </excludedClasses>
                                 </restrictImports>
                                 <!-- Factory package is allowed to import Jenkins models -->
                                 <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
-                                    <basePackage>io.jenkins.blueocean.rest.factory</basePackage>
+                                    <basePackage>io.jenkins.blueocean.rest.factory.**</basePackage>
                                     <bannedImports>
                                         <bannedImport>jenkins.**</bannedImport>
                                         <bannedImport>hudson.**</bannedImport>
                                     </bannedImports>
                                     <allowedImports>
+                                        <allowedImport>hudson.model.RootAction</allowedImport>
+                                        <allowedImport>hudson.model.Action</allowedImport>
+                                        <allowedImport>hudson.model.ModelObject</allowedImport>
                                         <allowedImport>hudson.Extension</allowedImport>
                                         <allowedImport>hudson.ExtensionPoint</allowedImport>
                                         <allowedImport>hudson.ExtensionList</allowedImport>
                                         <allowedImport>hudson.model.Item</allowedImport>
                                         <allowedImport>hudson.model.ItemGroup</allowedImport>
+                                        <allowedImport>jenkins.model.ModifiableTopLevelItemGroup</allowedImport>
                                         <allowedImport>hudson.model.TopLevelItem</allowedImport>
                                         <allowedImport>jenkins.model.Jenkins</allowedImport>
                                         <allowedImport>hudson.Util</allowedImport>
+                                        <allowedImport>hudson.model.Run</allowedImport>
                                     </allowedImports>
                                 </restrictImports>
                             </rules>

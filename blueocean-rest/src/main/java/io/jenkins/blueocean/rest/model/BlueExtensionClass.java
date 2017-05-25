@@ -18,7 +18,7 @@ public abstract class BlueExtensionClass extends Resource {
 
     /**
      *
-     * @return classes known to this extension class
+     * @return classes known to this extension class. If given extension class is not known then empty collection is returned.
      */
     @Exported(name = CLASSES)
     public abstract Collection<String> getClasses();

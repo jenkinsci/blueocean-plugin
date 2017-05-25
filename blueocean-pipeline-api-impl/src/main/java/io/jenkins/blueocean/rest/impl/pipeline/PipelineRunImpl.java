@@ -3,15 +3,13 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import hudson.Extension;
 import hudson.model.Queue;
 import hudson.model.Run;
-import hudson.plugins.git.Revision;
-import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
-import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.Branch;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.PullRequest;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
@@ -21,13 +19,14 @@ import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
-import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.ChangeSetResource;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import io.jenkins.blueocean.service.embedded.rest.StoppableRun;
 import jenkins.model.Jenkins;
+import jenkins.scm.api.SCMRevisionAction;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
+import org.jenkinsci.plugins.workflow.cps.replay.ReplayCause;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
@@ -36,6 +35,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -49,10 +49,14 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW
  */
 @Capability(JENKINS_WORKFLOW_RUN)
 public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
-    public static final String CAUSE_OF_BLOCKAGE = "causeOfBlockage";
     private static final Logger logger = LoggerFactory.getLogger(PipelineRunImpl.class);
-    public PipelineRunImpl(WorkflowRun run, Link parent) {
+    public PipelineRunImpl(WorkflowRun run, Reachable parent) {
         super(run, parent);
+    }
+
+    @Exported(name = "description")
+    public String getDescription() {
+        return run.getDescription();
     }
 
     @Exported(name = Branch.BRANCH, inline = true)
@@ -66,18 +70,30 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     }
 
     @Override
+    @Nonnull
     public Container<BlueChangeSetEntry> getChangeSet() {
-        Map<String, BlueChangeSetEntry> m = new LinkedHashMap<>();
-        int cnt = 0;
-        for (ChangeLogSet<? extends Entry> cs : run.getChangeSets()) {
-            for (ChangeLogSet.Entry e : cs) {
-                cnt++;
-                String id = e.getCommitId();
-                if (id == null) id = String.valueOf(cnt);
-                m.put(id, new ChangeSetResource(e, this));
+        // If this run is a replay then return the changesets from the original run
+        ReplayCause replayCause = run.getCause(ReplayCause.class);
+        if (replayCause != null) {
+            Run run = this.run.getParent().getBuildByNumber(replayCause.getOriginalNumber());
+            if (run == null) {
+                return Containers.empty(getLink());
+            } else {
+                return AbstractRunImpl.getBlueRun(run, parent).getChangeSet();
             }
+        } else {
+            Map<String, BlueChangeSetEntry> m = new LinkedHashMap<>();
+            int cnt = 0;
+            for (ChangeLogSet<? extends Entry> cs : run.getChangeSets()) {
+                for (ChangeLogSet.Entry e : cs) {
+                    cnt++;
+                    String id = e.getCommitId();
+                    if (id == null) id = String.valueOf(cnt);
+                    m.put(id, new ChangeSetResource(e, this));
+                }
+            }
+            return Containers.fromResourceMap(getLink(), m);
         }
-        return Containers.fromResourceMap(getLink(),m);
     }
 
     @Override
@@ -96,7 +112,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     @Override
     public BlueRun replay() {
         ReplayAction replayAction = run.getAction(ReplayAction.class);
-        if(replayAction == null) {
+        if(!isReplayable(replayAction)) {
             throw new ServiceException.BadRequestExpception("This run does not support replay");
         }
 
@@ -115,6 +131,16 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         } else { // For some reason could not be added to the queue
             throw new ServiceException.UnexpectedErrorException("Run was not added to queue.");
         }
+    }
+
+    @Override
+    public boolean isReplayable() {
+        ReplayAction replayAction = run.getAction(ReplayAction.class);
+        return isReplayable(replayAction);
+    }
+
+    private boolean isReplayable(ReplayAction replayAction) {
+        return replayAction != null && replayAction.isEnabled();
     }
 
     @Override
@@ -145,13 +171,9 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
 
     @Exported(name = "commitId")
     public String getCommitId() {
-        BuildData data = run.getAction(BuildData.class);
-
+        SCMRevisionAction data = run.getAction(SCMRevisionAction.class);
         if (data != null){
-            Revision revision = data.getLastBuiltRevision();
-            if(revision != null){
-                return revision.getSha1String();
-            }
+            return data.getRevision().toString();
         }
         return null;
     }
@@ -180,7 +202,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         @Override
         public BlueRun getRun(Run run, Reachable parent) {
             if(run instanceof WorkflowRun) {
-                return new PipelineRunImpl((WorkflowRun) run, parent.getLink());
+                return new PipelineRunImpl((WorkflowRun) run, parent);
             }
             return null;
         }

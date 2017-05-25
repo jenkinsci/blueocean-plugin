@@ -11,8 +11,8 @@ import { ColumnFilter } from './ColumnFilter';
 import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
 import {
     NoRunsDefaultPlaceholder,
-    NoRunsMultibranchPlaceholder,
     NoRunsForBranchPlaceholder,
+    NoRunsMultibranchPlaceholder,
 } from './placeholder/NoRunsPlaceholder';
 
 
@@ -111,10 +111,11 @@ export class Activity extends Component {
         const duration = t(`${head}.duration`, { defaultValue: 'Duration' });
         const completed = t(`${head}.completed`, { defaultValue: 'Completed' });
         const branchText = t(`${head}.branch`, { defaultValue: 'Branch' });
+        const decodedBranchName = branch ? decodeURIComponent(branch) : branch;
 
-        const branchFilter = isMultiBranchPipeline && (<ColumnFilter placeholder={branchText} value={branch}
+        const branchFilter = isMultiBranchPipeline && (<ColumnFilter placeholder={branchText} value={decodedBranchName}
             onChange={b => this.navigateToBranch(b)}
-            options={pipeline.branchNames.map(b => decodeURIComponent(b)).sort()}
+            options={pipeline.branchNames.map(b => decodeURIComponent(b))}
         />);
 
         const headers = isMultiBranchPipeline ? [

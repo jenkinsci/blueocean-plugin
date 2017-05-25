@@ -17,7 +17,6 @@ export {
     pullRequests,
     isMultiBranch,
     currentBranches,
-    tests,
 } from './reducer';
 export {
   ACTION_TYPES,

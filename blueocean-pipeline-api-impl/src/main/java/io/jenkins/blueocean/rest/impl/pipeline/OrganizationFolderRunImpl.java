@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.cloudbees.hudson.plugins.folder.computed.FolderComputation;
-import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.Result;
 import io.jenkins.blueocean.rest.Reachable;
@@ -15,10 +14,12 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.service.embedded.rest.LogResource;
 import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
 import org.kohsuke.stapler.QueryParameter;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Date;
 
@@ -64,13 +65,24 @@ public class OrganizationFolderRunImpl extends BlueRun {
     }
 
     @Override
+    public String getName() {
+        return null;
+    }
+
+    @Override
+    public String getDescription() {
+        return null;
+    }
+
+    @Override
     public Date getStartTime() {
         return folderComputation.getTimestamp().getTime();
     }
 
+    @Nonnull
     @Override
     public Container<BlueChangeSetEntry> getChangeSet() {
-        return null;
+        return Containers.empty(getLink());
     }
 
     @Override
@@ -167,15 +179,25 @@ public class OrganizationFolderRunImpl extends BlueRun {
     }
 
     @Override
+    public Collection<BlueCause> getCauses() {
+        return null;
+    }
+
+    @Override
     public String getCauseOfBlockage() {
         return null;
     }
 
     @Override
     public BlueRun replay() {
-        if(pipeline.folder.isBuildable()) {
-            return new QueueItemImpl(pipeline.folder.scheduleBuild2(0,new CauseAction(new Cause.UserIdCause())), pipeline, 1).toRun();
+        if(isReplayable()) {
+            return new QueueItemImpl(pipeline.folder.scheduleBuild2(0,new CauseAction(new hudson.model.Cause.UserIdCause())), pipeline, 1).toRun();
         }
         return null;
+    }
+
+    @Override
+    public boolean isReplayable() {
+        return pipeline.folder.isBuildable();
     }
 }

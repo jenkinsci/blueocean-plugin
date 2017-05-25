@@ -31,8 +31,8 @@ export class Step extends Component {
     componentWillMount() {
         const { step } = this.props;
         // needed for running steps as reference
-        this.durationMillis = (this.durationHarmonize(step)).durationMillis;
-        logger.debug('durationMillis mounting', this.durationMillis);
+        this.durationInMillis = (this.durationHarmonize(step)).durationInMillis;
+        logger.debug('durationInMillis mounting', this.durationInMillis);
     }
     /**
      * Mainly implemented due to fetch full log `start=0` for a step
@@ -77,16 +77,11 @@ export class Step extends Component {
     }
 
     render() {
-        // early out
-        if (this.pager.pending) {
-            logger.debug('pending returning null');
-            return null;
-        }
         const { step, locale, router, location, t, scrollToBottom } = this.props;
         if (step === undefined || !step) {
             return null;
         }
-        const { durationMillis } = this.durationHarmonize(step);
+        const { durationInMillis } = this.durationHarmonize(step);
         const isFocused = this.isFocused(this.props);
         const { data: logArray, hasMore } = this.pager.log || {};
         let children = null;
@@ -128,7 +123,7 @@ export class Step extends Component {
         // some ATH hook enhancements
         const logConsoleClass = `logConsole step-${step.id}`;
         // duration calaculations
-        const duration = step.isRunning ? this.durationMillis : durationMillis;
+        const duration = step.isRunning ? this.durationInMillis : durationInMillis;
         logger.debug('duration', duration, step.isRunning);
         const time = (<TimeDuration
             millis={duration }
@@ -139,7 +134,7 @@ export class Step extends Component {
             liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
             hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
         />);
-        return (<div className={logConsoleClass} key={this.pager.currentLogUrl}>
+        return (<div className={logConsoleClass}>
             <ResultItem {...{
                 extraInfo: time,
                 key: step.key,

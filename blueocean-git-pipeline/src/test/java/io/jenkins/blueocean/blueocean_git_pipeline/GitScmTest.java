@@ -1,12 +1,7 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
-import com.cloudbees.plugins.credentials.CredentialsProvider;
-import com.cloudbees.plugins.credentials.CredentialsStore;
-import com.cloudbees.plugins.credentials.SystemCredentialsProvider;
-import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import hudson.ExtensionList;
 import hudson.model.Item;
 import hudson.model.User;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
@@ -57,6 +52,7 @@ public class GitScmTest extends PipelineBaseTest {
     public void shouldCreateWithRemoteGitRepo() throws IOException, UnirestException {
         String accessToken = needsGithubAccessToken();
         User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
         Map resp = createCredentials(user, ImmutableMap.of("credentials", new ImmutableMap.Builder<String,Object>()
                 .put("password", accessToken)
@@ -90,6 +86,7 @@ public class GitScmTest extends PipelineBaseTest {
     @Test
     public void shouldGetForbiddenForBadCredentialIdOnCreate1() throws IOException, UnirestException {
         User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
         Map resp = createCredentials(user, ImmutableMap.of("credentials",
                 new ImmutableMap.Builder<String,Object>()
@@ -120,6 +117,7 @@ public class GitScmTest extends PipelineBaseTest {
     @Test
     public void shouldGetForbiddenForBadCredentialIdOnCreate2() throws IOException, UnirestException {
         User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
         Map resp = createCredentials(user, ImmutableMap.of("credentials", new ImmutableMap.Builder<String,Object>()
                 .put("password", "abcd")
@@ -144,7 +142,10 @@ public class GitScmTest extends PipelineBaseTest {
     }
 
     @Test
-    public void shouldGetBadRequestForBadGitUriOnCreate() throws IOException {
+    public void shouldGetBadRequestForBadGitUriOnCreate() throws Exception {
+
+        User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
         post("/organizations/jenkins/pipelines/",
                 ImmutableMap.of("name", "demo",
@@ -156,15 +157,8 @@ public class GitScmTest extends PipelineBaseTest {
 
 
     @Test
-    public void shouldGetForbiddenForBadCredentialIdOnUpdate1() throws IOException, UnirestException {
+    public void shouldFailForBadCredentialIdOnCreate() throws IOException, UnirestException {
         User user = login();
-        String mbp = createMbp(user);
-
-
-        SystemCredentialsProvider.ProviderImpl system = ExtensionList.lookup(CredentialsProvider.class).get(SystemCredentialsProvider.ProviderImpl.class);
-        CredentialsStore systemStore = system.getStore(j.getInstance());
-        systemStore.addDomain(new Domain("domain1", null, null));
-
         Map resp = createCredentials(user, ImmutableMap.of("credentials",
                 new ImmutableMap.Builder<String,Object>()
                         .put("privateKeySource", ImmutableMap.of(
@@ -182,63 +176,23 @@ public class GitScmTest extends PipelineBaseTest {
         String credentialId = (String) resp.get("id");
         Assert.assertNotNull(credentialId);
 
-        put("/organizations/jenkins/pipelines/"+mbp+"/",
-                ImmutableMap.of("name", mbp,
-                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineUpdateRequest",
-                        "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
-                                "credentialId", credentialId)
-                ), 400);
-
-    }
-
-
-    @Test
-    public void shouldGetForbiddenForBadCredentialIdOnUpdate2() throws IOException, UnirestException {
-        User user = login();
-        String mbp = createMbp(user);
-        SystemCredentialsProvider.ProviderImpl system = ExtensionList.lookup(CredentialsProvider.class).get(SystemCredentialsProvider.ProviderImpl.class);
-        CredentialsStore systemStore = system.getStore(j.getInstance());
-        systemStore.addDomain(new Domain("domain1", null, null));
-
-        Map<String, Object> resp = createCredentials(user, ImmutableMap.of("credentials",
-                new ImmutableMap.Builder<String,Object>()
-                        .put("password", "abcd")
-                        .put("stapler-class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
-                        .put("scope", "USER")
-                        .put("domain","blueocean-git-domain")
-                        .put("description", "joe desc")
-                        .put("$class", "com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl")
-                        .put("username", "joe").build()
-        ));
-
-        String credentialId = (String) resp.get("id");
-        Assert.assertNotNull(credentialId);
-
-        put("/organizations/jenkins/pipelines/"+mbp+"/",
-                ImmutableMap.of("name", mbp,
-                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineUpdateRequest",
-                        "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
-                                "credentialId", credentialId)
-                ), 400);
-
-    }
-
-    @Test
-    public void shouldGetBadRequestForBadGitUriOnUpdate() throws IOException, UnirestException {
-        User user = login();
-        String mbp = createMbp(user);
-
-        new RequestBuilder(baseUrl)
+        resp = new RequestBuilder(baseUrl)
                 .status(400)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .put("/organizations/jenkins/pipelines/" + mbp + "/")
-                .data(ImmutableMap.of("name", mbp,
-                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineUpdateRequest",
-                        "scmConfig", ImmutableMap.of("uri", "/sdsd/sdsd/sdsd")
-                ))
-                .build(Map.class);
-    }
+                .post("/organizations/jenkins/pipelines/")
+                .data(ImmutableMap.of("name", "demo",
+                        "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                        "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
+                                "credentialId", credentialId))).build(Map.class);
 
+        assertEquals(resp.get("code"), 400);
+
+        List<Map> errors = (List<Map>) resp.get("errors");
+
+        assertEquals(1, errors.size());
+        assertEquals("scmConfig.credentialId", errors.get(0).get("field"));
+        assertEquals("INVALID", errors.get(0).get("code"));
+    }
 
     @Test
     public void shouldCreateGitMbp() throws IOException, UnirestException {
@@ -267,14 +221,18 @@ public class GitScmTest extends PipelineBaseTest {
 
         List<Map> errors = (List<Map>) resp.get("errors");
 
-        assertEquals(errors.get(0).get("field"), "name");
-        assertEquals(errors.get(0).get("code"), "MISSING");
-        assertEquals(errors.get(1).get("field"), "$class");
-        assertEquals(errors.get(1).get("code"), "MISSING");
+        assertEquals("name", errors.get(0).get("field"));
+        assertEquals("MISSING", errors.get(0).get("code"));
+        assertEquals("$class", errors.get(1).get("field"));
+        assertEquals("MISSING", errors.get(1).get("code"));
     }
 
     @Test
-    public void shouldFailOnValidation2(){
+    public void shouldFailOnValidation2() throws Exception {
+
+        User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
+
         Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
                 ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest"
@@ -284,8 +242,8 @@ public class GitScmTest extends PipelineBaseTest {
 
         List<Map> errors = (List<Map>) resp.get("errors");
 
-        assertEquals(errors.get(0).get("field"), "scmConfig");
-        assertEquals(errors.get(0).get("code"), "MISSING");
+        assertEquals("scmConfig", errors.get(0).get("field"));
+        assertEquals("MISSING", errors.get(0).get("code"));
         assertNull(Jenkins.getInstance().getItem("demo"));
     }
 
@@ -344,10 +302,10 @@ public class GitScmTest extends PipelineBaseTest {
         for(Map<String,String> error:errors){
             if(error.get("field").equals("name")){
                 nameFound = true;
-                assertEquals(error.get("code"), "ALREADY_EXISTS");
+                assertEquals("ALREADY_EXISTS", error.get("code"));
             }else if(error.get("field").equals("scmConfig.credentialId")){
                 credentialIdFound = true;
-                assertEquals(error.get("code"), "NOT_FOUND");
+                assertEquals("NOT_FOUND", error.get("code"));
             }
         }
         assertTrue(nameFound);
@@ -355,7 +313,10 @@ public class GitScmTest extends PipelineBaseTest {
     }
 
     @Test
-    public void shouldFailOnValidation5(){
+    public void shouldFailOnValidation5() throws Exception {
+
+        User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
         Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
                 ImmutableMap.of("name", "demo",

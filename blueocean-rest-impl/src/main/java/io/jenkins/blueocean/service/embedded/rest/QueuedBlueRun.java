@@ -12,8 +12,10 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.rest.model.Containers;
 import org.kohsuke.stapler.export.Exported;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Date;
 
@@ -31,6 +33,16 @@ public class QueuedBlueRun extends BlueRun {
         this.runResult = runResult;
         this.item = item;
         this.parent = parent;
+    }
+
+    @Override
+    public String getName() {
+        return null;
+    }
+
+    @Override
+    public String getDescription() {
+        return null;
     }
 
     @Override
@@ -58,9 +70,10 @@ public class QueuedBlueRun extends BlueRun {
         return null;
     }
 
+    @Nonnull
     @Override
     public Container<BlueChangeSetEntry> getChangeSet() {
-        return null;
+        return Containers.empty(getLink());
     }
 
     @Override
@@ -145,6 +158,11 @@ public class QueuedBlueRun extends BlueRun {
     }
 
     @Override
+    public boolean isReplayable() {
+        return false;
+    }
+
+    @Override
     public BlueTestResultContainer getTests() {
         return null;
     }
@@ -152,6 +170,11 @@ public class QueuedBlueRun extends BlueRun {
     @Override
     public BlueTestSummary getTestSummary() {
         return null;
+    }
+
+    @Override
+    public Collection<BlueCause> getCauses() {
+        return item.getCauses();
     }
 
     @Override

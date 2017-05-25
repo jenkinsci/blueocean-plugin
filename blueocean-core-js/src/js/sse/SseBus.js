@@ -4,6 +4,7 @@
 import defaultFetch from 'isomorphic-fetch';
 import config from '../urlconfig';
 import utils from '../utils';
+import AppConfig from '../config';
 
 /**
  * Wraps the SSE Gateway and fetches data related to events from REST API.
@@ -44,7 +45,7 @@ export class SseBus {
         if (!this.sseListeners.job) {
             const sseListener = this.connection.subscribe('job', (event) => {
                 this._handleJobEvent(event);
-            });
+            }, { jenkins_org: AppConfig.getOrganizationName() });
 
             this.sseListeners.job = sseListener;
         }

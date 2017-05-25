@@ -1,6 +1,6 @@
 .RunDetailsHeader-title,
 .RunDetailsHeader-sources,
-.RunDetailsHeader-authors,
+.RunDetailsHeader-messages,
 .RunDetailsHeader-times {
     a {
         cursor: pointer;
@@ -8,7 +8,7 @@
 }
 
 .RunDetailsHeader-sources,
-.RunDetailsHeader-authors,
+.RunDetailsHeader-messages,
 .RunDetailsHeader-times
 {
     height:100%;
@@ -60,16 +60,25 @@
                 opacity: 50%;
                 margin-left: 3px;
             }
+
+            .inline-svg svg{
+                display: inline-block;
+                vertical-align: middle;
+            }
         }
 
 
     }
 }
 
-.RunDetailsHeader-authors {
+.RunDetailsHeader-messages {
     flex-grow: 1;
 }
 
 .RunDetails-content {
-    margin: 21px 42px;
+    margin: 24px 42px;
+
+    .RunDetails-Description {
+        margin-bottom: 24px;
+    }
 }
