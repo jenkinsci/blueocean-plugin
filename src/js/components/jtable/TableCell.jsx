@@ -14,7 +14,8 @@ export class TableCell extends Component {
             title,
             className,
             children,
-            onClick
+            onClick, // TODO: remove anything from here that we're not inspecting / molesting
+            ...restProps
         } = this.props;
 
         const classNames = ['JTable-cell'];
@@ -24,6 +25,7 @@ export class TableCell extends Component {
         }
 
         const outerProps = {
+            ...restProps,
             className: classNames.join(' '),
             style,
             title,

@@ -1,7 +1,6 @@
 // @flow
 
 import React from 'react';
-import {Link} from 'react-router';
 import { storiesOf } from '@kadira/storybook';
 import WithContext from './WithContext';
 import {
@@ -76,19 +75,21 @@ function container(...children) {
 function rowClicked(e) {
     e.stopPropagation();
     e.preventDefault();
-    console.log('rowClicked');
+    const tag = e.currentTarget.attributes.getNamedItem('data-tag');
+    console.log('rowClicked', (tag ? tag.value : 'missing data-tag'));
 }
 
 function cellClicked(e) {
     e.stopPropagation();
     e.preventDefault();
-    console.log('cellClicked');
+    const tag = e.currentTarget.attributes.getNamedItem('data-tag');
+    console.log('cellClicked', (tag ? tag.value : 'missing data-tag'));
 }
 
 function renderRow(rowData) {
     const key = rowData[1] + rowData[0];
     return (
-        <TableRow onClick={rowClicked} key={key}>{ rowData.map(renderCell) }</TableRow>
+        <TableRow onClick={rowClicked} key={key} data-tag={ 'row-' + key }>{ rowData.map(renderCell) }</TableRow>
     );
 }
 
@@ -173,10 +174,9 @@ function manual() {
     };
 
     return container(
-        <Link to="/relativeurl">This is in a link</Link>,
         <h3>Manual headers, row links</h3>,
         <JTable columns={columns} style={style}>
-            <TableRow onClick={rowClicked}>
+            <TableRow>
                 <TableHeader>X</TableHeader>
                 <TableHeader>Y</TableHeader>
                 <TableHeader>AND</TableHeader>
@@ -191,7 +191,7 @@ function manual() {
             {
                 null // Make sure we can have optional rows, as well as optional columns!
             }
-            <TableRow onClick={rowClicked} href="http://www.example.org/alpha/">
+            <TableRow onClick={rowClicked} data-tag="row-first" href="http://www.example.org/alpha/">
                 <TableCell>True</TableCell>
                 <TableCell>True</TableCell>
                 <TableCell>True</TableCell>
@@ -203,7 +203,7 @@ function manual() {
                 <TableCell>False</TableCell>
                 <TableCell>Alpha</TableCell>
             </TableRow>
-            <TableRow onClick={rowClicked} href="http://www.example.org/bravo/">
+            <TableRow onClick={rowClicked} data-tag="row-2" href="http://www.example.org/bravo/">
                 <TableCell>True</TableCell>
                 <TableCell>False</TableCell>
                 <TableCell>False</TableCell>
@@ -215,7 +215,7 @@ function manual() {
                 <TableCell>True</TableCell>
                 <TableCell>this space intentionally left blank</TableCell>
             </TableRow>
-            <TableRow onClick={rowClicked} href="http://www.example.org/charlie/">
+            <TableRow onClick={rowClicked} data-tag="row-3" href="http://www.example.org/charlie/">
                 <TableCell>False</TableCell>
                 <TableCell>True</TableCell>
                 <TableCell>False</TableCell>
@@ -224,14 +224,14 @@ function manual() {
                 <TableCell>True</TableCell>
                 <TableCell>Charlie don't surf</TableCell>
             </TableRow>
-            <TableRow onClick={rowClicked} linkTo="/app-specific-url/foo">
-                <TableCell onClick={cellClicked}>False</TableCell>
-                <TableCell onClick={cellClicked}>False</TableCell>
-                <TableCell onClick={cellClicked}>False</TableCell>
-                <TableCell onClick={cellClicked}>False</TableCell>
-                <TableCell onClick={cellClicked}>False</TableCell>
-                <TableCell onClick={cellClicked}>True</TableCell>
-                <TableCell onClick={cellClicked}>&lt;Link&gt;</TableCell>
+            <TableRow onClick={rowClicked} data-tag="row-last" linkTo="/app-specific-url/foo">
+                <TableCell>False</TableCell>
+                <TableCell>False</TableCell>
+                <TableCell onClick={cellClicked} data-tag="row-last-cell-and">False</TableCell>
+                <TableCell onClick={cellClicked} data-tag="row-last-cell-or">False</TableCell>
+                <TableCell onClick={cellClicked} data-tag="row-last-cell-xor">False</TableCell>
+                <TableCell onClick={cellClicked} data-tag="row-last-cell-nand">True</TableCell>
+                <TableCell onClick={cellClicked} data-tag="row-last-cell-last">&lt;Link&gt;</TableCell>
             </TableRow>
         </JTable>,
         <h3>Some Links, some useRollover</h3>,
