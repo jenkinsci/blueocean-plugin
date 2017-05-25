@@ -51,6 +51,7 @@ function checkProject(pathToProject) {
     const shrinkwrap = require(shrinkwrapJsonPath);
     validateDepsAgainstShrinkwrap(allDeps, shrinkwrap);
     validateShrinkwrapResolve(shrinkwrap);
+    validateExplicitDependencies(shrinkwrap);
     console.log('success!');
 }
 
@@ -64,7 +65,7 @@ function buildPath(path) {
 }
 
 function checkImpreciseDependencies(dependencies) {
-    const badDeps = [];    
+    const badDeps = [];
     Object.keys(dependencies).forEach(name => {
         const version = dependencies[name];
 
@@ -75,7 +76,7 @@ function checkImpreciseDependencies(dependencies) {
 
     if (badDeps.length) {
         badDeps.forEach(dep => console.error(`${dep} must use precise version`));
-        console.error(`did you use 'npm install dep --save/-dev -E' ?`)
+        console.error(`did you use 'npm install dep --save/-dev -E' ?`);
         process.exit(1);
     }
 }
@@ -92,7 +93,7 @@ function checkDuplicateDependencies(depList1, depList2) {
 }
 
 function validateShrinkwrapResolve(shrinkwrap) {
-  
+
   Object.keys(shrinkwrap.dependencies).forEach(name => {
     if (shrinkwrap.dependencies[name].from.startsWith("..") || shrinkwrap.dependencies[name].resolved.startsWith("file:")) {
         console.error(`Bad shrinkwrap resolution: 'from' or 'resolved' refer to a project relative path not absolute URI from:${shrinkwrap.dependencies[name].from} resolved:${shrinkwrap.dependencies[name].resolved} in ${name}`);
@@ -118,6 +119,44 @@ function validateDepsAgainstShrinkwrap(allDeps, shrinkwrap) {
     if (badDeps.length) {
         badDeps.forEach(message => console.error(message));
         console.log('You can use bin/cleanInstall to install the dominant dependency in various places.');
+        process.exit(1);
+    }
+}
+
+function validateExplicitDependencies(shrinkwrap) {
+    const depRules = {
+        'create-hmac': {
+            version: '1.1.4',
+            message: 'create-hmac cannot exceed 1.1.4 due to an incompatibility with safe-buffer and buffer. the version may have changed if you recently upgraded js-builder. discard the updates in npm-shrinkwrap.json manually. see https://github.com/crypto-browserify/createHmac/issues/20'
+        },
+    };
+
+    function transformDeps(dependencies) {
+        // transform an dependency object keyed by name to an array of child dependency objects with a 'name' property.
+        return Object.keys(dependencies).map(depName => {
+            const dependency = dependencies[depName];
+            dependency.name = depName;
+            return dependency;
+        });
+    }
+
+    const depsToCheck = transformDeps(shrinkwrap.dependencies);
+    const failedDeps = [];
+
+    while (depsToCheck.length) {
+        const currentDep = depsToCheck.shift();
+        if (depRules[currentDep.name] && depRules[currentDep.name].version !== currentDep.version) {
+            const rule = depRules[currentDep.name];
+            failedDeps.push(`${currentDep.name}:${rule.version}: ${rule.message}`);
+        }
+        if (currentDep.dependencies) {
+            depsToCheck.push(...transformDeps(currentDep.dependencies));
+        }
+    }
+
+    if (failedDeps.length) {
+        console.error('explicit version checks in shrinkwrap failed');
+        failedDeps.forEach(message => console.error(message));
         process.exit(1);
     }
 }

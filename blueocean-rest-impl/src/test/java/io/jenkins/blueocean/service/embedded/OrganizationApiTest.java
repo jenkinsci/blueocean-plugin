@@ -1,8 +1,14 @@
 package io.jenkins.blueocean.service.embedded;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
+import io.jenkins.blueocean.commons.stapler.TreeResponse;
+import io.jenkins.blueocean.rest.OrganizationRoute;
 import org.junit.Assert;
 import org.junit.Test;
+import org.jvnet.hudson.test.TestExtension;
+import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.List;
 import java.util.Map;
@@ -22,5 +28,34 @@ public class OrganizationApiTest extends BaseTest {
 
         Assert.assertEquals(users.size(), 1);
         Assert.assertEquals(((Map)users.get(0)).get("id"), "alice");
+    }
+
+
+    @TestExtension("customOrganizationRoute")
+    public static class XyzRoute implements OrganizationRoute{
+
+        @Override
+        public String getUrlName() {
+            return "xyz";
+        }
+
+        @WebMethod(name = "value")
+        @TreeResponse
+        public Xyz getValue(){
+            return new Xyz();
+        }
+
+        @ExportedBean
+        public static class Xyz{
+            @Exported
+            public String getName(){
+                return "hello";
+            }
+        }
+    }
+
+    @Test
+    public void customOrganizationRoute() throws Exception{
+        get("/organizations/jenkins/xyz/value/");
     }
 }
