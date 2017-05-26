@@ -33,7 +33,7 @@ public class ClassicFreestyleCreationPage {
 
     public void createJob(String jobName) throws UnirestException, IOException {
         driver.get(base + "/view/All/newJob");
-        jobApi.deleteJob(jobName);
+        jobApi.deletePipeline(jobName);
         nameInput.sendKeys(jobName);
     }
 }
