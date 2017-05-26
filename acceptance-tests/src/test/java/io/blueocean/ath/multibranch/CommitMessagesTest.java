@@ -47,7 +47,7 @@ public class CommitMessagesTest {
     ActivityPage activityPage;
 
     @Test
-    public void tested () throws IOException, GitAPIException {
+    public void commitMessagesTest () throws IOException, GitAPIException {
         String pipelineName = "CommitMessagesTest_tested";
 
         URL jenkinsFile = Resources.getResource(CommitMessagesTest.class, "CommitMessagesTest/Jenkinsfile");
