@@ -20,9 +20,4 @@ public class AllTest extends BOJUnitTest {
         Process process = processBuilder.start();
         Assert.assertEquals("exit code", 0, process.waitFor());
     }
-
-    @Test
-    public void jsTests() throws TaskRunnerException {
-        NightwatchRunner.runIntegrationSpec();
-    }
 }
