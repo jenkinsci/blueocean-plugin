@@ -12,7 +12,7 @@ public class AllTest extends BOJUnitTest {
     @Test
     public void javaTest() throws IOException, InterruptedException {
         File wd = new File("../../");
-        String[] cmd = {"mvn", "test"};
+        String[] cmd = {"mvn", "test", "-Dprofile=offlineAll"};
         ProcessBuilder processBuilder = new ProcessBuilder(cmd)
                 .directory(wd)
                 .inheritIO();
