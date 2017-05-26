@@ -70,9 +70,9 @@ export class MultiBranch extends Component {
         const columns = [
             JTable.column(60, healthHeader, false),
             JTable.column(60, statusHeader, false),
-            JTable.column(160, branchHeader, false),
+            JTable.column(170, branchHeader, false),
             JTable.column(80, commitHeader, false),
-            JTable.column(390, messageHeader, true),
+            JTable.column(380, messageHeader, true),
             JTable.column(100, completedHeader, false),
             JTable.column(actionColWidth, '', false),
         ];
