@@ -11,25 +11,12 @@ import java.util.Map;
 
 public class PipelineSearchTest extends BaseTest {
     @Test
-    public void testStartsWithSearch() throws IOException {
-        FreeStyleProject aa = j.createFreeStyleProject("aa");
-        FreeStyleProject bb = j.createFreeStyleProject("bb");
-
-        List req = request()
-            .get("/search/?q=type:pipeline;startsWith:a")
-            .build(List.class);
-
-        Assert.assertEquals(1, req.size());
-        Assert.assertEquals("aa", ((Map) req.get(0)).get("name"));
-    }
-
-    @Test
     public void testOrganizationSearch() throws IOException {
         FreeStyleProject aa = j.createFreeStyleProject("aa");
         FreeStyleProject bb = j.createFreeStyleProject("bb");
 
         List req = request()
-            .get("/search/?q=type:pipeline;startsWith:a;organization:jenkins")
+            .get("/search/?q=type:pipeline;pipeline:*a*;organization:jenkins")
             .build(List.class);
 
         Assert.assertEquals(1, req.size());

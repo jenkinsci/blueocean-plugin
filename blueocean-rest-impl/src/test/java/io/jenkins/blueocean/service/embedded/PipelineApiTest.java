@@ -438,17 +438,17 @@ public class PipelineApiTest extends BaseTest {
         folder1.createProject(MockFolder.class, "folder3");
         folder2.createProject(FreeStyleProject.class, "test2");
         folder2.createProject(FreeStyleProject.class, "coolPipeline");
-        List<Map> resp = get("/search?q=type:pipeline;pipeline:TEST*", List.class);
+        List<Map> resp = get("/search?q=type:pipeline;pipeline:*TEST*", List.class);
         assertEquals(2, resp.size());
 
-        resp = get("/search?q=type:pipeline;pipeline:cool*", List.class);
+        resp = get("/search?q=type:pipeline;pipeline:*cool*", List.class);
         assertEquals(1, resp.size());
 
-        resp = get("/search?q=type:pipeline;pipeline:nothing*", List.class);
+        resp = get("/search?q=type:pipeline;pipeline:*nothing*", List.class);
         assertEquals(0, resp.size());
 
-        resp = get("/search?q=type:pipeline;pipeline:f*", List.class);
-        assertEquals(2, resp.size());
+        resp = get("/search?q=type:pipeline;pipeline:*f*", List.class);
+        assertEquals(7, resp.size());
     }
 
     @Test
