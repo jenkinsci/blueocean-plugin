@@ -3,9 +3,9 @@
   "version": "0.0.2-unpublished",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.115-nicu-beta",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.115-nicu-beta",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.115-nicu-beta.tgz"
+      "version": "0.0.115-nicu-beta2",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.115-nicu-beta2",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.115-nicu-beta2.tgz"
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.128",
@@ -25,9 +25,9 @@
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.36",
-      "from": "@jenkins-cd/js-extensions@0.0.36",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.36.tgz"
+      "version": "0.0.37-nicu-beta",
+      "from": "@jenkins-cd/js-extensions@0.0.37-nicu-beta",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.37-nicu-beta.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.10",
