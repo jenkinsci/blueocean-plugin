@@ -25,14 +25,9 @@ module.exports = {
     'Create Job': function (browser) {
         var multibranchCreate = browser.page.multibranchCreate().navigate();      
         multibranchCreate.createBranch(jobName, pathToRepo);
-    },
-
-    'Open acitivty page wait for first run to finish': function(browser) {
         const blueActivityPage = browser.page.bluePipelineActivity().forJob(jobName);
         // validate that we have 3 activities from the previous tests
         blueActivityPage.assertActivitiesToBeEqual(1);
-
-        blueActivityPage.waitForRunSuccessVisible(`${jobName}-1`)
     },
 
     'Create new commits and check activity and branches page for correct commit messages': (client) => {
