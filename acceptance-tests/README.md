@@ -98,7 +98,8 @@ nightwatch src/test/js/
 
 #### Intellij
 
-Make sure you add the acceptance-tests to your intellij blueocean project by right-clicking on 
+Make sure you add the acceptance-tests to your intellij blueocean project by right-clicking on `acceptance-tests/pom.xml`
+and adding it to the project.
 
 #### JUnit4 Tests
 
