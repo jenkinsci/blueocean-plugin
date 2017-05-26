@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.112-SNAPSHOT",
+  "version": "0.0.114",
   "dependencies": {
     "@jenkins-cd/design-language": {
       "version": "0.0.128",
@@ -14,14 +14,14 @@
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.36-Nicu-beta1",
-      "from": "@jenkins-cd/js-extensions@0.0.36-Nicu-beta1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.36-Nicu-beta1.tgz"
+      "version": "0.0.36",
+      "from": "@jenkins-cd/js-extensions@0.0.36",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.36.tgz"
     },
     "@jenkins-cd/js-modules": {
-      "version": "0.0.8",
-      "from": "@jenkins-cd/js-modules@0.0.8",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.8.tgz"
+      "version": "0.0.10",
+      "from": "@jenkins-cd/js-modules@0.0.10",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.10.tgz"
     },
     "@jenkins-cd/logging": {
       "version": "0.0.6",
@@ -34,9 +34,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/react-material-icons/-/react-material-icons-1.0.0.tgz"
     },
     "@jenkins-cd/sse-gateway": {
-      "version": "0.0.19",
-      "from": "@jenkins-cd/sse-gateway@0.0.19",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.19.tgz"
+      "version": "0.0.21",
+      "from": "@jenkins-cd/sse-gateway@0.0.21",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/sse-gateway/-/sse-gateway-0.0.21.tgz"
     },
     "@jenkins-cd/storage": {
       "version": "0.0.6",

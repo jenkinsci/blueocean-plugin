@@ -1,4 +1,5 @@
 import jsModules from '@jenkins-cd/js-modules';
+import ModuleSpec from '@jenkins-cd/js-modules/js/ModuleSpec';
 
 /**
  * CSS load tracker.
@@ -49,8 +50,11 @@ export default class ResourceLoadTracker {
                 }
 
                 // Add the plugin CSS if it's not already in the list.
-                if (pointCSS.indexOf(pluginCSS) === -1) {
-                    pointCSS.push(pluginCSS);
+                if (pointCSS.filter((pluginCSSEntry) => pluginCSSEntry.url === pluginCSS).length === 0) {
+                    pointCSS.push({
+                        url: pluginCSS,
+                        hpiPluginId: pluginMetadata.hpiPluginId
+                    });
                 }
             }
         }
@@ -105,17 +109,17 @@ export default class ResourceLoadTracker {
         }
     }
 
-    _requireCSS(url, onload) {
-        if (!this.activeCSSs[url]) {
-            this._addCSS(url, onload);
-            this.activeCSSs[url] = true;
+    _requireCSS(pluginCSS, onload) {
+        if (!this.activeCSSs[pluginCSS.url]) {
+            this._addCSS(pluginCSS, onload);
+            this.activeCSSs[pluginCSS.url] = true;
         } else {
             onload();
         }
     }
 
-    _unrequireCSS(url) {
-        var activeCount = this.activeCSSs[url];
+    _unrequireCSS(pluginCSS) {
+        var activeCount = this.activeCSSs[pluginCSS.url];
 
         if (!activeCount) {
             // Huh?
@@ -126,18 +130,16 @@ export default class ResourceLoadTracker {
             activeCount--;
             if (activeCount === 0) {
                 // All extension points using this CSS have been unmounted.
-                delete this.activeCSSs[url];
-                this._removeCSS(url);
+                delete this.activeCSSs[pluginCSS.url];
+                this._removeCSS(pluginCSS);
             } else {
-                this.activeCSSs[url] = activeCount;
+                this.activeCSSs[pluginCSS.url] = activeCount;
             }
         }
     }
 
-    _addCSS(url, onload) {
-        const cssURLPrefix = jsModules.getAdjunctURL();
-        const cssURL = cssURLPrefix + '/' + url;
-
+    _addCSS(pluginCSS, onload) {
+        const cssURL = getPluginCSSURL(pluginCSS);
         jsModules.addCSSToPage(cssURL);
 
         const linkElId = jsModules.toCSSId(cssURL);
@@ -149,14 +151,30 @@ export default class ResourceLoadTracker {
         }
     }
 
-    _removeCSS(url) {
-        const cssURLPrefix = jsModules.getAdjunctURL();
-        const cssURL = cssURLPrefix + '/' + url;
+    _removeCSS(pluginCSS) {
+        const cssURL = getPluginCSSURL(pluginCSS);
         const linkElId = jsModules.toCSSId(cssURL);
         const linkEl = document.getElementById(linkElId);
 
         if (linkEl) {
             linkEl.parentNode.removeChild(linkEl);
         }
+    }
+}
+
+function getPluginCSSURL(pluginCSS) {
+    const moduleSpec = new ModuleSpec(`${pluginCSS.hpiPluginId}:jenkins-js-extension`);
+    let resolver;
+
+    // Backward compatibility - in case of an older version of js-modules
+    if (typeof jsModules.getResourceLocationResolver === 'function') {
+        resolver = jsModules.getResourceLocationResolver(moduleSpec);
+    }
+
+    if (resolver) {
+        return resolver(pluginCSS.url);
+    } else {
+        const adjunctUrl = jsModules.getAdjunctURL();
+        return adjunctUrl + '/' + pluginCSS.url;
     }
 }

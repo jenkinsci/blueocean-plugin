@@ -99,6 +99,11 @@ class RunDetailsHeader extends Component {
                 {isMultiBranch ? (
                     <span className={labelClassName}>
                         <Link to={ branchUrl }>{ displayName }</Link>
+                        { run.branch && run.branch.url &&
+                            <a className="inline-svg" title="Opens branch in a new window" target="_blank" href={ run.branch.url }>
+                                <Icon size={14} icon="launch" />
+                            </a>
+                        }
                     </span>
                   ) : (
                     <span>&mdash;</span>
