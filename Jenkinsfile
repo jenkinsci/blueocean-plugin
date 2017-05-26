@@ -21,6 +21,7 @@ node {
         sh 'npm --prefix ./blueocean-core-js run gulp'
         sh "mvn clean install -B -DcleanNode -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
         step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
+        step([$class: 'JUnitResultArchiver', testResults: '**/reports/junit.xml'])
         step([$class: 'ArtifactArchiver', artifacts: '*/target/*.hpi'])
 
         stage 'Sanity check dependancies'
