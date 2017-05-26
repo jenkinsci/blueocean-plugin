@@ -11,8 +11,8 @@
     "gulp": "gulp",
     "bundle:watch": "gulp watch",
     "test": "gulp test",
-    "test-debug": "node --debug-brk ./node_modules/.bin/gulp test-debug",
-    "test-fast": "gulp test-fast",
+    "test:debug": "node --debug-brk ./node_modules/.bin/gulp test-debug",
+    "test:fast": "gulp test-fast",
     "prepublish": "gulp"
   },
   "author": "Cliff Meyers <cmeyers@cloudbees.com> (https://www.cloudbees.com/)",
