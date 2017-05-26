@@ -22,21 +22,21 @@ node {
         sh "mvn clean install -B -DcleanNode -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
         step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
         step([$class: 'ArtifactArchiver', artifacts: '*/target/*.hpi'])
-      
+
         stage 'Sanity check dependancies'
         sh "node ./bin/checkdeps.js"
         stage 'Sanity check shrinkwrap'
-        sh "node ./bin/checkshrinkwrap.js"        
-        
+        sh "node ./bin/checkshrinkwrap.js"
+
         stage 'ATH'
         sh "cd acceptance-tests && ./run.sh -a=../blueocean/ --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
         step([$class: 'JUnitResultArchiver', testResults: 'acceptance-tests/target/surefire-reports/*.xml'])
-        
+
       } catch(err) {
         currentBuild.result = "FAILURE"
 
-        if (err.toString().contains('AbortException')) {
-            currentBuild.result = "ABORTED"
+        if (err.toString().contains('exit code 143')) {
+          currentBuild.result = "ABORTED"
         }
       } finally {
         sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
@@ -46,7 +46,7 @@ node {
     }
   }
   }
-  
+
 }
 
 
