@@ -40,22 +40,15 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static io.jenkins.blueocean.rest.model.BlueRun.DATE_FORMAT_STRING;
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_BRANCH;
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE;
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_JOB;
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_JOB;
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.PULL_REQUEST;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.*;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -877,7 +870,59 @@ public class MultiBranchTest extends PipelineBaseTest {
         resp = get("/organizations/jenkins/pipelines/p/branches/"+Util.rawEncode(branches[1])+"/runs/2/");
         Assert.assertEquals("SUCCESS", resp.get("result"));
         Assert.assertEquals("FINISHED", resp.get("state"));
+    }
 
+    @Test
+    public void testMbpPagination() throws Exception {
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+                new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+        mp.scheduleBuild2(0).getFuture().get();
+        this.j.waitUntilNoActivity();
+
+        //create 6 runs
+        List<WorkflowRun> launchedItems = new ArrayList<>();
+        for(String branch:branches) {
+            WorkflowJob job = findBranchProject(mp, branch);
+            launchedItems.addAll(job.getBuilds());
+            for (int j = 0; j < 2; j++) {
+                launchedItems.add(job.scheduleBuild2(0).waitForStart());
+                this.j.waitUntilNoActivity();
+            }
+        }
+
+        //total 9. 3 triggered from indexing and 6 we launched
+        assertEquals(9, launchedItems.size());
+
+        //sort runs
+        Collections.sort(launchedItems, new Comparator<WorkflowRun>() {
+            @Override
+            public int compare(WorkflowRun o1, WorkflowRun o2) {
+                return new Date(o2.getStartTimeInMillis()).compareTo(new Date(o1.getStartTimeInMillis()));
+
+            }
+        });
+
+        //request 10 runs, but should not return 9 runs.
+        List<Map> resp = get("/organizations/jenkins/pipelines/p/runs?start=0&limit=10", List.class);
+
+        assertEquals(9, resp.size()); //max number of runs are 9
+
+        for(int i=0; i< 9; i++){
+            Assert.assertEquals(launchedItems.get(i).getId(), (resp.get(i).get("id")));
+        }
+
+        // now call 3 out of 9 runs and see pagination returns only 3 and in right sort order
+        resp = get("/organizations/jenkins/pipelines/p/runs?start=0&limit=3", List.class);
+
+        assertEquals(3, resp.size());
+
+        for(int i=0; i< 3; i++){
+            Assert.assertEquals(launchedItems.get(i).getId(), (resp.get(i).get("id")));
+        }
     }
 
     private void setupParameterizedScm() throws Exception {
