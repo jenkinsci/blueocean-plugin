@@ -3,6 +3,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.Item;
@@ -294,7 +295,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                     }
                 });
 
-                return c.iterator();
+                return Iterators.limit(c.iterator(), limit);
             }
 
             private boolean retry(boolean[] retries) {
