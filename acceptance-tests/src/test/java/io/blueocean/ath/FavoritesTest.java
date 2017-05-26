@@ -1,11 +1,10 @@
 package io.blueocean.ath;
 
-import com.google.common.io.Resources;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.pages.blue.DashboardPage;
-import io.blueocean.ath.sse.SSEClient;
 import org.apache.log4j.Logger;
+import org.jukito.UseModules;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -14,6 +13,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 @Login
 @RunWith(ATHJUnitRunner.class)
+@UseModules(AthModule.class)
 public class FavoritesTest {
     private Logger logger = Logger.getLogger(FavoritesTest.class);
     @Inject
@@ -21,9 +21,6 @@ public class FavoritesTest {
 
     @Inject
     ClassicJobApi jobApi;
-
-    @Inject
-    SSEClient sseClient;
 
     @Test
     public void testFavorite() throws InterruptedException, UnirestException, IOException {

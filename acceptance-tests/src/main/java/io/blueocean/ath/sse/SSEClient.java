@@ -1,48 +1,70 @@
 package io.blueocean.ath.sse;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import com.offbytwo.jenkins.JenkinsServer;
 import io.blueocean.ath.BaseUrl;
+import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.sse.EventListener;
 import org.glassfish.jersey.media.sse.EventSource;
 import org.glassfish.jersey.media.sse.SseFeature;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.junit.rules.ExternalResource;
+import org.openqa.selenium.support.ui.FluentWait;
 
 import javax.inject.Inject;
-import javax.inject.Singleton;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
-
-import java.io.IOException;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
+import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
 
-@Singleton
-public class SSEClient {
+
+public class SSEClient extends ExternalResource {
+    private Logger logger = Logger.getLogger(SSEClient.class);
+
+    @Override
+    protected void before() throws Throwable {
+        events = Lists.newCopyOnWriteArrayList();
+        connect();
+    }
+
+    @Override
+    protected void after() {
+        clear();
+    }
 
     @Inject @BaseUrl
     String baseUrl;
 
-    ObjectMapper mapper = new ObjectMapper();
+    public SSEClient() {
+        mapper = new ObjectMapper();
+    }
 
-    List<JenkinsEvent> events = Lists.newArrayList();
+    ObjectMapper mapper;
+
+    List<JSONObject> events;
+
+    public List<JSONObject> getEvents() {
+        return events;
+    }
+
+    public void clear() {
+        events.clear();
+    }
     private EventListener listener = inboundEvent -> {
-        try {
-            JenkinsEvent jenkinsEvent = mapper.readValue(inboundEvent.readData(), JenkinsEvent.class);
-            events.add(jenkinsEvent);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        JSONObject jenkinsEvent = new JSONObject(inboundEvent.readData());
+        events.add(jenkinsEvent);
     };
+
     public void connect() throws UnirestException, InterruptedException {
         HttpResponse<JsonNode> httpResponse = Unirest.get(baseUrl + "/sse-gateway/connect?clientId=ath").asJson();
         JsonNode body = httpResponse.getBody();
@@ -61,5 +83,23 @@ public class SSEClient {
 
         Unirest.post(baseUrl + "/sse-gateway/configure?batchId=1")
             .body(req).asJson();
+
+        logger.info("SSE Connected");
+    }
+
+    public void untilEvent(Predicate<JSONObject> isEvent) {
+        new FluentWait<List<JSONObject>>(getEvents())
+            .pollingEvery(1000, TimeUnit.MILLISECONDS)
+            .withTimeout(20, TimeUnit.SECONDS)
+            .ignoring(NoSuchElementException.class)
+            .until((Predicate<List<JSONObject>>) events -> Iterables.any(events, isEvent));
+    }
+
+    public void untilEvents(Predicate<List<JSONObject>> isEvents) {
+        new FluentWait<List<JSONObject>>(getEvents())
+            .pollingEvery(1000, TimeUnit.MILLISECONDS)
+            .withTimeout(20, TimeUnit.SECONDS)
+            .ignoring(NoSuchElementException.class)
+            .until(isEvents);
     }
 }

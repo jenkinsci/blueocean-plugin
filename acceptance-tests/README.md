@@ -109,6 +109,7 @@ All test code is uses Guice to do dependency injection.
 @Login
 // Sets up the Guice DI and creates the WebDriver istan
 @RunWith(ATHJUnitRunner.class)
+@UseModules(AthModule.class)
 public class MyFirstATHTest{
     
     // Base url for the browser to naviate to. e.g driver.get(baseUrl + "/blue/")
@@ -127,6 +128,11 @@ public class MyFirstATHTest{
     @Inject
     DashboardPage dashboardPage;
     
+    // Creates a temporary git repository to use in this test
+    @Rule
+    @Inject
+    GitRepositoryRule repository;
+    
     @Test
     public void myFirstTest() {
         dashboardPage.open();
@@ -139,8 +145,41 @@ public class MyFirstATHTest{
     }
 }
 ```
+#### Server Side Events
 
-### Page Objects
+`SSEClient` is a JUnit `ExternalResource`. Once it is injected and marked as a rule on the test
+it connects to the Jenkins server want waits for job events. Events are saved into a list as they happen.
+
+Once a test is ready to check for events, `untilEvent()` can be used. `clear()` can be invoked at any time to clear out any 
+messages recieved until that point in time.
+
+```java
+@Login
+@RunWith(ATHJUnitRunner.class)
+@UseModules(AthModule.class)
+public class MySecondATHTest{
+    
+    @Rule
+    @Inject
+    SSEClient sseClient;
+    
+    @Test
+    public void mySecondTest() {
+       // ... do something that makes a build run.
+       
+       // This waits for any builds that have been queued to finish.
+       sseClient.untilEvents(SSEEvents.activityComplete(pipelineName));
+       // Clear all events so far so that when wait is called again it doesnt see the old events.
+       sseClient.clear();
+
+       // ... some more run stuff
+       sseClient.untilEvents(SSEEvents.activityComplete(pipelineName));
+       
+       // .. finish off test
+    }
+}
+```
+#### Page Objects
 
 Page Objects allow for selectors and actions to be grouped into reusable classes.
 
@@ -166,14 +205,13 @@ public class MyAwesomePage {
         myAwesomeButton.click()
         
         // Check to see if another element is selected using the By selector.
-        WebElement somethingElse = wait.until(EvisibilityOfElementLocated(By.id("somethingElse")));
+        WebElement somethingElse = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("somethingElse")));
         somethingElse.isSelected();
     }
 }
 ``` 
 
 Any new Page Object classes need to be bound in `ATHModule#configure` to be able to be injected via Guice.
-
 
 ###
 [nightwatch]: http://nightwatchjs.org/

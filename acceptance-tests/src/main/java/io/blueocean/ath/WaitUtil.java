@@ -1,19 +1,13 @@
 package io.blueocean.ath;
 
-import com.google.common.base.Predicate;
-import com.google.common.collect.Lists;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
-
-import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
@@ -45,7 +39,7 @@ public class WaitUtil {
 
     }
 
-    public <T> Function<WebDriver, Integer> orVisisble(Function<WebDriver, WebElement> trueCase, Function<WebDriver, WebElement> falseCase) {
+    public <T> Function<WebDriver, Integer> orVisible(Function<WebDriver, WebElement> trueCase, Function<WebDriver, WebElement> falseCase) {
         return driver -> {
             try {
                 if(trueCase.apply(driver).isDisplayed()) {

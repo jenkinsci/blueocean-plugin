@@ -89,7 +89,7 @@ public class GithubCreationPage {
         githubCreationBtn.click();
         logger.info("Selected github");
 
-        if(wait.until(wait.orVisisble(
+        if(wait.until(wait.orVisible(
             driver -> apiKeyInput,
             driver -> driver.findElement(getOrgSelector(org)))) == 1) {
 

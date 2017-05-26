@@ -1,65 +1,29 @@
 package io.blueocean.ath;
 
-import com.google.common.io.Resources;
-import com.google.inject.BindingAnnotation;
-import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.blueocean.ath.pages.classic.LoginPage;
-import org.apache.log4j.PropertyConfigurator;
-import org.junit.internal.runners.statements.RunBefores;
-import org.junit.runner.notification.RunNotifier;
-import org.junit.runners.BlockJUnit4ClassRunner;
+import org.jukito.JukitoRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.remote.DesiredCapabilities;
-import org.openqa.selenium.remote.RemoteWebDriver;
 
-import javax.swing.plaf.nimbus.State;
-import java.io.IOException;
-import java.net.URL;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.concurrent.TimeUnit;
+import java.lang.reflect.InvocationTargetException;
 
-public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
-    private Injector injector;
-    private WebDriver driver;
-    @Override
-    public Object createTest() throws Exception {
-        Object obj = super.createTest();
-        injector.injectMembers(obj);
-        return obj;
-    }
+public class ATHJUnitRunner extends JukitoRunner {
 
-    public ATHJUnitRunner(Class<?> klass) throws InitializationError, IOException {
+
+    public ATHJUnitRunner(Class<?> klass) throws InitializationError, InvocationTargetException, InstantiationException, IllegalAccessException {
         super(klass);
-        injector = createInjector();
     }
 
-    private Injector createInjector() throws InitializationError, IOException {
-        DesiredCapabilities capability = DesiredCapabilities.firefox();
-        driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capability);
-        driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
-        driver.manage().deleteAllCookies();
-        String launchUrl = new String(Files.readAllBytes(Paths.get("runner/.blueocean-ath-jenkins-url")));
-
-        return Guice.createInjector(new AthModule(driver, launchUrl));
-    }
-
-    @Override
-    public void run(RunNotifier notifier) {
-        super.run(notifier);
-        driver.close();
-        driver.quit();
+    public ATHJUnitRunner(Class<?> klass, Injector injector) throws InitializationError, InvocationTargetException, InstantiationException, IllegalAccessException {
+        super(klass, injector);
     }
 
     @Override
     protected Statement methodInvoker(FrameworkMethod method, Object test) {
         Statement statement = super.methodInvoker(method, test);
-        statement = new LoginBefore(injector.getInstance(LoginPage.class), method, test, statement);
+        statement = new LoginBefore(getInjector().getInstance(LoginPage.class), method, test, statement);
         return statement;
     }
 
