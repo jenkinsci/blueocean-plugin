@@ -33,10 +33,19 @@ node() {
           sh "node ./bin/checkshrinkwrap.js"
         }
 
-        stage('ATH') {
-          sh "cd acceptance-tests && ./run.sh -a=../blueocean/ --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+        stage('ATH - Jenkins 2.7.3') {
+          sh "cd acceptance-tests && ./run.sh --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
           junit 'acceptance-tests/target/surefire-reports/*.xml'
+
         }
+        stage('ATH - Jenkins 2.46.3') {
+          if (env.JOB_NAME =~ 'blueocean-weekly-ath') {
+            sh "cd acceptance-tests && ./run.sh -v=2.46.3 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+            junit 'acceptance-tests/target/surefire-reports/*.xml'
+          }
+        }
+
+
       } catch(err) {
         currentBuild.result = "FAILURE"
 
