@@ -286,7 +286,9 @@
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-surefire-plugin</artifactId>
                         <configuration>
-                            <includes>**/*Test.java</includes>
+                            <includes>
+                                <include>**/*Test.java</include>
+                            </includes>
                         </configuration>
                     </plugin>
                 </plugins>
