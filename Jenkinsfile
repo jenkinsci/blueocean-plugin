@@ -11,6 +11,10 @@ node {
 
   configFileProvider([configFile(fileId: 'blueocean-maven-settings', targetLocation: 'settings.xml')]) {
 
+  withCredentials([file(credentialsId: 'blueoceandeploy_ath', variable: 'FILE')]) {
+      sh 'ls -l $FILE'
+      sh 'mv $FILE acceptance-tests/live.properties'
+  }
   sh "./acceptance-tests/runner/scripts/start-selenium.sh"
 
   docker.image('blueocean_build_env').inside("--net=container:blueo-selenium") {
