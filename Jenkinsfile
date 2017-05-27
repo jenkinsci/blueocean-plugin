@@ -24,8 +24,8 @@ node() {
           sh 'npm --prefix ./blueocean-core-js install'
           sh 'npm --prefix ./blueocean-core-js run gulp'
           sh "mvn clean install -B -DcleanNode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
-          step([$class: 'JUnitResultArchiver', testResults: '**/target/surefire-reports/TEST-*.xml'])
-          step([$class: 'ArtifactArchiver', artifacts: '*/target/*.hpi'])
+          junit '**/target/surefire-reports/TEST-*.xml'
+          archive '*/target/*.hpi'
         }
 
         stage('Sanity check dependancies') {
@@ -35,7 +35,7 @@ node() {
 
         stage('ATH') {
           sh "cd acceptance-tests && ./run.sh -a=../blueocean/ --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
-          step([$class: 'JUnitResultArchiver', testResults: 'acceptance-tests/target/surefire-reports/*.xml'])
+          junit 'acceptance-tests/target/surefire-reports/*.xml'
         }
       } catch(err) {
         currentBuild.result = "FAILURE"
