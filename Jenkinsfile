@@ -30,7 +30,6 @@ node() {
 
         stage('Sanity check dependancies') {
           sh "node ./bin/checkdeps.js"
-          stage 'Sanity check shrinkwrap'
           sh "node ./bin/checkshrinkwrap.js"
         }
 
