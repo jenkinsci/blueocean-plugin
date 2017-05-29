@@ -209,7 +209,7 @@ export default class Pipeline extends Component {
                 nextPath = `/${pathArray.join('/')}`;
             }
             // check whether we have a parallel node
-            const isParallel = this.pager.isParallel(nextNode);
+            const isParallel = this.pager.isParallel();
             // see whether we need to update the state
             if (nextNode.state === 'FINISHED' || isParallel) {
                 nextPath = `${nextPath}/${id}`; // only allow node param in finished nodes
