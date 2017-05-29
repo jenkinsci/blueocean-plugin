@@ -49,14 +49,6 @@ export class PipelinePager {
         return this.bunker.getItem(this.currentStepsUrl);
     }
     /**
-     * Is the current node parallel
-     * This used to be long involved logic, but it turns out it is in the data now.
-     * We can't calculate it from adjacent nodes as we don't always have them.
-     */
-    isParallel() {
-        return this.currentNode.isParallel;
-    }
-    /**
      * Creates an instance of Pager and fetches the first page.
      *
      * @param {BunkerService} bunker - Data store
