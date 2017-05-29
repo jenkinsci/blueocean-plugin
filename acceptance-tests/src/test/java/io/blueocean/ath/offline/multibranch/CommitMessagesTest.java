@@ -52,18 +52,18 @@ public class CommitMessagesTest {
 
         URL jenkinsFile = Resources.getResource(CommitMessagesTest.class, "CommitMessagesTest/Jenkinsfile");
         Files.copy(new File(jenkinsFile.getFile()), new File(repo.gitDirectory, "Jenkinsfile"));
-        repo.git.add().addFilepattern(".").call();
-        repo.git.commit().setMessage("initial commit").call();
+        repo.client.add().addFilepattern(".").call();
+        repo.client.commit().setMessage("initial commit").call();
         logger.info("Commited Jenkinsfile");
 
-        jobApi.createMultlBranchPipeline(pipelineName, repo.gitDirectory.getAbsolutePath());
+        jobApi.createMultlBranchPipeline(null, pipelineName, repo.gitDirectory.getAbsolutePath());
 
         sseClient.untilEvents(SSEEvents.activityComplete(pipelineName));
         sseClient.clear();
 
-        JGitTestUtil.writeTrashFile(repo.git.getRepository(), "trash", "hi");
-        repo.git.add().addFilepattern(".").call();
-        repo.git.commit().setMessage("2nd commit").call();
+        JGitTestUtil.writeTrashFile(repo.client.getRepository(), "trash", "hi");
+        repo.client.add().addFilepattern(".").call();
+        repo.client.commit().setMessage("2nd commit").call();
         logger.info("Commited a second time");
 
         Optional<FolderJob> folderJob = jenkins.getFolderJob(jenkins.getJob(pipelineName));

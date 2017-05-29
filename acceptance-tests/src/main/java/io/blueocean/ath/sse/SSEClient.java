@@ -60,6 +60,7 @@ public class SSEClient extends ExternalResource {
     public void clear() {
         events.clear();
     }
+
     private EventListener listener = inboundEvent -> {
         JSONObject jenkinsEvent = new JSONObject(inboundEvent.readData());
         events.add(jenkinsEvent);
@@ -98,7 +99,7 @@ public class SSEClient extends ExternalResource {
     public void untilEvents(Predicate<List<JSONObject>> isEvents) {
         new FluentWait<List<JSONObject>>(getEvents())
             .pollingEvery(1000, TimeUnit.MILLISECONDS)
-            .withTimeout(20, TimeUnit.SECONDS)
+            .withTimeout(60, TimeUnit.SECONDS)
             .ignoring(NoSuchElementException.class)
             .until(isEvents);
     }

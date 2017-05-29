@@ -69,24 +69,28 @@ public class GithubCreationPage {
         return By.xpath("//div[@class='org-list-item']/span[text()='"+ user +"']");
     }
     public void selectPipelineToCreate(String pipeline){
-        wait.until(ExpectedConditions.visibilityOf(pipelineSearchInput));
-        pipelineSearchInput.sendKeys(pipeline);
+        wait.until(ExpectedConditions.visibilityOf(pipelineSearchInput))
+            .sendKeys(pipeline);
 
         By xpath = By.xpath("//div[contains(@class, 'repo-list')]//div[contains(@class,'List-Item')]//span[text()='"+pipeline+"']");
-        WebElement element = wait.until(ExpectedConditions.visibilityOfElementLocated(xpath));
-
-        element.click();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(xpath)).click();
         logger.info("Selected pipeline to create");
     }
 
+    public By emptyRepositoryCreateBurron = By.cssSelector(".jenkins-pipeline-create-missing-jenkinsfile > div > button");
 
     public void createPipeline(String apikey, String org, String pipeline) throws IOException {
+        createPipeline(apikey, org, pipeline, false);
+    }
+    public void createPipeline(String apikey, String org, String pipeline, boolean createJenkisFile) throws IOException {
         jobApi.deletePipeline(org);
 
         dashboardPage.open();
-        dashboardPage.newPipelineButton.click();
+        wait.until(ExpectedConditions.visibilityOf(dashboardPage.newPipelineButton))
+            .click();;
         logger.info("Clicked on new pipeline button");
-        githubCreationBtn.click();
+
+        wait.until(ExpectedConditions.visibilityOf(githubCreationBtn)).click();
         logger.info("Selected github");
 
         if(wait.until(wait.orVisible(
@@ -97,15 +101,25 @@ public class GithubCreationPage {
         }
         selectOrganization(org);
 
-        wait.until(ExpectedConditions.visibilityOf(singlePipelineBtn));
-        singlePipelineBtn.click();
+        wait.until(ExpectedConditions.visibilityOf(singlePipelineBtn))
+            .click();
 
         logger.info("Select a single pipeline to create");
 
         selectPipelineToCreate(pipeline);
 
-        createBtn.click();
-        wait.until(ExpectedConditions.urlMatches(".*activity$"), 30000);
-        logger.info("Pipeline created");
+        wait.until(createBtn).click();
+
+        if(createJenkisFile) {
+            WebElement createJenkinsFileButton = wait
+                .until(ExpectedConditions.visibilityOfElementLocated(emptyRepositoryCreateBurron));
+            createJenkinsFileButton.click();
+            wait.until(ExpectedConditions.urlContains("pipeline-editor"), 30000);
+            logger.info("Pipeline created - now editing");
+        } else {
+            wait.until(ExpectedConditions.urlMatches(".*activity$"), 30000);
+            logger.info("Pipeline created");
+        }
     }
+
 }
