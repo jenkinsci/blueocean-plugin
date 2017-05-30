@@ -16,6 +16,7 @@ import jenkins.model.Jenkins;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -107,11 +108,21 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
             });
         }else{
             GlobMatcher matcher = pipeline.contains("*") ? new GlobMatcher(pipeline) : null;
-            while (pipelineIterator.hasNext()) {
-                BluePipeline p = pipelineIterator.next();
-                // If using glob syntax try to match using the glob matcher otherwise fall back to equality check
-                if (matcher != null && matcher.matches(p.getFullDisplayName()) || (matcher == null && pipeline.equals(p.getFullDisplayName()))) {
-                    pipelines.add(p);
+            if (matcher != null) {
+                while (pipelineIterator.hasNext()) {
+                    BluePipeline p = pipelineIterator.next();
+                    String decodedName = URLDecoder.decode(p.getFullDisplayName());
+                    if (matcher.matches(decodedName)) {
+                        pipelines.add(p);
+                    }
+                }
+
+            } else {
+                while (pipelineIterator.hasNext()) {
+                    BluePipeline p = pipelineIterator.next();
+                    if (pipeline.equals(p.getFullDisplayName())) {
+                        pipelines.add(p);
+                    }
                 }
             }
             return Pageables.wrap(pipelines);
