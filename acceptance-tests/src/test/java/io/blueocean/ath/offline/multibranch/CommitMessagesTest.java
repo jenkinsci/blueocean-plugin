@@ -1,4 +1,4 @@
-package io.blueocean.ath.multibranch;
+package io.blueocean.ath.offline.multibranch;
 
 
 import com.google.common.base.Optional;

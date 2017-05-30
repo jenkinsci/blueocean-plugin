@@ -27,3 +27,4 @@ jsconfig.json
 blueocean-core-js/nohup.out
 acceptance-tests/runner/.blueocean-ath-jenkins-url
 acceptance-tests/live.properties
+src/main/groovy/pipeline.gdsl

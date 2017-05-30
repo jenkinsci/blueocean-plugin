@@ -1,6 +1,9 @@
-package io.blueocean.ath;
+package io.blueocean.ath.offline;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
+import io.blueocean.ath.ATHJUnitRunner;
+import io.blueocean.ath.AthModule;
+import io.blueocean.ath.Login;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.pages.blue.DashboardPage;
 import org.apache.log4j.Logger;
