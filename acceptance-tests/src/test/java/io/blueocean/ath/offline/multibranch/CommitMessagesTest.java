@@ -45,6 +45,9 @@ public class CommitMessagesTest extends BaseTest{
     @Inject
     MultiBranchPipelineFactory mbpFactory;
 
+    /**
+     * This tests the commit messages are being picked up from git and displayed on the run in activity.
+     */
     @Test
     public void commitMessagesTest() throws IOException, GitAPIException {
         String pipelineName = "CommitMessagesTest_commitMessagesTest";

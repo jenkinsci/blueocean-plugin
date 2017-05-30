@@ -46,6 +46,11 @@ public class FolderTest extends BaseTest {
     @Inject @Rule
     public SSEClient client;
 
+    /**
+     * Tests that the activity page works when there are multiple layers of folders, and with funky characters.
+     *
+     * As long as activity loads run, any other page for this pipeline should load as it uses a shared router.
+     */
     @Test
     public void multiBranchFolderTest() throws GitAPIException, IOException {
         String pipelineName = "FolderTest_multiBranchFolderTest";

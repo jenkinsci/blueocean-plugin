@@ -101,6 +101,18 @@ public class GithubCreationTest{
     @Inject
     MultiBranchPipelineFactory mbpFactory;
 
+    @Inject @Rule
+    public SSEClient sseClient;
+
+    @Inject EditorPage editorPage;
+
+    /**
+     * This test tests the github creation flow.
+     *
+     * Creates a github repo with a sameple Jenkinsfile
+     *
+     * TODO: Add PR coverage.
+     */
     @Test
     public void testGithubCreation() throws IOException {
         URL jenkinsFileUrl = Resources.getResource(this.getClass(), "Jenkinsfile");
@@ -113,17 +125,17 @@ public class GithubCreationTest{
         creationPage.createPipeline(token, organization, repo);
     }
 
-
-    @Inject @Rule
-    public SSEClient sseClient;
-
-    @Inject EditorPage editorPage;
+    /**
+     * This test covers e2e usage of the editor.
+     *
+     * Creates a blank github repo, and then uses editor to create a simple pipeline.
+     */
     @Test
     public void testEditor() throws IOException {
         creationPage.createPipeline(token, organization, repo, true);
         MultiBranchPipeline pipeline = mbpFactory.pipeline(Folder.folders(organization), repo);
         editorPage.simplePipeline();
         pipeline.getActivityPage().checkUrl();
-        sseClient.untilEvents(SSEEvents.activityComplete(organization + "/" + repo));
+        sseClient.untilEvents(pipeline.buildsFinished);
     }
 }
