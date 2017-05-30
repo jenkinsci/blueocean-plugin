@@ -9,7 +9,6 @@ import {
 import {LiveStatusIndicator, RunButton} from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import {observer} from 'mobx-react';
-import {CellRow, CellLink} from './CellLink';
 import {Icon} from '@jenkins-cd/react-material-icons';
 import {buildPipelineUrl} from '../util/UrlUtils';
 import {Link} from 'react-router';
@@ -76,10 +75,17 @@ export class BranchDetailsRowRenderer extends Component {
             runMessage,
             completed,
             actions = [],
+            latestRunId,
             ...restProps,
         } = this.props;
 
-        // TODO: data-X attribs
+        const dataProps = {
+            'data-branch': branchName,
+        };
+
+        if (latestRunId != null) {
+            dataProps['data-runid'] = latestRunId;
+        }
 
         const actionsCell = React.createElement(
             TableCell,
@@ -90,7 +96,7 @@ export class BranchDetailsRowRenderer extends Component {
             ...actions);
 
         return (
-            <TableRow linkTo={runDetailsUrl} {...restProps}>
+            <TableRow linkTo={runDetailsUrl} {...dataProps} {...restProps}>
                 <TableCell>
                     { weatherScore != null && (
                         <WeatherIcon score={weatherScore}/>
@@ -193,6 +199,7 @@ export class BranchDetailsRow extends Component {
                                       runMessage={runMessage}
                                       completed={completed}
                                       actions={actions}
+                                      latestRunId={latestRun.id}
             />
         );
 
