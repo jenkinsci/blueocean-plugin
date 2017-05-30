@@ -48,6 +48,14 @@ public class WaitUtil {
     public WebElement until(By by) {
         return until(ExpectedConditions.visibilityOfElementLocated(by));
     }
+
+    public WebElement until(WebElement element, long timeoutInMS) {
+        return until(ExpectedConditions.visibilityOf(element), timeoutInMS);
+    }
+
+    public WebElement until(By by, long timeoutInMS) {
+        return until(ExpectedConditions.visibilityOfElementLocated(by), timeoutInMS);
+    }
     public <T> Function<WebDriver, Integer> orVisible(Function<WebDriver, WebElement> trueCase, Function<WebDriver, WebElement> falseCase) {
         return driver -> {
             try {
