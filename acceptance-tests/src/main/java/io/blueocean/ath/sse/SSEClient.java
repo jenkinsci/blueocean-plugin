@@ -61,9 +61,22 @@ public class SSEClient extends ExternalResource {
         events.clear();
     }
 
+    private boolean logEvents;
+
+    public boolean isLogEvents() {
+        return logEvents;
+    }
+
+    public void setLogEvents(boolean logEvents) {
+        this.logEvents = logEvents;
+    }
+
     private EventListener listener = inboundEvent -> {
         JSONObject jenkinsEvent = new JSONObject(inboundEvent.readData());
         events.add(jenkinsEvent);
+        if(logEvents) {
+            logger.info("SSE - " + jenkinsEvent.toString());
+        }
     };
 
     public void connect() throws UnirestException, InterruptedException {
@@ -97,7 +110,7 @@ public class SSEClient extends ExternalResource {
     }
 
     public void untilEvents(Predicate<List<JSONObject>> isEvents) {
-        new FluentWait<List<JSONObject>>(getEvents())
+        new FluentWait<>(getEvents())
             .pollingEvery(1000, TimeUnit.MILLISECONDS)
             .withTimeout(60, TimeUnit.SECONDS)
             .ignoring(NoSuchElementException.class)

@@ -11,6 +11,8 @@ import io.blueocean.ath.model.Folder;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.model.Pipeline;
 import io.blueocean.ath.pages.blue.ActivityPage;
+import io.blueocean.ath.sse.SSEClient;
+import io.blueocean.ath.sse.SSEEvents;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.jukito.UseModules;
@@ -27,6 +29,9 @@ import java.net.URLEncoder;
 @UseModules(AthModule.class)
 public class FolderTest extends BaseTest {
     private Logger logger = Logger.getLogger(FolderTest.class);
+
+    private Folder folder = Folder.folders("a folder", "bfolder", "cfolder");
+
     @Rule
     @Inject
     public GitRepositoryRule git;
@@ -34,13 +39,12 @@ public class FolderTest extends BaseTest {
     @Inject
     ClassicJobApi jobApi;
 
-    String[] folders = {"aFfolder", "b Folder", "cFolder"};
 
     @Inject
     MultiBranchPipelineFactory mbpFactory;
 
-    @Inject
-    WebDriver driver;
+    @Inject @Rule
+    public SSEClient client;
 
     @Test
     public void multiBranchFolderTest() throws GitAPIException, IOException {
@@ -49,22 +53,9 @@ public class FolderTest extends BaseTest {
         git.client.add().addFilepattern(".").call();
         git.client.commit().setMessage("bah").call();
         git.createBranch("feature/1");
-        MultiBranchPipeline p = null;
-        try {
-            p = mbpFactory
-                .pipeline(
-                    Folder.folders("aFold er", URLEncoder.encode("bF older"), "cFolder"),
-                    pipelineName)
-                .createPipeline(git);
-        } catch (IOException e) {
-            e.printStackTrace();
-            throw e;
-        }
-        ActivityPage activityPage = p.getActivityPage();
-        activityPage.open();
-
-
-        logger.info(driver.getCurrentUrl());
+        MultiBranchPipeline p = mbpFactory.pipeline(folder, pipelineName).createPipeline(git);
+        client.untilEvents(p.buildsFinished);
+        p.getActivityPage().open();
     }
 
 

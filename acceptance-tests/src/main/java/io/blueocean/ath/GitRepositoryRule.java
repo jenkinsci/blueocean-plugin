@@ -56,7 +56,7 @@ public class GitRepositoryRule extends ExternalResource {
     }
 
     public Ref createBranch(String branch) throws GitAPIException {
-        Ref ref = client.branchCreate().setName("branch").call();
+        Ref ref = client.branchCreate().setName(branch).call();
         logger.info("Created branch " + branch);
         return ref;
     }

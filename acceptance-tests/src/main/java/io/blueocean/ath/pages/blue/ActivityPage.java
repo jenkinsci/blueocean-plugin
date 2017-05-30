@@ -41,6 +41,7 @@ public class ActivityPage {
         PageFactory.initElements(driver, this);
     }
 
+    @Deprecated
     public void open(String pipeline) {
         driver.get(base+"/blue/organizations/jenkins/"+ pipeline + "/activity");
         logger.info("Opened activity page for " + pipeline);
@@ -52,12 +53,14 @@ public class ActivityPage {
 
     public void checkUrl() {
         wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity"), 30000);
+        wait.until(By.cssSelector("article.activity"));
     }
-    public void open() {
+    public ActivityPage open() {
         checkPipeline();
         driver.get(pipeline.getUrl() + "/activity");
-        wait.until(ExpectedConditions.urlToBe(pipeline.getUrl() + "/activity/"));
+        checkUrl();
         logger.info("Opened activity page for " + pipeline);
+        return this;
     }
     public void checkForCommitMesssage(String message) {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()=\""+ message +"\"]")));

@@ -16,7 +16,7 @@ public class Folder {
     }
 
     public String getPath() {
-        return URLEncoder.encode(Joiner.on("/").join(folders));
+        return Joiner.on("/").join(folders);
     }
 
     public String get(int i) {

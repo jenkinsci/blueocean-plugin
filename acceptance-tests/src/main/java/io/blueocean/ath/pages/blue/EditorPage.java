@@ -37,6 +37,5 @@ public class EditorPage {
         wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("Simple pipeline");
         wait.until(By.xpath("//*[text()=\"Save & run\"]")).click();
         logger.info("Simple pipeline saved");
-
     }
 }
