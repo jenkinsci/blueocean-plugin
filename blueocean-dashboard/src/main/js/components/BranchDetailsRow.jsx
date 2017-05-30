@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, {Component, PropTypes} from 'react';
 import {
     CommitHash,
     ReadableDate,
@@ -6,16 +6,16 @@ import {
     TableRow,
     TableCell,
 } from '@jenkins-cd/design-language';
-import { LiveStatusIndicator, RunButton } from '@jenkins-cd/blueocean-core-js';
+import {LiveStatusIndicator, RunButton} from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
-import { observer } from 'mobx-react';
-import { CellRow, CellLink } from './CellLink';
-import { Icon } from '@jenkins-cd/react-material-icons';
-import { buildPipelineUrl } from '../util/UrlUtils';
-import { Link } from 'react-router';
+import {observer} from 'mobx-react';
+import {CellRow, CellLink} from './CellLink';
+import {Icon} from '@jenkins-cd/react-material-icons';
+import {buildPipelineUrl} from '../util/UrlUtils';
+import {Link} from 'react-router';
 import RunMessageCell from './RunMessageCell';
 
-import { buildRunDetailsUrl } from '../util/UrlUtils';
+import {buildRunDetailsUrl} from '../util/UrlUtils';
 
 // For sorting the extensions in the actions column
 function sortByOrdinal(extensions, done) {
@@ -41,11 +41,25 @@ function cancelClick(e) {
 function noRun(branch, openRunDetails, t, store, columns) {
     const cleanBranchName = decodeURIComponent(branch.name);
     const statusIndicator = <LiveStatusIndicator result="NOT_BUILT"/>;
+    const actions = [(
+        <RunButton className="icon-button"
+                   runnable={branch}
+                   onNavigation={openRunDetails}
+        />
+    ), (
+        <Extensions.Renderer extensionPoint="jenkins.pipeline.branches.list.action"
+                             filter={sortByOrdinal}
+                             pipeline={branch }
+                             store={store}
+                             {...t}
+        />
+    )];
 
     return (
         <BranchDetailsRowRenderer columns={columns}
                                   branchName={cleanBranchName}
                                   statusIndicator={statusIndicator}
+                                  actions={actions}
         />
     );
 }
@@ -97,7 +111,7 @@ export class BranchDetailsRowRenderer extends Component {
 export class BranchDetailsRow extends Component {
 
     render() {
-        
+
         const {
             data: branch,
             pipeline,
@@ -133,7 +147,7 @@ export class BranchDetailsRow extends Component {
         );
 
         const runMessage = (
-            <RunMessageCell run={latestRun} t={t} />
+            <RunMessageCell run={latestRun} t={t}/>
         );
 
         const completed = (
@@ -181,7 +195,6 @@ export class BranchDetailsRow extends Component {
                                       actions={actions}
             />
         );
-
 
 
         // return (
