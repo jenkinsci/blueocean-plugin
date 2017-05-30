@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import { Table } from '@jenkins-cd/design-language';
 import {
     JTable,
     TableHeaderRow,
@@ -7,7 +6,6 @@ import {
 import { capable, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 
-import Branches from './Branches';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
 import { UnsupportedPlaceholder } from './placeholder/UnsupportedPlaceholder';
@@ -55,16 +53,6 @@ export class MultiBranch extends Component {
         const messageHeader = t(`${head}.message`, { defaultValue: 'Message' });
         const completedHeader = t(`${head}.completed`, { defaultValue: 'Completed' });
 
-        const headers = [
-            healthHeader,
-            statusHeader,
-            { label: branchHeader, className: 'branch' },
-            { label: commitHeader, className: 'lastcommit' },
-            { label: messageHeader, className: 'message' },
-            { label: completedHeader, className: 'completed' },
-            { label: '', className: 'run' },
-        ];
-
         const actionColWidth = 80; // TODO: Calc based on extensions
 
         const columns = [
@@ -81,19 +69,12 @@ export class MultiBranch extends Component {
         return (
             <main>
                 <article>
-
                     <JTable columns={columns} className="multibranch-table">
                         <TableHeaderRow />
                         { branches.map(branch => (
                             <BranchDetailsRow pipeline={pipeline} key={`${branch.name}-${branch.organization}`} data={branch} t={t} locale={locale} />
                         )) }
                     </JTable>
-
-                    <div style={{padding:'4em 2em'}}>TODO: REMOVE ME</div>
-                    
-                    <Table className="multibranch-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
-                        {branches.length > 0 && branches.map((branch, index) => <Branches pipeline={pipeline} key={index} data={branch} t={t} locale={locale} />)}
-                    </Table>
                     <ShowMoreButton pager={this.pager} />
                 </article>
                 {this.props.children}
