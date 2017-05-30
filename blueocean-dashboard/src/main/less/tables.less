@@ -12,6 +12,11 @@
 .TableCell--actions {
     // TODO: Remove this once updated to JDL that has it
     justify-content: flex-end;
+
+    .JTable-cell-contents {
+        display: flex;
+        flex-wrap: nowrap;
+    }
 }
 
 .TableCell--actions .ExtensionPoint
@@ -20,7 +25,7 @@
     flex-wrap: nowrap;
 
     // Constrain the children in size, there should only be icons here.
-    div {
+    div[react-dataroot] > * {
         width:24px;
         height:24px;
         overflow: hidden;

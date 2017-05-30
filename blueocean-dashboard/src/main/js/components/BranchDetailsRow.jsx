@@ -67,6 +67,14 @@ export class BranchDetailsRowRenderer extends Component {
 
         // TODO: data-X attribs
 
+        const actionsCell = React.createElement(
+            TableCell,
+            {
+                className: "TableCell--actions",
+                onClick: cancelClick,
+            },
+            ...actions);
+
         return (
             <TableRow linkTo={runDetailsUrl} {...restProps}>
                 <TableCell>
@@ -79,13 +87,7 @@ export class BranchDetailsRowRenderer extends Component {
                 <TableCell><CommitHash commitId={commitId}/></TableCell>
                 <TableCell>{ runMessage }</TableCell>
                 <TableCell>{ completed }</TableCell>
-                {
-                    // cloneElement so we don't get stupid warnings about missing keys
-                    React.cloneElement(<TableCell className="TableCell--actions" onClick={cancelClick}/>,
-                        null,
-                        ...actions
-                    )
-                }
+                { actionsCell }
             </TableRow>
         );
     }
