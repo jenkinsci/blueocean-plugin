@@ -116,6 +116,9 @@ export class BranchDetailsRowRenderer extends Component {
 @observer
 export class BranchDetailsRow extends Component {
 
+    // The number of hardcoded actions not provided by extensions
+    static actionItemsCount = 2;
+
     render() {
 
         const {

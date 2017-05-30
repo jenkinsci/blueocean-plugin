@@ -12,20 +12,38 @@ import { UnsupportedPlaceholder } from './placeholder/UnsupportedPlaceholder';
 
 import {BranchDetailsRow} from './BranchDetailsRow';
 
-const { object, string, any, func } = PropTypes;
+import Extensions from '@jenkins-cd/js-extensions';
 
 // TODO: Rename this
 @observer
 export class MultiBranch extends Component {
+
+    state = {
+        actionExtensionCount: 0,
+    };
+
     componentWillMount() {
         if (this.props.pipeline && this.context.params && capable(this.props.pipeline, MULTIBRANCH_PIPELINE)) {
             const { organization, pipeline } = this.context.params;
             this.pager = this.context.pipelineService.branchPager(organization, pipeline);
         }
+        this._countExtensions();
+    }
+
+    // Figure out how many extensions we have for the action buttons column so we can size it appropriately
+    _countExtensions() {
+        Extensions.store.getExtensions('jenkins.pipeline.branches.list.action', extensions => {
+            const count = extensions && typeof(extensions.length) === 'number' ? extensions.length : 0;
+            if (count !== this.state.actionExtensionCount) {
+                this.setState({ actionExtensionCount: count });
+            }
+        });
     }
 
     render() {
         const { t, locale, pipeline } = this.props;
+        const { actionExtensionCount } = this.state;
+        const actionsInRowCount = BranchDetailsRow.actionItemsCount; // Non-extension actions
 
         if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
             const childProps = {
@@ -53,7 +71,7 @@ export class MultiBranch extends Component {
         const messageHeader = t(`${head}.message`, { defaultValue: 'Message' });
         const completedHeader = t(`${head}.completed`, { defaultValue: 'Completed' });
 
-        const actionColWidth = 80; // TODO: Calc based on extensions
+        const actionColWidth = (actionExtensionCount + actionsInRowCount) * 24;
 
         const columns = [
             JTable.column(60, healthHeader, false),
@@ -64,7 +82,6 @@ export class MultiBranch extends Component {
             JTable.column(100, completedHeader, false),
             JTable.column(actionColWidth, '', false),
         ];
-
 
         return (
             <main>
@@ -84,16 +101,16 @@ export class MultiBranch extends Component {
 }
 
 MultiBranch.contextTypes = {
-    config: object.isRequired,
-    params: object.isRequired,
-    pipelineService: object.isRequired,
+    config: PropTypes.object.isRequired,
+    params: PropTypes.object.isRequired,
+    pipelineService: PropTypes.object.isRequired,
 };
 
 MultiBranch.propTypes = {
-    children: any,
-    t: func,
-    locale: string,
-    pipeline: object,
+    children: PropTypes.any,
+    t: PropTypes.func,
+    locale: PropTypes.string,
+    pipeline: PropTypes.object,
 };
 
 export default MultiBranch;
