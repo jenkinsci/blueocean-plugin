@@ -1,0 +1,13 @@
+
+
+    stage("parallel") {
+      parallel firstBranch: {
+          input "go ahead left?"
+
+      }, secondBranch: {
+          input "go ahead right?"
+      }
+
+    }
+
+
