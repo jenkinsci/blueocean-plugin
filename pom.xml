@@ -308,11 +308,17 @@
             <artifactId>workflow-api</artifactId>
             <version>2.16</version>
         </dependency>
+        
+        <!-- 
+            workflow-job >= 2.12 requires a Jenkins core >= 2.60.
+            Do not upgrade this dependency without a discussion on jenkinsci-ux@googlegroups.com
+        -->
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-job</artifactId>
-            <version>2.12</version>
+            <version>2.11</version>
         </dependency>
+        
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-graph-analysis</artifactId>
