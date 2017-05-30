@@ -5,6 +5,7 @@ import hudson.Plugin;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.commons.ServiceException.UnexpectedErrorException;
 import io.jenkins.blueocean.rest.OmniSearch;
 import io.jenkins.blueocean.rest.Query;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
@@ -16,6 +17,7 @@ import jenkins.model.Jenkins;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -111,7 +113,12 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
             if (matcher != null) {
                 while (pipelineIterator.hasNext()) {
                     BluePipeline p = pipelineIterator.next();
-                    String decodedName = URLDecoder.decode(p.getFullDisplayName());
+                    String decodedName = null;
+                    try {
+                        decodedName = URLDecoder.decode(p.getFullDisplayName(), "UTF-8");
+                    } catch (UnsupportedEncodingException e) {
+                        throw new UnexpectedErrorException("Could not decode '" + p.getFullDisplayName() + "'", e);
+                    }
                     if (matcher.matches(decodedName)) {
                         pipelines.add(p);
                     }
