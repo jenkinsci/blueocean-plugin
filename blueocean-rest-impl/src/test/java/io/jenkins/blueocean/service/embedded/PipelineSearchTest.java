@@ -69,6 +69,7 @@ public class PipelineSearchTest extends BaseTest {
         j.createFreeStyleProject("aa");
         j.createFreeStyleProject("bb");
 
+        // user types "aa"
         List req = request()
             .get("/search/?q=type:pipeline;pipeline:aa;organization:jenkins")
             .build(List.class);
