@@ -91,7 +91,7 @@ public class ClassicJobApi {
 
     }
     public FolderJob getFolder(Folder folder, boolean createMissing) throws IOException {
-        if(folder == null || folder.getFolders().length == 0) {
+        if(folder == null || folder.getFolders().size() == 0) {
             return null;
         }
 
@@ -102,7 +102,7 @@ public class ClassicJobApi {
         }
         FolderJob ret = jenkins.getFolderJob(job).get();
 
-        for (int i = 1; i < folder.getFolders().length; i++) {
+        for (int i = 1; i < folder.getFolders().size(); i++) {
             job = jenkins.getJob(ret, folder.get(i));
             if(job == null && createMissing) {
                 createFolderImpl(ret, folder.get(i));
@@ -125,7 +125,7 @@ public class ClassicJobApi {
         jenkins.createFolder(folder.get(0));
         FolderJob lastFolder = jenkins.getFolderJob(jenkins.getJob(folder.get(0))).get();
 
-        for (int i = 1; i < folder.getFolders().length; i++) {
+        for (int i = 1; i < folder.getFolders().size(); i++) {
             lastFolder.createFolder(folder.get(0));
             lastFolder = jenkins.getFolderJob(lastFolder.getJob(folder.get(0))).get();
         };
@@ -137,6 +137,10 @@ public class ClassicJobApi {
             .withTimeout(timeoutInMS, TimeUnit.MILLISECONDS)
             .ignoring(NotFoundException.class)
             .until((JenkinsServer server) -> function.apply(server));
+    }
+
+    public void buildBranch(Folder folder, String pipeline, String branch) throws IOException {
+        jenkins.getJob(getFolder(folder.append(pipeline), false), branch).build();
     }
 }
 

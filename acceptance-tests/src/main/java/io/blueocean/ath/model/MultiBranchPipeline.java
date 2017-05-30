@@ -31,6 +31,10 @@ public class MultiBranchPipeline extends Pipeline{
         return this;
     }
 
-    public Predicate<List<JSONObject>> buildsFinished = list -> SSEEvents.activityComplete(getFolder().getPath() + "/" + getName()).apply(list);
+    public Predicate<List<JSONObject>> buildsFinished = list -> SSEEvents.activityComplete(getFolder().getPath(getName())).apply(list);
 
+    public MultiBranchPipeline buildBranch(String branch) throws IOException {
+        jobApi.buildBranch(getFolder(), getName(), branch);
+        return this;
+    }
 }

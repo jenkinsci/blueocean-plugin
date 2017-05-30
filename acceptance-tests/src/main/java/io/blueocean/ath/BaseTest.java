@@ -9,10 +9,12 @@ import java.net.URL;
 
 public abstract class BaseTest {
     public String loadResource(String path) throws IOException {
-        URL url = Resources.getResource(this.getClass(), this.getClass().getSimpleName() + "/" + path);
-        return Resources.toString(url, Charsets.UTF_8);
+        return Resources.toString(getResourceURL(path), Charsets.UTF_8);
     }
 
+    public URL getResourceURL(String path) throws IOException {
+        return Resources.getResource(this.getClass(), this.getClass().getSimpleName() + "/" + path);
+    }
     public String loadJenkinsFile() throws IOException {
         return loadResource("Jenkinsfile");
     }

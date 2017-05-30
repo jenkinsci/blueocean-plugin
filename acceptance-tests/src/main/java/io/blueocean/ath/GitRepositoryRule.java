@@ -7,6 +7,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.junit.JGitTestUtil;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Rule;
 import org.junit.rules.ExternalResource;
 import org.junit.rules.TemporaryFolder;
@@ -65,4 +66,13 @@ public class GitRepositoryRule extends ExternalResource {
         JGitTestUtil.writeTrashFile(client.getRepository(), "Jenkinsfile", jenkinsFile);
         logger.info("Wrote Jenkinsfile to git repository");
     }
+
+    public RevCommit commit(String message) throws GitAPIException {
+        return client.commit().setMessage(message).call();
+    }
+
+    public void addAll() throws GitAPIException {
+        client.add().addFilepattern(".").call();
+    }
+
 }

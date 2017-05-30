@@ -50,9 +50,10 @@ public class FolderTest extends BaseTest {
     public void multiBranchFolderTest() throws GitAPIException, IOException {
         String pipelineName = "FolderTest_multiBranchFolderTest";
         git.writeJenkinsFile(loadJenkinsFile());
-        git.client.add().addFilepattern(".").call();
-        git.client.commit().setMessage("bah").call();
+        git.addAll();
+        git.commit("First");
         git.createBranch("feature/1");
+
         MultiBranchPipeline p = mbpFactory.pipeline(folder, pipelineName).createPipeline(git);
         client.untilEvents(p.buildsFinished);
         p.getActivityPage().open();

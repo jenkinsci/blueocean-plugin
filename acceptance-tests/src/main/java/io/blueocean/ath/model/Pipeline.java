@@ -21,11 +21,15 @@ public abstract class Pipeline {
 
 
     public Pipeline(String name) {
-        this.name = name;
+        this(null, name);
     }
 
     public Pipeline(Folder folder, String name) {
-        this.folder = folder;
+        if(folder == null) {
+            this.folder = Folder.folders();
+        } else {
+            this.folder = folder;
+        }
         this.name = name;
     }
 
