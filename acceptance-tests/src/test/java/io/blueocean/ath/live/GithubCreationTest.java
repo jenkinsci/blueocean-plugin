@@ -22,8 +22,6 @@ import org.junit.runner.RunWith;
 import org.kohsuke.github.GHContentUpdateResponse;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
-import org.openqa.selenium.WebDriver;
-import sun.jvm.hotspot.ui.Editor;
 
 import javax.inject.Inject;
 import java.io.FileInputStream;
@@ -115,8 +113,6 @@ public class GithubCreationTest{
         creationPage.createPipeline(token, organization, repo);
     }
 
-    @Inject
-    WebDriver driver;
 
     @Inject @Rule
     public SSEClient sseClient;
