@@ -36,19 +36,19 @@ node {
                         sh 'git push -u origin $BRANCH'
                     }
 
-                    //Sanity build and test
+                    //Sanity build
                     stage('Build and test') {
                         sh 'echo Java version: `java -version`'
                         sh 'echo Maven version: `mvn --version`'
                         sh 'echo Git version: `git --version`'
 
-                        sh 'mvn -T 1C  clean install'
+                        sh 'mvn -T 1C  clean install -Djacoco.skip=true -DskipTests -Dfinbugs.skip=true'
                     }
 
                     //Prepare for release, release on github (tag)
                     stage('mvn release:prepare') {
                         writeSettingsXmlFile()
-                        sh 'mvn -s settings.xml release:prepare -B -Darguments="-DskipTests" -DautoVersionSubmodules=true -Djacoco.skip=true -Dusername=$GITHUB_USERNAME -Dpassword=$GITHUB_TOKEN'
+                        sh 'mvn -s settings.xml release:prepare -B -Darguments="-DskipTests" -DautoVersionSubmodules=true -Djacoco.skip=true -Dfinbugs.skip=true -Dusername=$GITHUB_USERNAME -Dpassword=$GITHUB_TOKEN'
                     }
 
                     //Release to maven repo
