@@ -20,6 +20,10 @@ Please make sure that BlueOcean plugins are built correctly. If _funky_ things s
 mvn clean install -DskipTests -DcleanNode
 ```
 
+### Areas covered
+
+* Karaoke parallel: ParallelNavigationTest. This checks that users can navigate between concurrently executing parallel branches, including steps waiting for input.
+
 
 
 ### Run all tests (in one command)

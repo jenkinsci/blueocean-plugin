@@ -88,7 +88,7 @@ class HttpRequest {
                 throw new ServiceException.NotFoundException("Not Found: "+getErrorResponse(connection));
             }
             if(status > 399) {
-                throw new ServiceException.BadRequestExpception(String.format("%s %s returned error: %s. Error message: %s.", method, url ,status, getErrorResponse(connection)));
+                throw new ServiceException.BadRequestException(String.format("%s %s returned error: %s. Error message: %s.", method, url ,status, getErrorResponse(connection)));
             }
             if(!method.equals("HEAD")) {
                 r = new InputStreamReader(wrapStream(connection.getInputStream(), connection.getContentEncoding()), "UTF-8");
