@@ -7,7 +7,10 @@ import io.blueocean.ath.AthModule;
 import io.blueocean.ath.GitRepositoryRule;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.api.classic.ClassicJobApi;
-import io.blueocean.ath.pages.blue.ResultsPage;
+import io.blueocean.ath.factory.MultiBranchPipelineFactory;
+import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
+import io.blueocean.ath.model.MultiBranchPipeline;
+import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 
@@ -30,17 +33,18 @@ public class ParallelNavigationTest {
     private Logger logger = Logger.getLogger(CommitMessagesTest.class);
 
     @Rule
-    public GitRepositoryRule repo = new GitRepositoryRule();
+    @Inject
+    public GitRepositoryRule git;
 
     @Inject
     ClassicJobApi jobApi;
 
     @Inject
-    ResultsPage resultsPage;
-
-    @Inject
     WaitUtil wait;
 
+
+    @Inject
+    MultiBranchPipelineFactory mbpFactory;
 
     /**
      * This checks that we can run a pipeline with 2 long running parallel branches.
@@ -51,23 +55,20 @@ public class ParallelNavigationTest {
         String pipelineName = "ParallelNavigationTest_tested";
 
         URL jenkinsFile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile");
-        Files.copy(new File(jenkinsFile.getFile()), new File(repo.gitDirectory, "Jenkinsfile"));
-        repo.git.add().addFilepattern(".").call();
-        repo.git.commit().setMessage("initial commit").call();
+        Files.copy(new File(jenkinsFile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
+        git.addAll();
+        git.commit("initial commit");
         logger.info("Commited Jenkinsfile");
 
-        jobApi.createMultlBranchPipeline(pipelineName, repo.gitDirectory.getAbsolutePath());
-
-        resultsPage.open(pipelineName, 1);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(pipelineName).createPipeline(git);
+        pipeline.getRunDetailsPipelinePage().open(1);
 
         // at first we see branch one
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()=\"Steps firstBranch\"]")));
+        wait.until(By.xpath("//*[text()=\"Steps firstBranch\"]"));
 
         // and clicking on the unselected node will yield us the second branch
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".pipeline-node"))).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()=\"Steps secondBranch\"]")));
-
-
+        wait.until(By.cssSelector(".pipeline-node")).click();
+        wait.until(By.xpath("//*[text()=\"Steps secondBranch\"]"));
     }
 
 
@@ -80,25 +81,22 @@ public class ParallelNavigationTest {
         String pipelineName = "ParallelNavigationTest_tested_input";
 
         URL jenkinsFile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile.input");
-        Files.copy(new File(jenkinsFile.getFile()), new File(repo.gitDirectory, "Jenkinsfile"));
-        repo.git.add().addFilepattern(".").call();
-        repo.git.commit().setMessage("initial commit").call();
+        Files.copy(new File(jenkinsFile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
+        git.addAll();
+        git.commit("initial commit");
         logger.info("Commited Jenkinsfile");
 
-        jobApi.createMultlBranchPipeline(pipelineName, repo.gitDirectory.getAbsolutePath());
-
-        resultsPage.open(pipelineName, 1);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(pipelineName).createPipeline(git);
+        pipeline.getRunDetailsPipelinePage().open(1);
 
         // at first we see branch one
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()=\"Steps firstBranch\"]")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".btn.inputStepSubmit"))).click();
+        wait.until(By.xpath("//*[text()=\"Steps firstBranch\"]"));
+        wait.until(By.cssSelector(".btn.inputStepSubmit")).click();
 
         // and clicking on the unselected node will yield us the second branch
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".pipeline-node"))).click();
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()=\"Steps secondBranch\"]")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".btn.inputStepSubmit"))).click();
-
-
+        wait.until(By.cssSelector(".pipeline-node")).click();
+        wait.until(By.xpath("//*[text()=\"Steps secondBranch\"]"));
+        wait.until(By.cssSelector(".btn.inputStepSubmit")).click();
     }
 
 

@@ -5,9 +5,9 @@ import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.factory.ActivityPageFactory;
+import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
 import io.blueocean.ath.pages.blue.ActivityPage;
-
-import java.net.URLEncoder;
+import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 
 public abstract class Pipeline {
     private Folder folder;
@@ -19,6 +19,8 @@ public abstract class Pipeline {
     @Inject
     ActivityPageFactory activityPageFactory;
 
+    @Inject
+    RunDetailsPipelinePageFactory runDetailsPipelinePageFactory;
 
     public Pipeline(String name) {
         this(null, name);
@@ -72,5 +74,8 @@ public abstract class Pipeline {
         return activityPageFactory.withPipeline(this);
     }
 
+    public RunDetailsPipelinePage getRunDetailsPipelinePage() {
+        return runDetailsPipelinePageFactory.withPipeline(this);
+    }
 
 }

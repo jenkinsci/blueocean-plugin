@@ -5,14 +5,14 @@ import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.factory.ActivityPageFactory;
 import io.blueocean.ath.factory.FreestyleJobFactory;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
-import io.blueocean.ath.factory.PipelineFactory;
+import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
 import io.blueocean.ath.model.FreestyleJob;
 import io.blueocean.ath.model.MultiBranchPipeline;
-import io.blueocean.ath.model.Pipeline;
 import io.blueocean.ath.pages.blue.ActivityPage;
 import io.blueocean.ath.pages.blue.DashboardPage;
 import io.blueocean.ath.pages.blue.EditorPage;
 import io.blueocean.ath.pages.blue.GithubCreationPage;
+import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import io.blueocean.ath.pages.classic.ClassicFreestyleCreationPage;
 import io.blueocean.ath.pages.classic.LoginPage;
 import io.blueocean.ath.sse.SSEClient;
@@ -29,7 +29,6 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.concurrent.TimeUnit;
 
 public class AthModule extends JukitoModule
 {
@@ -79,6 +78,11 @@ public class AthModule extends JukitoModule
         install(new FactoryModuleBuilder()
             .implement(FreestyleJob.class, FreestyleJob.class)
             .build(FreestyleJobFactory.class));
+
+        install(new FactoryModuleBuilder()
+            .implement(RunDetailsPipelinePage.class, RunDetailsPipelinePage.class)
+            .build(RunDetailsPipelinePageFactory.class));
+
 
         bind(SSEClient.class);
         try {
