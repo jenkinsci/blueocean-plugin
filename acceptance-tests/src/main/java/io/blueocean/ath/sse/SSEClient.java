@@ -84,7 +84,7 @@ public class SSEClient extends ExternalResource {
         JsonNode body = httpResponse.getBody();
         Client client = ClientBuilder.newBuilder().register(SseFeature.class).build();
         WebTarget target = client.target(baseUrl + "/sse-gateway/listen/ath;jsessionid="+body.getObject().getJSONObject("data").getString("jsessionid"));
-        EventSource source = EventSource.target(target).build();
+        EventSource source = EventSource.target(target).usePersistentConnections().build();
         source.register(listener);
         source.open();
 
@@ -112,7 +112,7 @@ public class SSEClient extends ExternalResource {
     public void untilEvents(Predicate<List<JSONObject>> isEvents) {
         new FluentWait<>(getEvents())
             .pollingEvery(1000, TimeUnit.MILLISECONDS)
-            .withTimeout(60, TimeUnit.SECONDS)
+            .withTimeout(120, TimeUnit.SECONDS)
             .ignoring(NoSuchElementException.class)
             .until(isEvents);
     }
