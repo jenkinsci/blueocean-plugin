@@ -74,7 +74,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
                         logger.error(e.getMessage(), e1);
                     }
                     //ignored, give other OmniSearch implementations chance, they might handle it
-                    //throw new ServiceException.BadRequestExpception(String.format("%s parameter has invalid value: %s", EXCLUDED_FROM_FLATTENING_PARAM, s1), e);
+                    //throw new ServiceException.BadRequestException(String.format("%s parameter has invalid value: %s", EXCLUDED_FROM_FLATTENING_PARAM, s1), e);
                 }
                 if(c!=null){
                     excludeList.add(c);
@@ -140,7 +140,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
         if (org==null)  return Jenkins.getInstance();
         ItemGroup group = OrganizationFactory.getItemGroup(org);
         if (group==null) {
-            throw new ServiceException.BadRequestExpception(
+            throw new ServiceException.BadRequestException(
                 String.format("Organization %s not found. Query parameter %s value: %s is invalid. ", org,ORGANIZATION_PARAM,org));
         }
         return group;
