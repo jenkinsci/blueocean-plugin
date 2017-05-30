@@ -1,0 +1,13 @@
+node {
+
+    stage("parallel") {
+      parallel firstBranch: {
+          sh 'ping -c 30 localhost'
+
+      }, secondBranch: {
+          sh 'ping -c 30 localhost'
+      }
+
+    }
+
+}
