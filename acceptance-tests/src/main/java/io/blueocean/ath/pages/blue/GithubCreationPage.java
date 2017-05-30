@@ -77,7 +77,7 @@ public class GithubCreationPage {
         logger.info("Selected pipeline to create");
     }
 
-    public By emptyRepositoryCreateBurron = By.cssSelector(".jenkins-pipeline-create-missing-jenkinsfile > div > button");
+    public By emptyRepositoryCreateButton = By.cssSelector(".jenkins-pipeline-create-missing-jenkinsfile > div > button");
 
     public void createPipeline(String apikey, String org, String pipeline) throws IOException {
         createPipeline(apikey, org, pipeline, false);
@@ -101,7 +101,7 @@ public class GithubCreationPage {
         }
         selectOrganization(org);
 
-        wait.until(ExpectedConditions.visibilityOf(singlePipelineBtn))
+        wait.until(singlePipelineBtn,30000)
             .click();
 
         logger.info("Select a single pipeline to create");
@@ -112,7 +112,7 @@ public class GithubCreationPage {
 
         if(createJenkisFile) {
             WebElement createJenkinsFileButton = wait
-                .until(ExpectedConditions.visibilityOfElementLocated(emptyRepositoryCreateBurron));
+                .until(ExpectedConditions.visibilityOfElementLocated(emptyRepositoryCreateButton));
             createJenkinsFileButton.click();
             wait.until(ExpectedConditions.urlContains("pipeline-editor"), 30000);
             logger.info("Pipeline created - now editing");

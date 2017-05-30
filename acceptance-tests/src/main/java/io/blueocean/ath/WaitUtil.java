@@ -35,7 +35,7 @@ public class WaitUtil {
     public <T> T until(Function<WebDriver, T> function) {
         return new FluentWait<WebDriver>(driver)
             .pollingEvery(100, TimeUnit.MILLISECONDS)
-            .withTimeout(10000, TimeUnit.MILLISECONDS)
+            .withTimeout(20000, TimeUnit.MILLISECONDS)
             .ignoring(NoSuchElementException.class)
             .until((WebDriver driver) -> function.apply(driver));
 
