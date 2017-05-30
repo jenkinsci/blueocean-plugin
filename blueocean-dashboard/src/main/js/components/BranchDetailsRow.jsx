@@ -202,44 +202,6 @@ export class BranchDetailsRow extends Component {
                                       latestRunId={latestRun.id}
             />
         );
-
-
-        // return (
-        //     <CellRow linkUrl={runDetailsUrl} id={`${cleanBranchName}-${latestRun.id}`}>
-        //         <CellLink>
-        //             <ReadableDate
-        //                 date={latestRun.endTime}
-        //                 liveUpdate
-        //                 locale={locale}
-        //                 shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
-        //                 longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
-        //             />
-        //         </CellLink>
-        //         <td className="actions">
-        //
-        //             <RunButton
-        //                 className="icon-button"
-        //                 runnable={branch}
-        //                 latestRun={branch.latestRun}
-        //                 onNavigation={openRunDetails}
-        //             />
-        //
-        //             <div className="history-button-component">
-        //                 <Link to={historyButtonUrl} className="materials-icons history-button">
-        //                     <Icon size={24} icon="history" />
-        //                 </Link>
-        //             </div>
-        //
-        //             <Extensions.Renderer
-        //                 extensionPoint="jenkins.pipeline.branches.list.action"
-        //                 filter={sortByOrdinal}
-        //                 pipeline={branch }
-        //                 store={this.context.store}
-        //                 {...t}
-        //             />
-        //         </td>
-        //     </CellRow>
-        // );
     }
 }
 
