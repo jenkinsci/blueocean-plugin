@@ -10,7 +10,7 @@ import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
 import { UnsupportedPlaceholder } from './placeholder/UnsupportedPlaceholder';
 
-import {BranchDetailsRow} from './BranchDetailsRow';
+import { BranchDetailsRow } from './BranchDetailsRow';
 
 import Extensions from '@jenkins-cd/js-extensions';
 
