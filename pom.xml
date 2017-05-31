@@ -31,6 +31,7 @@
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
+    <jenkins-test-harness.version>2.15</jenkins-test-harness.version>
   </properties>
 
   <scm>
