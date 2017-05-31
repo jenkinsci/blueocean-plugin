@@ -69,6 +69,8 @@ public class ParallelNavigationTest {
         // and clicking on the unselected node will yield us the second branch
         wait.until(By.cssSelector(".pipeline-node")).click();
         wait.until(By.xpath("//*[text()=\"Steps secondBranch\"]"));
+
+        pipeline.stopAllRuns();
     }
 
 

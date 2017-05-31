@@ -11,8 +11,10 @@ import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.client.util.EncodingUtils;
+import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.FolderJob;
 import com.offbytwo.jenkins.model.Job;
+import com.offbytwo.jenkins.model.JobWithDetails;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.GitRepositoryRule;
 import io.blueocean.ath.model.Folder;
@@ -34,6 +36,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
+
+import static com.offbytwo.jenkins.model.BuildResult.BUILDING;
 
 @Singleton
 public class ClassicJobApi {
@@ -142,6 +146,25 @@ public class ClassicJobApi {
 
     public void buildBranch(Folder folder, String pipeline, String branch) throws IOException {
         jenkins.getJob(getFolder(folder.append(pipeline), false), branch).build();
+    }
+
+    public void abortAllBuilds(Folder folder, String pipeline) throws IOException {
+        JobWithDetails job = jenkins.getJob(getFolder(folder, false), pipeline);
+
+        for(Build build: job.getBuilds()){
+            if(build.details().getResult() == null) {
+                build.details().Stop();
+                logger.info("Stopped build " + folder.getPath(pipeline) + " - #" + build.getNumber());
+            }
+        }
+
+        Optional<FolderJob> folderJobOptional = jenkins.getFolderJob(job);
+
+        if(folderJobOptional.isPresent()) {
+            for (String s : folderJobOptional.get().getJobs().keySet()) {
+                abortAllBuilds(folder.append(pipeline), s);
+            }
+        }
     }
 }
 

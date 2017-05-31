@@ -37,4 +37,8 @@ public class MultiBranchPipeline extends Pipeline{
         jobApi.buildBranch(getFolder(), getName(), branch);
         return this;
     }
+
+    public void stopAllRuns() throws IOException {
+        jobApi.abortAllBuilds(getFolder(), getName());
+    }
 }
