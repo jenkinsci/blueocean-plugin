@@ -1773,10 +1773,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("deploy", resp.get(1).get("displayName"));
 
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/steps/", List.class);
-        Assert.assertEquals(7, resp.size());
+        Assert.assertEquals(8, resp.size());
 
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(0).getId()+"/steps/", List.class);
-        Assert.assertEquals(3, resp.size());
+        Assert.assertEquals(4, resp.size());
 
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(1).getId()+"/steps/", List.class);
         Assert.assertEquals(4, resp.size());
@@ -1863,16 +1863,91 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("FINISHED", resp.get(2).get("state"));
 
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/steps/", List.class);
-        Assert.assertEquals(7, resp.size());
+        Assert.assertEquals(8, resp.size());
 
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(0).getId()+"/steps/", List.class);
-        Assert.assertEquals(3, resp.size());
+        Assert.assertEquals(4, resp.size());
 
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(1).getId()+"/steps/", List.class);
         Assert.assertEquals(0, resp.size());
 
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(2).getId()+"/steps/", List.class);
         Assert.assertEquals(4, resp.size());
+    }
+
+    @Test
+    public void declarativeParallelStage() throws Exception {
+        setupScm("pipeline {\n" +
+                "    agent any\n" +
+                "    stages {\n" +
+                "        stage('Build') {\n" +
+                "            steps {\n" +
+                "                echo 'building...'\n" +
+                "            }\n" +
+                "        }\n" +
+                "        stage('Browser Tests') {\n" +
+                "            parallel {\n" +
+                "                stage(\"Firefox\") {\n" +
+                "                    steps {\n" +
+                "                        sh 'echo \\'setting up selenium environment\\''\n" +
+                "                    }\n" +
+                "                }\n" +
+                "                stage(\"Safari\") {\n" +
+                "                    steps {\n" +
+                "                        sh 'echo \\'setting up selenium environment\\''\n" +
+                "                    }\n" +
+                "                }\n" +
+                "                stage(\"Chrome\") {\n" +
+                "                    steps {\n" +
+                "                        sh 'echo \\'setting up selenium environment\\''\n" +
+                "                    }\n" +
+                "                }\n" +
+                "                stage(\"Internet Explorer\") {\n" +
+                "                    steps {\n" +
+                "                        sh 'echo \\'setting up selenium environment\\''\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            }\n" +
+                "        }\n" +
+                "        stage('Static Analysis') {\n" +
+                "            steps {\n" +
+                "                echo 'static analysis...'\n" +
+                "            }\n" +
+                "        }\n" +
+                "        stage('Deploy') {\n" +
+                "            steps {\n" +
+                "                echo 'deploying...'\n" +
+                "            }\n" +
+                "        }\n" +
+                "    }\n" +
+                "    post {\n" +
+                "        always {\n" +
+                "            echo 'post actions completed'\n" +
+                "        }\n" +
+                "    }\n" +
+                "}");
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false)));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        mp.scheduleBuild2(0).getFuture().get();
+
+        j.waitUntilNoActivity();
+
+        WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
+        j.waitUntilNoActivity();
+        WorkflowRun b1 = p.getLastBuild();
+        Assert.assertEquals(Result.SUCCESS, b1.getResult());
+
+        List<FlowNode> stages = getStages(NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1));
+        List<FlowNode> parallelNodes = getParallelNodes(NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1));
+        assertEquals(4, stages.size());
+        assertEquals(4, parallelNodes.size());
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/", List.class);
+        assertEquals(8, resp.size());
     }
     @Test
     public void waitForInputTest() throws Exception {
