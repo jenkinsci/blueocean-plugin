@@ -17,12 +17,10 @@ public class SSEEvents {
 
     public static Predicate<List<JSONObject>> activityComplete(String jobName){
         return list -> {
-            logger.error("activityComplete for " + jobName);
             List<JSONObject> jobsQueued = Lists.newArrayList();
             List<JSONObject> jobsFinished = Lists.newArrayList();
             for (JSONObject json : list) {
                 if(json.has("jenkins_event") && json.getString("jenkins_event").equals("job_run_queue_enter")) {
-                    logger.error(json.toString());
                     if(json.has("jenkins_object_type") &&
                         json.getString("jenkins_object_type").equals("org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject")) {
                         continue;
@@ -32,8 +30,6 @@ public class SSEEvents {
                     }
                 }
                 if(json.has("jenkins_event") && json.getString("jenkins_event").equals("job_run_ended")) {
-                    logger.error(json.toString());
-
                     if(json.has("blueocean_job_pipeline_name") && json.getString("blueocean_job_pipeline_name").equals(jobName)) {
                         jobsFinished.add(json);
                     }

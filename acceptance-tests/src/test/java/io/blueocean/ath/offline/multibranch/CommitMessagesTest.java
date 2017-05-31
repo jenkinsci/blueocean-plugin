@@ -44,7 +44,7 @@ public class CommitMessagesTest extends BaseTest{
 
     @Inject
     MultiBranchPipelineFactory mbpFactory;
-
+    
     /**
      * This tests the commit messages are being picked up from git and displayed on the run in activity.
      */

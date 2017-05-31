@@ -23,6 +23,7 @@ import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
@@ -81,16 +82,18 @@ public class SSEClient extends ExternalResource {
 
     EventSource source;
     public void connect() throws UnirestException, InterruptedException {
-        HttpResponse<JsonNode> httpResponse = Unirest.get(baseUrl + "/sse-gateway/connect?clientId=ath").asJson();
+        SecureRandom rnd = new SecureRandom();
+        String clientId = "ath-" + rnd.nextLong();
+        HttpResponse<JsonNode> httpResponse = Unirest.get(baseUrl + "/sse-gateway/connect?clientId=" + clientId).asJson();
         JsonNode body = httpResponse.getBody();
         Client client = ClientBuilder.newBuilder().register(SseFeature.class).build();
-        WebTarget target = client.target(baseUrl + "/sse-gateway/listen/ath;jsessionid="+body.getObject().getJSONObject("data").getString("jsessionid"));
-        source = EventSource.target(target).usePersistentConnections().build();
+        WebTarget target = client.target(baseUrl + "/sse-gateway/listen/" + clientId + ";jsessionid="+body.getObject().getJSONObject("data").getString("jsessionid"));
+        source = EventSource.target(target).build();
         source.register(listener);
         source.open();
 
         JSONObject req = new JSONObject()
-            .put("dispatcherId","ath")
+            .put("dispatcherId",clientId)
             .put("subscribe", new JSONArray(ImmutableList.of(
                 new JSONObject().put("jenkins_org", "jenkins")
                     .put("jenkins_channel", "job"))))
@@ -99,7 +102,7 @@ public class SSEClient extends ExternalResource {
         Unirest.post(baseUrl + "/sse-gateway/configure?batchId=1")
             .body(req).asJson();
 
-        logger.info("SSE Connected");
+        logger.info("SSE Connected " + clientId);
     }
 
     public void untilEvent(Predicate<JSONObject> isEvent) {
