@@ -3,6 +3,8 @@
  *
  * `bluebuild-environment` is the node label that must use maven 3.3.9, JDK8 and build essentials based docker image.
  *
+ *  To use, simply copy it to pipeline job.
+ *
  */
 node('bluebuild-environment') {
     properties([parameters([
@@ -41,10 +43,6 @@ node('bluebuild-environment') {
                     sh 'git push -u origin $BRANCH'
                 }
 
-                stage('Clean') {
-                    sh 'mvn clean -DcleanNode'
-                }
-
                 //Sanity build
                 stage('Build') {
                     sh 'echo Java version: `java -version`'
@@ -52,7 +50,7 @@ node('bluebuild-environment') {
                     sh 'echo Git version: `git --version`'
 
                     // clean build
-                    sh 'mvn -B -T 1C clean install -Djacoco.skip=true -DskipTests -Dfindbugs.skip=true'
+                    sh 'mvn clean install -Djacoco.skip=true -DskipTests -Dfindbugs.skip=true'
                 }
 
                 //Prepare for release, release on github (tag)
@@ -63,7 +61,7 @@ node('bluebuild-environment') {
 
                 //Release to maven repo
                 stage('mvn release:perform') {
-                    sh 'mvn -s settings.xml release:perform -Djacoco.skip=true'
+                    sh 'mvn -s settings.xml release:perform -Djacoco.skip=true -Dfindbugs.skip=true'
                 }
             } catch (err) {
                 currentBuild.result = "FAILURE"
