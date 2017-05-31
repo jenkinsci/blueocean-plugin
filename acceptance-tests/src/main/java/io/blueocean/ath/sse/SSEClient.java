@@ -81,7 +81,6 @@ public class SSEClient extends ExternalResource {
 
     EventSource source;
     public void connect() throws UnirestException, InterruptedException {
-        logEvents = true;
         HttpResponse<JsonNode> httpResponse = Unirest.get(baseUrl + "/sse-gateway/connect?clientId=ath").asJson();
         JsonNode body = httpResponse.getBody();
         Client client = ClientBuilder.newBuilder().register(SseFeature.class).build();
@@ -117,9 +116,7 @@ public class SSEClient extends ExternalResource {
             .withTimeout(120, TimeUnit.SECONDS)
             .ignoring(NoSuchElementException.class)
             .until((Predicate<List<JSONObject>>) a -> {
-                logger.info("SSEClient isOpen():" + source.isOpen());
-
-                return isEvents.apply(a);
+               return isEvents.apply(a);
             });
     }
 }
