@@ -35,14 +35,9 @@ export class LogConsole extends Component {
     componentWillReceiveProps(nextProps) { // eslint-disable-line
         logger.debug('newProps isArray', Array.isArray(nextProps.logArray));
         // We need a shallow copy of the ObservableArray to "cast" it down to normal array
-        const newArray = nextProps.logArray !== undefined && nextProps.logArray.slice();
-        const oldArray = this.props.logArray !== undefined && this.props.logArray.slice();
-        // if have a new logArray, simply add it to the queue and wait for next tick
-        this.queuedLines = this.queuedLines.concat(newArray.slice(oldArray.length));
-        clearTimeout(this.timeouts.render);
-        this.timeouts.render = setTimeout(() => {
-            this._processNextLines();
-        }, INITIAL_RENDER_DELAY);
+        const lineArray = nextProps.logArray !== undefined && nextProps.logArray.slice();
+        logger.debug('isArray props', Array.isArray(this.props.logArray), 'isArray after', Array.isArray(lineArray));
+        this._processLines(lineArray);
     }
 
     componentWillUnmount() {
@@ -121,6 +116,7 @@ export class LogConsole extends Component {
             logger.debug('no lines passed');
             return null;
         }
+
         logger.debug('render lines length', lines.length);
         // JENKINS-37925 - show more button should open log in new window
         // const logUrl = url && url.includes(suffix) ? url : `${url}${suffix}`;
