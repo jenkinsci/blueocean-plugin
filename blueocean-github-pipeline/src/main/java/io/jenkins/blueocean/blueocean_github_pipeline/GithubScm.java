@@ -125,7 +125,7 @@ public class GithubScm extends Scm {
         final StandardUsernamePasswordCredentials credential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
 
         if(credential == null){
-            throw new ServiceException.BadRequestExpception(String.format("Credential id: %s not found for user %s", credentialId, authenticatedUser.getId()));
+            throw new ServiceException.BadRequestException(String.format("Credential id: %s not found for user %s", credentialId, authenticatedUser.getId()));
         }
 
         String accessToken = credential.getPassword().getPlainText();
@@ -192,7 +192,7 @@ public class GithubScm extends Scm {
             credentialId = request.getHeader(X_CREDENTIAL_ID);
         }
         if(credentialId == null){
-            throw new ServiceException.BadRequestExpception("Missing credential id. It must be provided either as HTTP header: " + X_CREDENTIAL_ID+" or as query parameter 'credentialId'");
+            throw new ServiceException.BadRequestException("Missing credential id. It must be provided either as HTTP header: " + X_CREDENTIAL_ID+" or as query parameter 'credentialId'");
         }
         return credentialId;
     }
@@ -200,7 +200,7 @@ public class GithubScm extends Scm {
     static class RateLimitHandlerImpl extends RateLimitHandler{
         @Override
         public void onError(IOException e, HttpURLConnection httpURLConnection) throws IOException {
-            throw new ServiceException.BadRequestExpception("API rate limit reached."+e.getMessage(), e);
+            throw new ServiceException.BadRequestException("API rate limit reached."+e.getMessage(), e);
         }
     }
 
@@ -208,7 +208,7 @@ public class GithubScm extends Scm {
     public HttpResponse validateAndCreate(@JsonBody JSONObject request) {
         String accessToken = (String) request.get("accessToken");
         if(accessToken == null){
-            throw new ServiceException.BadRequestExpception("accessToken is required");
+            throw new ServiceException.BadRequestException("accessToken is required");
         }
         try {
             User authenticatedUser =  getAuthenticatedUser();
@@ -270,7 +270,7 @@ public class GithubScm extends Scm {
             throw new ServiceException.NotFoundException("Not Found");
         }
         if(status != 200) {
-            throw new ServiceException.BadRequestExpception(String.format("Github Api returned error: %s. Error message: %s.", connection.getResponseCode(), connection.getResponseMessage()));
+            throw new ServiceException.BadRequestException(String.format("Github Api returned error: %s. Error message: %s.", connection.getResponseCode(), connection.getResponseMessage()));
         }
 
         return connection;

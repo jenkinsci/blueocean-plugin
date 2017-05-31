@@ -20,6 +20,10 @@ Please make sure that BlueOcean plugins are built correctly. If _funky_ things s
 mvn clean install -DskipTests -DcleanNode
 ```
 
+### Areas covered
+
+* Karaoke parallel: ParallelNavigationTest. This checks that users can navigate between concurrently executing parallel branches, including steps waiting for input.
+
 
 
 ### Run all tests (in one command)
@@ -45,15 +49,17 @@ Next run the desired tests
 
 #### Java Webdriver Tests via Maven
 
-Maven has 3 profiles set up for running tests. The default profile runs tests that need no live component.
-The `live` profile runs tests that need services like GitHub, and finally the `all` profile will run all of them.
+Maven has 5 profiles set up for running tests. The default profile runs the offline tests.
+The `live` profile runs tests that need services like GitHub, and the `all` profile will run all of them. Finally there 
+are the `nightwatch` and `offlineAll` profiles which run the nightwatch tests and run the nightwatch  + offline tests respectively.
 
 Specific tests can be specified with `-Dtest=`.
 ```bash
 mvn clean test
-mvn clean test -Plive
-mvn clean test -Pall
-mvn clean test -Pall -Dtest=FavoritesTest
+mvn clean test -Dprofile=live
+mvn clean test -Dprofile=offlineAll
+mvn clean test -Dprofile=all
+mvn clean test -Dprofile=all -Dtest=FavoritesTest
 ```
 
 Note to run the live tests there needs to be a `live.properties` file in the acceptance-tests directory.

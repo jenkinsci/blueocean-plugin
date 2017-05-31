@@ -43,7 +43,7 @@ WIP...
 
 # Plugins and extension points
 
-Blue Ocean is built on Jenkins, with things being plugins. Ths same applies to the UI and javascript code - extension points are embraced. Ideally all features are implemented as extensions vs in core, even if this means adding an ExtensionPoint to some code in core or another plugin. On the web, an extension point can be as simple as `<ExtensionPoint name="awesome.plugin.thing"/>` allowing others to add features to your plugin. 
+Blue Ocean is built on Jenkins, with things being plugins. Ths same applies to the UI and javascript code - extension points are embraced. Ideally all features are implemented as extensions vs in core, even if this means adding an ExtensionPoint to some code in core or another plugin. On the web, an extension point can be as simple as `<Extensions.Renderer name="awesome.plugin.thing"/>` allowing others to add features to your plugin (you can grep through existing plugins for examples of extension points).
 
 # Discussion and chat 
 

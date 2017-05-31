@@ -7,6 +7,7 @@ import hudson.model.queue.QueueTaskFuture;
 import hudson.util.RunList;
 import io.jenkins.blueocean.rest.model.scm.GitSampleRepoRule;
 import jenkins.branch.BranchSource;
+import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSource;
 import net.sf.json.JSONObject;
@@ -19,6 +20,7 @@ import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 
@@ -40,6 +42,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
     @Rule
     public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();
 
+    @BeforeClass
+    public static void setupStatic() throws Exception {
+        System.setProperty("NODE-DUMP-ENABLED", "true");//tests node dump code path, also helps debug test failure
+    }
 
     //TODO: Enable this test if there is way to determine when test starts running and not waiting till launched
 //    @Test
@@ -1922,6 +1928,44 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("PAUSED", stepsResp.get(2).get("state"));
         Assert.assertEquals("UNKNOWN", stepsResp.get(2).get("result"));
         Assert.assertEquals("12", stepsResp.get(2).get("id"));
+    }
+
+    @Test
+    public void testBlockedStep() throws Exception {
+        String scipt = "node {\n" +
+                "    stage(\"one\"){\n" +
+                "        echo '1'\n" +
+                "    }\n" +
+                "    stage(\"two\") {\n" +
+                "            node('blah'){\n" +
+                "                sh 'blah'\n" +
+                "            }\n" +
+                "        }\n" +
+                "\n" +
+                "}";
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition(scipt, false));
+
+        QueueTaskFuture<WorkflowRun> runQueueTaskFuture = job1.scheduleBuild2(0);
+        WorkflowRun run = runQueueTaskFuture.getStartCondition().get();
+        CpsFlowExecution e = (CpsFlowExecution) run.getExecutionPromise().get();
+
+        if(waitForItemToAppearInQueue(1000*300)) { //5 min timeout
+            List<Map> stepsResp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/11/steps/", List.class);
+            assertEquals(1, stepsResp.size());
+            assertEquals("QUEUED", stepsResp.get(0).get("state"));
+        }
+    }
+
+    private boolean waitForItemToAppearInQueue(long timeout) throws InterruptedException {
+        long start = System.currentTimeMillis();
+        long diff = 0;
+        while(Jenkins.getInstance().getQueue().getItems().length <= 0 && diff < timeout){
+            diff = System.currentTimeMillis() - start;
+            Thread.sleep(100);
+        }
+        return Jenkins.getInstance().getQueue().getItems().length > 0;
     }
 
     @Test

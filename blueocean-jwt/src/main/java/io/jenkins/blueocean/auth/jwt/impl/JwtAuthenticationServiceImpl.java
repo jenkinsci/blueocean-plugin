@@ -41,7 +41,7 @@ public class JwtAuthenticationServiceImpl extends JwtAuthenticationService {
         }
         if(expiryTimeInMins != null){
             if(expiryTimeInMins > maxExpiryTime) {
-                throw new ServiceException.BadRequestExpception(
+                throw new ServiceException.BadRequestException(
                     String.format("expiryTimeInMins %s can't be greated than %s", expiryTimeInMins, maxExpiryTime));
             }
             expiryTime = expiryTimeInMins * 60;

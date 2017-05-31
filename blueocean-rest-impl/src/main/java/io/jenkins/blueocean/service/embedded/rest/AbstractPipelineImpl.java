@@ -121,7 +121,7 @@ public class AbstractPipelineImpl extends BluePipeline {
     @Override
     public BlueFavorite favorite(@JsonBody BlueFavoriteAction favoriteAction) {
         if(favoriteAction == null) {
-            throw new ServiceException.BadRequestExpception("Must provide pipeline name");
+            throw new ServiceException.BadRequestException("Must provide pipeline name");
         }
         FavoriteUtil.toggle(favoriteAction, job);
         return FavoriteUtil.getFavorite(job, new Reachable() {
