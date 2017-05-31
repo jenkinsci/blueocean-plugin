@@ -119,7 +119,7 @@ public class SSEClient extends ExternalResource {
             .until((Predicate<List<JSONObject>>) a -> {
                 logger.info("SSEClient isOpen():" + source.isOpen());
 
-                return isEvents.apply(a);   
+                return isEvents.apply(a);
             });
     }
 }

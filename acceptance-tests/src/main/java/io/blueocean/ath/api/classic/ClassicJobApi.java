@@ -46,6 +46,7 @@ public class ClassicJobApi {
     @Inject
     JenkinsServer jenkins;
 
+
     public void deletePipeline(String pipeline) throws IOException {
         deletePipeline(null, pipeline);
     }
