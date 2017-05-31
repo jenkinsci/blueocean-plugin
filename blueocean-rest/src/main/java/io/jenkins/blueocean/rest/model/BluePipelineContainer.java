@@ -37,7 +37,7 @@ public abstract class BluePipelineContainer extends Container<BluePipeline>{
         }
 
         if(!err.getErrors().isEmpty()){
-            throw new ServiceException.BadRequestExpception(err);
+            throw new ServiceException.BadRequestException(err);
         }
 
         BluePipelineCreateRequest request = staplerRequest.bindJSON(BluePipelineCreateRequest.class, body);

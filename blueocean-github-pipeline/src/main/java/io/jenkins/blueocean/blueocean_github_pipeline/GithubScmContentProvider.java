@@ -63,7 +63,7 @@ public class GithubScmContentProvider extends ScmContentProvider {
         }
 
         if(!errors.isEmpty()){
-            throw new ServiceException.BadRequestExpception(
+            throw new ServiceException.BadRequestException(
                     new ErrorMessage(400, "Failed to load scm file").addAll(errors));
         }
 
@@ -71,12 +71,12 @@ public class GithubScmContentProvider extends ScmContentProvider {
 
         //if no repo param, then see if its there in given Item.
         if(repo == null && scmParamsFromItem.repo == null){
-            throw new ServiceException.BadRequestExpception("github repo could not be determine from pipeline: "+item.getFullName());
+            throw new ServiceException.BadRequestException("github repo could not be determine from pipeline: "+item.getFullName());
         }
 
         // If both, repo param and repo in pipeline scm configuration present, they better match
         if(repo != null && scmParamsFromItem.repo != null && !repo.equals(scmParamsFromItem.repo)){
-            throw new ServiceException.BadRequestExpception(
+            throw new ServiceException.BadRequestException(
                     String.format("repo parameter %s doesn't match with repo in pipeline %s github configuration repo: %s ",
                             repo, item.getFullName(), scmParamsFromItem.repo));
         }
@@ -127,7 +127,7 @@ public class GithubScmContentProvider extends ScmContentProvider {
 
         GithubScmSaveFileRequest request = staplerRequest.bindJSON(GithubScmSaveFileRequest.class, body);
         if(request == null){
-            throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to bind request"));
+            throw new ServiceException.BadRequestException(new ErrorMessage(400, "Failed to bind request"));
         }
 
         ScmContentProvider scmContentProvider = ScmContentProvider.resolve(item);
@@ -135,7 +135,7 @@ public class GithubScmContentProvider extends ScmContentProvider {
         if(scmContentProvider != null){
             return saveContent(request, item);
         }
-        throw new ServiceException.BadRequestExpception("No save scm content provider found for pipeline: " + item.getFullName());
+        throw new ServiceException.BadRequestException("No save scm content provider found for pipeline: " + item.getFullName());
     }
 
     @SuppressWarnings("unchecked")
@@ -172,7 +172,7 @@ public class GithubScmContentProvider extends ScmContentProvider {
             if (credentials instanceof StandardUsernamePasswordCredentials) {
                 accessToken = ((StandardUsernamePasswordCredentials) credentials).getPassword().getPlainText();
             } else {
-                throw new ServiceException.BadRequestExpception("accessToken not found in pipeline: " + item.getFullName());
+                throw new ServiceException.BadRequestException("accessToken not found in pipeline: " + item.getFullName());
             }
         }
         return githubRequest.save(apiUrl, owner, repo, accessToken);
@@ -258,15 +258,15 @@ public class GithubScmContentProvider extends ScmContentProvider {
                 if (credentials instanceof StandardUsernamePasswordCredentials) {
                     accessToken = ((StandardUsernamePasswordCredentials) credentials).getPassword().getPlainText();
                 } else {
-                    throw new ServiceException.BadRequestExpception("accessToken not found in pipeline: " + item.getFullName());
+                    throw new ServiceException.BadRequestException("accessToken not found in pipeline: " + item.getFullName());
                 }
             }
             if(owner == null){
-                throw new ServiceException.BadRequestExpception(
+                throw new ServiceException.BadRequestException(
                         String.format("Pipeline %s is not configured with github source correctly, no github user/org found", item.getFullName()));
             }
             if(accessToken == null){
-                throw new ServiceException.BadRequestExpception(
+                throw new ServiceException.BadRequestException(
                         String.format("Pipeline %s is not configured with github source correctly, no credentials with github accessToken found", item.getFullName()));
             }
             this.owner = owner;

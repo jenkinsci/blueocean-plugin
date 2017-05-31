@@ -34,7 +34,7 @@ public class JsonConverter{
         } catch (JsonParseException e){
             String msg = "Json parsing failure: "+e.getMessage();
             LOGGER.error(msg, e);
-            throw new ServiceException.BadRequestExpception("Json parsing failure: "+e.getMessage());
+            throw new ServiceException.BadRequestException("Json parsing failure: "+e.getMessage());
         } catch (JsonMappingException e){
             String msg = String.format("Failed to map Json to java type : %s. %s ", type, e.getMessage());
             LOGGER.error(msg, e);

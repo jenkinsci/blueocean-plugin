@@ -54,7 +54,7 @@ public class RunSearch extends OmniSearch<BlueRun> {
             if (p instanceof Job) {
                 return Pageables.wrap(findRuns((Job)p));
             }else{
-                throw new ServiceException.BadRequestExpception(String.format("Pipeline %s not found", pipeline));
+                throw new ServiceException.BadRequestException(String.format("Pipeline %s not found", pipeline));
             }
         }else if(latestOnly){
             return Pageables.empty();

@@ -173,24 +173,24 @@ public class PipelineStepImpl extends BluePipelineStep {
         }
         String id = body.getString(ID_ELEMENT);
         if(id == null){
-            throw new ServiceException.BadRequestExpception("id is required");
+            throw new ServiceException.BadRequestException("id is required");
         }
 
         if(body.get(PARAMETERS_ELEMENT) == null && body.get(ABORT_ELEMENT) == null){
-            throw new ServiceException.BadRequestExpception("parameters is required");
+            throw new ServiceException.BadRequestException("parameters is required");
         }
 
         WorkflowRun run = node.getRun();
         InputAction inputAction = run.getAction(InputAction.class);
         if (inputAction == null) {
-            throw new ServiceException.BadRequestExpception("Error processing Input Submit request. This Run instance does not" +
+            throw new ServiceException.BadRequestException("Error processing Input Submit request. This Run instance does not" +
                     " have an InputAction.");
         }
 
         try {
             InputStepExecution execution = inputAction.getExecution(id);
             if (execution == null) {
-                throw new ServiceException.BadRequestExpception(
+                throw new ServiceException.BadRequestException(
                         String.format("Error processing Input Submit request. This Run instance does not" +
                         " have an Input with an id of '%s'.", id));
             }
@@ -217,11 +217,11 @@ public class PipelineStepImpl extends BluePipelineStep {
     //TODO: InputStepException.preSubmissionCheck() is private, remove it after its made public
     private void preSubmissionCheck(InputStepExecution execution){
         if (execution.isSettled()) {
-            throw new ServiceException.BadRequestExpception("This input has been already given");
+            throw new ServiceException.BadRequestException("This input has been already given");
         }
 
         if(!canSubmit(execution.getInput())){
-            throw new ServiceException.BadRequestExpception("You need to be "+ execution.getInput().getSubmitter() +" to submit this");
+            throw new ServiceException.BadRequestException("You need to be "+ execution.getInput().getSubmitter() +" to submit this");
         }
     }
 
@@ -234,7 +234,7 @@ public class PipelineStepImpl extends BluePipelineStep {
             String name = (String) p.get(NAME_ELEMENT);
 
             if(name == null){
-                throw new ServiceException.BadRequestExpception("name is required parameter element");
+                throw new ServiceException.BadRequestException("name is required parameter element");
             }
 
             ParameterDefinition d=null;
@@ -243,7 +243,7 @@ public class PipelineStepImpl extends BluePipelineStep {
                     d = def;
             }
             if (d == null)
-                throw new ServiceException.BadRequestExpception("No such parameter definition: " + name);
+                throw new ServiceException.BadRequestException("No such parameter definition: " + name);
 
             ParameterValue v = d.createValue(request, p);
             if (v == null) {

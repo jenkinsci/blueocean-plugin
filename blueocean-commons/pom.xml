@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.jenkins.blueocean</groupId>
     <artifactId>blueocean-parent</artifactId>
-    <version>1.1.0-beta-5-SNAPSHOT</version>
+    <version>1.1.0-beta-9-SNAPSHOT</version>
   </parent>
 
   <artifactId>blueocean-commons</artifactId>
@@ -24,6 +24,18 @@
 
   <build>
     <plugins>
+      <plugin>
+        <groupId>org.jacoco</groupId>
+        <artifactId>jacoco-maven-plugin</artifactId>
+        <version>${jacoco.version}</version>
+        <configuration>
+          <excludes>
+            <!-- Dont run code coverage for imported stapler classes -->
+            <exclude>io/jenkins/blueocean/commons/stapler/export/**/*</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>

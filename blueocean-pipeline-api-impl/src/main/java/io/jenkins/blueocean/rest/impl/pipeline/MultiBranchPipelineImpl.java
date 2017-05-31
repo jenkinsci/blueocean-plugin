@@ -3,6 +3,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.Item;
@@ -81,11 +82,11 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     @Override
     public BlueFavorite favorite(@JsonBody BlueFavoriteAction favoriteAction) {
         if (favoriteAction == null) {
-            throw new ServiceException.BadRequestExpception("Must provide pipeline name");
+            throw new ServiceException.BadRequestException("Must provide pipeline name");
         }
         Job job = PrimaryBranch.resolve(mbp);
         if (job == null) {
-            throw new ServiceException.BadRequestExpception("no default branch to favorite");
+            throw new ServiceException.BadRequestException("no default branch to favorite");
         }
         FavoriteUtil.toggle(favoriteAction, job);
         return new FavoriteImpl(new BranchImpl(job, getLink().rel("branches")), getLink().rel("favorite"));
@@ -294,7 +295,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                     }
                 });
 
-                return c.iterator();
+                return Iterators.limit(c.iterator(), limit);
             }
 
             private boolean retry(boolean[] retries) {
