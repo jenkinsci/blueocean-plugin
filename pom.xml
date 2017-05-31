@@ -35,8 +35,8 @@
   </properties>
 
   <scm>
-    <connection>scm:git:ssh://github.com/jenkinsci/blueocean-plugin.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/blueocean-plugin.git</developerConnection>
+    <connection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</connection>
+    <developerConnection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/blueocean-plugin</url>
     <tag>HEAD</tag>
   </scm>
