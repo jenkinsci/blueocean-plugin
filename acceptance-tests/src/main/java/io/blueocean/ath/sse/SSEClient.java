@@ -81,6 +81,7 @@ public class SSEClient extends ExternalResource {
 
     EventSource source;
     public void connect() throws UnirestException, InterruptedException {
+        logEvents = true;
         HttpResponse<JsonNode> httpResponse = Unirest.get(baseUrl + "/sse-gateway/connect?clientId=ath").asJson();
         JsonNode body = httpResponse.getBody();
         Client client = ClientBuilder.newBuilder().register(SseFeature.class).build();
