@@ -1,6 +1,6 @@
 package io.jenkins.blueocean.service.embedded;
 
-import com.mashape.unirest.http.exceptions.UnirestException;
+import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.OrganizationRoute;
 import org.junit.Assert;
@@ -20,15 +20,19 @@ import static junit.framework.TestCase.assertEquals;
  */
 public class OrganizationApiTest extends BaseTest {
     @Test
-    public void organizationUsers() throws UnirestException {
+    public void organizationUsers() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
         hudson.model.User alice = j.jenkins.getUser("alice");
         alice.setFullName("Alice Cooper");
+        alice.addProperty(new Mailer.UserProperty("alice@example.com"));
 
         List users = request().jwtToken(getJwtToken(j.jenkins,"alice", "alice")).get("/organizations/jenkins/users/").build(List.class);
 
         Assert.assertEquals(users.size(), 1);
-        Assert.assertEquals(((Map)users.get(0)).get("id"), "alice");
+        Map aliceMap = (Map) users.get(0);
+        Assert.assertEquals(aliceMap.get("id"), "alice");
+        Assert.assertEquals(aliceMap.get("fullName"), "Alice Cooper");
+        Assert.assertEquals(aliceMap.get("email"), "alice@example.com");
     }
 
     @Test
