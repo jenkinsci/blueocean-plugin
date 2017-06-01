@@ -23,8 +23,9 @@ mvn clean install -DskipTests -DcleanNode
 ### Areas covered
 
 * Karaoke parallel: ParallelNavigationTest. This checks that users can navigate between concurrently executing parallel branches, including steps waiting for input.
-
-
+* Commit Messages: CommitMessagesTest checks to see that commit messsages of git commits are shown on a run
+* Folder Names: FoldersTest checks that folders with sperial characters work correctly in blueoean
+* Github integration: GithubCreationTests cover github integration testing of buth the creation flow and also simple editor round tripping.
 
 ### Run all tests (in one command)
  ```bash
@@ -147,8 +148,8 @@ public class MyFirstATHTest{
         // Waits for 10s for the url to contain the string pipelines.
         wait.until(ExpectedConditions.urlContains("pipelines"));
     
-        WebElement button = wait.until(driver -> driver.findElement(By.cssSelector("button.some.clazz")));
-        button.click();
+        wait.until(By.cssSelector("button.some.clazz"));
+            .click();
     }
 }
 ```
@@ -168,7 +169,7 @@ public class MySecondATHTest{
     
     @Rule
     @Inject
-    SSEClient sseClient;
+    SSEClientRule sseClient;
     
     @Test
     public void mySecondTest() {
@@ -219,6 +220,53 @@ public class MyAwesomePage {
 ``` 
 
 Any new Page Object classes need to be bound in `ATHModule#configure` to be able to be injected via Guice.
+
+#### Pipeline Helper
+
+These are a series or helpers to deal with pipelines. The started life to deal with pieplines being in folders. It offes a way 
+to give PageOjects more contextual information about what they are operating on without having to be explicit about it in every method call.
+
+```java
+
+@Login
+@RunWith(ATHJUnitRunner.class)
+@UseModules(AthModule.class)
+public class MySecondATHTest{
+    
+    @Inject
+    MultiBranchPipelineFactory mbpFactory;  
+    
+    @Rule
+    @Inject
+    public GitRepositoryRule git;
+    
+    
+    @Rule
+    @Inject
+    public SSEClientRule sseClient;
+    
+    @Test
+    public void mySecondTest() {
+        // Sets up the pipeline model with folders and a job name
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(Folder.folders("afolder", "bFolder"), "pipelineName");
+        
+        // Creates the pipeline in jenkins using the git repository rule.
+        pipeline.createPipeline(git);
+        
+        // Wait for all runs to finish on the pipeline. Including all branches.
+        sseClient.untilEvents(pipeline.buildsFinished);
+        
+        // Builds a bunch
+        pipeline.buildBranch("master");
+        
+        // Opens the activity page for this pipeline and verifies its not 404.
+        pipeline.getActivityPage().open();
+        // Stops any runsa that are currently running on any branch job.
+        pipeline.stopAllBuilds();
+        
+    }
+}
+```
 
 ###
 [nightwatch]: http://nightwatchjs.org/
