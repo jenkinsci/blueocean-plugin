@@ -15,7 +15,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_ORGANIZATIO
 @Capability(BLUE_ORGANIZATION)
 public abstract class BlueOrganization extends Resource implements Routable{
     public static final String NAME="name";
-    public static final String DISPLAY_NAME="name";
+    public static final String DISPLAY_NAME="displayName";
     public static final String PIPELINES="pipelines";
 
     @Override
