@@ -13,6 +13,8 @@ import org.kohsuke.stapler.export.ExportedBean;
 import java.util.List;
 import java.util.Map;
 
+import static junit.framework.TestCase.assertEquals;
+
 /**
  * @author Ivan Meredith
  */
@@ -28,6 +30,17 @@ public class OrganizationApiTest extends BaseTest {
 
         Assert.assertEquals(users.size(), 1);
         Assert.assertEquals(((Map)users.get(0)).get("id"), "alice");
+    }
+
+    @Test
+    public void defaultOrganization() throws Exception {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+        hudson.model.User alice = j.jenkins.getUser("alice");
+        alice.setFullName("Alice Cooper");
+
+        Map organization = request().jwtToken(getJwtToken(j.jenkins,"alice", "alice")).get("/organizations/jenkins/").build(Map.class);
+        assertEquals("Jenkins", organization.get("displayName"));
+        assertEquals("jenkins", organization.get("name"));
     }
 
 
