@@ -25,6 +25,11 @@ public class FavoritesTest {
     @Inject
     ClassicJobApi jobApi;
 
+    /**
+     * Makes sure that pipelines can be favorited.
+     *
+     * TODO: Add a test for the favorite cards.
+     */
     @Test
     public void testFavorite() throws InterruptedException, UnirestException, IOException {
 

@@ -23,13 +23,14 @@ import javax.inject.Inject;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.WebTarget;
+import java.security.SecureRandom;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 
-public class SSEClient extends ExternalResource {
-    private Logger logger = Logger.getLogger(SSEClient.class);
+public class SSEClientRule extends ExternalResource {
+    private Logger logger = Logger.getLogger(SSEClientRule.class);
 
     @Override
     protected void before() throws Throwable {
@@ -45,7 +46,7 @@ public class SSEClient extends ExternalResource {
     @Inject @BaseUrl
     String baseUrl;
 
-    public SSEClient() {
+    public SSEClientRule() {
         mapper = new ObjectMapper();
     }
 
@@ -60,22 +61,39 @@ public class SSEClient extends ExternalResource {
     public void clear() {
         events.clear();
     }
+
+    private boolean logEvents;
+
+    public boolean isLogEvents() {
+        return logEvents;
+    }
+
+    public void setLogEvents(boolean logEvents) {
+        this.logEvents = logEvents;
+    }
+
     private EventListener listener = inboundEvent -> {
         JSONObject jenkinsEvent = new JSONObject(inboundEvent.readData());
         events.add(jenkinsEvent);
+        if(logEvents) {
+            logger.info("SSE - " + jenkinsEvent.toString());
+        }
     };
 
+    EventSource source;
     public void connect() throws UnirestException, InterruptedException {
-        HttpResponse<JsonNode> httpResponse = Unirest.get(baseUrl + "/sse-gateway/connect?clientId=ath").asJson();
+        SecureRandom rnd = new SecureRandom();
+        String clientId = "ath-" + rnd.nextLong();
+        HttpResponse<JsonNode> httpResponse = Unirest.get(baseUrl + "/sse-gateway/connect?clientId=" + clientId).asJson();
         JsonNode body = httpResponse.getBody();
         Client client = ClientBuilder.newBuilder().register(SseFeature.class).build();
-        WebTarget target = client.target(baseUrl + "/sse-gateway/listen/ath;jsessionid="+body.getObject().getJSONObject("data").getString("jsessionid"));
-        EventSource source = EventSource.target(target).build();
+        WebTarget target = client.target(baseUrl + "/sse-gateway/listen/" + clientId + ";jsessionid="+body.getObject().getJSONObject("data").getString("jsessionid"));
+        source = EventSource.target(target).build();
         source.register(listener);
         source.open();
 
         JSONObject req = new JSONObject()
-            .put("dispatcherId","ath")
+            .put("dispatcherId",clientId)
             .put("subscribe", new JSONArray(ImmutableList.of(
                 new JSONObject().put("jenkins_org", "jenkins")
                     .put("jenkins_channel", "job"))))
@@ -84,7 +102,7 @@ public class SSEClient extends ExternalResource {
         Unirest.post(baseUrl + "/sse-gateway/configure?batchId=1")
             .body(req).asJson();
 
-        logger.info("SSE Connected");
+        logger.info("SSE Connected " + clientId);
     }
 
     public void untilEvent(Predicate<JSONObject> isEvent) {
@@ -96,10 +114,12 @@ public class SSEClient extends ExternalResource {
     }
 
     public void untilEvents(Predicate<List<JSONObject>> isEvents) {
-        new FluentWait<List<JSONObject>>(getEvents())
+        new FluentWait<>(getEvents())
             .pollingEvery(1000, TimeUnit.MILLISECONDS)
-            .withTimeout(20, TimeUnit.SECONDS)
+            .withTimeout(120, TimeUnit.SECONDS)
             .ignoring(NoSuchElementException.class)
-            .until(isEvents);
+            .until((Predicate<List<JSONObject>>) a -> {
+               return isEvents.apply(a);
+            });
     }
 }
