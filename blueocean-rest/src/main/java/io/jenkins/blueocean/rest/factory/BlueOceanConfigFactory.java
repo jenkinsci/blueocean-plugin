@@ -1,10 +1,11 @@
-package io.jenkins.blueocean.config;
+package io.jenkins.blueocean.rest.factory;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
+import io.jenkins.blueocean.rest.model.BlueOceanConfig;
 
 /**
  * Blue Ocean configuration factory which allows different extensions to return configuration values.

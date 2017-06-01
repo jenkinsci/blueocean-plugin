@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.config;
+package io.jenkins.blueocean.rest.model;
 
 import org.kohsuke.stapler.export.ExportedBean;
 

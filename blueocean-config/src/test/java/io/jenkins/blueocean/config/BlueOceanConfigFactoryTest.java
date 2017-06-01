@@ -10,6 +10,9 @@ import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
 
+import io.jenkins.blueocean.rest.factory.BlueOceanConfigFactory;
+import io.jenkins.blueocean.rest.model.BlueOceanConfig;
+
 public class BlueOceanConfigFactoryTest {
     @Rule
     public JenkinsRule j = new JenkinsRule();

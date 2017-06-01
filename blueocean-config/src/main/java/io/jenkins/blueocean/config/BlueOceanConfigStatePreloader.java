@@ -8,6 +8,8 @@ import hudson.util.VersionNumber;
 import io.jenkins.blueocean.auth.jwt.JwtTokenServiceEndpoint;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import io.jenkins.blueocean.commons.PageStatePreloader;
+import io.jenkins.blueocean.rest.factory.BlueOceanConfigFactory;
+import io.jenkins.blueocean.rest.model.BlueOceanConfig;
 import jenkins.model.Jenkins;
 import net.sf.json.util.JSONBuilder;
 

@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import hudson.Extension;
+import io.jenkins.blueocean.rest.factory.BlueOceanConfigFactory;
+import io.jenkins.blueocean.rest.model.BlueOceanConfig;
 import jenkins.util.SystemProperties;
 
 /**
