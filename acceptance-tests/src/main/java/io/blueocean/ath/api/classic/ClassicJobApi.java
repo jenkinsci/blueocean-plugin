@@ -4,13 +4,9 @@ import com.google.common.base.Charsets;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
-import com.google.common.net.PercentEscaper;
-import com.google.common.net.UrlEscapers;
-import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import com.offbytwo.jenkins.JenkinsServer;
-import com.offbytwo.jenkins.client.util.EncodingUtils;
 import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.FolderJob;
 import com.offbytwo.jenkins.model.Job;
@@ -20,24 +16,15 @@ import io.blueocean.ath.GitRepositoryRule;
 import io.blueocean.ath.model.Folder;
 import org.apache.http.client.HttpResponseException;
 import org.apache.log4j.Logger;
-import org.json.JSONObject;
-import org.junit.Assert;
-import org.mockito.AdditionalMatchers;
-import org.mockito.internal.matchers.GreaterThan;
-import org.omg.PortableInterceptor.LOCATION_FORWARD;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.support.ui.FluentWait;
-
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
 import java.net.URL;
-import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
-
-import static com.offbytwo.jenkins.model.BuildResult.BUILDING;
 
 @Singleton
 public class ClassicJobApi {
