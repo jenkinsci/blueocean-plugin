@@ -19,8 +19,7 @@ import static junit.framework.TestCase.assertEquals;
  * @author Ivan Meredith
  */
 public class OrganizationApiTest extends BaseTest {
-    //TODO: Fix Test - see JENKINS-38320
-    //@Test
+    @Test
     public void organizationUsers() throws UnirestException {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
         hudson.model.User alice = j.jenkins.getUser("alice");
