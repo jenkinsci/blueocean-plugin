@@ -43,14 +43,10 @@ public class LoginPage{
     public void login() {
         open();
 
-        Assert.assertTrue(loginUsername.isDisplayed());
-        loginUsername.sendKeys("alice");
-        Assert.assertEquals("alice", wait.until(driver -> loginUsername.getAttribute("value")));
+        wait.until(loginUsername).sendKeys("alice");
 
-        Assert.assertTrue(loginPassword.isDisplayed());
-        loginPassword.sendKeys("alice");
-        Assert.assertEquals("alice", wait.until(driver -> loginPassword.getAttribute("value")));
+        wait.until(loginPassword).sendKeys("alice");
 
-        loginSubmit.click();
+        wait.until(loginSubmit).click();
     }
 }

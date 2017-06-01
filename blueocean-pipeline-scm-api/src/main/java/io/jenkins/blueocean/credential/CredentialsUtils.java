@@ -181,7 +181,7 @@ public class CredentialsUtils {
                     domainName+" to store credentials by BlueOcean", domainSpecifications)
             );
             if (!result) {
-                throw new ServiceException.BadRequestExpception("Failed to create credential domain: " + domainName);
+                throw new ServiceException.BadRequestException("Failed to create credential domain: " + domainName);
             }
             domain = store.getDomainByName(domainName);
             if (domain == null) {

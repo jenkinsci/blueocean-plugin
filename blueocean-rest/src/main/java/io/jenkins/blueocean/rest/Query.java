@@ -46,7 +46,7 @@ public class Query {
     public <T> T param(String key, Class<T> type, boolean required){
         String value = params.get(key);
         if(value == null && required){
-            throw new ServiceException.BadRequestExpception(
+            throw new ServiceException.BadRequestException(
                 String.format("%s is required parameter to execute query for type %s", key, type));
         }else if (value == null && Boolean.class.isAssignableFrom(type)){
             return (T) Boolean.FALSE;
@@ -77,7 +77,7 @@ public class Query {
         //If there is no type, we don't know what resource to look for
         //TODO: what would be default type?
         if (type == null) {
-            throw new ServiceException.BadRequestExpception("type is required parameter for query param q");
+            throw new ServiceException.BadRequestException("type is required parameter for query param q");
         }
         return new Query(type, params);
     }

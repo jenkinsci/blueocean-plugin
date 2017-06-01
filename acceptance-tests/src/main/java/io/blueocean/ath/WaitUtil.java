@@ -1,9 +1,11 @@
 package io.blueocean.ath;
 
+import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 
 import javax.inject.Inject;
@@ -33,12 +35,27 @@ public class WaitUtil {
     public <T> T until(Function<WebDriver, T> function) {
         return new FluentWait<WebDriver>(driver)
             .pollingEvery(100, TimeUnit.MILLISECONDS)
-            .withTimeout(10000, TimeUnit.MILLISECONDS)
+            .withTimeout(20000, TimeUnit.MILLISECONDS)
             .ignoring(NoSuchElementException.class)
             .until((WebDriver driver) -> function.apply(driver));
 
     }
 
+    public WebElement until(WebElement element) {
+        return until(ExpectedConditions.visibilityOf(element));
+    }
+
+    public WebElement until(By by) {
+        return until(ExpectedConditions.visibilityOfElementLocated(by));
+    }
+
+    public WebElement until(WebElement element, long timeoutInMS) {
+        return until(ExpectedConditions.visibilityOf(element), timeoutInMS);
+    }
+
+    public WebElement until(By by, long timeoutInMS) {
+        return until(ExpectedConditions.visibilityOfElementLocated(by), timeoutInMS);
+    }
     public <T> Function<WebDriver, Integer> orVisible(Function<WebDriver, WebElement> trueCase, Function<WebDriver, WebElement> falseCase) {
         return driver -> {
             try {
