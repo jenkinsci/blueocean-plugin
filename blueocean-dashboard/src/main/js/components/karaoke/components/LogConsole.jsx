@@ -116,7 +116,7 @@ export class LogConsole extends Component {
     }
     render() {
         const { isLoading, lines } = this.state;
-        const { prefix = '', hasMore = false, router, location, t } = this.props; // if hasMore true then show link to full log
+        const { prefix = '', hasMore = false, router, location, t, currentLogUrl } = this.props; // if hasMore true then show link to full log
         if (!lines) {
             logger.debug('no lines passed');
             return null;
@@ -126,7 +126,7 @@ export class LogConsole extends Component {
         // const logUrl = url && url.includes(suffix) ? url : `${url}${suffix}`;
         // JENKINS-41717 reverts above again
         // fulllog within steps are triggered by
-        const logUrl = `#${prefix || ''}log-${0}`;
+        // const logUrl = `#${prefix || ''}log-${0}`;
 
         return (<div className="log-wrapper">
             { isLoading && <div className="loadingContainer" id={`${prefix}log-${0}`}>
@@ -139,12 +139,8 @@ export class LogConsole extends Component {
                     <a
                       className="btn-link inverse"
                       key={0}
-                      onClick={() => {
-                          logger.debug('location', { location, logUrl });
-                          location.query.start = 0;
-                          location.hash = logUrl;
-                          router.push(location);
-                      }}
+                      target="_blank"
+                      href={`${currentLogUrl}?start=0`}
                     >
                         {t('Show.complete.logs')}
                     </a>
@@ -175,6 +171,7 @@ const { array, bool, string, func, shape } = PropTypes;
 LogConsole.propTypes = {
     scrollToBottom: bool, // in case of long logs you can scroll to the bottom
     logArray: array,
+    currentLogUrl: string,
     scrollToAnchorTimeOut: func,
     scrollBottom: func,
     prefix: string,
