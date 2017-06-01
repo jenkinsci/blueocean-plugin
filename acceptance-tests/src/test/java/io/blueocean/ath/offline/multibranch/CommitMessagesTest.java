@@ -1,18 +1,15 @@
 package io.blueocean.ath.offline.multibranch;
 
 
-import com.google.common.base.Optional;
 import com.google.common.io.Files;
-import com.google.common.io.Resources;
-import com.offbytwo.jenkins.JenkinsServer;
-import com.offbytwo.jenkins.model.FolderJob;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.AthModule;
+import io.blueocean.ath.BaseTest;
 import io.blueocean.ath.GitRepositoryRule;
-import io.blueocean.ath.api.classic.ClassicJobApi;
+import io.blueocean.ath.factory.MultiBranchPipelineFactory;
+import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.pages.blue.ActivityPage;
-import io.blueocean.ath.sse.SSEClient;
-import io.blueocean.ath.sse.SSEEvents;
+import io.blueocean.ath.sse.SSEClientRule;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.junit.JGitTestUtil;
@@ -28,50 +25,47 @@ import java.net.URL;
 
 @RunWith(ATHJUnitRunner.class)
 @UseModules(AthModule.class)
-public class CommitMessagesTest {
+public class CommitMessagesTest extends BaseTest{
     private Logger logger = Logger.getLogger(CommitMessagesTest.class);
 
     @Rule
-    public GitRepositoryRule repo = new GitRepositoryRule();
+    @Inject
+    public GitRepositoryRule git;
 
-    @Rule @Inject
-    public SSEClient sseClient;
+    @Rule
+    @Inject
+    public SSEClientRule sseClientRule;
 
     @Inject
-    ClassicJobApi jobApi;
+    MultiBranchPipelineFactory mbpFactory;
 
-    @Inject
-    JenkinsServer jenkins;
-
-    @Inject
-    ActivityPage activityPage;
-
+    /**
+     * This tests the commit messages are being picked up from git and displayed on the run in activity.
+     */
     @Test
-    public void commitMessagesTest () throws IOException, GitAPIException {
-        String pipelineName = "CommitMessagesTest_tested";
+    public void commitMessagesTest() throws IOException, GitAPIException {
+        String pipelineName = "CommitMessagesTest_commitMessagesTest";
 
-        URL jenkinsFile = Resources.getResource(CommitMessagesTest.class, "CommitMessagesTest/Jenkinsfile");
-        Files.copy(new File(jenkinsFile.getFile()), new File(repo.gitDirectory, "Jenkinsfile"));
-        repo.git.add().addFilepattern(".").call();
-        repo.git.commit().setMessage("initial commit").call();
+        URL jenkinsFile = getResourceURL("Jenkinsfile");
+        Files.copy(new File(jenkinsFile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
+        git.addAll();
+        git.commit("initial commit");
         logger.info("Commited Jenkinsfile");
 
-        jobApi.createMultlBranchPipeline(pipelineName, repo.gitDirectory.getAbsolutePath());
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(pipelineName).createPipeline(git);
+        sseClientRule.untilEvents(pipeline.buildsFinished);
+        sseClientRule.clear();
 
-        sseClient.untilEvents(SSEEvents.activityComplete(pipelineName));
-        sseClient.clear();
+        JGitTestUtil.writeTrashFile(git.client.getRepository(), "trash", "hi");
+        git.addAll();
+        git.commit("2nd commit");
 
-        JGitTestUtil.writeTrashFile(repo.git.getRepository(), "trash", "hi");
-        repo.git.add().addFilepattern(".").call();
-        repo.git.commit().setMessage("2nd commit").call();
         logger.info("Commited a second time");
 
-        Optional<FolderJob> folderJob = jenkins.getFolderJob(jenkins.getJob(pipelineName));
+        pipeline.buildBranch("master");
+        sseClientRule.untilEvents(pipeline.buildsFinished);
 
-        jenkins.getJob(folderJob.get(), "master").build();
-        sseClient.untilEvents(SSEEvents.activityComplete(pipelineName));
-
-        activityPage.open(pipelineName);
+        ActivityPage activityPage = pipeline.getActivityPage().open();
         activityPage.checkForCommitMesssage("2nd commit");
     }
 }

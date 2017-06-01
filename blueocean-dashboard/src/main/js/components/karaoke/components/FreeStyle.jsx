@@ -70,6 +70,7 @@ export default class FreeStyle extends Component {
                 hasMore,
                 scrollToBottom,
                 logArray,
+                currentLogUrl: augmenter.generalLogUrl,
                 key: augmenter.generalLogUrl,
             }}
             />

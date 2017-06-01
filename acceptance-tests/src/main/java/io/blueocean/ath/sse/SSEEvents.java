@@ -45,9 +45,9 @@ public class SSEEvents {
 
                 Optional<JSONObject> found = Iterables.tryFind(jobsFinished, json -> json.getString("job_run_queueId").equals(jsonObject.getString("job_run_queueId")));
                 if(!found.isPresent()) {
-                    logger.info("Waiting for " + jsonObject.getString("job_name") + " - queueID:" + jsonObject.getString("job_run_queueId") + " to finish");
+                    logger.info("Waiting for '" + jsonObject.getString("job_name") + "' - queueID:" + jsonObject.getString("job_run_queueId") + " to finish");
                 } else {
-                    logger.info("Build " + found.get().getString("job_name") + " - #" + found.get().getString("blueocean_queue_item_expected_build_number") + " is finished");
+                    logger.info("Build '" + found.get().getString("job_name") + "' - #" + found.get().getString("blueocean_queue_item_expected_build_number") + " is finished");
                 }
                 if(finished && !found.isPresent()) {
                     finished = false;

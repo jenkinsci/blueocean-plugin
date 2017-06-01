@@ -1952,9 +1952,12 @@ public class PipelineNodeTest extends PipelineBaseTest {
         CpsFlowExecution e = (CpsFlowExecution) run.getExecutionPromise().get();
 
         if(waitForItemToAppearInQueue(1000*300)) { //5 min timeout
-            List<Map> stepsResp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/11/steps/", List.class);
-            assertEquals(1, stepsResp.size());
-            assertEquals("QUEUED", stepsResp.get(0).get("state"));
+            List<FlowNode> nodes = getStages(NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run));
+            if(nodes.size() == 2) {
+                List<Map> stepsResp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/11/steps/", List.class);
+                assertEquals(1, stepsResp.size());
+                assertEquals("QUEUED", stepsResp.get(0).get("state"));
+            }
         }
     }
 
