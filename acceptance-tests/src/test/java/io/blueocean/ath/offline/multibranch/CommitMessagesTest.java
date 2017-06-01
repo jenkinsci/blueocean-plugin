@@ -1,21 +1,15 @@
 package io.blueocean.ath.offline.multibranch;
 
 
-import com.google.common.base.Optional;
 import com.google.common.io.Files;
-import com.offbytwo.jenkins.JenkinsServer;
-import com.offbytwo.jenkins.model.FolderJob;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.AthModule;
 import io.blueocean.ath.BaseTest;
 import io.blueocean.ath.GitRepositoryRule;
-import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
-import io.blueocean.ath.model.Folder;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.pages.blue.ActivityPage;
-import io.blueocean.ath.sse.SSEClient;
-import io.blueocean.ath.sse.SSEEvents;
+import io.blueocean.ath.sse.SSEClientRule;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.junit.JGitTestUtil;
@@ -40,11 +34,11 @@ public class CommitMessagesTest extends BaseTest{
 
     @Rule
     @Inject
-    public SSEClient sseClient;
+    public SSEClientRule sseClientRule;
 
     @Inject
     MultiBranchPipelineFactory mbpFactory;
-    
+
     /**
      * This tests the commit messages are being picked up from git and displayed on the run in activity.
      */
@@ -59,8 +53,8 @@ public class CommitMessagesTest extends BaseTest{
         logger.info("Commited Jenkinsfile");
 
         MultiBranchPipeline pipeline = mbpFactory.pipeline(pipelineName).createPipeline(git);
-        sseClient.untilEvents(pipeline.buildsFinished);
-        sseClient.clear();
+        sseClientRule.untilEvents(pipeline.buildsFinished);
+        sseClientRule.clear();
 
         JGitTestUtil.writeTrashFile(git.client.getRepository(), "trash", "hi");
         git.addAll();
@@ -69,7 +63,7 @@ public class CommitMessagesTest extends BaseTest{
         logger.info("Commited a second time");
 
         pipeline.buildBranch("master");
-        sseClient.untilEvents(pipeline.buildsFinished);
+        sseClientRule.untilEvents(pipeline.buildsFinished);
 
         ActivityPage activityPage = pipeline.getActivityPage().open();
         activityPage.checkForCommitMesssage("2nd commit");

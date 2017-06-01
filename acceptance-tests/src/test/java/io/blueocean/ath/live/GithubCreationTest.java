@@ -9,8 +9,7 @@ import io.blueocean.ath.model.Folder;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.pages.blue.EditorPage;
 import io.blueocean.ath.pages.blue.GithubCreationPage;
-import io.blueocean.ath.sse.SSEClient;
-import io.blueocean.ath.sse.SSEEvents;
+import io.blueocean.ath.sse.SSEClientRule;
 import org.apache.log4j.Logger;
 import org.jukito.UseModules;
 import org.junit.After;
@@ -47,12 +46,29 @@ public class GithubCreationTest{
 
     private GitHub github;
     private GHRepository ghRepository;
+
+    @Inject
+    GithubCreationPage creationPage;
+
+    @Inject
+    MultiBranchPipelineFactory mbpFactory;
+
+    @Inject @Rule
+    public SSEClientRule sseClient;
+
+    @Inject EditorPage editorPage;
+
+    /**
+     * Cleans up repostory after the test has completed.
+     *
+     * @throws IOException
+     */
     @After
     public void deleteRepository() throws IOException {
         if(deleteRepo) {
             try {
                 GHRepository repositoryToDelete = github.getRepository(organization + "/" + repo);
-              //  repositoryToDelete.delete();
+                repositoryToDelete.delete();
                 logger.info("Deleted repository " + repo);
             } catch (FileNotFoundException e) {
 
@@ -60,6 +76,11 @@ public class GithubCreationTest{
         }
     }
 
+    /**
+     * Every test in this class gets a blank github repository created for them.
+     *
+     * @throws IOException
+     */
     @Before
     public void createBlankRepo() throws IOException {
         props.load(new FileInputStream("live.properties"));
@@ -89,22 +110,8 @@ public class GithubCreationTest{
             .autoInit(true)
             .create();
         logger.info("Created repository " + repo);
-
     }
 
-
-
-    @Inject
-    GithubCreationPage creationPage;
-
-
-    @Inject
-    MultiBranchPipelineFactory mbpFactory;
-
-    @Inject @Rule
-    public SSEClient sseClient;
-
-    @Inject EditorPage editorPage;
 
     /**
      * This test tests the github creation flow.

@@ -29,8 +29,8 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.TimeUnit;
 
 
-public class SSEClient extends ExternalResource {
-    private Logger logger = Logger.getLogger(SSEClient.class);
+public class SSEClientRule extends ExternalResource {
+    private Logger logger = Logger.getLogger(SSEClientRule.class);
 
     @Override
     protected void before() throws Throwable {
@@ -46,7 +46,7 @@ public class SSEClient extends ExternalResource {
     @Inject @BaseUrl
     String baseUrl;
 
-    public SSEClient() {
+    public SSEClientRule() {
         mapper = new ObjectMapper();
     }
 

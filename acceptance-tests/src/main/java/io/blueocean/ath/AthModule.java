@@ -15,7 +15,7 @@ import io.blueocean.ath.pages.blue.GithubCreationPage;
 import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import io.blueocean.ath.pages.classic.ClassicFreestyleCreationPage;
 import io.blueocean.ath.pages.classic.LoginPage;
-import io.blueocean.ath.sse.SSEClient;
+import io.blueocean.ath.sse.SSEClientRule;
 import org.jukito.JukitoModule;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -84,7 +84,7 @@ public class AthModule extends JukitoModule
             .build(RunDetailsPipelinePageFactory.class));
 
 
-        bind(SSEClient.class);
+        bind(SSEClientRule.class);
         try {
             JenkinsServer server = new JenkinsServer(new URI(launchUrl));
             bind(JenkinsServer.class).toInstance(server);
