@@ -93,8 +93,6 @@ public class AthModule extends JukitoModule
                     "jenkins.model.Jenkins.getInstance().setNumExecutors(10);\n" +
                         "jenkins.model.Jenkins.getInstance().save();\n");
             }
-            System.out.println("exec " + server.getComputerSet().getTotalExecutors());
-
         } catch (URISyntaxException e) {
             e.printStackTrace();
         } catch (IOException e) {
