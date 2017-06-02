@@ -2,23 +2,20 @@ package io.blueocean.ath.pages.classic;
 
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
+import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.openqa.selenium.By;
-import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.interactions.Action;
-import org.openqa.selenium.interactions.Actions;
-import org.openqa.selenium.interactions.ClickAction;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
 public class LoginPage{
+    Logger logger = Logger.getLogger(LoginPage.class);
     @Inject
     WebDriver driver;
 
@@ -52,5 +49,7 @@ public class LoginPage{
         wait.until(loginPassword).sendKeys("alice");
 
         wait.until(By.xpath("//*/button[contains(text(), 'log')]")).click();
+
+        logger.info("Logged in as alice");
     }
 }
