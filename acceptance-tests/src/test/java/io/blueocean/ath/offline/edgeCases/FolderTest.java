@@ -54,21 +54,4 @@ public class FolderTest extends BaseTest {
         client.untilEvents(p.buildsFinished);
         p.getActivityPage().open();
     }
-
-    @Inject
-    WebDriver driver;
-
-    @Inject
-    WaitUtil wait;
-
-    @Inject
-    DashboardPage dashboardPage;
-
-    @Test
-    public void testScreenshoting(){
-        dashboardPage.open();
-
-        wait.until(By.id("a"), 1000);
-    }
-
 }
