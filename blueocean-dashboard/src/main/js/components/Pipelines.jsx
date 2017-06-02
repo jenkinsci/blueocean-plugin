@@ -5,6 +5,7 @@ import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '@j
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
+import { Icon } from '@jenkins-cd/react-material-icons';
 
 import { documentTitle } from './DocumentTitle';
 import CreatePipelineLink from './CreatePipelineLink';
@@ -73,7 +74,12 @@ export class Pipelines extends Component {
                         </Extensions.Renderer>
                         
                         {fastSearchFeatureFlag &&
-                            <TextInput className="search-pipelines-input" iconLeft="search" defaultValue={this.getSearchText()} placeholder="Search pipelines..." onChange={this.onChange} />
+                            <div className="TextInput search-pipelines-input u-icon-left" iconLeft="search">
+                                <div className="TextInput-icon u-icon-left">
+                                    <Icon icon="search" />
+                                </div>
+                                <input className="TextInput-control" value={this.getSearchText()} placeholder="Search pipelines..." onChange={(e) => {this.onChange(e.target.value ? e.target.value : '')}} />
+                            </div>
                         }
                     </div>
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
