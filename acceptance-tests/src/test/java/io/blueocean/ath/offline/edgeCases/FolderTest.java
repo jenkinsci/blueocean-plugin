@@ -3,15 +3,20 @@ package io.blueocean.ath.offline.edgeCases;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.BaseTest;
 import io.blueocean.ath.GitRepositoryRule;
+import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.Folder;
 import io.blueocean.ath.model.MultiBranchPipeline;
+import io.blueocean.ath.pages.blue.DashboardPage;
 import io.blueocean.ath.sse.SSEClientRule;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.experimental.theories.DataPoint;
 import org.junit.runner.RunWith;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -50,6 +55,20 @@ public class FolderTest extends BaseTest {
         p.getActivityPage().open();
     }
 
+    @Inject
+    WebDriver driver;
 
+    @Inject
+    WaitUtil wait;
+
+    @Inject
+    DashboardPage dashboardPage;
+
+    @Test
+    public void testScreenshoting(){
+        dashboardPage.open();
+
+        wait.until(By.id("a"), 1000);
+    }
 
 }
