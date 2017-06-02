@@ -56,8 +56,8 @@ module.exports = {
          var blueActivityPage = browser.page.bluePipelineActivity().forJob(jobName, 'jenkins');
          blueActivityPage.click(".branches");
 
-         blueActivityPage.waitForElementVisible('tr[id^="master"]');
-         blueActivityPage.click('tr[id^="master"]');
+         blueActivityPage.waitForElementVisible('.JTable-row[data-branch="master"]');
+         blueActivityPage.click('.JTable-row[data-branch="master"]');
 
          blueActivityPage.assertStageGraphShows();
 
@@ -98,8 +98,9 @@ module.exports = {
          blueActivityPage.waitForElementVisible('.branches');
          blueActivityPage.click(".branches");
 
-         blueActivityPage.waitForElementVisible('tr[id^="feature"]');
-         blueActivityPage.click('tr[id^="feature"]');
+         const rowSelector = '.JTable-row[data-branch="feature"]'
+         blueActivityPage.waitForElementVisible(rowSelector);
+         blueActivityPage.click(rowSelector);
 
          blueActivityPage.assertStageGraphShows();
    
