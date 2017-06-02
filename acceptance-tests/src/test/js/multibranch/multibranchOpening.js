@@ -98,7 +98,7 @@ module.exports = {
          blueActivityPage.waitForElementVisible('.branches');
          blueActivityPage.click(".branches");
 
-         const rowSelector = '.JTable-row[data-branch="feature"]'
+         const rowSelector = '.JTable-row[data-branch="feature/1"]';
          blueActivityPage.waitForElementVisible(rowSelector);
          blueActivityPage.click(rowSelector);
 
