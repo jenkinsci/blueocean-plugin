@@ -10,13 +10,14 @@ import { documentTitle } from './DocumentTitle';
 import CreatePipelineLink from './CreatePipelineLink';
 import PipelineRowItem from './PipelineRowItem';
 import { DashboardPlaceholder } from './placeholder/DashboardPlaceholder';
+import updateGetParam from '../util/UpdateGetParam';
 
 const translate = i18nTranslator('blueocean-dashboard');
 
 @observer
 export class Pipelines extends Component {
     onChange = debounce(e => {
-        this.context.router.push(`${this.props.location.pathname}${this.updateGetParam('search', e)}`);
+        this.context.router.push(`${this.props.location.pathname}${updateGetParam('search', e, this.props.location.query)}`);
     }, 200);
 
     getSearchText() {
@@ -28,28 +29,6 @@ export class Pipelines extends Component {
         const searchText = this.getSearchText();
 
         this.pager = this.context.pipelineService.pipelinesPager(org, searchText);
-    }
-
-    updateGetParam(paramName, newParamValue) {
-        const getParams = this.props.location.query;
-        let updatedParamsStr = '?';
-        let i;
-
-        for (i in getParams) {
-            if (getParams.hasOwnProperty(i)) {
-                if (i === paramName) {
-                    updatedParamsStr += newParamValue ? `${i}=${newParamValue}&` : '';
-                } else {
-                    updatedParamsStr += `${i}=${getParams[i]}&`;
-                }
-            }
-        }
-
-        if (!getParams.hasOwnProperty(paramName)) {
-            updatedParamsStr += `${paramName}=${newParamValue}&`;
-        }
-
-        return updatedParamsStr.slice(0, -1);
     }
 
     render() {
