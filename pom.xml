@@ -10,7 +10,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.1.0-beta-8-SNAPSHOT</version>
+  <version>1.1.0-beta-10-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean Parent</name>
@@ -32,6 +32,8 @@
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
     <jenkins-test-harness.version>2.15</jenkins-test-harness.version>
+    <scm-api.version>2.1.1</scm-api.version>
+    <git.version>3.3.0</git.version>
   </properties>
 
   <scm>
@@ -302,12 +304,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-cps</artifactId>
-            <version>2.29</version>
+            <version>2.31</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-api</artifactId>
-            <version>2.13</version>
+            <version>2.15</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -332,7 +334,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-step-api</artifactId>
-            <version>2.9</version>
+            <version>2.10</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -384,12 +386,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>scm-api</artifactId>
-            <version>2.1.1</version>
+            <version>${scm-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>git</artifactId>
-            <version>3.3.0</version>
+            <version>${git.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -576,6 +578,21 @@
             <artifactId>org.eclipse.sisu.plexus</artifactId>
             <version>0.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>git</artifactId>
+            <classifier>tests</classifier>
+            <version>${git.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>scm-api</artifactId>
+            <version>${scm-api.version}</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
   </dependencyManagement>
 

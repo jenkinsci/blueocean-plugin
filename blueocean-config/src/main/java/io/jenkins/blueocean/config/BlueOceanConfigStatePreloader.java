@@ -8,6 +8,8 @@ import hudson.util.VersionNumber;
 import io.jenkins.blueocean.auth.jwt.JwtTokenServiceEndpoint;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import io.jenkins.blueocean.commons.PageStatePreloader;
+import io.jenkins.blueocean.rest.factory.BlueOceanConfigFactory;
+import io.jenkins.blueocean.rest.model.BlueOceanConfig;
 import jenkins.model.Jenkins;
 import net.sf.json.util.JSONBuilder;
 
@@ -71,8 +73,7 @@ public class BlueOceanConfigStatePreloader extends PageStatePreloader {
                 // If more "features" vars are added, we could just iterate the system props
                 // and add any starting with "blueocean.features.". However, lets not do that
                 // unless there are more than a few.
-                .key("features").object()
-                    .key("organizations.enabled").value(Boolean.getBoolean("blueocean.features.organizations.enabled"))
+                               .key("features").object().key(BlueOceanConfig.ORGANIZATION_ENABLED).value(BlueOceanConfigFactory.getConfig(BlueOceanConfig.ORGANIZATION_ENABLED, Boolean.class))
                 .endObject()
             .endObject();
 

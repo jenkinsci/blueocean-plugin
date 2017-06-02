@@ -1,14 +1,23 @@
 package io.blueocean.ath;
 
+import com.google.inject.AbstractModule;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.offbytwo.jenkins.JenkinsServer;
 import io.blueocean.ath.api.classic.ClassicJobApi;
+import io.blueocean.ath.factory.ActivityPageFactory;
+import io.blueocean.ath.factory.FreestyleJobFactory;
+import io.blueocean.ath.factory.MultiBranchPipelineFactory;
+import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
+import io.blueocean.ath.model.FreestyleJob;
+import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.pages.blue.ActivityPage;
 import io.blueocean.ath.pages.blue.DashboardPage;
+import io.blueocean.ath.pages.blue.EditorPage;
 import io.blueocean.ath.pages.blue.GithubCreationPage;
+import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import io.blueocean.ath.pages.classic.ClassicFreestyleCreationPage;
 import io.blueocean.ath.pages.classic.LoginPage;
-import io.blueocean.ath.sse.SSEClient;
-import org.jukito.JukitoModule;
+import io.blueocean.ath.sse.SSEClientRule;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -20,23 +29,23 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.concurrent.TimeUnit;
 
-public class AthModule extends JukitoModule
+public class AthModule extends AbstractModule
 {
     WebDriver driver;
 
-
     @Override
-    protected void configureTest() {
+    protected void configure() {
+
         DesiredCapabilities capability = DesiredCapabilities.firefox();
         try {
             driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capability);
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
         driver.manage().window().maximize();
-        driver.manage().timeouts().implicitlyWait(20, TimeUnit.SECONDS);
+        //driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
         driver.manage().deleteAllCookies();
         String launchUrl = "";
         try {
@@ -56,11 +65,37 @@ public class AthModule extends JukitoModule
         bind(GithubCreationPage.class);
         bind(GitRepositoryRule.class);
         bind(ActivityPage.class);
+        bind(EditorPage.class);
 
-        bind(SSEClient.class);
+        install(new FactoryModuleBuilder()
+            .implement(ActivityPage.class, ActivityPage.class)
+            .build(ActivityPageFactory.class));
+
+        install(new FactoryModuleBuilder()
+            .implement(MultiBranchPipeline.class, MultiBranchPipeline.class)
+            .build(MultiBranchPipelineFactory.class));
+
+        install(new FactoryModuleBuilder()
+            .implement(FreestyleJob.class, FreestyleJob.class)
+            .build(FreestyleJobFactory.class));
+
+        install(new FactoryModuleBuilder()
+            .implement(RunDetailsPipelinePage.class, RunDetailsPipelinePage.class)
+            .build(RunDetailsPipelinePageFactory.class));
+
+
+        bind(SSEClientRule.class);
         try {
-            bind(JenkinsServer.class).toInstance(new JenkinsServer(new URI(launchUrl)));
+            JenkinsServer server = new JenkinsServer(new URI(launchUrl));
+            bind(JenkinsServer.class).toInstance(server);
+            if(server.getComputerSet().getTotalExecutors() < 10) {
+                server.runScript(
+                    "jenkins.model.Jenkins.getInstance().setNumExecutors(10);\n" +
+                        "jenkins.model.Jenkins.getInstance().save();\n");
+            }
         } catch (URISyntaxException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

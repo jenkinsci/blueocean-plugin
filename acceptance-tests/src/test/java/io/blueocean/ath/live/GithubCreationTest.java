@@ -2,14 +2,18 @@ package io.blueocean.ath.live;
 
 import com.google.common.io.Resources;
 import io.blueocean.ath.ATHJUnitRunner;
-import io.blueocean.ath.AthModule;
 import io.blueocean.ath.Login;
+import io.blueocean.ath.factory.MultiBranchPipelineFactory;
+import io.blueocean.ath.model.Folder;
+import io.blueocean.ath.model.MultiBranchPipeline;
+import io.blueocean.ath.pages.blue.EditorPage;
 import io.blueocean.ath.pages.blue.GithubCreationPage;
+import io.blueocean.ath.sse.SSEClientRule;
 import org.apache.log4j.Logger;
-import org.jukito.UseModules;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kohsuke.github.GHContentUpdateResponse;
@@ -27,7 +31,6 @@ import java.util.Properties;
 
 @Login
 @RunWith(ATHJUnitRunner.class)
-@UseModules(AthModule.class)
 public class GithubCreationTest{
     private Logger logger = Logger.getLogger(GithubCreationTest.class);
 
@@ -39,7 +42,24 @@ public class GithubCreationTest{
     private Boolean randomSuffix = false;
 
     private GitHub github;
+    private GHRepository ghRepository;
 
+    @Inject
+    GithubCreationPage creationPage;
+
+    @Inject
+    MultiBranchPipelineFactory mbpFactory;
+
+    @Inject @Rule
+    public SSEClientRule sseClient;
+
+    @Inject EditorPage editorPage;
+
+    /**
+     * Cleans up repostory after the test has completed.
+     *
+     * @throws IOException
+     */
     @After
     public void deleteRepository() throws IOException {
         if(deleteRepo) {
@@ -53,8 +73,13 @@ public class GithubCreationTest{
         }
     }
 
+    /**
+     * Every test in this class gets a blank github repository created for them.
+     *
+     * @throws IOException
+     */
     @Before
-    public void setupRepo() throws IOException {
+    public void createBlankRepo() throws IOException {
         props.load(new FileInputStream("live.properties"));
         token = props.getProperty("github.token");
         organization = props.getProperty("github.org");
@@ -67,7 +92,6 @@ public class GithubCreationTest{
         Assert.assertNotNull(repo);
 
         logger.info("Loaded test properties");
-
         if(randomSuffix) {
             SecureRandom random = new SecureRandom();
             repo = repo + "-" + new BigInteger(50, random).toString(16);
@@ -79,27 +103,30 @@ public class GithubCreationTest{
 
         deleteRepository();
 
-        GHRepository repository = github.createRepository(repo)
-                .autoInit(true)
-                .create();
+        ghRepository = github.createRepository(repo)
+            .autoInit(true)
+            .create();
         logger.info("Created repository " + repo);
-
-        URL jenkinsFileUrl = Resources.getResource(this.getClass(), "Jenkinsfile");
-        byte[] content = Resources.toByteArray(jenkinsFileUrl);
-        GHContentUpdateResponse updateResponse = repository.createContent(content, "Jenkinsfile", "Jenkinsfile", "master");
-        repository.createRef("refs/heads/branch1", updateResponse.getCommit().getSHA1());
-        logger.info("Created master and branch1 branches in " + repo);
-
-        repository.createContent("hi there","newfile", "newfile", "branch1");
-
     }
 
-    @Inject
-    GithubCreationPage creationPage;
 
-
+    /**
+     * This test tests the github creation flow.
+     *
+     * Creates a github repo with a sameple Jenkinsfile
+     *
+     * TODO: Add PR coverage.
+     */
     @Test
     public void testGithubCreation() throws IOException {
+        URL jenkinsFileUrl = Resources.getResource(this.getClass(), "Jenkinsfile");
+        byte[] content = Resources.toByteArray(jenkinsFileUrl);
+        GHContentUpdateResponse updateResponse = ghRepository.createContent(content, "Jenkinsfile", "Jenkinsfile", "master");
+        ghRepository.createRef("refs/heads/branch1", updateResponse.getCommit().getSHA1());
+        logger.info("Created master and branch1 branches in " + repo);
+        ghRepository.createContent("hi there","newfile", "newfile", "branch1");
+
         creationPage.createPipeline(token, organization, repo);
     }
+
 }

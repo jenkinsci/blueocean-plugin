@@ -61,7 +61,7 @@ module.exports = {
         // Validate the result of the node
         nodeDetail.waitForElementVisible('span.result-item-label')
             .getText('span.result-item-label', function (result) {
-                this.assert.equal('Shell Script', result.value);
+                this.assert.equal(result.value.startsWith('Shell Script'), true);
             })
         ;
         // test whether the expand works
