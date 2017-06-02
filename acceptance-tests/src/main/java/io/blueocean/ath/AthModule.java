@@ -1,5 +1,7 @@
 package io.blueocean.ath;
 
+import com.google.inject.AbstractModule;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.offbytwo.jenkins.JenkinsServer;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.factory.ActivityPageFactory;
@@ -16,11 +18,9 @@ import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import io.blueocean.ath.pages.classic.ClassicFreestyleCreationPage;
 import io.blueocean.ath.pages.classic.LoginPage;
 import io.blueocean.ath.sse.SSEClientRule;
-import org.jukito.JukitoModule;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -30,17 +30,17 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class AthModule extends JukitoModule
+public class AthModule extends AbstractModule
 {
     WebDriver driver;
 
-
     @Override
-    protected void configureTest() {
+    protected void configure() {
 
         DesiredCapabilities capability = DesiredCapabilities.firefox();
         try {
             driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capability);
+
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }

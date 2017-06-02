@@ -3,10 +3,16 @@ package io.blueocean.ath.pages.classic;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
 import org.junit.Assert;
+import org.openqa.selenium.By;
+import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Action;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.interactions.ClickAction;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -25,9 +31,6 @@ public class LoginPage{
     @FindBy(name = "j_password")
     WebElement loginPassword;
 
-    @FindBy(id = "yui-gen1-button")
-    WebElement loginSubmit;
-
     @Inject
     public LoginPage(WebDriver driver) {
         PageFactory.initElements(driver, this);
@@ -43,10 +46,11 @@ public class LoginPage{
     public void login() {
         open();
 
+
         wait.until(loginUsername).sendKeys("alice");
 
         wait.until(loginPassword).sendKeys("alice");
 
-        wait.until(loginSubmit).click();
+        wait.until(By.xpath("//*/button[contains(text(), 'log')]")).click();
     }
 }
