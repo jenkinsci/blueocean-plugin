@@ -88,11 +88,13 @@ export class Pipelines extends Component {
                 </ContentPageHeader>
                 <main>
                     <article>
-                        <Extensions.Renderer
-                            extensionPoint="jenkins.pipeline.list.top"
-                            store={ this.context.store }
-                            router={ this.context.router }
-                        />
+                        {!this.getSearchText() &&
+                            <Extensions.Renderer
+                                extensionPoint="jenkins.pipeline.list.top"
+                                store={ this.context.store }
+                                router={ this.context.router }
+                            />
+                        }
                         { showEmptyState && <DashboardPlaceholder t={translate} /> }
                         { showPipelineList &&
                         <Table
