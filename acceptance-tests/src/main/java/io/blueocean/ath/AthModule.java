@@ -18,6 +18,7 @@ import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import io.blueocean.ath.pages.classic.ClassicFreestyleCreationPage;
 import io.blueocean.ath.pages.classic.LoginPage;
 import io.blueocean.ath.sse.SSEClientRule;
+import org.apache.log4j.Logger;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -31,41 +32,32 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 public class AthModule extends AbstractModule
-{
-    WebDriver driver;
-
-    @Override
+{  @Override
     protected void configure() {
 
         DesiredCapabilities capability = DesiredCapabilities.firefox();
+
         try {
-            driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capability);
+            WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capability);
+            driver.manage().window().maximize();
+            driver.manage().deleteAllCookies();
+            bind(WebDriver.class).toInstance(driver);
 
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
+            String launchUrl = new String(Files.readAllBytes(Paths.get("runner/.blueocean-ath-jenkins-url")));
+            bindConstant().annotatedWith(BaseUrl.class).to(launchUrl);
+
+            JenkinsServer server = new JenkinsServer(new URI(launchUrl));
+            bind(JenkinsServer.class).toInstance(server);
+            if(server.getComputerSet().getTotalExecutors() < 10) {
+                server.runScript(
+                    "jenkins.model.Jenkins.getInstance().setNumExecutors(10);\n" +
+                        "jenkins.model.Jenkins.getInstance().save();\n");
+            }
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        driver.manage().window().maximize();
-        //driver.manage().timeouts().implicitlyWait(2, TimeUnit.SECONDS);
-        driver.manage().deleteAllCookies();
-        String launchUrl = "";
-        try {
-            launchUrl = new String(Files.readAllBytes(Paths.get("runner/.blueocean-ath-jenkins-url")));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
 
-        bindConstant().annotatedWith(BaseUrl.class).to(launchUrl);
-        bind(WebDriver.class).toInstance(driver);
-        bind(WaitUtil.class);
-        bind(LoginPage.class);
-        bind(ClassicJobApi.class);
-        bind(ClassicFreestyleCreationPage.class);
-        bind(DashboardPage.class);
-        bind(GithubCreationPage.class);
-        bind(GitRepositoryRule.class);
-        bind(ActivityPage.class);
-        bind(EditorPage.class);
 
         install(new FactoryModuleBuilder()
             .implement(ActivityPage.class, ActivityPage.class)
@@ -82,21 +74,5 @@ public class AthModule extends AbstractModule
         install(new FactoryModuleBuilder()
             .implement(RunDetailsPipelinePage.class, RunDetailsPipelinePage.class)
             .build(RunDetailsPipelinePageFactory.class));
-
-
-        bind(SSEClientRule.class);
-        try {
-            JenkinsServer server = new JenkinsServer(new URI(launchUrl));
-            bind(JenkinsServer.class).toInstance(server);
-            if(server.getComputerSet().getTotalExecutors() < 10) {
-                server.runScript(
-                    "jenkins.model.Jenkins.getInstance().setNumExecutors(10);\n" +
-                        "jenkins.model.Jenkins.getInstance().save();\n");
-            }
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 }

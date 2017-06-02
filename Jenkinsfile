@@ -36,7 +36,7 @@ node() {
         stage('ATH - Jenkins 2.7.3') {
           sh "cd acceptance-tests && ./run.sh --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
           junit 'acceptance-tests/target/surefire-reports/*.xml'
-
+          archive 'acceptance-tests/target/screenshots/*'
         }
         if (env.JOB_NAME =~ 'blueocean-weekly-ath') {
           stage('ATH - Jenkins 2.46.3') {
