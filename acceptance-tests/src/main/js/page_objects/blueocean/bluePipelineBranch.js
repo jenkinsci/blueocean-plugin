@@ -9,7 +9,7 @@ var url = require('../../util/url');
  * */
 module.exports = {
     elements: {
-        runButton: '.actions a.run-button',
+        runButton: 'a.run-button',
         toasts: 'div.toaster div.toast span.text'
     }
 };
