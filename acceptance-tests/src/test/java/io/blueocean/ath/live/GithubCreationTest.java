@@ -2,7 +2,6 @@ package io.blueocean.ath.live;
 
 import com.google.common.io.Resources;
 import io.blueocean.ath.ATHJUnitRunner;
-import io.blueocean.ath.AthModule;
 import io.blueocean.ath.Login;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.Folder;
@@ -11,7 +10,6 @@ import io.blueocean.ath.pages.blue.EditorPage;
 import io.blueocean.ath.pages.blue.GithubCreationPage;
 import io.blueocean.ath.sse.SSEClientRule;
 import org.apache.log4j.Logger;
-import org.jukito.UseModules;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,7 +31,6 @@ import java.util.Properties;
 
 @Login
 @RunWith(ATHJUnitRunner.class)
-@UseModules(AthModule.class)
 public class GithubCreationTest{
     private Logger logger = Logger.getLogger(GithubCreationTest.class);
 

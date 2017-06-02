@@ -2061,15 +2061,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
     @Test
     public void abortInput() throws Exception {
         String script = "node {\n" +
-                "    stage(\"parallelStage\"){\n" +
-                "      parallel left : {\n" +
-                "            echo \"running\"\n" +
-                "            def branchInput = input message: 'Please input branch to test against', parameters: [[$class: 'StringParameterDefinition', defaultValue: 'master', description: '', name: 'branch']]\n" +
-                "            echo \"BRANCH NAME: ${branchInput}\"\n" +
-                "        }, \n" +
-                "        right : {\n" +
-                "            sh 'echo 'right done''\n" +
-                "        }\n" +
+                "    stage(\"thing\"){\n" +
+                "            input 'continue'\n" +
                 "    }\n" +
                 "}";
 
@@ -2085,11 +2078,14 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         List<Map> stepsResp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
 
-        Assert.assertEquals("PAUSED", stepsResp.get(2).get("state"));
-        Assert.assertEquals("UNKNOWN", stepsResp.get(2).get("result"));
-        Assert.assertEquals("12", stepsResp.get(2).get("id"));
+        System.out.println(stepsResp);
 
-        Map<String,Object> input = (Map<String, Object>) stepsResp.get(2).get("input");
+        Assert.assertEquals("PAUSED", stepsResp.get(0).get("state"));
+        Assert.assertEquals("UNKNOWN", stepsResp.get(0).get("result"));
+        String stepId = (String) stepsResp.get(0).get("id");
+        //Assert.assertEquals("7", stepsResp.get(0).get("id"));
+
+        Map<String,Object> input = (Map<String, Object>) stepsResp.get(0).get("input");
         Assert.assertNotNull(input);
         String id = (String) input.get("id");
         Assert.assertNotNull(id);
@@ -2098,13 +2094,13 @@ public class PipelineNodeTest extends PipelineBaseTest {
         req.put("id", id);
         req.put("abort", true);
 
-        post("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/",req, 200);
+        post("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/" + stepId + "/",req, 200);
 
         if(waitForBuildCount(job1,1, Result.ABORTED)) {
-            Map<String, Object> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/");
+            Map<String, Object> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/" + stepId + "/");
             Assert.assertEquals("FINISHED", resp.get("state"));
             Assert.assertEquals("ABORTED", resp.get("result"));
-            Assert.assertEquals("12", resp.get("id"));
+            Assert.assertEquals(stepId, resp.get("id"));
         }
     }
 
