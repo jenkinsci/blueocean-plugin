@@ -1,4 +1,13 @@
 import AppConfig from '../config';
+
+function jobPrefixPath(organization) {
+    // custom organization
+    if (organization !== 'undefined' && organization !== 'jenkins') {
+        return `/job/${organization}/job/`;
+    }
+    return '/job/';
+}
+
 /**
  * Build a root-relative URL to the organization's pipeline list screen.
  * @param organization
@@ -22,7 +31,7 @@ export const buildPipelineUrl = (organization, fullName, tabName) => {
 
 export const rootPath = (name) => {
     const jenkinsUrl = AppConfig.getJenkinsRootURL();
-    return `${jenkinsUrl}/job/${name.split('/').join('/job/')}/`;
+    return `${jenkinsUrl}/${jobPrefixPath(AppConfig.getOrganizationName())}/${name.split('/').join('/job/')}/`;
 };
 
 export const buildClassicConfigUrl = (pipeline) => {
@@ -274,7 +283,7 @@ export function toClassicJobPage(pageUrl, isMultibranch = false) {
         // The next token is the "full" job name, URL encoded.
         const fullJobName = decodeURIComponent(pageUrlTokens.shift());
         const fullJobNameTokens = fullJobName.split('/');
-        const classicJobFullName = '/job/' + fullJobNameTokens.join('/job/');
+        const classicJobFullName = jobPrefixPath(AppConfig.getOrganizationName()) + fullJobNameTokens.join('/job/');
 
         // map to job only after there is token after pipelines. For example /organizations/jenkins/pipelines/p1
         // can be mapped to /job/p1 but /organizations/jenkins/pipelines/ should be mapped to classic dashboard '/'
