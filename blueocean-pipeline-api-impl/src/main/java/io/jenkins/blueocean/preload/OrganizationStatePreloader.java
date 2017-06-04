@@ -23,7 +23,7 @@ public class OrganizationStatePreloader extends PageStatePreloader {
 
     @Override
     public String getStateJson() {
-        BlueOrganization organization = OrganizationFactory.getInstance().of(Jenkins.getInstance());
+        BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(Jenkins.getInstance());
         if(organization != null) {
             StringWriter writer = new StringWriter();
             new JSONBuilder(writer)
