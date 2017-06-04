@@ -64,8 +64,8 @@ export class Pipelines extends Component {
                                 <Link to="/" query={ location.query }>
                                     { translate('home.header.dashboard', { defaultValue: 'Dashboard' }) }
                                 </Link>
-                                { organization && ' / ' }
-                                { organization && orgLink }
+                                { AppConfig.showOrg() && organization && ' / ' }
+                                { AppConfig.showOrg() && organization && orgLink }
                             </h1>
                         </Extensions.Renderer>
                     </div>
