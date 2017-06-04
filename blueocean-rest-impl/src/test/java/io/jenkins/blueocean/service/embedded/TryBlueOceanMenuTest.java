@@ -17,7 +17,7 @@ public class TryBlueOceanMenuTest extends BaseTest{
     public void testOpenBlueOcean() throws IOException, SAXException {
         JenkinsRule.WebClient webClient = j.createWebClient();
         HtmlPage page = webClient.getPage(j.getInstance());
-        HtmlAnchor anchor = page.getAnchorByText(Messages.BlueOceanUrlActionImpl_DisplayName());
+        HtmlAnchor anchor = page.getAnchorByText(Messages.BlueOceanUrlAction_DisplayName());
         Assert.assertEquals("/jenkins/blue/organizations/jenkins/pipelines/", anchor.getHrefAttribute());
         Assert.assertEquals("task-link", anchor.getAttribute("class"));
     }
