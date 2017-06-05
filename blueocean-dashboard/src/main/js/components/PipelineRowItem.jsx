@@ -7,27 +7,26 @@ import { capable, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 import { MATRIX_PIPELINE } from '../Capabilities';
 import { Icon } from '@jenkins-cd/react-material-icons';
 
-function generateRedirectLink(pipeline, organization) {
+// Generate classic URL to redirect matrix-style / multiconfig jobs.
+function generateRedirectURL(pipeline) {
     if (capable(pipeline, MATRIX_PIPELINE)) {
-        const fullDisplayPath = organization ? `${organization}/${pipeline.fullDisplayName}` : pipeline.fullDisplayName;
-    
-        return (<a
-          className="pipelineRedirectLink"
-          href={`${UrlConfig.getJenkinsRootURL()}${pipeline._links.self.href}`}
-          target="_blank"
-        >
-                <ExpandablePath path={fullDisplayPath} /><Icon size={24} icon="exit_to_app" />
-        </a>);
+        return `${UrlConfig.getJenkinsRootURL()}${pipeline._links.self.href}`;
     }
-
     return null;
+}
+
+// Intercept click events so they don't bubble back to containing components
+function cancelClick(e) {
+    // TODO: Find other things doing the same and merge this
+    e.stopPropagation();
+    e.preventDefault();
 }
 
 export class PipelineRowItem extends Component {
 
     calculateResponse(passing, failing) {
         const { t } = this.props;
-        let response = '-';
+        let response = ' - ';
         if (failing > 0) {
             response = t('home.pipelineslist.row.failing', {
                 0: failing,
@@ -87,25 +86,39 @@ export class PipelineRowItem extends Component {
 
             if (hasPullRequests) {
                 pullRequestsLink = <Link to={pullRequestsURL}>{multiPrLabel}</Link>;
+            }  else {
+                pullRequestsLink = multiPrLabel;
             }
         } else {
             multiBranchLink = multiBranchLabel;
             pullRequestsLink = multiPrLabel;
         }
+
+        // Build the row link properties. Matrix jobs get sent to classic, hence the logic here.
+        const linkProps = {};
+        const matrixRedirectURL = generateRedirectURL(pipeline);
+
+        if (matrixRedirectURL) {
+            // Use a regular anchor, and target to a new tab
+            linkProps.href = matrixRedirectURL;
+            linkProps.className = 'pipelineRedirectLink';
+            linkProps.target = '_blank';
+        } else {
+            // This is a normal pipeline job, so we use <Link> as usual
+            linkProps.linkTo = activitiesURL;
+            linkProps.query = location.query;
+        }
+
         return (
-            <TableRow data-pipeline={name} data-organization={organization} columns={columns}>
+            <TableRow data-pipeline={name} data-organization={organization} columns={columns} {...linkProps}>
                 <TableCell className="TableCell--pipelineLink">
-                    {
-                        generateRedirectLink(pipeline, showOrganization ? organization : null) ||
-                        <Link to={activitiesURL} query={location.query}>
-                            <ExpandablePath path={fullDisplayPath} />
-                        </Link>
-                    }
+                    <ExpandablePath path={fullDisplayPath} />
+                    { matrixRedirectURL && <Icon size={24} icon="exit_to_app" /> }
                 </TableCell>
                 <TableCell><WeatherIcon score={weatherScore} /></TableCell>
                 <TableCell>{multiBranchLink}</TableCell>
                 <TableCell>{pullRequestsLink}</TableCell>
-                <TableCell className="TableCell--actions">
+                <TableCell className="TableCell--actions" onClick={cancelClick}>
                     <Extensions.Renderer
                       extensionPoint="jenkins.pipeline.list.action"
                       store={this.context.store}
