@@ -34,12 +34,19 @@
     "enzyme": "^2.4.1",
     "eslint": "2.8.0",
     "eslint-plugin-react": "^5.0.1",
-    "gulp": "^3.9.1",
+    "gulp": "3.9.1",
     "gulp-mocha": "^2.2.0",
+    "gulp-babel": "6.1.2",
+    "gulp-copy": "0.0.2",
+    "gulp-eslint": "3.0.1",
+    "gulp-less": "3.1.0",
+    "gulp-rename": "1.2.2",
+    "gulp-sourcemaps": "1.6.0",
     "jsdom": "^9.5.0",
     "react": "^0.14.7 || ^15.0.0",
     "react-addons-test-utils": "^15.3.2",
-    "react-dom": "^0.14.7 || ^15.0.0"
+    "react-dom": "^0.14.7 || ^15.0.0",
+    "run-sequence": "1.2.2"
   },
   "dependencies": {
     "envify": "3.4.1",
