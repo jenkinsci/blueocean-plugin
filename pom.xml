@@ -275,7 +275,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-autofavorite</artifactId>
-            <version>0.7</version>
+            <version>1.0.0</version>
         </dependency>
 
         <!-- TODO: should be moved out of blueocean repo as separate plugin -->
