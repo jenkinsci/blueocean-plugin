@@ -31,7 +31,7 @@ export const buildPipelineUrl = (organization, fullName, tabName) => {
 
 export const rootPath = (name) => {
     const jenkinsUrl = AppConfig.getJenkinsRootURL();
-    return `${jenkinsUrl}/${jobPrefixPath(AppConfig.getOrganizationName())}/${name.split('/').join('/job/')}/`;
+    return `${jenkinsUrl}${jobPrefixPath(AppConfig.getOrganizationName())}${name.split('/').join('/job/')}/`;
 };
 
 export const buildClassicConfigUrl = (pipeline) => {
