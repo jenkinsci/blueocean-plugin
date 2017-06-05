@@ -86,7 +86,7 @@ export class PipelineRowItem extends Component {
 
             if (hasPullRequests) {
                 pullRequestsLink = <Link to={pullRequestsURL}>{multiPrLabel}</Link>;
-            }  else {
+            } else {
                 pullRequestsLink = multiPrLabel;
             }
         } else {
