@@ -98,7 +98,7 @@ describe('PipelineRowItem', () => {
         const columns = wrapper.find('TableCell');
 
         const nameCol = columns.at(0);
-        const path = nameCol.find('Link').shallow().find('ExpandablePath');
+        const path = nameCol.find('ExpandablePath');
         assert.equal(path.props().path, pipelineSimple.fullDisplayName);
 
         const weatherCol = columns.at(1);
@@ -126,14 +126,14 @@ describe('PipelineRowItem', () => {
             const columns = wrapper.find('TableCell');
 
             const nameCol = columns.at(0);
-            const path = nameCol.find('Link').shallow().find('ExpandablePath');
+            const path = nameCol.find('ExpandablePath');
             assert.equal(path.props().path, pipelineMulti.fullDisplayName);
 
             const multibranchCol = columns.at(2).find('Link').shallow();
             assert.equal(multibranchCol.text(), '1 failing');
 
             const pullRequestsCol = columns.at(3);
-            assert.equal(pullRequestsCol.children().length, 0);
+            assert.equal(pullRequestsCol.children().text(), ' - ');
         });
 
         it('/with success', () => {
@@ -149,7 +149,7 @@ describe('PipelineRowItem', () => {
             const columns = wrapper.find('TableCell');
 
             const nameCol = columns.at(0);
-            const path = nameCol.find('Link').shallow().find('ExpandablePath');
+            const path = nameCol.find('ExpandablePath');
             assert.equal(path.props().path, pipelineMultiSuccess.fullDisplayName);
 
             const multibranchCol = columns.at(2).find('Link').shallow();

@@ -215,7 +215,6 @@ describe('TestResults', () => {
         // Lets mount it to that it renders children.
         const wrapper = mount(<TestResults t={t} run={run} testService={testService} pipeline={pipeline} />);
 
-        console.log(wrapper.html());
         // Expend the test result
         wrapper.find('.result-item-head').simulate('click');
 
