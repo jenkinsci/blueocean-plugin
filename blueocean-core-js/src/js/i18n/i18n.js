@@ -43,7 +43,7 @@ function newPluginXHR(pluginName, onLoad) {
                 logger.debug('loading data for', url);
             }
             let status;
-            return Fetch.fetch(url)
+            return Fetch.fetch(url, {'disableLoadingIndicator': true})
                 .then(response => {
                     // i18n xhr-backend needs the status
                     status = response.status;
