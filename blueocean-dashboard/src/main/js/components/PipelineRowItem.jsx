@@ -94,7 +94,7 @@ export class PipelineRowItem extends Component {
         }
         return (
             <TableRow data-pipeline={name} data-organization={organization} columns={columns}>
-                <TableCell>
+                <TableCell className="TableCell--pipelineLink">
                     {
                         generateRedirectLink(pipeline, showOrganization ? organization : null) ||
                         <Link to={activitiesURL} query={location.query}>
