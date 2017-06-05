@@ -78,6 +78,10 @@
             <artifactId>blueocean-git-pipeline</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>credentials-binding</artifactId>
+        </dependency>
 
         <!-- Bundled plugins for improved out of the box experience -->
         <dependency>
