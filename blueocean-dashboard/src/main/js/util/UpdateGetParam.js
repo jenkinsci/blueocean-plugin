@@ -1,8 +1,8 @@
 /*
- * Calculate whether to fetch a node
- * @param paramName
+ * Update a GET url param value
+ * @param paramName: which param to change value of
  * @param newParamValue
- * @param getParams
+ * @param getParams: query obj that needs to be passed along to this function e.g. "this.props.location.query"
  */
 
 export default function updateGetParamm(paramName, newParamValue, getParams) {

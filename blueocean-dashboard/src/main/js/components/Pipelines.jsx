@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { Page, Table, TextInput } from '@jenkins-cd/design-language';
+import { Page, Table } from '@jenkins-cd/design-language';
 import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
@@ -78,7 +78,7 @@ export class Pipelines extends Component {
                                 <div className="TextInput-icon u-icon-left">
                                     <Icon icon="search" />
                                 </div>
-                                <input className="TextInput-control" value={this.getSearchText()} placeholder="Search pipelines..." onChange={(e) => {this.onChange(e.target.value ? e.target.value : '')}} />
+                                <input className="TextInput-control" value={this.getSearchText()} placeholder="Search pipelines..." onChange={(e) => {this.onChange(e.target.value ? e.target.value : '');}} />
                             </div>
                         }
                     </div>
