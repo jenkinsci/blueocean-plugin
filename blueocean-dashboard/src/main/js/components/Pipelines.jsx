@@ -35,7 +35,6 @@ export class Pipelines extends Component {
     render() {
         this._initPager();
 
-        const fastSearchFeatureFlag = this.props.location.query.fastsearch ? decodeURIComponent(this.props.location.query.fastsearch) : '';
         const pipelines = this.pager.data;
         const { organization, location = { } } = this.context.params;
 
@@ -73,14 +72,12 @@ export class Pipelines extends Component {
                             </h1>
                         </Extensions.Renderer>
                         
-                        {fastSearchFeatureFlag &&
-                            <div className="TextInput search-pipelines-input u-icon-left" iconLeft="search">
-                                <div className="TextInput-icon u-icon-left">
-                                    <Icon icon="search" />
-                                </div>
-                                <input className="TextInput-control" value={this.getSearchText()} placeholder="Search pipelines..." onChange={(e) => {this.onChange(e.target.value ? e.target.value : '');}} />
+                        <div className="TextInput search-pipelines-input u-icon-left" iconLeft="search">
+                            <div className="TextInput-icon u-icon-left">
+                                <Icon icon="search" />
                             </div>
-                        }
+                            <input className="TextInput-control" value={this.getSearchText()} placeholder="Search pipelines..." onChange={(e) => {this.onChange(e.target.value ? e.target.value : '');}} />
+                        </div>
                     </div>
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
                         <CreatePipelineLink />
