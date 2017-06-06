@@ -73,6 +73,7 @@ export const getNodesInformation = (nodes) => {
             id: item.id,
             edges: item.edges,
             displayName: item.displayName,
+            displayDescription: item.displayDescription,
             title: title || `runId: ${item.id}`,
             durationInMillis: item.durationInMillis || undefined,
             startTime: item.startTime || undefined,

@@ -15,6 +15,7 @@ import { getNodesInformation } from './../../main/js/util/logDisplayHelper';
 import runningFailing from './data/steps/failingRunningSteps';
 import { poststagefail } from './data/runs/nodes/poststagefail';
 import { nullNodes } from './data/runs/nodes/nodesAllNull';
+import stepsDescriptions from './data/runs/nodes/steps/steps-descriptions';
 
 
 import Step from '../../main/js/components/karaoke/components/Step';
@@ -74,6 +75,15 @@ describe("Logic test of different runs", () => {
             errors: 0,
         });
        assert.equal(stagesInfo.model[0].isFocused, true);
+    });
+    it('includes name and description', () => {
+        const stepsInfo = getNodesInformation(stepsDescriptions);
+        assert.isOk(stepsInfo);
+        assert.isOk(stepsInfo.model);
+        stepsInfo.model.forEach(step => {
+            assert.isOk(step.displayName);
+            assert.isOk(step.displayDescription);
+        });
     });
 });
 
