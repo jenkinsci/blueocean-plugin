@@ -17,9 +17,14 @@ const translate = i18nTranslator('blueocean-dashboard');
 
 @observer
 export class Pipelines extends Component {
-    onChange = debounce(e => {
-        this.context.router.push(`${this.props.location.pathname}${updateGetParam('search', e, this.props.location.query)}`);
+    updateSearchText = debounce(value => {
+        this.context.router.push(`${this.props.location.pathname}${updateGetParam('search', value, this.props.location.query)}`);
     }, 200);
+
+    onChange = value => {
+        this.setState({ searchText: value });
+        this.updateSearchText(value);
+    }
 
     getSearchText() {
         return this.props.location.query.search ? decodeURIComponent(this.props.location.query.search) : '';
@@ -30,6 +35,10 @@ export class Pipelines extends Component {
         const searchText = this.getSearchText();
 
         this.pager = this.context.pipelineService.pipelinesPager(org, searchText);
+    }
+
+    componentWillMount() {
+        this.setState({ searchText: this.getSearchText() });
     }
 
     render() {
@@ -76,7 +85,7 @@ export class Pipelines extends Component {
                             <div className="TextInput-icon u-icon-left">
                                 <Icon icon="search" />
                             </div>
-                            <input className="TextInput-control" value={this.getSearchText()} placeholder="Search pipelines..." onChange={(e) => {this.onChange(e.target.value ? e.target.value : '');}} />
+                            <input className="TextInput-control" value={this.state.searchText} placeholder="Search pipelines..." onChange={(e) => {this.onChange(e.target.value ? e.target.value : '');}} />
                         </div>
                     </div>
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
@@ -93,6 +102,11 @@ export class Pipelines extends Component {
                             />
                         }
                         { showEmptyState && <DashboardPlaceholder t={translate} /> }
+                        { !this.pager.pending && !pipelines.length && this.getSearchText() &&
+                            <div className="no-search-results-container">
+                                There are no pipelines that match <i>{this.getSearchText()}</i>
+                            </div>
+                        }
                         { showPipelineList &&
                         <Table
                             className="pipelines-table"
@@ -113,7 +127,7 @@ export class Pipelines extends Component {
                         </Table>
                         }
 
-                        { pipelines && <ShowMoreButton pager={this.pager} /> }
+                        { (pipelines || this.pager.pending) && <ShowMoreButton pager={this.pager} /> }
                     </article>
                 </main>
             </Page>
