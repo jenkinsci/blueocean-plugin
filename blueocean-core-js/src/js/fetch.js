@@ -277,14 +277,14 @@ export const Fetch = {
      * @param {Object} [options.fetchOptions] - Optional isomorphic-fetch options.
      * @returns fetch body.
      */
-    fetch(url, { onSuccess, onError, fetchOptions } = {}) {
+    fetch(url, { onSuccess, onError, fetchOptions, disableLoadingIndicator } = {}) {
         let fixedUrl = url;
 
         if (urlconfig.getJenkinsRootURL() !== '' && !url.startsWith(urlconfig.getJenkinsRootURL())) {
             fixedUrl = `${urlconfig.getJenkinsRootURL()}${url}`;
         }
         if (!config.isJWTEnabled()) {
-            return FetchFunctions.rawFetch(fixedUrl, { onSuccess, onError, fetchOptions });
+            return FetchFunctions.rawFetch(fixedUrl, { onSuccess, onError, fetchOptions, disableLoadingIndicator });
         }
 
         return jwt.getToken()

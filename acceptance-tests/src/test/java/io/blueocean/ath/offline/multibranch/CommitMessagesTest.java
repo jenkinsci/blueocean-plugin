@@ -3,7 +3,6 @@ package io.blueocean.ath.offline.multibranch;
 
 import com.google.common.io.Files;
 import io.blueocean.ath.ATHJUnitRunner;
-import io.blueocean.ath.AthModule;
 import io.blueocean.ath.BaseTest;
 import io.blueocean.ath.GitRepositoryRule;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
@@ -13,7 +12,6 @@ import io.blueocean.ath.sse.SSEClientRule;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.junit.JGitTestUtil;
-import org.jukito.UseModules;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -24,7 +22,6 @@ import java.io.IOException;
 import java.net.URL;
 
 @RunWith(ATHJUnitRunner.class)
-@UseModules(AthModule.class)
 public class CommitMessagesTest extends BaseTest{
     private Logger logger = Logger.getLogger(CommitMessagesTest.class);
 

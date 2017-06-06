@@ -31,8 +31,8 @@ import java.util.Properties;
 
 @Login
 @RunWith(ATHJUnitRunner.class)
-public class GithubCreationTest{
-    private Logger logger = Logger.getLogger(GithubCreationTest.class);
+public class GithubEditorTest {
+    private Logger logger = Logger.getLogger(GithubEditorTest.class);
 
     private Properties props = new Properties();
     private String token;
@@ -53,7 +53,8 @@ public class GithubCreationTest{
     @Inject @Rule
     public SSEClientRule sseClient;
 
-    @Inject EditorPage editorPage;
+    @Inject
+    EditorPage editorPage;
 
     /**
      * Cleans up repostory after the test has completed.
@@ -111,22 +112,16 @@ public class GithubCreationTest{
 
 
     /**
-     * This test tests the github creation flow.
+     * This test covers e2e usage of the editor.
      *
-     * Creates a github repo with a sameple Jenkinsfile
-     *
-     * TODO: Add PR coverage.
+     * Creates a blank github repo, and then uses editor to create a simple pipeline.
      */
     @Test
-    public void testGithubCreation() throws IOException {
-        URL jenkinsFileUrl = Resources.getResource(this.getClass(), "Jenkinsfile");
-        byte[] content = Resources.toByteArray(jenkinsFileUrl);
-        GHContentUpdateResponse updateResponse = ghRepository.createContent(content, "Jenkinsfile", "Jenkinsfile", "master");
-        ghRepository.createRef("refs/heads/branch1", updateResponse.getCommit().getSHA1());
-        logger.info("Created master and branch1 branches in " + repo);
-        ghRepository.createContent("hi there","newfile", "newfile", "branch1");
-
-        creationPage.createPipeline(token, organization, repo);
+    public void testEditor() throws IOException {
+        creationPage.createPipeline(token, organization, repo, true);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(Folder.folders(organization), repo);
+        editorPage.simplePipeline();
+        pipeline.getActivityPage().checkUrl();
+        sseClient.untilEvents(pipeline.buildsFinished);
     }
-
 }
