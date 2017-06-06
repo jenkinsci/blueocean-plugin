@@ -195,6 +195,32 @@ main {
     padding: 0;
 }
 
+.logConsole .result-item-title {
+    .result-item-expando {
+        flex-shrink: 0;
+    }
+
+    .result-item-extra-info {
+        flex-shrink: 0;
+        margin-left: 10px;
+    }
+
+    .result-item-label {
+        display: flex;
+
+        .result-item-label-desc {
+            max-height: 16px;
+            overflow: hidden;
+        }
+
+        .result-item-label-name {
+            color: #a4a4a4;
+            white-space: nowrap;
+            margin-left: 10px;
+        }
+    }
+}
+
 code div {
     font-size: 12px;
     margin: 5px;
@@ -372,6 +398,7 @@ a.pipelineRedirectLink svg {
             cursor: pointer;
             text-decoration: none;
             color: @gray-light;
+            white-space: nowrap;
         }
         a::before {
             content: counter(line-numbering);

@@ -113,7 +113,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     public BlueRun replay() {
         ReplayAction replayAction = run.getAction(ReplayAction.class);
         if(!isReplayable(replayAction)) {
-            throw new ServiceException.BadRequestExpception("This run does not support replay");
+            throw new ServiceException.BadRequestException("This run does not support replay");
         }
 
         Queue.Item item = replayAction.run2(replayAction.getOriginalScript(), replayAction.getOriginalLoadedScripts());

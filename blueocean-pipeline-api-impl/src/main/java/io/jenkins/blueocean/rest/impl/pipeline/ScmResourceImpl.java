@@ -43,7 +43,7 @@ public class ScmResourceImpl extends BluePipelineScm {
         if(scmContentProvider != null){
             return scmContentProvider.saveContent(staplerRequest, item);
         }
-        throw new ServiceException.BadRequestExpception("No scm content provider found for pipeline: " + item.getFullName());
+        throw new ServiceException.BadRequestException("No scm content provider found for pipeline: " + item.getFullName());
     }
 
     @Override
