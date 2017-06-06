@@ -1,5 +1,3 @@
-import AppConfig from '../config';
-
 /**
  * This object defines rest paths
  */
@@ -12,12 +10,15 @@ export default {
         return '/blue/rest';
     },
 
-    organizationPipelines(organizationName) {
-        return `${this.apiRoot()}/search/?q=type:pipeline;organization:${encodeURIComponent(organizationName)};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
-    },
+    pipelines(organizationName, searchText) {
+        const organization = organizationName ? `;organization:${encodeURIComponent(organizationName)}` : '';
+        let searchTextQuery = '';
 
-    allPipelines() {
-        return `${this.apiRoot()}/search/?q=type:pipeline;organization:${AppConfig.getOrganizationName()};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
+        if (searchText) {
+            searchTextQuery = ('*' + searchText + '*').replace(/\//g, '*/*').replace('**', '*');
+        }
+
+        return `${this.apiRoot()}/search/?q=type:pipeline${organization};pipeline:${encodeURIComponent(searchTextQuery)};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
     },
 
     runs(organization, pipeline, branch) {
