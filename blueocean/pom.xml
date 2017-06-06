@@ -95,7 +95,6 @@
           <artifactId>blueocean-pipeline-editor</artifactId>
         </dependency>
 
-
         <!-- Test deps -->
         <dependency>
             <groupId>${project.groupId}</groupId>

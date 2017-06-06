@@ -504,7 +504,6 @@
             <version>1.20</version>
         </dependency>
 
-
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.hamcrest</groupId>

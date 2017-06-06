@@ -39,6 +39,17 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-jwt</artifactId>
         </dependency>
+
+        <!--
+            Junit plugin loads structs 1.2 during mvn hpi:run for plugins depending on blueocean aggregator.
+            We tell mvn hpi:run to load later version of structs.
+
+            TODO: remove when junit plugin dependency is removed
+        -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>structs</artifactId>
+        </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>junit</artifactId>
@@ -49,11 +60,6 @@
         </dependency>
 
         <!-- Test plugins -->
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>structs</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>com.mashape.unirest</groupId>
             <artifactId>unirest-java</artifactId>
