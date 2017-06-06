@@ -10,6 +10,19 @@ import { prefixIfNeeded } from '../urls/prefixIfNeeded';
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Step');
 const timeManager = new TimeManager();
 
+function createStepLabel(step) {
+    const { displayName, displayDescription } = step;
+
+    if (displayDescription) {
+        return [
+            <span className="result-item-label-desc">{displayDescription}</span>,
+            <span className="result-item-label-name">&mdash; {displayName}</span>,
+        ];
+    }
+
+    return displayName;
+}
+
 @observer
 export class Step extends Component {
     constructor(props) {
@@ -137,13 +150,14 @@ export class Step extends Component {
             liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
             hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
         />);
+
         return (<div className={logConsoleClass}>
             <ResultItem {...{
                 extraInfo: time,
                 key: step.key,
                 result: step.computedResult.toLowerCase(),
                 expanded: isFocused,
-                label: step.title,
+                label: createStepLabel(step),
                 onCollapse: removeFocus,
                 onExpand: getLogForNode,
             }}
