@@ -17,10 +17,10 @@ const translate = i18nTranslator('blueocean-dashboard');
 
 @observer
 export class Pipelines extends Component {
-    updateSearchText = debounce(value => {
-        this.context.router.push(`${this.props.location.pathname}${updateGetParam('search', value, this.props.location.query)}`);
-    }, 200);
-
+    componentWillMount() {
+        this.setState({ searchText: this.getSearchText() });
+    }
+    
     onChange = value => {
         this.setState({ searchText: value });
         this.updateSearchText(value);
@@ -30,15 +30,15 @@ export class Pipelines extends Component {
         return this.props.location.query.search ? decodeURIComponent(this.props.location.query.search) : '';
     }
 
+    updateSearchText = debounce(value => {
+        this.context.router.push(`${this.props.location.pathname}${updateGetParam('search', value, this.props.location.query)}`);
+    }, 200);
+
     _initPager() {
         const org = this.props.params.organization ? this.props.params.organization : AppConfig.getOrganizationName();
         const searchText = this.getSearchText();
 
         this.pager = this.context.pipelineService.pipelinesPager(org, searchText);
-    }
-
-    componentWillMount() {
-        this.setState({ searchText: this.getSearchText() });
     }
 
     render() {
