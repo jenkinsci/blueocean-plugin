@@ -12,7 +12,7 @@ export default class Steps extends Component {
             return <QueuedState message={queuedMessage} />;
         }
         const { model } = nodeInformation;
-        return (<div>
+        return (<div className="Steps">
             { model.map((item) => <Step
                 { ...
                     { ...this.props,
