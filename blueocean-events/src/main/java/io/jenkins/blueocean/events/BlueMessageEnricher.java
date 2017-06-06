@@ -33,6 +33,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
+import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import org.jenkinsci.plugins.pubsub.EventProps;
 import org.jenkinsci.plugins.pubsub.Events;
@@ -78,11 +79,11 @@ public class BlueMessageEnricher extends MessageEnricher {
             }
 
             jobChannelMessage.set(BlueEventProps.blueocean_job_rest_url, jobUrl.getHref());
-            jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, jobChannelItem.getFullName());
+            jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, AbstractPipelineImpl.getFullName(org, jobChannelItem));
             if (jobChannelItem instanceof WorkflowJob) {
                 ItemGroup<? extends Item> parent = jobChannelItem.getParent();
                 if (parent instanceof WorkflowMultiBranchProject) {
-                    String multiBranchProjectName = parent.getFullName();
+                    String multiBranchProjectName = AbstractPipelineImpl.getFullName(org, (WorkflowMultiBranchProject)parent);
                     jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, multiBranchProjectName);
                     jobChannelMessage.set(BlueEventProps.blueocean_job_branch_name, jobChannelItem.getName());
                 }
