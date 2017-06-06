@@ -5,6 +5,7 @@ import { observer } from 'mobx-react';
 import { KaraokeService } from '../index';
 import LogConsole from './LogConsole';
 import InputStep from './InputStep';
+import { prefixIfNeeded } from '../urls/prefixIfNeeded';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Step');
 const timeManager = new TimeManager();
@@ -86,6 +87,7 @@ export class Step extends Component {
         const { data: logArray, hasMore } = this.pager.log || {};
         let children = null;
         if (logArray && !step.isInputStep) {
+            const currentLogUrl = prefixIfNeeded(this.pager.currentLogUrl);
             logger.debug('Updating children');
             children = (<LogConsole {...{
                 t,
@@ -94,6 +96,7 @@ export class Step extends Component {
                 hasMore,
                 scrollToBottom,
                 logArray,
+                currentLogUrl,
                 key: step.logUrl,
                 prefix: `step-${step.id}-`,
             }}

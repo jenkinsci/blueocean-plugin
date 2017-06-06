@@ -1,24 +1,20 @@
 package io.blueocean.ath;
 
 
-import com.google.common.collect.ContiguousSet;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Range;
-import com.google.common.collect.RangeSet;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.junit.JGitTestUtil;
 import org.eclipse.jgit.lib.Ref;
+import org.eclipse.jgit.revwalk.RevCommit;
 import org.junit.Rule;
 import org.junit.rules.ExternalResource;
 import org.junit.rules.TemporaryFolder;
 
-import javax.inject.Singleton;
 import javax.validation.constraints.NotNull;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.Files;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -29,14 +25,14 @@ public class GitRepositoryRule extends ExternalResource {
 
     public File gitDirectory;
 
-    public Git git;
+    public Git client;
 
     @Override
     protected void before() throws Throwable {
         temporaryFolder = new TemporaryFolder();
         temporaryFolder.create();
         gitDirectory = temporaryFolder.newFolder();
-        git = Git.init().setDirectory(gitDirectory).call();
+        client = Git.init().setDirectory(gitDirectory).call();
         logger.info("Created git repository at " + gitDirectory.getAbsolutePath());
 
     }
@@ -49,14 +45,34 @@ public class GitRepositoryRule extends ExternalResource {
     private Logger logger = Logger.getLogger(GitRepositoryRule.class);
 
     @NotNull
-    public List<Ref> createBranches(@NotNull  String prefix, int number) throws GitAPIException {
+    public List<Ref> createBranches(@NotNull String prefix, int number) throws GitAPIException {
         List<Ref> refs = Lists.newArrayList();
         for(int i = 1; i < number + 1; i++) {
-            Ref ref = git.branchCreate().setName(prefix + i).call();
+            Ref ref = client.branchCreate().setName(prefix + i).call();
             refs.add(ref);
         }
         logger.info("Created " + number + " branches " + prefix + "[1-" + (number + 1) + "]");
 
         return refs;
     }
+
+    public Ref createBranch(String branch) throws GitAPIException {
+        Ref ref = client.branchCreate().setName(branch).call();
+        logger.info("Created branch " + branch);
+        return ref;
+    }
+
+    public void writeJenkinsFile(String jenkinsFile) throws IOException {
+        JGitTestUtil.writeTrashFile(client.getRepository(), "Jenkinsfile", jenkinsFile);
+        logger.info("Wrote Jenkinsfile to git repository");
+    }
+
+    public RevCommit commit(String message) throws GitAPIException {
+        return client.commit().setMessage(message).call();
+    }
+
+    public void addAll() throws GitAPIException {
+        client.add().addFilepattern(".").call();
+    }
+
 }

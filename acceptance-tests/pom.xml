@@ -91,11 +91,6 @@
             <version>4.1.0</version>
         </dependency>
         <dependency>
-            <groupId>org.jukito</groupId>
-            <artifactId>jukito</artifactId>
-            <version>1.5</version>
-        </dependency>
-        <dependency>
             <groupId>com.github.eirslett</groupId>
             <artifactId>frontend-plugin-core</artifactId>
             <version>1.0</version>
