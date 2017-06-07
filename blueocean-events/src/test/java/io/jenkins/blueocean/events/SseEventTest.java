@@ -2,14 +2,19 @@ package io.jenkins.blueocean.events;
 
 import hudson.ExtensionList;
 import hudson.model.FreeStyleProject;
+import hudson.model.ItemGroup;
 import hudson.model.queue.QueueTaskFuture;
 import hudson.util.OneShotEvent;
 import io.jenkins.blueocean.events.sse.SSEConnection;
-import io.jenkins.blueocean.rest.model.scm.GitSampleRepoRule;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
+import io.jenkins.blueocean.service.embedded.OrganizationFactoryImpl;
+import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
+import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
+import jenkins.plugins.git.GitSampleRepoRule;
 import jenkins.scm.api.SCMSource;
 import org.jenkinsci.plugins.pubsub.ChannelSubscriber;
 import org.jenkinsci.plugins.pubsub.Message;
@@ -25,9 +30,13 @@ import org.jenkinsci.plugins.workflow.support.steps.input.InputStepExecution;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.MockFolder;
+import org.jvnet.hudson.test.TestExtension;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeoutException;
@@ -356,6 +365,73 @@ public class SseEventTest {
         }
     }
 
+    @Test
+    public void multiBranchJobEventsWithCustomOrg() throws Exception {
+        MockFolder folder = j.createFolder("TestOrgFolderName");
+        assertNotNull(folder);
+
+        setupScm();
+
+        final OneShotEvent success = new OneShotEvent();
+
+        final Boolean[] pipelineNameMatched = {null};
+        final Boolean[] mbpPipelineNameMatched = {null};
+
+        SSEConnection con = new SSEConnection(j.getURL(), "me", new ChannelSubscriber() {
+            @Override
+            public void onMessage(@Nonnull Message message) {
+                System.out.println(message);
+                if("job".equals(message.get(jenkins_channel))) {
+                    if ("org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject".equals(message.get(jenkins_object_type))) {
+                        if("pipeline1".equals(message.get(blueocean_job_pipeline_name))) {
+                            mbpPipelineNameMatched[0] = true;
+                        }else{
+                            mbpPipelineNameMatched[0] = false;
+                        }
+                    } else if ("org.jenkinsci.plugins.workflow.job.WorkflowJob".equals(message.get(jenkins_object_type))) {
+                        if("pipeline1".equals(message.get(blueocean_job_pipeline_name))) {
+                            pipelineNameMatched[0] = true;
+                        }else {
+                            pipelineNameMatched[0] = false;
+                        }
+                    }
+                }
+                if(pipelineNameMatched[0] != null && mbpPipelineNameMatched[0] != null){
+                    success.signal();
+                }
+            }
+        });
+        con.subscribe("pipeline");
+        con.subscribe("job");
+
+        final WorkflowMultiBranchProject mp = folder.createProject(WorkflowMultiBranchProject.class, "pipeline1");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+                new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        mp.scheduleBuild2(0).getFuture().get();
+
+        WorkflowJob p = mp.getItem("master");
+        if (p == null) {
+            mp.getIndexing().writeWholeLogTo(System.out);
+            fail("master project not found");
+        }
+        j.waitUntilNoActivity();
+        WorkflowRun b1 = p.getLastBuild();
+        assertEquals(1, b1.getNumber());
+        assertEquals(2, mp.getItems().size());
+
+        success.block(5000);
+        con.close();
+        if(success.isSignaled()) {
+            assertTrue(pipelineNameMatched[0]);
+            assertTrue(mbpPipelineNameMatched[0]);
+        }
+    }
+
+
     private void setupScm() throws Exception {
         // create git repo
         sampleRepo.init();
@@ -379,5 +455,39 @@ public class SseEventTest {
         sampleRepo.write("file", "subsequent content1");
         sampleRepo.git("commit", "--all", "--message=tweaked1");
     }
+
+
+    @TestExtension(value = "multiBranchJobEventsWithCustomOrg")
+    public static class TestOrganizationFactoryImpl extends OrganizationFactoryImpl {
+        private OrganizationImpl instance = new OrganizationImpl("TestOrg", Jenkins.getInstance().getItem("/TestOrgFolderName", Jenkins.getInstance(), MockFolder.class));
+
+        @Override
+        public OrganizationImpl get(String name) {
+            if (instance != null) {
+                if (instance.getName().equals(name)) {
+                    System.out.println("" + name + " Intance returned " + instance);
+                    return instance;
+                }
+            }
+            System.out.println("" + name + " no instance found");
+            return null;
+        }
+
+        @Override
+        public Collection<BlueOrganization> list() {
+            return Collections.singleton((BlueOrganization) instance);
+        }
+
+        @Override
+        public OrganizationImpl of(ItemGroup group) {
+            if (group == instance.getGroup() || group == Jenkins.getInstance()) {
+                return instance;
+            }
+            return null;
+        }
+    }
+
+
+
 
 }

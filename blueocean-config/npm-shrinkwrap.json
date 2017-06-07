@@ -9,15 +9,15 @@
       "dev": true
     },
     "@jenkins-cd/js-builder": {
-      "version": "0.0.57",
-      "from": "@jenkins-cd/js-builder@0.0.57",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.57.tgz",
+      "version": "0.0.59",
+      "from": "@jenkins-cd/js-builder@0.0.59",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.59.tgz",
       "dev": true
     },
     "@jenkins-cd/js-modules": {
-      "version": "0.0.8",
-      "from": "@jenkins-cd/js-modules@0.0.8",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.8.tgz"
+      "version": "0.0.10",
+      "from": "@jenkins-cd/js-modules@0.0.10",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.10.tgz"
     },
     "acorn": {
       "version": "1.2.2",

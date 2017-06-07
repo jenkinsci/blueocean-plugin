@@ -46,7 +46,7 @@ public class Utils {
                     String.format("Unknown type %s", type));
             }
         }catch (NumberFormatException e){
-            throw new ServiceException.BadRequestExpception(
+            throw new ServiceException.BadRequestException(
                 String.format("Value %s can't be converted to type: %s", value, type));
         }
     }

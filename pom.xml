@@ -10,7 +10,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.1.0-beta-5-SNAPSHOT</version>
+  <version>1.2.0-beta-1-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean Parent</name>
@@ -31,11 +31,14 @@
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
+    <jenkins-test-harness.version>2.15</jenkins-test-harness.version>
+    <scm-api.version>2.1.1</scm-api.version>
+    <git.version>3.3.0</git.version>
   </properties>
 
   <scm>
-    <connection>scm:git:ssh://github.com/jenkinsci/blueocean-plugin.git</connection>
-    <developerConnection>scm:git:ssh://git@github.com/jenkinsci/blueocean-plugin.git</developerConnection>
+    <connection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</connection>
+    <developerConnection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/blueocean-plugin</url>
     <tag>HEAD</tag>
   </scm>
@@ -272,7 +275,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-autofavorite</artifactId>
-            <version>0.7</version>
+            <version>1.0.0</version>
         </dependency>
 
         <!-- TODO: should be moved out of blueocean repo as separate plugin -->
@@ -301,37 +304,43 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-cps</artifactId>
-            <version>2.29</version>
+            <version>2.34</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-api</artifactId>
-            <version>2.13</version>
+            <version>2.17</version>
         </dependency>
+
+        <!--
+            workflow-job >= 2.12 requires a Jenkins core >= 2.60.
+            Do not upgrade this dependency without a discussion on jenkinsci-ux@googlegroups.com
+        -->
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-job</artifactId>
-            <version>2.10</version>
+            <version>2.11</version>
         </dependency>
+
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-graph-analysis</artifactId>
-            <version>1.3</version>
+            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-branch-source</artifactId>
-            <version>2.0.5</version>
+            <version>2.0.6</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-multibranch</artifactId>
-            <version>2.14</version>
+            <version>2.15</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-step-api</artifactId>
-            <version>2.9</version>
+            <version>2.11</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -346,7 +355,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-basic-steps</artifactId>
-            <version>2.4</version>
+            <version>2.5</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -383,12 +392,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>scm-api</artifactId>
-            <version>2.1.1</version>
+            <version>${scm-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>git</artifactId>
-            <version>3.3.0</version>
+            <version>${git.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -408,7 +417,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>matrix-project</artifactId>
-            <version>1.10</version>
+            <version>1.11</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.main</groupId>
@@ -419,7 +428,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>structs</artifactId>
-            <version>1.6</version>
+            <version>1.7</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -434,7 +443,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>metrics</artifactId>
-            <version>3.1.2.9</version>
+            <version>3.1.2.10</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -462,6 +471,11 @@
             <version>2.6</version>
         </dependency>
         <dependency>
+            <groupId>oro</groupId>
+            <artifactId>oro</artifactId>
+            <version>2.0.8</version>
+        </dependency>
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
             <version>${jackson.version}</version>
@@ -474,12 +488,12 @@
         <dependency>
             <groupId>org.bitbucket.b_c</groupId>
             <artifactId>jose4j</artifactId>
-            <version>0.5.5</version>
+            <version>0.5.6</version>
         </dependency>
         <dependency>
             <groupId>org.jvnet.hudson.plugins</groupId>
             <artifactId>favorite</artifactId>
-            <version>2.0.4</version>
+            <version>2.2.0</version>
         </dependency>
         <dependency>
           <groupId>io.jenkins.blueocean</groupId>
@@ -541,7 +555,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>async-http-client</artifactId>
-            <version>1.7.8</version>
+            <version>1.7.24.1</version>
             <scope>test</scope>
         </dependency>
 
@@ -575,6 +589,21 @@
             <artifactId>org.eclipse.sisu.plexus</artifactId>
             <version>0.1.0</version>
         </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>git</artifactId>
+            <classifier>tests</classifier>
+            <version>${git.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>scm-api</artifactId>
+            <version>${scm-api.version}</version>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
   </dependencyManagement>
 
@@ -638,9 +667,6 @@
                               <goal>check</goal>
                           </goals>
                           <configuration>
-                              <excludes>
-                                  <exclude>io/jenkins/blueocean/commons/stapler/export/**/*</exclude>
-                              </excludes>
                               <rules>
                                   <rule>
                                       <element>BUNDLE</element>

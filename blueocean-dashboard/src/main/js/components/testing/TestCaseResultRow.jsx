@@ -22,7 +22,7 @@ export default class TestCaseResultRow extends Component {
     }
 
     render() {
-        const { testCase: t, translation, locale = 'en', testService } = this.props;
+        const { testCase: t, translation, locale = 'en' } = this.props;
         moment.locale(locale);
         const duration = moment.duration(Number(t.duration), 'milliseconds').humanize();
         const showTestCase = (t.errorStackTrace || t.errorDetails || this.stdout || this.stderr);

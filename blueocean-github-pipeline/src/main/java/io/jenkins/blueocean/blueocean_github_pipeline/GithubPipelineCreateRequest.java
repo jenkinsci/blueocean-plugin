@@ -60,8 +60,8 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
     private static final Logger logger = LoggerFactory.getLogger(GithubPipelineCreateRequest.class);
 
     @DataBoundConstructor
-    public GithubPipelineCreateRequest(String name, String organization, BlueScmConfig scmConfig) {
-        super(name, organization, scmConfig);
+    public GithubPipelineCreateRequest(String name, BlueScmConfig scmConfig) {
+        super(name, scmConfig);
     }
 
     @SuppressWarnings("unchecked")
@@ -111,7 +111,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
                     //add the properties otherwise simply use it
                     Domain domain = CredentialsUtils.findDomain(credentialId, authenticatedUser);
                     if(domain == null){ //this should not happen since validateCredentialId found the credential
-                        throw new ServiceException.BadRequestExpception(
+                        throw new ServiceException.BadRequestException(
                                 new ErrorMessage(400, "Failed to create pipeline")
                                         .add(new ErrorMessage.Error("scm.credentialId",
                                                 ErrorMessage.Error.ErrorCodes.INVALID.toString(),
@@ -322,7 +322,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
         if (credentialId != null && !credentialId.trim().isEmpty()) {
             StandardUsernamePasswordCredentials credentials = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
             if (credentials == null) {
-                throw new ServiceException.BadRequestExpception(new ErrorMessage(400, "Failed to create Github pipeline")
+                throw new ServiceException.BadRequestException(new ErrorMessage(400, "Failed to create Github pipeline")
                         .add(new ErrorMessage.Error("scmConfig.credentialId",
                                 ErrorMessage.Error.ErrorCodes.NOT_FOUND.toString(),
                                 "No Credentials instance found for credentialId: "+credentialId)));

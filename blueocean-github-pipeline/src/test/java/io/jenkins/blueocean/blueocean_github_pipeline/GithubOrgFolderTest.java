@@ -45,7 +45,6 @@ public class GithubOrgFolderTest extends GithubMockBase {
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", orgFolderName,
-                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
                                 ImmutableMap.of("repos", ImmutableList.of("PR-demo"), "orgName","cloudbeers"),
@@ -77,7 +76,6 @@ public class GithubOrgFolderTest extends GithubMockBase {
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", "cloudbeers",
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
-                        "organization", "jenkins",
                         "scmConfig", ImmutableMap.of("config",
                                 ImmutableMap.of("repos", ImmutableList.of("PR-demo")),
                                 "credentialId", credentialId,
@@ -106,7 +104,6 @@ public class GithubOrgFolderTest extends GithubMockBase {
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", orgFolderName,
-                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
                                 ImmutableMap.of("repos", ImmutableList.of("PR-demo")),
@@ -131,7 +128,6 @@ public class GithubOrgFolderTest extends GithubMockBase {
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", orgFolderName,
-                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",ImmutableMap.of(
                                 "credentialId", credentialId,
@@ -151,7 +147,6 @@ public class GithubOrgFolderTest extends GithubMockBase {
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", orgFolderName,
-                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
                                 ImmutableMap.of("repos", ImmutableList.of("PR-demo")),
@@ -172,11 +167,12 @@ public class GithubOrgFolderTest extends GithubMockBase {
         assertTrue((Boolean) repo.get("meetsScanCriteria"));
 
         resp = new RequestBuilder(baseUrl)
-                .status(200)
+                .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .put("/organizations/jenkins/pipelines/"+orgFolderName+"/")
+                .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", orgFolderName,
-                        "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineUpdateRequest",
+                        "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
+                        "organization","jenkins",
                         "scmConfig", ImmutableMap.of("config",
                                 ImmutableMap.of("repos", ImmutableList.of("PR-demo")),
                                 "credentialId", credentialId,
