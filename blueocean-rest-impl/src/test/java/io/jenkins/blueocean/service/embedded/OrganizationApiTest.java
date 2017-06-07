@@ -26,7 +26,7 @@ public class OrganizationApiTest extends BaseTest {
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@example.com"));
 
-        List users = request().jwtToken(getJwtToken(j.jenkins,"alice", "alice")).get("/organizations/jenkins/users/").build(List.class);
+        List users = request().authAlice().get("/organizations/jenkins/users/").build(List.class);
 
         Assert.assertEquals(users.size(), 1);
         Map aliceMap = (Map) users.get(0);
@@ -41,7 +41,7 @@ public class OrganizationApiTest extends BaseTest {
         hudson.model.User alice = j.jenkins.getUser("alice");
         alice.setFullName("Alice Cooper");
 
-        Map organization = request().jwtToken(getJwtToken(j.jenkins,"alice", "alice")).get("/organizations/jenkins/").build(Map.class);
+        Map organization = request().authAlice().get("/organizations/jenkins/").build(Map.class);
         assertEquals("Jenkins", organization.get("displayName"));
         assertEquals("jenkins", organization.get("name"));
     }
