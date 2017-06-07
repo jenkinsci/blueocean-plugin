@@ -44,17 +44,24 @@
                 <st:include it="${pd}" page="header.jelly" optional="true" />
             </j:forEach>
             <style type="text/css">
+                html {overflow-y: scroll;}
                 #loadbar{background:#4A90E2;height:5px;width:0;position:fixed;top:0;left:0;opacity:1;z-index:10000}
                 .loadbar-light #loadbar{background:#fff;transition:background-color .1s}
                 #loadbar.go{transition:width 1s ease-in;width:40%}
                 #loadbar.go.long{transition: all 5s ease-out;width:70%}
                 #loadbar.go.long.longer{transition: all 60s ease-out;width:95%}
                 #loadbar.go.complete.complete.complete{transition: all .5s ease-out;width:100%;opacity:0;}
+                #loadbar .font-loader-text{visibility: hidden; height: 0;}
             </style>
         </head>
 
         <body>
-            <div id="loadbar"></div>
+            <div id="loadbar">
+                <div class="font-loader-text">
+                    loading
+                    <h1>BlueOcean</h1>
+                </div>
+            </div>
             <script>
                 window.isDevelopmentMode = ${it.developmentMode};
                 function lb(c,t){setTimeout(function(){document.getElementById('loadbar').classList.add(c)},t)}
