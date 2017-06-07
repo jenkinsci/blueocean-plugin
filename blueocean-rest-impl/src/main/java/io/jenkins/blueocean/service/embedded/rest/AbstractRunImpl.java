@@ -103,6 +103,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public BlueRunResult getResult() {
+        // A runs result is always unknown until it has finished running
         if (getStateObj() == BlueRunState.RUNNING) {
             return BlueRunResult.UNKNOWN;
         } else {
