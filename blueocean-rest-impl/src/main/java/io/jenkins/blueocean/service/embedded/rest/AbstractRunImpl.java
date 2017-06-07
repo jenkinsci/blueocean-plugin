@@ -103,8 +103,12 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public BlueRunResult getResult() {
-        Result result = run.getResult();
-        return result != null ? BlueRunResult.valueOf(result.toString()) : BlueRunResult.UNKNOWN;
+        if (getStateObj() == BlueRunState.RUNNING) {
+            return BlueRunResult.UNKNOWN;
+        } else {
+            Result result = run.getResult();
+            return result != null ? BlueRunResult.valueOf(result.toString()) : BlueRunResult.UNKNOWN;
+        }
     }
 
 
