@@ -1,7 +1,3 @@
-html {
-    overflow-y: scroll;
-}
-
 #modal-snap-background {
     position: fixed;
     top: 0;
@@ -197,6 +193,32 @@ main {
     background-color: @pre-bg;
     border: none;
     padding: 0;
+}
+
+.logConsole .result-item-title {
+    .result-item-expando {
+        flex-shrink: 0;
+    }
+
+    .result-item-extra-info {
+        flex-shrink: 0;
+        margin-left: 10px;
+    }
+
+    .result-item-label {
+        display: flex;
+
+        .result-item-label-desc {
+            max-height: 16px;
+            overflow: hidden;
+        }
+
+        .result-item-label-name {
+            color: #a4a4a4;
+            white-space: nowrap;
+            margin-left: 10px;
+        }
+    }
 }
 
 code div {
@@ -403,4 +425,8 @@ a.pipelineRedirectLink svg {
     label {
         font-weight: bold;
     }
+}
+
+.no-search-results-container {
+    text-align: center;
 }
