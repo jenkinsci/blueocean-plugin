@@ -137,7 +137,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         Assert.assertEquals(m.get("artifactsZipFile"), "/job/artifactTest/1/artifact/*zip*/archive.zip");
     }
 
-    @Test(timeout = 10000)
+    @Test(timeout = 20000)
     @Issue("JENKINS-44736")
     public void earlyUnstableStatusShouldReportPunStateAsRunningAndResultAsUnknown() throws Exception {
         WorkflowJob p = j.createProject(WorkflowJob.class, "project");
