@@ -1,11 +1,11 @@
 import AppConfig from '../config';
 
-function jobPrefixPath(organization) {
-    // custom organization
-    if (organization !== 'undefined' && organization !== 'jenkins') {
-        return `/job/${organization}/job/`;
+function jobPrefixPath(organizationGroup) {
+    // organizationGroup is either full name of organization. e.g. /folder1/folder2/ or "/" in case of root Jenkins
+    if (organizationGroup) {
+        return `${organizationGroup.split('/').join('/job/')}`;
     }
-    return '/job/';
+    return '';
 }
 
 /**
@@ -31,7 +31,7 @@ export const buildPipelineUrl = (organization, fullName, tabName) => {
 
 export const rootPath = (name) => {
     const jenkinsUrl = AppConfig.getJenkinsRootURL();
-    return `${jenkinsUrl}${jobPrefixPath(AppConfig.getOrganizationName())}${name.split('/').join('/job/')}/`;
+    return `${jenkinsUrl}${jobPrefixPath(AppConfig.getOrganizationGroup())}/job/${name.split('/').join('/job/')}/`;
 };
 
 export const buildClassicConfigUrl = (pipeline) => {
@@ -274,7 +274,7 @@ export function toClassicJobPage(pageUrl, isMultibranch = false) {
     while (token !== undefined && token !== 'organizations') {
         token = pageUrlTokens.shift();
     }
-
+    let classicJobFullName = jobPrefixPath(AppConfig.getOrganizationGroup());
     if (pageUrlTokens.length > 1) {
         // The next token is the actual organization name e.g. "jenkins".
         // Remove that since we don't need it.
@@ -283,14 +283,9 @@ export function toClassicJobPage(pageUrl, isMultibranch = false) {
         // The next token is the "full" job name, URL encoded.
         const fullJobName = decodeURIComponent(pageUrlTokens.shift());
         const fullJobNameTokens = fullJobName.split('/');
-        const classicJobFullName = jobPrefixPath(AppConfig.getOrganizationName()) + fullJobNameTokens.join('/job/');
-
-        // map to job only after there is token after pipelines. For example /organizations/jenkins/pipelines/p1
-        // can be mapped to /job/p1 but /organizations/jenkins/pipelines/ should be mapped to classic dashboard '/'
-        if (fullJobName === 'pipelines' && pageUrlTokens.length === 0) {
-            return undefined;
+        if (fullJobName !== 'pipelines' && pageUrlTokens.length > 0) {
+            classicJobFullName = classicJobFullName + '/job/' + fullJobNameTokens.join('/job/');
         }
-
         if (pageUrlTokens.length > 1) {
             // The next token being "detail" indicates that we're looking
             // at a branch.
@@ -322,9 +317,7 @@ export function toClassicJobPage(pageUrl, isMultibranch = false) {
                 }
             }
         }
-
-        return classicJobFullName;
     }
 
-    return undefined;
+    return classicJobFullName;
 }
