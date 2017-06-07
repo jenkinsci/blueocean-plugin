@@ -1,8 +1,11 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.io.Resources;
 import hudson.model.Result;
+import hudson.model.Run;
 import hudson.model.queue.QueueTaskFuture;
 import hudson.util.RunList;
 import jenkins.branch.BranchSource;
@@ -23,8 +26,10 @@ import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
 
 import java.io.IOException;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -45,6 +50,31 @@ public class PipelineNodeTest extends PipelineBaseTest {
     @BeforeClass
     public static void setupStatic() throws Exception {
         System.setProperty("NODE-DUMP-ENABLED", "true");//tests node dump code path, also helps debug test failure
+    }
+
+    @Test
+    @Issue("JENKINS-44742")
+    public void successfulStepWithBlockFailureAfterward() throws Exception {
+        WorkflowJob p = j.createProject(WorkflowJob.class, "project");
+
+        URL resource = Resources.getResource(getClass(), "successfulStepWithBlockFailureAfterward.jenkinsfile");
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+        p.save();
+
+        Run r = p.scheduleBuild2(0).waitForStart();
+
+        j.waitForCompletion(r);
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/project/runs/" + r.getId() + "/steps/", List.class);
+
+        Map firstStep = resp.get(0);
+        Assert.assertEquals("SUCCESS", firstStep.get("result"));
+        Assert.assertEquals("FINISHED", firstStep.get("state"));
+
+        Map secondStep = resp.get(1);
+        Assert.assertEquals("FAILURE", secondStep.get("result"));
+        Assert.assertEquals("FINISHED", secondStep.get("state"));
     }
 
     //TODO: Enable this test if there is way to determine when test starts running and not waiting till launched

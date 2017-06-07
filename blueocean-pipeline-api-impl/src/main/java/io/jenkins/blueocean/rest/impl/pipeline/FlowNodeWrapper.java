@@ -1,5 +1,7 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import io.jenkins.blueocean.rest.model.BlueRun.BlueRunResult;
+import io.jenkins.blueocean.rest.model.BlueRun.BlueRunState;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.graph.AtomNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -78,6 +80,9 @@ public class FlowNodeWrapper {
     }
 
     public @Nonnull NodeRunStatus getStatus(){
+        if (hasBlockError()) {
+            return new NodeRunStatus(BlueRunResult.FAILURE, BlueRunState.FINISHED);
+        }
         return status;
     }
 
