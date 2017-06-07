@@ -14,7 +14,7 @@
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.36",
+      "version": "0.0.36"
       "from": "@jenkins-cd/js-extensions@0.0.37-nicu-beta2",
       "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.37-nicu-beta2.tgz"
     },
