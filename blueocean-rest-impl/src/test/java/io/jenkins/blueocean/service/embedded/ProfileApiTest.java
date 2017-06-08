@@ -13,6 +13,7 @@ import org.acegisecurity.adapters.PrincipalAcegiUserToken;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UserDetails;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestExtension;
@@ -353,7 +354,8 @@ public class ProfileApiTest extends BaseTest{
             .build(Map.class); //sends jwt token for anonymous user
     }
 
-    //@Test
+    @Ignore
+    @Test
     public void badTokenTest1() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
         new RequestBuilder(baseUrl)
@@ -364,8 +366,8 @@ public class ProfileApiTest extends BaseTest{
 
     }
 
-
-    //@Test
+    @Ignore
+    @Test
     public void badTokenTest2() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
         new RequestBuilder(baseUrl)
