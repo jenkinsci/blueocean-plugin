@@ -153,10 +153,6 @@ public class FlowNodeWrapper {
         return node.hashCode();
     }
 
-    ErrorAction getBlockErrorAction() {
-        return blockErrorAction;
-    }
-
     boolean hasBlockError(){
         return blockErrorAction != null
                 && blockErrorAction.getError() != null;
