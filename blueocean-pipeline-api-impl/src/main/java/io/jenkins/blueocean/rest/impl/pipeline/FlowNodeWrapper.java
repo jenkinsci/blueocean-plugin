@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import hudson.model.Result;
 import io.jenkins.blueocean.rest.model.BlueRun.BlueRunResult;
 import io.jenkins.blueocean.rest.model.BlueRun.BlueRunState;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
@@ -7,6 +8,7 @@ import org.jenkinsci.plugins.workflow.graph.AtomNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.TimingInfo;
+import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
 
 import javax.annotation.CheckForNull;
@@ -79,8 +81,9 @@ public class FlowNodeWrapper {
         throw new IllegalArgumentException(String.format("Unknown FlowNode %s, type: %s",node.getId(),node.getClass()));
     }
 
-    public @Nonnull NodeRunStatus getStatus(){
-        if (hasBlockError()) {
+    public @Nonnull NodeRunStatus getStatus() {
+        // Do not count block errors that are aborts
+        if (hasBlockError() && !isBlockErrorInterruptedWithAbort()) {
             return new NodeRunStatus(BlueRunResult.FAILURE, BlueRunState.FINISHED);
         }
         return status;
@@ -169,6 +172,17 @@ public class FlowNodeWrapper {
             return errorAction.getError().getMessage();
         }
         return null;
+    }
+
+    boolean isBlockErrorInterruptedWithAbort() {
+        if (hasBlockError()) {
+            Throwable error = blockErrorAction.getError();
+            if (error instanceof FlowInterruptedException) {
+                FlowInterruptedException interrupted = (FlowInterruptedException)error;
+                return interrupted.getResult().equals(Result.ABORTED);
+            }
+        }
+        return false;
     }
 
     boolean isLoggable(){

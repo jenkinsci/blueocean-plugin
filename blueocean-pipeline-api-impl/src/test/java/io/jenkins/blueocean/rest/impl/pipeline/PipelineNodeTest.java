@@ -170,8 +170,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
     }
 
-    //JENKINS-39296
     @Test
+    @Issue("JENKINS-39296")
     public void stepStatusForFailedBuild() throws Exception{
         String p = "node {\n" +
                 "   echo 'Hello World'\n" +
@@ -179,7 +179,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
                 "    echo 'Inside try'\n" +
                 "    sh 'this should fail'" +
                 "   }finally{\n" +
-                "    sh 'echo \"blah\"' \n" +
+                "    echo 'this should pass'\n" +
                 "   }\n" +
                 "}";
 
@@ -193,16 +193,29 @@ public class PipelineNodeTest extends PipelineBaseTest {
         List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
         Assert.assertEquals(resp.size(),4);
 
-        for(int i=0; i< resp.size();i++) {
-            Map rn = resp.get(i);
-            if(i==2){
-                Assert.assertEquals("FAILURE", rn.get("result"));
-            }else {
-                Assert.assertEquals("SUCCESS", rn.get("result"));
-            }
-            Assert.assertEquals("FINISHED", rn.get("state"));
-        }
+        Map helloWorldStep = resp.get(0);
 
+        Assert.assertEquals("Hello World", helloWorldStep.get("displayDescription"));
+        Assert.assertEquals("SUCCESS", helloWorldStep.get("result"));
+        Assert.assertEquals("FINISHED", helloWorldStep.get("state"));
+
+        Map insideTryStep = resp.get(1);
+
+        Assert.assertEquals("Inside try", insideTryStep.get("displayDescription"));
+        Assert.assertEquals("SUCCESS", insideTryStep.get("result"));
+        Assert.assertEquals("FINISHED", insideTryStep.get("state"));
+
+        Map thisShouldFailStep = resp.get(2);
+
+        Assert.assertEquals("this should fail", thisShouldFailStep.get("displayDescription"));
+        Assert.assertEquals("FAILURE", thisShouldFailStep.get("result"));
+        Assert.assertEquals("FINISHED", thisShouldFailStep.get("state"));
+
+        Map thisShouldPassStep = resp.get(3);
+
+        Assert.assertEquals("this should pass", thisShouldPassStep.get("displayDescription"));
+        Assert.assertEquals("SUCCESS", thisShouldPassStep.get("result"));
+        Assert.assertEquals("FINISHED", thisShouldPassStep.get("state"));
     }
 
     @Test
