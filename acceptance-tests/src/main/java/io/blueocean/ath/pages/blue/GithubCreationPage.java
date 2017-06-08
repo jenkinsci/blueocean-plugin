@@ -23,22 +23,22 @@ public class GithubCreationPage {
         PageFactory.initElements(driver, this);
     }
 
-    @FindBy(xpath = "//span[text()='Github']")
+    @FindBy(css = "button.github-creation")
     public WebElement githubCreationBtn;
 
-    @FindBy(css = "input[placeholder='Your Github access token']")
+    @FindBy(css = ".text-token input")
     public WebElement apiKeyInput;
 
-    @FindBy(css = "button.Button.button-connect")
+    @FindBy(css = ".button-connect")
     public WebElement connectButton;
 
-    @FindBy(xpath = "//p[text()='Create a Pipeline from a single repository.']")
+    @FindBy(css = ".button-single-repo")
     public WebElement singlePipelineBtn;
 
-    @FindBy(css = "input[placeholder='Search...']")
+    @FindBy(css = ".repo-list input")
     public WebElement pipelineSearchInput;
 
-    @FindBy(css = "button.button-create")
+    @FindBy(css = ".button-create")
     public WebElement createBtn;
 
     @Inject

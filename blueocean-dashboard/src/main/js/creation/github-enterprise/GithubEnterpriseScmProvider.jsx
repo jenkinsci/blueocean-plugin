@@ -12,7 +12,7 @@ export default class GithubEnterpriseScmProvider extends GithubScmProvider {
     manager = null;
 
     getDefaultOption() {
-        return <GithubDefaultOption label="GitHub Enterprise" />;
+        return <GithubDefaultOption className="github-enterprise-creation" label="GitHub Enterprise" />;
     }
 
     getFlowManager() {

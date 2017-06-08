@@ -45,14 +45,14 @@ export default class GithubChooseDiscoverStep extends React.Component {
                 { /* existing && <p className="instructions">{existing}</p> */ }
 
                 <div className="toggle layout-large">
-                    <button className={`monochrome ${option1Class}`} onClick={() => this.selectDiscover(false)}>
+                    <button className={`button-single-repo monochrome ${option1Class}`} onClick={() => this.selectDiscover(false)}>
                         <h1 className="title">New Pipeline <span>&mdash; Recommended</span></h1>
                         <p className="text">
                             Create a Pipeline from a single repository.
                         </p>
                     </button>
 
-                    <button className={`monochrome ${option2Class}`} onClick={() => this.selectDiscover(true)}>
+                    <button className={`button-auto-discover monochrome ${option2Class}`} onClick={() => this.selectDiscover(true)}>
                         <h1 className="title">Auto-discover Jenkinsfiles <span>&mdash; Advanced</span></h1>
                         <p className="text">
                             Create Pipelines for any repository in this organization that contain a <em>Jenkinsfile</em>.
