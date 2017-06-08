@@ -1,4 +1,19 @@
 import AppConfig from '../config';
+
+/**
+ * Gives classic jenkins job path prefix.
+ * For organization group '/folder1/org1', job prefix is: /job/folder1/job/org1
+ * For root organization group '/', there is no prefix: ''.
+ * @param organizationGroup organization group
+ * @returns {string}
+ */
+function jobPrefixPath(organizationGroup) {
+    if (organizationGroup && organizationGroup !== '/') {
+        return `${organizationGroup.split('/').join('/job/')}`;
+    }
+    return '';
+}
+
 /**
  * Build a root-relative URL to the organization's pipeline list screen.
  * @param organization
@@ -22,7 +37,7 @@ export const buildPipelineUrl = (organization, fullName, tabName) => {
 
 export const rootPath = (name) => {
     const jenkinsUrl = AppConfig.getJenkinsRootURL();
-    return `${jenkinsUrl}/job/${name.split('/').join('/job/')}/`;
+    return `${jenkinsUrl}${jobPrefixPath(AppConfig.getOrganizationGroup())}/job/${name.split('/').join('/job/')}/`;
 };
 
 export const buildClassicConfigUrl = (pipeline) => {
@@ -265,7 +280,7 @@ export function toClassicJobPage(pageUrl, isMultibranch = false) {
     while (token !== undefined && token !== 'organizations') {
         token = pageUrlTokens.shift();
     }
-
+    let classicJobFullName = jobPrefixPath(AppConfig.getOrganizationGroup());
     if (pageUrlTokens.length > 1) {
         // The next token is the actual organization name e.g. "jenkins".
         // Remove that since we don't need it.
@@ -274,14 +289,9 @@ export function toClassicJobPage(pageUrl, isMultibranch = false) {
         // The next token is the "full" job name, URL encoded.
         const fullJobName = decodeURIComponent(pageUrlTokens.shift());
         const fullJobNameTokens = fullJobName.split('/');
-        const classicJobFullName = '/job/' + fullJobNameTokens.join('/job/');
-
-        // map to job only after there is token after pipelines. For example /organizations/jenkins/pipelines/p1
-        // can be mapped to /job/p1 but /organizations/jenkins/pipelines/ should be mapped to classic dashboard '/'
-        if (fullJobName === 'pipelines' && pageUrlTokens.length === 0) {
-            return undefined;
+        if (fullJobName !== 'pipelines' && pageUrlTokens.length > 0) {
+            classicJobFullName = classicJobFullName + '/job/' + fullJobNameTokens.join('/job/');
         }
-
         if (pageUrlTokens.length > 1) {
             // The next token being "detail" indicates that we're looking
             // at a branch.
@@ -313,9 +323,7 @@ export function toClassicJobPage(pageUrl, isMultibranch = false) {
                 }
             }
         }
-
-        return classicJobFullName;
     }
 
-    return undefined;
+    return classicJobFullName;
 }
