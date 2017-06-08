@@ -31,7 +31,7 @@ export class Pipelines extends Component {
     }
 
     updateSearchText = debounce(value => {
-        this.context.router.push(`${this.props.location.pathname}${updateGetParam('search', value, this.props.location.query)}`);
+        this.context.router.push(`${this.props.location.pathname}${updateGetParam('search', encodeURIComponent(value), this.props.location.query)}`);
     }, 200);
 
     _initPager() {
