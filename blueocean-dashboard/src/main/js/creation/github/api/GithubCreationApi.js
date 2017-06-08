@@ -18,14 +18,15 @@ export const ListOrganizationsOutcome = new Enum({
  */
 export class GithubCreationApi {
 
-    constructor(fetch) {
-        this._fetch = fetch || Fetch.fetchJSON;
+    constructor(scmId) {
+        this._fetch = Fetch.fetchJSON;
         this.organization = AppConfig.getOrganizationName();
+        this.scmId = scmId || 'github';
     }
 
     listOrganizations(credentialId) {
         const path = UrlConfig.getJenkinsRootURL();
-        const orgsUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/github/organizations/?credentialId=${credentialId}`, false);
+        const orgsUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/organizations/?credentialId=${credentialId}`, false);
 
         return this._fetch(orgsUrl)
             .then(orgs => capabilityAugmenter.augmentCapabilities(orgs))
@@ -68,7 +69,7 @@ export class GithubCreationApi {
     listRepositories(credentialId, organizationName, pageNumber = 1, pageSize = 100) {
         const path = UrlConfig.getJenkinsRootURL();
         const reposUrl = Utils.cleanSlashes(
-            `${path}/blue/rest/organizations/${this.organization}/scm/github/organizations/${organizationName}/repositories/` +
+            `${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/organizations/${organizationName}/repositories/` +
             `?credentialId=${credentialId}&pageNumber=${pageNumber}&pageSize=${pageSize}`);
 
         return this._fetch(reposUrl)
@@ -153,7 +154,6 @@ export class GithubCreationApi {
             $class: 'io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest',
             scmConfig: {
                 credentialId,
-                uri: 'https://api.github.com', // optional for github! required for enterprise where it should be http://ghe.acme.com/api/v3
                 config: {
                     orgName: organizationName,
                     repos: repoNames,

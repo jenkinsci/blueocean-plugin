@@ -10,14 +10,15 @@ const INVALID_SCOPES = 'missing scopes';
  */
 export class GithubCredentialsApi {
 
-    constructor(fetch) {
-        this._fetch = fetch || Fetch.fetchJSON;
+    constructor(scmId) {
+        this._fetch = Fetch.fetchJSON;
         this.organization = AppConfig.getOrganizationName();
+        this.scmId = scmId || 'github';
     }
 
     findExistingCredential() {
         const path = UrlConfig.getJenkinsRootURL();
-        const credUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/github`);
+        const credUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}`);
 
         return this._fetch(credUrl)
             .then(credential => capabilityAugmenter.augmentCapabilities(credential));
@@ -25,7 +26,7 @@ export class GithubCredentialsApi {
 
     createAccessToken(accessToken) {
         const path = UrlConfig.getJenkinsRootURL();
-        const tokenUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/github/validate`);
+        const tokenUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/validate`);
 
         const requestBody = {
             accessToken,
