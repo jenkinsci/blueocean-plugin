@@ -45,6 +45,10 @@ export default {
         return encoded ? encodeURIComponent(organization.name) : organization.name;
     },
 
+    getOrganizationGroup() {
+        return organization.organizationGroup;
+    },
+
     getSecurityConfig() {
         return this.getJenkinsConfig().security || {};
     },
