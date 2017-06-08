@@ -1,8 +1,14 @@
 import AppConfig from '../config';
 
+/**
+ * Gives classic jenkins job path prefix.
+ * For organization group '/folder1/org1', job prefix is: /job/folder1/job/org1
+ * For root organization group '/', there is no prefix: ''.
+ * @param organizationGroup organization group
+ * @returns {string}
+ */
 function jobPrefixPath(organizationGroup) {
-    // organizationGroup is either full name of organization. e.g. /folder1/folder2/ or "/" in case of root Jenkins
-    if (organizationGroup) {
+    if (organizationGroup && organizationGroup !== '/') {
         return `${organizationGroup.split('/').join('/job/')}`;
     }
     return '';
