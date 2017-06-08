@@ -9,6 +9,7 @@
     "storybook:port": "npm run start-storybook -- -p ",
     "flow": "flow",
     "gulp": "gulp",
+    "gulp:fast": "gulp clean-build",
     "bundle:watch": "gulp watch",
     "test": "gulp test",
     "prepublish": "gulp"
