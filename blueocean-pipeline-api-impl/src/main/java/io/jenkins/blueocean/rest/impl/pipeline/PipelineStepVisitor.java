@@ -211,7 +211,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
             stepMap.put(node.getId(), node);
 
             // If there is closest block boundary, we capture it's error to the last step encountered and prepare for next block.
-            // If the previous step is in error, don't mark this step with a failure
+            // but only if the previous node did not fail
             if(closestEndNode!=null && closestEndNode.getError() != null && new NodeRunStatus(before).result != BlueRunResult.FAILURE) {
                 node.setBlockErrorAction(closestEndNode.getError());
                 closestEndNode = null; //prepare for next block
