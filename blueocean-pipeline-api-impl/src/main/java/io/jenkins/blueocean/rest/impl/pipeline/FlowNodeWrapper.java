@@ -82,9 +82,12 @@ public class FlowNodeWrapper {
     }
 
     public @Nonnull NodeRunStatus getStatus() {
-        // Do not count block errors that are aborts
-        if (hasBlockError() && !isBlockErrorInterruptedWithAbort()) {
-            return new NodeRunStatus(BlueRunResult.FAILURE, BlueRunState.FINISHED);
+        if (hasBlockError()) {
+            if (isBlockErrorInterruptedWithAbort()) {
+                return new NodeRunStatus(BlueRunResult.ABORTED, BlueRunState.FINISHED);
+            } else {
+                return new NodeRunStatus(BlueRunResult.FAILURE, BlueRunState.FINISHED);
+            }
         }
         return status;
     }
