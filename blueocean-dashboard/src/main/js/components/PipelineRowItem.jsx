@@ -10,7 +10,7 @@ import { Icon } from '@jenkins-cd/react-material-icons';
 function generateRedirectLink(pipeline, organization) {
     if (capable(pipeline, MATRIX_PIPELINE)) {
         const fullDisplayPath = organization ? `${organization}/${pipeline.fullDisplayName}` : pipeline.fullDisplayName;
-    
+
         return (<a
           className="pipelineRedirectLink"
           href={`${UrlConfig.getJenkinsRootURL()}${pipeline._links.self.href}`}
@@ -48,7 +48,6 @@ export class PipelineRowItem extends Component {
         if (!pipeline) {
             return null;
         }
-        const { location = {} } = this.context;
         const simple = !pipeline.branchNames;
         const {
             name,
@@ -64,7 +63,7 @@ export class PipelineRowItem extends Component {
 
         const hasPullRequests = !simple && (
             numberOfSuccessfulPullRequests || numberOfFailingPullRequests);
-        
+
         const baseUrl = buildPipelineUrl(organization, fullName);
         const multiBranchURL = `${baseUrl}/branches`;
         const pullRequestsURL = `${baseUrl}/pr`;
@@ -97,7 +96,7 @@ export class PipelineRowItem extends Component {
                 <td>
                     {
                         generateRedirectLink(pipeline, showOrganization ? organization : null) ||
-                        <Link to={activitiesURL} query={location.query}>
+                        <Link to={activitiesURL}>
                             <ExpandablePath path={fullDisplayPath} />
                         </Link>
                     }
@@ -128,7 +127,6 @@ PipelineRowItem.propTypes = {
 };
 
 PipelineRowItem.contextTypes = {
-    location: PropTypes.object,
     store: PropTypes.object,
 };
 
