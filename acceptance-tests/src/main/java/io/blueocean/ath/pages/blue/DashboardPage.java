@@ -69,11 +69,24 @@ public class DashboardPage {
         ));
     }
 
-    public void testJobCount(int numberOfJobs) {
+    public int getJobCount() {
+        return driver.findElements(By.cssSelector(".pipelines-table tbody tr")).size();
+    }
+
+    public void testJobCountEqualTo(int numberOfJobs) {
         wait.until(ExpectedConditions.numberOfElementsToBe(
             By.cssSelector(".pipelines-table tbody tr"),
             numberOfJobs
         ));
+        logger.info("found job count = " + numberOfJobs);
+    }
+
+    public void testJobCountAtLeast(int numberOfJobs) {
+        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(
+            By.cssSelector(".pipelines-table tbody tr"),
+            numberOfJobs - 1
+        ));
+        logger.info("found job count >= " + numberOfJobs);
     }
 
     public void enterSearchText(String searchText) {
@@ -81,6 +94,7 @@ public class DashboardPage {
             ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".search-pipelines-input input"))
         );
         element.sendKeys(searchText);
+        logger.info("entered search text =" + searchText);
     }
 
     public void clearSearchText() {
@@ -89,5 +103,6 @@ public class DashboardPage {
         );
         element.sendKeys(Keys.chord(Keys.CONTROL, "a"));
         element.sendKeys(Keys.BACK_SPACE);
+        logger.info("cleared search text");
     }
 }

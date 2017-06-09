@@ -27,8 +27,7 @@ public class DashboardTest {
     public void testPipelineList() throws InterruptedException, UnirestException, IOException {
         jobApi.createFreeStyleJob("freestyle-alpha", "echo alpha");
         jobApi.createFreeStyleJob("freestyle-bravo", "echo bravo");
-
         dashboardPage.open();
-        dashboardPage.testJobCount(2);
+        dashboardPage.testJobCountAtLeast(2);
     }
 }

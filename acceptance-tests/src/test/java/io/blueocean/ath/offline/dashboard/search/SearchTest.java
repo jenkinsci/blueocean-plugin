@@ -23,13 +23,16 @@ public class SearchTest {
 
     @Test
     public void testSearch() throws InterruptedException, UnirestException, IOException {
-        jobApi.createFreeStyleJob("freestyle-alpha", "echo alpha");
-        jobApi.createFreeStyleJob("freestyle-bravo", "echo bravo");
+        String alpha = "search-test-freestyle-alpha";
+        String bravo = "search-test-freestyle-bravo";
+        jobApi.createFreeStyleJob(alpha, "echo alpha");
+        jobApi.createFreeStyleJob(bravo, "echo bravo");
+
         dashboardPage.open();
-        dashboardPage.enterSearchText("alpha");
-        dashboardPage.testJobCount(1);
-        dashboardPage.findJob("freestyle-alpha");
+        dashboardPage.enterSearchText(alpha);
+        dashboardPage.testJobCountEqualTo(1);
+        dashboardPage.findJob(alpha);
         dashboardPage.clearSearchText();
-        dashboardPage.testJobCount(2);
+        dashboardPage.testJobCountAtLeast(2);
     }
 }
