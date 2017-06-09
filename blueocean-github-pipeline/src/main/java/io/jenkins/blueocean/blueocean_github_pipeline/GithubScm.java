@@ -98,7 +98,7 @@ public class GithubScm extends Scm {
     public @Nonnull String getUri() {
         StaplerRequest request = Stapler.getCurrentRequest();
         Preconditions.checkNotNull(request, "Must be called in HTTP request context");
-        String endpointUri = request.getParameter("endpoint_url");
+        String endpointUri = request.getParameter("apiUrl");
         return (endpointUri != null) ? endpointUri : GitHubSCMSource.GITHUB_URL;
     }
 
