@@ -7,6 +7,7 @@ import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
@@ -98,6 +99,7 @@ public class GithubScm extends Scm {
     @Override
     public @Nonnull String getUri() {
         StaplerRequest request = Stapler.getCurrentRequest();
+        Preconditions.checkNotNull(request, "Must be called in HTTP request context");
         String apiURI = request.getParameter("api_uri");
         return (apiURI != null) ? apiURI : DEFAULT_API_URI;
     }
