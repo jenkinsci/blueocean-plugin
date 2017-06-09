@@ -4,6 +4,7 @@ import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredenti
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Cause;
@@ -206,17 +207,15 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
     private void updateEndpoints(String apiUrl) {
         GitHubConfiguration config = GitHubConfiguration.get();
         synchronized (config) {
-            List<Endpoint> endpoints = config.getEndpoints();
             final String finalApiUrl = apiUrl;
-            Endpoint endpoint = Iterables.find(endpoints, new Predicate<Endpoint>() {
+            Endpoint endpoint = Iterables.find(config.getEndpoints(), new Predicate<Endpoint>() {
                 @Override
                 public boolean apply(@Nullable Endpoint input) {
                     return input != null && input.getApiUri().equals(finalApiUrl);
                 }
             }, null);
             if (endpoint == null) {
-                endpoints.add(new Endpoint(apiUrl, apiUrl));
-                config.setEndpoints(endpoints);
+                config.setEndpoints(ImmutableList.of(new Endpoint(apiUrl, apiUrl)));
                 config.save();
             }
         }
