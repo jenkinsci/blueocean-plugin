@@ -3,6 +3,8 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Cause;
 import hudson.model.Item;
@@ -32,6 +34,8 @@ import jenkins.scm.api.SCMSourceCriteria;
 import jenkins.scm.api.SCMSourceEvent;
 import jenkins.scm.api.SCMSourceOwner;
 import org.apache.commons.lang3.StringUtils;
+import org.jenkinsci.plugins.github_branch_source.Endpoint;
+import org.jenkinsci.plugins.github_branch_source.GitHubConfiguration;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.jenkinsci.plugins.pubsub.MessageException;
@@ -41,6 +45,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
@@ -78,6 +83,23 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
 
         if (scmConfig != null) {
             apiUrl = StringUtils.defaultIfBlank(scmConfig.getUri(), GithubScm.DEFAULT_API_URI);
+
+            GitHubConfiguration config = GitHubConfiguration.get();
+            synchronized (config) {
+                List<Endpoint> endpoints = config.getEndpoints();
+                final String finalApiUrl = apiUrl;
+                Endpoint endpoint = Iterables.find(endpoints, new Predicate<Endpoint>() {
+                    @Override
+                    public boolean apply(@Nullable Endpoint input) {
+                        return input != null && input.getApiUri().equals(finalApiUrl);
+                    }
+                }, null);
+                if (endpoint == null) {
+                    endpoints.add(new Endpoint(apiUrl, apiUrl));
+                    config.setEndpoints(endpoints);
+                }
+            }
+
             if (scmConfig.getConfig().get("orgName") instanceof String) {
                 orgName = (String) scmConfig.getConfig().get("orgName");
             }

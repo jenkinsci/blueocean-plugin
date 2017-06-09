@@ -97,9 +97,9 @@ public class GithubScm extends Scm {
 
     @Override
     public @Nonnull String getUri() {
-        String url = System.getProperty(GITHUB_API_URL_PROPERTY);
-        String githubUrl = (url != null) ? url : DEFAULT_API_URI;
-        return githubUrl;
+        StaplerRequest request = Stapler.getCurrentRequest();
+        String apiURI = request.getParameter("api_uri");
+        return (apiURI != null) ? apiURI : DEFAULT_API_URI;
     }
 
     public String getCredentialDomainName(){
