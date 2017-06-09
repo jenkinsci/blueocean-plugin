@@ -30,11 +30,6 @@ public class GithubEnterpriseScm extends GithubScm {
     }
 
     @Override
-    public @Nonnull String getUri() {
-        return super.getUri()+DEFAULT_ENTERPRISE_API_SUFFIX;
-    }
-
-    @Override
     public String getCredentialDomainName() {
         java.net.URI uri;
         try {
