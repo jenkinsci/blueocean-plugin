@@ -130,6 +130,10 @@ public class GithubScmTest {
 
         String guser = "{\n  \"login\": \"joe\",\n  \"id\": 1, \"email\": \"joe@example.com\", \"created_at\": \"2008-01-14T04:33:35Z\"}";
 
+        mockStatic(Stapler.class);
+        StaplerRequest request = mock(StaplerRequest.class);
+        when(Stapler.getCurrentRequest()).thenReturn(request);
+
         when(httpURLConnectionMock.getInputStream()).thenReturn(new ByteArrayInputStream(guser.getBytes("UTF-8")));
 
         githubScm.validateAndCreate(req);

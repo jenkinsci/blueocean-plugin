@@ -75,16 +75,15 @@ public abstract class GithubMockBase extends PipelineBaseTest {
         this.githubApiUrl = String.format("http://localhost:%s",githubApi.port());
     }
 
-    protected String CreateGithubCredential() throws UnirestException {
+    protected String createGithubCredential() throws UnirestException {
         Map r = new RequestBuilder(baseUrl)
                 .data(ImmutableMap.of("accessToken", accessToken))
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .put("/organizations/jenkins/scm/github/validate/")
+                .put("/organizations/jenkins/scm/github/validate/?apiUrl="+githubApiUrl)
                 .build(Map.class);
         String credentialId = (String) r.get("credentialId");
         assertEquals("github", credentialId);
         return credentialId;
     }
-
 }
