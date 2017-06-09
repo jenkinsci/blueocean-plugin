@@ -20,7 +20,6 @@ import java.util.Map;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static io.jenkins.blueocean.blueocean_github_pipeline.GithubScm.GITHUB_API_URL_PROPERTY;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -74,7 +73,6 @@ public abstract class GithubMockBase extends PipelineBaseTest {
 
         this.user = login("vivek", "Vivek Pandey", "vivek.pandey@gmail.com");
         this.githubApiUrl = String.format("http://localhost:%s",githubApi.port());
-        System.setProperty(GITHUB_API_URL_PROPERTY, githubApiUrl);
     }
 
     protected String CreateGithubCredential() throws UnirestException {
