@@ -28,6 +28,7 @@ import io.jenkins.blueocean.rest.model.Container;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.kohsuke.github.GHMyself;
 import org.kohsuke.github.GHOrganization;
 import org.kohsuke.github.GHUser;
@@ -65,7 +66,6 @@ public class GithubScm extends Scm {
     //Used by tests to mock github
     static final String GITHUB_API_URL_PROPERTY = "blueocean.github.url";
 
-    static final String DEFAULT_API_URI = "https://api.github.com";
     private static final String ID = "github";
 
     //desired scopes
@@ -100,8 +100,8 @@ public class GithubScm extends Scm {
     public @Nonnull String getUri() {
         StaplerRequest request = Stapler.getCurrentRequest();
         Preconditions.checkNotNull(request, "Must be called in HTTP request context");
-        String apiURI = request.getParameter("api_uri");
-        return (apiURI != null) ? apiURI : DEFAULT_API_URI;
+        String endpointUri = request.getParameter("endpoint_url");
+        return (endpointUri != null) ? endpointUri : GitHubSCMSource.GITHUB_URL;
     }
 
     public String getCredentialDomainName(){

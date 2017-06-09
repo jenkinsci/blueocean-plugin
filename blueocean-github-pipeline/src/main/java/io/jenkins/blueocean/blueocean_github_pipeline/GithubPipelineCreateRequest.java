@@ -82,7 +82,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
         List<String> repos = new ArrayList<>();
 
         if (scmConfig != null) {
-            apiUrl = StringUtils.defaultIfBlank(scmConfig.getUri(), GithubScm.DEFAULT_API_URI);
+            apiUrl = StringUtils.defaultIfBlank(scmConfig.getUri(), GitHubSCMSource.GITHUB_URL);
 
             GitHubConfiguration config = GitHubConfiguration.get();
             synchronized (config) {
