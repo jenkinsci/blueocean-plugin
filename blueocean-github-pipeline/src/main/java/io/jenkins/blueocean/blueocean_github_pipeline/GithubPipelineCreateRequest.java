@@ -83,22 +83,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
 
         if (scmConfig != null) {
             apiUrl = StringUtils.defaultIfBlank(scmConfig.getUri(), GitHubSCMSource.GITHUB_URL);
-
-            GitHubConfiguration config = GitHubConfiguration.get();
-            synchronized (config) {
-                List<Endpoint> endpoints = config.getEndpoints();
-                final String finalApiUrl = apiUrl;
-                Endpoint endpoint = Iterables.find(endpoints, new Predicate<Endpoint>() {
-                    @Override
-                    public boolean apply(@Nullable Endpoint input) {
-                        return input != null && input.getApiUri().equals(finalApiUrl);
-                    }
-                }, null);
-                if (endpoint == null) {
-                    endpoints.add(new Endpoint(apiUrl, apiUrl));
-                    config.setEndpoints(endpoints);
-                }
-            }
+            updateEndpoints(apiUrl);
 
             if (scmConfig.getConfig().get("orgName") instanceof String) {
                 orgName = (String) scmConfig.getConfig().get("orgName");
@@ -216,6 +201,25 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
             return cleanupOnError(e, getName(), item, creatingNewItem);
         }
         return null;
+    }
+
+    private void updateEndpoints(String apiUrl) {
+        GitHubConfiguration config = GitHubConfiguration.get();
+        synchronized (config) {
+            List<Endpoint> endpoints = config.getEndpoints();
+            final String finalApiUrl = apiUrl;
+            Endpoint endpoint = Iterables.find(endpoints, new Predicate<Endpoint>() {
+                @Override
+                public boolean apply(@Nullable Endpoint input) {
+                    return input != null && input.getApiUri().equals(finalApiUrl);
+                }
+            }, null);
+            if (endpoint == null) {
+                endpoints.add(new Endpoint(apiUrl, apiUrl));
+                config.setEndpoints(endpoints);
+                config.save();
+            }
+        }
     }
 
     /**

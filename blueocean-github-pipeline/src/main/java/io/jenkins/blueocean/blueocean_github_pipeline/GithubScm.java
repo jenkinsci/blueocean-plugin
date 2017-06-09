@@ -64,8 +64,6 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
  */
 public class GithubScm extends Scm {
     //Used by tests to mock github
-    static final String GITHUB_API_URL_PROPERTY = "blueocean.github.url";
-
     private static final String ID = "github";
 
     //desired scopes
