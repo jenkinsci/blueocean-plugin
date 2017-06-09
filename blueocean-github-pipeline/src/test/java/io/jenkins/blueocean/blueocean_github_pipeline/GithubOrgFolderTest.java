@@ -38,7 +38,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
 
     @Test
     public void simpleOrgTest() throws IOException, UnirestException {
-        String credentialId = createGithubCredential(user);
+        String credentialId = createGithubCredential();
         String orgFolderName = "cloudbeers1";
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
@@ -69,7 +69,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
 
     @Test
     public void createGithubOrgTest() throws IOException, UnirestException {
-        String credentialId = createGithubCredential(user);
+        String credentialId = createGithubCredential();
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
@@ -97,7 +97,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
 
     @Test
     public void orgUpdateWithPOSTTest() throws IOException, UnirestException {
-        String credentialId = createGithubCredential(user);
+        String credentialId = createGithubCredential();
         String orgFolderName = "cloudbeers";
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
@@ -140,7 +140,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
 
     @Test
     public void orgUpdateTest() throws IOException, UnirestException {
-        String credentialId = createGithubCredential(user);
+        String credentialId = createGithubCredential();
         String orgFolderName = "cloudbeers";
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
@@ -241,17 +241,5 @@ public class GithubOrgFolderTest extends GithubMockBase {
         //it must resolve to system credential
         c = Connector.lookupScanCredentials(organizationFolder, null, credential.getId());
         assertEquals("System Github Access Token", c.getDescription());
-    }
-
-    private String createGithubCredential(User user) throws UnirestException {
-        Map r = new RequestBuilder(baseUrl)
-                .data(ImmutableMap.of("accessToken", "12345"))
-                .status(200)
-                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .put("/organizations/jenkins/scm/github/validate/")
-                .build(Map.class);
-
-        assertEquals("github", r.get("credentialId"));
-        return "github";
     }
 }

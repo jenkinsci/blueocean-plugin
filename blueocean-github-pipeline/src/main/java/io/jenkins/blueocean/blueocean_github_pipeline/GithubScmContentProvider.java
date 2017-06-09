@@ -140,7 +140,7 @@ public class GithubScmContentProvider extends ScmContentProvider {
 
     @SuppressWarnings("unchecked")
     private Object saveContent(@Nonnull GithubScmSaveFileRequest githubRequest, @Nonnull Item item) {
-        String apiUrl = GithubScm.DEFAULT_API_URI;
+        String apiUrl = GitHubSCMSource.GITHUB_URL;
         String owner = null;
         String repo = null;
         String accessToken = null;
@@ -251,7 +251,7 @@ public class GithubScmContentProvider extends ScmContentProvider {
                     repo = repo(source);
                 }
             }
-            this.apiUrl = apiUrl == null ? GithubScm.DEFAULT_API_URI : apiUrl;
+            this.apiUrl = apiUrl == null ? GitHubSCMSource.GITHUB_URL : apiUrl;
 
             if (credentialId != null) {
                 StandardCredentials credentials = Connector.lookupScanCredentials((SCMSourceOwner) item, this.apiUrl, credentialId);
