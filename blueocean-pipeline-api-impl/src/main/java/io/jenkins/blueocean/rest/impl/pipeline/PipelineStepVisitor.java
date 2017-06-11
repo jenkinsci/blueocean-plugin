@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueRun.BlueRunResult;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode;
@@ -209,8 +210,9 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
             }
             stepMap.put(node.getId(), node);
 
-            //If there is closest block boundary, we capture it's error to the last step encountered and prepare for next block.
-            if(closestEndNode!=null && closestEndNode.getError() != null) {
+            // If there is closest block boundary, we capture it's error to the last step encountered and prepare for next block.
+            // but only if the previous node did not fail
+            if(closestEndNode!=null && closestEndNode.getError() != null && new NodeRunStatus(before).result != BlueRunResult.FAILURE) {
                 node.setBlockErrorAction(closestEndNode.getError());
                 closestEndNode = null; //prepare for next block
             }

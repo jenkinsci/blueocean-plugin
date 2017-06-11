@@ -109,12 +109,10 @@ export default class ResourceLoadTracker {
         }
     }
 
-    _requireCSS(pluginCSS, onload) {
+    _requireCSS(pluginCSS) {
         if (!this.activeCSSs[pluginCSS.url]) {
-            this._addCSS(pluginCSS, onload);
+            this._addCSS(pluginCSS);
             this.activeCSSs[pluginCSS.url] = true;
-        } else {
-            onload();
         }
     }
 
@@ -138,17 +136,9 @@ export default class ResourceLoadTracker {
         }
     }
 
-    _addCSS(pluginCSS, onload) {
+    _addCSS(pluginCSS) {
         const cssURL = getPluginCSSURL(pluginCSS);
         jsModules.addCSSToPage(cssURL);
-
-        const linkElId = jsModules.toCSSId(cssURL);
-        const linkEl = document.getElementById(linkElId);
-        if (linkEl) {
-            linkEl.onload = onload;
-        } else {
-            onload();
-        }
     }
 
     _removeCSS(pluginCSS) {
