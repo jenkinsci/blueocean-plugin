@@ -6,6 +6,7 @@ import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.collect.Lists;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.util.DescribableList;
+import io.jenkins.blueocean.rest.impl.pipeline.GitContent;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
@@ -76,7 +77,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
         StaplerRequest staplerRequest = mockStapler();
 
-        GithubContent content = new GithubContent.Builder().autoCreateBranch(true).base64Data("c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n")
+        GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n")
                 .branch("test1").message("another commit").owner("cloudbeers").path("Jankinsfile").repo("PR-demo").sha("e23b8ef5c2c4244889bf94db6c05cc08ea138aef").build();
 
         when(staplerRequest.bindJSON(Mockito.eq(GithubScmSaveFileRequest.class), Mockito.any(JSONObject.class))).thenReturn(new GithubScmSaveFileRequest(content));
@@ -109,7 +110,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
         StaplerRequest staplerRequest = mockStapler();
 
-        GithubContent content = new GithubContent.Builder().autoCreateBranch(true).base64Data("c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n")
+        GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n")
                 .branch("test1").message("another commit").owner("cloudbeers").path("Jankinsfile").repo("PR-demo").sha("e23b8ef5c2c4244889bf94db6c05cc08ea138aef").build();
 
         when(staplerRequest.bindJSON(Mockito.eq(GithubScmSaveFileRequest.class), Mockito.any(JSONObject.class))).thenReturn(new GithubScmSaveFileRequest(content));
@@ -144,7 +145,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
         StaplerRequest staplerRequest = mockStapler();
 
-        GithubContent content = new GithubContent.Builder().autoCreateBranch(true).base64Data("c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n")
+        GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n")
                 .branch("test2").message("another commit").owner("cloudbeers").path("Jankinsfile").repo("PR-demo").sha("e23b8ef5c2c4244889bf94db6c05cc08ea138aef").build();
 
         when(staplerRequest.bindJSON(Mockito.eq(GithubScmSaveFileRequest.class), Mockito.any(JSONObject.class))).thenReturn(new GithubScmSaveFileRequest(content));

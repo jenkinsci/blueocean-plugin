@@ -124,6 +124,7 @@
     <module>blueocean-jwt</module>
     <module>blueocean-github-pipeline</module>
     <module>blueocean-git-pipeline</module>
+    <module>blueocean-bitbucket-pipeline</module>
   </modules>
 
   <repositories>
@@ -289,6 +290,11 @@
             <artifactId>blueocean-git-pipeline</artifactId>
             <version>${project.version}</version>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-bitbucket-pipeline</artifactId>
+            <version>${project.version}</version>
+        </dependency>
 
         <!-- Pipeline -->
         <dependency>
@@ -391,6 +397,23 @@
             <groupId>com.coravy.hudson.plugins.github</groupId>
             <artifactId>github</artifactId>
             <version>1.27.0</version>
+        </dependency>
+
+        <!-- BitBucket dependencies -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>cloudbees-bitbucket-branch-source</artifactId>
+            <version>2.1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>fluent-hc</artifactId>
+            <version>4.5.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>4.5.3</version>
         </dependency>
 
         <!-- Other -->
