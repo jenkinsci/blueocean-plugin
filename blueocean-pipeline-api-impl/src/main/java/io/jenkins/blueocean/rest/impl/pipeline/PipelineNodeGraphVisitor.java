@@ -287,6 +287,14 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                         startTime);
                 status = new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.RUNNING);
             }
+
+            // Declarative might have set skipped tag on skipped parallel stage,
+            // lets take that in to account and set the status accordingly
+            boolean skippedStage = PipelineNodeUtil.isSkippedStage(branchStartNode);
+            if(skippedStage){
+                status = new NodeRunStatus(BlueRun.BlueRunResult.NOT_BUILT, BlueRun.BlueRunState.SKIPPED);
+            }
+
             assert times != null; //keep FB happy
 
             FlowNodeWrapper branch = new FlowNodeWrapper(branchStartNode, status, times, run);
