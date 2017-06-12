@@ -26,6 +26,9 @@ public class OrganizationApiTest extends BaseTest {
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@example.com"));
 
+        // Let uapi sync with data
+        Thread.sleep(1000);
+
         List users = request().jwtToken(getJwtToken(j.jenkins,"alice", "alice")).get("/organizations/jenkins/users/").build(List.class);
 
         Assert.assertEquals(users.size(), 1);
