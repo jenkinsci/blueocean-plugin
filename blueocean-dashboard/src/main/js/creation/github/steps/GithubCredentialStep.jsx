@@ -35,7 +35,8 @@ export default class GithubCredentialsStep extends React.Component {
     }
 
     _createToken() {
-        this.props.flowManager.createAccessToken(this.state.accessToken, this.state.apiUrl);
+        const apiUrl = this.props.enterpriseMode ? this.state.apiUrl : null;
+        this.props.flowManager.createAccessToken(this.state.accessToken, apiUrl);
     }
 
     _getGeneralErrorMessage(stateId) {
