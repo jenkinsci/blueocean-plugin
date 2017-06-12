@@ -19,7 +19,7 @@ export default class GithubEnterpriseScmProvider extends GithubScmProvider {
         const creationApi = new GithubCreationApi('github-enterprise');
         const credentialsApi = new GithubCredentialsApi('github-enterprise');
 
-        this.manager = new GithubFlowManager(creationApi, credentialsApi);
+        this.manager = new GithubFlowManager(creationApi, credentialsApi, true);
         return this.manager;
     }
 

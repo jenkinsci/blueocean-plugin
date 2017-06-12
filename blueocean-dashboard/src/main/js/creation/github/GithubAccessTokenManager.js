@@ -66,10 +66,10 @@ export class GithubAccessTokenManager {
     }
 
     @action
-    createAccessToken(token) {
+    createAccessToken(token, apiUrl) {
         this.pendingValidation = true;
 
-        return this._credentialsApi.createAccessToken(token)
+        return this._credentialsApi.createAccessToken(token, apiUrl)
             .then(waitAtLeast(MIN_DELAY))
             .then(response => this._createTokenComplete(response));
     }
@@ -85,6 +85,10 @@ export class GithubAccessTokenManager {
             this.stateId = GithubAccessTokenState.VALIDATION_FAILED_TOKEN;
         } else if (response.scopes) {
             this.stateId = GithubAccessTokenState.VALIDATION_FAILED_SCOPES;
+        } else if (response.invalidApiUrl) {
+            this.stateId = GithubAccessTokenState.VALIDATION_FAILED_API_URL;
+        } else {
+            this.stateId = GithubAccessTokenState.VALIDATION_FAILED_UNKNOWN;
         }
 
         return response;

@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
-import { FormElement, TextInput } from '@jenkins-cd/design-language';
+import { ErrorMessage, FormElement, TextInput } from '@jenkins-cd/design-language';
 
 import FlowStep from '../../flow2/FlowStep';
 import { GithubAccessTokenState } from '../GithubAccessTokenState';
@@ -17,8 +17,15 @@ export default class GithubCredentialsStep extends React.Component {
         super(props);
 
         this.state = {
+            apiUrl: '',
             accessToken: '',
         };
+
+        this.label = 'GitHub';
+    }
+
+    componentWillMount() {
+        this.label = !this.props.enterpriseMode ? 'GitHub' : 'GitHub Enterprise';
     }
 
     _tokenChange(accessToken) {
@@ -27,11 +34,33 @@ export default class GithubCredentialsStep extends React.Component {
         });
     }
 
-    _createToken() {
-        this.props.flowManager.createAccessToken(this.state.accessToken);
+    _urlChange(apiUrl) {
+        this.setState({
+            apiUrl,
+        });
     }
 
-    _getErrorMessage(stateId) {
+    _createToken() {
+        this.props.flowManager.createAccessToken(this.state.accessToken, this.state.apiUrl);
+    }
+
+    _getGeneralErrorMessage(stateId) {
+        if (stateId === GithubAccessTokenState.VALIDATION_FAILED_UNKNOWN) {
+            return 'An unknown error occurred. You may try your request again.';
+        }
+
+        return null;
+    }
+
+    _getUrlErrorMessage(stateId) {
+        if (stateId === GithubAccessTokenState.VALIDATION_FAILED_API_URL) {
+            return 'Invalid URL.';
+        }
+
+        return null;
+    }
+
+    _getTokenErrorMessage(stateId) {
         if (stateId === GithubAccessTokenState.EXISTING_REVOKED) {
             return 'The existing access token appears to have been deleted. Please create a new token.';
         } else if (stateId === GithubAccessTokenState.EXISTING_MISSING_SCOPES) {
@@ -46,10 +75,12 @@ export default class GithubCredentialsStep extends React.Component {
     }
 
     render() {
+        const { label } = this;
         const manager = this.props.flowManager.accessTokenManager;
-        const title = 'Connect to Github';
-        const errorMessage = this._getErrorMessage(manager.stateId);
-
+        const title = `Connect to ${label}`;
+        const generalErrorMessage = this._getGeneralErrorMessage(manager.stateId);
+        const urlErrorMessage = this._getUrlErrorMessage(manager.stateId);
+        const tokenErrorMessage = this._getTokenErrorMessage(manager.stateId);
         const disabled = manager.stateId === GithubAccessTokenState.SAVE_SUCCESS;
 
         let result = null;
@@ -67,15 +98,29 @@ export default class GithubCredentialsStep extends React.Component {
         return (
             <FlowStep {...this.props} className="github-credentials-step" disabled={disabled} title={title}>
                 <p className="instructions">
-                    Jenkins needs an access key to authorize itself with Github. &nbsp;
+                    Jenkins needs an access key to authorize itself with {label}. &nbsp;
                     <a href={GITHUB_URL} target="_blank">Create an access key here.</a>
                 </p>
 
-                <FormElement errorMessage={errorMessage}>
-                    <TextInput className="text-token" placeholder="Your Github access token" onChange={val => this._tokenChange(val)} />
+                <ErrorMessage>{generalErrorMessage}</ErrorMessage>
+
+                { !this.props.enterpriseMode &&
+                <FormElement errorMessage={tokenErrorMessage}>
+                    <TextInput className="text-token" placeholder="Your GitHub access token" onChange={val => this._tokenChange(val)} />
 
                     <Button className="button-connect" status={status} onClick={() => this._createToken()}>Connect</Button>
                 </FormElement>
+                }
+
+                { this.props.enterpriseMode && [
+                    <FormElement errorMessage={urlErrorMessage}>
+                        <TextInput className="text-url" placeholder="Your GitHub Enterprise URL" onChange={val => this._urlChange(val)} />
+                    </FormElement>,
+                    <FormElement errorMessage={tokenErrorMessage}>
+                        <TextInput className="text-token" placeholder="Your GitHub access token" onChange={val => this._tokenChange(val)} />
+                    </FormElement>,
+                    <Button className="button-connect" status={status} onClick={() => this._createToken()}>Connect</Button>,
+                ]}
             </FlowStep>
         );
     }
@@ -83,4 +128,5 @@ export default class GithubCredentialsStep extends React.Component {
 
 GithubCredentialsStep.propTypes = {
     flowManager: PropTypes.object,
+    enterpriseMode: PropTypes.bool,
 };

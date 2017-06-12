@@ -100,6 +100,8 @@ export default class GithubFlowManager extends FlowManager {
 
     savedPipeline = null;
 
+    enterpriseMode = false;
+
     _repositoryCache = {};
 
     _creationApi = null;
@@ -108,10 +110,11 @@ export default class GithubFlowManager extends FlowManager {
 
     _sseTimeoutId = null;
 
-    constructor(creationApi, credentialsApi) {
+    constructor(creationApi, credentialsApi, enterpriseMode) {
         super();
 
         this._creationApi = creationApi;
+        this.enterpriseMode = !!enterpriseMode;
         this.accessTokenManager = new GithubAccessTokenManager(credentialsApi);
     }
 
@@ -148,13 +151,13 @@ export default class GithubFlowManager extends FlowManager {
         } else {
             this.renderStep({
                 stateId: STATE.STEP_ACCESS_TOKEN,
-                stepElement: <GithubCredentialsStep />,
+                stepElement: <GithubCredentialsStep enterpriseMode={this.enterpriseMode} />,
             });
         }
     }
 
-    createAccessToken(token) {
-        return this.accessTokenManager.createAccessToken(token)
+    createAccessToken(token, apiUrl) {
+        return this.accessTokenManager.createAccessToken(token, apiUrl)
             .then(success => this._createTokenComplete(success));
     }
 

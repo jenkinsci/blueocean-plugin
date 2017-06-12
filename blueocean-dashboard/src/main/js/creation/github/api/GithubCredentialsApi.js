@@ -3,6 +3,7 @@ import { capabilityAugmenter, Fetch, UrlConfig, Utils, AppConfig } from '@jenkin
 // TODO: temporary until we get more structured errors
 const INVALID_TOKEN = 'Invalid accessToken';
 const INVALID_SCOPES = 'missing scopes';
+const INVALID_API_URL = 'Invalid apiUrl';
 
 
 /**
@@ -24,9 +25,16 @@ export class GithubCredentialsApi {
             .then(credential => capabilityAugmenter.augmentCapabilities(credential));
     }
 
-    createAccessToken(accessToken) {
+    createAccessToken(accessToken, apiUrl) {
         const path = UrlConfig.getJenkinsRootURL();
-        const tokenUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/validate`);
+        let tokenUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/validate`);
+
+        if (apiUrl) {
+            tokenUrl += '?apiUrl=';
+            // trim trailing slash from URL
+            tokenUrl += apiUrl.slice(-1) === '/' ?
+                apiUrl.slice(0, -1) : apiUrl;
+        }
 
         const requestBody = {
             accessToken,
@@ -56,12 +64,14 @@ export class GithubCredentialsApi {
     }
 
     _createAccessTokenFailure(error) {
-        const { message } = error.responseBody;
+        const { code, message } = error.responseBody;
+        const invalidApiUrl = code === 404 || message.indexOf(INVALID_API_URL) !== -1;
 
         return {
             success: false,
             invalid: message.indexOf(INVALID_TOKEN) !== -1,
             scopes: message.indexOf(INVALID_SCOPES) !== -1,
+            invalidApiUrl,
         };
     }
 
