@@ -37,6 +37,9 @@ import static io.jenkins.blueocean.auth.jwt.JwtToken.X_BLUEOCEAN_JWT;
 public abstract class BaseTest {
     private static  final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
 
+    static {
+        System.setProperty("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION", "true");
+    }
     public BaseTest() {
         System.setProperty("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION", "true");
         j = new JenkinsRule();
