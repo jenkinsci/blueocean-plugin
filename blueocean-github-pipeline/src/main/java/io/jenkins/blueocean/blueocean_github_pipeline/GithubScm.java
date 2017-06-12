@@ -243,7 +243,7 @@ public class GithubScm extends Scm {
             return createResponse(credential.getId());
 
         } catch (IOException e) {
-            if (e instanceof MalformedURLException) {
+            if (e instanceof MalformedURLException || e instanceof UnknownHostException) {
                 throw new ServiceException.BadRequestException(
                     new ErrorMessage(400, "Invalid apiUrl").add(
                         new ErrorMessage.Error("apiUrl", ErrorMessage.Error.ErrorCodes.INVALID.toString(), e.getMessage())
