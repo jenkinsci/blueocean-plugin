@@ -20,12 +20,6 @@ export default class GithubCredentialsStep extends React.Component {
             apiUrl: '',
             accessToken: '',
         };
-
-        this.label = 'GitHub';
-    }
-
-    componentWillMount() {
-        this.label = !this.props.enterpriseMode ? 'GitHub' : 'GitHub Enterprise';
     }
 
     _tokenChange(accessToken) {
@@ -75,8 +69,11 @@ export default class GithubCredentialsStep extends React.Component {
     }
 
     render() {
-        const { label } = this;
         const manager = this.props.flowManager.accessTokenManager;
+        const { enterpriseMode } = this.props;
+
+        const label = !enterpriseMode ? 'GitHub' : 'GitHub Enterprise';
+        const className = 'github-credentials-step' + (enterpriseMode && ' github-enterprise' || '');
         const title = `Connect to ${label}`;
         const generalErrorMessage = this._getGeneralErrorMessage(manager.stateId);
         const urlErrorMessage = this._getUrlErrorMessage(manager.stateId);
@@ -96,7 +93,7 @@ export default class GithubCredentialsStep extends React.Component {
         };
 
         return (
-            <FlowStep {...this.props} className="github-credentials-step" disabled={disabled} title={title}>
+            <FlowStep {...this.props} className={className} disabled={disabled} title={title}>
                 <p className="instructions">
                     Jenkins needs an access key to authorize itself with {label}. &nbsp;
                     <a href={GITHUB_URL} target="_blank">Create an access key here.</a>
