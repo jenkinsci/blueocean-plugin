@@ -45,10 +45,7 @@ import org.kohsuke.stapler.json.JsonBody;
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
+import java.net.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -246,6 +243,13 @@ public class GithubScm extends Scm {
             return createResponse(credential.getId());
 
         } catch (IOException e) {
+            if (e instanceof MalformedURLException) {
+                throw new ServiceException.BadRequestException(
+                    new ErrorMessage(400, "Invalid apiUrl").add(
+                        new ErrorMessage.Error("apiUrl", ErrorMessage.Error.ErrorCodes.INVALID.toString(), e.getMessage())
+                    )
+                );
+            }
             throw new ServiceException.UnexpectedErrorException(e.getMessage());
         }
     }
