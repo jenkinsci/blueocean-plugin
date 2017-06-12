@@ -29,7 +29,7 @@ export class GithubCredentialsApi {
         const path = UrlConfig.getJenkinsRootURL();
         let tokenUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/validate`);
 
-        if (apiUrl) {
+        if (typeof apiUrl === 'string') {
             tokenUrl += '?apiUrl=';
             // trim trailing slash from URL
             tokenUrl += apiUrl.slice(-1) === '/' ?
