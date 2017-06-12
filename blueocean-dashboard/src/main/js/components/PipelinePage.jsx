@@ -55,7 +55,7 @@ export class PipelinePage extends Component {
 
         const { organization, name, fullName, fullDisplayName } = pipeline || {};
         
-        const organizationName = organization ? organization : AppConfig.getOrganizationName();
+        const organizationName = organization || AppConfig.getOrganizationName();
         const organizationDisplayName = organization === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : organization;
         
         const orgUrl = buildOrganizationUrl(organizationName);

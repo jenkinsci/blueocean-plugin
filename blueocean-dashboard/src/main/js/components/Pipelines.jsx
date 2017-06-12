@@ -37,7 +37,7 @@ export class Pipelines extends Component {
     render() {
         const { organization, location = { } } = this.context.params;
         AppConfig.getOrganizationName();
-        const organizationName = organization ? organization : AppConfig.getOrganizationName();
+        const organizationName = organization || AppConfig.getOrganizationName();
         const organizationDisplayName = organization === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : organization;
         
         const searchText = this.getSearchText();
