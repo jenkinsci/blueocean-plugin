@@ -230,7 +230,7 @@ public class GithubScm extends Scm {
             //Now we know the token is valid. Lets find credential
             StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(getId(), StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
 
-            final StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER, "github", "Github Access Token", authenticatedUser.getId(), accessToken);
+            final StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER, getId(), "Github Access Token", authenticatedUser.getId(), accessToken);
 
 
             if(githubCredential == null) {
