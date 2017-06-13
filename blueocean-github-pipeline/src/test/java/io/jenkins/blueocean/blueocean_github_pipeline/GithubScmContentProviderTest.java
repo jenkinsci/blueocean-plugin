@@ -40,7 +40,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void getContentForOrgFolder() throws UnirestException {
-        String credentialId = CreateGithubCredential();
+        String credentialId = createGithubCredential();
 
         StaplerRequest staplerRequest = mockStapler();
 
@@ -55,7 +55,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void getContentForMbp() throws UnirestException {
-        String credentialId = CreateGithubCredential();
+        String credentialId = createGithubCredential();
 
         StaplerRequest staplerRequest = mockStapler();
 
@@ -72,7 +72,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void saveContentToOrgFolder() throws UnirestException, IOException {
-        String credentialId = CreateGithubCredential();
+        String credentialId = createGithubCredential();
 
         StaplerRequest staplerRequest = mockStapler();
 
@@ -105,7 +105,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void saveContentToMbp() throws UnirestException, IOException {
-        String credentialId = CreateGithubCredential();
+        String credentialId = createGithubCredential();
 
         StaplerRequest staplerRequest = mockStapler();
 
@@ -140,7 +140,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void saveContentToMbpMissingBranch() throws UnirestException, IOException {
-        String credentialId = CreateGithubCredential();
+        String credentialId = createGithubCredential();
 
         StaplerRequest staplerRequest = mockStapler();
 

@@ -13,6 +13,7 @@ import org.acegisecurity.adapters.PrincipalAcegiUserToken;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UserDetails;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestExtension;
@@ -116,7 +117,7 @@ public class ProfileApiTest extends BaseTest{
         //make a request on bob's behalf to get alice's user details, should get null email
         Map r = new RequestBuilder(baseUrl)
             .status(200)
-            .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
+            .auth("bob", "bob")
             .get("/users/"+alice.getId()).build(Map.class);
 
         assertEquals(alice.getId(), r.get("id"));
@@ -127,7 +128,7 @@ public class ProfileApiTest extends BaseTest{
 
         r = new RequestBuilder(baseUrl)
             .status(200)
-            .jwtToken(getJwtToken(j.jenkins,"alice", "alice"))
+            .authAlice()
             .get("/users/"+alice.getId()).build(Map.class);
 
         assertEquals(alice.getId(), r.get("id"));
@@ -143,17 +144,17 @@ public class ProfileApiTest extends BaseTest{
 
         Project p = j.createFreeStyleProject("pipeline1");
 
-        String token = getJwtToken(j.jenkins,"alice", "alice");
+      //  String token = getJwtToken(j.jenkins,"alice", "alice");
         Map map = new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/pipeline1/favorite")
-            .jwtToken(token)
+            .authAlice()
             .data(ImmutableMap.of("favorite", true))
             .build(Map.class);
 
         validatePipeline(p, (Map) map.get("item"));
         List l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
-            .jwtToken(token)
+            .authAlice()
             .build(List.class);
 
         assertEquals(1, l.size());
@@ -165,7 +166,7 @@ public class ProfileApiTest extends BaseTest{
         assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite/", href);
         map = new RequestBuilder(baseUrl)
             .put(href.substring("/blue/rest".length()))
-            .jwtToken(token)
+            .authAlice()
             .data(ImmutableMap.of("favorite", false))
             .build(Map.class);
 
@@ -173,14 +174,14 @@ public class ProfileApiTest extends BaseTest{
 
         l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
-            .jwtToken(token)
+            .authAlice()
             .build(List.class);
 
         assertEquals(0, l.size());
 
         new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
-            .jwtToken(getJwtToken(j.jenkins,"bob","bob"))
+            .auth("bob", "bob")
             .status(403)
             .build(String.class);
 
@@ -195,17 +196,17 @@ public class ProfileApiTest extends BaseTest{
         MockFolder folder1 = j.createFolder("folder1");
         Project p = folder1.createProject(FreeStyleProject.class, "pipeline1");
 
-        String token = getJwtToken(j.jenkins,"alice", "alice");
+        //String token = getJwtToken(j.jenkins,"alice", "alice");
         Map map = new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/folder1/pipelines/pipeline1/favorite/")
-            .jwtToken(token)
+            .authAlice()
             .data(ImmutableMap.of("favorite", true))
             .build(Map.class);
 
         validatePipeline(p, (Map) map.get("item"));
         List l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
-            .jwtToken(token)
+            .authAlice()
             .build(List.class);
 
         assertEquals(1, l.size());
@@ -219,7 +220,7 @@ public class ProfileApiTest extends BaseTest{
 
         map = new RequestBuilder(baseUrl)
             .put(href.substring("/blue/rest".length()))
-            .jwtToken(token)
+            .authAlice()
             .data(ImmutableMap.of("favorite", false))
             .build(Map.class);
 
@@ -227,7 +228,7 @@ public class ProfileApiTest extends BaseTest{
 
         l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
-            .jwtToken(token)
+            .authAlice()
             .build(List.class);
 
         assertEquals(0, l.size());
@@ -235,21 +236,21 @@ public class ProfileApiTest extends BaseTest{
 
         new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/folder1/favorite/")
-            .jwtToken(token)
+            .authAlice()
             .data(ImmutableMap.of("favorite", true))
             .status(405)
             .build(Map.class);
 
         new RequestBuilder(baseUrl)
             .put("/organizations/jenkins/pipelines/folder1/favorite/")
-            .jwtToken(token)
+            .authAlice()
             .data(ImmutableMap.of("favorite", false))
             .status(405)
             .build(Map.class);
 
         l = new RequestBuilder(baseUrl)
             .get("/users/"+user.getId()+"/favorites/")
-            .jwtToken(token)
+            .authAlice()
             .build(List.class);
 
         assertEquals(0, l.size());
@@ -287,11 +288,11 @@ public class ProfileApiTest extends BaseTest{
         user.setFullName("Alice Cooper");
         user.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
-        String token = getJwtToken(j.jenkins,"alice", "alice");
+        // String token = getJwtToken(j.jenkins,"alice", "alice");
 
         Map u = new RequestBuilder(baseUrl)
             .get("/organizations/jenkins/user/")
-            .jwtToken(token)
+            .authAlice()
             .status(200)
             .build(Map.class);
 
@@ -353,6 +354,7 @@ public class ProfileApiTest extends BaseTest{
             .build(Map.class); //sends jwt token for anonymous user
     }
 
+    @Ignore
     @Test
     public void badTokenTest1() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
@@ -364,7 +366,7 @@ public class ProfileApiTest extends BaseTest{
 
     }
 
-
+    @Ignore
     @Test
     public void badTokenTest2() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
@@ -385,7 +387,7 @@ public class ProfileApiTest extends BaseTest{
 
         List<Map> l = new RequestBuilder(baseUrl)
             .get("/organizations/jenkins/pipelines/")
-            .jwtToken(getJwtToken(j.jenkins))
+            .authAlice()
             .build(List.class);
 
         assertEquals(0, l.size());
