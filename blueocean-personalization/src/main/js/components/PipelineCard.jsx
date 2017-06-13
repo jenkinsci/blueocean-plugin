@@ -145,7 +145,7 @@ export class PipelineCard extends Component {
         const isBranch = capable(runnable, BRANCH_CAPABILITY);
         const names = extractNames(runnable, isBranch);
         const organizationName = runnable.organization;
-        const organizationDisplayName = organizationName === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : organizationName
+        const organizationDisplayName = organizationName === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : organizationName;
         const fullDisplayName = isBranch ?
             runnable.fullDisplayName.split('/').slice(0, -1).join('/') :
             runnable.fullDisplayName;
