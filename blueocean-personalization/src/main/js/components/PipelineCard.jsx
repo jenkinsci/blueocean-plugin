@@ -251,7 +251,7 @@ PipelineCard.contextTypes = {
 
 PipelineCard.logger = logging.logger('io.jenkins.blueocean.personalization.PipelineCard');
 
-export const PipelineCardRenderer = (props) => {
+export function PipelineCardRenderer(props) {
     const {
         onClickMain,
         status,
@@ -334,7 +334,7 @@ export const PipelineCardRenderer = (props) => {
             </span>
         </div>
     );
-};
+}
 
 PipelineCardRenderer.propTypes = {
     onClickMain: PropTypes.func,

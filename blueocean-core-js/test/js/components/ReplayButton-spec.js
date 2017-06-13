@@ -1,13 +1,13 @@
-/**
- * Created by cmeyers on 9/16/16.
- */
-
 import React from 'react';
 import { assert } from 'chai';
 import { shallow } from 'enzyme';
 
 import utils from '../../../src/js/utils';
 import { ReplayButton } from '../../../src/js/components/ReplayButton';
+
+
+jest.mock('../../../src/js/i18n/i18n');
+
 
 describe('ReplayButton', () => {
     let pipeline;
