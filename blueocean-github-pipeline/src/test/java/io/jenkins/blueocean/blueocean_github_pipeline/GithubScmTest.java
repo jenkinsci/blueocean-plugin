@@ -19,6 +19,7 @@ import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.GrantedAuthority;
+import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,7 +37,12 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.scm.Scm.CREDENTIAL_ID;
-import static org.powermock.api.mockito.PowerMockito.*;
+import static org.powermock.api.mockito.PowerMockito.doNothing;
+import static org.powermock.api.mockito.PowerMockito.method;
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
+import static org.powermock.api.mockito.PowerMockito.whenNew;
 
 
 /**
@@ -87,7 +93,7 @@ public class GithubScmTest {
         when(httpURLConnectionMock.getHeaderField("X-OAuth-Scopes")).thenReturn("user:email,repo");
         when(httpURLConnectionMock.getResponseCode()).thenReturn(200);
 
-        HttpURLConnection httpURLConnection = GithubScm.connect(GithubScm.DEFAULT_API_URI, "abcd");
+        HttpURLConnection httpURLConnection = GithubScm.connect(GitHubSCMSource.GITHUB_URL, "abcd");
         GithubScm.validateAccessTokenScopes(httpURLConnection);
     }
 
@@ -123,6 +129,10 @@ public class GithubScmTest {
         when(httpURLConnectionMock.getResponseCode()).thenReturn(200);
 
         String guser = "{\n  \"login\": \"joe\",\n  \"id\": 1, \"email\": \"joe@example.com\", \"created_at\": \"2008-01-14T04:33:35Z\"}";
+
+        mockStatic(Stapler.class);
+        StaplerRequest request = mock(StaplerRequest.class);
+        when(Stapler.getCurrentRequest()).thenReturn(request);
 
         when(httpURLConnectionMock.getInputStream()).thenReturn(new ByteArrayInputStream(guser.getBytes("UTF-8")));
 

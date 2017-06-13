@@ -38,7 +38,7 @@ public abstract class BaseTest {
     private static  final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
 
     public BaseTest() {
-        System.setProperty("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION", "true");
+        //System.setProperty("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION", "true");
         j = new JenkinsRule();
     }
     @Rule

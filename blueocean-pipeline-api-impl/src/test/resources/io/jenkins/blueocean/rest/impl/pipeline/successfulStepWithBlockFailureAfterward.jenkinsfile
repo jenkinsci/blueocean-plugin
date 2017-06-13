@@ -1,0 +1,7 @@
+stage ('first') {
+    echo 'Hello world'
+}
+stage ('second') {
+    echo 'Hello world'
+    garbage
+}
