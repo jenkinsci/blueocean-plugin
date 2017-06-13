@@ -22,11 +22,21 @@ describe('Pipelines', () => {
                             data: pipelines,
                         };
                     },
+                    pipelinesPager() {
+                        return {
+                            data: pipelines,
+                        };
+                    },
                 },
             };
 
+            const location = {
+                query: {}
+            };
+
+
             wrapper = shallow(
-                <Pipelines params={context.params} setTitle={() => {}} />,
+                <Pipelines location={location} params={context.params} setTitle={() => {}} />,
                 {
                     context,
                 }
@@ -54,11 +64,20 @@ describe('Pipelines', () => {
                             data: pipelines,
                         };
                     },
+                    pipelinesPager() {
+                        return {
+                            data: pipelines,
+                        };
+                    },
                 },
             };
 
+            const location = {
+                query: {}
+            };
+
             const wrapper = shallow(
-                <Pipelines params={context.params} setTitle={() => {}} />,
+                <Pipelines location={location} params={context.params} setTitle={() => {}} />,
                 { context },
             );
 
@@ -78,12 +97,20 @@ describe('Pipelines', () => {
                             data: pipelinesDupName,
                         };
                     },
+                    pipelinesPager() {
+                        return {
+                            data: pipelines,
+                        };
+                    },
                 },
             };
 
+            const location = {
+                query: {}
+            };
 
             const wrapper = shallow(
-                <Pipelines params={context.params} setTitle={() => {}} />,
+                <Pipelines location={location} params={context.params} setTitle={() => {}} />,
                 { context },
             );
 

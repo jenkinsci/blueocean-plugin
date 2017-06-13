@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.114-SNAPSHOT-jm-b",
+  "version": "0.0.119-SNAPSHOT",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {

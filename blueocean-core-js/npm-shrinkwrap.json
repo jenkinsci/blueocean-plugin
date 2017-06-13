@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.114",
+  "version": "0.0.118-SNAPSHOT-nicu",
   "dependencies": {
     "@jenkins-cd/design-language": {
       "version": "0.0.130-SNAPSHOT-jm-b",
@@ -15,8 +15,8 @@
     },
     "@jenkins-cd/js-extensions": {
       "version": "0.0.36",
-      "from": "@jenkins-cd/js-extensions@0.0.36",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.36.tgz"
+      "from": "@jenkins-cd/js-extensions@0.0.37-nicu-beta2",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.37-nicu-beta2.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.10",

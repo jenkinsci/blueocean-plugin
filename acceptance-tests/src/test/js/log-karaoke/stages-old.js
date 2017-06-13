@@ -59,9 +59,10 @@ module.exports = {
         // validate that karaoke has stopped but overall process still runs
         nodeDetail.waitForElementVisible('g.progress-spinner.running');
         // Validate the result of the node
-        nodeDetail.waitForElementVisible('span.result-item-label')
-            .getText('span.result-item-label', function (result) {
-                this.assert.equal(result.value.startsWith('Shell Script'), true);
+        const stepLabelSelector = '.Steps .logConsole:first-child .result-item-label-name';
+        nodeDetail.waitForElementVisible(stepLabelSelector)
+            .getText(stepLabelSelector, function (result) {
+                this.assert.equal(result.value.indexOf('Shell Script') >= 0, true);
             })
         ;
         // test whether the expand works
