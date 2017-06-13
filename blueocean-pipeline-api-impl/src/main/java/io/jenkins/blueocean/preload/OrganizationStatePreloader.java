@@ -34,6 +34,7 @@ public class OrganizationStatePreloader extends PageStatePreloader {
             new JSONBuilder(writer)
                     .object()
                     .key("name").value(organization.getName())
+                    .key("displayName").value(organization.getDisplayName())
                     // org group such as 'folder1/folder2' is going to be returned as '/folder1/folder2'
                     // root 'jenkins' org will be returned as '/'
                     .key("organizationGroup").value(organizationGroup)

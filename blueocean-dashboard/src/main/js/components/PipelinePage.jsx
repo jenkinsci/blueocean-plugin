@@ -54,8 +54,12 @@ export class PipelinePage extends Component {
         const { location = {} } = this.context;
 
         const { organization, name, fullName, fullDisplayName } = pipeline || {};
-        const orgUrl = buildOrganizationUrl(organization);
-        const activityUrl = buildPipelineUrl(organization, fullName, 'activity');
+        
+        const organizationName = organization || AppConfig.getOrganizationName();
+        const organizationDisplayName = organization === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : organization;
+        
+        const orgUrl = buildOrganizationUrl(organizationName);
+        const activityUrl = buildPipelineUrl(organizationName, fullName, 'activity');
         const isReady = !!pipeline;
 
         if (!pipeline && this.error) {
@@ -64,12 +68,12 @@ export class PipelinePage extends Component {
         }
 
         if (isReady) {
-            setTitle(`${organization} / ${name}`);
+            setTitle(`${organizationDisplayName} / ${name}`);
         } else {
             setTitle(translate('common.pager.loading', { defaultValue: 'Loading...' }));
         }
 
-        const baseUrl = buildPipelineUrl(organization, fullName);
+        const baseUrl = buildPipelineUrl(organizationName, fullName);
 
         const pageTabLinks = [
             <TabLink to="/activity">{ translate('pipelinedetail.common.tab.activity', { defaultValue: 'Activity' }) }</TabLink>,
@@ -81,7 +85,7 @@ export class PipelinePage extends Component {
                 <ContentPageHeader pageTabBase={baseUrl} pageTabLinks={pageTabLinks}>
                     <WeatherIcon score={pipeline.weatherScore} />
                     <h1>
-                        {AppConfig.showOrg() && <span><Link to={orgUrl} query={location.query}>{organization}</Link>
+                        {AppConfig.showOrg() && <span><Link to={orgUrl} query={location.query}>{organizationDisplayName}</Link>
                             <span>&nbsp;/&nbsp;</span></span>}
                             <Link to={activityUrl} query={location.query}>
                                 <ExpandablePath path={fullDisplayName} hideFirst className="dark-theme" iconSize={20} />
@@ -97,7 +101,7 @@ export class PipelinePage extends Component {
             ) : (
                 <ContentPageHeader pageTabBase={baseUrl} pageTabLinks={pageTabLinks}>
                     <h1>
-                        <Link to={orgUrl}>{organization}</Link>
+                        <Link to={orgUrl}>{organizationDisplayName}</Link>
                         <span> / </span>
                     </h1>
                 </ContentPageHeader>
