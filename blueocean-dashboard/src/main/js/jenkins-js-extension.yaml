@@ -2,6 +2,8 @@
 # NB: "component" currently maps to modules, not "symbols" so make sure to "export default"
 # WARNING: If you change this you'll have to change io.jenkins.blueocean.jsextensions.JenkinsJSExtensionsTest as well :(
 extensions:
+  - component: TopPipelinesLink
+    extensionPoint: jenkins.blueocean.top.pipelines
   - component: AdminNavLink
     extensionPoint: jenkins.logo.top
   - component: PipelineRoutes
