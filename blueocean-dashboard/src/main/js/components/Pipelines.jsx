@@ -20,7 +20,7 @@ export class Pipelines extends Component {
     componentWillMount() {
         this.setState({ searchText: this.getSearchText() });
     }
-    
+
     onChange = value => {
         this.setState({ searchText: value });
         this.updateSearchText(value);
@@ -50,13 +50,10 @@ export class Pipelines extends Component {
         this._initPager();
 
         const pipelines = this.pager.data;
-        const { organization, location = { } } = this.context.params;
+        const { organization } = this.context.params;
 
         const orgLink = organization ?
-            <Link
-                to={ `organizations/${organization}` }
-                query={ location.query }
-            >
+            <Link to={`organizations/${organization}`}>
                 { organization }
             </Link> : '';
 
@@ -78,14 +75,14 @@ export class Pipelines extends Component {
                     <div className="u-flex-grow">
                         <Extensions.Renderer extensionPoint="jenkins.pipeline.header">
                             <h1>
-                                <Link to="/" query={ location.query }>
+                                <Link to="/">
                                     { translate('home.header.dashboard', { defaultValue: 'Dashboard' }) }
                                 </Link>
                                 { AppConfig.showOrg() && organization && ' / ' }
                                 { AppConfig.showOrg() && organization && orgLink }
                             </h1>
                         </Extensions.Renderer>
-                        
+
                         <div className="TextInput search-pipelines-input u-icon-left" iconLeft="search">
                             <div className="TextInput-icon u-icon-left">
                                 <Icon icon="search" />
@@ -150,7 +147,6 @@ Pipelines.contextTypes = {
     store: object,
     router: object,
     pipelineService: object,
-    location: object.isRequired, // From react-router
 };
 
 Pipelines.propTypes = {
