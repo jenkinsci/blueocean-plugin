@@ -34,6 +34,11 @@ export class Pipelines extends Component {
         this.context.router.push(`${this.props.location.pathname}${updateGetParam('search', encodeURIComponent(value), this.props.location.query)}`);
     }, 200);
 
+    clearSearchInputText = () => {
+        this.setState({ searchText: '' });
+        this.context.router.push(`${this.props.location.pathname}${updateGetParam('search', '', this.props.location.query)}`);
+    }
+
     render() {
         const { organization, location = { } } = this.context.params;
         const organizationName = organization || AppConfig.getOrganizationName();
@@ -81,7 +86,10 @@ export class Pipelines extends Component {
                             <div className="TextInput-icon u-icon-left">
                                 <Icon icon="search" />
                             </div>
-                            <input className="TextInput-control" value={this.state.searchText} placeholder="Search pipelines..." onChange={(e) => {this.onChange(e.target.value ? e.target.value : '');}} />
+                            <input className="fastsearch-input TextInput-control" value={this.state.searchText} placeholder="Search pipelines..." onChange={(e) => {this.onChange(e.target.value ? e.target.value : '');}} />
+                            <div className="TextInput-icon clear-icon-container" onClick={this.clearSearchInputText}>
+                                <Icon icon="clear" />
+                            </div>
                         </div>
                     </div>
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
