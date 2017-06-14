@@ -1,8 +1,6 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
-import org.apache.commons.httpclient.URIException;
-import org.apache.commons.httpclient.util.URIUtil;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
@@ -16,20 +14,13 @@ public class GithubEnterpriseScmCredential {
         this.credential = credential;
     }
 
-    @Exported(name = "id")
-    public String getId() {
+    @Exported
+    public String getCredentialId() {
         return this.credential.getId();
     }
 
-    @Exported(name = "apiUri")
+    @Exported
     public String getApiUri() {
-        return getId().substring(getId().indexOf(":") + 1);
-        /*
-        try {
-            return URIUtil.decode(encodedUri);
-        } catch (URIException e) {
-            return "";
-        }
-        */
+        return getCredentialId().substring(getCredentialId().indexOf(":") + 1);
     }
 }
