@@ -12,7 +12,8 @@ import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 
 @Restricted(NoExternalUse.class)
-public class InvalidatingJobCache<T> {
+@Extension
+public class InvalidatingJobCache<T> extends ItemListener {
 
     private final Cache<String, T> cache;
 
@@ -28,20 +29,16 @@ public class InvalidatingJobCache<T> {
         }
     }
 
-    @Extension
-    public class ListenerImpl extends ItemListener {
-
-        @Override
-        public void onLocationChanged(Item item, String oldFullName, String newFullName) {
-            T cacheValue = cache.getIfPresent(oldFullName);
-            if (cacheValue != null) {
-                cache.put(newFullName, cacheValue);
-            }
+    @Override
+    public void onLocationChanged(Item item, String oldFullName, String newFullName) {
+        T cacheValue = cache.getIfPresent(oldFullName);
+        if (cacheValue != null) {
+            cache.put(newFullName, cacheValue);
         }
+    }
 
-        @Override
-        public void onDeleted(Item item) {
-            cache.invalidate(item.getFullName());
-        }
+    @Override
+    public void onDeleted(Item item) {
+        cache.invalidate(item.getFullName());
     }
 }
