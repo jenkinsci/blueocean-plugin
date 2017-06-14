@@ -33,16 +33,6 @@ export class Pipelines extends Component {
         this.updateSearchText(value);
     };
 
-    // Figure out how many extensions we have for the action buttons column so we can size it appropriately
-    _countExtensions() {
-        Extensions.store.getExtensions('jenkins.pipeline.list.action', extensions => {
-            const count = extensions && typeof(extensions.length) === 'number' ? extensions.length : 0;
-            if (count !== this.state.actionExtensionCount) {
-                this.setState({ actionExtensionCount: count });
-            }
-        });
-    }
-
     getSearchText() {
         return this.props.location.query.search ? decodeURIComponent(this.props.location.query.search) : '';
     }
@@ -54,6 +44,16 @@ export class Pipelines extends Component {
     clearSearchInputText = () => {
         this.setState({ searchText: '' });
         this.context.router.push(`${this.props.location.pathname}${updateGetParam('search', '', this.props.location.query)}`);
+    };
+
+    // Figure out how many extensions we have for the action buttons column so we can size it appropriately
+    _countExtensions() {
+        Extensions.store.getExtensions('jenkins.pipeline.list.action', extensions => {
+            const count = extensions && typeof(extensions.length) === 'number' ? extensions.length : 0;
+            if (count !== this.state.actionExtensionCount) {
+                this.setState({ actionExtensionCount: count });
+            }
+        });
     }
 
     _initPager() {
