@@ -1,5 +1,7 @@
 package io.jenkins.blueocean.service.embedded;
 
+import com.google.common.base.Supplier;
+import com.google.common.base.Suppliers;
 import com.google.inject.Binder;
 import com.google.inject.Inject;
 import com.google.inject.Module;
@@ -27,6 +29,12 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
     private static final String URL_BASE="blue";
 
     private final boolean enableJWT = BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION;
+    private static final Supplier<String> SESSION_HASH = Suppliers.memoize(new Supplier<String>() {
+        @Override
+        public String get() {
+            return Jenkins.SESSION_HASH;
+        }
+    });
 
     @Inject
     private BlueOceanUI app;
@@ -65,7 +73,7 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
         }
 
         // frontend uses this to determine when to reload
-        Stapler.getCurrentResponse().setHeader("X-Blueocean-Refresher", Jenkins.SESSION_HASH);
+        Stapler.getCurrentResponse().setHeader("X-Blueocean-Refresher", SESSION_HASH.get());
 
         return app;
     }
