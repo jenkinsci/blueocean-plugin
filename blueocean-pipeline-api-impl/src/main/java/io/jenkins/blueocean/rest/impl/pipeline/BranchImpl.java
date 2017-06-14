@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.cloudbees.hudson.plugins.folder.computed.ComputedFolder;
+import com.google.common.cache.CacheBuilder;
 import hudson.Extension;
 import hudson.Util;
 import hudson.model.BuildableItem;
@@ -23,6 +24,9 @@ import jenkins.scm.api.mixin.ChangeRequestSCMHead;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+
+import java.util.concurrent.Callable;
+import java.util.concurrent.TimeUnit;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_BRANCH;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_JOB;
@@ -94,6 +98,10 @@ public class BranchImpl extends PipelineImpl {
     @ExportedBean
     public static class Branch {
 
+        private static final InvalidatingJobCache<Branch> CACHE = new InvalidatingJobCache<>(
+            CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).<String, Branch>build()
+        );
+
         public static final String BRANCH = "branch";
         private static final String BRANCH_URL = "url";
         private static final String BRANCH_PRIMARY = "isPrimary";
@@ -116,19 +124,28 @@ public class BranchImpl extends PipelineImpl {
             return primary;
         }
 
-        public static Branch getBranch(Job job) {
-            ObjectMetadataAction om = job.getAction(ObjectMetadataAction.class);
-            PrimaryInstanceMetadataAction pima = job.getAction(PrimaryInstanceMetadataAction.class);
-            if (om == null && pima == null) {
-                return null;
-            }
-            String url = om != null && om.getObjectUrl() != null ? om.getObjectUrl() : null;
-            return new Branch(url, pima != null);
+        public static Branch getBranch(final Job job) {
+            return CACHE.get(job.getFullName(), new Callable<Branch>() {
+                @Override
+                public Branch call() throws Exception {
+                    ObjectMetadataAction om = job.getAction(ObjectMetadataAction.class);
+                    PrimaryInstanceMetadataAction pima = job.getAction(PrimaryInstanceMetadataAction.class);
+                    if (om == null && pima == null) {
+                        return null;
+                    }
+                    String url = om != null && om.getObjectUrl() != null ? om.getObjectUrl() : null;
+                    return new Branch(url, pima != null);
+                }
+            });
         }
     }
 
     @ExportedBean
     public static class PullRequest {
+
+        private static final InvalidatingJobCache<PullRequest> CACHE = new InvalidatingJobCache<>(
+            CacheBuilder.newBuilder().expireAfterAccess(1, TimeUnit.HOURS).<String, PullRequest>build()
+        );
 
         public static final String PULL_REQUEST = "pullRequest";
         private static final String PULL_REQUEST_NUMBER = "id";
@@ -174,21 +191,26 @@ public class BranchImpl extends PipelineImpl {
             return author;
         }
 
-        public static PullRequest get(Job job) {
-            // TODO probably want to be using SCMHeadCategory instances to categorize them instead of hard-coding for PRs
-            SCMHead head = SCMHead.HeadByItem.findHead(job);
-            if(head instanceof ChangeRequestSCMHead) {
-                ChangeRequestSCMHead cr = (ChangeRequestSCMHead)head;
-                ObjectMetadataAction om = job.getAction(ObjectMetadataAction.class);
-                ContributorMetadataAction cm = job.getAction(ContributorMetadataAction.class);
-                return new PullRequest(
-                    cr.getId(),
-                    om != null ? om.getObjectUrl() : null,
-                    om != null ? om.getObjectDisplayName() : null,
-                    cm != null ? cm.getContributor() : null
-                );
-            }
-            return null;
+        public static PullRequest get(final Job job) {
+            return CACHE.get(job.getFullName(), new Callable<PullRequest>() {
+                @Override
+                public PullRequest call() throws Exception {
+                    // TODO probably want to be using SCMHeadCategory instances to categorize them instead of hard-coding for PRs
+                    SCMHead head = SCMHead.HeadByItem.findHead(job);
+                    if(head instanceof ChangeRequestSCMHead) {
+                        ChangeRequestSCMHead cr = (ChangeRequestSCMHead)head;
+                        ObjectMetadataAction om = job.getAction(ObjectMetadataAction.class);
+                        ContributorMetadataAction cm = job.getAction(ContributorMetadataAction.class);
+                        return new PullRequest(
+                            cr.getId(),
+                            om != null ? om.getObjectUrl() : null,
+                            om != null ? om.getObjectDisplayName() : null,
+                            cm != null ? cm.getContributor() : null
+                        );
+                    }
+                    return null;
+                }
+            });
         }
     }
 }
