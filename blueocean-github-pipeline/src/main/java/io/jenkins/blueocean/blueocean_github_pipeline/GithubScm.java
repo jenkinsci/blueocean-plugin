@@ -7,6 +7,7 @@ import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
@@ -38,10 +39,7 @@ import org.kohsuke.stapler.json.JsonBody;
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
+import java.net.*;
 import java.util.*;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
@@ -84,6 +82,13 @@ public class GithubScm extends Scm {
 
     @Override
     public @Nonnull String getUri() {
+        String apiUri = getCustomApiUri();
+
+        // NOTE: GithubScm only uses a custom apiUri in the context of automated tests
+        if (!StringUtils.isEmpty(apiUri)) {
+            return apiUri;
+        }
+
         return GitHubSCMSource.GITHUB_URL;
     }
 
@@ -172,6 +177,32 @@ public class GithubScm extends Scm {
 
     protected String createCredentialId(@Nonnull String apiUrl) {
         return ID;
+    }
+
+    protected @Nonnull String getCustomApiUri() {
+        StaplerRequest request = Stapler.getCurrentRequest();
+        Preconditions.checkNotNull(request, "Must be called in HTTP request context");
+        String apiUri = request.getParameter("apiUrl");
+        String customUrl = "";
+
+        // if "apiUrl" parameter was supplied, parse and normalize it for later use
+        if (!StringUtils.isEmpty(apiUri)) {
+            java.net.URI uri;
+
+            try {
+                uri = new URI(apiUri);
+            } catch (URISyntaxException ex) {
+                throw new ServiceException.BadRequestException(new ErrorMessage(400, "Invalid URI: " + apiUri));
+            }
+
+            customUrl = uri.toString();
+
+            if (customUrl.endsWith("/")) {
+                customUrl = customUrl.substring(0, customUrl.length() - 1);
+            }
+        }
+
+        return customUrl;
     }
 
      private static String getCredentialIdFromRequest(StaplerRequest request){

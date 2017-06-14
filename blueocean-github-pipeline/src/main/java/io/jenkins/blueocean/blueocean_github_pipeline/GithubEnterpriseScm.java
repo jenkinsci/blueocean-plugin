@@ -13,6 +13,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
+import org.parboiled.common.StringUtils;
 
 import javax.annotation.Nonnull;
 import java.net.URI;
@@ -40,24 +41,14 @@ public class GithubEnterpriseScm extends GithubScm {
 
     @Override
     public @Nonnull String getUri() {
-        StaplerRequest request = Stapler.getCurrentRequest();
-        Preconditions.checkNotNull(request, "Must be called in HTTP request context");
-        String apiUri = request.getParameter("apiUrl");
-        URI uri;
+        String apiUri = getCustomApiUri();
 
-        try {
-            uri = new URI(apiUri);
-        } catch (URISyntaxException ex) {
-            throw new ServiceException.UnexpectedErrorException(new ErrorMessage(400, "Invalid URI: "+apiUri));
+        // NOTE: GithubEnterpriseScm requires that the apiUri be specified
+        if (StringUtils.isEmpty(apiUri)) {
+            throw new ServiceException.BadRequestException(new ErrorMessage(400, "URI is required"));
         }
 
-        String trimmedUri = uri.toString();
-
-        if (trimmedUri.endsWith("/")) {
-            trimmedUri = trimmedUri.substring(0, trimmedUri.length() - 1);
-        }
-
-        return trimmedUri;
+        return apiUri;
     }
 
     @Override
