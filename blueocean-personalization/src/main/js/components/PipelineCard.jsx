@@ -144,7 +144,8 @@ export class PipelineCard extends Component {
 
         const isBranch = capable(runnable, BRANCH_CAPABILITY);
         const names = extractNames(runnable, isBranch);
-        const organization = runnable.organization;
+        const organizationName = runnable.organization;
+        const organizationDisplayName = organizationName === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : organizationName;
         const fullDisplayName = isBranch ?
             runnable.fullDisplayName.split('/').slice(0, -1).join('/') :
             runnable.fullDisplayName;
@@ -165,12 +166,12 @@ export class PipelineCard extends Component {
 
         const commitText = commitId ? commitId.substr(0, 7) : '';
 
-        const activityUrl = `/organizations/${encodeURIComponent(organization)}/` +
+        const activityUrl = `/organizations/${encodeURIComponent(organizationName)}/` +
         `${encodeURIComponent(names.fullName)}/activity`;
 
         let displayPath;
         if (AppConfig.showOrg()) {
-            displayPath = `${organization}/${fullDisplayName}`;
+            displayPath = `${organizationDisplayName}/${fullDisplayName}`;
         } else {
             displayPath = fullDisplayName;
         }
@@ -250,7 +251,7 @@ PipelineCard.contextTypes = {
 
 PipelineCard.logger = logging.logger('io.jenkins.blueocean.personalization.PipelineCard');
 
-export const PipelineCardRenderer = (props) => {
+export function PipelineCardRenderer(props) {
     const {
         onClickMain,
         status,
@@ -333,7 +334,7 @@ export const PipelineCardRenderer = (props) => {
             </span>
         </div>
     );
-};
+}
 
 PipelineCardRenderer.propTypes = {
     onClickMain: PropTypes.func,

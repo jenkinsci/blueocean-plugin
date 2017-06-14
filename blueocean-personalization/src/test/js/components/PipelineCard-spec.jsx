@@ -5,7 +5,8 @@ import React from 'react';
 import { assert } from 'chai';
 import { shallow } from 'enzyme';
 
-import { PipelineCard } from '../../../main/js/components/PipelineCard';
+import { mockExtensionsForI18n } from '../mock-extensions-i18n';
+import { PipelineCard, PipelineCardRenderer } from '../../../main/js/components/PipelineCard';
 
 function clone(object) {
     return JSON.parse(JSON.stringify(object));
@@ -14,15 +15,8 @@ function clone(object) {
 const context = {
     params: {},
     config: {
-        getServerBrowserTimeSkewMillis: () => 0
+        getServerBrowserTimeSkewMillis: () => 0,
     },
-    activityService: {
-        activityPager() {
-            return {
-                data: data
-            }
-        }
-    }
 };
 
 // Dummy translation
@@ -33,34 +27,33 @@ describe('PipelineCard', () => {
     let item;
     let favorite;
 
-    function shallowRenderCard() {
-        return shallow(
-            <PipelineCard runnable={item} favorite={favorite} t={t}/>, {context}
-        );
-    }
-
     beforeEach(() => {
         const favorites = clone(require('../data/favorites.json'));
 
         item = favorites[0].item;
         item._capabilities = ['io.jenkins.blueocean.rest.model.BlueBranch'];
         favorite = true;
+
+        mockExtensionsForI18n();
     });
 
     it('renders without error for empty props', () => {
-        const wrapper = shallow(
-            <PipelineCard t={t}/>, {context}
+        const wrapper1 = shallow(
+            <PipelineCard t={t} />,
+            { context },
         );
 
-        assert.isOk(wrapper);
+        assert.isOk(wrapper1);
     });
 
     it('renders with correct props', () => {
         item.latestRun.result = 'SUCCESS';
-        const wrapper = shallowRenderCard();
+        const wrapper = shallow(
+            <PipelineCard runnable={item} favorite={favorite} t={t} />,
+            { context }
+        );
 
         assert.equal(wrapper.find('PipelineCardRenderer').length, 1);
-
         assert.equal(wrapper.prop('status'), 'SUCCESS');
         assert.equal(wrapper.prop('startTime'), '2016-05-24T08:57:04.432-0400');
         assert.equal(wrapper.prop('estimatedDuration'), 73248);

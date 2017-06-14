@@ -81,7 +81,7 @@ class RunDetailsHeader extends Component {
         // Sub-trees
         const title = (
             <h1 className="RunDetailsHeader-title">
-                {AppConfig.showOrg() && <span><a onClick={ onOrganizationClick }>{ run.organization }</a>
+                {AppConfig.showOrg() && <span><a onClick={ onOrganizationClick }>{ run.organization === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : run.organization }</a>
                 <span>&nbsp;/&nbsp;</span></span>}
                 <a className="path-link" onClick={ onNameClick }>
                     <ExpandablePath path={ fullDisplayName } hideFirst className="dark-theme" iconSize={ 20 } />

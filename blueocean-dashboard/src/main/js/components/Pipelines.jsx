@@ -56,26 +56,22 @@ export class Pipelines extends Component {
         });
     }
 
-    _initPager() {
-        const org = this.props.params.organization ? this.props.params.organization : AppConfig.getOrganizationName();
-        const searchText = this.getSearchText();
-
-        this.pager = this.context.pipelineService.pipelinesPager(org, searchText);
-    }
-
     render() {
-        this._initPager();
-
-        const pipelines = this.pager.data;
         const { organization, location = { } } = this.context.params;
         const { actionExtensionCount } = this.state;
+        const organizationName = organization || AppConfig.getOrganizationName();
+        const organizationDisplayName = organization === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : organization;
 
-        const orgLink = organization ?
+        const searchText = this.getSearchText();
+        this.pager = this.context.pipelineService.pipelinesPager(organizationName, searchText);
+        const pipelines = this.pager.data;
+
+        const orgLink = organizationName ?
             <Link
-                to={ `organizations/${organization}` }
+                to={ `organizations/${organizationName}` }
                 query={ location.query }
             >
-                { organization }
+                { organizationDisplayName }
             </Link> : '';
 
         const showPipelineList = pipelines && pipelines.length > 0;
@@ -100,7 +96,7 @@ export class Pipelines extends Component {
                 <PipelineRowItem
                     t={ translate }
                     key={ key } pipeline={ pipeline }
-                    showOrganization={ AppConfig.showOrg() && !organization }
+                    showOrganization={ AppConfig.showOrg() && !organizationName }
                 />
             );
         });
@@ -116,8 +112,8 @@ export class Pipelines extends Component {
                                 <Link to="/" query={ location.query }>
                                     { translate('home.header.dashboard', { defaultValue: 'Dashboard' }) }
                                 </Link>
-                                { AppConfig.showOrg() && organization && ' / ' }
-                                { AppConfig.showOrg() && organization && orgLink }
+                                { AppConfig.showOrg() && organizationName && ' / ' }
+                                { AppConfig.showOrg() && organizationName && orgLink }
                             </h1>
                         </Extensions.Renderer>
 
