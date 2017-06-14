@@ -31,28 +31,29 @@ export class Pipelines extends Component {
     }
 
     updateSearchText = debounce(value => {
-        this.context.router.push(`${this.props.location.pathname}${updateGetParam('search', value, this.props.location.query)}`);
+        this.context.router.push(`${this.props.location.pathname}${updateGetParam('search', encodeURIComponent(value), this.props.location.query)}`);
     }, 200);
 
-    _initPager() {
-        const org = this.props.params.organization ? this.props.params.organization : AppConfig.getOrganizationName();
-        const searchText = this.getSearchText();
-
-        this.pager = this.context.pipelineService.pipelinesPager(org, searchText);
+    clearSearchInputText = () => {
+        this.setState({ searchText: '' });
+        this.context.router.push(`${this.props.location.pathname}${updateGetParam('search', '', this.props.location.query)}`);
     }
 
     render() {
-        this._initPager();
-
-        const pipelines = this.pager.data;
         const { organization, location = { } } = this.context.params;
-
-        const orgLink = organization ?
+        const organizationName = organization || AppConfig.getOrganizationName();
+        const organizationDisplayName = organization === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : organization;
+        
+        const searchText = this.getSearchText();
+        this.pager = this.context.pipelineService.pipelinesPager(organizationName, searchText);
+        const pipelines = this.pager.data;
+        
+        const orgLink = organizationName ?
             <Link
-                to={ `organizations/${organization}` }
+                to={ `organizations/${organizationName}` }
                 query={ location.query }
             >
-                { organization }
+                { organizationDisplayName }
             </Link> : '';
 
         const showPipelineList = pipelines && pipelines.length > 0;
@@ -76,8 +77,8 @@ export class Pipelines extends Component {
                                 <Link to="/" query={ location.query }>
                                     { translate('home.header.dashboard', { defaultValue: 'Dashboard' }) }
                                 </Link>
-                                { AppConfig.showOrg() && organization && ' / ' }
-                                { AppConfig.showOrg() && organization && orgLink }
+                                { AppConfig.showOrg() && organizationName && ' / ' }
+                                { AppConfig.showOrg() && organizationName && orgLink }
                             </h1>
                         </Extensions.Renderer>
                         
@@ -85,7 +86,10 @@ export class Pipelines extends Component {
                             <div className="TextInput-icon u-icon-left">
                                 <Icon icon="search" />
                             </div>
-                            <input className="TextInput-control" value={this.state.searchText} placeholder="Search pipelines..." onChange={(e) => {this.onChange(e.target.value ? e.target.value : '');}} />
+                            <input className="fastsearch-input TextInput-control" value={this.state.searchText} placeholder="Search pipelines..." onChange={(e) => {this.onChange(e.target.value ? e.target.value : '');}} />
+                            <div className="TextInput-icon clear-icon-container" onClick={this.clearSearchInputText}>
+                                <Icon icon="clear" />
+                            </div>
                         </div>
                     </div>
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.create.action">
@@ -119,7 +123,7 @@ export class Pipelines extends Component {
                                     <PipelineRowItem
                                         t={ translate }
                                         key={ key } pipeline={ pipeline }
-                                        showOrganization={ AppConfig.showOrg() && !organization }
+                                        showOrganization={ AppConfig.showOrg() && !organizationName }
                                     />
                                 );
                             })

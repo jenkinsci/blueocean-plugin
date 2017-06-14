@@ -7,6 +7,7 @@ import { PipelineRecord, RunsRecord } from '../../main/js/components/records.jsx
 import { CapabilityRecord } from '../../main/js/components/Capability.jsx';
 
 import Branches from '../../main/js/components/Branches.jsx';
+import { mockExtensionsForI18n } from './mock-extensions-i18n';
 
 const t = () => {};
 
@@ -15,6 +16,8 @@ const capabilities = {
 };
 
 describe('Branches should render', () => {
+    beforeAll(() => mockExtensionsForI18n());
+
     it('renders the Branches', () => {
         const pipeline = new PipelineRecord(pipelines[0]);
         const branch = new RunsRecord(runs[0]);
@@ -34,6 +37,8 @@ describe('Branches should render', () => {
 });
 
 describe('Branches should not render', () => {
+    beforeAll(() => mockExtensionsForI18n());
+
     it('renders the Branches', () => {
         const wrapper = shallow(<Branches t={t} />);
         assert.equal(wrapper.text(), '');

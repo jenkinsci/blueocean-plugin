@@ -1,0 +1,8 @@
+node {
+    stage ("stage 1 marked as unstable") {
+        currentBuild.result = 'UNSTABLE';
+    }
+    stage ("stage 2 wait") {
+        sleep 5
+    }
+}
