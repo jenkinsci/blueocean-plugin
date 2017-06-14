@@ -4,6 +4,10 @@ import { shallow } from 'enzyme';
 
 import { PipelinePage } from '../../main/js/components/PipelinePage.jsx';
 
+import { mockExtensionsForI18n } from './mock-extensions-i18n';
+mockExtensionsForI18n();
+
+
 const params = {
       organization: 'jenkins',
       pipeline: 'asdf',
@@ -12,7 +16,7 @@ const context = {
   pipelineService: {
     fetchPipeline() {
       return Promise.resolve(5);
-    }, 
+    },
     getPipeline() {
       return null;
     }
@@ -36,6 +40,8 @@ const contextFailed = {
     }
 };
 describe("PipelinePage", () => {
+  beforeAll(() => mockExtensionsForI18n());
+
   const pipeline = {
     'displayName': 'beers',
     'name': 'beers',
@@ -54,7 +60,7 @@ describe("PipelinePage", () => {
     }
   };
 
-  
+
   it("shows 404 for failure", () => {
     let wrapper;
     wrapper = shallow(<PipelinePage params={params} setTitle={()=>{}}/>, { context });
