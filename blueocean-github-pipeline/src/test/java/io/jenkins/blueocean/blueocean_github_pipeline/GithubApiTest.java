@@ -51,14 +51,37 @@ public class GithubApiTest extends GithubMockBase {
 
     @Test
     public void validateGithubEnterpriseToken() throws IOException, UnirestException {
-        //check credentialId of this SCM, should be null
+        String credentialId = createGithubEnterpriseCredential();
+        //check if this credentialId is created in correct user domain
+        Domain domain = CredentialsUtils.findDomain(credentialId, user);
+        assertEquals("blueocean-github-enterprise-domain", domain.getName());
+
+        //now that there is github credentials setup, calling scm api to get credential should simply return that.
         Map r = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .get("/organizations/jenkins/scm/github-enterprise/")
                 .build(Map.class);
+
         Assert.assertNull(r.get("credentialId"));
         assertEquals("github-enterprise", r.get("id"));
+        List credentials = (List) r.get("credentials");
+        assertNotNull(credentials);
+        assertEquals(credentials.size(), 1);
+        Map<String, Object> credential = (Map<String, Object>) credentials.get(0);
+        assertEquals(githubApiUrl, credential.get("apiUri"));
+        assertEquals(credentialId, credential.get("credentialId"));
+    }
+
+    @Test
+    public void validateGithubEnterpriseToken_apiUrlRequired() throws UnirestException {
+        Map r = new RequestBuilder(baseUrl)
+            .data(ImmutableMap.of("accessToken", accessToken))
+            .status(400)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .put("/organizations/jenkins/scm/github-enterprise/validate")
+            .build(Map.class);
+        assertEquals(400, r.get("code"));
     }
 
     @Test

@@ -14,6 +14,7 @@ import com.cloudbees.plugins.credentials.domains.PathSpecification;
 import com.cloudbees.plugins.credentials.domains.SchemeSpecification;
 import com.google.common.base.Optional;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -116,6 +117,23 @@ public class CredentialsUtils {
                         domainRequirements),
                 CredentialsMatchers.allOf(CredentialsMatchers.withId(credentialId))
         );
+    }
+
+    public static @Nonnull <C extends Credentials> List<C> findCredentials(@Nonnull Class<C> type, @Nonnull User user, @Nonnull String domainName) {
+        CredentialsStore store = findUserStoreFirstOrNull(user);
+
+        if (store == null) {
+            return ImmutableList.of();
+        }
+
+        Domain domain = store.getDomainByName(domainName);
+
+        if (domain == null) {
+            return ImmutableList.of();
+        }
+
+        List<C> filtered = (List<C>) CredentialsMatchers.filter(store.getCredentials(domain), CredentialsMatchers.instanceOf(type));
+        return filtered;
     }
 
     private static @CheckForNull CredentialsStore findUserStoreFirstOrNull(User user){

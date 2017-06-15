@@ -8,13 +8,18 @@ import RunDetailsChanges from '../../main/js/components/RunDetailsChanges';
 
 const t = i18nTranslator('blueocean-dashboard');
 
+import { mockExtensionsForI18n } from './mock-extensions-i18n';
+mockExtensionsForI18n();
+
 describe('RunDetailsChanges', () => {
+    beforeAll(() => mockExtensionsForI18n());
+
     let component;
     let tree;
     let output;
 
     describe('empty runs / bad data', () => {
-        before(() => {
+        beforeAll(() => {
             component = (
                 <RunDetailsChanges t={t} />
             );
@@ -28,7 +33,7 @@ describe('RunDetailsChanges', () => {
     });
 
     describe('empty changeSet', () => {
-        before(() => {
+        beforeAll(() => {
             component = (
                 <RunDetailsChanges
                   t={t}
@@ -45,7 +50,7 @@ describe('RunDetailsChanges', () => {
     });
 
     describe('valid changeSet', () => {
-        before(() => {
+        beforeAll(() => {
             const runs = latestRuns.map(run => (run.latestRun));
             component = (
                 <RunDetailsChanges

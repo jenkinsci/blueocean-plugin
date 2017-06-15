@@ -3,6 +3,8 @@
 HERE=$(dirname $0)
 cd $HERE
 
+# Useful to rebuild an already existing image, in case it's broken
+FORCE_REBUILD=${FORCE_REBUILD:-$false}
 BLUEOCEAN_VERSION=$(git for-each-ref --sort=-taggerdate refs/tags/blueocean-parent-\*  | grep -v 'beta' | head -1 |awk '{print $3 }' | sed 's/refs\/tags\/blueocean-parent-//')
 
 # Check we have the latest LTS for blue ocean to build on and get its image ID
@@ -14,10 +16,12 @@ LTS_IMAGE_ID=$(docker images jenkinsci/jenkins:lts-alpine | sed -n 2p | awk '{ p
 # A new LTS means there may be security fixes
 FULL_VERSION="$BLUEOCEAN_VERSION-$LTS_IMAGE_ID"
 
-# Check if the image already exists
-if docker pull jenkinsci/blueocean:$FULL_VERSION; then
-  echo "Image jenkinsci/blueocean:$FULL_VERSION already exists in Docker Hub"
-  exit 0
+if [ ! $FORCE_REBUILD ]; then
+  # Check if the image already exists
+  if docker pull jenkinsci/blueocean:$FULL_VERSION; then
+    echo "Image jenkinsci/blueocean:$FULL_VERSION already exists in Docker Hub"
+    exit 0
+  fi
 fi
 
 # Build the image

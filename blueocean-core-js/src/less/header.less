@@ -149,11 +149,30 @@
         }
     }
 
+    .clear-icon-container {
+        display: none;
+        width: 16px;
+    }
+    .fastsearch-input:not([value=""]) ~ .clear-icon-container {
+        display: block;
+        right: 0;
+
+        .clear {
+            width: 16px;
+            cursor: pointer;
+            path {
+                fill: rgba(255, 255, 255, 0.5)
+            }
+        }
+    }
+
     input.TextInput-control {
+        width: 250px;
         border: none;
         color: #ffffff;
         font-size: 18px;
         padding-top: 0px;
+        padding-right: 41px;
         padding-bottom: 0px;
         padding-left: 30px;
         cursor: pointer;
@@ -175,7 +194,7 @@
 
         &:focus {
             padding-left: 30px;
-            width: auto;
+            width: 250px;
             cursor: inherit;
 
             &::-webkit-input-placeholder {
@@ -189,6 +208,10 @@
             }
         }
     }
+}
+
+.no-search-results-container {
+    text-align: center;
 }
 
 /* End of TODO */

@@ -5,13 +5,18 @@ import path from 'path';
 import {convertJenkinsNodeGraph} from '../../main/js/components/PipelineRunGraph.jsx';
 
 import {StatusIndicator} from '@jenkins-cd/design-language';
+
+import { mockExtensionsForI18n } from './mock-extensions-i18n';
+
+
 const validResultValues = StatusIndicator.validResultValues;
 
 describe("pipeline graph data converter /", () => {
 
     let jsonDir = null;
 
-    before(() => {
+    beforeAll(() => {
+        mockExtensionsForI18n();
         jsonDir = path.resolve(__dirname, "../json/pipeline-graph-converter/");
     });
 
@@ -42,7 +47,7 @@ describe("pipeline graph data converter /", () => {
         let testDataJSON = null;
         let testData = null;
 
-        before(() => {
+        beforeAll(() => {
             testDataJSON = fs.readFileSync(path.resolve(jsonDir, "single-node.json"));
         });
 
@@ -71,7 +76,7 @@ describe("pipeline graph data converter /", () => {
         let testDataJSON = null;
         let testData = null;
 
-        before(() => {
+        beforeAll(() => {
             testDataJSON = fs.readFileSync(path.resolve(jsonDir, "three-nodes.json"));
         });
 
@@ -114,7 +119,7 @@ describe("pipeline graph data converter /", () => {
         let testDataJSON = null;
         let testData = null;
 
-        before(() => {
+        beforeAll(() => {
             testDataJSON = fs.readFileSync(path.resolve(jsonDir, "pipeline-nodes-example.json"));
         });
 
@@ -174,7 +179,7 @@ describe("pipeline graph data converter /", () => {
         let testDataJSON = null;
         let testData = null;
 
-        before(() => {
+        beforeAll(() => {
             testDataJSON = fs.readFileSync(path.resolve(jsonDir, "ends-with-parallel.json"));
         });
 
@@ -226,7 +231,7 @@ describe("pipeline graph data converter /", () => {
         let testDataJSON = null;
         let testData = null;
 
-        before(() => {
+        beforeAll(() => {
             testDataJSON = fs.readFileSync(path.resolve(jsonDir, "every-result.json"));
         });
 
