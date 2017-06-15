@@ -129,11 +129,11 @@ describe('PipelineRowItem', () => {
             const path = nameCol.find('ExpandablePath');
             assert.equal(path.props().path, pipelineMulti.fullDisplayName);
 
-            const multibranchCol = columns.at(2).find('Link').shallow();
-            assert.equal(multibranchCol.text(), '1 failing');
+            const multibranchCol = columns.at(2);
+            assert.equal(multibranchCol.children().text(), '1 failing', 'branches label');
 
             const pullRequestsCol = columns.at(3);
-            assert.equal(pullRequestsCol.children().text(), ' - ');
+            assert.equal(pullRequestsCol.children().text(), ' - ', 'pr label');
         });
 
         it('/with success', () => {
@@ -152,11 +152,11 @@ describe('PipelineRowItem', () => {
             const path = nameCol.find('ExpandablePath');
             assert.equal(path.props().path, pipelineMultiSuccess.fullDisplayName);
 
-            const multibranchCol = columns.at(2).find('Link').shallow();
-            assert.equal(multibranchCol.text(), '3 passing');
+            const multibranchCol = columns.at(2);
+            assert.equal(multibranchCol.children().text(), '3 passing', 'branches label');
 
-            const pullRequestsCol = columns.at(3).find('Link').shallow();
-            assert.equal(pullRequestsCol.text(), '3 passing');
+            const pullRequestsCol = columns.at(3);
+            assert.equal(pullRequestsCol.children().text(), '3 passing', 'pr label');
         });
     });
 });

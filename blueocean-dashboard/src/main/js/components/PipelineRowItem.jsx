@@ -1,5 +1,4 @@
 import React, { Component, PropTypes } from 'react';
-import { Link } from 'react-router';
 import { ExpandablePath, WeatherIcon, TableRow, TableCell } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import { buildPipelineUrl } from '../util/UrlUtils';
@@ -83,10 +82,10 @@ export class PipelineRowItem extends Component {
         // Now calculate the labels and/or urls for the branches / PR columns
 
         let multiBranchLabel = ' - ';
-        let multiBranchLinkProps = {...linkProps}; // Default to "show pipeline"
+        let multiBranchLinkProps = { ...linkProps }; // Default to "show pipeline"
 
         let pullRequestsLabel = ' - ';
-        let pullRequestsLinkProps = {...linkProps}; // Default to "show pipeline"
+        let pullRequestsLinkProps = { ...linkProps }; // Default to "show pipeline"
 
         if (!simple) {
             // Labels

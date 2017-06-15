@@ -86,7 +86,7 @@ class RunDetailsRow extends Component {
                 </TableCell>
                 <TableCell linkTo={runDetailsUrl}>{run.id}</TableCell>
                 <TableCell linkTo={runDetailsUrl}><CommitHash commitId={run.commitId} /></TableCell>
-                { isMultibranch && <TableCell  linkTo={runDetailsUrl}>{branchName}</TableCell> }
+                { isMultibranch && <TableCell linkTo={runDetailsUrl}>{branchName}</TableCell> }
                 <TableCell linkTo={runDetailsUrl}><RunMessageCell run={run} t={t} /></TableCell>
                 <TableCell linkTo={runDetailsUrl}>
                     <TimeDuration millis={durationMillis}
