@@ -25,7 +25,7 @@ module.exports = {
         const blueActivityPage = browser.page.bluePipelineActivity().forJob(jobName, 'jenkins');
         // Check the run is turning to pause
         blueActivityPage.waitForJobRunPaused(jobName, function () {
-            blueActivityPage.waitForRunPausedVisible(jobName + '-1');
+            blueActivityPage.waitForRunPausedVisible(jobName, '1');
         });
     },
     /** Check Job Blue Ocean Pipeline Activity Page has run  - then go to the detail page and validate the input form

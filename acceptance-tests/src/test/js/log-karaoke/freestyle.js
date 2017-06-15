@@ -23,7 +23,7 @@ module.exports = {
     'Step 03': function (browser) {
         const blueActivityPage = browser.page.bluePipelineActivity().forJob('hijo', 'jenkins');
         // Check the run itself
-        blueActivityPage.waitForRunRunningVisible('hijo-1');
+        blueActivityPage.waitForRunRunningVisible('hijo', '1');
         const blueRunDetailPage = browser.page.bluePipelineRunDetail().forRun('hijo', 'jenkins', 1);
         // assert basic page style
         blueRunDetailPage.assertBasicLayoutOkay();

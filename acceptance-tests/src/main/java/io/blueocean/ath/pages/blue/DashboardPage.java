@@ -41,7 +41,7 @@ public class DashboardPage {
 
     public boolean isFavorite(String job) {
         WebElement favorite = wait.until(driver -> {
-            WebElement tr = driver.findElement(By.xpath("//tr[@data-name=\"" + job + "\"]"));
+            WebElement tr = driver.findElement(By.xpath("//*[@data-pipeline=\"" + job + "\"]"));
             return tr.findElement(By.cssSelector(".Checkbox.Favorite > label > input"));
         });
         return favorite.isSelected();
@@ -49,7 +49,7 @@ public class DashboardPage {
 
     public void toggleFavorite(String job) {
         WebElement favorite = wait.until(driver -> {
-            WebElement tr = driver.findElement(By.xpath("//tr[@data-name=\"" + job + "\"]"));
+            WebElement tr = driver.findElement(By.xpath("//*[@data-pipeline=\"" + job + "\"]"));
             return tr.findElement(By.cssSelector(".Checkbox.Favorite > label"));
         });
 

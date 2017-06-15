@@ -2,6 +2,7 @@
   "parser": "babel-eslint",
   "extends": [ "@jenkins-cd/jenkins/react"],
   "rules": {
+    "react/no-multi-comp": 0,
     "react/jsx-no-bind": 0,
     "react/jsx-indent-props": 0,
     "eqeqeq": ["error", "smart"],
