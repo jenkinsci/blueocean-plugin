@@ -2204,9 +2204,9 @@
       "dev": true
     },
     "create-hmac": {
-      "version": "1.1.6",
-      "from": "create-hmac@>=1.1.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/create-hmac/-/create-hmac-1.1.6.tgz",
+      "version": "1.1.4",
+      "from": "create-hmac@1.1.4",
+      "resolved": "https://registry.npmjs.org/create-hmac/-/create-hmac-1.1.4.tgz",
       "dev": true
     },
     "create-react-class": {
