@@ -24,7 +24,6 @@ export class Pipelines extends Component {
 
     componentWillMount() {
         this.setState({ searchText: this.getSearchText() });
-       // this._initPager(this.props); // TODO: See if Niku has killed pager (incompletely)
         this._countExtensions();
     }
 
