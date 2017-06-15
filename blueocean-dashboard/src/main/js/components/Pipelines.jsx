@@ -147,7 +147,7 @@ export class Pipelines extends Component {
                             </div>
                         }
                         { showPipelineList && (
-                            <JTable className="pipelines-table" columns={ columns }>
+                            <JTable className="pipelines-table" columns={ columns } >
                                 <TableHeaderRow />
                                 { pipelineRows }
                             </JTable>

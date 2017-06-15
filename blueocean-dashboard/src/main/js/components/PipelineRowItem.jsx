@@ -15,13 +15,6 @@ function generateRedirectURL(pipeline) {
     return null;
 }
 
-// Intercept click events so they don't bubble back to containing components
-function cancelClick(e) {
-    // TODO: Find other things doing the same and merge this
-    e.stopPropagation();
-    e.preventDefault();
-}
-
 export class PipelineRowItem extends Component {
 
     calculateResponse(passing, failing) {
@@ -71,28 +64,6 @@ export class PipelineRowItem extends Component {
         const activitiesURL = `${baseUrl}/activity`;
 
         const fullDisplayPath = showOrganization ? `${organization}/${fullDisplayName}` : fullDisplayName;
-        let multiBranchLabel = ' - ';
-        let multiPrLabel = ' - ';
-        let multiBranchLink = null;
-        let pullRequestsLink = null;
-
-        if (!simple) {
-            multiBranchLabel = this.calculateResponse(
-                numberOfSuccessfulBranches, numberOfFailingBranches);
-            multiPrLabel = this.calculateResponse(
-                numberOfSuccessfulPullRequests, numberOfFailingPullRequests);
-
-            multiBranchLink = <Link to={multiBranchURL}>{multiBranchLabel}</Link>;
-
-            if (hasPullRequests) {
-                pullRequestsLink = <Link to={pullRequestsURL}>{multiPrLabel}</Link>;
-            } else {
-                pullRequestsLink = multiPrLabel;
-            }
-        } else {
-            multiBranchLink = multiBranchLabel;
-            pullRequestsLink = multiPrLabel;
-        }
 
         // Build the row link properties. Matrix jobs get sent to classic, hence the logic here.
         const linkProps = {};
@@ -109,16 +80,45 @@ export class PipelineRowItem extends Component {
             linkProps.query = location.query;
         }
 
+        // Now calculate the labels and/or urls for the branches / PR columns
+
+        let multiBranchLabel = ' - ';
+        let multiBranchLinkProps = {...linkProps}; // Default to "show pipeline"
+
+        let pullRequestsLabel = ' - ';
+        let pullRequestsLinkProps = {...linkProps}; // Default to "show pipeline"
+
+        if (!simple) {
+            // Labels
+            multiBranchLabel = this.calculateResponse(
+                numberOfSuccessfulBranches, numberOfFailingBranches);
+            pullRequestsLabel = this.calculateResponse(
+                numberOfSuccessfulPullRequests, numberOfFailingPullRequests);
+
+            // Now create links for them if possible, replacing the whole-row "show pipeline" link
+            multiBranchLinkProps = { linkTo: multiBranchURL };
+
+            if (hasPullRequests) {
+                pullRequestsLinkProps = { linkTo: pullRequestsURL };
+            }
+        }
+        
         return (
-            <TableRow data-pipeline={name} data-organization={organization} columns={columns} {...linkProps}>
-                <TableCell className="TableCell--pipelineLink">
+            <TableRow useRollover data-pipeline={name} data-organization={organization} columns={columns}>
+                <TableCell className="TableCell--pipelineLink" {...linkProps}>
                     <ExpandablePath path={fullDisplayPath} />
                     { matrixRedirectURL && <Icon size={24} icon="exit_to_app" /> }
                 </TableCell>
-                <TableCell><WeatherIcon score={weatherScore} /></TableCell>
-                <TableCell>{multiBranchLink}</TableCell>
-                <TableCell>{pullRequestsLink}</TableCell>
-                <TableCell className="TableCell--actions" onClick={cancelClick}>
+                <TableCell {...linkProps}>
+                    <WeatherIcon score={weatherScore} />
+                </TableCell>
+                <TableCell {...multiBranchLinkProps}>
+                    { multiBranchLabel }
+                </TableCell>
+                <TableCell {...pullRequestsLinkProps}>
+                    { pullRequestsLabel}
+                </TableCell>
+                <TableCell className="TableCell--actions">
                     <Extensions.Renderer
                       extensionPoint="jenkins.pipeline.list.action"
                       store={this.context.store}
