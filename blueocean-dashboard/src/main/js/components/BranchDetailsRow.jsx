@@ -30,13 +30,6 @@ function sortByOrdinal(extensions, done) {
     done(sorted);
 }
 
-// Intercept click events so they don't bubble back to containing components
-function cancelClick(e) {
-    // TODO: Find other things doing the same and merge this
-    e.stopPropagation();
-    e.preventDefault();
-}
-
 function noRun(branch, openRunDetails, t, store, columns) {
     const cleanBranchName = decodeURIComponent(branch.name);
     const statusIndicator = <LiveStatusIndicator result="NOT_BUILT" />;
@@ -90,22 +83,21 @@ export class BranchDetailsRowRenderer extends Component {
             TableCell,
             {
                 className: 'TableCell--actions',
-                onClick: cancelClick,
             },
             ...actions);
 
         return (
-            <TableRow linkTo={runDetailsUrl} {...dataProps} {...restProps}>
-                <TableCell>
+            <TableRow useRollover={!!runDetailsUrl} {...dataProps} {...restProps}>
+                <TableCell linkTo={runDetailsUrl}>
                     { weatherScore != null && (
                         <WeatherIcon score={weatherScore} />
                     )}
                 </TableCell>
-                <TableCell>{ statusIndicator }</TableCell>
-                <TableCell>{ branchName }</TableCell>
-                <TableCell><CommitHash commitId={commitId} /></TableCell>
-                <TableCell>{ runMessage }</TableCell>
-                <TableCell>{ completed }</TableCell>
+                <TableCell linkTo={runDetailsUrl}>{ statusIndicator }</TableCell>
+                <TableCell linkTo={runDetailsUrl}>{ branchName }</TableCell>
+                <TableCell linkTo={runDetailsUrl}><CommitHash commitId={commitId} /></TableCell>
+                <TableCell linkTo={runDetailsUrl}>{ runMessage }</TableCell>
+                <TableCell linkTo={runDetailsUrl}>{ completed }</TableCell>
                 { actionsCell }
             </TableRow>
         );
