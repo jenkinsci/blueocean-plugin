@@ -13,6 +13,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.io.IOException;
+import java.util.regex.Pattern;
 
 @Singleton
 public class GithubCreationPage {
@@ -53,11 +54,38 @@ public class GithubCreationPage {
     @Inject
     ClassicJobApi jobApi;
 
-    public void setGithubOauthToken(String token) {
+    /**
+     * Navigate to the creation page via dashboard
+     */
+    public void navigateToCreation() {
+        dashboardPage.open();
+        wait.until(ExpectedConditions.visibilityOf(dashboardPage.newPipelineButton))
+            .click();;
+        logger.info("Clicked on new pipeline button");
+    }
+
+    public void selectGithubCreation() {
+        wait.until(ExpectedConditions.visibilityOf(githubCreationBtn)).click();
+        logger.info("Selected github");
+    }
+
+    /**
+     * Enter the specified token and press button to validate.
+     * @param token
+     */
+    public void validateGithubOauthToken(String token) {
         WebElement element = wait.until(ExpectedConditions.visibilityOf((apiKeyInput)), 1000);
         element.sendKeys(token);
         connectButton.click();
         logger.info("Set Oauth token");
+    }
+
+    public void findFormErrorMessage(String errorMessage) {
+        wait.until(ExpectedConditions.textMatches(
+            By.cssSelector(".FormElement .ErrorMessage"),
+            Pattern.compile(errorMessage)
+        ));
+        logger.info("Found error message = " + errorMessage);
     }
 
     public void selectOrganization(String org) {
@@ -85,19 +113,14 @@ public class GithubCreationPage {
     public void createPipeline(String apikey, String org, String pipeline, boolean createJenkisFile) throws IOException {
         jobApi.deletePipeline(org);
 
-        dashboardPage.open();
-        wait.until(ExpectedConditions.visibilityOf(dashboardPage.newPipelineButton))
-            .click();;
-        logger.info("Clicked on new pipeline button");
-
-        wait.until(ExpectedConditions.visibilityOf(githubCreationBtn)).click();
-        logger.info("Selected github");
+        navigateToCreation();
+        selectGithubCreation();
 
         if(wait.until(wait.orVisible(
             driver -> apiKeyInput,
             driver -> driver.findElement(getOrgSelector(org)))) == 1) {
 
-            setGithubOauthToken(apikey);
+            validateGithubOauthToken(apikey);
         }
         selectOrganization(org);
 
