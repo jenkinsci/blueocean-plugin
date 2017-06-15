@@ -62,7 +62,7 @@ public abstract class ContainerFilter implements ExtensionPoint {
     public static <T extends Item> Collection<T> filter(Collection<T> items, int start, int limit) {
         String[] filterNames = filterNames();
 
-        int skipped=start;
+        int skipped=0;
         Predicate<Item>[] filters = getFilters(filterNames);
         Collection<T> out = new LinkedList<>();
 
@@ -77,7 +77,7 @@ public abstract class ContainerFilter implements ExtensionPoint {
                 }
             }
             //if there is need to skip, skip these items
-            if(start > 0 && start > skipped++){
+            if(skipped++ < start){
                 continue;
             }
             out.add(item);
