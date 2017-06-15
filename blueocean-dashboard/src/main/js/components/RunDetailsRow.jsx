@@ -19,13 +19,6 @@ import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
 import RunMessageCell from './RunMessageCell';
 
-// Intercept click events so they don't bubble back to containing components
-function cancelClick(e) {
-    // TODO: Find other things doing the same and merge this
-    e.stopPropagation();
-    e.preventDefault();
-}
-
 /*
  Rest source: http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/{PIPELINE_NAME}/runs
  */
@@ -82,8 +75,8 @@ class RunDetailsRow extends Component {
         }
 
         return (
-            <TableRow linkTo={runDetailsUrl} columns={columns} {...dataProps}>
-                <TableCell>
+            <TableRow useRollover columns={columns} {...dataProps}>
+                <TableCell linkTo={runDetailsUrl}>
                     <LiveStatusIndicator
                         durationInMillis={durationMillis}
                         result={resultRun}
@@ -91,11 +84,11 @@ class RunDetailsRow extends Component {
                         estimatedDuration={run.estimatedDurationInMillis}
                     />
                 </TableCell>
-                <TableCell>{run.id}</TableCell>
-                <TableCell><CommitHash commitId={run.commitId} /></TableCell>
-                { isMultibranch && <TableCell>{branchName}</TableCell> }
-                <TableCell><RunMessageCell run={run} t={t} /></TableCell>
-                <TableCell>
+                <TableCell linkTo={runDetailsUrl}>{run.id}</TableCell>
+                <TableCell linkTo={runDetailsUrl}><CommitHash commitId={run.commitId} /></TableCell>
+                { isMultibranch && <TableCell  linkTo={runDetailsUrl}>{branchName}</TableCell> }
+                <TableCell linkTo={runDetailsUrl}><RunMessageCell run={run} t={t} /></TableCell>
+                <TableCell linkTo={runDetailsUrl}>
                     <TimeDuration millis={durationMillis}
                                   updatePeriod={1000}
                                   liveUpdate={isRunning}
@@ -105,7 +98,7 @@ class RunDetailsRow extends Component {
                                   hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
                     />
                 </TableCell>
-                <TableCell>
+                <TableCell linkTo={runDetailsUrl}>
                     <ReadableDate date={endTime}
                                   liveUpdate
                                   locale={locale}
@@ -113,7 +106,7 @@ class RunDetailsRow extends Component {
                                   longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
                     />
                 </TableCell>
-                <TableCell className="TableCell--actions" onClick={cancelClick}>
+                <TableCell className="TableCell--actions">
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" {...t} />
                     <RunButton
                         className="icon-button"
