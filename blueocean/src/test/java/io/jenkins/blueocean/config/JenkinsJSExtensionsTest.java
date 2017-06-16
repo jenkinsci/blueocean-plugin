@@ -74,7 +74,7 @@ public class JenkinsJSExtensionsTest extends BaseTest {
         // Calling JenkinsJSExtensions.getJenkinsJSExtensionData() multiple times should
         // result in the same object instance being returned because the list of plugin
         // has not changed i.e. we have a simple optimization in there where we only scan
-        // the classpath if the active plugin lust has changed.
+        // the classpath if the active plugin list has changed.
         Assert.assertEquals(
             JenkinsJSExtensions.getJenkinsJSExtensionData(),
             JenkinsJSExtensions.getJenkinsJSExtensionData()
