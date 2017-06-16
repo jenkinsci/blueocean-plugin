@@ -4,8 +4,6 @@
 extensions:
   - component: TopPipelinesLink
     extensionPoint: jenkins.blueocean.top.pipelines
-  - component: AdminNavLink
-    extensionPoint: jenkins.logo.top
   - component: PipelineRoutes
     extensionPoint: jenkins.main.routes
   - component: PipelineStore
