@@ -18,7 +18,8 @@ import javax.inject.Singleton;
 public class DashboardPage {
     private Logger logger = Logger.getLogger(DashboardPage.class);
 
-    @Inject @BaseUrl
+    @Inject
+    @BaseUrl
     String base;
 
     @Inject
@@ -40,9 +41,17 @@ public class DashboardPage {
         logger.info("Navigated to dashboard page");
     }
 
+    public By getSelectorForJob(String job) {
+        return By.xpath("//*[@data-pipeline=\"" + job + "\"]");
+    }
+
+    public By getSelectorForAllJobRows() {
+        return By.xpath("//*[contains(@class, 'pipelines-table')]//*[@data-pipeline]");
+    }
+
     public boolean isFavorite(String job) {
         WebElement favorite = wait.until(driver -> {
-            WebElement tr = driver.findElement(By.xpath("//tr[@data-name=\"" + job + "\"]"));
+            WebElement tr = driver.findElement(getSelectorForJob(job));
             return tr.findElement(By.cssSelector(".Checkbox.Favorite > label > input"));
         });
         return favorite.isSelected();
@@ -50,7 +59,7 @@ public class DashboardPage {
 
     public void toggleFavorite(String job) {
         WebElement favorite = wait.until(driver -> {
-            WebElement tr = driver.findElement(By.xpath("//tr[@data-name=\"" + job + "\"]"));
+            WebElement tr = driver.findElement(getSelectorForJob(job));
             return tr.findElement(By.cssSelector(".Checkbox.Favorite > label"));
         });
 
@@ -64,34 +73,32 @@ public class DashboardPage {
     }
 
     public void findJob(String jobName) {
-        wait.until(ExpectedConditions.visibilityOfElementLocated(
-            By.cssSelector(".pipelines-table tr[data-name='"+jobName+"']")
-        ));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(getSelectorForJob(jobName)));
     }
 
     public int getJobCount() {
-        return driver.findElements(By.cssSelector(".pipelines-table tbody tr")).size();
+        return driver.findElements(getSelectorForAllJobRows()).size();
     }
 
     public void testJobCountEqualTo(int numberOfJobs) {
         wait.until(ExpectedConditions.numberOfElementsToBe(
-            By.cssSelector(".pipelines-table tbody tr"),
-            numberOfJobs
+                getSelectorForAllJobRows(),
+                numberOfJobs
         ));
         logger.info("found job count = " + numberOfJobs);
     }
 
     public void testJobCountAtLeast(int numberOfJobs) {
         wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(
-            By.cssSelector(".pipelines-table tbody tr"),
-            numberOfJobs - 1
+                getSelectorForAllJobRows(),
+                numberOfJobs - 1
         ));
         logger.info("found job count >= " + numberOfJobs);
     }
 
     public void enterSearchText(String searchText) {
         WebElement element = wait.until(
-            ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".search-pipelines-input input"))
+                ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".search-pipelines-input input"))
         );
         element.sendKeys(searchText);
         logger.info("entered search text =" + searchText);
@@ -99,7 +106,7 @@ public class DashboardPage {
 
     public void clearSearchText() {
         WebElement element = wait.until(
-            ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".search-pipelines-input input"))
+                ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".search-pipelines-input input"))
         );
         element.sendKeys(Keys.chord(Keys.CONTROL, "a"));
         element.sendKeys(Keys.BACK_SPACE);
