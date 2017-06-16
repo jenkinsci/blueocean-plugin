@@ -11,6 +11,8 @@ import {
     TableHeaderRow
 } from '../components';
 
+import { Icon } from '@jenkins-cd/react-material-icons';
+
 //--------------------------------------------------------------------------
 //
 //  Story index
@@ -31,7 +33,7 @@ storiesOf('JTable', module)
 //--------------------------------------------------------------------------
 
 const rowHeaders =
-    [ "Score", "Batsman",            "For",         "Against",      "Innings", "Test", "Ground",                                    "Date"];
+    [ "Score", "Batsman",            "For",         "Against",      "Innings", "Test", "Ground",                                    "Date",                ""];
 const rowData = [
     [ "400",   "Brian Lara",         "West Indies", "England",      "1st",     "4th",  "Antigua Recreation Ground, St John's",      "10 April 2004"    ],
     [ "380",   "Matthew Hayden",     "Australia",   "Zimbabwe",     "1st",     "1st",  "WACA Ground, Perth",                        "9 October 2003"   ],
@@ -45,7 +47,7 @@ const rowData = [
     [ "334",   "Donald Bradman",     "Australia",   "England",      "1st",     "3rd",  "Headingley, Leeds",                         "11 July 1930"     ],
     [ "334",   "Mark Taylor",        "Australia",   "Pakistan",     "1st",     "2nd",  "Arbab Niaz Stadium, Peshawar",              "15 October 1998"  ]];
 const colWidths =
-    [ 40,      200,                  90,            90,             40,        40,     200,                                         130 ];
+    [ 40,      200,                  90,            90,             40,        40,     200,                                         130,                   90];
 
 //--------------------------------------------------------------------------
 //
@@ -61,7 +63,7 @@ function container(...children) {
 
     const ctx = {
         router: {
-            createHref: x => "/createdHref" + x
+            createHref: x => "/context-url-base" + x
         }
     };
 
@@ -88,8 +90,23 @@ function cellClicked(e) {
 
 function renderRow(rowData) {
     const key = rowData[1] + rowData[0];
+
+    const boxStyle = {
+        width: '24px',
+        height: '24px',
+        background: '#ccc',
+        overflow: 'hidden'
+    };
+
     return (
-        <TableRow onClick={rowClicked} key={key} data-tag={ 'row-' + key }>{ rowData.map(renderCell) }</TableRow>
+        <TableRow onClick={rowClicked} key={key} data-tag={ 'row-' + key }>
+            { rowData.map(renderCell) }
+            <TableCell className="TableCell--actions">
+                <Icon size={24} icon="history"/>
+                <div style={boxStyle}/>
+                <Icon size={24} icon="delete"/>
+            </TableCell>
+        </TableRow>
     );
 }
 
@@ -245,7 +262,7 @@ function manual() {
                 <TableHeader>NAND</TableHeader>
                 <TableHeader>Comment</TableHeader>
             </TableRow>
-            <TableRow href="http://www.example.org/alpha/">
+            <TableRow linkTo="/app-link">
                 <TableCell>True</TableCell>
                 <TableCell>True</TableCell>
                 <TableCell>True</TableCell>
@@ -273,13 +290,13 @@ function manual() {
                 <TableCell>No link</TableCell>
             </TableRow>
             <TableRow useRollover>
-                <TableCell>False</TableCell>
-                <TableCell>False</TableCell>
-                <TableCell>False</TableCell>
-                <TableCell>False</TableCell>
-                <TableCell>False</TableCell>
-                <TableCell>True</TableCell>
-                <TableCell>No link, useRollover=true</TableCell>
+                <TableCell href="http://example.org/a">False</TableCell>
+                <TableCell href="http://example.org/a">False</TableCell>
+                <TableCell href="http://example.org/a">False</TableCell>
+                <TableCell linkTo="/app-link">False</TableCell>
+                <TableCell linkTo="/app-link">False</TableCell>
+                <TableCell linkTo="/app-link">True</TableCell>
+                <TableCell>Cell links only, useRollover=true</TableCell>
             </TableRow>
         </JTable>
     );

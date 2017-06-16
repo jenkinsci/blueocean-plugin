@@ -21,6 +21,35 @@ type Props = {
     useRollover?: boolean
 };
 
+type TagOrComponent = string | Class<*> | Function;
+
+/**
+ * Generate the props and optionally override the element tag / component required to implement a link on a row or cell.
+ */
+export function generateLink(defaultTagOrComponent: TagOrComponent, href ?: string, linkTo ?: string) {
+    let isLink = false;
+    let linkProps = undefined;
+    let tagOrComponent: TagOrComponent = defaultTagOrComponent;
+
+    if (typeof href === 'string' && href.length > 0) {
+        isLink = true;
+        // We switch to an <A> instead of <DIV> so the user can middle-click
+        tagOrComponent = 'a';
+        linkProps = { href };
+    } else if (typeof linkTo === 'string' && linkTo.length > 0) {
+        isLink = true;
+        // Use <Link> instead of <A> for local BO URLs because we don't know the base url here
+        tagOrComponent = Link;
+        linkProps = { to: linkTo };
+    }
+
+    return {
+        isLink,
+        linkProps,
+        tagOrComponent
+    };
+}
+
 function processChildren(children: any, columns: any): Array<React$Element<any>> {
 
     // First filter the children to strip any falsey values dropped by logic in our parent's render() method
@@ -98,27 +127,19 @@ export class TableRow extends Component {
 
         const newChildren = processChildren(children, columns);
 
-        let tagOrComponent = 'div';
+        const {
+            isLink,
+            linkProps,
+            tagOrComponent
+        } = generateLink('div', href, linkTo);
+
         const props: Object = {
             ...restProps,
+            ...linkProps,
             className,
         };
 
-        let rowIsALink = false;
-        
-        if (typeof href === 'string' && href.length > 0) {
-            rowIsALink = true;
-            // We switch to an <A> instead of <DIV> so the user can middle-click
-            tagOrComponent = 'a';
-            props.href = href;
-        } else if (typeof linkTo === 'string' && linkTo.length > 0) {
-            rowIsALink = true;
-            // Use <Link> instead of <A> for local URLs because we don't know the base url here
-            tagOrComponent = Link;
-            props.to = linkTo;
-        } 
-        
-        if (rowIsALink) {
+        if (isLink) {
             classNames.push('JTable-row--href');
 
             if (useRollOver !== false) {
