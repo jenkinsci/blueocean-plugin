@@ -1,7 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import {
     JTable,
-    TableHeaderRow,
+    TableRow,
+    TableHeader,
+    TableCell,
 } from '@jenkins-cd/design-language';
 import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
@@ -162,7 +164,7 @@ export class Activity extends Component {
         ];
 
         if (isMultiBranchPipeline) {
-            columns.push(JTable.column(160, branchFilter, false));
+            columns.push(JTable.column(160, 'branches', false));
         }
 
         columns.push(
@@ -176,7 +178,18 @@ export class Activity extends Component {
 
         const runsTable = showTable && (
                 <JTable columns={columns} className="activity-table">
-                    <TableHeaderRow />
+                    <TableRow>
+                        <TableHeader>{ status }</TableHeader>
+                        <TableHeader>{ runHeader }</TableHeader>
+                        <TableHeader>{ commit }</TableHeader>
+                        { isMultiBranchPipeline && (
+                            <TableCell>{ branchFilter }</TableCell>
+                        )}
+                        <TableHeader>{ message }</TableHeader>
+                        <TableHeader>{ duration }</TableHeader>
+                        <TableHeader>{ completed }</TableHeader>
+                        <TableHeader/>
+                    </TableRow>
                     {
                         runs.map(extractLatestRecord).map(
                             ([run, changeset], index) => (
