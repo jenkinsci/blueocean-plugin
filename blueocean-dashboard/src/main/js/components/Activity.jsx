@@ -188,7 +188,7 @@ export class Activity extends Component {
                         <TableHeader>{ message }</TableHeader>
                         <TableHeader>{ duration }</TableHeader>
                         <TableHeader>{ completed }</TableHeader>
-                        <TableHeader/>
+                        <TableHeader />
                     </TableRow>
                     {
                         runs.map(extractLatestRecord).map(
