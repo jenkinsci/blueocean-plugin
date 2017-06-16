@@ -18,7 +18,7 @@
   <properties>
     <java.level>7</java.level>
     <jackson.version>2.8.7</jackson.version>
-    <jenkins.version>2.7.1</jenkins.version> <!-- Should be kept in sync with Dockerfile FROM statement-->
+    <jenkins.version>2.7.4</jenkins.version> <!-- Should be kept in sync with Dockerfile FROM statement-->
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <node.version>6.4.0</node.version>
     <npm.version>3.10.3</npm.version>
