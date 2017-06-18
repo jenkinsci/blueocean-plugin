@@ -7,14 +7,11 @@ import { Icon } from '@jenkins-cd/react-material-icons';
 
 import { RunApi as runApi, ToastUtils } from '../index';
 import Security from '../security';
+import { stopProp } from '../utils';
 import i18nTranslator from '../i18n/i18n';
 
 const { permit } = Security;
 const translate = i18nTranslator('blueocean-web');
-
-const stopProp = (event) => {
-    event.stopPropagation();
-};
 
 function isRunFinished(run) {
     return !!(run && run.state === 'FINISHED');

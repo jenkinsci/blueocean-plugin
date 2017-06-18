@@ -61,13 +61,13 @@ public class TryBlueOceanMenu extends TransientActionFactory<ModelObject> {
 
     private boolean exists(Actionable actionable, BlueOceanUrlAction blueOceanUrlAction){
         for(Action a: actionable.getActions()) {
-            String blueUrl  = blueOceanUrlAction.getUrlName();
-            String thisUrl = a.getUrlName();
-            if(a instanceof BlueOceanUrlAction
-                    && thisUrl != null
-                    && blueUrl != null
-                    && thisUrl.equals(blueUrl)){
-                return true;
+            // JENKINS-44926 only call getURLName on these actions if action is BLueOceanUrlAction
+            if (a instanceof BlueOceanUrlAction) {
+                String blueUrl  = blueOceanUrlAction.getUrlName();
+                String thisUrl = a.getUrlName();
+                if(thisUrl != null && thisUrl.equals(blueUrl)){
+                    return true;
+                }
             }
         }
         return false;

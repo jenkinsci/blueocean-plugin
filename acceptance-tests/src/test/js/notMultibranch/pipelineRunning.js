@@ -21,14 +21,15 @@ module.exports = {
         blueActivityPage.click('.run-button');
         blueActivityPage.waitForElementVisible('@toastOpenButton')
         
-        //check it spins and then is done  
-        blueActivityPage.waitForElementVisible('#pipeRun-1');                
+        //check it spins and then is done
+        const rowSelector = `[data-pipeline='${jobName}'][data-runid='1']`;
+        blueActivityPage.waitForElementVisible(rowSelector);
         blueActivityPage.waitForElementVisible('.progress-spinner');
         blueActivityPage.waitForElementVisible('.success');         
         blueActivityPage.waitForElementNotPresent('.progress-spinner');       
 
-        browser.elements('css selector', `#${jobName}-1`, function(res) {
-          browser.assert.equal(1, res.value.length, 'Correct number of runs started');          
+        browser.elements('css selector', rowSelector, function(res) {
+            browser.assert.equal(1, res.value.length, 'Correct number of runs started');
         })
     },
     
@@ -42,8 +43,9 @@ module.exports = {
         blueActivityPage.click('.run-button');
         blueActivityPage.waitForElementVisible('@toastOpenButton')
         
-        //check it spins and then is done  
-        blueActivityPage.waitForElementVisible('#pipeRun-2');                
+        //check it spins and then is done
+        const rowSelector = `[data-pipeline='${jobName}'][data-runid='2']`;
+        blueActivityPage.waitForElementVisible(rowSelector);
     },
 
 };
