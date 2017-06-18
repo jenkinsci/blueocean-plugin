@@ -4,8 +4,8 @@ import com.cloudbees.hudson.plugins.folder.Folder;
 import com.google.common.collect.Lists;
 import hudson.ExtensionList;
 import hudson.model.Item;
-import hudson.model.ItemGroup;
 import hudson.model.Job;
+import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.metadata.ContributorMetadataAction;
 import jenkins.scm.api.metadata.ObjectMetadataAction;
@@ -26,24 +26,24 @@ import static org.mockito.Mockito.when;
 @PrepareForTest(ExtensionList.class)
 public class CachesTest {
 
-    ItemGroup<? extends Item> group;
+    Jenkins jenkins;
     Job job;
 
     @Before
     public void setup() {
-        group = mock(ItemGroup.class);
-        when(group.getFullName()).thenReturn("");
+        jenkins = mock(Jenkins.class);
+        when(jenkins.getFullName()).thenReturn("");
 
         Folder folder = mock(Folder.class);
-        when(folder.getParent()).thenReturn(group);
+        when(folder.getParent()).thenReturn(jenkins);
         when(folder.getFullName()).thenReturn("/Repo");
-        when(group.getItem("/Repo")).thenReturn(folder);
+        when(jenkins.getItem("/Repo")).thenReturn(folder);
 
         job = mock(Job.class);
         when(job.getParent()).thenReturn(folder);
         when(job.getFullName()).thenReturn("cool-branch");
 
-        when(group.getItem("/Repo/cool-branch")).thenReturn(job);
+        when(jenkins.getItemByFullName("/Repo/cool-branch", Job.class)).thenReturn(job);
     }
 
     @Test
@@ -53,7 +53,7 @@ public class CachesTest {
         when(job.getAction(ObjectMetadataAction.class)).thenReturn(metadataAction);
         when(job.getAction(PrimaryInstanceMetadataAction.class)).thenReturn(instanceMetadataAction);
 
-        Caches.BranchCacheLoader loader = new Caches.BranchCacheLoader(group);
+        Caches.BranchCacheLoader loader = new Caches.BranchCacheLoader(jenkins);
         BranchImpl.Branch branch = loader.load(job.getFullName());
 
         assertNotNull(branch);
@@ -67,7 +67,7 @@ public class CachesTest {
         when(job.getAction(PrimaryInstanceMetadataAction.class)).thenReturn(instanceMetadataAction);
         when(job.getFullName()).thenReturn("cool-branch");
 
-        Caches.BranchCacheLoader loader = new Caches.BranchCacheLoader(group);
+        Caches.BranchCacheLoader loader = new Caches.BranchCacheLoader(jenkins);
         BranchImpl.Branch branch = loader.load(job.getFullName());
 
         assertNotNull(branch);
@@ -81,7 +81,7 @@ public class CachesTest {
         when(job.getAction(ObjectMetadataAction.class)).thenReturn(metadataAction);
         when(job.getFullName()).thenReturn("cool-branch");
 
-        Caches.BranchCacheLoader loader = new Caches.BranchCacheLoader(group);
+        Caches.BranchCacheLoader loader = new Caches.BranchCacheLoader(jenkins);
         BranchImpl.Branch branch = loader.load(job.getFullName());
 
         assertNotNull(branch);
@@ -103,7 +103,7 @@ public class CachesTest {
         when(extensionList.iterator()).thenReturn(Lists.<SCMHead.HeadByItem>newArrayList(new HeadByItemForTest()).iterator());
         when(ExtensionList.lookup(SCMHead.HeadByItem.class)).thenReturn(extensionList);
 
-        Caches.PullRequestCacheLoader loader = new Caches.PullRequestCacheLoader(group);
+        Caches.PullRequestCacheLoader loader = new Caches.PullRequestCacheLoader(jenkins);
         BranchImpl.PullRequest pr = loader.load(job.getFullName());
 
         assertNotNull(pr);
@@ -127,7 +127,7 @@ public class CachesTest {
         when(extensionList.iterator()).thenReturn(Lists.<SCMHead.HeadByItem>newArrayList().iterator());
         when(ExtensionList.lookup(SCMHead.HeadByItem.class)).thenReturn(extensionList);
 
-        Caches.PullRequestCacheLoader loader = new Caches.PullRequestCacheLoader(group);
+        Caches.PullRequestCacheLoader loader = new Caches.PullRequestCacheLoader(jenkins);
         BranchImpl.PullRequest pr = loader.load(job.getFullName());
 
         assertNull(pr);
@@ -145,7 +145,7 @@ public class CachesTest {
         when(extensionList.iterator()).thenReturn(Lists.<SCMHead.HeadByItem>newArrayList(new HeadByItemForTest()).iterator());
         when(ExtensionList.lookup(SCMHead.HeadByItem.class)).thenReturn(extensionList);
 
-        Caches.PullRequestCacheLoader loader = new Caches.PullRequestCacheLoader(group);
+        Caches.PullRequestCacheLoader loader = new Caches.PullRequestCacheLoader(jenkins);
         BranchImpl.PullRequest pr = loader.load(job.getFullName());
 
         assertNotNull(pr);

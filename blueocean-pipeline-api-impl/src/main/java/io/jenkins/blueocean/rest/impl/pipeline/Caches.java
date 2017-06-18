@@ -65,19 +65,18 @@ class Caches {
     }
 
     static class BranchCacheLoader extends CacheLoader<String, Branch> {
-        private ItemGroup<? extends Item> itemGroup;
+        private Jenkins jenkins;
 
-        BranchCacheLoader(ItemGroup<? extends Item> itemGroup) {
-            this.itemGroup = itemGroup;
+        BranchCacheLoader(Jenkins jenkins) {
+            this.jenkins = jenkins;
         }
 
         @Override
         public Branch load(String key) throws Exception {
-            Item item = itemGroup.getItem(key);
-            if (item == null) {
+            Job job = jenkins.getItemByFullName(key, Job.class);
+            if (job == null) {
                 return null;
             }
-            Job job = (Job)item;
             ObjectMetadataAction om = job.getAction(ObjectMetadataAction.class);
             PrimaryInstanceMetadataAction pima = job.getAction(PrimaryInstanceMetadataAction.class);
             if (om == null && pima == null) {
@@ -89,19 +88,18 @@ class Caches {
     }
 
     static class PullRequestCacheLoader extends CacheLoader<String, PullRequest> {
-        private ItemGroup<? extends Item> itemGroup;
+        private Jenkins jenkins;
 
-        PullRequestCacheLoader(ItemGroup<? extends Item> itemGroup) {
-            this.itemGroup = itemGroup;
+        PullRequestCacheLoader(Jenkins jenkins) {
+            this.jenkins = jenkins;
         }
 
         @Override
         public PullRequest load(String key) throws Exception {
-            Item item = itemGroup.getItem(key);
-            if (item == null) {
+            Job job = jenkins.getItemByFullName(key, Job.class);
+            if (job == null) {
                 return null;
             }
-            Job job = (Job)item;
             // TODO probably want to be using SCMHeadCategory instances to categorize them instead of hard-coding for PRs
             SCMHead head = SCMHead.HeadByItem.findHead(job);
             if (head instanceof ChangeRequestSCMHead) {
