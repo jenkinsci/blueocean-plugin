@@ -6,10 +6,11 @@ ext.store.init({
     },
 });
 
-require('./pipelines');
-require('./status');
-require('./icons');
-require('./RunDetailsHeaderStories');
+require('./ColumnFilterStories');
 require('./FullScreenStories');
-require('./moments');
+require('./icons');
 require('./inputStep');
+require('./moments');
+require('./pipelines');
+require('./RunDetailsHeaderStories');
+require('./status');

@@ -72,7 +72,7 @@ module.exports = {
         blueActivityPage.expect.element('@emptyStateShoes').to.not.be.present.before(1000);
 
         // Check the run itself
-        blueActivityPage.waitForRunSuccessVisible('my-pipeline-1');
+        blueActivityPage.waitForRunSuccessVisible('my-pipeline', '1');
     },
 
     /**

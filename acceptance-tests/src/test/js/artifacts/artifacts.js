@@ -20,7 +20,7 @@ module.exports = {
       // run the job
       blueActivityPage.click('@runButton');
       blueActivityPage.waitForElementVisible('@toastOpenButton');
-      blueActivityPage.waitForRunSuccessVisible(`${jobName}-1`);
+      blueActivityPage.waitForRunSuccessVisible(jobName, '1');
 
     },
 

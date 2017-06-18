@@ -34,7 +34,7 @@ module.exports = {
 
     const blueActivityPage = browser.page.bluePipelineActivity().forJob(jobName, 'jenkins');
     blueActivityPage.click('.branches');
-    blueActivityPage.waitForElementVisible('tr[id^="master"]');
+    blueActivityPage.waitForElementVisible('.JTable-row[data-branch="master"]');
     blueActivityPage.waitForElementVisible('a.run-button');
     blueActivityPage.click('a.run-button');
     blueActivityPage.waitForElementVisible('button.inputStepSubmit');
