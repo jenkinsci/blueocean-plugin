@@ -40,7 +40,6 @@ export class PipelineRowItem extends Component {
         if (!pipeline) {
             return null;
         }
-        const { location = {} } = this.context;
         const simple = !pipeline.branchNames;
         const {
             name,
@@ -76,7 +75,6 @@ export class PipelineRowItem extends Component {
         } else {
             // This is a normal pipeline job, so we use <Link> as usual
             linkProps.linkTo = activitiesURL;
-            linkProps.query = location.query;
         }
 
         // Now calculate the labels and/or urls for the branches / PR columns
