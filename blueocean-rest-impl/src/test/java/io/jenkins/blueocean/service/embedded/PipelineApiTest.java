@@ -21,7 +21,6 @@ import hudson.model.Job;
 import hudson.model.ParametersAction;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Project;
-import hudson.model.Queue;
 import hudson.model.Run;
 import hudson.model.StringParameterDefinition;
 import hudson.model.StringParameterValue;
@@ -538,25 +537,37 @@ public class PipelineApiTest extends BaseTest {
 
     @Test
     public void testNewPipelineQueueItem() throws Exception {
+        // We always want the first two jobs to be executing
+
+        j.jenkins.setNumExecutors(2);
+
         FreeStyleProject p1 = j.createFreeStyleProject("pipeline1");
         FreeStyleProject p2 = j.createFreeStyleProject("pipeline2");
         FreeStyleProject p3 = j.createFreeStyleProject("pipeline3");
-        p1.getBuildersList().add(new Shell("echo hello!\nsleep 300"));
-        p2.getBuildersList().add(new Shell("echo hello!\nsleep 300"));
-        p3.getBuildersList().add(new Shell("echo hello!\nsleep 300"));
+        p1.getBuildersList().add(new Shell("echo hello!\nsleep 100000"));
+        p2.getBuildersList().add(new Shell("echo hello!\nsleep 100000"));
+        p3.getBuildersList().add(new Shell("echo hello!\nsleep 100000"));
+
+        // Kick off the first two jobs
         p1.scheduleBuild2(0).waitForStart();
         p2.scheduleBuild2(0).waitForStart();
 
+        // Run the third pipeline
         Map r = request().post("/organizations/jenkins/pipelines/pipeline3/runs/").build(Map.class);
 
+        // Ensure it is still in the queue
         assertNotNull(p3.getQueueItem());
         String id = Long.toString(p3.getQueueItem().getId());
+
+        // Queue id matches the one we get back from the rest API
         assertEquals(id, r.get("queueId"));
 
+        // Remove from queue
         delete("/organizations/jenkins/pipelines/pipeline3/queue/"+id+"/");
-        Queue.Item item = j.jenkins.getQueue().getItem(Long.parseLong(id));
-        assertTrue(item instanceof Queue.LeftItem);
-        assertTrue(((Queue.LeftItem)item).isCancelled());
+
+        // Make sure it is no longer in the queue
+        List<Map> build = request().get("/organizations/jenkins/pipelines/pipeline3/queue/").build(List.class);
+        assertEquals(0, build.size());
     }
 
     @Test
