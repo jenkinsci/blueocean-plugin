@@ -1,6 +1,8 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 
+// Fixme: Splat these post table-transistion
+
 /**
  * A convenience wrapper to pass down 'linkUrl' to child CellLink components.
  */

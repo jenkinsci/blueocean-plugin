@@ -8,6 +8,10 @@
 const url = require('../../util/url');
 const pipelinesUrl = url.viewAllPipelines();
 
+function pipelineRowSelector(pipeline) {
+    return `.pipelines-table .JTable-row[data-pipeline='${pipeline}']`;
+}
+
 module.exports = {
 
     url: function () {
@@ -35,10 +39,10 @@ module.exports.commands = [{
         this.waitForElementVisible('.Site-footer');
     },
     assertJob: function(jobName) {
-        this.waitForElementVisible('.pipelines-table tr[data-name="' + jobName + '"]');
+        this.waitForElementVisible(pipelineRowSelector(jobName));
     },
     countJobToBeEqual: function(browser, jobName, count) {
-        browser.elements('css selector', '.pipelines-table tr[data-name="' + jobName + '"]', function (codeCollection) {
+        browser.elements('css selector', pipelineRowSelector(jobName), function (codeCollection) {
             this.assert.equal(codeCollection.value.length, count);
         });
     },

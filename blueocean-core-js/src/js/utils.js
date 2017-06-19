@@ -36,7 +36,17 @@ function randomId(prefix = 'id') {
     return `${prefix}-${integer}`;
 }
 
+/**
+ * Swallow an event, preventing it from reaching containing react components or default DOM behaviour
+ * @param event
+ */
+export function stopProp(event) {
+    event.stopPropagation(); // Keeps event from containing elements' onClick handlers
+    event.preventDefault(); // Keeps event from triggering DOM builtins such as <a> elements
+}
+
 export default {
+    stopProp,
     cleanSlashes,
     randomId,
     clone(obj: Object) {

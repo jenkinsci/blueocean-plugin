@@ -77,14 +77,14 @@ const i18nextInst = i18next.init({
 const t = i18nextInst.getFixedT(TEST_LANG, TEST_NS);
 
 describe('PipelineRecord', () => {
-    it('create without error', () => {
+    it('/create without error', () => {
         const pipelineRecord = new PipelineRecord(pipelineMultiSuccess);
         assert.isOk(pipelineRecord);
     });
 });
 
 describe('PipelineRowItem', () => {
-    it('simple pipeline', () => {
+    it('/simple pipeline', () => {
         const wrapper = shallow(
             <PipelineRowItem
               t={t}
@@ -93,26 +93,27 @@ describe('PipelineRowItem', () => {
               simple
             />
         );
-        assert.equal(wrapper.find('tr').length, 1);
+        assert.equal(wrapper.find('TableRow').length, 1);
 
-        const columns = wrapper.find('td');
+        const columns = wrapper.find('TableCell');
 
         const nameCol = columns.at(0);
-        const path = nameCol.find('Link').shallow().find('ExpandablePath');
+        const path = nameCol.find('ExpandablePath');
         assert.equal(path.props().path, pipelineSimple.fullDisplayName);
 
         const weatherCol = columns.at(1);
-        assert.equal(weatherCol.text(), '<WeatherIcon />');
+
+        assert.equal(weatherCol.find('WeatherIcon').length, 1);
 
         const multibranchCol = columns.at(2);
-        assert.equal(multibranchCol.text(), ' - ');
+        assert.equal(multibranchCol.children().text(), ' - ');
 
         const pullRequestsCol = columns.at(3);
-        assert.equal(pullRequestsCol.text(), ' - ');
+        assert.equal(pullRequestsCol.children().text(), ' - ');
     });
 
-    describe('multiBranch', () => {
-        it('with failing items', () => {
+    describe('/multiBranch', () => {
+        it('/with failing items', () => {
             const wrapper = shallow(
                 <PipelineRowItem
                   t={t}
@@ -120,22 +121,22 @@ describe('PipelineRowItem', () => {
                   pipeline={pipelineMulti}
                 />
             );
-            assert.equal(wrapper.find('tr').length, 1);
+            assert.equal(wrapper.find('TableRow').length, 1);
 
-            const columns = wrapper.find('td');
+            const columns = wrapper.find('TableCell');
 
             const nameCol = columns.at(0);
-            const path = nameCol.find('Link').shallow().find('ExpandablePath');
+            const path = nameCol.find('ExpandablePath');
             assert.equal(path.props().path, pipelineMulti.fullDisplayName);
 
-            const multibranchCol = columns.at(2).find('Link').shallow();
-            assert.equal(multibranchCol.text(), '1 failing');
+            const multibranchCol = columns.at(2);
+            assert.equal(multibranchCol.children().text(), '1 failing', 'branches label');
 
             const pullRequestsCol = columns.at(3);
-            assert.equal(pullRequestsCol.text(), '');
+            assert.equal(pullRequestsCol.children().text(), ' - ', 'pr label');
         });
 
-        it('with success', () => {
+        it('/with success', () => {
             const wrapper = shallow(
                 <PipelineRowItem
                   t={t}
@@ -143,19 +144,19 @@ describe('PipelineRowItem', () => {
                   pipeline={pipelineMultiSuccess}
                 />
             );
-            assert.equal(wrapper.find('tr').length, 1);
+            assert.equal(wrapper.find('TableRow').length, 1);
 
-            const columns = wrapper.find('td');
+            const columns = wrapper.find('TableCell');
 
             const nameCol = columns.at(0);
-            const path = nameCol.find('Link').shallow().find('ExpandablePath');
+            const path = nameCol.find('ExpandablePath');
             assert.equal(path.props().path, pipelineMultiSuccess.fullDisplayName);
 
-            const multibranchCol = columns.at(2).find('Link').shallow();
-            assert.equal(multibranchCol.text(), '3 passing');
+            const multibranchCol = columns.at(2);
+            assert.equal(multibranchCol.children().text(), '3 passing', 'branches label');
 
-            const pullRequestsCol = columns.at(3).find('Link').shallow();
-            assert.equal(pullRequestsCol.text(), '3 passing');
+            const pullRequestsCol = columns.at(3);
+            assert.equal(pullRequestsCol.children().text(), '3 passing', 'pr label');
         });
     });
 });

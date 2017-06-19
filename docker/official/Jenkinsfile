@@ -3,6 +3,7 @@
 properties([
     buildDiscarder(logRotator(numToKeepStr: '10')),
     pipelineTriggers([cron('@daily')]),
+    parameters([string(defaultValue: 'false', description: 'Should rebuild the latest image if it exists on DockerHub?', name: 'FORCE_REBUILD')]),
 ])
 
 node('docker') {

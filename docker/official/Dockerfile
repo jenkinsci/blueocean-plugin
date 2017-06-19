@@ -6,6 +6,6 @@ USER root
 # Add the docker binary so running Docker commands from the master works nicely
 RUN apk -U add docker
 
-RUN install-plugins.sh antisamy-markup-formatter matrix-auth pipeline-model-definition blueocean:$BLUEOCEAN_VERSION
+RUN install-plugins.sh workflow-job:2.11 antisamy-markup-formatter matrix-auth blueocean:$BLUEOCEAN_VERSION
 
 USER jenkins
