@@ -380,7 +380,8 @@ public class PipelineApiTest extends BaseTest {
             Thread.sleep(10); //sleep for 10ms
         }while(b.hasntStartedYet());
 
-        Map resp = put("/organizations/jenkins/pipelines/p1/runs/"+b.getId()+"/stop/?blocking=true&timeOutInSecs=2", Map.class);
+        Map resp = put("/organizations/jenkins/pipelines/p1/runs/"+b.getId()+"/stop/?blocking=true&timeOutInSecs=3", Map.class);
+        Thread.sleep(500);
         assertEquals("ABORTED", resp.get("result"));
     }
 
