@@ -9,9 +9,6 @@ import {
 import { LiveStatusIndicator, RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
-import { Icon } from '@jenkins-cd/react-material-icons';
-import { buildPipelineUrl } from '../util/UrlUtils';
-import { Link } from 'react-router';
 import RunMessageCell from './RunMessageCell';
 
 import { buildRunDetailsUrl } from '../util/UrlUtils';
@@ -149,7 +146,6 @@ export class BranchDetailsRow extends Component {
         }
         const cleanBranchName = decodeURIComponent(branch.name);
         const runDetailsUrl = buildRunDetailsUrl(branch.organization, pipeline.fullName, cleanBranchName, latestRun.id, 'pipeline');
-        const historyButtonUrl = `${buildPipelineUrl(branch.organization, pipeline.fullName)}/activity?branch=${encodeURIComponent(branch.name)}`;
 
         const statusIndicator = (
             <LiveStatusIndicator durationInMillis={latestRun.durationInMillis}

@@ -4,10 +4,7 @@ import { LiveStatusIndicator, RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { CellRow, CellLink } from './CellLink';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
-import { buildPipelineUrl } from '../util/UrlUtils';
 import RunHistoryButton from './RunHistoryButton';
-import { Link } from 'react-router';
-import { Icon } from '@jenkins-cd/react-material-icons';
 
 function noRun(pr, openRunDetails, t) {
     return (<tr id={`${name}`}>
@@ -82,7 +79,7 @@ export default class PullRequest extends Component {
                       onNavigation={openRunDetails}
                     />
 
-                    <RunHistoryButton pipeline={contextPipeline} branchName={pr.name}/>
+                    <RunHistoryButton pipeline={contextPipeline} branchName={pr.name} />
 
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" {...t} />
                 </td>
