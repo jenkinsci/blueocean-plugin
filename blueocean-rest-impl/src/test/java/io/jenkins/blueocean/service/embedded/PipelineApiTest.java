@@ -9,7 +9,21 @@ import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.maven.MavenModuleSet;
-import hudson.model.*;
+import hudson.model.AbstractBuild;
+import hudson.model.BuildListener;
+import hudson.model.Cause;
+import hudson.model.CauseAction;
+import hudson.model.FreeStyleBuild;
+import hudson.model.FreeStyleProject;
+import hudson.model.Item;
+import hudson.model.ItemGroup;
+import hudson.model.Job;
+import hudson.model.ParametersAction;
+import hudson.model.ParametersDefinitionProperty;
+import hudson.model.Project;
+import hudson.model.Run;
+import hudson.model.StringParameterDefinition;
+import hudson.model.StringParameterValue;
 import hudson.security.HudsonPrivateSecurityRealm;
 import hudson.security.LegacyAuthorizationStrategy;
 import hudson.tasks.ArtifactArchiver;
@@ -32,11 +46,20 @@ import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import jenkins.model.Jenkins;
 import org.junit.Assert;
 import org.junit.Test;
-import org.jvnet.hudson.test.*;
+import org.jvnet.hudson.test.ExtractResourceSCM;
+import org.jvnet.hudson.test.Issue;
+import org.jvnet.hudson.test.MockFolder;
+import org.jvnet.hudson.test.TestBuilder;
+import org.jvnet.hudson.test.TestExtension;
+import org.jvnet.hudson.test.ToolInstallations;
 import org.kohsuke.stapler.export.Exported;
 
 import java.io.IOException;
-import java.util.*;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 import java.util.concurrent.ExecutionException;
 
 import static junit.framework.TestCase.assertFalse;
@@ -515,6 +538,7 @@ public class PipelineApiTest extends BaseTest {
     @Test
     public void testNewPipelineQueueItem() throws Exception {
         // We always want the first two jobs to be executing
+
         j.jenkins.setNumExecutors(2);
 
         FreeStyleProject p1 = j.createFreeStyleProject("pipeline1");
