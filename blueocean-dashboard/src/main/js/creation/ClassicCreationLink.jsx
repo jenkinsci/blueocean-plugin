@@ -11,7 +11,7 @@ export function ClassicCreationLink() {
 
     return (
         <a target="_blank" className={'classic-link'} href={newJobUrl}>
-            <Icon icon="input" />
+            <Icon icon="exit_to_app" size={24} />
 
             <span>{t('creation.core.header.classic')}</span>
         </a>
