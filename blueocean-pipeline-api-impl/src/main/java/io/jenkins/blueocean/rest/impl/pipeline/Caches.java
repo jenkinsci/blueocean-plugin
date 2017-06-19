@@ -5,7 +5,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import hudson.Extension;
 import hudson.model.Item;
-import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.listeners.ItemListener;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.Branch;
@@ -21,14 +20,26 @@ import java.util.concurrent.TimeUnit;
 
 class Caches {
 
+    /**
+     * Pull request metadata cache maximum number of entries. Default 10000.
+     */
+    static final long PR_METADATA_CACHE_MAX_SIZE = Long.getLong("PR_METADATA_CACHE_MAX_SIZE", 10000);
+
+    /**
+     * Branch metadata cache maximum number of entries. Default 10000.
+     */
+    static final long BRANCH_METADATA_CACHE_MAX_SIZE = Long.getLong("BRANCH_METADATA_CACHE_MAX_SIZE", 10000);
+
     static final LoadingCache<String, PullRequest> PULL_REQUEST_METADATA = CacheBuilder.newBuilder()
-        .expireAfterAccess(1, TimeUnit.DAYS)
-        .build(new PullRequestCacheLoader(Jenkins.getInstance().getItemGroup()));
+            .maximumSize(PR_METADATA_CACHE_MAX_SIZE)
+            .expireAfterAccess(1, TimeUnit.DAYS)
+            .build(new PullRequestCacheLoader(Jenkins.getInstance().getItemGroup()));
 
 
     static final LoadingCache<String, Branch> BRANCH_METADATA = CacheBuilder.newBuilder()
-        .expireAfterAccess(1, TimeUnit.DAYS)
-        .build(new BranchCacheLoader(Jenkins.getInstance().getItemGroup()));
+            .maximumSize(BRANCH_METADATA_CACHE_MAX_SIZE)
+            .expireAfterAccess(1, TimeUnit.DAYS)
+            .build(new BranchCacheLoader(Jenkins.getInstance().getItemGroup()));
 
     @Extension
     public static class ListenerImpl extends ItemListener {
