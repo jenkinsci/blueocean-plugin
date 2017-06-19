@@ -371,7 +371,6 @@ public class PipelineApiTest extends BaseTest {
     }
 
     @Test
-    @Ignore //this is just too flaky and is testing jenkins functionality, not blue ocean.
     public void getPipelineRunsStopTest() throws Exception {
         FreeStyleProject p = j.createFreeStyleProject("p1");
         p.getBuildersList().add(new Shell("sleep 60"));
