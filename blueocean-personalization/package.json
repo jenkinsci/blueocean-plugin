@@ -39,7 +39,7 @@
     "react-addons-test-utils": "15.3.2"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.126",
+    "@jenkins-cd/blueocean-core-js": "0.0.126-SNAPSHOT-nicu",
     "@jenkins-cd/design-language": "0.0.130-SNAPSHOT-jm-c",
     "@jenkins-cd/js-extensions": "0.0.36",
     "@jenkins-cd/js-modules": "0.0.10",
