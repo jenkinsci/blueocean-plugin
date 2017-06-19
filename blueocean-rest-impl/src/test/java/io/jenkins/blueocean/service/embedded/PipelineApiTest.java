@@ -570,7 +570,7 @@ public class PipelineApiTest extends BaseTest {
         // but handle the async nature of the queue otherwise we will intermittently fail this test on slow machines
         List<Map> build = request().get("/organizations/jenkins/pipelines/pipeline3/queue/").build(List.class);
         long end = TimeUnit.SECONDS.toMillis(10) + System.currentTimeMillis();
-        while (!build.isEmpty() && System.currentTimeMillis() < end) {
+        while (!build.isEmpty() || System.currentTimeMillis() < end) {
             build = request().get("/organizations/jenkins/pipelines/pipeline3/queue/").build(List.class);
         }
 
