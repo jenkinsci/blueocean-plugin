@@ -60,10 +60,16 @@ export class Pipelines extends Component {
         });
     }
 
-    handleKeyDownEvent(event) {
-        if (document.activeElement !== document.getElementsByClassName('fastsearch-input')[0] && event.key === 't') {
-            document.getElementsByClassName('fastsearch-input')[0].focus();
-            event.preventDefault();
+    handleKeyDownEvent = (event) => {
+        if (document.activeElement !== document.getElementsByClassName('fastsearch-input')[0]) {
+            if (event.key === 't') {
+                document.getElementsByClassName('fastsearch-input')[0].focus();
+                event.preventDefault();
+            }
+        } else {
+            if (event.key === 'Escape') {
+                this.clearSearchInputText();
+            }
         }
     }
 
