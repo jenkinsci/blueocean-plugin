@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded;
 
-import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.HttpResponse;
@@ -43,7 +42,6 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.ArtifactContainerImpl;
-import io.jenkins.blueocean.service.embedded.rest.ContainerFilter;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import jenkins.model.Jenkins;
@@ -898,35 +896,4 @@ public class PipelineApiTest extends BaseTest {
             return null;
         }
     }
-
-    //custom filter test
-    @TestExtension("customFilter")
-    public static class ItemGroupFilter extends ContainerFilter{
-
-        private final Predicate<Item> filter = new Predicate<Item>() {
-            @Override
-            public boolean apply(Item job) {
-                return (job instanceof ItemGroup);
-            }
-        };
-        @Override
-        public String getName() {
-            return "itemgroup-only";
-        }
-
-        @Override
-        public Predicate<Item> getFilter() {
-            return filter;
-        }
-    }
-
-    @Test
-    public void customFilter() throws IOException {
-        MockFolder folder = j.createFolder("folder1");
-        Project p = folder.createProject(FreeStyleProject.class, "test1");
-        Collection<Item> items = ContainerFilter.filter(j.getInstance().getAllItems(), "itemgroup-only");
-        assertEquals(1, items.size());
-        assertEquals(folder.getFullName(), items.iterator().next().getFullName());
-    }
-
 }

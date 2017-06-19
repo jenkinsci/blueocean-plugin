@@ -2,6 +2,7 @@ package io.blueocean.ath.pages.blue;
 
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
+import io.blueocean.ath.model.Pipeline;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
@@ -111,5 +112,9 @@ public class DashboardPage {
         element.sendKeys(Keys.chord(Keys.CONTROL, "a"));
         element.sendKeys(Keys.BACK_SPACE);
         logger.info("cleared search text");
+    }
+
+    public void clickPipeline(String pipelineName){
+        wait.until(By.xpath("//*/div[@data-pipeline='" + pipelineName + "']/a[1]")).click();
     }
 }
