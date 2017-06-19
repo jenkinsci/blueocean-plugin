@@ -61,6 +61,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.*;
@@ -567,6 +568,12 @@ public class PipelineApiTest extends BaseTest {
 
         // Make sure it is no longer in the queue
         List<Map> build = request().get("/organizations/jenkins/pipelines/pipeline3/queue/").build(List.class);
+
+        long end = TimeUnit.SECONDS.toMillis(10) + System.currentTimeMillis();
+        while (!build.isEmpty() && System.currentTimeMillis() < end) {
+            build = request().get("/organizations/jenkins/pipelines/pipeline3/queue/").build(List.class);
+        }
+
         assertEquals(0, build.size());
     }
 
