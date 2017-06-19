@@ -27,6 +27,11 @@ export class Pipelines extends Component {
         this._countExtensions();
     }
 
+    componentDidMount() {
+        document.getElementsByClassName('fastsearch-input')[0].focus();
+        document.addEventListener('keydown', this.handleKeyDownEvent);
+    }
+
     onChange = value => {
         this.setState({ searchText: value });
         this.updateSearchText(value);
@@ -53,6 +58,13 @@ export class Pipelines extends Component {
                 this.setState({ actionExtensionCount: count });
             }
         });
+    }
+
+    handleKeyDownEvent(event) {
+        if (document.activeElement !== document.getElementsByClassName('fastsearch-input')[0] && event.key === 't') {
+            document.getElementsByClassName('fastsearch-input')[0].focus();
+            event.preventDefault();
+        }
     }
 
     render() {
