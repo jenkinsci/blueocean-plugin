@@ -183,26 +183,23 @@ public class GithubScm extends Scm {
         StaplerRequest request = Stapler.getCurrentRequest();
         Preconditions.checkNotNull(request, "Must be called in HTTP request context");
         String apiUri = request.getParameter("apiUrl");
-        String customUrl = "";
 
-        // if "apiUrl" parameter was supplied, parse and normalize it for later use
+        // if "apiUrl" parameter was supplied, parse and trim trailing slash
         if (!StringUtils.isEmpty(apiUri)) {
-            java.net.URI uri;
-
             try {
-                uri = new URI(apiUri);
+                new URI(apiUri);
             } catch (URISyntaxException ex) {
                 throw new ServiceException.BadRequestException(new ErrorMessage(400, "Invalid URI: " + apiUri));
             }
 
-            customUrl = uri.toString();
-
-            if (customUrl.endsWith("/")) {
-                customUrl = customUrl.substring(0, customUrl.length() - 1);
+            if (apiUri.endsWith("/")) {
+                apiUri = apiUri.substring(0, apiUri.length() - 1);
             }
+        } else {
+            apiUri = "";
         }
 
-        return customUrl;
+        return apiUri;
     }
 
      private static String getCredentialIdFromRequest(StaplerRequest request){

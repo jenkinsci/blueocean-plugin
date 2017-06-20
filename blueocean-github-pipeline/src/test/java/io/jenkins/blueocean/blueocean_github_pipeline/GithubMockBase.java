@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Rule;
 
 import java.io.File;
@@ -95,7 +96,11 @@ public abstract class GithubMockBase extends PipelineBaseTest {
             .put("/organizations/jenkins/scm/github-enterprise/validate/?apiUrl="+githubApiUrl)
             .build(Map.class);
         String credentialId = (String) r.get("credentialId");
-        assertEquals(GithubEnterpriseScm.DOMAIN_NAME+":"+githubApiUrl, credentialId);
+        assertEquals(GithubEnterpriseScm.DOMAIN_NAME+":"+ getGithubApiUrlEncoded(), credentialId);
         return credentialId;
+    }
+
+    protected String getGithubApiUrlEncoded() {
+        return DigestUtils.sha256Hex(githubApiUrl);
     }
 }
