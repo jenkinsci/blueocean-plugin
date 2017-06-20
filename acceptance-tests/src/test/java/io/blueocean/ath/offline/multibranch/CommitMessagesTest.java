@@ -71,7 +71,8 @@ public class CommitMessagesTest extends BaseTest{
         ActivityPage activityPage = pipeline.getActivityPage().open();
         activityPage.checkForCommitMesssage("2nd commit");
 
-        // Make sure we have a value in the "duration" column
+        // Do some assertions on the run data
+
         WebElement row = activityPage.getRunRowForBranch(branchName);
         List<WebElement> cells = row.findElements(activityPage.getSelectorForRowCells());
         assertEquals("Number of cells in row",8, cells.size());

@@ -100,7 +100,7 @@ public class ActivityPage {
     }
 
     public void assertIsDuration(String text) {
-        final String durationRegex = "\\d+\\w";
+        final String durationRegex = "<1s|\\d+\\w";
         Assert.assertTrue("String (\"" + text + "\") contains a valid duration", text.matches(durationRegex));
     }
 }
