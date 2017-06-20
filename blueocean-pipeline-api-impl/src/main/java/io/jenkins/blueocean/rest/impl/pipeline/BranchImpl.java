@@ -6,6 +6,7 @@ import hudson.Util;
 import hudson.model.BuildableItem;
 import hudson.model.Item;
 import hudson.model.Job;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
@@ -15,14 +16,13 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.Resource;
 import jenkins.branch.MultiBranchProject;
-import jenkins.scm.api.SCMHead;
-import jenkins.scm.api.metadata.ContributorMetadataAction;
 import jenkins.scm.api.metadata.ObjectMetadataAction;
 import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
-import jenkins.scm.api.mixin.ChangeRequestSCMHead;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+
+import java.util.concurrent.ExecutionException;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_BRANCH;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_JOB;
@@ -95,8 +95,8 @@ public class BranchImpl extends PipelineImpl {
     public static class Branch {
 
         public static final String BRANCH = "branch";
-        private static final String BRANCH_URL = "url";
-        private static final String BRANCH_PRIMARY = "isPrimary";
+        public static final String BRANCH_URL = "url";
+        public static final String BRANCH_PRIMARY = "isPrimary";
 
         private final String url;
         private final boolean primary;
@@ -116,14 +116,12 @@ public class BranchImpl extends PipelineImpl {
             return primary;
         }
 
-        public static Branch getBranch(Job job) {
-            ObjectMetadataAction om = job.getAction(ObjectMetadataAction.class);
-            PrimaryInstanceMetadataAction pima = job.getAction(PrimaryInstanceMetadataAction.class);
-            if (om == null && pima == null) {
-                return null;
+        public static Branch getBranch(final Job job) {
+            try {
+                return Caches.BRANCH_METADATA.get(job.getFullName());
+            } catch (ExecutionException e) {
+                throw new ServiceException.UnexpectedErrorException("loading branch metadata for '" + job.getFullName() + "'", e);
             }
-            String url = om != null && om.getObjectUrl() != null ? om.getObjectUrl() : null;
-            return new Branch(url, pima != null);
         }
     }
 
@@ -131,10 +129,10 @@ public class BranchImpl extends PipelineImpl {
     public static class PullRequest {
 
         public static final String PULL_REQUEST = "pullRequest";
-        private static final String PULL_REQUEST_NUMBER = "id";
-        private static final String PULL_REQUEST_AUTHOR = "author";
-        private static final String PULL_REQUEST_TITLE = "title";
-        private static final String PULL_REQUEST_URL = "url";
+        public static final String PULL_REQUEST_NUMBER = "id";
+        public static final String PULL_REQUEST_AUTHOR = "author";
+        public static final String PULL_REQUEST_TITLE = "title";
+        public static final String PULL_REQUEST_URL = "url";
 
         private final String id;
 
@@ -174,21 +172,12 @@ public class BranchImpl extends PipelineImpl {
             return author;
         }
 
-        public static PullRequest get(Job job) {
-            // TODO probably want to be using SCMHeadCategory instances to categorize them instead of hard-coding for PRs
-            SCMHead head = SCMHead.HeadByItem.findHead(job);
-            if(head instanceof ChangeRequestSCMHead) {
-                ChangeRequestSCMHead cr = (ChangeRequestSCMHead)head;
-                ObjectMetadataAction om = job.getAction(ObjectMetadataAction.class);
-                ContributorMetadataAction cm = job.getAction(ContributorMetadataAction.class);
-                return new PullRequest(
-                    cr.getId(),
-                    om != null ? om.getObjectUrl() : null,
-                    om != null ? om.getObjectDisplayName() : null,
-                    cm != null ? cm.getContributor() : null
-                );
+        public static PullRequest get(final Job job) {
+            try {
+                return Caches.PULL_REQUEST_METADATA.get(job.getFullName());
+            } catch (ExecutionException e) {
+                throw new ServiceException.UnexpectedErrorException("loading pr metadata for '" + job.getFullName() + "'", e);
             }
-            return null;
         }
     }
 }

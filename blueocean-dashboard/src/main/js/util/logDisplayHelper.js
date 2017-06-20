@@ -66,13 +66,15 @@ export const getNodesInformation = (nodes) => {
         const computedResult = isCompleted ? item.result : item.state;
         const isInputStep = item.input && item.input !== null;
         const key = index + isRunning + computedResult;
+        const title = item.displayDescription ? item.displayName + ': ' + item.displayDescription : item.displayName;
         const modelItem = {
             _links: item._links,
             key: key || undefined,
             id: item.id,
             edges: item.edges,
             displayName: item.displayName,
-            title: item.displayName || `runId: ${item.id}`,
+            displayDescription: item.displayDescription,
+            title: title || `runId: ${item.id}`,
             durationInMillis: item.durationInMillis || undefined,
             startTime: item.startTime || undefined,
             result: item.result || undefined,

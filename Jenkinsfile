@@ -25,6 +25,7 @@ node() {
           sh 'npm --prefix ./blueocean-core-js run gulp'
           sh "mvn clean install -B -DcleanNode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
           junit '**/target/surefire-reports/TEST-*.xml'
+          junit '**/reports/junit.xml'
           archive '*/target/*.hpi'
         }
 
@@ -36,7 +37,7 @@ node() {
         stage('ATH - Jenkins 2.7.3') {
           sh "cd acceptance-tests && ./run.sh --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
           junit 'acceptance-tests/target/surefire-reports/*.xml'
-
+          archive 'acceptance-tests/target/screenshots/*'
         }
         if (env.JOB_NAME =~ 'blueocean-weekly-ath') {
           stage('ATH - Jenkins 2.46.3') {

@@ -1,7 +1,3 @@
-html {
-    overflow-y: scroll;
-}
-
 #modal-snap-background {
     position: fixed;
     top: 0;
@@ -23,21 +19,6 @@ html {
 .btn-show-more {
     display: table;
     margin: 10px auto;
-}
-
-.pipelines-table {
-    th {
-        width: 10%;
-        min-width: 100px;
-    }
-
-    th.name-col {
-        width: auto;
-    }
-
-    th.actions-col {
-        width: 30px;
-    }
 }
 
 .activity-table {
@@ -199,6 +180,32 @@ main {
     padding: 0;
 }
 
+.logConsole .result-item-title {
+    .result-item-expando {
+        flex-shrink: 0;
+    }
+
+    .result-item-extra-info {
+        flex-shrink: 0;
+        margin-left: 10px;
+    }
+
+    .result-item-label {
+        display: flex;
+
+        .result-item-label-desc {
+            max-height: 16px;
+            overflow: hidden;
+        }
+
+        .result-item-label-name {
+            color: #a4a4a4;
+            white-space: nowrap;
+            margin-left: 10px;
+        }
+    }
+}
+
 code div {
     font-size: 12px;
     margin: 5px;
@@ -316,9 +323,9 @@ code div a.btn-secondary.inverse:hover{
     }
 }
 
-// FIXME This is probably still not ideal. Belongs in JDL, also.
+// FIXME: Remove this once all <table> usages are converted
 .u-table-lr-indents {
-    .cell-link, // TODO: Do we need this?
+    .cell-link, 
     td, th {
         &:first-child {
             padding-left: 1rem;
@@ -328,10 +335,6 @@ code div a.btn-secondary.inverse:hover{
             padding-right: 1rem;
         }
     }
-}
-
-a.pipelineRedirectLink {
-    display:block;
 }
 
 a.pipelineRedirectLink svg {

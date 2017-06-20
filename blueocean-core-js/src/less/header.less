@@ -128,3 +128,90 @@
         stroke: white;
     }
 }
+
+/* TODO - move this out as soon as we fix the css loading issue */
+
+.jenkins-pipeline-header {
+    display: inline-block;
+}
+
+.TextInput.search-pipelines-input {
+    background-color: transparent;
+    background-repeat: no-repeat;
+    margin-left: 20px;
+
+    .TextInput-icon.u-icon-left {
+        pointer-events: none;
+        left: 0;
+
+        path {
+            fill: #ffffff;
+        }
+    }
+
+    .clear-icon-container {
+        display: none;
+        width: 16px;
+    }
+    .fastsearch-input:not([value=""]) ~ .clear-icon-container {
+        display: block;
+        right: 0;
+
+        .clear {
+            width: 16px;
+            cursor: pointer;
+            path {
+                fill: rgba(255, 255, 255, 0.5)
+            }
+        }
+    }
+
+    input.TextInput-control {
+        width: 250px;
+        border: none;
+        color: #ffffff;
+        font-size: 18px;
+        padding-top: 0px;
+        padding-right: 41px;
+        padding-bottom: 0px;
+        padding-left: 30px;
+        cursor: pointer;
+
+        &::-webkit-input-placeholder {
+            color: transparent;
+        }
+        &::-moz-placeholder {
+            color: transparent;
+        }
+        &:-ms-input-placeholder {
+            color: transparent;
+        }
+
+        &[value=""] {
+            width: 20px;
+            padding-left: 25px;
+        }
+
+        &:focus {
+            padding-left: 30px;
+            width: 250px;
+            cursor: inherit;
+
+            &::-webkit-input-placeholder {
+                color: rgba(255, 255, 255, 0.4);
+            }
+            &::-moz-placeholder {
+                color: rgba(255, 255, 255, 0.4);
+            }
+            &:-ms-input-placeholder {
+                color: rgba(255, 255, 255, 0.4);
+            }
+        }
+    }
+}
+
+.no-search-results-container {
+    text-align: center;
+}
+
+/* End of TODO */

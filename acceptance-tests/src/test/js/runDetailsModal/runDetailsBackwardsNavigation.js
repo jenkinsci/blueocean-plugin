@@ -38,10 +38,10 @@ module.exports = {
     'Step 03 - click to Branches tab': function(browser) {
         activity.click('.Header-pageTabs .branches');
         branches = browser.page.bluePipelineBranch();
-        branches.waitForElementVisible('tr[id^="master"]');
+        branches.waitForElementVisible('.JTable-row[data-branch="master"]');
     },
     'Step 04 - click to Run Details': function(browser) {
-        branches.click('tr[id^="master"]');
+        branches.click('.JTable-row[data-branch="master"]');
         runDetails = browser.page.bluePipelineRunDetail();
         runDetails.waitForElementVisible('.RunDetailsHeader');
     },

@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.114",
+  "version": "0.0.127",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
@@ -9,8 +9,11 @@
     "storybook:port": "npm run start-storybook -- -p ",
     "flow": "flow",
     "gulp": "gulp",
+    "gulp:fast": "gulp clean-build",
     "bundle:watch": "gulp watch",
     "test": "gulp test",
+    "test:debug": "node --debug-brk ./node_modules/.bin/gulp test-debug",
+    "test:fast": "gulp test-fast",
     "prepublish": "gulp"
   },
   "author": "Cliff Meyers <cmeyers@cloudbees.com> (https://www.cloudbees.com/)",
@@ -29,7 +32,7 @@
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
-    "@jenkins-cd/design-language": "0.0.128",
+    "@jenkins-cd/design-language": "0.0.130",
     "@jenkins-cd/js-extensions": "0.0.36",
     "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/logging": "0.0.6",
@@ -74,9 +77,13 @@
     "gulp-babel": "6.1.2",
     "gulp-copy": "0.0.2",
     "gulp-eslint": "3.0.1",
+    "gulp-jest": "1.0.0",
     "gulp-less": "3.1.0",
     "gulp-rename": "1.2.2",
     "gulp-sourcemaps": "1.6.0",
+    "jest": "19.0.2",
+    "jest-cli": "19.0.2",
+    "jest-junit": "1.5.1",
     "karma": "1.3.0",
     "karma-browserify": "5.1.0",
     "karma-chrome-launcher": "2.0.0",
@@ -84,6 +91,7 @@
     "karma-mocha": "1.2.0",
     "karma-mocha-reporter": "2.2.0",
     "karma-phantomjs-launcher": "1.0.2",
+    "minimist": "1.2.0",
     "mocha": "3.1.0",
     "phantomjs-prebuilt": "2.1.12",
     "react": "15.3.2",

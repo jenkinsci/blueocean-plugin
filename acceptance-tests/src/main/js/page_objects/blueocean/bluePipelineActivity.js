@@ -10,12 +10,19 @@ const pageHelper = require('../../util/pageHelper');
 //oh man, I miss es6 import :(
 const sanityCheck = pageHelper.sanityCheck;
 
+function activityRowSelector(pipeline, runId) {
+    // Fixme: Can we parameterise the "elements" below?
+    return `.activity-table .JTable-row[data-pipeline='${pipeline}'][data-runid='${runId}']`;
+}
+
+const activityTableEntries = '.activity-table .JTable-row[data-pipeline]';
+
 module.exports = {
     elements: {
         pipelinesNav: '.Header-topNav nav a[href="/blue/pipelines"]',
         emptyStateShoes: '.PlaceholderContent.NoRuns',
         activityTable: '.activity-table',
-        activityTableEntries: 'table.activity-table tbody tr',
+        activityTableEntries: activityTableEntries,
         runButton: 'a.run-button',
         toastOpenButton: {
             selector: '//div[@class="toast default"]/a[@class="action" and text()="Open"]',
@@ -65,60 +72,61 @@ module.exports.commands = [{
         this.waitForElementVisible('@emptyStateShoes');
     },
     /**
-     * Wait for a specific run to appear in the activity table as a success
-     * @param runName name of the job
+     * Wait for a specific run to appear in the activity table
+     * @param pipeline name of the pipeline
+     * @param runId id of the run
      */
-    waitForRunSuccessVisible: function(runName) {
-        this.waitForElementVisible('.activity-table tr#' + runName);
-        this.waitForElementVisible('.activity-table tr#' + runName + ' svg.svgResultStatus');
-        this.waitForElementPresent('.activity-table tr#' + runName + ' svg circle.success');
+    waitForRunVisible: function(pipeline, runId) {
+        this.waitForElementVisible(activityRowSelector(pipeline, runId));
+    },
+    /**
+     * Wait for a specific run to appear in the activity table as a success
+     * @param pipeline name of the pipeline
+     * @param runId id of the run
+     */
+    waitForRunSuccessVisible: function(pipeline, runId) {
+        this.waitForRunVisible(pipeline, runId);
+        const resultRowSelector = activityRowSelector(pipeline, runId);
+        this.waitForElementVisible(`${resultRowSelector} .success`);
     },
     /**
      * Wait for a specific run to appear in the activity table as a failure
      * @param runName name of the job
      */
-    waitForRunFailureVisible: function(runName) {
-        this.waitForElementVisible('.activity-table tr#' + runName);
-        this.waitForElementVisible('.activity-table tr#' + runName + ' svg.svgResultStatus');
-        this.waitForElementPresent('.activity-table tr#' + runName + ' svg circle.failure');
+    waitForRunFailureVisible: function(pipeline, runId) {
+        this.waitForRunVisible(pipeline, runId);
+        const resultRowSelector = activityRowSelector(pipeline, runId);
+        this.waitForElementVisible(`${resultRowSelector} .failure`);
     },    
 
     /**
      * Wait for a specific run to appear in the activity table as unstable
      * @param runName name of the job
      */
-    waitForRunUnstableVisible: function(runName) {
-        this.waitForElementVisible('.activity-table tr#' + runName);
-        this.waitForElementVisible('.activity-table tr#' + runName + ' svg.svgResultStatus');
-        this.waitForElementPresent('.activity-table tr#' + runName + ' svg circle.unstable');
-    },  
+    waitForRunUnstableVisible: function(pipeline, runId) {
+        this.waitForRunVisible(pipeline, runId);
+        const resultRowSelector = activityRowSelector(pipeline, runId);
+        this.waitForElementVisible(`${resultRowSelector} .unstable`);
+    },
     /**
      * Wait for a specific run to appear in the activity table as running
      * @param runName name of the job
      * @param [callback] {Function} - callback to be invoke when finished, will pass the sse event to the callback
      */
-    waitForRunRunningVisible: function(runName, callback) {
-        this.waitForElementVisible('.activity-table tr#' + runName);
-        this.waitForElementVisible('.activity-table tr#' + runName + ' svg.svgResultStatus');
-        if (callback === undefined) {
-            this.waitForElementPresent('.activity-table tr#' + runName + ' svg path.running');
-        } else {
-            this.waitForElementPresent('.activity-table tr#' + runName + ' svg path.running', callback);
-        }
+    waitForRunRunningVisible: function(pipeline, runId) {
+        this.waitForRunVisible(pipeline, runId);
+        const resultRowSelector = activityRowSelector(pipeline, runId);
+        this.waitForElementVisible(`${resultRowSelector} .running`);
     },
     /**
      * Wait for a specific run to appear in the activity table as paused
      * @param runName name of the job
      * @param [callback] {Function} - callback to be invoke when finished, will pass the sse event to the callback
      */
-    waitForRunPausedVisible: function(runName, callback) {
-        this.waitForElementVisible('.activity-table tr#' + runName);
-        this.waitForElementVisible('.activity-table tr#' + runName + ' svg.svgResultStatus');
-        if (callback === undefined) {
-            this.waitForElementPresent('.activity-table tr#' + runName + ' svg .paused');
-        } else {
-            this.waitForElementPresent('.activity-table tr#' + runName + ' svg .paused', callback);
-        }
+    waitForRunPausedVisible: function(pipeline, runId) {
+        this.waitForRunVisible(pipeline, runId);
+        const resultRowSelector = activityRowSelector(pipeline, runId);
+        this.waitForElementVisible(`${resultRowSelector} .paused`);
     },
 
     /**
@@ -127,7 +135,7 @@ module.exports.commands = [{
     assertStageGraphShows: function() {
       //check results look kosher:
       this.waitForElementVisible('.progress-spinner.running');                           
-      this.waitForElementVisible('.BasicHeader--running')
+      this.waitForElementVisible('.BasicHeader--running');
       
       this.waitForElementVisible('.pipeline-node-selected');                  
       this.waitForElementVisible('.download-log-button');                  
@@ -155,7 +163,7 @@ module.exports.commands = [{
         var self = this;
         const browser = this.api;
         self.waitForElementVisible('@activityTableEntries');
-        browser.elements('css selector', 'table.activity-table tbody tr', function (codeCollection) {
+        browser.elements('css selector', activityTableEntries, function (codeCollection) {
             this.assert.equal(codeCollection.value.length, expected);
         });
     },

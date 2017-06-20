@@ -2,7 +2,9 @@ package io.blueocean.ath.pages.classic;
 
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
+import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -13,6 +15,7 @@ import javax.inject.Singleton;
 
 @Singleton
 public class LoginPage{
+    Logger logger = Logger.getLogger(LoginPage.class);
     @Inject
     WebDriver driver;
 
@@ -24,9 +27,6 @@ public class LoginPage{
 
     @FindBy(name = "j_password")
     WebElement loginPassword;
-
-    @FindBy(id = "yui-gen1-button")
-    WebElement loginSubmit;
 
     @Inject
     public LoginPage(WebDriver driver) {
@@ -43,10 +43,13 @@ public class LoginPage{
     public void login() {
         open();
 
+
         wait.until(loginUsername).sendKeys("alice");
 
         wait.until(loginPassword).sendKeys("alice");
 
-        wait.until(loginSubmit).click();
+        wait.until(By.xpath("//*/button[contains(text(), 'log')]")).click();
+
+        logger.info("Logged in as alice");
     }
 }

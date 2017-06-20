@@ -20,6 +20,7 @@
     "babel-preset-es2015": "6.16.0",
     "babel-preset-react": "6.16.0",
     "babel-preset-stage-0": "6.16.0",
+    "create-hmac": "1.1.4",
     "eslint": "2.13.1",
     "eslint-plugin-react": "4.3.0",
     "giti": "1.1.3",
@@ -29,8 +30,8 @@
     "zombie": "4.2.1"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.114",
-    "@jenkins-cd/design-language": "0.0.128",
+    "@jenkins-cd/blueocean-core-js": "0.0.127",
+    "@jenkins-cd/design-language": "0.0.130",
     "@jenkins-cd/js-extensions": "0.0.36",
     "@jenkins-cd/js-modules": "0.0.10",
     "history": "2.0.2",

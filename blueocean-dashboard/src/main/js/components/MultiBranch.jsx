@@ -1,28 +1,49 @@
 import React, { Component, PropTypes } from 'react';
-import { Table } from '@jenkins-cd/design-language';
+import {
+    JTable,
+    TableHeaderRow,
+} from '@jenkins-cd/design-language';
 import { capable, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 
-import Branches from './Branches';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
 import { UnsupportedPlaceholder } from './placeholder/UnsupportedPlaceholder';
 
+import { BranchDetailsRow } from './BranchDetailsRow';
 
-const { object, string, any, func } = PropTypes;
+import Extensions from '@jenkins-cd/js-extensions';
 
-
+// TODO: Rename this
 @observer
 export class MultiBranch extends Component {
+
+    state = {
+        actionExtensionCount: 0,
+    };
+
     componentWillMount() {
         if (this.props.pipeline && this.context.params && capable(this.props.pipeline, MULTIBRANCH_PIPELINE)) {
             const { organization, pipeline } = this.context.params;
             this.pager = this.context.pipelineService.branchPager(organization, pipeline);
         }
+        this._countExtensions();
+    }
+
+    // Figure out how many extensions we have for the action buttons column so we can size it appropriately
+    _countExtensions() {
+        Extensions.store.getExtensions('jenkins.pipeline.branches.list.action', extensions => {
+            const count = extensions && typeof(extensions.length) === 'number' ? extensions.length : 0;
+            if (count !== this.state.actionExtensionCount) {
+                this.setState({ actionExtensionCount: count });
+            }
+        });
     }
 
     render() {
         const { t, locale, pipeline } = this.props;
+        const { actionExtensionCount } = this.state;
+        const actionsInRowCount = BranchDetailsRow.actionItemsCount; // Non-extension actions
 
         if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
             const childProps = {
@@ -50,22 +71,27 @@ export class MultiBranch extends Component {
         const messageHeader = t(`${head}.message`, { defaultValue: 'Message' });
         const completedHeader = t(`${head}.completed`, { defaultValue: 'Completed' });
 
-        const headers = [
-            healthHeader,
-            statusHeader,
-            { label: branchHeader, className: 'branch' },
-            { label: commitHeader, className: 'lastcommit' },
-            { label: messageHeader, className: 'message' },
-            { label: completedHeader, className: 'completed' },
-            { label: '', className: 'run' },
+        const actionColWidth = (actionExtensionCount + actionsInRowCount) * 24;
+
+        const columns = [
+            JTable.column(60, healthHeader, false),
+            JTable.column(60, statusHeader, false),
+            JTable.column(170, branchHeader, false),
+            JTable.column(80, commitHeader, false),
+            JTable.column(380, messageHeader, true),
+            JTable.column(100, completedHeader, false),
+            JTable.column(actionColWidth, '', false),
         ];
 
         return (
             <main>
                 <article>
-                    <Table className="multibranch-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
-                        {branches.length > 0 && branches.map((branch, index) => <Branches pipeline={pipeline} key={index} data={branch} t={t} locale={locale} />)}
-                    </Table>
+                    <JTable columns={columns} className="multibranch-table">
+                        <TableHeaderRow />
+                        { branches.map(branch => (
+                            <BranchDetailsRow pipeline={pipeline} key={`${branch.name}-${branch.organization}`} data={branch} t={t} locale={locale} />
+                        )) }
+                    </JTable>
                     <ShowMoreButton pager={this.pager} />
                 </article>
                 {this.props.children}
@@ -75,16 +101,16 @@ export class MultiBranch extends Component {
 }
 
 MultiBranch.contextTypes = {
-    config: object.isRequired,
-    params: object.isRequired,
-    pipelineService: object.isRequired,
+    config: PropTypes.object.isRequired,
+    params: PropTypes.object.isRequired,
+    pipelineService: PropTypes.object.isRequired,
 };
 
 MultiBranch.propTypes = {
-    children: any,
-    t: func,
-    locale: string,
-    pipeline: object,
+    children: PropTypes.any,
+    t: PropTypes.func,
+    locale: PropTypes.string,
+    pipeline: PropTypes.object,
 };
 
 export default MultiBranch;

@@ -7,6 +7,7 @@ import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
@@ -27,6 +28,7 @@ import io.jenkins.blueocean.rest.model.Container;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.kohsuke.github.GHMyself;
 import org.kohsuke.github.GHOrganization;
 import org.kohsuke.github.GHUser;
@@ -62,9 +64,6 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
  */
 public class GithubScm extends Scm {
     //Used by tests to mock github
-    static final String GITHUB_API_URL_PROPERTY = "blueocean.github.url";
-
-    static final String DEFAULT_API_URI = "https://api.github.com";
     private static final String ID = "github";
 
     //desired scopes
@@ -97,9 +96,10 @@ public class GithubScm extends Scm {
 
     @Override
     public @Nonnull String getUri() {
-        String url = System.getProperty(GITHUB_API_URL_PROPERTY);
-        String githubUrl = (url != null) ? url : DEFAULT_API_URI;
-        return githubUrl;
+        StaplerRequest request = Stapler.getCurrentRequest();
+        Preconditions.checkNotNull(request, "Must be called in HTTP request context");
+        String endpointUri = request.getParameter("apiUrl");
+        return (endpointUri != null) ? endpointUri : GitHubSCMSource.GITHUB_URL;
     }
 
     public String getCredentialDomainName(){

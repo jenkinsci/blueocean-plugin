@@ -44,6 +44,14 @@ export default {
     getOrganizationName(encoded = true) {
         return encoded ? encodeURIComponent(organization.name) : organization.name;
     },
+    
+    getOrganizationDisplayName() {
+        return organization.displayName;
+    },
+
+    getOrganizationGroup() {
+        return organization.organizationGroup;
+    },
 
     getSecurityConfig() {
         return this.getJenkinsConfig().security || {};

@@ -8,22 +8,20 @@ import hudson.Extension;
 import hudson.model.Action;
 import hudson.model.Actionable;
 import hudson.model.ModelObject;
-import io.jenkins.blueocean.rest.factory.BlueOceanUrlAction;
-import io.jenkins.blueocean.rest.factory.BlueOceanUrlActionFactory;
+import io.jenkins.blueocean.rest.factory.BlueOceanUrlObjectFactory;
+import io.jenkins.blueocean.rest.model.BlueOceanUrlObject;
 import jenkins.model.TransientActionFactory;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Collections;
 
-import static io.jenkins.blueocean.rest.factory.BlueOceanUrlActionFactory.getFirst;
+import static io.jenkins.blueocean.rest.factory.BlueOceanUrlObjectFactory.getFirst;
 
 /**
  * Adds 'Open Blue Ocean' menu on the left side of Jenkins pages.
  *
- * @see BlueOceanUrlActionFactory
- * @see io.jenkins.blueocean.rest.factory.BlueOceanUrlAction
- * @see io.jenkins.blueocean.rest.factory.BlueOceanUrlMapper
+ * @see BlueOceanUrlObjectFactory
  */
 @Extension
 public class TryBlueOceanMenu extends TransientActionFactory<ModelObject> {
@@ -42,10 +40,11 @@ public class TryBlueOceanMenu extends TransientActionFactory<ModelObject> {
     @Override
     public Collection<? extends Action> createFor(@Nonnull ModelObject target) {
         // we do not report actions as it might appear multiple times, we simply add it to Actionable
-        BlueOceanUrlActionFactory f = getFirst();
+        BlueOceanUrlObjectFactory f = getFirst();
         if(f != null){
+            BlueOceanUrlObject blueOceanUrlObject = f.get(target);
+            BlueOceanUrlAction a = new BlueOceanUrlAction(blueOceanUrlObject);
             if(target instanceof Actionable){
-                BlueOceanUrlAction a = f.get(target);
                 if(exists((Actionable) target, a)){
                     return Collections.emptyList();
                 }
@@ -62,9 +61,13 @@ public class TryBlueOceanMenu extends TransientActionFactory<ModelObject> {
 
     private boolean exists(Actionable actionable, BlueOceanUrlAction blueOceanUrlAction){
         for(Action a: actionable.getActions()) {
-            if(a instanceof BlueOceanUrlAction &&
-                    ((BlueOceanUrlAction) a).getUrl().equals(blueOceanUrlAction.getUrl())){
-                return true;
+            // JENKINS-44926 only call getURLName on these actions if action is BLueOceanUrlAction
+            if (a instanceof BlueOceanUrlAction) {
+                String blueUrl  = blueOceanUrlAction.getUrlName();
+                String thisUrl = a.getUrlName();
+                if(thisUrl != null && thisUrl.equals(blueUrl)){
+                    return true;
+                }
             }
         }
         return false;

@@ -3,6 +3,9 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Cause;
 import hudson.model.Item;
@@ -32,6 +35,8 @@ import jenkins.scm.api.SCMSourceCriteria;
 import jenkins.scm.api.SCMSourceEvent;
 import jenkins.scm.api.SCMSourceOwner;
 import org.apache.commons.lang3.StringUtils;
+import org.jenkinsci.plugins.github_branch_source.Endpoint;
+import org.jenkinsci.plugins.github_branch_source.GitHubConfiguration;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.jenkinsci.plugins.pubsub.MessageException;
@@ -41,6 +46,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.util.ArrayList;
@@ -77,7 +83,9 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
         List<String> repos = new ArrayList<>();
 
         if (scmConfig != null) {
-            apiUrl = StringUtils.defaultIfBlank(scmConfig.getUri(), GithubScm.DEFAULT_API_URI);
+            apiUrl = StringUtils.defaultIfBlank(scmConfig.getUri(), GitHubSCMSource.GITHUB_URL);
+            updateEndpoints(apiUrl);
+
             if (scmConfig.getConfig().get("orgName") instanceof String) {
                 orgName = (String) scmConfig.getConfig().get("orgName");
             }
@@ -194,6 +202,23 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
             return cleanupOnError(e, getName(), item, creatingNewItem);
         }
         return null;
+    }
+
+    private void updateEndpoints(String apiUrl) {
+        GitHubConfiguration config = GitHubConfiguration.get();
+        synchronized (config) {
+            final String finalApiUrl = apiUrl;
+            Endpoint endpoint = Iterables.find(config.getEndpoints(), new Predicate<Endpoint>() {
+                @Override
+                public boolean apply(@Nullable Endpoint input) {
+                    return input != null && input.getApiUri().equals(finalApiUrl);
+                }
+            }, null);
+            if (endpoint == null) {
+                config.setEndpoints(ImmutableList.of(new Endpoint(apiUrl, apiUrl)));
+                config.save();
+            }
+        }
     }
 
     /**
