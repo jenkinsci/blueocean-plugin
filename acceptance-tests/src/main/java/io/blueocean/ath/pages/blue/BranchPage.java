@@ -46,12 +46,12 @@ public class BranchPage {
 
     public BranchPage checkUrl() {
         wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/branches"), 30000);
-        wait.until(By.cssSelector("div.multibranch-table"));
+        wait.until(By.cssSelector("table.multibranch-table"));
         return this;
     }
 
     public ActivityPage clickHistoryButton(String branch) {
-        wait.until(By.cssSelector("div[data-branch='" + branch + "'] a.history-button")).click();
+        wait.until(By.cssSelector("tr[id='" + branch + "-1'] a.history-button")).click();
         logger.info("Clicked history button of branch " + branch);
         return activityPageFactory.withPipeline(pipeline).checkUrl(branch);
     }

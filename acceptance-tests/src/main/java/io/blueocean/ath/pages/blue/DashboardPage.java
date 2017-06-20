@@ -64,6 +64,6 @@ public class DashboardPage {
     }
 
     public void clickPipeline(String pipelineName){
-        wait.until(By.xpath("//*/div[@data-pipeline='" + pipelineName + "']/a[1]")).click();
+        wait.until(By.xpath("//*/tr[@data-name='" + pipelineName + "']/td/a[1]")).click();
     }
 }
