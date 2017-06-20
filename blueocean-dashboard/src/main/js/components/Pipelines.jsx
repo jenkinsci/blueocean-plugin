@@ -28,14 +28,22 @@ export class Pipelines extends Component {
     }
 
     componentDidMount() {
-        document.getElementsByClassName('fastsearch-input')[0].focus();
+        this.getSearchInput().focus();
         document.addEventListener('keydown', this.handleKeyDownEvent);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this.handleKeyDownEvent);
     }
 
     onChange = value => {
         this.setState({ searchText: value });
         this.updateSearchText(value);
     };
+
+    getSearchInput() {
+        return document.getElementsByClassName('fastsearch-input')[0];
+    }
 
     getSearchText() {
         return this.props.location.query.search ? decodeURIComponent(this.props.location.query.search) : '';
@@ -61,9 +69,9 @@ export class Pipelines extends Component {
     }
 
     handleKeyDownEvent = (event) => {
-        if (document.activeElement !== document.getElementsByClassName('fastsearch-input')[0]) {
+        if (document.activeElement !== this.getSearchInput()) {
             if (event.key === 't') {
-                document.getElementsByClassName('fastsearch-input')[0].focus();
+                this.getSearchInput().focus();
                 event.preventDefault();
             }
         } else {
