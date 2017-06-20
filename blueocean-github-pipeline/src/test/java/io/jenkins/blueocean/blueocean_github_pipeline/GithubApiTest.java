@@ -52,7 +52,7 @@ public class GithubApiTest extends GithubMockBase {
     @Test
     public void validateGithubEnterpriseToken() throws IOException, UnirestException {
         String credentialId = createGithubEnterpriseCredential();
-        assertEquals("blueocean-github-enterprise-domain:" + githubApiUrl, credentialId);
+        assertEquals("blueocean-github-enterprise-domain:" + getGithubApiUrlEncoded(), credentialId);
 
         //check if this credentialId is created in correct user domain
         Domain domain = CredentialsUtils.findDomain(credentialId, user);
@@ -81,7 +81,7 @@ public class GithubApiTest extends GithubMockBase {
             .get("/organizations/jenkins/scm/github-enterprise/?apiUrl=" + githubApiUrl)
             .build(Map.class);
 
-        assertEquals("blueocean-github-enterprise-domain:" + githubApiUrl, r.get("credentialId"));
+        assertEquals("blueocean-github-enterprise-domain:" + getGithubApiUrlEncoded(), r.get("credentialId"));
         assertEquals(githubApiUrl, r.get("uri"));
     }
 

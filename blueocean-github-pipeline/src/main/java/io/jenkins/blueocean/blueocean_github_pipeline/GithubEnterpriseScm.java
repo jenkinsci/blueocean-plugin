@@ -10,6 +10,7 @@ import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.GET;
 import org.parboiled.common.StringUtils;
@@ -76,7 +77,7 @@ public class GithubEnterpriseScm extends GithubScm {
     @Override
     protected String createCredentialId(@Nonnull String apiUri) {
         String domainName = getCredentialDomainName();
-        return domainName + ":" + apiUri;
+        return domainName + ":" + DigestUtils.sha256Hex(apiUri);
     }
 
     @Extension
