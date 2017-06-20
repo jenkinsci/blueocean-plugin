@@ -4,12 +4,14 @@ import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.offbytwo.jenkins.JenkinsServer;
 import io.blueocean.ath.factory.ActivityPageFactory;
+import io.blueocean.ath.factory.BranchPageFactory;
 import io.blueocean.ath.factory.FreestyleJobFactory;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
 import io.blueocean.ath.model.FreestyleJob;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.pages.blue.ActivityPage;
+import io.blueocean.ath.pages.blue.BranchPage;
 import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
@@ -20,8 +22,8 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 
-public class AthModule extends AbstractModule
-{  @Override
+public class AthModule extends AbstractModule {
+    @Override
     protected void configure() {
 
         DesiredCapabilities capability = DesiredCapabilities.firefox();
@@ -64,5 +66,8 @@ public class AthModule extends AbstractModule
         install(new FactoryModuleBuilder()
             .implement(RunDetailsPipelinePage.class, RunDetailsPipelinePage.class)
             .build(RunDetailsPipelinePageFactory.class));
+        install(new FactoryModuleBuilder()
+            .implement(BranchPage.class, BranchPage.class)
+            .build(BranchPageFactory.class));
     }
 }

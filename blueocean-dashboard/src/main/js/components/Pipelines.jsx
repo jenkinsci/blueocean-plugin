@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { Page, Table } from '@jenkins-cd/design-language';
+import { Page, JTable, TableHeaderRow } from '@jenkins-cd/design-language';
 import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
@@ -17,13 +17,32 @@ const translate = i18nTranslator('blueocean-dashboard');
 
 @observer
 export class Pipelines extends Component {
+
+    state = {
+        actionExtensionCount: 0,
+    };
+
     componentWillMount() {
         this.setState({ searchText: this.getSearchText() });
+        this._countExtensions();
     }
-    
+
+    componentDidMount() {
+        this.getSearchInput().focus();
+        document.addEventListener('keydown', this.handleKeyDownEvent);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this.handleKeyDownEvent);
+    }
+
     onChange = value => {
         this.setState({ searchText: value });
         this.updateSearchText(value);
+    };
+
+    getSearchInput() {
+        return document.getElementsByClassName('fastsearch-input')[0];
     }
 
     getSearchText() {
@@ -37,35 +56,74 @@ export class Pipelines extends Component {
     clearSearchInputText = () => {
         this.setState({ searchText: '' });
         this.context.router.push(`${this.props.location.pathname}${updateGetParam('search', '', this.props.location.query)}`);
+    };
+
+    // Figure out how many extensions we have for the action buttons column so we can size it appropriately
+    _countExtensions() {
+        Extensions.store.getExtensions('jenkins.pipeline.list.action', extensions => {
+            const count = extensions && typeof(extensions.length) === 'number' ? extensions.length : 0;
+            if (count !== this.state.actionExtensionCount) {
+                this.setState({ actionExtensionCount: count });
+            }
+        });
+    }
+
+    handleKeyDownEvent = (event) => {
+        if (document.activeElement !== this.getSearchInput()) {
+            if (event.key === 't') {
+                this.getSearchInput().focus();
+                event.preventDefault();
+            }
+        } else {
+            if (event.key === 'Escape') {
+                this.clearSearchInputText();
+            }
+        }
     }
 
     render() {
-        const { organization, location = { } } = this.context.params;
+        const { organization } = this.context.params;
+        const { actionExtensionCount } = this.state;
         const organizationName = organization || AppConfig.getOrganizationName();
         const organizationDisplayName = organization === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : organization;
-        
+
         const searchText = this.getSearchText();
         this.pager = this.context.pipelineService.pipelinesPager(organizationName, searchText);
         const pipelines = this.pager.data;
-        
-        const orgLink = organizationName ?
-            <Link
-                to={ `organizations/${organizationName}` }
-                query={ location.query }
-            >
+
+        const orgLink = organizationName ? (
+            <Link to={ `organizations/${organizationName}` }>
                 { organizationDisplayName }
-            </Link> : '';
+            </Link>
+        ) : '';
 
         const showPipelineList = pipelines && pipelines.length > 0;
         const showEmptyState = !this.pager.pending && !this.getSearchText() && (!pipelines || !pipelines.length);
 
-        const headers = [
-            { label: translate('home.pipelineslist.header.name', { defaultValue: 'Name' }), className: 'name-col' },
-            translate('home.pipelineslist.header.health', { defaultValue: 'Health' }),
-            translate('home.pipelineslist.header.branches', { defaultValue: 'Branches' }),
-            translate('home.pipelineslist.header.pullrequests', { defaultValue: 'PR' }),
-            { label: '', className: 'actions-col' },
+        const labelName = translate('home.pipelineslist.header.name', { defaultValue: 'Name' });
+        const labelHealth = translate('home.pipelineslist.header.health', { defaultValue: 'Health' });
+        const labelBranches = translate('home.pipelineslist.header.branches', { defaultValue: 'Branches' });
+        const labelPullReqs = translate('home.pipelineslist.header.pullrequests', { defaultValue: 'PR' });
+
+        const columns = [
+            JTable.column(640, labelName, true),
+            JTable.column(70, labelHealth),
+            JTable.column(70, labelBranches),
+            JTable.column(70, labelPullReqs),
+            JTable.column(actionExtensionCount * 24, ''),
         ];
+
+        const pipelineRows = pipelines && pipelines.map(pipeline => {
+            const key = pipeline._links.self.href;
+            return (
+                <PipelineRowItem
+                    t={ translate }
+                    key={ key } pipeline={ pipeline }
+                    showOrganization={ AppConfig.showOrg() && !organizationName }
+                />
+            );
+        });
+
         this.props.setTitle('Jenkins Blue Ocean');
 
         return (
@@ -74,14 +132,14 @@ export class Pipelines extends Component {
                     <div className="u-flex-grow">
                         <Extensions.Renderer extensionPoint="jenkins.pipeline.header">
                             <h1>
-                                <Link to="/" query={ location.query }>
+                                <Link to="/">
                                     { translate('home.header.dashboard', { defaultValue: 'Dashboard' }) }
                                 </Link>
                                 { AppConfig.showOrg() && organizationName && ' / ' }
                                 { AppConfig.showOrg() && organizationName && orgLink }
                             </h1>
                         </Extensions.Renderer>
-                        
+
                         <div className="TextInput search-pipelines-input u-icon-left" iconLeft="search">
                             <div className="TextInput-icon u-icon-left">
                                 <Icon icon="search" />
@@ -111,26 +169,12 @@ export class Pipelines extends Component {
                                 There are no pipelines that match <i>{this.getSearchText()}</i>
                             </div>
                         }
-                        { showPipelineList &&
-                        <Table
-                            className="pipelines-table"
-                            headers={ headers }
-                        >
-                            { pipelines &&
-                            pipelines.map(pipeline => {
-                                const key = pipeline._links.self.href;
-                                return (
-                                    <PipelineRowItem
-                                        t={ translate }
-                                        key={ key } pipeline={ pipeline }
-                                        showOrganization={ AppConfig.showOrg() && !organizationName }
-                                    />
-                                );
-                            })
-                            }
-                        </Table>
-                        }
-
+                        { showPipelineList && (
+                            <JTable className="pipelines-table" columns={ columns } >
+                                <TableHeaderRow />
+                                { pipelineRows }
+                            </JTable>
+                        )}
                         { (pipelines || this.pager.pending) && <ShowMoreButton pager={this.pager} /> }
                     </article>
                 </main>
@@ -146,7 +190,6 @@ Pipelines.contextTypes = {
     store: object,
     router: object,
     pipelineService: object,
-    location: object.isRequired, // From react-router
 };
 
 Pipelines.propTypes = {

@@ -34,7 +34,7 @@ module.exports = {
 
     const blueActivityPage = browser.page.bluePipelineActivity().forJob(jobName, 'jenkins');
     blueActivityPage.click('.branches');
-    blueActivityPage.waitForElementVisible('tr[id^="master"]');
+    blueActivityPage.waitForElementVisible('.JTable-row[data-branch="master"]');
     blueActivityPage.waitForElementVisible('a.run-button');
     blueActivityPage.click('a.run-button');
     blueActivityPage.waitForElementVisible('button.inputStepSubmit');
@@ -77,21 +77,12 @@ module.exports = {
   'Step 05': function (browser) {
     const blueRunDetailPage = browser.page.bluePipelineRunDetail().forRun(jobName2, 'jenkins', 2);
     blueRunDetailPage.assertBasicLayoutOkay();
-    browser.elements('css selector', 'div.result-item', function (resutlItems) {
-      const results = resutlItems.value.length;
-      this.assert.equal(results, 2);
-      // Note, tried using "last" selectors for both CSS and XPath
-      // and neither worked in nightwatch e.g. //div[starts-with(@class, 'logConsole')][last()]
-      // works in the browser, but not for nightwatch.
-      // NOTE: if the pipeline script (parameterPipeline.groovy) changes then the following
-      // selector will need to be changed too.
-      const lastLogConsoleSelector = '.logConsole.step-6';
-      blueRunDetailPage.waitForElementVisible(lastLogConsoleSelector);
-      blueRunDetailPage.click(lastLogConsoleSelector);
-      blueRunDetailPage.waitForElementVisible('span.line');
-      blueRunDetailPage.getText('span.line', function (result) {
-        this.assert.equal(result.value, 'We are going to build now the branch master');
-      })
-    });
+    const lastLogConsoleSelector = '.logConsole.step-6';
+    blueRunDetailPage.waitForElementVisible(lastLogConsoleSelector);
+    blueRunDetailPage.click(lastLogConsoleSelector);
+    blueRunDetailPage.waitForElementVisible('span.line');
+    blueRunDetailPage.getText('span.line', function (result) {
+      this.assert.equal(result.value, 'We are going to build now the branch master');
+    })
   }
 };

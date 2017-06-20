@@ -44,7 +44,7 @@ function newPluginXHR(pluginName, onLoad) {
             }
             let status;
             // eslint-disable-next-line
-            return Fetch.fetch(url, { 'disableLoadingIndicator': true })
+            return Fetch.fetch(url, { disableLoadingIndicator: true, ignoreRefreshHeader: true })
                 .then(response => {
                     // i18n xhr-backend needs the status
                     status = response.status;
