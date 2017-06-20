@@ -52,25 +52,11 @@ public class GithubApiTest extends GithubMockBase {
     @Test
     public void validateGithubEnterpriseToken() throws IOException, UnirestException {
         String credentialId = createGithubEnterpriseCredential();
+        assertEquals("blueocean-github-enterprise-domain:" + githubApiUrl, credentialId);
+
         //check if this credentialId is created in correct user domain
         Domain domain = CredentialsUtils.findDomain(credentialId, user);
         assertEquals("blueocean-github-enterprise-domain", domain.getName());
-
-        //now that there is github credentials setup, calling scm api to get credential should simply return that.
-        Map r = new RequestBuilder(baseUrl)
-                .status(200)
-                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .get("/organizations/jenkins/scm/github-enterprise/")
-                .build(Map.class);
-
-        Assert.assertNull(r.get("credentialId"));
-        assertEquals("github-enterprise", r.get("id"));
-        List credentials = (List) r.get("credentials");
-        assertNotNull(credentials);
-        assertEquals(credentials.size(), 1);
-        Map<String, Object> credential = (Map<String, Object>) credentials.get(0);
-        assertEquals(githubApiUrl, credential.get("apiUri"));
-        assertEquals(credentialId, credential.get("credentialId"));
     }
 
     @Test
@@ -82,6 +68,46 @@ public class GithubApiTest extends GithubMockBase {
             .put("/organizations/jenkins/scm/github-enterprise/validate")
             .build(Map.class);
         assertEquals(400, r.get("code"));
+    }
+
+    @Test
+    public void fetchExistingGithubEnterpriseToken() throws IOException, UnirestException {
+        createGithubEnterpriseCredential();
+
+        //now that there is github credentials setup, calling scm api to get credential should simply return that.
+        Map r = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .get("/organizations/jenkins/scm/github-enterprise/?apiUrl=" + githubApiUrl)
+            .build(Map.class);
+
+        assertEquals("blueocean-github-enterprise-domain:" + githubApiUrl, r.get("credentialId"));
+        assertEquals(githubApiUrl, r.get("uri"));
+    }
+
+    @Test
+    public void fetchExistingGithubEnterpriseToken_apiUrlRequired() throws IOException, UnirestException {
+        // fetch the github-enterprise endpoint without specifiying apirUrl
+        Map r = new RequestBuilder(baseUrl)
+            .status(400)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .get("/organizations/jenkins/scm/github-enterprise/")
+            .build(Map.class);
+        assertEquals(400, r.get("code"));
+    }
+
+    @Test
+    public void fetchExistingGithubEnterpriseToken_notFound() throws IOException, UnirestException {
+        // create a credential using default apiUrl
+        createGithubEnterpriseCredential();
+
+        // look up credential for apiUrl that's invalid
+        Map r = new RequestBuilder(baseUrl)
+            .status(404)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .get("/organizations/jenkins/scm/github-enterprise/?apiUrl=https://foo.com")
+            .build(Map.class);
+        assertEquals(404, r.get("code"));
     }
 
     @Test
