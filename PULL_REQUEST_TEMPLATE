@@ -7,7 +7,6 @@ See [JENKINS-XXXXX](https://issues.jenkins-ci.org/browse/JENKINS-XXXXX).
 - [ ] Change is code complete and matches issue description
 - [ ] Appropriate unit or acceptance tests or explanation to why this change has no tests
 - [ ] Reviewer's manual test instructions provided in PR description. See Reviewer's first task below.
-- [ ] Ran Acceptance Test Harness against PR changes.
 
 # Reviewer checklist
 - [ ] Run the changes and verified the change matches the issue description

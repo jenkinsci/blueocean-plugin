@@ -56,7 +56,7 @@ export class Pipelines extends Component {
     }
 
     render() {
-        const { organization, location = { } } = this.context.params;
+        const { organization } = this.context.params;
         const { actionExtensionCount } = this.state;
         const organizationName = organization || AppConfig.getOrganizationName();
         const organizationDisplayName = organization === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : organization;
@@ -65,13 +65,11 @@ export class Pipelines extends Component {
         this.pager = this.context.pipelineService.pipelinesPager(organizationName, searchText);
         const pipelines = this.pager.data;
 
-        const orgLink = organizationName ?
-            <Link
-                to={ `organizations/${organizationName}` }
-                query={ location.query }
-            >
+        const orgLink = organizationName ? (
+            <Link to={ `organizations/${organizationName}` }>
                 { organizationDisplayName }
-            </Link> : '';
+            </Link>
+        ) : '';
 
         const showPipelineList = pipelines && pipelines.length > 0;
         const showEmptyState = !this.pager.pending && !this.getSearchText() && (!pipelines || !pipelines.length);
@@ -108,7 +106,7 @@ export class Pipelines extends Component {
                     <div className="u-flex-grow">
                         <Extensions.Renderer extensionPoint="jenkins.pipeline.header">
                             <h1>
-                                <Link to="/" query={ location.query }>
+                                <Link to="/">
                                     { translate('home.header.dashboard', { defaultValue: 'Dashboard' }) }
                                 </Link>
                                 { AppConfig.showOrg() && organizationName && ' / ' }
@@ -166,7 +164,6 @@ Pipelines.contextTypes = {
     store: object,
     router: object,
     pipelineService: object,
-    location: object.isRequired, // From react-router
 };
 
 Pipelines.propTypes = {

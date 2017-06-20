@@ -3,21 +3,14 @@
   "version": "0.0.2-unpublished",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.124-SNAPSHOT-nicu",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.124-SNAPSHOT-nicu",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.124-SNAPSHOT-nicu.tgz",
-      "dependencies": {
-        "@jenkins-cd/design-language": {
-          "version": "0.0.131-SNAPSHOT-nicu",
-          "from": "@jenkins-cd/design-language@0.0.131-SNAPSHOT-nicu",
-          "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.131-SNAPSHOT-nicu.tgz"
-        }
-      }
+      "version": "0.0.127",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.127",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.127.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.131-SNAPSHOT-nicu",
-      "from": "@jenkins-cd/design-language@0.0.131-SNAPSHOT-nicu",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.131-SNAPSHOT-nicu.tgz"
+      "version": "0.0.130",
+      "from": "@jenkins-cd/design-language@0.0.130",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.130.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
