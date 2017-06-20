@@ -64,7 +64,7 @@ public class GithubEnterpriseScm extends GithubScm {
         List<StandardUsernamePasswordCredentials> credentials = CredentialsUtils.findCredentials(StandardUsernamePasswordCredentials.class, user, DOMAIN_NAME);
 
         for (StandardUsernamePasswordCredentials cred : credentials) {
-            if (getCredentialId().equals(cred.getId())) {
+            if (cred.getId().equals(getCredentialId())) {
                 return this;
             }
         }
