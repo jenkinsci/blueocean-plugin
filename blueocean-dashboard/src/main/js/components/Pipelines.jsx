@@ -27,10 +27,23 @@ export class Pipelines extends Component {
         this._countExtensions();
     }
 
+    componentDidMount() {
+        this.getSearchInput().focus();
+        document.addEventListener('keydown', this.handleKeyDownEvent);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this.handleKeyDownEvent);
+    }
+
     onChange = value => {
         this.setState({ searchText: value });
         this.updateSearchText(value);
     };
+
+    getSearchInput() {
+        return document.getElementsByClassName('fastsearch-input')[0];
+    }
 
     getSearchText() {
         return this.props.location.query.search ? decodeURIComponent(this.props.location.query.search) : '';
@@ -53,6 +66,19 @@ export class Pipelines extends Component {
                 this.setState({ actionExtensionCount: count });
             }
         });
+    }
+
+    handleKeyDownEvent = (event) => {
+        if (document.activeElement !== this.getSearchInput()) {
+            if (event.key === 't') {
+                this.getSearchInput().focus();
+                event.preventDefault();
+            }
+        } else {
+            if (event.key === 'Escape') {
+                this.clearSearchInputText();
+            }
+        }
     }
 
     render() {
