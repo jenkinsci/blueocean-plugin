@@ -53,7 +53,7 @@ class RunDetailsRow extends Component {
         const runDetailsUrl = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'pipeline');
 
         const {
-            durationMillis,
+            durationInMillis,
             endTime,
             startTime,
         } = getTimes({
@@ -78,7 +78,7 @@ class RunDetailsRow extends Component {
             <TableRow useRollover columns={columns} {...dataProps}>
                 <TableCell linkTo={runDetailsUrl}>
                     <LiveStatusIndicator
-                        durationInMillis={durationMillis}
+                        durationInMillis={durationInMillis}
                         result={resultRun}
                         startTime={startTime}
                         estimatedDuration={run.estimatedDurationInMillis}
@@ -89,7 +89,7 @@ class RunDetailsRow extends Component {
                 { isMultibranch && <TableCell linkTo={runDetailsUrl}>{branchName}</TableCell> }
                 <TableCell linkTo={runDetailsUrl}><RunMessageCell run={run} t={t} /></TableCell>
                 <TableCell linkTo={runDetailsUrl}>
-                    <TimeDuration millis={durationMillis}
+                    <TimeDuration millis={durationInMillis}
                                   updatePeriod={1000}
                                   liveUpdate={isRunning}
                                   locale={locale}
