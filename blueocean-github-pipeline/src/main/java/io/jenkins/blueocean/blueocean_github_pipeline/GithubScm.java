@@ -195,6 +195,8 @@ public class GithubScm extends Scm {
             if (apiUri.endsWith("/")) {
                 apiUri = apiUri.substring(0, apiUri.length() - 1);
             }
+        } else {
+            apiUri = "";
         }
 
         return apiUri;
