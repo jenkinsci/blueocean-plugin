@@ -6,6 +6,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.pageable.PagedResponse;
 import io.jenkins.blueocean.service.embedded.rest.ContainerFilter;
 
 import java.util.ArrayList;
@@ -137,11 +138,17 @@ public class BranchContainerImpl extends BluePipelineContainer {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Iterator<BluePipeline> iterator() {
+        return iterator(0, PagedResponse.DEFAULT_LIMIT);
+    }
+
+    @Override
+    @SuppressWarnings("unchecked")
+    public Iterator<BluePipeline> iterator(int start, int limit) {
         List<BluePipeline> branches = new ArrayList<>();
         Collection<Job> jobs = pipeline.mbp.getAllJobs();
-        jobs = ContainerFilter.filter(jobs);
+
+        jobs = ContainerFilter.filter(jobs, start, limit);
         for(Job j: jobs){
             branches.add(new BranchImpl(j, getLink()));
         }

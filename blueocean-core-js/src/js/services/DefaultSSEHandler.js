@@ -86,8 +86,15 @@ export class DefaultSSEHandler {
     }
 
     queueLeft(event) {
+        // ignore the event if there's no build number
+        // it's not related to a run, rather something like repo or branch indexing
+        if (!event.blueocean_queue_item_expected_build_number) {
+            return;
+        }
+
         const id = event.blueocean_queue_item_expected_build_number;
         const href = `${event.blueocean_job_rest_url}runs/${id}/`;
+
         if (event.job_run_status === 'CANCELLED') {
             // Cancelled runs are removed from the stores. They are gone *poof*.
             this._removeRun(event, href);

@@ -6,9 +6,13 @@ import { Pipelines } from '../../main/js/components/Pipelines.jsx';
 import { pipelines } from './data/pipelines/pipelinesSingle';
 import { pipelinesDupName } from './data/pipelines/pipelinesTwoJobsSameName';
 
+import { mockExtensionsForI18n } from './mock-extensions-i18n';
+
 const resultArrayHeaders = ['Name', 'Status', 'Branches', 'Pull Requests', ''];
 
 describe('Pipelines', () => {
+    beforeAll(() => mockExtensionsForI18n());
+
     describe('basic table rendering', () => {
         let wrapper;
 
@@ -22,11 +26,21 @@ describe('Pipelines', () => {
                             data: pipelines,
                         };
                     },
+                    pipelinesPager() {
+                        return {
+                            data: pipelines,
+                        };
+                    },
                 },
             };
 
+            const location = {
+                query: {}
+            };
+
+
             wrapper = shallow(
-                <Pipelines params={context.params} setTitle={() => {}} />,
+                <Pipelines location={location} params={context.params} setTitle={() => {}} />,
                 {
                     context,
                 }
@@ -34,7 +48,7 @@ describe('Pipelines', () => {
         });
 
         it('check header to be as expected', () => {
-            assert.equal(wrapper.find('Table').props().headers.length, resultArrayHeaders.length);
+            assert.equal(wrapper.find('JTable').props().columns.length, resultArrayHeaders.length);
         });
 
         it('check rows number to be as expected', () => {
@@ -54,11 +68,20 @@ describe('Pipelines', () => {
                             data: pipelines,
                         };
                     },
+                    pipelinesPager() {
+                        return {
+                            data: pipelines,
+                        };
+                    },
                 },
             };
 
+            const location = {
+                query: {}
+            };
+
             const wrapper = shallow(
-                <Pipelines params={context.params} setTitle={() => {}} />,
+                <Pipelines location={location} params={context.params} setTitle={() => {}} />,
                 { context },
             );
 
@@ -78,12 +101,20 @@ describe('Pipelines', () => {
                             data: pipelinesDupName,
                         };
                     },
+                    pipelinesPager() {
+                        return {
+                            data: pipelines,
+                        };
+                    },
                 },
             };
 
+            const location = {
+                query: {}
+            };
 
             const wrapper = shallow(
-                <Pipelines params={context.params} setTitle={() => {}} />,
+                <Pipelines location={location} params={context.params} setTitle={() => {}} />,
                 { context },
             );
 

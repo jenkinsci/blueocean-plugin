@@ -3,6 +3,10 @@ import { Promise } from 'es6-promise';
 
 import GitFlowManager from '../../../../main/js/creation/git/GitFlowManager';
 
+import { mockExtensionsForI18n } from '../../mock-extensions-i18n';
+mockExtensionsForI18n();
+
+
 describe('GitFlowManager', () => {
     let manager;
 

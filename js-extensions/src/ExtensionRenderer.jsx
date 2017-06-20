@@ -20,8 +20,9 @@ export default class ExtensionRenderer extends React.Component {
     }
 
     componentDidMount() {
-        ExtensionRenderer.resourceLoadTracker.onMount(this.props.extensionPoint);
-        this._renderAllExtensions();
+        ExtensionRenderer.resourceLoadTracker.onMount(this.props.extensionPoint, () => {
+            this._renderAllExtensions();
+        });
     }
 
     componentWillUpdate(nextProps, nextState) {
@@ -89,7 +90,7 @@ export default class ExtensionRenderer extends React.Component {
         } = this.props;
 
         const classNames = ['ExtensionPoint', extensionPoint.replace(/\.+/g,'-')];
-        
+
         if (className) {
             classNames.push(className);
         }

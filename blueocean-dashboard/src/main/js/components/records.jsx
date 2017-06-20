@@ -98,7 +98,7 @@ export class RunRecord extends Record({
     commitId: null,
     parameters: null,
     artifactsZipFile: null,
-    pullRequest: PullRequestRecord,
+    pullRequest: null,
     testSummary: TestSummaryRecord,
     replayable: null,
     branch: branchDetailsRecord,

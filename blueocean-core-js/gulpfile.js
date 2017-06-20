@@ -14,12 +14,14 @@ const del = require('del');
 const runSequence = require('run-sequence');
 const lint = require('gulp-eslint');
 const Karma = require('karma').Server;
+const jest = require('gulp-jest').default;
 const fs = require('fs');
+const minimist = require('minimist');
 
 // Options, src/dest folders, etc
 
 const config = {
-    clean: ["dist", "licenses", "reports"],
+    clean: ["coverage", "dist", "licenses", "reports"],
     react: {
         sources: "src/**/*.{js,jsx}",
         dest: "dist"
@@ -33,12 +35,15 @@ const config = {
         less_assets: {
             sources: "src/less/**/*.svg",
             dest: "dist/assets/css"
-        }
+        },
     },
     test: {
-        sources: "test/**/*-spec.{js,jsx}"
-    }
+        sources: '.',
+        match: ['**/?(*-)(spec|test).js?(x)'],
+        output: 'reports/junit.xml',
+    },
 };
+
 
 // Watch all
 
@@ -71,9 +76,11 @@ gulp.task("lint", () => (
         .pipe(lint.failAfterError())
 ));
 
-gulp.task("test", ['test-karma']);
+gulp.task("test", ['test-jest']);
 
-gulp.task("test-debug", ['test-karma-debug']);
+gulp.task("test-debug", ['test-jest-debug']);
+
+gulp.task("test-fast", ['test-jest-fast']);
 
 gulp.task("test-karma", (done) => {
     new Karma({
@@ -90,6 +97,52 @@ gulp.task("test-karma-debug", (done) => {
         browsers: ['Chrome'],
     }, done).start();
 });
+
+function runJest(options) {
+    const argv = minimist(process.argv.slice(2));
+    options.testPathPattern = argv.test || null;
+
+    return gulp.src(config.test.sources)
+        .pipe(jest(options))
+        .on('error', () => {
+            process.exit(1);
+        });
+}
+
+gulp.task('test-jest', () => {
+    if (!process.env.JEST_JUNIT_OUTPUT) {
+        process.env.JEST_JUNIT_OUTPUT = config.test.output;
+    }
+
+    runJest({
+        config: {
+            collectCoverage: true,
+            testMatch: config.test.match,
+            testResultsProcessor: 'jest-junit',
+        },
+    });
+});
+
+gulp.task('test-jest-fast', () =>
+    runJest({
+        notify: true,
+        forceExit: true,
+        config: {
+            testMatch: config.test.match,
+        },
+    })
+);
+
+gulp.task('test-jest-debug', () =>
+    runJest({
+        runInBand: true,
+        forceExit: true,
+        config: {
+            testMatch: config.test.match,
+        },
+    })
+);
+
 
 // Build all
 

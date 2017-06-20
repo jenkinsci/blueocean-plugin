@@ -5,9 +5,23 @@ import { observer } from 'mobx-react';
 import { KaraokeService } from '../index';
 import LogConsole from './LogConsole';
 import InputStep from './InputStep';
+import { prefixIfNeeded } from '../urls/prefixIfNeeded';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Step');
 const timeManager = new TimeManager();
+
+function createStepLabel(step) {
+    const { displayName, displayDescription } = step;
+
+    if (displayDescription) {
+        return [
+            <span className="result-item-label-desc">{displayDescription}</span>,
+            <span className="result-item-label-name">&mdash; {displayName}</span>,
+        ];
+    }
+
+    return displayName;
+}
 
 @observer
 export class Step extends Component {
@@ -86,6 +100,7 @@ export class Step extends Component {
         const { data: logArray, hasMore } = this.pager.log || {};
         let children = null;
         if (logArray && !step.isInputStep) {
+            const currentLogUrl = prefixIfNeeded(this.pager.currentLogUrl);
             logger.debug('Updating children');
             children = (<LogConsole {...{
                 t,
@@ -94,6 +109,7 @@ export class Step extends Component {
                 hasMore,
                 scrollToBottom,
                 logArray,
+                currentLogUrl,
                 key: step.logUrl,
                 prefix: `step-${step.id}-`,
             }}
@@ -134,13 +150,14 @@ export class Step extends Component {
             liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
             hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
         />);
+
         return (<div className={logConsoleClass}>
             <ResultItem {...{
                 extraInfo: time,
                 key: step.key,
                 result: step.computedResult.toLowerCase(),
                 expanded: isFocused,
-                label: step.title,
+                label: createStepLabel(step),
                 onCollapse: removeFocus,
                 onExpand: getLogForNode,
             }}

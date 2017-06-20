@@ -5,7 +5,7 @@
   <parent>
     <artifactId>blueocean-parent</artifactId>
     <groupId>io.jenkins.blueocean</groupId>
-    <version>1.1.0-beta-9-SNAPSHOT</version>
+    <version>1.2.0-beta-1-SNAPSHOT</version>
   </parent>
 
   <name>GitHub Pipeline for Blue Ocean</name>

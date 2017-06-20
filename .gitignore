@@ -15,6 +15,10 @@ npm-debug.log*
 **/.settings/
 **/.project
 **/.classpath
+blueocean-dashboard/coverage
+blueocean-dashboard/reports
+blueocean-personalization/coverage
+blueocean-personalization/reports
 blueocean-web/src/main/webapp/assets
 .build_container
 .watch_trigger
