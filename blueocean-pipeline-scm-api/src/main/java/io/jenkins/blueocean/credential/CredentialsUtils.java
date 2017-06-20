@@ -119,6 +119,7 @@ public class CredentialsUtils {
         );
     }
 
+    @SuppressWarnings("unchecked")
     public static @Nonnull <C extends Credentials> List<C> findCredentials(@Nonnull Class<C> type, @Nonnull User user, @Nonnull String domainName) {
         CredentialsStore store = findUserStoreFirstOrNull(user);
 
@@ -132,8 +133,7 @@ public class CredentialsUtils {
             return ImmutableList.of();
         }
 
-        List<C> filtered = (List<C>) CredentialsMatchers.filter(store.getCredentials(domain), CredentialsMatchers.instanceOf(type));
-        return filtered;
+        return (List<C>) CredentialsMatchers.filter(store.getCredentials(domain), CredentialsMatchers.instanceOf(type));
     }
 
     private static @CheckForNull CredentialsStore findUserStoreFirstOrNull(User user){
