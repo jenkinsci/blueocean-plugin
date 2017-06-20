@@ -50,8 +50,10 @@ public class TryBlueOceanMenu extends TransientActionFactory<ModelObject> {
                 }
                 try {
                     ((Actionable) target).replaceAction(a);
-                }catch (UnsupportedOperationException e){
+                }catch (Throwable e){
                     //ignore, replace is not supported
+                    //JENKINS-44964 sometimes replaceAction will fail because one of the actions inserted is null
+                    //only seen in the wild when the maven plugin is available
                 }
                 return Collections.singleton(a);
             }
