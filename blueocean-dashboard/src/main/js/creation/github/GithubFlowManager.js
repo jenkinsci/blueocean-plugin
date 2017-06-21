@@ -39,6 +39,8 @@ export default class GithubFlowManager extends FlowManager {
         return this.accessTokenManager && this.accessTokenManager.credentialId;
     }
 
+    apiUrl = null;
+
     @observable
     organizations = [];
 
@@ -100,8 +102,6 @@ export default class GithubFlowManager extends FlowManager {
 
     savedPipeline = null;
 
-    enterpriseMode = false;
-
     _repositoryCache = {};
 
     _creationApi = null;
@@ -110,11 +110,10 @@ export default class GithubFlowManager extends FlowManager {
 
     _sseTimeoutId = null;
 
-    constructor(creationApi, credentialsApi, enterpriseMode) {
+    constructor(creationApi, credentialsApi) {
         super();
 
         this._creationApi = creationApi;
-        this.enterpriseMode = !!enterpriseMode;
         this.accessTokenManager = new GithubAccessTokenManager(credentialsApi);
     }
 
@@ -130,11 +129,7 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     onInitialized() {
-        if (!this.enterpriseMode) {
-            this.findGithubCredential();
-        } else {
-            this._renderCredentialsStep();
-        }
+        this.findExistingCredential();
         this.setPlaceholders('Complete');
     }
 
@@ -143,6 +138,7 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     findExistingCredential(apiUrl) {
+        this.apiUrl = apiUrl;
         return this.accessTokenManager.findExistingCredential(apiUrl)
             .then(waitAtLeast(MIN_DELAY))
             .then(success => this._findExistingCredentialComplete(success));
@@ -152,7 +148,7 @@ export default class GithubFlowManager extends FlowManager {
         if (success) {
             this.changeState(STATE.PENDING_LOADING_ORGANIZATIONS);
             this.listOrganizations();
-        } else if (!this.enterpriseMode) {
+        } else {
             this._renderCredentialsStep();
         }
     }
@@ -160,7 +156,7 @@ export default class GithubFlowManager extends FlowManager {
     _renderCredentialsStep() {
         this.renderStep({
             stateId: STATE.STEP_ACCESS_TOKEN,
-            stepElement: <GithubCredentialsStep enterpriseMode={this.enterpriseMode} />,
+            stepElement: <GithubCredentialsStep />,
         });
     }
 
@@ -171,19 +167,23 @@ export default class GithubFlowManager extends FlowManager {
 
     _createTokenComplete(response) {
         if (response.success) {
-            this.renderStep({
-                stateId: STATE.PENDING_LOADING_ORGANIZATIONS,
-                stepElement: <GithubLoadingStep />,
-                afterStateId: STATE.STEP_ACCESS_TOKEN,
-            });
-
-            this.listOrganizations();
+            this._renderLoadingOrganizations();
         }
+    }
+
+    _renderLoadingOrganizations() {
+        this.renderStep({
+            stateId: STATE.PENDING_LOADING_ORGANIZATIONS,
+            stepElement: <GithubLoadingStep />,
+            afterStateId: STATE.STEP_ACCESS_TOKEN,
+        });
+
+        this.listOrganizations();
     }
 
     @action
     listOrganizations() {
-        this._creationApi.listOrganizations(this.credentialId)
+        this._creationApi.listOrganizations(this.credentialId, this.apiUrl)
             .then(waitAtLeast(MIN_DELAY))
             .then(orgs => this._listOrganizationsSuccess(orgs));
     }
@@ -320,7 +320,7 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     _loadPagedRepository(organizationName, pageNumber, pageSize = PAGE_SIZE) {
-        return this._creationApi.listRepositories(this.credentialId, organizationName, pageNumber, pageSize);
+        return this._creationApi.listRepositories(this.credentialId, this.apiUrl, organizationName, pageNumber, pageSize);
     }
 
     @action

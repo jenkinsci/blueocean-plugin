@@ -5,7 +5,8 @@ import { GithubCreationApi } from '../github/api/GithubCreationApi';
 import { GithubCredentialsApi } from '../github/api/GithubCredentialsApi';
 
 import GithubDefaultOption from '../github/GithubDefaultOption';
-import GithubFlowManager from '../github/GithubFlowManager';
+import GithubEnterpriseFlowManager from './GithubEnterpriseFlowManager';
+
 
 export default class GithubEnterpriseScmProvider extends GithubScmProvider {
 
@@ -19,7 +20,7 @@ export default class GithubEnterpriseScmProvider extends GithubScmProvider {
         const creationApi = new GithubCreationApi('github-enterprise');
         const credentialsApi = new GithubCredentialsApi('github-enterprise');
 
-        this.manager = new GithubFlowManager(creationApi, credentialsApi, true);
+        this.manager = new GithubEnterpriseFlowManager(creationApi, credentialsApi);
         return this.manager;
     }
 
