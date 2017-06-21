@@ -14,6 +14,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -71,7 +72,7 @@ public class GithubApiTest extends GithubMockBase {
     }
 
     @Test
-    public void fetchExistingGithubEnterpriseToken() throws IOException, UnirestException {
+    public void fetchExistingGithubEnterpriseToken_withCredential() throws IOException, UnirestException {
         createGithubEnterpriseCredential();
 
         //now that there is github credentials setup, calling scm api to get credential should simply return that.
@@ -97,17 +98,21 @@ public class GithubApiTest extends GithubMockBase {
     }
 
     @Test
-    public void fetchExistingGithubEnterpriseToken_notFound() throws IOException, UnirestException {
+    public void fetchExistingGithubEnterpriseToken_withoutCredential() throws IOException, UnirestException {
         // create a credential using default apiUrl
         createGithubEnterpriseCredential();
 
+        String bogusUrl = "https://foo.com";
+
         // look up credential for apiUrl that's invalid
         Map r = new RequestBuilder(baseUrl)
-            .status(404)
+            .status(200)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-            .get("/organizations/jenkins/scm/github-enterprise/?apiUrl=https://foo.com")
+            .get("/organizations/jenkins/scm/github-enterprise/?apiUrl="+bogusUrl)
             .build(Map.class);
-        assertEquals(404, r.get("code"));
+
+        assertNull(r.get("credentialId"));
+        assertEquals(bogusUrl, r.get("uri"));
     }
 
     @Test

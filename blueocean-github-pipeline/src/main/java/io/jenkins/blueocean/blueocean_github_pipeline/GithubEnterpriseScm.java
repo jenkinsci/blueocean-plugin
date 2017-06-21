@@ -48,7 +48,12 @@ public class GithubEnterpriseScm extends GithubScm {
 
     @Override
     public String getCredentialId() {
-        return createCredentialId(getUri());
+        String credentialId = createCredentialId(getUri());
+        StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+        if(githubCredential != null){
+            return githubCredential.getId();
+        }
+        return null;
     }
 
     @Override
@@ -58,15 +63,8 @@ public class GithubEnterpriseScm extends GithubScm {
 
     @WebMethod(name="") @GET @TreeResponse
     public Object getState() {
-        // will enforce that the apiUrl parameter has been sent
-        String apiUri = getUri();
-
-        StandardUsernamePasswordCredentials credential = CredentialsUtils.findCredential(createCredentialId(apiUri), StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
-
-        if (credential == null) {
-            throw new ServiceException.NotFoundException("Credential not found for apiUrl=" + apiUri);
-        }
-
+        // will produce a 400 if apiUrl wasn't sent
+        getUri();
         return this;
     }
 
