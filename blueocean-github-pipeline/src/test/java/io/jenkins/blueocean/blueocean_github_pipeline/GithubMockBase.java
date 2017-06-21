@@ -96,7 +96,7 @@ public abstract class GithubMockBase extends PipelineBaseTest {
             .put("/organizations/jenkins/scm/github-enterprise/validate/?apiUrl="+githubApiUrl)
             .build(Map.class);
         String credentialId = (String) r.get("credentialId");
-        assertEquals(GithubEnterpriseScm.DOMAIN_NAME+":"+ getGithubApiUrlEncoded(), credentialId);
+        assertEquals(GithubEnterpriseScm.ID+":"+ getGithubApiUrlEncoded(), credentialId);
         return credentialId;
     }
 

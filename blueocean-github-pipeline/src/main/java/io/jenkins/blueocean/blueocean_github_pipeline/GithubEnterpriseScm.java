@@ -76,8 +76,7 @@ public class GithubEnterpriseScm extends GithubScm {
 
     @Override
     protected String createCredentialId(@Nonnull String apiUri) {
-        String domainName = getCredentialDomainName();
-        return domainName + ":" + DigestUtils.sha256Hex(apiUri);
+        return getId() + ":" + DigestUtils.sha256Hex(apiUri);
     }
 
     @Extension
