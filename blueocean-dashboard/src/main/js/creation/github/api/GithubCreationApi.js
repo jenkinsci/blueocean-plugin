@@ -132,12 +132,12 @@ export class GithubCreationApi {
         };
     }
 
-    createOrgFolder(credentialId, githubOrganization, repoNames = []) {
+    createOrgFolder(credentialId, apiUrl, githubOrganization, repoNames = []) {
         const path = UrlConfig.getJenkinsRootURL();
         const createUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/pipelines/`);
 
         const requestBody = this._buildRequestBody(
-            credentialId, githubOrganization.name, githubOrganization.name, repoNames,
+            credentialId, apiUrl, githubOrganization.name, githubOrganization.name, repoNames,
         );
 
         const fetchOptions = {
@@ -152,12 +152,13 @@ export class GithubCreationApi {
             .then(pipeline => capabilityAugmenter.augmentCapabilities(pipeline));
     }
 
-    _buildRequestBody(credentialId, itemName, organizationName, repoNames) {
+    _buildRequestBody(credentialId, apiUrl, itemName, organizationName, repoNames) {
         return {
             name: itemName,
             $class: 'io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest',
             scmConfig: {
                 credentialId,
+                uri: apiUrl,
                 config: {
                     orgName: organizationName,
                     repos: repoNames,
