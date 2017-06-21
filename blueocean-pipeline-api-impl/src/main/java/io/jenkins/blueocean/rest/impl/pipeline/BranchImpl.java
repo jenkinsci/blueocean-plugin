@@ -24,9 +24,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.concurrent.ExecutionException;
 
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_BRANCH;
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_JOB;
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.PULL_REQUEST;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.*;
 
 /**
  * @author Vivek Pandey
@@ -118,7 +116,7 @@ public class BranchImpl extends PipelineImpl {
 
         public static Branch getBranch(final Job job) {
             try {
-                return Caches.BRANCH_METADATA.get(job.getFullName());
+                return Caches.BRANCH_METADATA.get(job.getFullName()).cacheValue;
             } catch (ExecutionException e) {
                 throw new ServiceException.UnexpectedErrorException("loading branch metadata for '" + job.getFullName() + "'", e);
             }
@@ -174,7 +172,7 @@ public class BranchImpl extends PipelineImpl {
 
         public static PullRequest get(final Job job) {
             try {
-                return Caches.PULL_REQUEST_METADATA.get(job.getFullName());
+                return Caches.PULL_REQUEST_METADATA.get(job.getFullName()).cacheValue;
             } catch (ExecutionException e) {
                 throw new ServiceException.UnexpectedErrorException("loading pr metadata for '" + job.getFullName() + "'", e);
             }
