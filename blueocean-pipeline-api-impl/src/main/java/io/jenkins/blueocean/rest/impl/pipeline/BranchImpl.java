@@ -24,9 +24,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.concurrent.ExecutionException;
 
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_BRANCH;
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_JOB;
-import static io.jenkins.blueocean.rest.model.KnownCapabilities.PULL_REQUEST;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.*;
 
 /**
  * @author Vivek Pandey

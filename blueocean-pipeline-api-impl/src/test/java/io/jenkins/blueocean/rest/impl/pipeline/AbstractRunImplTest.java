@@ -164,4 +164,48 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         Assert.assertEquals("FINISHED", m.get("state"));
         Assert.assertEquals("UNSTABLE", m.get("result"));
     }
+
+    @Test
+    public void pipelineLatestRunIncludesRunning() throws Exception {
+        WorkflowJob p = j.createProject(WorkflowJob.class, "project");
+
+        URL resource = Resources.getResource(getClass(), "latestRunIncludesQueued.jenkinsfile");
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+        p.save();
+
+        // Ensure null before first run
+        Map pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        Assert.assertNull(pipeline.get("latestRun"));
+
+        // Run until completed
+        Run r = p.scheduleBuild2(0).waitForStart();
+        j.waitForCompletion(r);
+
+        // Make the next runs queue
+        j.jenkins.setNumExecutors(0);
+
+        // Schedule another run so it goes in the queue
+        p.scheduleBuild2(0);
+
+        // Get latest run for this pipeline
+        pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        Map latestRun = (Map) pipeline.get("latestRun");
+
+        Assert.assertEquals("RUNNING", latestRun.get("state"));
+        Assert.assertEquals("2", latestRun.get("id"));
+
+        String idOfSecondRun = (String) latestRun.get("id");
+
+        // Replay this
+        request().post("/organizations/jenkins/pipelines/project/runs/" + idOfSecondRun + "/replay/").build(String.class);
+
+        // Get latest run for this pipeline
+        pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        latestRun = (Map) pipeline.get("latestRun");
+
+        // It should be running
+        Assert.assertEquals("RUNNING", latestRun.get("state"));
+        Assert.assertEquals("3", latestRun.get("id"));
+    }
 }
