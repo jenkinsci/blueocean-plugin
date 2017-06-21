@@ -34,7 +34,7 @@ public class NodeRunStatus {
         } else if (ExecutorTaskInfoAction.isNodeQueued(endNode)) {
             this.result = BlueRun.BlueRunResult.UNKNOWN;
             this.state = BlueRun.BlueRunState.QUEUED;
-        } else if (ExecutorTaskInfoAction.isNodeCanceled(endNode)) {
+        } else if (ExecutorTaskInfoAction.isNodeCancelled(endNode)) {
             this.result = BlueRun.BlueRunResult.ABORTED;
             this.state = BlueRun.BlueRunState.FINISHED;
         } else if (endNode.isRunning()) {
