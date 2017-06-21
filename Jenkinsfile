@@ -68,6 +68,10 @@ def acceptanceTests() {
 
 
 
+/** 
+* The build steps for a build and unit test
+* Includes some npm sanity checks. 
+*/
 def fullBuildSteps() {
   sh 'npm --prefix ./blueocean-core-js install'
   sh 'npm --prefix ./blueocean-core-js run gulp'
@@ -81,12 +85,14 @@ def fullBuildSteps() {
 
 }
 
+/** Run the vanilla acceptance tests */
 def runAcceptanceTests() {
   sh "cd acceptance-tests && ./run.sh --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
   junit 'acceptance-tests/target/surefire-reports/*.xml'
   archive 'acceptance-tests/target/screenshots/*'
 }
 
+/** When the job is named weekly, run the tests across a few different versions */
 def runWeeklyPermutationATH() {
   if (env.JOB_NAME =~ 'blueocean-weekly-ath') {
     stage('ATH - Jenkins 2.46.3') {
