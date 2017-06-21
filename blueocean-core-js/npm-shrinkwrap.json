@@ -1,11 +1,11 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.128",
+  "version": "0.0.129-SNAPSHOT-nicu",
   "dependencies": {
     "@jenkins-cd/design-language": {
-      "version": "0.0.131-SNAPSHOT-nicu-dropdowns-ff-fix",
-      "from": "@jenkins-cd/design-language@0.0.131-SNAPSHOT-nicu-dropdowns-ff-fix",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.131-SNAPSHOT-nicu-dropdowns-ff-fix.tgz"
+      "version": "0.0.131",
+      "from": "@jenkins-cd/design-language@0.0.131",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.131.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
