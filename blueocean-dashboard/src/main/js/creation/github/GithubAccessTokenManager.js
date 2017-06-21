@@ -27,10 +27,11 @@ export class GithubAccessTokenManager {
 
     constructor(credentialsApi) {
         this._credentialsApi = credentialsApi;
+        action(() => this.stateId = GithubAccessTokenState.INITIAL)();
     }
 
-    findExistingCredential() {
-        return this._credentialsApi.findExistingCredential()
+    findExistingCredential(apiUrl) {
+        return this._credentialsApi.findExistingCredential(apiUrl)
             .then(waitAtLeast(MIN_DELAY))
             .then(
                 cred => this._findExistingCredentialSuccess(cred),
@@ -38,12 +39,15 @@ export class GithubAccessTokenManager {
             );
     }
 
+    @action
     _findExistingCredentialSuccess(credential) {
         if (credential && credential.credentialId) {
             this.credential = credential;
+            this.stateId = GithubAccessTokenState.EXISTING_WAS_FOUND;
             return true;
         }
 
+        this.stateId = GithubAccessTokenState.EXISTING_NOT_FOUND;
         return false;
     }
 

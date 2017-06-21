@@ -17,9 +17,10 @@ export class GithubCredentialsApi {
         this.scmId = scmId || 'github';
     }
 
-    findExistingCredential() {
+    findExistingCredential(apiUrl) {
         const path = UrlConfig.getJenkinsRootURL();
-        const credUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}`);
+        let credUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}`);
+        credUrl += this._appendApiUrl(apiUrl);
 
         return this._fetch(credUrl)
             .then(credential => capabilityAugmenter.augmentCapabilities(credential));
@@ -28,13 +29,7 @@ export class GithubCredentialsApi {
     createAccessToken(accessToken, apiUrl) {
         const path = UrlConfig.getJenkinsRootURL();
         let tokenUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/validate`);
-
-        if (typeof apiUrl === 'string') {
-            tokenUrl += '?apiUrl=';
-            // trim trailing slash from URL
-            tokenUrl += apiUrl.slice(-1) === '/' ?
-                apiUrl.slice(0, -1) : apiUrl;
-        }
+        tokenUrl += this._appendApiUrl(apiUrl);
 
         const requestBody = {
             accessToken,
@@ -54,6 +49,19 @@ export class GithubCredentialsApi {
                 token => this._createAccessTokenSuccess(token),
                 error => this._createAccessTokenFailure(error)
             );
+    }
+
+    _appendApiUrl(apiUrl) {
+        let queryString = '';
+
+        if (typeof apiUrl === 'string') {
+            queryString += '?apiUrl=';
+            // trim trailing slash from URL
+            queryString += apiUrl.slice(-1) === '/' ?
+                apiUrl.slice(0, -1) : apiUrl;
+        }
+
+        return queryString;
     }
 
     _createAccessTokenSuccess(credential) {

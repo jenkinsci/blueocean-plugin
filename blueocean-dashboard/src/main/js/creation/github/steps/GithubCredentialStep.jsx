@@ -1,13 +1,20 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 import { ErrorMessage, FormElement, TextInput } from '@jenkins-cd/design-language';
+import debounce from 'lodash.debounce';
 
 import FlowStep from '../../flow2/FlowStep';
 import { GithubAccessTokenState } from '../GithubAccessTokenState';
 import { Button } from '../Button';
 
 
-const GITHUB_URL = 'https://github.com/settings/tokens/new?scopes=repo,read:user,user:email';
+function getCreateTokenUrl(apiUrl) {
+    // TODO: needs testing w/ real GHE endpoint as api domain and web UI domain are likely different
+    // use 'github.com' for blank or api.github.com usages
+    const baseUrl = !apiUrl || apiUrl.indexOf('https://api.github.com') === 0 ?
+        'https://github.com' : apiUrl;
+    return `${baseUrl}/settings/tokens/new?scopes=repo,read:user,user:email`;
+}
 
 
 @observer
@@ -22,17 +29,23 @@ export default class GithubCredentialsStep extends React.Component {
         };
     }
 
+    _urlChange(apiUrl) {
+        this.setState({
+            apiUrl,
+        });
+
+        this._fetchExistingCredential(apiUrl);
+    }
+
     _tokenChange(accessToken) {
         this.setState({
             accessToken,
         });
     }
 
-    _urlChange(apiUrl) {
-        this.setState({
-            apiUrl,
-        });
-    }
+    _fetchExistingCredential = debounce(apiUrl => {
+        this.props.flowManager.findExistingCredential(apiUrl);
+    }, 500);
 
     _createToken() {
         const apiUrl = this.props.enterpriseMode ? this.state.apiUrl : null;
@@ -69,17 +82,50 @@ export default class GithubCredentialsStep extends React.Component {
         return null;
     }
 
+    _getInstructions(stateId) {
+        const githubUrl = getCreateTokenUrl(this.state.apiUrl);
+
+        if (!this.props.enterpriseMode) {
+            return (
+                <p className="instructions">
+                    Jenkins needs an access key to authorize itself with GitHub. <br />
+                    <a href={githubUrl} target="_blank">Create an access key here.</a>
+                </p>
+            );
+        }
+
+        switch (stateId) {
+        case GithubAccessTokenState.INITIAL:
+        case GithubAccessTokenState.VALIDATION_FAILED_API_URL:
+            return (
+                <p className="instructions">
+                    Jenkins needs an access key to authorize itself with GitHub. <br /> Enter the API URL below.
+                </p>
+            );
+        default:
+            return (
+                <p className="instructions">
+                    Jenkins needs an access key to authorize itself with GitHub Enterprise. <br />
+                    <a href={githubUrl} target="_blank">Create an access key here.</a>
+                </p>
+            );
+        }
+    }
+
     render() {
         const manager = this.props.flowManager.accessTokenManager;
         const { enterpriseMode } = this.props;
 
-        const label = !enterpriseMode ? 'GitHub' : 'GitHub Enterprise';
         const className = 'github-credentials-step' + (enterpriseMode && ' github-enterprise' || '');
+        const label = !enterpriseMode ? 'GitHub' : 'GitHub Enterprise';
         const title = `Connect to ${label}`;
+        const instructions = this._getInstructions(manager.stateId);
         const generalErrorMessage = this._getGeneralErrorMessage(manager.stateId);
         const urlErrorMessage = this._getUrlErrorMessage(manager.stateId);
         const tokenErrorMessage = this._getTokenErrorMessage(manager.stateId);
-        const disabled = manager.stateId === GithubAccessTokenState.SAVE_SUCCESS;
+        const noValidApiUrl = manager.stateId === GithubAccessTokenState.INITIAL || manager.stateId === GithubAccessTokenState.VALIDATION_FAILED_API_URL;
+        const tokenPlaceholder = manager.stateId === GithubAccessTokenState.EXISTING_WAS_FOUND ? 'using saved access token' : 'Your GitHub access token';
+        const formDisabled = manager.stateId === GithubAccessTokenState.SAVE_SUCCESS || manager.stateId === GithubAccessTokenState.EXISTING_WAS_FOUND;
 
         let result = null;
 
@@ -94,11 +140,10 @@ export default class GithubCredentialsStep extends React.Component {
         };
 
         return (
-            <FlowStep {...this.props} className={className} disabled={disabled} title={title}>
-                <p className="instructions">
-                    Jenkins needs an access key to authorize itself with {label}. &nbsp;
-                    <a href={GITHUB_URL} target="_blank">Create an access key here.</a>
-                </p>
+            <FlowStep {...this.props} className={className} disabled={formDisabled} title={title}>
+                {instructions}
+
+                { manager.stateId }
 
                 <ErrorMessage>{generalErrorMessage}</ErrorMessage>
 
@@ -114,10 +159,10 @@ export default class GithubCredentialsStep extends React.Component {
                     <FormElement errorMessage={urlErrorMessage}>
                         <TextInput className="text-url" placeholder="Your GitHub Enterprise URL" onChange={val => this._urlChange(val)} />
                     </FormElement>,
-                    <FormElement errorMessage={tokenErrorMessage}>
-                        <TextInput className="text-token" placeholder="Your GitHub access token" onChange={val => this._tokenChange(val)} />
+                    !noValidApiUrl && <FormElement errorMessage={tokenErrorMessage}>
+                        <TextInput className="text-token" placeholder={tokenPlaceholder} onChange={val => this._tokenChange(val)} />
                     </FormElement>,
-                    <Button className="button-connect" status={status} onClick={() => this._createToken()}>Connect</Button>,
+                    !noValidApiUrl && <Button className="button-connect" status={status} onClick={() => this._createToken()}>Connect</Button>,
                 ]}
             </FlowStep>
         );

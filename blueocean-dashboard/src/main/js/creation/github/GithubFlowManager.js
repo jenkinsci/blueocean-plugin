@@ -130,7 +130,11 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     onInitialized() {
-        this.findExistingCredential();
+        if (!this.enterpriseMode) {
+            this.findGithubCredential();
+        } else {
+            this._renderCredentialsStep();
+        }
         this.setPlaceholders('Complete');
     }
 
@@ -138,8 +142,8 @@ export default class GithubFlowManager extends FlowManager {
         this._cleanupListeners();
     }
 
-    findExistingCredential() {
-        return this.accessTokenManager.findExistingCredential()
+    findExistingCredential(apiUrl) {
+        return this.accessTokenManager.findExistingCredential(apiUrl)
             .then(waitAtLeast(MIN_DELAY))
             .then(success => this._findExistingCredentialComplete(success));
     }
@@ -148,12 +152,16 @@ export default class GithubFlowManager extends FlowManager {
         if (success) {
             this.changeState(STATE.PENDING_LOADING_ORGANIZATIONS);
             this.listOrganizations();
-        } else {
-            this.renderStep({
-                stateId: STATE.STEP_ACCESS_TOKEN,
-                stepElement: <GithubCredentialsStep enterpriseMode={this.enterpriseMode} />,
-            });
+        } else if (!this.enterpriseMode) {
+            this._renderCredentialsStep();
         }
+    }
+
+    _renderCredentialsStep() {
+        this.renderStep({
+            stateId: STATE.STEP_ACCESS_TOKEN,
+            stepElement: <GithubCredentialsStep enterpriseMode={this.enterpriseMode} />,
+        });
     }
 
     createAccessToken(token, apiUrl) {
