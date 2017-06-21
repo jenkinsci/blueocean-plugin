@@ -3,6 +3,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import hudson.model.Result;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
+import org.jenkinsci.plugins.workflow.actions.ExecutorTaskInfoAction;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.GenericStatus;
@@ -30,7 +31,13 @@ public class NodeRunStatus {
                 this.result = BlueRun.BlueRunResult.ABORTED;
             }
             this.state = endNode.isRunning() ? BlueRun.BlueRunState.RUNNING : BlueRun.BlueRunState.FINISHED;
-        }else if (endNode.isRunning()) {
+        } else if (ExecutorTaskInfoAction.isNodeQueued(endNode)) {
+            this.result = BlueRun.BlueRunResult.UNKNOWN;
+            this.state = BlueRun.BlueRunState.QUEUED;
+        } else if (ExecutorTaskInfoAction.isNodeCanceled(endNode)) {
+            this.result = BlueRun.BlueRunResult.ABORTED;
+            this.state = BlueRun.BlueRunState.FINISHED;
+        } else if (endNode.isRunning()) {
             this.result = BlueRun.BlueRunResult.UNKNOWN;
             this.state = BlueRun.BlueRunState.RUNNING;
         } else if (NotExecutedNodeAction.isExecuted(endNode)) {
@@ -89,6 +96,10 @@ public class NodeRunStatus {
             case NOT_EXECUTED:
                 this.result = BlueRun.BlueRunResult.NOT_BUILT;
                 this.state = BlueRun.BlueRunState.NOT_BUILT;
+                break;
+            case QUEUED:
+                this.result = BlueRun.BlueRunResult.UNKNOWN;
+                this.state = BlueRun.BlueRunState.QUEUED;
                 break;
             default:
                 // Shouldn't happen, above includes all statuses
