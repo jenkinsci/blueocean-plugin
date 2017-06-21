@@ -174,6 +174,10 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
         p.save();
 
+        // Ensure null before first run
+        Map pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        Assert.assertNull(pipeline.get("latestRun"));
+
         // Run until completed
         Run r = p.scheduleBuild2(0).waitForStart();
         j.waitForCompletion(r);
@@ -185,7 +189,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         p.scheduleBuild2(0);
 
         // Get latest run for this pipeline
-        Map pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
         Map latestRun = (Map) pipeline.get("latestRun");
 
         Assert.assertEquals("RUNNING", latestRun.get("state"));
