@@ -7,6 +7,8 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.OrganizationFolderPipelineImpl;
 import jenkins.branch.OrganizationFolder;
 import jenkins.scm.api.SCMNavigator;
+import jenkins.scm.api.trait.SCMTrait;
+import jenkins.scm.impl.trait.Selection;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.kohsuke.stapler.export.Exported;
@@ -32,10 +34,12 @@ public class GithubOrganizationFolder  extends OrganizationFolderPipelineImpl {
             SCMNavigator scmNavigator = getFolder().getSCMNavigators().get(0);
             if(scmNavigator instanceof GitHubSCMNavigator){
                 GitHubSCMNavigator gitHubSCMNavigator = (GitHubSCMNavigator) scmNavigator;
-                return (StringUtils.isBlank(gitHubSCMNavigator.getIncludes()) || gitHubSCMNavigator.getIncludes().equals("*"))
-                        && StringUtils.isBlank(gitHubSCMNavigator.getExcludes())
-                        && (StringUtils.isBlank(gitHubSCMNavigator.getPattern())
-                        || gitHubSCMNavigator.getPattern().equals(".*"));
+                for (SCMTrait<?> t: gitHubSCMNavigator.getTraits()) {
+                    if (t.getDescriptor().getClass().getAnnotation(Selection.class) != null) {
+                        // approximate logic
+                        return false;
+                    }
+                }
 
             }
         }
