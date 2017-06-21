@@ -20,6 +20,8 @@ import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequire
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import io.jenkins.blueocean.scm.api.AbstractPipelineCreateRequest;
+import java.util.Arrays;
+import java.util.EnumSet;
 import jenkins.branch.CustomOrganizationFolderDescriptor;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
@@ -34,8 +36,13 @@ import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.SCMSourceCriteria;
 import jenkins.scm.api.SCMSourceEvent;
 import jenkins.scm.api.SCMSourceOwner;
+import jenkins.scm.api.mixin.ChangeRequestCheckoutStrategy;
+import jenkins.scm.api.trait.SCMTrait;
+import jenkins.scm.impl.trait.RegexSCMSourceFilterTrait;
 import org.apache.commons.lang3.StringUtils;
+import org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
+import org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait;
 import org.jenkinsci.plugins.github_branch_source.GitHubConfiguration;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
@@ -145,7 +152,14 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
                     // currently, we are setting a series of regular expressions to match the repositories
                     // so we need to extract the current set for incoming create requests to keep them
                     // see a few lines below for the pattern being used
-                    Matcher matcher = Pattern.compile("\\((.*?)\\\\b\\)\\?").matcher(gitHubSCMNavigator.getPattern());
+                    String pattern = ".*";
+                    for (SCMTrait<?> t : gitHubSCMNavigator.getTraits()) {
+                        if (t instanceof RegexSCMSourceFilterTrait) {
+                            pattern = ((RegexSCMSourceFilterTrait) t).getRegex();
+                            break;
+                        }
+                    }
+                    Matcher matcher = Pattern.compile("\\((.*?)\\\\b\\)\\?").matcher(pattern);
 
                     while (matcher.find()) {
                         String existingRepo = matcher.group(1);
@@ -162,19 +176,28 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
                     }
 
                     if (credentialId == null) {
-                        credentialId = gitHubSCMNavigator.getScanCredentialsId();
+                        credentialId = gitHubSCMNavigator.getCredentialsId();
                     }
                 }
 
-                gitHubSCMNavigator = new GitHubSCMNavigator(apiUrl, orgName, credentialId, credentialId);
-                organizationFolder.getNavigators().replace(gitHubSCMNavigator);
+                gitHubSCMNavigator = new GitHubSCMNavigator(orgName);
 
+                List<SCMTrait<?>> traits = new ArrayList<>();
+                traits.add(new BranchDiscoveryTrait(true, true));
+                traits.add(new ForkPullRequestDiscoveryTrait(
+                        EnumSet.of(ChangeRequestCheckoutStrategy.MERGE),
+                        new ForkPullRequestDiscoveryTrait.TrustContributors()
+                    ));
                 for (String r : repos) {
                     sb.append(String.format("(%s\\b)?", r));
                 }
                 if (sb.length() > 0) {
-                    gitHubSCMNavigator.setPattern(sb.toString());
+                    traits.add(new RegexSCMSourceFilterTrait(sb.toString()));
                 }
+                gitHubSCMNavigator.setTraits(traits);
+                gitHubSCMNavigator.setApiUri(apiUrl);
+                gitHubSCMNavigator.setCredentialsId(credentialId);
+                organizationFolder.getNavigators().replace(gitHubSCMNavigator);
 
                 GithubOrganizationFolder githubOrganizationFolder = new GithubOrganizationFolder(organizationFolder, parent.getLink());
                 if(singleRepo != null){
@@ -191,8 +214,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
                             return hasJenkinsfile;
                         }
                     });
-                }else {
-                    gitHubSCMNavigator.setPattern(".*");
+                } else {
                     organizationFolder.scheduleBuild(new Cause.UserIdCause());
                 }
                 organizationFolder.save();

@@ -152,7 +152,7 @@ public class GithubScmContentProvider extends ScmContentProvider {
                 if (navigator.getApiUri() != null) {
                     apiUrl = navigator.getApiUri();
                 }
-                credentialId = navigator.getScanCredentialsId();
+                credentialId = navigator.getCredentialsId();
                 owner = navigator.getRepoOwner();
             }
         } else if (item instanceof MultiBranchProject) {
@@ -162,7 +162,7 @@ public class GithubScmContentProvider extends ScmContentProvider {
                 if (source.getApiUri() != null) {
                     apiUrl = source.getApiUri();
                 }
-                credentialId = source.getScanCredentialsId();
+                credentialId = source.getCredentialsId();
                 owner = owner(source);
                 repo = repo(source);
             }
@@ -236,7 +236,7 @@ public class GithubScmContentProvider extends ScmContentProvider {
                     if (navigator.getApiUri() != null) {
                         apiUrl = navigator.getApiUri();
                     }
-                    credentialId = navigator.getScanCredentialsId();
+                    credentialId = navigator.getCredentialsId();
                     owner = navigator.getRepoOwner();
                 }
             } else if (item instanceof MultiBranchProject) {
@@ -246,7 +246,7 @@ public class GithubScmContentProvider extends ScmContentProvider {
                     if (source.getApiUri() != null) {
                         apiUrl = source.getApiUri();
                     }
-                    credentialId = source.getScanCredentialsId();
+                    credentialId = source.getCredentialsId();
                     owner = owner(source);
                     repo = repo(source);
                 }
@@ -254,7 +254,7 @@ public class GithubScmContentProvider extends ScmContentProvider {
             this.apiUrl = apiUrl == null ? GitHubSCMSource.GITHUB_URL : apiUrl;
 
             if (credentialId != null) {
-                StandardCredentials credentials = Connector.lookupScanCredentials((SCMSourceOwner) item, this.apiUrl, credentialId);
+                StandardCredentials credentials = Connector.lookupScanCredentials(item, this.apiUrl, credentialId);
                 if (credentials instanceof StandardUsernamePasswordCredentials) {
                     accessToken = ((StandardUsernamePasswordCredentials) credentials).getPassword().getPlainText();
                 } else {
