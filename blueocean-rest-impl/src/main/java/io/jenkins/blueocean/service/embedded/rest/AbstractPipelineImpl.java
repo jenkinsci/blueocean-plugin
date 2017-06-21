@@ -42,6 +42,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -84,7 +85,8 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     @Override
     public BlueRun getLatestRun() {
-        return getRuns().iterator().next();
+        Iterator<BlueRun> iterator = getRuns().iterator();
+        return iterator.hasNext() ? iterator.next() : null;
     }
 
     @Override
