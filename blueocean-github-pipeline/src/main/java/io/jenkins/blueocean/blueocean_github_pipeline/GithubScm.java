@@ -46,9 +46,11 @@ import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -71,6 +73,7 @@ public class GithubScm extends Scm {
     private static final String USER_SCOPE = "user";
     private static final String REPO_SCOPE = "repo";
     static final String DOMAIN_NAME="blueocean-github-domain";
+    static final String CREDENTIAL_DESCRIPTION = "GitHub Access Token";
 
     private final Link self;
 
@@ -96,10 +99,14 @@ public class GithubScm extends Scm {
 
     @Override
     public @Nonnull String getUri() {
-        StaplerRequest request = Stapler.getCurrentRequest();
-        Preconditions.checkNotNull(request, "Must be called in HTTP request context");
-        String endpointUri = request.getParameter("apiUrl");
-        return (endpointUri != null) ? endpointUri : GitHubSCMSource.GITHUB_URL;
+        String apiUri = getCustomApiUri();
+
+        // NOTE: GithubScm only uses a custom apiUri in the context of automated tests
+        if (!StringUtils.isEmpty(apiUri)) {
+            return apiUri;
+        }
+
+        return GitHubSCMSource.GITHUB_URL;
     }
 
     public String getCredentialDomainName(){
@@ -185,6 +192,37 @@ public class GithubScm extends Scm {
         }
     }
 
+    protected @Nonnull String createCredentialId(@Nonnull String apiUrl) {
+        return ID;
+    }
+
+    protected @Nonnull String getCredentialDescription() {
+        return CREDENTIAL_DESCRIPTION;
+    }
+
+    protected @Nonnull String getCustomApiUri() {
+        StaplerRequest request = Stapler.getCurrentRequest();
+        Preconditions.checkNotNull(request, "Must be called in HTTP request context");
+        String apiUri = request.getParameter("apiUrl");
+
+        // if "apiUrl" parameter was supplied, parse and trim trailing slash
+        if (!StringUtils.isEmpty(apiUri)) {
+            try {
+                new URI(apiUri);
+            } catch (URISyntaxException ex) {
+                throw new ServiceException.BadRequestException(new ErrorMessage(400, "Invalid URI: " + apiUri));
+            }
+
+            if (apiUri.endsWith("/")) {
+                apiUri = apiUri.substring(0, apiUri.length() - 1);
+            }
+        } else {
+            apiUri = "";
+        }
+
+        return apiUri;
+    }
+
      private static String getCredentialIdFromRequest(StaplerRequest request){
         String credentialId = request.getParameter(CREDENTIAL_ID);
 
@@ -228,24 +266,30 @@ public class GithubScm extends Scm {
             }
 
             //Now we know the token is valid. Lets find credential
-            StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(getId(), StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
-
-            final StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER, "github", "Github Access Token", authenticatedUser.getId(), accessToken);
-
+            String credentialId = createCredentialId(getUri());
+            StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+            final StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER, credentialId, getCredentialDescription(), authenticatedUser.getId(), accessToken);
 
             if(githubCredential == null) {
                 CredentialsUtils.createCredentialsInUserStore(
-                        credential, authenticatedUser, getCredentialsDomainName(getUri()),
+                        credential, authenticatedUser, getCredentialDomainName(),
                         ImmutableList.<DomainSpecification>of(new BlueOceanDomainSpecification()));
             }else{
                 CredentialsUtils.updateCredentialsInUserStore(
-                        githubCredential, credential, authenticatedUser, getCredentialsDomainName(getUri()),
+                        githubCredential, credential, authenticatedUser, getCredentialDomainName(),
                         ImmutableList.<DomainSpecification>of(new BlueOceanDomainSpecification()));
             }
 
             return createResponse(credential.getId());
 
         } catch (IOException e) {
+            if (e instanceof MalformedURLException || e instanceof UnknownHostException) {
+                throw new ServiceException.BadRequestException(
+                    new ErrorMessage(400, "Invalid apiUrl").add(
+                        new ErrorMessage.Error("apiUrl", ErrorMessage.Error.ErrorCodes.INVALID.toString(), e.getMessage())
+                    )
+                );
+            }
             throw new ServiceException.UnexpectedErrorException(e.getMessage());
         }
     }
@@ -331,19 +375,5 @@ public class GithubScm extends Scm {
             throw new ServiceException.UnauthorizedException("No logged in user found");
         }
         return authenticatedUser;
-    }
-
-    private String getCredentialsDomainName(String apiUri) {
-        java.net.URI uri;
-        try {
-            uri = new URI(apiUri);
-        } catch (URISyntaxException e) {
-            throw new ServiceException.UnexpectedErrorException(new ErrorMessage(400, "Invalid URI: "+apiUri));
-        }
-        String domainName = getCredentialDomainName();
-        if(this instanceof GithubEnterpriseScm){
-            return domainName + "-" + uri.getHost();
-        }
-        return domainName;
     }
 }
