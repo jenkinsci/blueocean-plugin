@@ -33,8 +33,7 @@ def buildAndTest() {
     docker.image('blueocean_build_env').inside {
       withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
         try {
-          fullBuildSteps()        
-          runWeeklyPermutationATH()
+          fullBuildSteps()                  
         } catch(err) {
           handleBuildFailure(err)
         } finally {                      
@@ -54,7 +53,8 @@ def acceptanceTests() {
       withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
         try {
           sh "mvn install -DskipTests"
-          runAcceptanceTests()          
+          runAcceptanceTests()
+          runWeeklyPermutationATH()
         } catch(err) {
           handleBuildFailure(err)
         } finally {
