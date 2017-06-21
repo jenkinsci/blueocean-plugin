@@ -2,12 +2,12 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import hudson.Extension;
-import hudson.model.User;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -16,7 +16,6 @@ import org.kohsuke.stapler.verb.GET;
 import org.parboiled.common.StringUtils;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
  * @author Vivek Pandey
@@ -24,6 +23,7 @@ import java.util.List;
 public class GithubEnterpriseScm extends GithubScm {
     static final String ID = "github-enterprise";
     static final String DOMAIN_NAME="blueocean-github-enterprise-domain";
+    static final String CREDENTIAL_DESCRIPTION = "GitHub Enterprise Access Token";
 
     public GithubEnterpriseScm(Reachable parent) {
         super(parent);
@@ -48,7 +48,12 @@ public class GithubEnterpriseScm extends GithubScm {
 
     @Override
     public String getCredentialId() {
-        return createCredentialId(getUri());
+        String credentialId = createCredentialId(getUri());
+        StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+        if(githubCredential != null){
+            return githubCredential.getId();
+        }
+        return null;
     }
 
     @Override
@@ -58,26 +63,20 @@ public class GithubEnterpriseScm extends GithubScm {
 
     @WebMethod(name="") @GET @TreeResponse
     public Object getState() {
-        // will enforce that the apiUrl parameter has been sent
-        String apiUri = getUri();
-
-        User user = getAuthenticatedUser();
-        List<StandardUsernamePasswordCredentials> credentials = CredentialsUtils.findCredentials(StandardUsernamePasswordCredentials.class, user, DOMAIN_NAME);
-
-        for (StandardUsernamePasswordCredentials cred : credentials) {
-            if (cred.getId().equals(getCredentialId())) {
-                return this;
-            }
-        }
-
-        throw new ServiceException.NotFoundException("Credential not found for apiUrl=" + apiUri);
+        // will produce a 400 if apiUrl wasn't sent
+        getUri();
+        return this;
     }
 
 
     @Override
-    protected String createCredentialId(@Nonnull String apiUri) {
-        String domainName = getCredentialDomainName();
-        return domainName + ":" + DigestUtils.sha256Hex(apiUri);
+    protected @Nonnull String createCredentialId(@Nonnull String apiUri) {
+        return getId() + ":" + DigestUtils.sha256Hex(apiUri);
+    }
+
+    @Override
+    protected @Nonnull String getCredentialDescription() {
+        return CREDENTIAL_DESCRIPTION;
     }
 
     @Extension

@@ -29,7 +29,13 @@ import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
-import org.kohsuke.github.*;
+import org.kohsuke.github.GHMyself;
+import org.kohsuke.github.GHOrganization;
+import org.kohsuke.github.GHUser;
+import org.kohsuke.github.GitHub;
+import org.kohsuke.github.GitHubBuilder;
+import org.kohsuke.github.HttpException;
+import org.kohsuke.github.RateLimitHandler;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -39,8 +45,18 @@ import org.kohsuke.stapler.json.JsonBody;
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 import java.io.IOException;
-import java.net.*;
-import java.util.*;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.ANY;
 import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
@@ -57,6 +73,7 @@ public class GithubScm extends Scm {
     private static final String USER_SCOPE = "user";
     private static final String REPO_SCOPE = "repo";
     static final String DOMAIN_NAME="blueocean-github-domain";
+    static final String CREDENTIAL_DESCRIPTION = "GitHub Access Token";
 
     private final Link self;
 
@@ -175,8 +192,12 @@ public class GithubScm extends Scm {
         }
     }
 
-    protected String createCredentialId(@Nonnull String apiUrl) {
+    protected @Nonnull String createCredentialId(@Nonnull String apiUrl) {
         return ID;
+    }
+
+    protected @Nonnull String getCredentialDescription() {
+        return CREDENTIAL_DESCRIPTION;
     }
 
     protected @Nonnull String getCustomApiUri() {
@@ -247,7 +268,7 @@ public class GithubScm extends Scm {
             //Now we know the token is valid. Lets find credential
             String credentialId = createCredentialId(getUri());
             StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
-            final StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER, credentialId, "Github Access Token", authenticatedUser.getId(), accessToken);
+            final StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER, credentialId, getCredentialDescription(), authenticatedUser.getId(), accessToken);
 
             if(githubCredential == null) {
                 CredentialsUtils.createCredentialsInUserStore(
