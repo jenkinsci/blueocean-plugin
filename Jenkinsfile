@@ -3,17 +3,9 @@
 // only 20 builds
 properties([buildDiscarder(logRotator(artifactNumToKeepStr: '20', numToKeepStr: '20'))])
 
-node() {
+node {
   stage('Setup') {
-    deleteDir()
-    checkout scm
-    sh 'docker build -t blueocean_build_env --build-arg GID=$(id -g ${USER}) --build-arg UID=$(id -u ${USER}) - < Dockerfile.build'
-    withCredentials([file(credentialsId: 'blueoceandeploy_ath', variable: 'FILE')]) {
-      sh 'mv $FILE acceptance-tests/live.properties'
-    }
-    configFileProvider([configFile(fileId: 'blueocean-maven-settings', variable: 'MAVEN_SETTINGS')]) {
-      sh 'mv $MAVEN_SETTINGS settings.xml'
-    }
+    prepareEnvironment()
     sh "./acceptance-tests/runner/scripts/start-selenium.sh"
   }
 
@@ -66,7 +58,7 @@ node() {
       } finally {
         stage('Cleanup') {
           sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
-          sendhipchat()
+          notifications()
           deleteDir()
         }
       }
@@ -74,8 +66,26 @@ node() {
   }
 }
 
+/**
+ * clean checkout, set some properties/files for running live tests, maven settings and more
+ */
+def prepareEnvironment() {
+    deleteDir()
+    checkout scm
+    sh 'docker build -t blueocean_build_env --build-arg GID=$(id -g ${USER}) --build-arg UID=$(id -u ${USER}) - < Dockerfile.build'
+    withCredentials([file(credentialsId: 'blueoceandeploy_ath', variable: 'FILE')]) {
+      sh 'mv $FILE acceptance-tests/live.properties'
+    }
+    configFileProvider([configFile(fileId: 'blueocean-maven-settings', variable: 'MAVEN_SETTINGS')]) {
+      sh 'mv $MAVEN_SETTINGS settings.xml'
+    }
+}
 
-def sendhipchat() {
+
+/**
+ * Junk for notification
+ */
+def notifications() {
   res = currentBuild.result
   if(currentBuild.result == null) {
     res = "SUCCESS"
