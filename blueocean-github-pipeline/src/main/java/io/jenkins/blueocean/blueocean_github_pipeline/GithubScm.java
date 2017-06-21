@@ -73,6 +73,7 @@ public class GithubScm extends Scm {
     private static final String USER_SCOPE = "user";
     private static final String REPO_SCOPE = "repo";
     static final String DOMAIN_NAME="blueocean-github-domain";
+    static final String CREDENTIAL_DESCRIPTION = "GitHub Access Token";
 
     private final Link self;
 
@@ -195,6 +196,10 @@ public class GithubScm extends Scm {
         return ID;
     }
 
+    protected @Nonnull String getCredentialDescription() {
+        return CREDENTIAL_DESCRIPTION;
+    }
+
     protected @Nonnull String getCustomApiUri() {
         StaplerRequest request = Stapler.getCurrentRequest();
         Preconditions.checkNotNull(request, "Must be called in HTTP request context");
@@ -263,7 +268,7 @@ public class GithubScm extends Scm {
             //Now we know the token is valid. Lets find credential
             String credentialId = createCredentialId(getUri());
             StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
-            final StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER, credentialId, "Github Access Token", authenticatedUser.getId(), accessToken);
+            final StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER, credentialId, getCredentialDescription(), authenticatedUser.getId(), accessToken);
 
             if(githubCredential == null) {
                 CredentialsUtils.createCredentialsInUserStore(

@@ -23,6 +23,7 @@ import javax.annotation.Nonnull;
 public class GithubEnterpriseScm extends GithubScm {
     static final String ID = "github-enterprise";
     static final String DOMAIN_NAME="blueocean-github-enterprise-domain";
+    static final String CREDENTIAL_DESCRIPTION = "GitHub Enterprise Access Token";
 
     public GithubEnterpriseScm(Reachable parent) {
         super(parent);
@@ -73,6 +74,11 @@ public class GithubEnterpriseScm extends GithubScm {
     @Override
     protected @Nonnull String createCredentialId(@Nonnull String apiUri) {
         return getId() + ":" + DigestUtils.sha256Hex(apiUri);
+    }
+
+    @Override
+    protected @Nonnull String getCredentialDescription() {
+        return CREDENTIAL_DESCRIPTION;
     }
 
     @Extension
