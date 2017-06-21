@@ -27,7 +27,12 @@ export class GithubAccessTokenManager {
 
     constructor(credentialsApi) {
         this._credentialsApi = credentialsApi;
-        action(() => this.stateId = GithubAccessTokenState.INITIAL)();
+        this._initialize();
+    }
+
+    @action
+    _initialize() {
+        this.stateId = GithubAccessTokenState.INITIAL;
     }
 
     findExistingCredential(apiUrl) {
