@@ -84,10 +84,7 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     @Override
     public BlueRun getLatestRun() {
-        if(job.getLastBuild() == null){
-            return null;
-        }
-        return AbstractRunImpl.getBlueRun(job.getLastBuild(), this);
+        return getRuns().iterator().next();
     }
 
     @Override
@@ -164,13 +161,13 @@ public class AbstractPipelineImpl extends BluePipeline {
                 encondedDisplayName.append(String.format("%s", Util.rawEncode(displayNames[i])));
             }
         }
-        
+
         return encondedDisplayName.toString();
     }
 
     /**
      * Returns full name relative to the <code>BlueOrganization</code> base. Each name is separated by '/'
-     * 
+     *
      * @param org the organization the item belongs to
      * @param item to return the full name of
      * @return
@@ -182,7 +179,7 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     /**
      * Tries to obtain the base group for a <code>BlueOrganization</code>
-     * 
+     *
      * @param org to get the base group of
      * @return the base group
      */
@@ -201,7 +198,7 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     /**
      * Calculates the recursive path for the <code>BluePipeline</code>. The path is relative to the org base
-     * 
+     *
      * @param pipeline to get the recursive path from
      * @return the recursive path
      */
