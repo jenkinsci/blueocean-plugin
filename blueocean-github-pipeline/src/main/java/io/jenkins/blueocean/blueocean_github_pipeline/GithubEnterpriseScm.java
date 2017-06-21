@@ -2,12 +2,12 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import hudson.Extension;
-import hudson.model.User;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -16,7 +16,6 @@ import org.kohsuke.stapler.verb.GET;
 import org.parboiled.common.StringUtils;
 
 import javax.annotation.Nonnull;
-import java.util.List;
 
 /**
  * @author Vivek Pandey
@@ -61,16 +60,13 @@ public class GithubEnterpriseScm extends GithubScm {
         // will enforce that the apiUrl parameter has been sent
         String apiUri = getUri();
 
-        User user = getAuthenticatedUser();
-        List<StandardUsernamePasswordCredentials> credentials = CredentialsUtils.findCredentials(StandardUsernamePasswordCredentials.class, user, DOMAIN_NAME);
+        StandardUsernamePasswordCredentials credential = CredentialsUtils.findCredential(createCredentialId(apiUri), StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
 
-        for (StandardUsernamePasswordCredentials cred : credentials) {
-            if (cred.getId().equals(getCredentialId())) {
-                return this;
-            }
+        if (credential == null) {
+            throw new ServiceException.NotFoundException("Credential not found for apiUrl=" + apiUri);
         }
 
-        throw new ServiceException.NotFoundException("Credential not found for apiUrl=" + apiUri);
+        return this;
     }
 
 
