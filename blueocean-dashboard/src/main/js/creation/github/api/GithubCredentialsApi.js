@@ -1,5 +1,7 @@
 import { capabilityAugmenter, Fetch, UrlConfig, Utils, AppConfig } from '@jenkins-cd/blueocean-core-js';
 
+import GithubApiUtils from './GithubApiUtils';
+
 // TODO: temporary until we get more structured errors
 const INVALID_TOKEN = 'Invalid accessToken';
 const INVALID_SCOPES = 'missing scopes';
@@ -20,7 +22,7 @@ export class GithubCredentialsApi {
     findExistingCredential(apiUrl) {
         const path = UrlConfig.getJenkinsRootURL();
         let credUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}`);
-        credUrl += this._appendApiUrl(apiUrl);
+        credUrl = GithubApiUtils.appendApiUrlParam(credUrl, apiUrl);
 
         return this._fetch(credUrl)
             .then(credential => capabilityAugmenter.augmentCapabilities(credential));
@@ -29,7 +31,7 @@ export class GithubCredentialsApi {
     createAccessToken(accessToken, apiUrl) {
         const path = UrlConfig.getJenkinsRootURL();
         let tokenUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/validate`);
-        tokenUrl += this._appendApiUrl(apiUrl);
+        tokenUrl = GithubApiUtils.appendApiUrlParam(tokenUrl, apiUrl);
 
         const requestBody = {
             accessToken,
@@ -49,19 +51,6 @@ export class GithubCredentialsApi {
                 token => this._createAccessTokenSuccess(token),
                 error => this._createAccessTokenFailure(error)
             );
-    }
-
-    _appendApiUrl(apiUrl) {
-        let queryString = '';
-
-        if (typeof apiUrl === 'string') {
-            queryString += '?apiUrl=';
-            // trim trailing slash from URL
-            queryString += apiUrl.slice(-1) === '/' ?
-                apiUrl.slice(0, -1) : apiUrl;
-        }
-
-        return queryString;
     }
 
     _createAccessTokenSuccess(credential) {
