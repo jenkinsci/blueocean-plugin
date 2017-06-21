@@ -191,7 +191,7 @@ public class GithubScm extends Scm {
         }
     }
 
-    protected String createCredentialId(@Nonnull String apiUrl) {
+    protected @Nonnull String createCredentialId(@Nonnull String apiUrl) {
         return ID;
     }
 
