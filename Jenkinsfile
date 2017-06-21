@@ -54,8 +54,7 @@ def acceptanceTests() {
       withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
         try {
           sh "mvn install -DskipTests"
-          runAcceptanceTests()
-          runWeeklyPermutationATH()
+          runAcceptanceTests()          
         } catch(err) {
           handleBuildFailure(err)
         } finally {
