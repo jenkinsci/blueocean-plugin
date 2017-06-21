@@ -102,6 +102,12 @@ export default class GithubCredentialsStep extends React.Component {
                     Jenkins needs an access key to authorize itself with GitHub. <br /> Enter the API URL below.
                 </p>
             );
+        case GithubAccessTokenState.EXISTING_WAS_FOUND:
+            return (
+                <p className="instructions">
+                    An existing access token for {this.state.apiUrl} was found and will be used.
+                </p>
+            );
         default:
             return (
                 <p className="instructions">
@@ -124,14 +130,13 @@ export default class GithubCredentialsStep extends React.Component {
         const urlErrorMessage = this._getUrlErrorMessage(manager.stateId);
         const tokenErrorMessage = this._getTokenErrorMessage(manager.stateId);
         const noValidApiUrl = manager.stateId === GithubAccessTokenState.INITIAL || manager.stateId === GithubAccessTokenState.VALIDATION_FAILED_API_URL;
-        const tokenPlaceholder = manager.stateId === GithubAccessTokenState.EXISTING_WAS_FOUND ? 'using saved access token' : 'Your GitHub access token';
-        const formDisabled = manager.stateId === GithubAccessTokenState.SAVE_SUCCESS || manager.stateId === GithubAccessTokenState.EXISTING_WAS_FOUND;
+        const disabled = manager.stateId === GithubAccessTokenState.SAVE_SUCCESS || manager.stateId === GithubAccessTokenState.EXISTING_WAS_FOUND;
 
         let result = null;
 
         if (manager.pendingValidation) {
             result = 'running';
-        } else if (manager.stateId === GithubAccessTokenState.SAVE_SUCCESS) {
+        } else if (manager.stateId === GithubAccessTokenState.SAVE_SUCCESS || manager.stateId === GithubAccessTokenState.EXISTING_WAS_FOUND) {
             result = 'success';
         }
 
@@ -140,10 +145,8 @@ export default class GithubCredentialsStep extends React.Component {
         };
 
         return (
-            <FlowStep {...this.props} className={className} disabled={formDisabled} title={title}>
+            <FlowStep {...this.props} className={className} disabled={disabled} title={title}>
                 {instructions}
-
-                { manager.stateId }
 
                 <ErrorMessage>{generalErrorMessage}</ErrorMessage>
 
@@ -159,10 +162,12 @@ export default class GithubCredentialsStep extends React.Component {
                     <FormElement errorMessage={urlErrorMessage}>
                         <TextInput className="text-url" placeholder="Your GitHub Enterprise URL" onChange={val => this._urlChange(val)} />
                     </FormElement>,
-                    !noValidApiUrl && <FormElement errorMessage={tokenErrorMessage}>
-                        <TextInput className="text-token" placeholder={tokenPlaceholder} onChange={val => this._tokenChange(val)} />
+                    !noValidApiUrl &&
+                    <FormElement errorMessage={tokenErrorMessage}>
+                        <TextInput className="text-token" placeholder="Your GitHub access token" onChange={val => this._tokenChange(val)} />
                     </FormElement>,
-                    !noValidApiUrl && <Button className="button-connect" status={status} onClick={() => this._createToken()}>Connect</Button>,
+                    !noValidApiUrl &&
+                    <Button className="button-connect" status={status} disabled={disabled} onClick={() => this._createToken()}>Connect</Button>,
                 ]}
             </FlowStep>
         );
