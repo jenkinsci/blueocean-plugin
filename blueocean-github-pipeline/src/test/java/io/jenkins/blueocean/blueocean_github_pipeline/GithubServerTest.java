@@ -146,7 +146,7 @@ public class GithubServerTest extends PipelineBaseTest {
     }
 
     @Test
-    public void createListDelete() throws Exception {
+    public void createAndList() throws Exception {
         Assert.assertEquals(0, getServers().size());
 
         // Create a server
