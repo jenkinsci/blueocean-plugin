@@ -165,6 +165,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
                         }
                     }
                     if (trait == null) {
+                        // migrate any legacy configuration injected in the regex pattern
                         Matcher matcher = Pattern.compile("\\((.*?)\\\\b\\)\\?").matcher(
                             regexTrait == null ? ".*" : regexTrait.getRegex()
                         );
@@ -177,6 +178,10 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
                         }
                     } else {
                         repos.addAll(trait.getNames());
+                        if (regexTrait != null) {
+                            // this is a user configured regex
+                            traits.add(regexTrait);
+                        }
                     }
 
                     // Add any existing discovered repos
