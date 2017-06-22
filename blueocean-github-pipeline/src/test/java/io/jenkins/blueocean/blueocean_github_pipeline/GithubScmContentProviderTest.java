@@ -216,7 +216,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
         when(mbp.getParent()).thenReturn(orgFolder);
         GitHubSCMSource scmSource = mock(GitHubSCMSource.class);
         when(scmSource.getApiUri()).thenReturn(githubApiUrl);
-        when(scmSource.getScanCredentialsId()).thenReturn(credentialId);
+        when(scmSource.getCredentialsId()).thenReturn(credentialId);
         when(scmSource.getRepoOwner()).thenReturn("cloudbeers");
         when(scmSource.getRepository()).thenReturn("PR-demo");
         when(mbp.getSCMSources()).thenReturn(Lists.<SCMSource>newArrayList(scmSource));
