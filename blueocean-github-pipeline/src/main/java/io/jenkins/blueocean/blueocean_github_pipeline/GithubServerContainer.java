@@ -6,6 +6,7 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.Container;
 import net.sf.json.JSONObject;
@@ -30,34 +31,35 @@ public class GithubServerContainer extends Container<GithubServer> {
     }
 
     @PUT
-    @WebMethod(name="create")
+    @WebMethod(name="")
+    @TreeResponse
     public @CheckForNull GithubServer create(@JsonBody JSONObject request) {
 
         List<ErrorMessage.Error> errors = Lists.newLinkedList();
 
         // Validate name
-        final String name = request.getString(GithubServer.NAME);
+        final String name = (String) request.get(GithubServer.NAME);
         if (StringUtils.isEmpty(name)) {
             errors.add(new ErrorMessage.Error(GithubServer.NAME, ErrorMessage.Error.ErrorCodes.MISSING.toString(), GithubServer.NAME + " is required"));
         } else {
-            GithubServer byName = get(name);
+            GithubServer byName = findByName(name);
             if (byName != null) {
-                errors.add(new ErrorMessage.Error(GithubServer.NAME, ErrorMessage.Error.ErrorCodes.MISSING.toString(), GithubServer.NAME + " exists"));
+                errors.add(new ErrorMessage.Error(GithubServer.NAME, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), GithubServer.NAME + " already exists for server at '" + byName.getApiUrl() + "'"));
             }
         }
 
         // Validate url
-        final String url = request.getString(GithubServer.API_URL);
-        if (StringUtils.isEmpty(name)) {
+        final String url = (String) request.get(GithubServer.API_URL);
+        if (StringUtils.isEmpty(url)) {
             errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.MISSING.toString(), GithubServer.API_URL + " is required"));
         } else {
-            GithubServer byName = get(name);
-            if (byName != null) {
-                errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.MISSING.toString(), GithubServer.API_URL + " is already registered as '" + byName.getName() + "'"));
+            GithubServer byUrl = findByURL(url);
+            if (byUrl != null) {
+                errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), GithubServer.API_URL + " is already registered as '" + byUrl.getName() + "'"));
             }
         }
 
-        if (errors.isEmpty()) {
+        if (!errors.isEmpty()) {
             ErrorMessage errorMessage = new ErrorMessage(400, "Failed to create Github server");
             errorMessage.addAll(errors);
             throw new ServiceException.BadRequestException(errorMessage);
@@ -66,7 +68,9 @@ public class GithubServerContainer extends Container<GithubServer> {
             GithubServer server;
             synchronized (config) {
                 Endpoint endpoint = new Endpoint(url, name);
-                config.getEndpoints().add(endpoint);
+                List<Endpoint> endpoints = Lists.newLinkedList(config.getEndpoints());
+                endpoints.add(endpoint);
+                config.setEndpoints(endpoints);
                 config.save();
                 server = new GithubServer(endpoint, getLink());
             }
@@ -81,12 +85,7 @@ public class GithubServerContainer extends Container<GithubServer> {
 
     @Override
     public GithubServer get(final String name) {
-        GithubServer githubServer = Iterators.find(iterator(), new Predicate<GithubServer>() {
-            @Override
-            public boolean apply(GithubServer input) {
-                return input.getName().equals(name);
-            }
-        }, null);
+        GithubServer githubServer = findByName(name);
         if (githubServer == null) {
             throw new ServiceException.NotFoundException("not found");
         }
@@ -106,5 +105,23 @@ public class GithubServerContainer extends Container<GithubServer> {
                 return new GithubServer(input, getLink());
             }
         });
+    }
+
+    private GithubServer findByName(final String name) {
+        return Iterators.find(iterator(), new Predicate<GithubServer>() {
+            @Override
+            public boolean apply(GithubServer input) {
+                return input.getName().equals(name);
+            }
+        }, null);
+    }
+
+    private GithubServer findByURL(final String url) {
+        return Iterators.find(iterator(), new Predicate<GithubServer>() {
+            @Override
+            public boolean apply(GithubServer input) {
+                return input.getApiUrl().equals(url);
+            }
+        }, null);
     }
 }
