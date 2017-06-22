@@ -147,7 +147,6 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
 
                 GitHubSCMNavigator gitHubSCMNavigator = organizationFolder.getNavigators().get(GitHubSCMNavigator.class);
 
-                StringBuilder sb = new StringBuilder();
                 List<SCMTrait<?>> traits = new ArrayList<>();
                 if (gitHubSCMNavigator != null) {
                     // currently, we are setting a series of regular expressions to match the repositories
