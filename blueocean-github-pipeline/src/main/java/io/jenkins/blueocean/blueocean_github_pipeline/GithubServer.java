@@ -3,7 +3,10 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.Resource;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
+import org.jenkinsci.plugins.github_branch_source.GitHubConfiguration;
+import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.verb.DELETE;
 
 import static hudson.Util.rawEncode;
 
@@ -33,5 +36,15 @@ public class GithubServer extends Resource {
     @Override
     public Link getLink() {
         return parent.rel(rawEncode(endpoint.getName()));
+    }
+
+    @DELETE
+    @WebMethod(name="delete")
+    public void delete() {
+        GitHubConfiguration config = GitHubConfiguration.get();
+        synchronized (config) {
+            config.getEndpoints().remove(endpoint);
+            config.save();
+        }
     }
 }

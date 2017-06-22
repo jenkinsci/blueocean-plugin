@@ -8,6 +8,7 @@ import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
@@ -103,4 +104,8 @@ public class GithubEnterpriseScm extends GithubScm {
         }
     }
 
+    @Override
+    public Link getLink() {
+        return parent.getLink().rel("github-enterprise");
+    }
 }

@@ -81,12 +81,16 @@ public class GithubServerContainer extends Container<GithubServer> {
 
     @Override
     public GithubServer get(final String name) {
-        return Iterators.find(iterator(), new Predicate<GithubServer>() {
+        GithubServer githubServer = Iterators.find(iterator(), new Predicate<GithubServer>() {
             @Override
-            public boolean apply( GithubServer input) {
+            public boolean apply(GithubServer input) {
                 return input.getName().equals(name);
             }
         }, null);
+        if (githubServer == null) {
+            throw new ServiceException.NotFoundException("not found");
+        }
+        return githubServer;
     }
 
     @Override
