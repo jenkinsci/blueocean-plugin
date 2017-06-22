@@ -58,7 +58,16 @@ public class BlueOceanSCMSourceFilterTrait extends SCMNavigatorTrait {
 
         @Override
         public boolean isExcluded(@NonNull SCMNavigator source, @NonNull String projectName) {
-            return !names.contains(projectName);
+            if (names.contains(projectName)) {
+                return false;
+            }
+            // GitHub is case insensitive for repository names, but can return different case under different code paths
+            for (String name: names) {
+                if (name.equalsIgnoreCase(projectName)) {
+                    return false;
+                }
+            }
+            return true;
         }
     }
 
