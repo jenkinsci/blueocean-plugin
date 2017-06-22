@@ -79,7 +79,7 @@ public class BlueOceanSCMSourceFilterTrait extends SCMNavigatorTrait {
         @Nonnull
         @Override
         public String getDisplayName() {
-            return "Only repositories configured through BlueOcean";
+            return "BlueOcean managed repository selection";
         }
 
         @Override
