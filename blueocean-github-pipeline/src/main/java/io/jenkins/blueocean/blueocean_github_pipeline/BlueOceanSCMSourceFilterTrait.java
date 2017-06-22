@@ -15,12 +15,13 @@ import jenkins.scm.api.trait.SCMSourcePrefilter;
 import jenkins.scm.impl.trait.Selection;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 public class BlueOceanSCMSourceFilterTrait extends SCMNavigatorTrait {
 
     private final Set<String> names;
 
-
+    @DataBoundConstructor
     public BlueOceanSCMSourceFilterTrait(String namesStr) {
         names = new TreeSet<>();
         for (String name: StringUtils.split(namesStr, "\n")) {
@@ -78,7 +79,7 @@ public class BlueOceanSCMSourceFilterTrait extends SCMNavigatorTrait {
         @Nonnull
         @Override
         public String getDisplayName() {
-            return "Only specified projects";
+            return "Only repositories configured through BlueOcean";
         }
 
         @Override
