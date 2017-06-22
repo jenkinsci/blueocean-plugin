@@ -20,7 +20,6 @@ import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequire
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import io.jenkins.blueocean.scm.api.AbstractPipelineCreateRequest;
-import java.util.Arrays;
 import java.util.EnumSet;
 import jenkins.branch.CustomOrganizationFolderDescriptor;
 import jenkins.branch.MultiBranchProject;
