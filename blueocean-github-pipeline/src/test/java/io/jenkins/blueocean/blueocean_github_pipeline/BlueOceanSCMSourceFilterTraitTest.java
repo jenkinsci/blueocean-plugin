@@ -18,7 +18,7 @@ public class BlueOceanSCMSourceFilterTraitTest {
 
     @Test
     public void given__trait__when__decoratingContext__then__prefilterApplied() throws Exception {
-        BlueOceanSCMSourceFilterTrait instance = new BlueOceanSCMSourceFilterTrait("foo\\nmanchu");
+        BlueOceanSCMSourceFilterTrait instance = new BlueOceanSCMSourceFilterTrait("foo\nmanchu");
         GitHubSCMNavigatorContext probe = new GitHubSCMNavigatorContext();
         instance.decorateContext(probe);
         assertThat(probe.prefilters(),contains(instanceOf(BlueOceanSCMSourceFilterTrait.Prefilter.class)));
@@ -33,7 +33,7 @@ public class BlueOceanSCMSourceFilterTraitTest {
 
     @Test
     public void given__trait__when__testingApplicability__then__limitedToGitHub() throws Exception {
-        BlueOceanSCMSourceFilterTrait instance = new BlueOceanSCMSourceFilterTrait("foo\\nmanchu");
+        BlueOceanSCMSourceFilterTrait instance = new BlueOceanSCMSourceFilterTrait("foo\nmanchu");
         assertThat(instance.getDescriptor().isApplicableTo(GitHubSCMNavigator.class), is(true));
         assertThat(instance.getDescriptor().isApplicableTo(SCMNavigator.class), is(false));
     }

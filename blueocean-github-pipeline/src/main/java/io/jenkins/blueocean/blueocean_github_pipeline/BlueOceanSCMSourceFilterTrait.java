@@ -24,9 +24,9 @@ public class BlueOceanSCMSourceFilterTrait extends SCMNavigatorTrait {
     @DataBoundConstructor
     public BlueOceanSCMSourceFilterTrait(String namesStr) {
         names = new TreeSet<>();
-        for (String name: StringUtils.split(namesStr, "\n")) {
+        for (String name: StringUtils.split(namesStr, '\n')) {
             name = StringUtils.trim(name);
-            if (!StringUtils.isBlank(name)) {
+            if (StringUtils.isNotBlank(name)) {
                 names.add(name);
             }
         }
@@ -41,7 +41,7 @@ public class BlueOceanSCMSourceFilterTrait extends SCMNavigatorTrait {
     }
 
     public String getNamesStr() {
-        return StringUtils.join(names, "\n");
+        return StringUtils.join(names, '\n');
     }
 
     @Override
