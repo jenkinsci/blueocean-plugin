@@ -9,6 +9,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
@@ -44,12 +45,18 @@ public class LoginPage{
         open();
 
 
-        wait.until(loginUsername).sendKeys("alice");
+        WebElement usernameField = wait.until(By.id("j_username"));
+        usernameField.sendKeys("alice");
 
-        wait.until(loginPassword).sendKeys("alice");
+        wait.until(By.name("j_password")).sendKeys("alice");
 
         wait.until(By.xpath("//*/button[contains(text(), 'log')]")).click();
-
+        wait.until(driver -> {
+            if(driver.getCurrentUrl().contains("loginError")) {
+                throw new RuntimeException("Error logging in");
+            }
+            return ExpectedConditions.urlToBe(base + "/").apply(driver);
+        });
         logger.info("Logged in as alice");
     }
 }

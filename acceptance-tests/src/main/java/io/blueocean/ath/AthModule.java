@@ -2,6 +2,7 @@ package io.blueocean.ath;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.name.Names;
 import com.offbytwo.jenkins.JenkinsServer;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.factory.ActivityPageFactory;
@@ -25,6 +26,7 @@ import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -32,6 +34,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Properties;
 
 public class AthModule extends AbstractModule {
     @Override
@@ -55,10 +58,13 @@ public class AthModule extends AbstractModule {
                     "jenkins.model.Jenkins.getInstance().setNumExecutors(10);\n" +
                         "jenkins.model.Jenkins.getInstance().save();\n");
             }
+
+            Properties properties = new Properties();
+            properties.load(new FileInputStream("live.properties"));
+            bind(Properties.class).annotatedWith(Names.named("live")).toInstance(properties);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
 
 
         install(new FactoryModuleBuilder()
