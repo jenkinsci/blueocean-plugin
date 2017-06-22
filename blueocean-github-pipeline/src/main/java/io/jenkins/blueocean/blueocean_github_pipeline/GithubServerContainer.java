@@ -2,6 +2,7 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import io.jenkins.blueocean.commons.ErrorMessage;
@@ -10,13 +11,12 @@ import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.Container;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
 import org.jenkinsci.plugins.github_branch_source.GitHubConfiguration;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.PUT;
-import org.parboiled.common.ImmutableList;
-import org.parboiled.common.StringUtils;
 
 import javax.annotation.CheckForNull;
 import java.util.Iterator;
