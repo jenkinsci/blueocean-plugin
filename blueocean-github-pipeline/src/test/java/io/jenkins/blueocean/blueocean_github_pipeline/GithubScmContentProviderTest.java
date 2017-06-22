@@ -190,7 +190,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
         //mock GithubSCMNavigator
         GitHubSCMNavigator navigator = mock(GitHubSCMNavigator.class);
         when(navigator.getApiUri()).thenReturn(githubApiUrl);
-        when(navigator.getScanCredentialsId()).thenReturn(credentialId);
+        when(navigator.getCredentialsId()).thenReturn(credentialId);
         when(navigator.getRepoOwner()).thenReturn("cloudbeers");
 
 
