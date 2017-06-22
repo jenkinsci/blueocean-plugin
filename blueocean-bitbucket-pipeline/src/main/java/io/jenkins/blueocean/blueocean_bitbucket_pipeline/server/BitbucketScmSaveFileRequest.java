@@ -1,6 +1,6 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
 
-import io.jenkins.blueocean.rest.impl.pipeline.GitContent;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 /**

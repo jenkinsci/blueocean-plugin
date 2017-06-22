@@ -3,7 +3,7 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 import com.google.common.collect.ImmutableMap;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.impl.pipeline.GitContent;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.github.GHBranch;
 import org.kohsuke.github.GHContent;

@@ -6,7 +6,7 @@ import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.collect.Lists;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.util.DescribableList;
-import io.jenkins.blueocean.rest.impl.pipeline.GitContent;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;

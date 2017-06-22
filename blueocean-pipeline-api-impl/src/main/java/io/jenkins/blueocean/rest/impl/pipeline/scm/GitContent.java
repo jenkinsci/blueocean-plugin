@@ -1,7 +1,6 @@
-package io.jenkins.blueocean.rest.impl.pipeline;
+package io.jenkins.blueocean.rest.impl.pipeline.scm;
 
 import io.jenkins.blueocean.commons.ErrorMessage;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmContent;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
 
