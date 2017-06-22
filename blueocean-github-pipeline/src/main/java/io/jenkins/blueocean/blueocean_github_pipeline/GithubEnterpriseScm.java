@@ -6,10 +6,12 @@ import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.credential.CredentialsUtils;
+import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
+import io.jenkins.blueocean.rest.model.Container;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.GET;
@@ -68,6 +70,10 @@ public class GithubEnterpriseScm extends GithubScm {
         return this;
     }
 
+    @Navigable
+    public Container<GithubServer> getServers() {
+        return new GithubServerContainer(getLink());
+    }
 
     @Override
     protected @Nonnull String createCredentialId(@Nonnull String apiUri) {
