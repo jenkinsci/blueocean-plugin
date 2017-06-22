@@ -148,23 +148,26 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
                 GitHubSCMNavigator gitHubSCMNavigator = organizationFolder.getNavigators().get(GitHubSCMNavigator.class);
 
                 StringBuilder sb = new StringBuilder();
+                List<SCMTrait<?>> traits = new ArrayList<>();
                 if (gitHubSCMNavigator != null) {
                     // currently, we are setting a series of regular expressions to match the repositories
                     // so we need to extract the current set for incoming create requests to keep them
                     // see a few lines below for the pattern being used
-                    String pattern = ".*";
+                    RegexSCMSourceFilterTrait regexTrait = null;
                     BlueOceanSCMSourceFilterTrait trait = null;
                     for (SCMTrait<?> t : gitHubSCMNavigator.getTraits()) {
                         if (t instanceof BlueOceanSCMSourceFilterTrait) {
                             trait = (BlueOceanSCMSourceFilterTrait) t;
-                            break;
-                        }
-                        if (t instanceof RegexSCMSourceFilterTrait) {
-                            pattern = ((RegexSCMSourceFilterTrait) t).getRegex();
+                        } else if (t instanceof RegexSCMSourceFilterTrait) {
+                            regexTrait = (RegexSCMSourceFilterTrait) t;
+                        } else {
+                            traits.add(t);
                         }
                     }
                     if (trait == null) {
-                        Matcher matcher = Pattern.compile("\\((.*?)\\\\b\\)\\?").matcher(pattern);
+                        Matcher matcher = Pattern.compile("\\((.*?)\\\\b\\)\\?").matcher(
+                            regexTrait == null ? ".*" : regexTrait.getRegex()
+                        );
 
                         while (matcher.find()) {
                             String existingRepo = matcher.group(1);
@@ -186,19 +189,18 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
                     if (credentialId == null) {
                         credentialId = gitHubSCMNavigator.getCredentialsId();
                     }
-                }
-
-                gitHubSCMNavigator = new GitHubSCMNavigator(orgName);
-
-                List<SCMTrait<?>> traits = new ArrayList<>();
-                traits.add(new BranchDiscoveryTrait(true, true));
-                traits.add(new ForkPullRequestDiscoveryTrait(
+                } else {
+                    // these are the legacy defaults for discovery, TBD whether to change
+                    traits.add(new BranchDiscoveryTrait(true, true));
+                    traits.add(new ForkPullRequestDiscoveryTrait(
                         EnumSet.of(ChangeRequestCheckoutStrategy.MERGE),
                         new ForkPullRequestDiscoveryTrait.TrustContributors()
                     ));
+                }
                 if (!repos.isEmpty()) {
                     traits.add(new BlueOceanSCMSourceFilterTrait(repos));
                 }
+                gitHubSCMNavigator = new GitHubSCMNavigator(orgName); // technically only needed if new org folder
                 gitHubSCMNavigator.setTraits(traits);
                 gitHubSCMNavigator.setApiUri(apiUrl);
                 gitHubSCMNavigator.setCredentialsId(credentialId);
