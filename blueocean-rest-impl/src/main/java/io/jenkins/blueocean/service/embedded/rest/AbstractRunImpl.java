@@ -103,8 +103,13 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public BlueRunResult getResult() {
-        Result result = run.getResult();
-        return result != null ? BlueRunResult.valueOf(result.toString()) : BlueRunResult.UNKNOWN;
+        // A runs result is always unknown until it has finished running
+        if (getStateObj() == BlueRunState.RUNNING) {
+            return BlueRunResult.UNKNOWN;
+        } else {
+            Result result = run.getResult();
+            return result != null ? BlueRunResult.valueOf(result.toString()) : BlueRunResult.UNKNOWN;
+        }
     }
 
 
@@ -220,7 +225,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
                     timeOutInSecs = DEFAULT_BLOCKING_STOP_TIMEOUT_IN_SECS;
                 }
                 if(timeOutInSecs < 0){
-                    throw new ServiceException.BadRequestExpception("timeOutInSecs must be >= 0");
+                    throw new ServiceException.BadRequestException("timeOutInSecs must be >= 0");
                 }
 
                 long timeOutInMillis = timeOutInSecs*1000;

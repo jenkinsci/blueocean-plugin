@@ -1,6 +1,3 @@
-/**
- * Created by cmeyers on 9/16/16.
- */
 import React from 'react';
 import { assert } from 'chai';
 import { shallow } from 'enzyme';
@@ -8,12 +5,16 @@ import { shallow } from 'enzyme';
 import utils from '../../../src/js/utils';
 import { RunButton } from '../../../src/js/components/RunButton';
 
+
+jest.mock('../../../src/js/i18n/i18n');
+
+
 describe('RunButton', () => {
     let pipeline;
+
     beforeEach(() => {
         pipeline = utils.clone(require('../data/pipeline-1.json'));
     });
-
 
     it('renders without errors when no props are specified', () => {
         const wrapper = shallow(<RunButton />);

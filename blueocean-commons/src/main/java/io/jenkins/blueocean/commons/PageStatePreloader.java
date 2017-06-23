@@ -24,7 +24,7 @@
 package io.jenkins.blueocean.commons;
 
 import hudson.ExtensionList;
-import org.apache.tools.ant.ExtensionPoint;
+import hudson.ExtensionPoint;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -38,7 +38,7 @@ import javax.annotation.Nonnull;
  *
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
-public abstract class PageStatePreloader extends ExtensionPoint {
+public abstract class PageStatePreloader implements ExtensionPoint {
 
     /**
      * Get the JavaScript object graph path at shiwh the state is to be stored.

@@ -38,14 +38,13 @@ public class GithubOrgFolderTest extends GithubMockBase {
 
     @Test
     public void simpleOrgTest() throws IOException, UnirestException {
-        String credentialId = createGithubCredential(user);
+        String credentialId = createGithubCredential();
         String orgFolderName = "cloudbeers1";
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", orgFolderName,
-                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
                                 ImmutableMap.of("repos", ImmutableList.of("PR-demo"), "orgName","cloudbeers"),
@@ -70,14 +69,13 @@ public class GithubOrgFolderTest extends GithubMockBase {
 
     @Test
     public void createGithubOrgTest() throws IOException, UnirestException {
-        String credentialId = createGithubCredential(user);
+        String credentialId = createGithubCredential();
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", "cloudbeers",
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
-                        "organization", "jenkins",
                         "scmConfig", ImmutableMap.of("config",
                                 ImmutableMap.of("repos", ImmutableList.of("PR-demo")),
                                 "credentialId", credentialId,
@@ -99,14 +97,13 @@ public class GithubOrgFolderTest extends GithubMockBase {
 
     @Test
     public void orgUpdateWithPOSTTest() throws IOException, UnirestException {
-        String credentialId = createGithubCredential(user);
+        String credentialId = createGithubCredential();
         String orgFolderName = "cloudbeers";
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", orgFolderName,
-                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
                                 ImmutableMap.of("repos", ImmutableList.of("PR-demo")),
@@ -131,7 +128,6 @@ public class GithubOrgFolderTest extends GithubMockBase {
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", orgFolderName,
-                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",ImmutableMap.of(
                                 "credentialId", credentialId,
@@ -144,14 +140,13 @@ public class GithubOrgFolderTest extends GithubMockBase {
 
     @Test
     public void orgUpdateTest() throws IOException, UnirestException {
-        String credentialId = createGithubCredential(user);
+        String credentialId = createGithubCredential();
         String orgFolderName = "cloudbeers";
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", orgFolderName,
-                        "organization", "jenkins",
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
                                 ImmutableMap.of("repos", ImmutableList.of("PR-demo")),
@@ -172,11 +167,12 @@ public class GithubOrgFolderTest extends GithubMockBase {
         assertTrue((Boolean) repo.get("meetsScanCriteria"));
 
         resp = new RequestBuilder(baseUrl)
-                .status(200)
+                .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .put("/organizations/jenkins/pipelines/"+orgFolderName+"/")
+                .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", orgFolderName,
-                        "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineUpdateRequest",
+                        "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
+                        "organization","jenkins",
                         "scmConfig", ImmutableMap.of("config",
                                 ImmutableMap.of("repos", ImmutableList.of("PR-demo")),
                                 "credentialId", credentialId,
@@ -245,17 +241,5 @@ public class GithubOrgFolderTest extends GithubMockBase {
         //it must resolve to system credential
         c = Connector.lookupScanCredentials(organizationFolder, null, credential.getId());
         assertEquals("System Github Access Token", c.getDescription());
-    }
-
-    private String createGithubCredential(User user) throws UnirestException {
-        Map r = new RequestBuilder(baseUrl)
-                .data(ImmutableMap.of("accessToken", "12345"))
-                .status(200)
-                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .put("/organizations/jenkins/scm/github/validate/")
-                .build(Map.class);
-
-        assertEquals("github", r.get("credentialId"));
-        return "github";
     }
 }

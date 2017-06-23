@@ -27,7 +27,7 @@ module.exports = {
     'Step 2 - view all runs on Activity tab': function (browser) {
         activity = browser.page.bluePipelineActivity().forJob(jobName, 'jenkins');
         activity.waitForElementVisible('@activityTable');
-        browser.elements('css selector', 'tbody tr', function(res) {
+        browser.elements('css selector', '.activity-table .JTable-row[data-pipeline]', function(res) {
             browser.assert.equal(res.value.length, 2, 'Correct number of runs shown initially');
         });
     },
@@ -37,7 +37,7 @@ module.exports = {
         activity.waitForElementVisible('.item[title=master]');
         activity.click('.item[title=master]');
         activity.waitForElementVisible('input.autocomplete[value=master');
-        browser.elements('css selector', 'tbody tr', function(res) {
+        browser.elements('css selector', '.activity-table .JTable-row[data-pipeline]', function(res) {
             browser.assert.equal(res.value.length, 1, 'Correct number of runs filtered down');
         });
     }

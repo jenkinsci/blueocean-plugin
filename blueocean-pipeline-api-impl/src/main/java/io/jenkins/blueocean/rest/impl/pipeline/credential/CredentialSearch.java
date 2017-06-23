@@ -38,7 +38,7 @@ CredentialSearch extends OmniSearch<CredentialApi.Credential> {
             if (domain != null) {
                 CredentialApi.CredentialDomain d = api.getDomains().get(domain);
                 if (d == null) {
-                    throw new ServiceException.BadRequestExpception("Credential domain " + domain + " not found");
+                    throw new ServiceException.BadRequestException("Credential domain " + domain + " not found");
                 }
                 for (CredentialApi.Credential c : d.getCredentials()) {
                     credentials.add(c);
@@ -57,12 +57,12 @@ CredentialSearch extends OmniSearch<CredentialApi.Credential> {
     private BlueOrganization getOrganization(Query q){
         String org = q.param("organization");
         if(org == null){
-            throw new ServiceException.BadRequestExpception("Credentials search query parameter 'organization' is required");
+            throw new ServiceException.BadRequestException("Credentials search query parameter 'organization' is required");
         }
 
         BlueOrganization organization = OrganizationFactory.getInstance().get(org);
         if(organization == null){
-            throw new ServiceException.BadRequestExpception(
+            throw new ServiceException.BadRequestException(
                     String.format("Organization %s not found. Query parameter 'organization' value: %s is invalid. ", org,org));
         }
         return organization;

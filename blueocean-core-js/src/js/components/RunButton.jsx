@@ -5,15 +5,12 @@ import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/react-material-icons';
 import { RunApi as runApi, ToastService as toastService, ToastUtils } from '../';
 import Security from '../security';
+import { stopProp } from '../utils';
 import i18nTranslator from '../i18n/i18n';
 
 const translate = i18nTranslator('blueocean-web');
 
 const { permit } = Security;
-
-const stopProp = (event) => {
-    event.stopPropagation();
-};
 
 /**
  * Run Buttons allows a pipeline or branch to be run and also be stopped thereafter.

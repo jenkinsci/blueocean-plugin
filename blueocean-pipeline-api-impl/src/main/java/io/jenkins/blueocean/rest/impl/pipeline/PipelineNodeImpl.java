@@ -56,6 +56,11 @@ public class PipelineNodeImpl extends BluePipelineNode {
     }
 
     @Override
+    public String getDisplayDescription() {
+        return null;
+    }
+
+    @Override
     public BlueRun.BlueRunResult getResult() {
         return status.getResult();
     }

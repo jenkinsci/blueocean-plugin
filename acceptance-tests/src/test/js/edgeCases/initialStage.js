@@ -32,7 +32,7 @@ module.exports = {
   'Step 03': function (browser) {
     const blueActivityPage = browser.page.bluePipelineActivity().forJob(jobName, 'jenkins');
     // Check the run itself
-    blueActivityPage.waitForRunRunningVisible(jobName + '-1');
+    blueActivityPage.waitForRunRunningVisible(jobName, '1');
     const blueRunDetailPage = browser.page.bluePipelineRunDetail().forRun(jobName, 'jenkins', 1);
 
     blueRunDetailPage.assertBasicLayoutOkay();

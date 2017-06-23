@@ -151,7 +151,7 @@ export const FetchFunctions = {
      * @param {boolean} [options.disableLoadingIndicator] - Optional flag to disable loading indicator for this request.
      * @returns JSON body
      */
-    rawFetchJSON(url, { onSuccess, onError, fetchOptions, disableDedupe, disableLoadingIndicator } = {}) {
+    rawFetchJSON(url, { onSuccess, onError, fetchOptions, disableDedupe, disableLoadingIndicator, ignoreRefreshHeader } = {}) {
         const request = () => {
             let future = getPrefetchedDataFuture(url); // eslint-disable-line no-use-before-define
 
@@ -160,9 +160,13 @@ export const FetchFunctions = {
             }
 
             if (!future) {
-                future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
-                    .then(FetchFunctions.checkRefreshHeader)
-                    .then(FetchFunctions.checkStatus)
+                future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions));
+
+                if (!ignoreRefreshHeader) {
+                    future = future.then(FetchFunctions.checkRefreshHeader);
+                }
+
+                future = future.then(FetchFunctions.checkStatus)
                     .then(FetchFunctions.parseJSON, FetchFunctions.parseErrorJson);
 
                 if (!disableLoadingIndicator) {
@@ -198,7 +202,7 @@ export const FetchFunctions = {
      * @param {boolean} [options.disableLoadingIndicator] - Optional flag to disable loading indicator for this request.
      * @returns fetch response
      */
-    rawFetch(url, { onSuccess, onError, fetchOptions, disableDedupe, disableLoadingIndicator } = {}) {
+    rawFetch(url, { onSuccess, onError, fetchOptions, disableDedupe, disableLoadingIndicator, ignoreRefreshHeader } = {}) {
         const request = () => {
             let future = getPrefetchedDataFuture(url); // eslint-disable-line no-use-before-define
             if (!future) {
@@ -206,9 +210,13 @@ export const FetchFunctions = {
                     loadingIndicator.show();
                 }
 
-                future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions))
-                    .then(FetchFunctions.checkRefreshHeader)
-                    .then(FetchFunctions.checkStatus);
+                future = isoFetch(url, FetchFunctions.sameOriginFetchOption(fetchOptions));
+
+                if (!ignoreRefreshHeader) {
+                    future = future.then(FetchFunctions.checkRefreshHeader);
+                }
+
+                future = future.then(FetchFunctions.checkStatus);
 
                 if (!disableLoadingIndicator) {
                     future = future.then(FetchFunctions.stopLoadingIndicator, err => { FetchFunctions.stopLoadingIndicator(); throw err; });
@@ -241,14 +249,14 @@ export const Fetch = {
      * @param {Object} [options.fetchOptions] - Optional isomorphic-fetch options.
      * @returns JSON body.
      */
-    fetchJSON(url, { onSuccess, onError, fetchOptions, disableCapabilites } = {}) {
+    fetchJSON(url, { onSuccess, onError, fetchOptions, disableCapabilites, ignoreRefreshHeader } = {}) {
         let fixedUrl = url;
         if (urlconfig.getJenkinsRootURL() !== '' && !url.startsWith(urlconfig.getJenkinsRootURL())) {
             fixedUrl = `${urlconfig.getJenkinsRootURL()}${url}`;
         }
         let future;
         if (!config.isJWTEnabled()) {
-            future = FetchFunctions.rawFetchJSON(fixedUrl, { onSuccess, onError, fetchOptions });
+            future = FetchFunctions.rawFetchJSON(fixedUrl, { onSuccess, onError, fetchOptions, ignoreRefreshHeader });
         } else {
             future = jwt.getToken()
                 .then(token => FetchFunctions.rawFetchJSON(fixedUrl, {
@@ -277,14 +285,14 @@ export const Fetch = {
      * @param {Object} [options.fetchOptions] - Optional isomorphic-fetch options.
      * @returns fetch body.
      */
-    fetch(url, { onSuccess, onError, fetchOptions } = {}) {
+    fetch(url, { onSuccess, onError, fetchOptions, disableLoadingIndicator, ignoreRefreshHeader } = {}) {
         let fixedUrl = url;
 
         if (urlconfig.getJenkinsRootURL() !== '' && !url.startsWith(urlconfig.getJenkinsRootURL())) {
             fixedUrl = `${urlconfig.getJenkinsRootURL()}${url}`;
         }
         if (!config.isJWTEnabled()) {
-            return FetchFunctions.rawFetch(fixedUrl, { onSuccess, onError, fetchOptions });
+            return FetchFunctions.rawFetch(fixedUrl, { onSuccess, onError, fetchOptions, disableLoadingIndicator, ignoreRefreshHeader });
         }
 
         return jwt.getToken()

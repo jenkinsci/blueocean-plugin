@@ -79,7 +79,16 @@
 
         .placeholder({
             opacity: 1;
-            color: #4a4a4a;
+
+            // Required for alignment with other table headers
+            position: relative;
+            top: -1px;
+
+            // NB: These should be the same as .JTable-header
+            color: rgba(53, 64, 82, 0.5);
+            font-size: 12px;
+            text-transform: uppercase;
+            font-weight:bold;
         });
     }
 
@@ -113,16 +122,7 @@
 
     .selected {
         background-color: #e3ebee;
-    }
-
-    .absolute() { // override the local styles for the drop-down container
-        position: absolute;
-        top: 100%;
-        left: 0;
-        min-width: 100%;
-        max-width: 200%;
-        max-height: 20em;
-        padding: 0;
+        font-weight: inherit;
     }
 
     > div > div { // drop-down container
@@ -132,11 +132,7 @@
         border-radius: 0 0 3px 3px;
         z-index: 1000;
         box-shadow: 0 1px 6px rgba(0, 0, 0, 0.25);
-
-        .absolute() !important; // ick
+        min-width: 180px !important;
+        max-width: 450px !important;
     }
-}
-
-th.branch {
-    overflow: visible !important;
 }

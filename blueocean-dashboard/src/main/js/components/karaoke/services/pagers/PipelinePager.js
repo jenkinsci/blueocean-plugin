@@ -49,19 +49,6 @@ export class PipelinePager {
         return this.bunker.getItem(this.currentStepsUrl);
     }
     /**
-     * We are testing whether we are in parallel mode by comparing the current selected node
-     * with an other (e.g. the one we clicked in the PipelineGraph)
-     * @param nodeInfo {Object} node that we have clicked on the pipelineGraph
-     * @returns {boolean} true when parallel, false otherwise
-     */
-    isParallel(nodeInfo) {
-        // in case we have edges arrays we compare the first edge, if not we know we are not in parallel mode
-        const isParallel = this.currentNode.edges && this.currentNode.edges[0] && nodeInfo.edges[0] ?
-            this.currentNode.edges[0].id === nodeInfo.edges[0].id : false;
-        logger.warn('compute whether we have a parallel node', isParallel);
-        return isParallel;
-    }
-    /**
      * Creates an instance of Pager and fetches the first page.
      *
      * @param {BunkerService} bunker - Data store

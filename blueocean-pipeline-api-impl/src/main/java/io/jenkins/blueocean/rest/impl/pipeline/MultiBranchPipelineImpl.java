@@ -3,6 +3,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.Item;
@@ -52,6 +53,7 @@ import java.util.List;
 import java.util.Map;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.PipelineJobFilters.isPullRequest;
+import static io.jenkins.blueocean.rest.impl.pipeline.PipelineRunImpl.LATEST_RUN_START_TIME_COMPARATOR;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_MULTI_BRANCH_PROJECT;
 
 /**
@@ -81,11 +83,11 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     @Override
     public BlueFavorite favorite(@JsonBody BlueFavoriteAction favoriteAction) {
         if (favoriteAction == null) {
-            throw new ServiceException.BadRequestExpception("Must provide pipeline name");
+            throw new ServiceException.BadRequestException("Must provide pipeline name");
         }
         Job job = PrimaryBranch.resolve(mbp);
         if (job == null) {
-            throw new ServiceException.BadRequestExpception("no default branch to favorite");
+            throw new ServiceException.BadRequestException("no default branch to favorite");
         }
         FavoriteUtil.toggle(favoriteAction, job);
         return new FavoriteImpl(new BranchImpl(job, getLink().rel("branches")), getLink().rel("favorite"));
@@ -287,14 +289,9 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
                     }
                 }
 
-                Collections.sort(c, new Comparator<BlueRun>() {
-                    @Override
-                    public int compare(BlueRun o1, BlueRun o2) {
-                        return o2.getStartTime().compareTo(o1.getStartTime());
-                    }
-                });
+                Collections.sort(c, LATEST_RUN_START_TIME_COMPARATOR);
 
-                return c.iterator();
+                return Iterators.limit(c.iterator(), limit);
             }
 
             private boolean retry(boolean[] retries) {
@@ -357,10 +354,9 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
         Collections.sort(branches, new Comparator<BluePipeline>() {
             @Override
             public int compare(BluePipeline o1, BluePipeline o2) {
-                Long t1 = o1.getLatestRun() != null ? o1.getLatestRun().getStartTime().getTime() : 0;
-                Long t2 = o2.getLatestRun() != null ? o2.getLatestRun().getStartTime().getTime() : 0;
-
-                return t2.compareTo(t1);
+                BlueRun o1LatestRun = o1.getLatestRun();
+                BlueRun o2LatestRun = o2.getLatestRun();
+                return LATEST_RUN_START_TIME_COMPARATOR.compare(o1LatestRun, o2LatestRun);
             }
         });
     }

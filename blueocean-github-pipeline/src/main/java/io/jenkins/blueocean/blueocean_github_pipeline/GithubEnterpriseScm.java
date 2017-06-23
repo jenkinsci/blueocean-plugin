@@ -1,24 +1,29 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import hudson.Extension;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.commons.stapler.TreeResponse;
+import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.verb.GET;
+import org.parboiled.common.StringUtils;
 
 import javax.annotation.Nonnull;
-import java.net.URI;
-import java.net.URISyntaxException;
 
 /**
  * @author Vivek Pandey
  */
 public class GithubEnterpriseScm extends GithubScm {
-    static final String DEFAULT_ENTERPRISE_API_SUFFIX = "/api/v3";
     static final String ID = "github-enterprise";
     static final String DOMAIN_NAME="blueocean-github-enterprise-domain";
-
+    static final String CREDENTIAL_DESCRIPTION = "GitHub Enterprise Access Token";
 
     public GithubEnterpriseScm(Reachable parent) {
         super(parent);
@@ -31,18 +36,47 @@ public class GithubEnterpriseScm extends GithubScm {
 
     @Override
     public @Nonnull String getUri() {
-        return super.getUri()+DEFAULT_ENTERPRISE_API_SUFFIX;
+        String apiUri = getCustomApiUri();
+
+        // NOTE: GithubEnterpriseScm requires that the apiUri be specified
+        if (StringUtils.isEmpty(apiUri)) {
+            throw new ServiceException.BadRequestException(new ErrorMessage(400, "apiUrl is required parameter"));
+        }
+
+        return apiUri;
+    }
+
+    @Override
+    public String getCredentialId() {
+        String credentialId = createCredentialId(getUri());
+        StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+        if(githubCredential != null){
+            return githubCredential.getId();
+        }
+        return null;
     }
 
     @Override
     public String getCredentialDomainName() {
-        java.net.URI uri;
-        try {
-            uri = new URI(getUri());
-        } catch (URISyntaxException e) {
-            throw new ServiceException.UnexpectedErrorException(new ErrorMessage(400, "Invalid Github Enterprise URI: "+getUri()));
-        }
-        return DOMAIN_NAME + "-" + uri.getHost();
+        return DOMAIN_NAME;
+    }
+
+    @WebMethod(name="") @GET @TreeResponse
+    public Object getState() {
+        // will produce a 400 if apiUrl wasn't sent
+        getUri();
+        return this;
+    }
+
+
+    @Override
+    protected @Nonnull String createCredentialId(@Nonnull String apiUri) {
+        return getId() + ":" + DigestUtils.sha256Hex(apiUri);
+    }
+
+    @Override
+    protected @Nonnull String getCredentialDescription() {
+        return CREDENTIAL_DESCRIPTION;
     }
 
     @Extension

@@ -5,7 +5,7 @@
   <parent>
     <groupId>io.jenkins.blueocean</groupId>
     <artifactId>blueocean-parent</artifactId>
-    <version>1.1.0-beta-5-SNAPSHOT</version>
+    <version>1.2.0-beta-1-SNAPSHOT</version>
   </parent>
 
   <artifactId>blueocean-rest</artifactId>
@@ -73,6 +73,9 @@
                                         <bannedImport>hudson.**</bannedImport>
                                     </bannedImports>
                                     <allowedImports>
+                                        <allowedImport>hudson.model.RootAction</allowedImport>
+                                        <allowedImport>hudson.model.Action</allowedImport>
+                                        <allowedImport>hudson.model.ModelObject</allowedImport>
                                         <allowedImport>hudson.Extension</allowedImport>
                                         <allowedImport>hudson.ExtensionPoint</allowedImport>
                                         <allowedImport>hudson.ExtensionList</allowedImport>

@@ -1,16 +1,18 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
 import hudson.model.FreeStyleProject;
 import hudson.model.Label;
 import hudson.model.Queue;
 import hudson.model.Run;
 import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
-import io.jenkins.blueocean.rest.model.scm.GitSampleRepoRule;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
 import jenkins.plugins.git.GitSCMSource;
+import jenkins.plugins.git.GitSampleRepoRule;
 import jenkins.scm.api.SCMSource;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -20,7 +22,9 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.Issue;
 
+import java.net.URL;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
@@ -131,5 +135,77 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         Map m = request().get("/organizations/jenkins/pipelines/"+JOB_NAME+"/runs/"+r.getId()+"/").build(Map.class);
 
         Assert.assertEquals(m.get("artifactsZipFile"), "/job/artifactTest/1/artifact/*zip*/archive.zip");
+    }
+
+    @Test(timeout = 20000)
+    @Issue("JENKINS-44736")
+    public void earlyUnstableStatusShouldReportPunStateAsRunningAndResultAsUnknown() throws Exception {
+        WorkflowJob p = j.createProject(WorkflowJob.class, "project");
+
+        URL resource = Resources.getResource(getClass(), "earlyUnstableStatusShouldReportPunStateAsRunningAndResultAsUnknown.jenkinsfile");
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+        p.save();
+
+        Run r = p.scheduleBuild2(0).waitForStart();
+
+        String url = "/organizations/jenkins/pipelines/project/runs/" + r.getId() + "/";
+        Map m = request().get(url).build(Map.class);
+
+        // While the run has not finished keep checking that the result is unknown
+        while (!"FINISHED".equals(m.get("state").toString())) {
+            Assert.assertEquals("RUNNING", m.get("state"));
+            Assert.assertEquals("UNKNOWN", m.get("result"));
+            Thread.sleep(1000);
+            m = request().get(url).build(Map.class);
+        }
+
+        // Ensure that the run has finished and was marked as unstable when completed
+        Assert.assertEquals("FINISHED", m.get("state"));
+        Assert.assertEquals("UNSTABLE", m.get("result"));
+    }
+
+    @Test
+    public void pipelineLatestRunIncludesRunning() throws Exception {
+        WorkflowJob p = j.createProject(WorkflowJob.class, "project");
+
+        URL resource = Resources.getResource(getClass(), "latestRunIncludesQueued.jenkinsfile");
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+        p.save();
+
+        // Ensure null before first run
+        Map pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        Assert.assertNull(pipeline.get("latestRun"));
+
+        // Run until completed
+        Run r = p.scheduleBuild2(0).waitForStart();
+        j.waitForCompletion(r);
+
+        // Make the next runs queue
+        j.jenkins.setNumExecutors(0);
+
+        // Schedule another run so it goes in the queue
+        p.scheduleBuild2(0);
+
+        // Get latest run for this pipeline
+        pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        Map latestRun = (Map) pipeline.get("latestRun");
+
+        Assert.assertEquals("RUNNING", latestRun.get("state"));
+        Assert.assertEquals("2", latestRun.get("id"));
+
+        String idOfSecondRun = (String) latestRun.get("id");
+
+        // Replay this
+        request().post("/organizations/jenkins/pipelines/project/runs/" + idOfSecondRun + "/replay/").build(String.class);
+
+        // Get latest run for this pipeline
+        pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        latestRun = (Map) pipeline.get("latestRun");
+
+        // It should be running
+        Assert.assertEquals("RUNNING", latestRun.get("state"));
+        Assert.assertEquals("3", latestRun.get("id"));
     }
 }
