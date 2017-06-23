@@ -57,7 +57,7 @@ class GHEChooseServerStep extends React.Component {
     }
 
     _onClickNextButton() {
-
+        this.props.flowManager.selectServer(this.state.selectedServer);
     }
 
     render() {

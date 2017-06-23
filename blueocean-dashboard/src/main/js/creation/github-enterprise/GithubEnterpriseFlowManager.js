@@ -16,6 +16,8 @@ const MIN_DELAY = 500;
 
 export default class GithubEnterpriseFlowManager extends GithubFlowManager {
 
+    selectedServer = null;
+
     constructor(creationApi, credentialsApi, serverApi) {
         super(creationApi, credentialsApi);
 
@@ -42,6 +44,19 @@ export default class GithubEnterpriseFlowManager extends GithubFlowManager {
         this.setPlaceholders('Complete');
     }
 
+    getApiUrl() {
+        return this.selectedServer ? this.selectedServer.apiUrl : null;
+    }
+
+    _getCredentialsStepAfterStateId() {
+        return STATE.STEP_CHOOSE_SERVER;
+    }
+
+    _getOrganizationsStepAfterStateId() {
+        return this.isStateAdded(STATE.STEP_ACCESS_TOKEN) ?
+            STATE.STEP_ACCESS_TOKEN : STATE.STEP_CHOOSE_SERVER;
+    }
+
     _loadServerList() {
         return this.serverManager.listServers()
             .then(waitAtLeast(MIN_DELAY))
@@ -52,6 +67,17 @@ export default class GithubEnterpriseFlowManager extends GithubFlowManager {
         this.renderStep({
             stateId: STATE.STEP_CHOOSE_SERVER,
             stepElement: <GHEChooseServerStep />,
+        });
+    }
+
+    selectServer(server) {
+        this.selectedServer = server;
+
+        this.findExistingCredential();
+        this.renderStep({
+            stateId: STATE.PENDING_LOADING_CREDS,
+            stepElement: <GithubLoadingStep />,
+            afterStateId: STATE.STEP_CHOOSE_SERVER,
         });
     }
 
