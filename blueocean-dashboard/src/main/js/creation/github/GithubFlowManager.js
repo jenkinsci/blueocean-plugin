@@ -153,15 +153,23 @@ export default class GithubFlowManager extends FlowManager {
             this.changeState(STATE.PENDING_LOADING_ORGANIZATIONS);
             this.listOrganizations();
         } else {
-            this._renderCredentialsStep();
+            const afterStateId = this._getCredentialsStepAfterStateId();
+            this.renderStep({
+                stateId: STATE.STEP_ACCESS_TOKEN,
+                stepElement: <GithubCredentialsStep />,
+                afterStateId,
+            });
         }
     }
 
-    _renderCredentialsStep() {
-        this.renderStep({
-            stateId: STATE.STEP_ACCESS_TOKEN,
-            stepElement: <GithubCredentialsStep />,
-        });
+    /**
+     * stateId of the step after which the 'GithubCredentialsStep' should be added
+     * @returns {string}
+     * @private
+     */
+    _getCredentialsStepAfterStateId() {
+        // if needed, the credentials step is always added at the beginning
+        return null;
     }
 
     createAccessToken(token) {
@@ -192,13 +200,21 @@ export default class GithubFlowManager extends FlowManager {
             .then(orgs => this._listOrganizationsSuccess(orgs));
     }
 
+    /**
+     * stateId of the step after which the 'GithubOrgListStep' should be added
+     * @returns {string}
+     * @private
+     */
+    _getOrganizationsStepAfterStateId() {
+        return this.isStateAdded(STATE.STEP_ACCESS_TOKEN) ?
+            STATE.STEP_ACCESS_TOKEN : null;
+    }
+
     @action
     _listOrganizationsSuccess(response) {
-        const afterStateId = this.isStateAdded(STATE.STEP_ACCESS_TOKEN) ?
-            STATE.STEP_ACCESS_TOKEN : null;
-
         if (response.outcome === ListOrganizationsOutcome.SUCCESS) {
             this.organizations = response.organizations;
+            const afterStateId = this._getOrganizationsStepAfterStateId();
 
             this.renderStep({
                 stateId: STATE.STEP_CHOOSE_ORGANIZATION,
