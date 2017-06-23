@@ -20,6 +20,7 @@ import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
+import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStep;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
@@ -147,8 +148,6 @@ public class PipelineNodeUtil {
      * @param stage stage's {@link FlowNode}
      * @param nodeBlock agent or node block's {@link FlowNode}
      * @return cause of block if present, nul otherwise
-     * @throws IOException in case of IOException
-     * @throws InterruptedException in case of Interrupted exception
      */
     public static @CheckForNull String getCauseOfBlockage(@Nonnull FlowNode stage, @Nullable FlowNode nodeBlock) {
         if(nodeBlock != null){
@@ -194,10 +193,11 @@ public class PipelineNodeUtil {
         if (node != null) {
             if (node instanceof StepStartNode) {
                 StepStartNode stepStartNode = (StepStartNode) node;
-                if (stepStartNode.getDescriptor() != null &&
-                    stepStartNode.getDescriptor().getClass().equals(ExecutorStep.DescriptorImpl.class) &&
-                    !stepStartNode.isBody()) {
-                    return true;
+                if (stepStartNode.getDescriptor() != null) {
+                    StepDescriptor sd = stepStartNode.getDescriptor();
+                    return sd != null &&
+                        ExecutorStep.DescriptorImpl.class.equals(sd.getClass()) &&
+                        !stepStartNode.isBody();
                 }
             }
         }
