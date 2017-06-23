@@ -12,10 +12,10 @@ describe('Enum', () => {
                 HEARTS: 'hearts',
             });
 
-            assert.equal(Suit.SPADES, 'spades');
-            assert.equal(Suit.CLUBS, 'clubs');
-            assert.equal(Suit.DIAMONDS, 'diamonds');
-            assert.equal(Suit.HEARTS, 'hearts');
+            assert.equal(Suit.SPADES, 'SPADES');
+            assert.equal(Suit.CLUBS, 'CLUBS');
+            assert.equal(Suit.DIAMONDS, 'DIAMONDS');
+            assert.equal(Suit.HEARTS, 'HEARTS');
         });
     });
     describe('values', () => {
@@ -28,10 +28,10 @@ describe('Enum', () => {
             });
 
             assert.equal(Suit.values().length, 4);
-            assert.equal(Suit.values()[0], 'spades');
-            assert.equal(Suit.values()[1], 'clubs');
-            assert.equal(Suit.values()[2], 'diamonds');
-            assert.equal(Suit.values()[3], 'hearts');
+            assert.equal(Suit.values()[0], 'SPADES');
+            assert.equal(Suit.values()[1], 'CLUBS');
+            assert.equal(Suit.values()[2], 'DIAMONDS');
+            assert.equal(Suit.values()[3], 'HEARTS');
         });
     });
 });
