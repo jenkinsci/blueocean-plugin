@@ -18,6 +18,7 @@ import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import org.jenkinsci.plugins.workflow.test.steps.SemaphoreStep;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -214,5 +215,77 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         // It should be running
         Assert.assertEquals("RUNNING", latestRun.get("state"));
         Assert.assertEquals("3", latestRun.get("id"));
+    }
+
+    @Issue("JENKINS-44981")
+    @Test
+    public void queuedSingleNode() throws Exception {
+        WorkflowJob p = j.createProject(WorkflowJob.class, "project");
+
+        URL resource = Resources.getResource(getClass(), "queuedSingleNode.jenkinsfile");
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+        p.save();
+
+        // Ensure null before first run
+        Map pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        Assert.assertNull(pipeline.get("latestRun"));
+
+        // Run until completed
+        WorkflowRun r = p.scheduleBuild2(0).waitForStart();
+        j.waitForMessage("Still waiting to schedule task", r);
+
+        // Get latest run for this pipeline
+        pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        Map latestRun = (Map) pipeline.get("latestRun");
+
+        Assert.assertEquals("QUEUED", latestRun.get("state"));
+        Assert.assertEquals("1", latestRun.get("id"));
+
+        j.createOnlineSlave(Label.get("test"));
+
+        j.assertBuildStatusSuccess(j.waitForCompletion(r));
+    }
+
+    @Issue("JENKINS-44981")
+    @Test
+    public void queuedAndRunningParallel() throws Exception {
+        WorkflowJob p = j.createProject(WorkflowJob.class, "project");
+
+        URL resource = Resources.getResource(getClass(), "queuedAndRunningParallel.jenkinsfile");
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+        p.save();
+
+        // Ensure null before first run
+        Map pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        Assert.assertNull(pipeline.get("latestRun"));
+        j.createOnlineSlave(Label.get("first"));
+
+        // Run until completed
+        WorkflowRun r = p.scheduleBuild2(0).waitForStart();
+        SemaphoreStep.waitForStart("wait-a/1", r);
+        j.waitForMessage("Still waiting to schedule task", r);
+
+        // Get latest run for this pipeline
+        pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        Map latestRun = (Map) pipeline.get("latestRun");
+
+        Assert.assertEquals("RUNNING", latestRun.get("state"));
+        Assert.assertEquals("1", latestRun.get("id"));
+
+        SemaphoreStep.success("wait-a/1", null);
+        // Sleep to make sure we get the a branch end node...
+        Thread.sleep(1000);
+
+        pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        latestRun = (Map) pipeline.get("latestRun");
+
+        Assert.assertEquals("QUEUED", latestRun.get("state"));
+        Assert.assertEquals("1", latestRun.get("id"));
+
+        j.createOnlineSlave(Label.get("second"));
+
+        j.assertBuildStatusSuccess(j.waitForCompletion(r));
     }
 }
