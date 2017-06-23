@@ -130,7 +130,7 @@ class GHEAddServerDialog extends React.Component {
             newState.urlErrorMsg = t('creation.githubent.add_server.text_url_error_invalid');
         }
 
-        if (!duplicateName && !duplicateUrl && !duplicateUrl) {
+        if (!duplicateName && !duplicateUrl && !invalidUrl) {
             newState.unknownError = error;
         }
 
