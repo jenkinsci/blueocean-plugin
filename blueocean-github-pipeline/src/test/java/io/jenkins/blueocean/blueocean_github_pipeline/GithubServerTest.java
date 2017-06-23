@@ -7,9 +7,19 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import static org.powermock.api.mockito.PowerMockito.*;
+import static org.powermock.api.mockito.PowerMockito.when;
+
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({GithubScm.class, Jenkins.class, Authentication.class, User.class, Secret.class,
+    CredentialsMatchers.class, CredentialsProvider.class, Stapler.class})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*"})
 public class GithubServerTest extends PipelineBaseTest {
 
     String token;
@@ -147,6 +157,9 @@ public class GithubServerTest extends PipelineBaseTest {
 
     @Test
     public void createAndList() throws Exception {
+
+        validGithubServer();
+
         Assert.assertEquals(0, getServers().size());
 
         // Create a server
@@ -186,6 +199,16 @@ public class GithubServerTest extends PipelineBaseTest {
 
         Assert.assertNotNull(resp);
         Assert.assertEquals(404, resp.get("code"));
+    }
+
+    void validGithubServer() throws Exception {
+        HttpURLConnection httpURLConnectionMock = mock(HttpURLConnection.class);
+        doNothing().when(httpURLConnectionMock).connect();
+
+        URL urlMock = mock(URL.class);
+        whenNew(URL.class).withAnyArguments().thenReturn(urlMock);
+        when(urlMock.openConnection()).thenReturn(httpURLConnectionMock);
+        when(httpURLConnectionMock.getHeaderField("X-GitHub-Request-Id")).thenReturn("B0D3:28E87:2860BCA:359FACB:594C7A45");
     }
 
     private List getServers() {

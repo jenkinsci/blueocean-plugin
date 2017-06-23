@@ -19,10 +19,16 @@ import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.PUT;
 
 import javax.annotation.CheckForNull;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class GithubServerContainer extends Container<GithubServer> {
+
+    private static final Logger LOGGER = Logger.getLogger(GithubServerContainer.class.getName());
 
     private final Link parent;
 
@@ -57,6 +63,21 @@ public class GithubServerContainer extends Container<GithubServer> {
             if (byUrl != null) {
                 errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), GithubServer.API_URL + " is already registered as '" + byUrl.getName() + "'"));
             }
+        }
+
+        // Validate that the URL represents a Github API endpoint
+        try {
+            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setDoOutput(true);
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Content-type", "application/json");
+            connection.connect();
+            if (connection.getHeaderField("X-GitHub-Request-Id") == null) {
+                errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Specified URL is not a Github server"));
+            }
+        } catch (Throwable e) {
+            errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Could not connect to Github"));
+            LOGGER.log(Level.INFO, "Could not connect to Github", e);
         }
 
         if (!errors.isEmpty()) {

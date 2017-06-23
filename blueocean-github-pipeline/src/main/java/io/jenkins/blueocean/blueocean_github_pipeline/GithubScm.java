@@ -294,7 +294,7 @@ public class GithubScm extends Scm {
         }
     }
 
-    static HttpURLConnection connect(String apiUrl, String accessToken) throws IOException {
+    protected static HttpURLConnection connect(String apiUrl, String accessToken) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
 
         connection.setDoOutput(true);
