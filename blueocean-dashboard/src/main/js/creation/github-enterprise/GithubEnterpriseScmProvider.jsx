@@ -3,8 +3,8 @@ import GithubScmProvider from '../github/GithubScmProvider';
 
 import { GithubCreationApi } from '../github/api/GithubCreationApi';
 import { GithubCredentialsApi } from '../github/api/GithubCredentialsApi';
-// import GHEServerApi from './api/GHEServerApi';
-import GHEServerApi from './api/mock/GHEServerApiMock';
+import GHEServerApi from './api/GHEServerApi';
+// import GHEServerApi from './api/mock/GHEServerApiMock';
 
 import GithubDefaultOption from '../github/GithubDefaultOption';
 import GithubEnterpriseFlowManager from './GithubEnterpriseFlowManager';

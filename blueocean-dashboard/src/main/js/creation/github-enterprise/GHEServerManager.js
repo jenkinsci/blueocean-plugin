@@ -1,5 +1,7 @@
 import { action, observable } from 'mobx';
 
+import CreateServerError from './api/CreateServerError';
+
 
 class GHEServerManager {
 
@@ -32,19 +34,11 @@ class GHEServerManager {
     @action
     _onCreateServerSuccess(server) {
         this.servers.push(server);
-        return {
-            success: true,
-            server,
-        };
+        return server;
     }
 
     _onCreateServerFailure(response) {
-        const { errors } = response.responseBody;
-        return {
-            success: false,
-            duplicateName: errors.some(err => err.field === 'name' && err.code === 'ALREADY_EXISTS'),
-            duplicateUrl: errors.some(err => err.field === 'apiUrl' && err.code === 'ALREADY_EXISTS'),
-        };
+        throw new CreateServerError(response);
     }
 }
 

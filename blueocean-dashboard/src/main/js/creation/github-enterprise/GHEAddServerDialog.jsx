@@ -1,8 +1,9 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
-
 import { Dialog, FormElement, TextInput } from '@jenkins-cd/design-language';
+
+import ServerErrorRenderer from './ServerErrorRenderer';
 
 
 let t = null;
@@ -15,8 +16,8 @@ class GHEAddServerDialog extends React.Component {
         super(props);
 
         this.state = {
-            creationPending: false,
-            creationErrorMsg: null,
+            pending: false,
+            unknownError: null,
             nameValue: null,
             nameErrorMsg: null,
             urlValue: null,
@@ -68,10 +69,13 @@ class GHEAddServerDialog extends React.Component {
         const { serverManager } = this.props.flowManager;
 
         serverManager.createServer(this.state.nameValue, this.state.urlValue)
-            .then(result => this._onCreateServerResult(result));
+            .then(
+                server => this._onCreateServerSuccess(server),
+                error => this._onCreateServerFailure(error),
+            );
 
         this.setState({
-            creationPending: true,
+            pending: true,
         });
     }
 
@@ -97,28 +101,40 @@ class GHEAddServerDialog extends React.Component {
         return result;
     }
 
-    _onCreateServerResult(result) {
+    _onCreateServerSuccess(server) {
         this.setState({
-            creationPending: false,
+            pending: false,
+            unknownError: null,
         });
 
-        if (result.success) {
-            const { server } = result;
+        this._onCloseClick(server);
+    }
 
-            this.setState({
-                creationErrorMsg: null,
-                creationPending: false,
-            });
+    _onCreateServerFailure(error) {
+        const { duplicateName, duplicateUrl, invalidUrl } = error;
 
-            this._onCloseClick(server);
-        } else {
-            const { duplicateName, duplicateUrl } = result;
-            this.setState({
-                nameErrorMsg: duplicateName ? t('creation.githubent.add_server.text_name_error_duplicate') : null,
-                urlErrorMsg: duplicateUrl ? t('creation.githubent.add_server.text_url_error_duplicate') : null,
-                creationErrorMsg: !duplicateName && !duplicateUrl ? t('creation.githubent.add_server.error_msg') : null,
-            });
+        const newState = {
+            pending: false,
+            unknownError: null,
+            nameErrorMsg: null,
+            urlErrorMsg: null,
+        };
+
+        if (duplicateName) {
+            newState.nameErrorMsg = t('creation.githubent.add_server.text_name_error_duplicate');
         }
+
+        if (duplicateUrl) {
+            newState.urlErrorMsg = t('creation.githubent.add_server.text_url_error_duplicate');
+        } else if (invalidUrl) {
+            newState.urlErrorMsg = t('creation.githubent.add_server.text_url_error_invalid');
+        }
+
+        if (!duplicateName && !duplicateUrl && !duplicateUrl) {
+            newState.unknownError = error;
+        }
+
+        this.setState(newState);
     }
 
     _onCloseClick(credential) {
@@ -128,7 +144,7 @@ class GHEAddServerDialog extends React.Component {
     }
 
     render() {
-        const disabled = this.state.creationPending;
+        const disabled = this.state.pending;
 
         const buttons = [
             <button className="button-create-server" disabled={disabled} onClick={() => this._onCreateClick()}>
@@ -148,9 +164,10 @@ class GHEAddServerDialog extends React.Component {
                 <FormElement
                     className="server-new"
                     title={t('creation.githubent.add_server.instructions')}
-                    errorMessage={this.state.creationErrorMsg}
                     verticalLayout
                 >
+                    { this.state.unknownError && <ServerErrorRenderer error={this.state.unknownError} /> }
+
                     <FormElement title={t('creation.githubent.add_server.text_name_title')} errorMessage={this.state.nameErrorMsg}>
                         <TextInput className="text-name" placeholder={t('creation.githubent.add_server.text_name_placeholder')} onChange={val => this._nameChange(val)} />
                     </FormElement>
