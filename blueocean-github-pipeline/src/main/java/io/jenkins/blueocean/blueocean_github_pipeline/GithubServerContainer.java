@@ -5,12 +5,14 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Ordering;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.Container;
 import net.sf.json.JSONObject;
+import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
 import org.jenkinsci.plugins.github_branch_source.GitHubConfiguration;
@@ -21,6 +23,7 @@ import org.kohsuke.stapler.verb.PUT;
 import javax.annotation.CheckForNull;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.logging.Level;
@@ -118,10 +121,16 @@ public class GithubServerContainer extends Container<GithubServer> {
     @Override
     public Iterator<GithubServer> iterator() {
         GitHubConfiguration config = GitHubConfiguration.get();
-        ImmutableList<Endpoint> endpoints;
+        List<Endpoint> endpoints;
         synchronized (config) {
             endpoints = ImmutableList.copyOf(config.getEndpoints());
         }
+        endpoints = Ordering.from(new Comparator<Endpoint>() {
+            @Override
+            public int compare(Endpoint o1, Endpoint o2) {
+                return ComparatorUtils.NATURAL_COMPARATOR.compare(o1.getName(), o2.getName());
+            }
+        }).sortedCopy(endpoints);
         return Iterators.transform(endpoints.iterator(), new Function<Endpoint, GithubServer>() {
             @Override
             public GithubServer apply(Endpoint input) {
