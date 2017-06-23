@@ -27,16 +27,10 @@ export class GithubAccessTokenManager {
 
     constructor(credentialsApi) {
         this._credentialsApi = credentialsApi;
-        this._initialize();
     }
 
-    @action
-    _initialize() {
-        this.stateId = GithubAccessTokenState.INITIAL;
-    }
-
-    findExistingCredential(apiUrl) {
-        return this._credentialsApi.findExistingCredential(apiUrl)
+    findExistingCredential() {
+        return this._credentialsApi.findExistingCredential()
             .then(waitAtLeast(MIN_DELAY))
             .then(
                 cred => this._findExistingCredentialSuccess(cred),
@@ -44,15 +38,12 @@ export class GithubAccessTokenManager {
             );
     }
 
-    @action
     _findExistingCredentialSuccess(credential) {
         if (credential && credential.credentialId) {
             this.credential = credential;
-            this.stateId = GithubAccessTokenState.EXISTING_WAS_FOUND;
             return true;
         }
 
-        this.stateId = GithubAccessTokenState.EXISTING_NOT_FOUND;
         return false;
     }
 
@@ -75,10 +66,10 @@ export class GithubAccessTokenManager {
     }
 
     @action
-    createAccessToken(token, apiUrl) {
+    createAccessToken(token) {
         this.pendingValidation = true;
 
-        return this._credentialsApi.createAccessToken(token, apiUrl)
+        return this._credentialsApi.createAccessToken(token)
             .then(waitAtLeast(MIN_DELAY))
             .then(response => this._createTokenComplete(response));
     }
@@ -94,10 +85,6 @@ export class GithubAccessTokenManager {
             this.stateId = GithubAccessTokenState.VALIDATION_FAILED_TOKEN;
         } else if (response.scopes) {
             this.stateId = GithubAccessTokenState.VALIDATION_FAILED_SCOPES;
-        } else if (response.invalidApiUrl) {
-            this.stateId = GithubAccessTokenState.VALIDATION_FAILED_API_URL;
-        } else {
-            this.stateId = GithubAccessTokenState.VALIDATION_FAILED_UNKNOWN;
         }
 
         return response;
