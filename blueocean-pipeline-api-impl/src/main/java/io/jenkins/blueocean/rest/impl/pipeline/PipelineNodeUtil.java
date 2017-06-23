@@ -9,16 +9,19 @@ import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.pipeline.StageStatus;
 import org.jenkinsci.plugins.pipeline.SyntheticStage;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
+import org.jenkinsci.plugins.workflow.actions.ExecutorTaskInfoAction;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.actions.StageAction;
 import org.jenkinsci.plugins.workflow.actions.TagsAction;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
+import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
 import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
+import org.jenkinsci.plugins.workflow.support.steps.ExecutorStep;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 
@@ -143,34 +146,19 @@ public class PipelineNodeUtil {
      *
      * @param stage stage's {@link FlowNode}
      * @param nodeBlock agent or node block's {@link FlowNode}
-     * @param run {@link WorkflowRun} instance
      * @return cause of block if present, nul otherwise
      * @throws IOException in case of IOException
      * @throws InterruptedException in case of Interrupted exception
      */
-    public static @CheckForNull String getCauseOfBlockage(@Nonnull FlowNode stage, @Nullable FlowNode nodeBlock, @Nonnull WorkflowRun run) throws IOException, InterruptedException {
+    public static @CheckForNull String getCauseOfBlockage(@Nonnull FlowNode stage, @Nullable FlowNode nodeBlock) {
         if(nodeBlock != null){
             //Check and see if this node block is inside this stage
             for(FlowNode p:nodeBlock.getParents()){
                 if(p.equals(stage)){
-
-                    //see if there is blocked item in queue
-                    for(Queue.Item i: Jenkins.getInstance().getQueue().getItems()){
-                        if(i.task instanceof ExecutorStepExecution.PlaceholderTask){
-                            ExecutorStepExecution.PlaceholderTask task = (ExecutorStepExecution.PlaceholderTask) i.task;
-                            String cause = i.getCauseOfBlockage().getShortDescription();
-                            if(task.getCauseOfBlockage() != null){
-                                cause = task.getCauseOfBlockage().getShortDescription();
-                            }
-
-                            Run r = task.runForDisplay();
-
-                            //Set cause if its there and run and node block in the queue is same as the one we
-                            if(cause != null && r != null && r.equals(run) && task.getNode() != null && task.getNode().equals(nodeBlock)){
-                                return cause;
-                            }
-
-                        }
+                    ExecutorTaskInfoAction action = nodeBlock.getAction(ExecutorTaskInfoAction.class);
+                    if (action != null && action.isQueued()) {
+                        // TODO: Probably rewrite once we change whyBlocked to be CauseOfBlockage
+                        return action.getWhyBlocked();
                     }
                 }
             }
@@ -194,5 +182,26 @@ public class PipelineNodeUtil {
         PauseAction pauseAction = step.getAction(PauseAction.class);
         return (pauseAction != null && pauseAction.isPaused()
                 && pauseAction.getCause().equals("Input"));
+    }
+
+    /**
+     * Determine if the given {@link FlowNode} is the initial {@link StepStartNode} for an {@link org.jenkinsci.plugins.workflow.support.steps.ExecutorStep}.
+     *
+     * @param node a possibly null {@link FlowNode}
+     * @return true if {@code node} is the non-body start of the agent execution.
+     */
+    public static boolean isAgentStart(@Nullable FlowNode node) {
+        if (node != null) {
+            if (node instanceof StepStartNode) {
+                StepStartNode stepStartNode = (StepStartNode) node;
+                if (stepStartNode.getDescriptor() != null &&
+                    stepStartNode.getDescriptor().getClass().equals(ExecutorStep.DescriptorImpl.class) &&
+                    !stepStartNode.isBody()) {
+                    return true;
+                }
+            }
+        }
+
+        return false;
     }
 }

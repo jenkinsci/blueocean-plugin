@@ -13,6 +13,7 @@ import io.jenkins.blueocean.rest.factory.BlueRunFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.Branch;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.PullRequest;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
+import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
@@ -108,6 +109,22 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         } catch (InterruptedException | TimeoutException e) {
             logger.error("Error getting StateObject from execution context: "+e.getMessage(), e);
         }
+
+        // TODO: Probably move this elsewhere - maybe into PipelineNodeContainerImpl?
+        boolean isQueued = false;
+        boolean isRunning = false;
+        for (BluePipelineNode n : getNodes()) {
+            if (n.getStateObj().equals(BlueRunState.QUEUED)) {
+                isQueued = true;
+            } else if (n.getStateObj().equals(BlueRunState.RUNNING)) {
+                isRunning = true;
+            }
+        }
+        if (isQueued && !isRunning) {
+            return BlueRunState.QUEUED;
+
+        }
+
         return super.getStateObj();
     }
 

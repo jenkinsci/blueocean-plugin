@@ -33,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,6 +70,8 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     private final Stack<FlowNode> nestedbranches = new Stack<>();
 
     private final ArrayDeque<FlowNode> pendingInputSteps = new ArrayDeque<>();
+    private final ArrayDeque<FlowNode> queuedNodes = new ArrayDeque<>();
+    private final ArrayDeque<FlowNode> runningNodes = new ArrayDeque<>();
 
     private final Stack<FlowNode> parallelBranchEndNodes = new Stack<>();
 
@@ -117,11 +118,10 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             dump("\tStartNode: "+((StepEndNode) endNode).getStartNode());
         }
 
-        if(endNode instanceof StepStartNode){
-            if(endNode.getDisplayFunctionName().equals("node")){
-                agentNode = (StepStartNode) endNode;
-            }
+        if (endNode instanceof StepStartNode && PipelineNodeUtil.isAgentStart(endNode)) {
+            agentNode = (StepStartNode) endNode;
         }
+
         // capture orphan branches
         captureOrphanParallelBranches();
 
@@ -206,14 +206,8 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         FlowNodeWrapper stage = new FlowNodeWrapper(chunk.getFirstNode(),
                 status, times, run);
 
-        try {
-            String cause = PipelineNodeUtil.getCauseOfBlockage(stage.getNode(), agentNode, run);
-            stage.setCauseOfFailure(cause);
-        } catch (IOException | InterruptedException e) {
-            //log the error but don't fail. This is better as in worst case all we will lose is blockage cause of a node.
-            logger.error(String.format("Error trying to get blockage status of pipeline: %s, runId: %s node block: %s. %s"
-                    ,run.getParent().getFullName(), run.getId(), agentNode, e.getMessage()), e);
-        }
+        stage.setCauseOfFailure(PipelineNodeUtil.getCauseOfBlockage(stage.getNode(), agentNode));
+
         nodes.push(stage);
         nodeMap.put(stage.getId(), stage);
         if(!skippedStage && !parallelBranches.isEmpty()){
