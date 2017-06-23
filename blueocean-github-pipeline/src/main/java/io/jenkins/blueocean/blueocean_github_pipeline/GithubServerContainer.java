@@ -123,14 +123,13 @@ public class GithubServerContainer extends Container<GithubServer> {
         GitHubConfiguration config = GitHubConfiguration.get();
         List<Endpoint> endpoints;
         synchronized (config) {
-            endpoints = ImmutableList.copyOf(config.getEndpoints());
+            endpoints = Ordering.from(new Comparator<Endpoint>() {
+                @Override
+                public int compare(Endpoint o1, Endpoint o2) {
+                    return ComparatorUtils.NATURAL_COMPARATOR.compare(o1.getName(), o2.getName());
+                }
+            }).sortedCopy(config.getEndpoints());
         }
-        endpoints = Ordering.from(new Comparator<Endpoint>() {
-            @Override
-            public int compare(Endpoint o1, Endpoint o2) {
-                return ComparatorUtils.NATURAL_COMPARATOR.compare(o1.getName(), o2.getName());
-            }
-        }).sortedCopy(endpoints);
         return Iterators.transform(endpoints.iterator(), new Function<Endpoint, GithubServer>() {
             @Override
             public GithubServer apply(Endpoint input) {
