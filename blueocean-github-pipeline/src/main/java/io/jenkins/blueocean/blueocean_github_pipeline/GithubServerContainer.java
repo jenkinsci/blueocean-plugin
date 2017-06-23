@@ -65,19 +65,21 @@ public class GithubServerContainer extends Container<GithubServer> {
             }
         }
 
-        // Validate that the URL represents a Github API endpoint
-        try {
-            HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-            connection.setDoOutput(true);
-            connection.setRequestMethod("GET");
-            connection.setRequestProperty("Content-type", "application/json");
-            connection.connect();
-            if (connection.getHeaderField("X-GitHub-Request-Id") == null) {
-                errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Specified URL is not a Github server"));
+        if (StringUtils.isNotEmpty(url)) {
+            // Validate that the URL represents a Github API endpoint
+            try {
+                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
+                connection.setDoOutput(true);
+                connection.setRequestMethod("GET");
+                connection.setRequestProperty("Content-type", "application/json");
+                connection.connect();
+                if (connection.getHeaderField("X-GitHub-Request-Id") == null) {
+                    errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Specified URL is not a Github server"));
+                }
+            } catch (Throwable e) {
+                errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Could not connect to Github"));
+                LOGGER.log(Level.INFO, "Could not connect to Github", e);
             }
-        } catch (Throwable e) {
-            errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Could not connect to Github"));
-            LOGGER.log(Level.INFO, "Could not connect to Github", e);
         }
 
         if (!errors.isEmpty()) {

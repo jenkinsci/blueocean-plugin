@@ -1,26 +1,25 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
+import com.github.tomakehurst.wiremock.client.MappingBuilder;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 
-import java.io.IOException;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
-import static org.powermock.api.mockito.PowerMockito.*;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({GithubScm.class, Jenkins.class, Authentication.class, User.class, Secret.class,
-    CredentialsMatchers.class, CredentialsProvider.class, Stapler.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*"})
 public class GithubServerTest extends PipelineBaseTest {
+
+    @Rule
+    public WireMockRule wireMockRule = new WireMockRule();
 
     String token;
 
@@ -32,7 +31,54 @@ public class GithubServerTest extends PipelineBaseTest {
     }
 
     @Test
+    public void testServerNotGithub() throws Exception {
+        validGithubServer(false);
+
+        // Create a server
+        Map resp = request()
+            .status(400)
+            .jwtToken(token)
+            .data(ImmutableMap.of(
+                "name", "My Server",
+                "apiUrl", getApiUrl()
+            ))
+            .put("/organizations/jenkins/scm/github-enterprise/servers/")
+            .build(Map.class);
+
+        List errors = (List) resp.get("errors");
+        Assert.assertEquals(1, errors.size());
+
+        Map error1 = (Map) errors.get(0);
+        Assert.assertEquals("apiUrl", error1.get("field"));
+        Assert.assertEquals("Specified URL is not a Github server", error1.get("message"));
+        Assert.assertEquals("INVALID", error1.get("code"));
+    }
+
+    @Test
+    public void testServerBadServer() throws Exception {
+        // Create a server
+        Map resp = request()
+            .status(400)
+            .jwtToken(token)
+            .data(ImmutableMap.of(
+                "name", "My Server",
+                "apiUrl", "http://foobar/"
+            ))
+            .put("/organizations/jenkins/scm/github-enterprise/servers/")
+            .build(Map.class);
+
+        List errors = (List) resp.get("errors");
+        Assert.assertEquals(1, errors.size());
+
+        Map error1 = (Map) errors.get(0);
+        Assert.assertEquals("apiUrl", error1.get("field"));
+        Assert.assertEquals("Could not connect to Github", error1.get("message"));
+        Assert.assertEquals("INVALID", error1.get("code"));
+    }
+
+    @Test
     public void testMissingParams() throws Exception {
+        validGithubServer(true);
         Map resp = request()
             .status(400)
             .jwtToken(token)
@@ -53,6 +99,7 @@ public class GithubServerTest extends PipelineBaseTest {
 
     @Test
     public void testMissingUrlParam() throws Exception {
+        validGithubServer(true);
         Map resp = request()
             .status(400)
             .jwtToken(token)
@@ -72,10 +119,11 @@ public class GithubServerTest extends PipelineBaseTest {
 
     @Test
     public void testMissingNameParam() throws Exception {
+        validGithubServer(true);
         Map resp = request()
             .status(400)
             .jwtToken(token)
-            .data(ImmutableMap.of("apiUrl", "http://google.com/"))
+            .data(ImmutableMap.of("apiUrl", getApiUrl()))
             .put("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
         Assert.assertNotNull(resp);
@@ -91,13 +139,14 @@ public class GithubServerTest extends PipelineBaseTest {
 
     @Test
     public void avoidDuplicateByUrl() throws Exception {
+        validGithubServer(true);
         // Create a server
         Map server = request()
             .status(200)
             .jwtToken(token)
             .data(ImmutableMap.of(
                 "name", "My Server",
-                "apiUrl", "http://github.example.com/"
+                "apiUrl", getApiUrl()
             ))
             .put("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
@@ -108,7 +157,7 @@ public class GithubServerTest extends PipelineBaseTest {
             .jwtToken(token)
             .data(ImmutableMap.of(
                 "name", "My Server 2",
-                "apiUrl", "http://github.example.com/"
+                "apiUrl", getApiUrl()
             ))
             .put("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
@@ -124,13 +173,14 @@ public class GithubServerTest extends PipelineBaseTest {
 
     @Test
     public void avoidDuplicateByName() throws Exception {
+        validGithubServer(true);
         // Create a server
         Map server = request()
             .status(200)
             .jwtToken(token)
             .data(ImmutableMap.of(
                 "name", "My Server",
-                "apiUrl", "http://github.example.com/"
+                "apiUrl", getApiUrl()
             ))
             .put("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
@@ -141,25 +191,23 @@ public class GithubServerTest extends PipelineBaseTest {
             .jwtToken(token)
             .data(ImmutableMap.of(
                 "name", "My Server",
-                "apiUrl", "http://github.corp.example.com/"
+                "apiUrl", getApiUrl()
             ))
             .put("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
 
         List errors = (List) resp.get("errors");
-        Assert.assertEquals(1, errors.size());
+        Assert.assertEquals(2, errors.size());
 
         Map error1 = (Map) errors.get(0);
         Assert.assertEquals("name", error1.get("field"));
         Assert.assertEquals("ALREADY_EXISTS", error1.get("code"));
-        Assert.assertEquals("name already exists for server at 'http://github.example.com/'", error1.get("message"));
+        Assert.assertEquals("name already exists for server at '" + getApiUrl() + "'", error1.get("message"));
     }
 
     @Test
     public void createAndList() throws Exception {
-
-        validGithubServer();
-
+        validGithubServer(true);
         Assert.assertEquals(0, getServers().size());
 
         // Create a server
@@ -168,13 +216,13 @@ public class GithubServerTest extends PipelineBaseTest {
             .jwtToken(token)
             .data(ImmutableMap.of(
                 "name", "My Server",
-                "apiUrl", "http://github.example.com/"
+                "apiUrl", getApiUrl()
             ))
             .put("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
 
         Assert.assertEquals("My Server", server.get("name"));
-        Assert.assertEquals("http://github.example.com/", server.get("apiUrl"));
+        Assert.assertEquals(getApiUrl(), server.get("apiUrl"));
 
         // Get the list of servers and check that it persisted
         List servers = getServers();
@@ -182,7 +230,7 @@ public class GithubServerTest extends PipelineBaseTest {
 
         server = (Map) servers.get(0);
         Assert.assertEquals("My Server", server.get("name"));
-        Assert.assertEquals("http://github.example.com/", server.get("apiUrl"));
+        Assert.assertEquals(getApiUrl(), server.get("apiUrl"));
 
         // Load the server entry
         server = request()
@@ -190,7 +238,7 @@ public class GithubServerTest extends PipelineBaseTest {
             .get("/organizations/jenkins/scm/github-enterprise/servers/My%20Server")
             .build(Map.class);
         Assert.assertEquals("My Server", server.get("name"));
-        Assert.assertEquals("http://github.example.com/", server.get("apiUrl"));
+        Assert.assertEquals(getApiUrl(), server.get("apiUrl"));
 
         Map resp = request()
             .status(404)
@@ -201,16 +249,18 @@ public class GithubServerTest extends PipelineBaseTest {
         Assert.assertEquals(404, resp.get("code"));
     }
 
-    void validGithubServer() throws Exception {
-        HttpURLConnection httpURLConnectionMock = mock(HttpURLConnection.class);
-        doNothing().when(httpURLConnectionMock).connect();
-
-        URL urlMock = mock(URL.class);
-        whenNew(URL.class).withAnyArguments().thenReturn(urlMock);
-        when(urlMock.openConnection()).thenReturn(httpURLConnectionMock);
-        when(httpURLConnectionMock.getHeaderField("X-GitHub-Request-Id")).thenReturn("B0D3:28E87:2860BCA:359FACB:594C7A45");
+    private String getApiUrl() {
+        return "http://localhost:" + wireMockRule.port() + "/";
     }
 
+    private void validGithubServer(boolean hasHeader) throws Exception {
+        MappingBuilder mappingBuilder = WireMock.get(urlEqualTo("/"));
+        if (hasHeader) {
+            stubFor(mappingBuilder.willReturn(ok().withHeader("X-GitHub-Request-Id", "foobar")));
+        } else {
+            stubFor(mappingBuilder.willReturn(ok()));
+        }
+    }
     private List getServers() {
         return request()
             .status(200)
