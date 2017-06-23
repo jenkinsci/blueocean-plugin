@@ -42,7 +42,7 @@ public class GithubServerTest extends PipelineBaseTest {
                 "name", "My Server",
                 "apiUrl", getApiUrl()
             ))
-            .put("/organizations/jenkins/scm/github-enterprise/servers/")
+            .post("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
 
         List errors = (List) resp.get("errors");
@@ -64,7 +64,7 @@ public class GithubServerTest extends PipelineBaseTest {
                 "name", "My Server",
                 "apiUrl", "http://foobar/"
             ))
-            .put("/organizations/jenkins/scm/github-enterprise/servers/")
+            .post("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
 
         List errors = (List) resp.get("errors");
@@ -83,7 +83,7 @@ public class GithubServerTest extends PipelineBaseTest {
             .status(400)
             .jwtToken(token)
             .data(ImmutableMap.of())
-            .put("/organizations/jenkins/scm/github-enterprise/servers/")
+            .post("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
         Assert.assertNotNull(resp);
 
@@ -104,7 +104,7 @@ public class GithubServerTest extends PipelineBaseTest {
             .status(400)
             .jwtToken(token)
             .data(ImmutableMap.of("name", "foo"))
-            .put("/organizations/jenkins/scm/github-enterprise/servers/")
+            .post("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
         Assert.assertNotNull(resp);
 
@@ -124,7 +124,7 @@ public class GithubServerTest extends PipelineBaseTest {
             .status(400)
             .jwtToken(token)
             .data(ImmutableMap.of("apiUrl", getApiUrl()))
-            .put("/organizations/jenkins/scm/github-enterprise/servers/")
+            .post("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
         Assert.assertNotNull(resp);
 
@@ -148,7 +148,7 @@ public class GithubServerTest extends PipelineBaseTest {
                 "name", "My Server",
                 "apiUrl", getApiUrl()
             ))
-            .put("/organizations/jenkins/scm/github-enterprise/servers/")
+            .post("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
 
         // Create a server
@@ -159,7 +159,7 @@ public class GithubServerTest extends PipelineBaseTest {
                 "name", "My Server 2",
                 "apiUrl", getApiUrl()
             ))
-            .put("/organizations/jenkins/scm/github-enterprise/servers/")
+            .post("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
 
         List errors = (List) resp.get("errors");
@@ -182,7 +182,7 @@ public class GithubServerTest extends PipelineBaseTest {
                 "name", "My Server",
                 "apiUrl", getApiUrl()
             ))
-            .put("/organizations/jenkins/scm/github-enterprise/servers/")
+            .post("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
 
         // Create a server
@@ -193,7 +193,7 @@ public class GithubServerTest extends PipelineBaseTest {
                 "name", "My Server",
                 "apiUrl", getApiUrl()
             ))
-            .put("/organizations/jenkins/scm/github-enterprise/servers/")
+            .post("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
 
         List errors = (List) resp.get("errors");
@@ -218,7 +218,7 @@ public class GithubServerTest extends PipelineBaseTest {
                 "name", "My Server",
                 "apiUrl", getApiUrl()
             ))
-            .put("/organizations/jenkins/scm/github-enterprise/servers/")
+            .post("/organizations/jenkins/scm/github-enterprise/servers/")
             .build(Map.class);
 
         Assert.assertEquals("My Server", server.get("name"));

@@ -2,7 +2,6 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
@@ -18,7 +17,7 @@ import org.jenkinsci.plugins.github_branch_source.Endpoint;
 import org.jenkinsci.plugins.github_branch_source.GitHubConfiguration;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
-import org.kohsuke.stapler.verb.PUT;
+import org.kohsuke.stapler.verb.POST;
 
 import javax.annotation.CheckForNull;
 import java.net.HttpURLConnection;
@@ -39,7 +38,7 @@ public class GithubServerContainer extends Container<GithubServer> {
         this.parent = parent;
     }
 
-    @PUT
+    @POST
     @WebMethod(name="")
     @TreeResponse
     public @CheckForNull GithubServer create(@JsonBody JSONObject request) {
