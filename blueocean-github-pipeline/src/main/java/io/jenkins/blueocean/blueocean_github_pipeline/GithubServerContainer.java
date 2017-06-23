@@ -79,7 +79,7 @@ public class GithubServerContainer extends Container<GithubServer> {
                     errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Specified URL is not a Github server"));
                 }
             } catch (Throwable e) {
-                errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Could not connect to Github"));
+                errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), e.getMessage()));
                 LOGGER.log(Level.INFO, "Could not connect to Github", e);
             }
         }
