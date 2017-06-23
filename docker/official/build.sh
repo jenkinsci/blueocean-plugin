@@ -38,3 +38,9 @@ docker tag "jenkinsci/blueocean:$BLUEOCEAN_VERSION" "jenkinsci/blueocean:$FULL_V
 docker push "jenkins/blueocean:$BLUEOCEAN_VERSION"
 docker push "jenkins/blueocean:$FULL_VERSION"
 docker push "jenkins/blueocean:latest"
+
+# push it to legacy jenkinsci organizaiton on dockerhub
+docker push "jenkinsci/blueocean:$BLUEOCEAN_VERSION"
+docker push "jenkinsci/blueocean:$FULL_VERSION"
+docker push "jenkinsci/blueocean:latest"
+
