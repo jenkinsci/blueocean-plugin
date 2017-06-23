@@ -137,9 +137,13 @@ export default class GithubFlowManager extends FlowManager {
         this._cleanupListeners();
     }
 
-    findExistingCredential(apiUrl) {
-        this.apiUrl = apiUrl;
-        return this.accessTokenManager.findExistingCredential(apiUrl)
+    getApiUrl() {
+        // backend will default to api.github.com
+        return null;
+    }
+
+    findExistingCredential() {
+        return this.accessTokenManager.findExistingCredential(this.getApiUrl())
             .then(waitAtLeast(MIN_DELAY))
             .then(success => this._findExistingCredentialComplete(success));
     }
@@ -160,8 +164,8 @@ export default class GithubFlowManager extends FlowManager {
         });
     }
 
-    createAccessToken(token, apiUrl) {
-        return this.accessTokenManager.createAccessToken(token, apiUrl)
+    createAccessToken(token) {
+        return this.accessTokenManager.createAccessToken(token, this.getApiUrl())
             .then(success => this._createTokenComplete(success));
     }
 
@@ -183,7 +187,7 @@ export default class GithubFlowManager extends FlowManager {
 
     @action
     listOrganizations() {
-        this._creationApi.listOrganizations(this.credentialId, this.apiUrl)
+        this._creationApi.listOrganizations(this.credentialId, this.getApiUrl())
             .then(waitAtLeast(MIN_DELAY))
             .then(orgs => this._listOrganizationsSuccess(orgs));
     }
@@ -320,7 +324,7 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     _loadPagedRepository(organizationName, pageNumber, pageSize = PAGE_SIZE) {
-        return this._creationApi.listRepositories(this.credentialId, this.apiUrl, organizationName, pageNumber, pageSize);
+        return this._creationApi.listRepositories(this.credentialId, this.getApiUrl(), organizationName, pageNumber, pageSize);
     }
 
     @action
@@ -385,7 +389,7 @@ export default class GithubFlowManager extends FlowManager {
 
         this._initListeners();
 
-        this._creationApi.createOrgFolder(this.credentialId, this.apiUrl, this.selectedOrganization, repoNames)
+        this._creationApi.createOrgFolder(this.credentialId, this.getApiUrl(), this.selectedOrganization, repoNames)
             .then(waitAtLeast(MIN_DELAY * 2))
             .then(r => this._saveOrgFolderSuccess(r), e => this._saveOrgFolderFailure(e));
     }
