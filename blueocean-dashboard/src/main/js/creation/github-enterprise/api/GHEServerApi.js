@@ -1,22 +1,8 @@
-import { capabilityAugmenter, Fetch, UrlConfig, Utils, AppConfig } from '@jenkins-cd/blueocean-core-js';
-
-import { Enum } from '../../flow2/Enum';
-
-
-const INVALID_ACCESS_TOKEN_CODE = 428;
-const INVALID_ACCESS_TOKEN_MSG = 'Invalid Github accessToken';
-const INVALID_SCOPES_MSG = 'Github accessToken does not have required scopes';
-
-export const ListOrganizationsOutcome = new Enum({
-    SUCCESS: 'success',
-    INVALID_TOKEN_REVOKED: 'revoked_token',
-    INVALID_TOKEN_SCOPES: 'invalid_token_scopes',
-    ERROR: 'error',
-});
+import { Fetch, UrlConfig, Utils, AppConfig } from '@jenkins-cd/blueocean-core-js';
 
 
 /**
- * Handles lookup of Github orgs and repos, and saving of the Github org folder.
+ * Handles lookup and creation of Github servers.
  */
 class GHEServerApi {
 
@@ -30,9 +16,7 @@ class GHEServerApi {
         const path = UrlConfig.getJenkinsRootURL();
         const serversUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/servers`);
 
-        return this._fetch(serversUrl)
-            .then(orgs => capabilityAugmenter.augmentCapabilities(orgs))
-            .then(orgs => orgs);
+        return this._fetch(serversUrl);
     }
 
     createServer(serverName, serverUrl) {
@@ -52,16 +36,7 @@ class GHEServerApi {
             body: JSON.stringify(requestBody),
         };
 
-        return this._fetch(createUrl, { fetchOptions })
-            .then(pipeline => capabilityAugmenter.augmentCapabilities(pipeline))
-            .then(
-                server => server,
-                error => this._createServerFailure(error)
-            );
-    }
-
-    _createServerFailure(error) {
-
+        return this._fetch(createUrl, { fetchOptions });
     }
 
 }
