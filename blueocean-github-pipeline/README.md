@@ -2,7 +2,7 @@
 
 ## Running the proxy
 
-1. Install nginx `brew install nginx`
+1. Install nginx `brew tap homebrew/nginx && brew install nginx-full --with-sub`
 2. `cd blueocean-github-pipeline`
 3. `./run_proxy.sh`
 
