@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
-import { FormElement, TextInput } from '@jenkins-cd/design-language';
+import { FormElement, PasswordInput } from '@jenkins-cd/design-language';
 
 import FlowStep from '../../flow2/FlowStep';
 import { GithubAccessTokenState } from '../GithubAccessTokenState';
@@ -72,7 +72,7 @@ export default class GithubCredentialsStep extends React.Component {
                 </p>
 
                 <FormElement errorMessage={errorMessage}>
-                    <TextInput className="text-token" placeholder="Your Github access token" onChange={val => this._tokenChange(val)} />
+                    <PasswordInput className="text-token" placeholder="Your Github access token" onChange={val => this._tokenChange(val)} />
 
                     <Button className="button-connect" status={status} onClick={() => this._createToken()}>Connect</Button>
                 </FormElement>
