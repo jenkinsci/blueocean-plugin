@@ -10,7 +10,7 @@ import hudson.util.Secret;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbBranch;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbPage;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbProject;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbOrg;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbRepo;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbSaveContentResponse;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbUser;
@@ -33,7 +33,7 @@ import static org.powermock.api.mockito.PowerMockito.when;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Secret.class})
 @PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*"})
-public class BitbucketApiTest extends BitbucketWireMockBase{
+public class BitbucketApiTest extends BbServerWireMock {
     private BitbucketApi api;
 
     @Override
@@ -93,7 +93,7 @@ public class BitbucketApiTest extends BitbucketWireMockBase{
 
     @Test
     public void getProjects() throws JsonProcessingException {
-        BbPage<BbProject> projects = api.getProjects(0, 100);
+        BbPage<BbOrg> projects = api.getOrgs(0, 100);
         assertEquals(2, projects.getSize());
         assertEquals("TEST", projects.getValues().get(0).getKey());
         assertEquals("TESTP", projects.getValues().get(1).getKey());
@@ -102,7 +102,7 @@ public class BitbucketApiTest extends BitbucketWireMockBase{
 
     @Test
     public void getProject() throws JsonProcessingException {
-        BbProject project = api.getProject("TESTP");
+        BbOrg project = api.getOrg("TESTP");
         assertEquals("TESTP", project.getKey());
         assertEquals("testproject1", project.getName());
     }
@@ -158,8 +158,8 @@ public class BitbucketApiTest extends BitbucketWireMockBase{
         BbSaveContentResponse saveResponse = api.saveContent("TESTP","pipeline-demo-test","README.md",
                 "This is test content in new file",
                 "another commit", "master",null);
-        assertNotNull(saveResponse.getId());
-        String content = api.getContent("TESTP", "pipeline-demo-test", "README.md", (String) saveResponse.getId());
+        assertNotNull(saveResponse.getCommitId());
+        String content = api.getContent("TESTP", "pipeline-demo-test", "README.md", (String) saveResponse.getCommitId());
         assertEquals("This is test content in new file", content);
     }
 

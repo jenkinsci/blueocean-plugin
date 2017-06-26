@@ -14,15 +14,15 @@ import static org.junit.Assert.assertNotNull;
 /**
  * @author Vivek Pandey
  */
-public class BitbucketPipelineCreateRequestTest extends BitbucketWireMockBase{
+public class BitbucketPipelineCreateRequestTest extends BbServerWireMock {
     @Test
     public void createPipeline() throws UnirestException, IOException {
-        String credentialId = createCredential();
+        String credentialId = createCredential(BitbucketServerScm.ID);
         Map r = new PipelineBaseTest.RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
                 .post("/organizations/jenkins/pipelines/")
-                .data(ImmutableMap.of("name", "pipeline1", "$class", "io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.BitbucketPipelineCreateRequest",
+                .data(ImmutableMap.of("name", "pipeline1", "$class", "io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("credentialId", credentialId, "uri", apiUrl,
                                 "config", ImmutableMap.of("repoOwner", "TESTP", "repository", "pipeline-demo-test"))))
                 .build(Map.class);

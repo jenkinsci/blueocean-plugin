@@ -7,8 +7,10 @@ import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.collect.Lists;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.util.DescribableList;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketScmContentProvider;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketScmSaveFileRequest;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFile;
 import jenkins.branch.MultiBranchProject;
 import jenkins.scm.api.SCMSource;
@@ -35,11 +37,11 @@ import static org.powermock.api.mockito.PowerMockito.*;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Stapler.class})
 @PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*"})
-public class BitbucketContentProviderTest extends BitbucketWireMockBase {
+public class BitbucketContentProviderTest extends BbServerWireMock {
 
     @Test
     public void getContent() throws UnirestException, IOException {
-        String credentialId = createCredential();
+        String credentialId = createCredential(BitbucketServerScm.ID);
         StaplerRequest staplerRequest = mockStapler();
         MultiBranchProject mbp = mockMbp(credentialId);
 
@@ -52,7 +54,7 @@ public class BitbucketContentProviderTest extends BitbucketWireMockBase {
 
     @Test
     public void newContent() throws UnirestException, IOException {
-        String credentialId = createCredential();
+        String credentialId = createCredential(BitbucketServerScm.ID);
         StaplerRequest staplerRequest = mockStapler();
         MultiBranchProject mbp = mockMbp(credentialId);
 
@@ -81,10 +83,9 @@ public class BitbucketContentProviderTest extends BitbucketWireMockBase {
         assertEquals("master", respContent.getContent().getBranch());
     }
 
-
     @Test
     public void updateContent() throws UnirestException, IOException {
-        String credentialId = createCredential();
+        String credentialId = createCredential(BitbucketServerScm.ID);
         StaplerRequest staplerRequest = mockStapler();
         MultiBranchProject mbp = mockMbp(credentialId);
 

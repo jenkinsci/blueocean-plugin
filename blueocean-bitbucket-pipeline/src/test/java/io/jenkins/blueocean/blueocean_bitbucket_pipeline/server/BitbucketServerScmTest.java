@@ -12,7 +12,7 @@ import static org.junit.Assert.*;
 /**
  * @author Vivek Pandey
  */
-public class BitbucketServerScmTest extends BitbucketWireMockBase {
+public class BitbucketServerScmTest extends BbServerWireMock {
 
     @Test
     public void getBitbucketScmWithoutApiUrlParam() throws IOException, UnirestException {
@@ -49,7 +49,7 @@ public class BitbucketServerScmTest extends BitbucketWireMockBase {
 
     @Test
     public void getOrganizations() throws IOException, UnirestException {
-        String credentialId = createCredential();
+        String credentialId = createCredential(BitbucketServerScm.ID);
         List orgs = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
@@ -64,7 +64,7 @@ public class BitbucketServerScmTest extends BitbucketWireMockBase {
 
     @Test
     public void getRepositories() throws IOException, UnirestException {
-        String credentialId = createCredential();
+        String credentialId = createCredential(BitbucketServerScm.ID);
         Map repoResp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
