@@ -1,14 +1,20 @@
 /**
  * Pseudo-enum.
  *
- * Usage:
+ * Simplest usage:
+ * const Suit = new Enum(['SPADES', 'CLUBS', 'DIAMONDS', 'HEARTS']);
+ *
+ * Alternate usage:
+ * NOTE: the underlying values in the enum are the key names, NOT the values.
+ * NOTE: this usage may be desirable as it generally leads to better IDE code hints.
  *
  * const Suit = new Enum({
- *     SPADES: 'spades',
- *     CLUBS: 'clubs',
- *     DIAMONDS: 'diamonds',
- *     HEARTS: 'hearts',
+ *     SPADES: 'SPADES',
+ *     CLUBS: 'CLUBS',
+ *     DIAMONDS: 'DIAMONDS',
+ *     HEARTS: 'HEARTS',
  * });
+ *
  */
 export class Enum {
 
