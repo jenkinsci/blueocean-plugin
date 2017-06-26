@@ -20,6 +20,14 @@
       <artifactId>jackson-databind</artifactId>
       <version>${jackson.version}</version>
     </dependency>
+    <dependency>
+      <groupId>io.keen</groupId>
+      <artifactId>keen-client-api-java</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.jenkins-ci.modules</groupId>
+      <artifactId>instance-identity</artifactId>
+    </dependency>
   </dependencies>
 
   <build>
