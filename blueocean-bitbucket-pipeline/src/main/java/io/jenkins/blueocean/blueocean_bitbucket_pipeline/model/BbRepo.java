@@ -3,9 +3,6 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerBranch;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerProject;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerRepo;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepository;
@@ -23,8 +20,8 @@ public abstract class BbRepo {
     @JsonProperty("name")
     public abstract String getName();
 
-    @JsonProperty("project")
-    public abstract BbServerProject getProject();
+    @JsonProperty("organization")
+    public abstract BbOrg getOrg();
 
     @JsonProperty("scmId")
     public abstract String getScmId();
@@ -36,11 +33,11 @@ public abstract class BbRepo {
     public abstract boolean isPrivate();
 
     public ScmRepository toScmRepository(BitbucketApi api, final Reachable parent){
-        final BbBranch defaultBranch = api.getDefaultBranch(getProject().getKey(), getSlug());
+        final BbBranch defaultBranch = api.getDefaultBranch(getOrg().getKey(), getSlug());
         return new ScmRepository() {
             @Override
             public String getName() {
-                return BbRepo.this.getName();
+                return BbRepo.this.getSlug();
             }
 
             @Override

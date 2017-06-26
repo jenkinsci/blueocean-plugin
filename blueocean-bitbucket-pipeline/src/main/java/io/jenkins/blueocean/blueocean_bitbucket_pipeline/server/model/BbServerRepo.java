@@ -43,7 +43,7 @@ public class BbServerRepo extends BbRepo {
 
     @Override
     @JsonProperty("project")
-    public BbServerProject getProject() {
+    public BbServerProject getOrg() {
         return project;
     }
 

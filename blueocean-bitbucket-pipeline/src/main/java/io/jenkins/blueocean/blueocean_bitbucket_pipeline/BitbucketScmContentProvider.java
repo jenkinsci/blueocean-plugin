@@ -1,12 +1,12 @@
-package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
+package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 
 import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSource;
 import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.model.Item;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbBranch;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbSaveContentResponse;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.BitbucketServerScm;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
@@ -150,7 +150,7 @@ public class BitbucketScmContentProvider extends AbstractScmContentProvider {
                 .owner(gitContent.getOwner())
                 .repo(gitContent.getRepo())
                 .name(gitContent.getPath())
-                .commitId(response.getId())
+                .commitId(response.getCommitId())
                 .build();
 
         return new ScmFile<GitContent>() {

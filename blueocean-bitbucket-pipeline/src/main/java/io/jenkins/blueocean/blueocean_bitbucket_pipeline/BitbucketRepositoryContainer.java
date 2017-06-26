@@ -1,8 +1,7 @@
-package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
+package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbPage;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbProject;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbOrg;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbRepo;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
@@ -24,9 +23,9 @@ import java.util.List;
 public class BitbucketRepositoryContainer extends ScmRepositoryContainer {
     private final Link self;
     private final BitbucketApi api;
-    private final BbProject project;
+    private final BbOrg project;
 
-    public BitbucketRepositoryContainer(BbProject project, BitbucketApi api, Reachable parent) {
+    public BitbucketRepositoryContainer(BbOrg project, BitbucketApi api, Reachable parent) {
         this.self = parent.getLink().rel("repositories");
         this.api = api;
         this.project = project;

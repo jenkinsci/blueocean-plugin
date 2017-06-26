@@ -6,6 +6,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  * @author Vivek Pandey
  */
 public abstract class BbSaveContentResponse {
-    @JsonProperty("id")
-    public abstract String getId();
+    @JsonProperty("CommitId")
+    public abstract String getCommitId();
 }

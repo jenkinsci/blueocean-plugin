@@ -5,14 +5,15 @@ import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredenti
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.util.Secret;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApiFactory;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbBranch;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbOrg;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbPage;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbProject;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbRepo;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbSaveContentResponse;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbUser;
@@ -32,6 +33,8 @@ import org.apache.http.client.fluent.Response;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -89,7 +92,7 @@ public class BitbucketServerApi extends BitbucketApi {
 
     @Override
     public @Nonnull
-    BbPage<BbProject> getProjects(int start, int limit){
+    BbPage<BbOrg> getOrgs(int start, int limit){
         try {
             InputStream inputStream = Request.Get(String.format("%s?start=%s&limit=%s",baseUrl+"projects/", start,limit))
                     .addHeader("Authorization", basicAuthHeaderValue)
@@ -101,7 +104,8 @@ public class BitbucketServerApi extends BitbucketApi {
     }
 
     @Override
-    public @Nonnull BbProject getProject(@Nonnull String projectName){
+    public @Nonnull
+    BbOrg getOrg(@Nonnull String projectName){
         try {
             InputStream inputStream = Request.Get(String.format("%s/%s",baseUrl+"projects", projectName))
                     .addHeader("Authorization", basicAuthHeaderValue)
@@ -135,9 +139,9 @@ public class BitbucketServerApi extends BitbucketApi {
 
     @Nonnull
     @Override
-    public BbRepo getRepo(@Nonnull String projectKey, @Nonnull String repoSlug) {
+    public BbRepo getRepo(@Nonnull String orgId, @Nonnull String repoSlug) {
         try {
-            InputStream inputStream = Request.Get(String.format("%s/%s/repos/%s/",baseUrl+"projects",projectKey, repoSlug))
+            InputStream inputStream = Request.Get(String.format("%s/%s/repos/%s/",baseUrl+"projects", orgId, repoSlug))
                     .addHeader("Authorization", basicAuthHeaderValue)
                     .execute().returnContent().asStream();
             return om.readValue(inputStream, BbServerRepo.class);
@@ -147,9 +151,9 @@ public class BitbucketServerApi extends BitbucketApi {
     }
 
     @Override
-    public @Nonnull String getContent(@Nonnull String projectKey, @Nonnull String repoSlug, @Nonnull String path, @Nonnull String commitId){
+    public @Nonnull String getContent(@Nonnull String orgId, @Nonnull String repoSlug, @Nonnull String path, @Nonnull String commitId){
         List<String> content = new ArrayList<>();
-        getAndBuildContent(projectKey, repoSlug, path, commitId,0, 500, content); //default size as in bitbucket API
+        getAndBuildContent(orgId, repoSlug, path, commitId,0, 500, content); //default size as in bitbucket API
         return Joiner.on('\n').join(content);
     }
 
@@ -202,10 +206,10 @@ public class BitbucketServerApi extends BitbucketApi {
 
     @Override
     public @CheckForNull
-    BbBranch getBranch(@Nonnull String projectKey, @Nonnull String repoSlug, @Nonnull String branch){
+    BbBranch getBranch(@Nonnull String orgId, @Nonnull String repoSlug, @Nonnull String branch){
         try {
             URIBuilder uriBuilder = new URIBuilder(String.format("%s/%s/repos/%s/branches/",baseUrl+"projects",
-                    projectKey, repoSlug));
+                    orgId, repoSlug));
 
             uriBuilder.addParameter("filterText", branch);
             BbServerPage<BbServerBranch> branches = om.readValue(Request.Get(uriBuilder.build())
@@ -226,10 +230,10 @@ public class BitbucketServerApi extends BitbucketApi {
 
     @Override
     @Nonnull
-    public BbBranch createBranch(@Nonnull String projectKey, @Nonnull String repoSlug, Map<String, String> payload){
+    public BbBranch createBranch(@Nonnull String orgId, @Nonnull String repoSlug, Map<String, String> payload){
         try {
             return om.readValue(Request.Post(String.format("%s/%s/repos/%s/branches/", baseUrl + "projects",
-                    projectKey, repoSlug))
+                    orgId, repoSlug))
                     .addHeader("Authorization", basicAuthHeaderValue)
                     .bodyString(om.writeValueAsString(payload), ContentType.APPLICATION_JSON)
                     .execute().returnContent().asStream(), BbServerBranch.class);
@@ -240,10 +244,10 @@ public class BitbucketServerApi extends BitbucketApi {
 
     @Override
     public @CheckForNull
-    BbBranch getDefaultBranch(@Nonnull String projectKey, @Nonnull String repoSlug){
+    BbBranch getDefaultBranch(@Nonnull String orgId, @Nonnull String repoSlug){
         try {
             InputStream inputStream = Request.Get(String.format("%s/%s/repos/%s/branches/default",baseUrl+"projects",
-                    projectKey, repoSlug))
+                    orgId, repoSlug))
                     .addHeader("Authorization", basicAuthHeaderValue)
                     .execute().returnContent().asStream();
             return om.readValue(inputStream, new TypeReference<BbServerBranch>() {
@@ -259,10 +263,10 @@ public class BitbucketServerApi extends BitbucketApi {
     }
 
     @Override
-    public boolean isEmptyRepo(@NotNull String projectKey, @Nonnull String repoSlug){
+    public boolean isEmptyRepo(@NotNull String orgId, @Nonnull String repoSlug){
         try {
             URIBuilder uriBuilder = new URIBuilder(String.format("%s/%s/repos/%s/branches/default",baseUrl+"projects",
-                    projectKey, repoSlug));
+                    orgId, repoSlug));
 
             Response response = Request.Head(uriBuilder.build())
                     .addHeader("Authorization", basicAuthHeaderValue)
@@ -326,8 +330,18 @@ public class BitbucketServerApi extends BitbucketApi {
     public static class BitbucketServerApiFactory extends BitbucketApiFactory{
         @Override
         public boolean handles(@Nonnull String apiUrl) {
-            //If its not cloud apiUrl then it's server
-            return !apiUrl.startsWith("https://bitbucket.org/");
+            //We test using wiremock, where api url is always localhost:PORT, so we want to check for bbApiTestMode parameter.
+            //bbApiTestMode == "server" then its server mode otherwise its cloud
+
+            StaplerRequest request = Stapler.getCurrentRequest();
+            Preconditions.checkNotNull(request);
+            String mode = request.getParameter("bbApiTestMode");
+            boolean isServer = true;
+            if(org.apache.commons.lang.StringUtils.isNotBlank(mode) && !mode.equals("server")){
+                isServer = false;
+            }
+
+            return !apiUrl.startsWith("https://api.bitbucket.org/") || isServer;
         }
 
         @Nonnull

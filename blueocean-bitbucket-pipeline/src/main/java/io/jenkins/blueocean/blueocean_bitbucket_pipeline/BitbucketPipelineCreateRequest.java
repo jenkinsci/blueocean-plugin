@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
+package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 
 import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSource;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;

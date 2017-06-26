@@ -2,7 +2,7 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbProject;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbOrg;
 import org.apache.http.client.utils.URIBuilder;
 
 import java.net.URISyntaxException;
@@ -12,7 +12,7 @@ import java.util.Map;
 /**
  * @author Vivek Pandey
  */
-public class BbServerProject extends BbProject {
+public class BbServerProject extends BbOrg {
     private final String key;
     private final String name;
     private final boolean publicProject;

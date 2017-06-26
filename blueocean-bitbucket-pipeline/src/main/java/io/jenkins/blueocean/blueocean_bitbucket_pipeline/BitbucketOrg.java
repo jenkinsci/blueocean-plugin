@@ -1,10 +1,8 @@
-package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
+package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 
 import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMNavigator;
 import hudson.model.TopLevelItem;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbProject;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerProject;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbOrg;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmOrganization;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepositoryContainer;
@@ -16,12 +14,12 @@ import org.kohsuke.stapler.export.Exported;
 /**
  * @author Vivek Pandey
  */
-public class BitbucketProject extends ScmOrganization {
+public class BitbucketOrg extends ScmOrganization {
     private final Link self;
-    private final BbProject project;
+    private final BbOrg project;
     private final BitbucketApi api;
 
-    public BitbucketProject(BbProject project, BitbucketApi api, Link parent) {
+    public BitbucketOrg(BbOrg project, BitbucketApi api, Link parent) {
         this.self = parent.rel(project.getKey());
         this.project = project;
         this.api = api;

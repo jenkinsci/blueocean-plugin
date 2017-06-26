@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 /**
  * @author Vivek Pandey
  */
-public abstract class BbProject {
+public abstract class BbOrg {
     @JsonProperty("key")
     public abstract String getKey();
 

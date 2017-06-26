@@ -18,8 +18,7 @@ public class BbServerSaveContentResponse extends BbSaveContentResponse {
     }
 
     @Override
-    @JsonProperty("id")
-    public String getId() {
+    public String getCommitId() {
         return id;
     }
 }
