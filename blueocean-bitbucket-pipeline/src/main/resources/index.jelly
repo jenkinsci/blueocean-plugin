@@ -1,4 +1,4 @@
 <?jelly escape-by-default='true'?>
 <div>
-  BlueOcean GitHub organization pipeline creator
+  BlueOcean BitBucket pipeline creator
 </div>
