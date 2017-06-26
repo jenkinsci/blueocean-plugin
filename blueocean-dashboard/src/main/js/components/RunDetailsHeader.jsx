@@ -158,7 +158,7 @@ class RunDetailsHeader extends Component {
         );
 
         const causeMessage = (run && run.causes.length > 0 && run.causes[run.causes.length - 1].shortDescription) || null;
-        const cause = (<div className="causes">{causeMessage}</div>);
+        const cause = (<div className="causes" title={ causeMessage }>{ causeMessage }</div>);
 
         return (
             <ResultPageHeader startTime={ startTime }
