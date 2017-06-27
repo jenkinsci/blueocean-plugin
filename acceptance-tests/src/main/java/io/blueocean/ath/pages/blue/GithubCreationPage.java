@@ -110,17 +110,23 @@ public class GithubCreationPage {
     public void createPipeline(String apikey, String org, String pipeline) throws IOException {
         createPipeline(apikey, org, pipeline, false);
     }
-    public void createPipeline(String apikey, String org, String pipeline, boolean createJenkisFile) throws IOException {
-        jobApi.deletePipeline(org);
+    public void createPipeline(String apiKey, String org, String pipeline, boolean createJenkinsFile) throws IOException {
+        beginCreationFlow(org);
+        completeCreationFlow(apiKey, org, pipeline, createJenkinsFile);
+    }
 
+    public void beginCreationFlow(String org) throws IOException {
+        jobApi.deletePipeline(org);
         navigateToCreation();
         selectGithubCreation();
+    }
 
+    public void completeCreationFlow(String apiKey, String org, String pipeline, boolean createJenkinsFile) {
         if(wait.until(wait.orVisible(
             driver -> apiKeyInput,
             driver -> driver.findElement(getOrgSelector(org)))) == 1) {
 
-            validateGithubOauthToken(apikey);
+            validateGithubOauthToken(apiKey);
         }
         selectOrganization(org);
 
@@ -133,7 +139,7 @@ public class GithubCreationPage {
 
         wait.until(createBtn).click();
 
-        if(createJenkisFile) {
+        if(createJenkinsFile) {
             WebElement createJenkinsFileButton = wait
                 .until(ExpectedConditions.visibilityOfElementLocated(emptyRepositoryCreateButton));
             createJenkinsFileButton.click();
