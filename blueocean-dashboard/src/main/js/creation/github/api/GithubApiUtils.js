@@ -23,7 +23,22 @@ function appendApiUrlParam(fullUrl, apiUrl) {
     return appendedUrl;
 }
 
+/**
+ * Extract the protocol and host from a URL.
+ * Will not include the trailing slash.
+ *
+ * @param url
+ * @returns {string}
+ */
+function extractProtocolHost(url) {
+    const urlNoQuery = url.split('?')[0];
+    const [protocol, hostAndPath] = urlNoQuery.split('//');
+    const host = hostAndPath.split('/')[0];
+    return `${protocol}//${host}`;
+}
+
 
 export default {
     appendApiUrlParam,
+    extractProtocolHost,
 };
