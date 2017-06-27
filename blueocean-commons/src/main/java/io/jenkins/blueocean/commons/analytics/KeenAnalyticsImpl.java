@@ -27,6 +27,6 @@ public class KeenAnalyticsImpl extends Analytics {
 
     @Override
     protected void doTrack(String name, Map<String, Object> allProps) {
-        client.addEvent(name, allProps);
+        client.addEventAsync(name, allProps);
     }
 }

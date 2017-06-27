@@ -52,8 +52,13 @@ public abstract class Analytics {
         Map<String, Object> allProps = req.properties == null ? Maps.<String, Object>newHashMap() : Maps.newHashMap(req.properties);
         allProps.put("jenkins", server());
         allProps.put("userId", identity());
-        doTrack(req.name, allProps);
-        LOGGER.log(Level.FINE, Objects.toStringHelper(this).add("name", req.name).add("props", allProps).toString());
+        String msg = Objects.toStringHelper(this).add("name", req.name).add("props", allProps).toString();
+        try {
+            doTrack(req.name, allProps);
+            LOGGER.log(Level.FINE, msg);
+        } catch (Throwable throwable) {
+            LOGGER.log(Level.WARNING, "Failed to send event: " + msg);
+        }
     }
 
     protected abstract void doTrack(String name, Map<String, Object> allProps);
