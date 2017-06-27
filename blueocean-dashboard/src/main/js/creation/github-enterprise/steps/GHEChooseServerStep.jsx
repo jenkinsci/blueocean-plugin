@@ -77,7 +77,7 @@ class GHEChooseServerStep extends React.Component {
                         labelField="name"
                         onChange={option => this._onChangeServerDropdown(option)}
                     />
-                    <button className="button-add btn-secondary" onClick={() => this._onClickAddButton()}>
+                    <button className="button-add-server btn-secondary" onClick={() => this._onClickAddButton()}>
                         {t('creation.githubent.choose_server.button_add')}
                     </button>
                 </FormElement>
@@ -89,7 +89,7 @@ class GHEChooseServerStep extends React.Component {
                 />
                 }
 
-                <button className="button-next" disabled={disabledNext} onClick={() => this._onClickNextButton()}>
+                <button className="button-next-step" disabled={disabledNext} onClick={() => this._onClickNextButton()}>
                     {t('creation.githubent.choose_server.button_next')}
                 </button>
             </FlowStep>
