@@ -22,6 +22,7 @@ import java.io.IOException;
 public class GithubEnterpriseCreationTest {
 
     private static GithubHelper githubHelper;
+    private String repositoryName;
 
     @Inject
     WebDriver driver;
@@ -42,7 +43,7 @@ public class GithubEnterpriseCreationTest {
 
     @Before
     public void createEmptyRepository() throws IOException {
-        githubHelper.createEmptyRepository();
+        repositoryName = githubHelper.createEmptyRepository();
     }
 
     @After
@@ -78,7 +79,7 @@ public class GithubEnterpriseCreationTest {
         creationPage.completeCreationFlow(
             githubHelper.getAccessToken(),
             githubHelper.getOrganizationOrUsername(),
-            githubHelper.getRepositoryName(),
+            repositoryName,
             true
         );
     }
