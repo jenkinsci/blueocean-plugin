@@ -71,7 +71,7 @@ public abstract class Analytics {
     protected abstract void doTrack(String name, Map<String, Object> allProps);
 
     protected final String server() {
-        return InstanceIdentity.get().getPublic().getPublicExponent().toString(16);
+        return Hashing.md5().hashBytes(InstanceIdentity.get().getPublic().getEncoded()).toString();
     }
 
     protected final String identity() {
