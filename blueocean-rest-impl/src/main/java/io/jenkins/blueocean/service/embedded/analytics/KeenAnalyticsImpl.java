@@ -1,10 +1,12 @@
 package io.jenkins.blueocean.service.embedded.analytics;
 
 import hudson.Extension;
+import hudson.ProxyConfiguration;
 import hudson.model.UsageStatistics;
 import io.keen.client.java.JavaKeenClientBuilder;
 import io.keen.client.java.KeenClient;
 import io.keen.client.java.KeenProject;
+import jenkins.model.Jenkins;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
@@ -24,6 +26,10 @@ public class KeenAnalyticsImpl extends AbstractAnalytics {
     public KeenAnalyticsImpl() {
         this.client = new JavaKeenClientBuilder().build();
         KeenClient.initialize(this.client);
+        ProxyConfiguration proxyConfig = Jenkins.getInstance().proxy;
+        if (Jenkins.getInstance().proxy == null) {
+            KeenClient.client().setProxy(proxyConfig.createProxy(null));
+        }
         KeenClient.client().setDefaultProject(new KeenProject(PROJECT_ID, WRITE_KEY, null));
     }
 
