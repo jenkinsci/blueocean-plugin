@@ -3,9 +3,9 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.model;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbOrg;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbRepo;
-import org.eclipse.jgit.annotations.NonNull;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.util.Map;
 
 /**
@@ -22,15 +22,15 @@ public class BbCloudRepo extends BbRepo {
     public BbCloudRepo(@Nonnull @JsonProperty("slug")String slug,
                        @Nonnull @JsonProperty("name") String name,
                        @Nonnull @JsonProperty("scm") String scm,
-                       @NonNull @JsonProperty("is_private") boolean isPrivate,
-                       @Nonnull @JsonProperty("mainbranch") Map<String,String> mainBranch,
+                       @JsonProperty("is_private") boolean isPrivate,
+                       @Nullable @JsonProperty("mainbranch") Map<String,String> mainBranch,
                        @Nonnull @JsonProperty("owner") BbCloudTeam team) {
         this.slug = slug;
         this.name = name;
         this.team = team;
         this.scm = scm;
         this.isPrivate = isPrivate;
-        this.defaultBranch = mainBranch.get("name");
+        this.defaultBranch = mainBranch == null ? null : mainBranch.get("name");
     }
 
     @Override

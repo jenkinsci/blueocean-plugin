@@ -6,9 +6,9 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import hudson.Extension;
-import hudson.util.Secret;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApiFactory;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbBranch;
@@ -25,7 +25,6 @@ import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerSa
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerUser;
 import io.jenkins.blueocean.commons.ServiceException;
 import org.antlr.v4.runtime.misc.NotNull;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.fluent.Request;
@@ -41,7 +40,6 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,29 +52,13 @@ import static io.jenkins.blueocean.commons.JsonConverter.om;
  */
 public class BitbucketServerApi extends BitbucketApi {
     private final String baseUrl;
-    private final String basicAuthHeaderValue;
-    private final String userName;
 
     //package private for testing
     BitbucketServerApi(@Nonnull String hostUrl, @Nonnull StandardUsernamePasswordCredentials credentials) {
         super(hostUrl, credentials);
-        this.baseUrl=ensureTrailingSlash(hostUrl)+"rest/api/1.0/";
-        try {
-            this.basicAuthHeaderValue = String.format("Basic %s",
-                    Base64.encodeBase64String(String.format("%s:%s", credentials.getUsername(),
-                            Secret.toString(credentials.getPassword())).getBytes("UTF-8")));
-            this.userName = credentials.getUsername();
-        } catch (UnsupportedEncodingException e) {
-            throw new ServiceException.UnexpectedErrorException("Failed to create basic auth header: "+e.getMessage(), e);
-        }
+        this.baseUrl=apiUrl+"rest/api/1.0/";
     }
-
-    @Override
-    public @Nonnull
-    BbUser getUser(){
-        return getUser(this.userName);
-    }
-
+    
     @Override
     public @Nonnull BbUser getUser(@Nonnull String userName){
         try {
@@ -164,9 +146,34 @@ public class BitbucketServerApi extends BitbucketApi {
                                       @Nonnull String path,
                                       @Nonnull String content,
                                       @Nonnull String commitMessage,
-                                      @Nonnull String branch,
+                                      @Nullable String branch,
                                       @Nullable String commitId){
         try {
+            BbBranch defaultBranch = getDefaultBranch(projectKey, repoSlug);
+
+            BbBranch commitBranch;
+            if(branch == null){ //get default branch
+                assertDefaultBranch(defaultBranch, projectKey, repoSlug);
+                commitBranch = defaultBranch;
+            }else{ //check if this branch doesn't exist, if it doesn't then create this branch
+                commitBranch = getBranch(projectKey,repoSlug, branch);
+                if(commitBranch == null){
+                    if(commitId == null){
+                        assertDefaultBranch(defaultBranch, projectKey, repoSlug);
+                        commitId = defaultBranch.getLatestCommit();
+                    }
+                    commitBranch =  createBranch(projectKey,repoSlug, ImmutableMap.of("name", branch, "startPoint", commitId, "message", "Creating new branch "+branch));
+                }
+            }
+            branch = commitBranch.getDisplayId();
+            boolean fileExists = fileExists(projectKey,repoSlug,path,branch);
+            if(!fileExists){
+                commitId = null; //if file doesn't exist we need to send null commitId
+            } else if(commitId == null){ // else patch commitId with whats available on default branch
+                commitId = commitBranch.getLatestCommit();
+            }
+
+
             MultipartEntityBuilder builder = MultipartEntityBuilder.create()
                     .addTextBody("content", content)
                     .addTextBody("message", commitMessage)
@@ -277,13 +284,6 @@ public class BitbucketServerApi extends BitbucketApi {
         }
     }
 
-    private String ensureTrailingSlash(String url){
-        if(url.charAt(url.length() - 1) != '/'){
-            return url+"/";
-        }
-        return url;
-    }
-
     private void getAndBuildContent(@Nonnull String projectKey, @Nonnull String repoSlug, @Nonnull String path, @Nonnull String commitId, int start, int limit, @Nonnull final List<String> lines){
         try {
             InputStream inputStream = Request.Get(String.format("%s/%s/repos/%s/browse/%s?at=%s&start=%s&limit=%s",baseUrl+"projects",
@@ -319,11 +319,12 @@ public class BitbucketServerApi extends BitbucketApi {
         }));
     }
 
-    private ServiceException handleException(Exception e){
-        if(e instanceof HttpResponseException){
-            return new ServiceException(((HttpResponseException) e).getStatusCode(), e.getMessage(), e);
+    private void assertDefaultBranch(BbBranch defaultBranch, String projectKey, String repo){
+        if(defaultBranch == null){
+            throw new ServiceException.BadRequestException(
+                    String.format("No default branch on project %s, repo %s. Please resubmit request with content.branch",
+                            projectKey,repo));
         }
-        return new ServiceException.UnexpectedErrorException(e.getMessage(), e);
     }
 
     @Extension

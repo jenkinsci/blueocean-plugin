@@ -106,31 +106,6 @@ public class BitbucketScmContentProvider extends AbstractScmContentProvider {
         String commitId = gitContent.getCommitId();
         BitbucketApi api = BitbucketServerScm.getApi(scmParamsFromItem.getApiUrl(), scmParamsFromItem.getCredentials());
 
-        String branch=gitContent.getBranch();
-        BbBranch defaultBranch = api.getDefaultBranch(owner, repo);
-
-        BbBranch commitBranch;
-        if(branch == null){ //get default branch
-            assertDefaultBranch(defaultBranch, gitContent);
-            commitBranch = defaultBranch;
-        }else{ //check if this branch doesn't exist, if it doesn't then create this branch
-            commitBranch = api.getBranch(owner,repo, branch);
-            if(commitBranch == null){
-                if(commitId == null){
-                    assertDefaultBranch(defaultBranch, gitContent);
-                    commitId = defaultBranch.getLatestCommit();
-                }
-                commitBranch =  api.createBranch(owner,repo,ImmutableMap.of("name", branch, "startPoint", commitId, "message", "Creating new branch "+branch));
-            }
-        }
-        branch = commitBranch.getDisplayId();
-        boolean fileExists = api.fileExists(owner,repo,gitContent.getPath(),branch);
-        if(!fileExists){
-            commitId = null; //if file doesn't exist we need to send null commitId
-        } else if(commitId == null){ // else patch commitId with whats available on default branch
-            commitId = commitBranch.getLatestCommit();
-        }
-
         String content;
         try {
             content = new String(Base64.decodeBase64(gitContent.getBase64Data()), "UTF-8");
@@ -139,13 +114,13 @@ public class BitbucketScmContentProvider extends AbstractScmContentProvider {
         }
         String message = gitContent.getMessage();
         if(message == null){
-            message = "Saving "+gitContent.getPath();
+            message = gitContent.getPath()+" created with BlueOcean";
         }
         BbSaveContentResponse response = api.saveContent(owner,repo,gitContent.getPath(),content,
-                message, branch, commitId);
+                message, gitContent.getBranch(), commitId);
 
         final GitContent respContent =  new GitContent.Builder()
-                .branch(branch)
+                .branch(gitContent.getBranch())
                 .path(gitContent.getPath())
                 .owner(gitContent.getOwner())
                 .repo(gitContent.getRepo())
@@ -159,14 +134,6 @@ public class BitbucketScmContentProvider extends AbstractScmContentProvider {
                 return respContent;
             }
         };
-    }
-
-    private void assertDefaultBranch(BbBranch defaultBranch, GitContent gitContent){
-        if(defaultBranch == null){
-            throw new ServiceException.BadRequestException(
-                    String.format("No default branch on project %s, repo %s. Please resubmit request with content.branch",
-                    gitContent.getOwner(),gitContent.getRepo()));
-        }
     }
 
     @SuppressWarnings("unchecked")

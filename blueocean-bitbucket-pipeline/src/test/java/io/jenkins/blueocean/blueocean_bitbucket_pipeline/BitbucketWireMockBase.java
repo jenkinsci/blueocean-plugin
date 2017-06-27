@@ -21,10 +21,9 @@ import static org.junit.Assert.assertNotNull;
  * @author Vivek Pandey
  */
 public abstract class BitbucketWireMockBase extends PipelineBaseTest{
-    protected final String user="vivek";
-    protected final String password="admin";
     protected User authenticatedUser;
     protected String apiUrl;
+
 
     protected abstract WireMockRule getWireMockRule();
 
@@ -32,11 +31,14 @@ public abstract class BitbucketWireMockBase extends PipelineBaseTest{
 
     protected abstract String wireMockProxyUrl();
 
+    protected abstract String getUserName();
+
+    protected abstract String getPassword();
+
     @Before
     public void setup() throws Exception {
         super.setup();
         this.authenticatedUser = login();
-
         WireMockRule bitbucketApi = getWireMockRule();
 
         String files = wireMockFileSystemPath()+"__files";
@@ -61,12 +63,11 @@ public abstract class BitbucketWireMockBase extends PipelineBaseTest{
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .put("/organizations/jenkins/scm/"+ scmId+"/validate/")
-                .data(ImmutableMap.of("apiUrl",apiUrl, "userName","vivek", "password","admin"))
+                .data(ImmutableMap.of("apiUrl",apiUrl, "userName", getUserName(), "password",getPassword()))
                 .build(Map.class);
         assertNotNull(r);
         String credentialId = (String) r.get("credentialId");
         assertNotNull(credentialId);
         return credentialId;
     }
-
 }

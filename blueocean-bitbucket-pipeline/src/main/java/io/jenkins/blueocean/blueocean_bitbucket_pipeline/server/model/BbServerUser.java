@@ -47,4 +47,9 @@ public class BbServerUser extends BbUser {
     public String getEmailAddress() {
         return emailAddress;
     }
+
+    @Override
+    public String getAvatar() {
+        return null;
+    }
 }

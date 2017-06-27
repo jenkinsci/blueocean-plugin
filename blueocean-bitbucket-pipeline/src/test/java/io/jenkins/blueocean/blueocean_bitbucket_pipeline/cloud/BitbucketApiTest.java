@@ -1,10 +1,9 @@
-package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
+package io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud;
 
 import com.cloudbees.plugins.credentials.CredentialsDescriptor;
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.google.common.collect.ImmutableMap;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.util.Secret;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi;
@@ -24,7 +23,8 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.UnsupportedEncodingException;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
@@ -32,14 +32,15 @@ import static org.powermock.api.mockito.PowerMockito.when;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Secret.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*"})
-public class BitbucketApiTest extends BbServerWireMock {
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*", "javax.net.SocketFactory"})
+public class BitbucketApiTest  extends BbCloudWireMock{
+
     private BitbucketApi api;
 
     @Override
     public void setup() throws Exception {
         super.setup();
-        this.api = new BitbucketServerApi(apiUrl, getMockedCredentials());
+        this.api = new BitbucketCloudApi(apiUrl, getMockedCredentials());
     }
 
     @Test
@@ -47,105 +48,64 @@ public class BitbucketApiTest extends BbServerWireMock {
         BbUser user = api.getUser();
         assertNotNull(user);
         assertEquals(getUserName(), user.getSlug());
+        assertEquals("https://bitbucket.org/account/vivekp7/avatar/50/", user.getAvatar());
     }
 
     @Test
-    public void getProjects() throws JsonProcessingException {
-        BbPage<BbOrg> projects = api.getOrgs(0, 100);
-        assertEquals(2, projects.getSize());
-        assertEquals("TEST", projects.getValues().get(0).getKey());
-        assertEquals("TESTP", projects.getValues().get(1).getKey());
-
+    public void getTeams() throws JsonProcessingException {
+        BbPage<BbOrg> teams = api.getOrgs(0, 100);
+        assertEquals(1, teams.getSize());
+        assertEquals("vivektestteam", teams.getValues().get(0).getKey());
+        assertEquals("Vivek's Team", teams.getValues().get(0).getName());
+        assertEquals("https://bitbucket.org/account/vivektestteam/avatar/50/", teams.getValues().get(0).getAvatar());
     }
 
     @Test
-    public void getProject() throws JsonProcessingException {
-        BbOrg project = api.getOrg("TESTP");
-        assertEquals("TESTP", project.getKey());
-        assertEquals("testproject1", project.getName());
+    public void getTeam() throws JsonProcessingException {
+        BbOrg team = api.getOrg("vivektestteam");
+        assertEquals("vivektestteam", team.getKey());
+        assertEquals("Vivek's Team", team.getName());
+        assertEquals("https://bitbucket.org/account/vivektestteam/avatar/50/", team.getAvatar());
     }
 
     @Test
     public void getRepos(){
-        BbPage<BbRepo> repos = api.getRepos("TESTP", 1, 100);
+        BbPage<BbRepo> repos = api.getRepos("vivektestteam", 1, 100);
         assertEquals(2, repos.getSize());
-        assertEquals("empty-repo-test", repos.getValues().get(0).getSlug());
-        assertEquals("pipeline-demo-test", repos.getValues().get(1).getSlug());
+        assertEquals("pipeline-demo-test", repos.getValues().get(0).getSlug());
+        assertEquals("emptyrepo", repos.getValues().get(1).getSlug());
     }
 
     @Test
     public void getRepo(){
-        BbRepo repo = api.getRepo("TESTP", "pipeline-demo-test");
+        BbRepo repo = api.getRepo("vivektestteam", "pipeline-demo-test");
         assertEquals("pipeline-demo-test", repo.getSlug());
     }
 
     @Test
     public void getRepoContent() throws JsonProcessingException, UnsupportedEncodingException {
-        BbBranch branch = api.getDefaultBranch("TESTP","pipeline-demo-test");
+        BbBranch branch = api.getDefaultBranch("vivekp7","demo1");
         assertNotNull(branch);
-        String content = api.getContent("TESTP", "pipeline-demo-test", "Jenkinsfile", branch.getLatestCommit());
+        String content = api.getContent("vivekp7", "demo1", "Jenkinsfile", branch.getLatestCommit());
         assertEquals("node{\n" +
-                "  echo 'hello world'\n" +
-                "}", content);
-    }
-
-    @Test
-    public void updateRepoContent() throws JsonProcessingException, UnsupportedEncodingException {
-        BbBranch branch = api.getBranch("TESTP", "pipeline-demo-test", "master");
-        assertEquals("master", branch.getDisplayId());
-        assertEquals("refs/heads/master", branch.getId());
-        assertNotNull(branch.getLatestCommit());
-
-        String content = api.getContent("TESTP", "pipeline-demo-test", "Jenkinsfile", branch.getLatestCommit());
-        assertEquals("node{\n" +
-                "  echo 'hello world'\n" +
-                "}", content);
-
-        //update content
-        api.saveContent("TESTP", "pipeline-demo-test","Jenkinsfile","node{\n" +
                 "  echo 'hello world!'\n" +
-                "}", "another commit", "master",branch.getLatestCommit());
+                "}", content);
     }
+
 
     @Test
     public void createNewRepoContent() throws JsonProcessingException, UnsupportedEncodingException {
-        boolean exists = api.fileExists("TESTP", "pipeline-demo-test", "README.md", "master");
-        assertFalse(exists);
-
         //create new file
-        BbSaveContentResponse saveResponse = api.saveContent("TESTP","pipeline-demo-test","README.md",
+        BbSaveContentResponse saveResponse = api.saveContent("vivekp7","demo1","foo",
                 "This is test content in new file",
-                "another commit", "master",null);
+                "first commit", "null",null);
         assertNotNull(saveResponse.getCommitId());
-        String content = api.getContent("TESTP", "pipeline-demo-test", "README.md", (String) saveResponse.getCommitId());
+        String content = api.getContent("vivekp7", "demo1", "foo", (String) saveResponse.getCommitId());
         assertEquals("This is test content in new file", content);
     }
 
-    @Test
-    public void defaultBranch(){
-        BbBranch branch = api.getDefaultBranch("TESTP","pipeline-demo-test");
-        assertNotNull(branch);
-        assertEquals("master", branch.getDisplayId());
-        assertEquals("refs/heads/master", branch.getId());
-    }
-
-    @Test
-    public void testEmptyRepo(){
-        boolean empty = api.isEmptyRepo("TESTP", "empty-repo-test");
-        assertTrue(empty);
-    }
-
-    @Test
-    public void testCreateNewBranchOnExistingRepo(){
-        BbBranch branch = api.getDefaultBranch("TESTP","pipeline-demo-test");
-        BbBranch newBranch = api.createBranch("TESTP", "pipeline-demo-test",
-                ImmutableMap.of("name", "feature1",
-                        "startPoint", branch.getLatestCommit(),
-                        "message", "new branch"));
-        assertEquals("feature1", newBranch.getDisplayId());
-        assertEquals(branch.getLatestCommit(), newBranch.getLatestCommit());
-    }
-
+    //This is duplicated code from server, we can't move to base class as inheritance won't work with @RunWith annotation
+    //from subclasses
     private StandardUsernamePasswordCredentials getMockedCredentials(){
         final Secret secret = Mockito.mock(Secret.class);
         when(secret.getPlainText()).thenReturn(getPassword());

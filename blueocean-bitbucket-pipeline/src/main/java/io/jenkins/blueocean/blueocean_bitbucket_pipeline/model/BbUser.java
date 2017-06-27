@@ -17,4 +17,7 @@ public abstract class BbUser {
 
     @JsonProperty("emailAddress")
     public abstract String getEmailAddress();
+
+    @JsonProperty("avatar")
+    public abstract String  getAvatar();
 }

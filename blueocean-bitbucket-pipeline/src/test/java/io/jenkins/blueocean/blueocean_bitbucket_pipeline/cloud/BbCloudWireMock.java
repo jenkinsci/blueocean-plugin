@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
+package io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud;
 
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketWireMockBase;
@@ -9,14 +9,13 @@ import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMoc
 /**
  * @author Vivek Pandey
  */
-public class BbServerWireMock extends BitbucketWireMockBase {
+public class BbCloudWireMock extends BitbucketWireMockBase {
 
     @Rule
     public WireMockRule bitbucketApi = new WireMockRule(wireMockConfig().
             dynamicPort().dynamicHttpsPort()
-            .usingFilesUnderClasspath("api/server")
+            .usingFilesUnderClasspath("api/cloud")
     );
-
 
     @Override
     protected WireMockRule getWireMockRule() {
@@ -25,21 +24,21 @@ public class BbServerWireMock extends BitbucketWireMockBase {
 
     @Override
     protected String wireMockFileSystemPath() {
-        return "src/test/resources/api/server/";
+        return "src/test/resources/api/cloud/";
     }
 
     @Override
     protected String wireMockProxyUrl() {
-        return "http://localhost:7990";
+        return "https://api.bitbucket.org";
     }
 
     @Override
     protected String getUserName() {
-        return "vivek";
+        return "vivekp7";
     }
 
     @Override
     protected String getPassword() {
-        return "admin";
+        return "abcd";
     }
 }
