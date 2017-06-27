@@ -6,6 +6,7 @@ import com.google.common.hash.Hashing;
 import hudson.model.UsageStatistics;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
+import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.main.modules.instance_identity.InstanceIdentity;
 import org.kohsuke.accmod.Restricted;
@@ -52,6 +53,8 @@ public abstract class Analytics {
         Map<String, Object> allProps = req.properties == null ? Maps.<String, Object>newHashMap() : Maps.newHashMap(req.properties);
         allProps.put("jenkins", server());
         allProps.put("userId", identity());
+        allProps.put("serverVersion", Jenkins.getVersion().toString());
+        allProps.put("blueoceanVersion", Jenkins.getInstance().getPlugin("blueocean-common").getWrapper().getVersion());
         String msg = Objects.toStringHelper(this).add("name", req.name).add("props", allProps).toString();
         try {
             doTrack(req.name, allProps);
