@@ -14,8 +14,13 @@ import java.util.Map;
  */
 public abstract class Analytics implements ExtensionPoint {
 
+    /**
+     * Track a user event and properties
+     */
     public static class TrackRequest {
+        /** event name **/
         public final String name;
+        /** properties to track with event */
         public final Map<String, Object> properties;
 
         @DataBoundConstructor
