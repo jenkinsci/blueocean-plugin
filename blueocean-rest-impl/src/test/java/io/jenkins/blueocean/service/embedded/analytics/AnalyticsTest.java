@@ -1,9 +1,11 @@
-package io.jenkins.blueocean.commons.analytics;
+package io.jenkins.blueocean.service.embedded.analytics;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import hudson.model.UsageStatistics;
 import hudson.model.User;
+import io.jenkins.blueocean.analytics.Analytics;
+import io.jenkins.blueocean.analytics.Analytics.TrackRequest;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
 import org.junit.Assert;
@@ -39,7 +41,7 @@ public class AnalyticsTest {
 
     @Test
     public void trackWithNullAnalyticsDoesNotExplode() throws Exception {
-        NullAnalytics.INSTANCE.track(new Analytics.TrackRequest("bob", null));
+        new NullAnalytics().track(new TrackRequest("bob", null));
     }
 
     @Test
@@ -49,7 +51,7 @@ public class AnalyticsTest {
             "prop2", 2,
             "jenkinsVersion", j.jenkins.getVersion().toString(),
             "blueoceanVersion", Jenkins.getInstance().getPlugin("blueocean-commons").getWrapper().getVersion());
-        analytics.track(new Analytics.TrackRequest("test", props));
+        analytics.track(new TrackRequest("test", props));
 
         Map<String, Object> expectedProps = Maps.newHashMap(props);
         expectedProps.put("jenkins", analytics.getServer());
@@ -64,7 +66,7 @@ public class AnalyticsTest {
 
     @Test
     public void trackWithoutProps() {
-        analytics.track(new Analytics.TrackRequest("test", null));
+        analytics.track(new TrackRequest("test", null));
 
         Map<String, Object> expectedProps = Maps.newHashMap();
         expectedProps.put("jenkins", analytics.getServer());
@@ -92,17 +94,22 @@ public class AnalyticsTest {
     @Test
     public void nullNameInTrackRequest() {
         try {
-            analytics.track(new Analytics.TrackRequest(null, null));
+            analytics.track(new TrackRequest(null, null));
             Assert.fail("did not throw exception");
         } catch (ServiceException.BadRequestException e) {
             Assert.assertEquals("missing name", e.getMessage());
         }
     }
 
-    class MyAnalytics extends Analytics {
+    class MyAnalytics extends AbstractAnalytics {
 
         String lastName;
         Map<String, Object> lastProps;
+
+        @Override
+        public boolean isEnabled() {
+            return true;
+        }
 
         @Override
         protected void doTrack(String name, Map<String, Object> allProps) {

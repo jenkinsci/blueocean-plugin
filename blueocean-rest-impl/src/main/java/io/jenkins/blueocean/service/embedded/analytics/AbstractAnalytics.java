@@ -1,45 +1,29 @@
-package io.jenkins.blueocean.commons.analytics;
+package io.jenkins.blueocean.service.embedded.analytics;
 
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 import com.google.common.hash.Hashing;
-import hudson.model.UsageStatistics;
 import hudson.model.User;
 import hudson.util.VersionNumber;
+import io.jenkins.blueocean.analytics.Analytics;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.main.modules.instance_identity.InstanceIdentity;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
-import org.kohsuke.stapler.DataBoundConstructor;
 
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+/**
+ * Implements {@link Analytics} to guarantee common properties are tracked with any events sent
+ */
 @Restricted(NoExternalUse.class)
-public abstract class Analytics {
+public abstract class AbstractAnalytics extends Analytics {
 
-    private static final Logger LOGGER = Logger.getLogger(Analytics.class.getName());
-
-    public static class TrackRequest {
-        public final String name;
-        public final Map<String, Object> properties;
-
-        @DataBoundConstructor
-        public TrackRequest(String name, Map<String, Object> properties) {
-            this.name = name;
-            this.properties = properties;
-        }
-    }
-
-    /**
-     * @return analytics instance
-     */
-    public static Analytics get() {
-        return UsageStatistics.DISABLED ? NullAnalytics.INSTANCE : KeenAnalyticsImpl.INSTANCE;
-    }
+    private static final Logger LOGGER = Logger.getLogger(AbstractAnalytics.class.getName());
 
     /**
      * @param req to track

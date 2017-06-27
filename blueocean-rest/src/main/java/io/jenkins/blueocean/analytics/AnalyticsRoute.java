@@ -1,8 +1,7 @@
-package io.jenkins.blueocean;
+package io.jenkins.blueocean.analytics;
 
 import hudson.Extension;
-import io.jenkins.blueocean.commons.analytics.Analytics;
-import io.jenkins.blueocean.commons.analytics.Analytics.TrackRequest;
+import io.jenkins.blueocean.analytics.Analytics.TrackRequest;
 import io.jenkins.blueocean.rest.ApiRoutable;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -21,7 +20,6 @@ public class AnalyticsRoute implements ApiRoutable {
     @POST
     @WebMethod(name = "track")
     public void track(TrackRequest req) {
-        Analytics analytics = Analytics.get();
-        analytics.track(req);
+        Analytics.get().track(req);
     }
 }
