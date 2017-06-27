@@ -10,16 +10,29 @@
 @action-button-dark--hover: white;
 
 .action-button-colors {
+
     // default (light) themeing
+
     .svg-icon {
+        // Default fill for basic shapes, can be undone with a <g fill="none">
         fill: @action-button;
 
+        .action-button-fill {
+            // Named style to re-apply correct fill in more complex shapes
+            fill: @action-button;
+        }
+
         &:hover {
-            fill: @action-button--hover;
+            fill: @action-button--hover; // Default
+
+            .action-button-fill {
+                fill: @action-button--hover; // Named
+            }
         }
     }
 
     // dark themeing
+    
     &.dark {
         .btn {
             background: transparent;
@@ -28,10 +41,18 @@
         }
 
         .svg-icon {
-            fill: @action-button;
+            fill: @action-button-dark; // Default
+
+            .action-button-fill {
+                fill: @action-button-dark; // Named
+            }
 
             &:hover {
-                fill: @action-button-dark--hover;
+                fill: @action-button-dark--hover; // Default
+
+                .action-button-fill {
+                    fill: @action-button-dark--hover; // Named
+                }
             }
         }
     }
