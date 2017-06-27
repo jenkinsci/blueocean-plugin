@@ -1,10 +1,9 @@
 # Warning!
-# Make sure that .npmignore is the same as this, BUT DOES NOT CONTAIN "dist"
+# This file must be the same as .gitignore, but MUST NOT CONTAIN "dist"
 
 node_modules/
 npm-debug.log
 .DS_Store
-dist
 *.iml
 .idea/
 /.project
