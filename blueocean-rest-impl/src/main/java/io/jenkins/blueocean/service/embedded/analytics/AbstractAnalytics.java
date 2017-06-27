@@ -42,7 +42,7 @@ public abstract class AbstractAnalytics extends Analytics {
         if (version != null && version.toString() != null) {
             allProps.put("jenkinsVersion", version.toString());
         }
-        allProps.put("blueoceanVersion", Jenkins.getInstance().getPlugin("blueocean-commons").getWrapper().getVersion());
+        allProps.put("blueoceanVersion", Jenkins.getInstance().getPlugin("blueocean-rest-impl").getWrapper().getVersion());
         String msg = Objects.toStringHelper(this).add("name", req.name).add("props", allProps).toString();
         try {
             doTrack(req.name, allProps);
