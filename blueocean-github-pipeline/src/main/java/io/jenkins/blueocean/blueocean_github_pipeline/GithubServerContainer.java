@@ -92,7 +92,12 @@ public class GithubServerContainer extends Container<GithubServer> {
             GitHubConfiguration config = GitHubConfiguration.get();
             GithubServer server;
             synchronized (config) {
-                Endpoint endpoint = new Endpoint(url, name);
+                // TODO: this is a temp workaround to facilitate automated Selenium tests
+                // since duplicate URL's are not allowed, Selenium passes the same API URL with a random query string param
+                // this bypasses the unique constraint but such a URL will cause downstream errors
+                // once there is an easy way to delete existing GitHub servers this same logic should be added to validation above
+                String sanitizedUrl = discardQueryString(url);
+                Endpoint endpoint = new Endpoint(sanitizedUrl, name);
                 List<Endpoint> endpoints = Lists.newLinkedList(config.getEndpoints());
                 endpoints.add(endpoint);
                 config.setEndpoints(endpoints);
@@ -135,6 +140,14 @@ public class GithubServerContainer extends Container<GithubServer> {
                 return new GithubServer(input, getLink());
             }
         });
+    }
+
+    private String discardQueryString(String apiUrl) {
+        if (apiUrl != null && apiUrl.contains("?")) {
+            return apiUrl.substring(0, apiUrl.indexOf("?"));
+        }
+
+        return apiUrl;
     }
 
     private GithubServer findByName(final String name) {
