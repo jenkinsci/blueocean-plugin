@@ -56,9 +56,9 @@ public abstract class Analytics {
         allProps.put("userId", identity());
         VersionNumber version = Jenkins.getVersion();
         if (version != null && version.toString() != null) {
-            allProps.put("serverVersion", version.toString());
+            allProps.put("jenkinsVersion", version.toString());
         }
-        allProps.put("blueoceanVersion", Jenkins.getInstance().getPlugin("blueocean-common").getWrapper().getVersion());
+        allProps.put("blueoceanVersion", Jenkins.getInstance().getPlugin("blueocean-commons").getWrapper().getVersion());
         String msg = Objects.toStringHelper(this).add("name", req.name).add("props", allProps).toString();
         try {
             doTrack(req.name, allProps);
