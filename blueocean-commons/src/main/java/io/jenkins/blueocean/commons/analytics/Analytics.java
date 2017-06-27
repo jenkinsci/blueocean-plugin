@@ -5,6 +5,7 @@ import com.google.common.collect.Maps;
 import com.google.common.hash.Hashing;
 import hudson.model.UsageStatistics;
 import hudson.model.User;
+import hudson.util.VersionNumber;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
@@ -53,7 +54,10 @@ public abstract class Analytics {
         Map<String, Object> allProps = req.properties == null ? Maps.<String, Object>newHashMap() : Maps.newHashMap(req.properties);
         allProps.put("jenkins", server());
         allProps.put("userId", identity());
-        allProps.put("serverVersion", Jenkins.getVersion().toString());
+        VersionNumber version = Jenkins.getVersion();
+        if (version != null && version.toString() != null) {
+            allProps.put("serverVersion", version.toString());
+        }
         allProps.put("blueoceanVersion", Jenkins.getInstance().getPlugin("blueocean-common").getWrapper().getVersion());
         String msg = Objects.toStringHelper(this).add("name", req.name).add("props", allProps).toString();
         try {
