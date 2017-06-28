@@ -75,21 +75,21 @@ public class GithubScm extends Scm {
     static final String DOMAIN_NAME="blueocean-github-domain";
     static final String CREDENTIAL_DESCRIPTION = "GitHub Access Token";
 
-    private final Link self;
-
     static final ObjectMapper om = new ObjectMapper();
     static {
         om.setVisibilityChecker(new VisibilityChecker.Std(NONE, NONE, NONE, NONE, ANY));
         om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
+    protected final Reachable parent;
+
     public GithubScm(Reachable parent) {
-        this.self = parent.getLink().rel("github");
+        this.parent = parent;
     }
 
     @Override
     public Link getLink() {
-        return self;
+        return parent.getLink().rel("github");
     }
 
     @Override
@@ -294,7 +294,7 @@ public class GithubScm extends Scm {
         }
     }
 
-    static HttpURLConnection connect(String apiUrl, String accessToken) throws IOException {
+    protected static HttpURLConnection connect(String apiUrl, String accessToken) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
 
         connection.setDoOutput(true);
