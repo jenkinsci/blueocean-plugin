@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 
 import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSource;
-import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.model.Item;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbBranch;
@@ -9,8 +8,8 @@ import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbSaveContentResp
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.BitbucketServerScm;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.AbstractScmContentProvider;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmContentProviderParams;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFile;
 import jenkins.branch.MultiBranchProject;
@@ -38,24 +37,17 @@ public class BitbucketScmContentProvider extends AbstractScmContentProvider {
         String branchName = request.getBranch();
 
         BbBranch defaultBranch = api.getDefaultBranch(request.getOwner(), request.getRepo());
+        if(defaultBranch == null){ //empty repo
+            throw new ServiceException.NotFoundException(request.getPath()+ " not found. This is empty and un-initialized repository");
+        }
         if(branchName == null){
-            if(defaultBranch == null){
-                throw new ServiceException.NotFoundException("This is empty and un-instialized repository. Please initialize it");
-            }
             branch = defaultBranch;
         }
         if(branchName != null){
             branch = api.getBranch(request.getOwner(), request.getRepo(), branchName);
             //Given branchName create this branch
-            if(branch == null){
-                //if empty and unintialized repo then report error
-                //TODO: remove this error once bitbucket latest API supports creation of branch on empty repo
-                if(defaultBranch == null){
-                    throw new ServiceException.NotFoundException("This is empty and un-instialized repository. Please initialize it");
-                }
-                branch = api.createBranch(request.getOwner(), request.getRepo(), ImmutableMap.of("name", branchName,
-                        "startPoint", defaultBranch.getLatestCommit(),
-                        "message", "new branch created"));
+            if(branch == null ){
+                throw new ServiceException.BadRequestException("branch: "+branchName + " not found");
             }
         }
 
@@ -68,7 +60,8 @@ public class BitbucketScmContentProvider extends AbstractScmContentProvider {
                     .path(request.getPath())
                     .owner(request.getOwner())
                     .repo(request.getRepo())
-                    .name(request.getPath()).commitId(branch.getLatestCommit())
+                    .name(request.getPath())
+                    .commitId(branch.getLatestCommit())
                     .build();
 
             return new ScmFile<GitContent>() {
