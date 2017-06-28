@@ -5,5 +5,4 @@ dist
 *.iml
 .idea/
 /.project
-coverage
-reports
+target
