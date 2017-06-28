@@ -10,6 +10,8 @@ import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequire
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import io.jenkins.blueocean.scm.api.AbstractMultiBranchCreateRequest;
 import jenkins.branch.MultiBranchProject;
+import jenkins.model.Jenkins;
+import jenkins.model.JenkinsLocationConfiguration;
 import jenkins.scm.api.SCMSource;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -37,6 +39,18 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
             BitbucketApiFactory apiFactory = BitbucketApiFactory.resolve(bbUri);
             if(apiFactory instanceof BitbucketServerApi.BitbucketServerApiFactory){
                 bitbucketSCMSource.setBitbucketServerUrl(scmConfig.getUri());
+            }
+        }
+
+        //Setup Jenkins root url, if not set bitbucket cloud notification will fail
+        JenkinsLocationConfiguration jenkinsLocationConfiguration = JenkinsLocationConfiguration.get();
+        if(jenkinsLocationConfiguration != null) {
+            String url = jenkinsLocationConfiguration.getUrl();
+            if (url == null) {
+                url = Jenkins.getInstance().getRootUrl();
+                if (url != null) {
+                    jenkinsLocationConfiguration.setUrl(url);
+                }
             }
         }
         return bitbucketSCMSource;
