@@ -3,6 +3,7 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSource;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.google.common.collect.Lists;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.BitbucketServerApi;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
@@ -29,7 +30,15 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
     protected SCMSource createSource(@Nonnull MultiBranchProject project, @Nonnull BlueScmConfig scmConfig) {
         BitbucketSCMSource bitbucketSCMSource =  new BitbucketSCMSource(null, (String)scmConfig.getConfig().get("repoOwner"), (String)scmConfig.getConfig().get("repository"));
         bitbucketSCMSource.setCredentialsId(scmConfig.getCredentialId());
-        bitbucketSCMSource.setBitbucketServerUrl(scmConfig.getUri());
+
+        //Set bb server uri only in case we are talking to BB server
+        String bbUri = scmConfig.getUri();
+        if(StringUtils.isNotBlank(bbUri)) {
+            BitbucketApiFactory apiFactory = BitbucketApiFactory.resolve(bbUri);
+            if(apiFactory instanceof BitbucketServerApi.BitbucketServerApiFactory){
+                bitbucketSCMSource.setBitbucketServerUrl(scmConfig.getUri());
+            }
+        }
         return bitbucketSCMSource;
     }
 
