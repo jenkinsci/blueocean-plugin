@@ -24,6 +24,7 @@
     <npm.version>3.10.3</npm.version>
     <findbugs-maven-plugin.version>3.0.4</findbugs-maven-plugin.version>
     <findbugs.failOnError>true</findbugs.failOnError>
+    <access-modifier.version>1.12</access-modifier.version>
     <powermock.version>1.6.6</powermock.version>
     <guava.version>11.0.1</guava.version>
     <jacoco.version>0.7.9</jacoco.version>
@@ -510,7 +511,11 @@
           <artifactId>blueocean-pipeline-editor</artifactId>
           <version>0.2.0</version>
         </dependency>
-
+        <dependency>
+            <groupId>org.kohsuke</groupId>
+            <artifactId>access-modifier-annotation</artifactId>
+            <version>${access-modifier.version}</version>
+        </dependency>
 
         <!-- Needed for blueocean-display-url plugin -->
         <dependency>
@@ -697,6 +702,11 @@
                           </configuration>
                       </execution>
                   </executions>
+              </plugin>
+              <plugin>
+                  <groupId>org.kohsuke</groupId>
+                  <artifactId>access-modifier-checker</artifactId>
+                  <version>${access-modifier.version}</version>
               </plugin>
           </plugins>
       </pluginManagement>
