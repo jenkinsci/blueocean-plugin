@@ -15,6 +15,7 @@ import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
+import static io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi.X_BB_API_TEST_MODE_HEADER;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -56,18 +57,28 @@ public abstract class BitbucketWireMockBase extends PipelineBaseTest{
         this.apiUrl = String.format("http://localhost:%s",bitbucketApi.port());
     }
 
-    protected String createCredential(String scmId) throws IOException, UnirestException {
+    protected String createCredential(String scmId, String apiMode) throws IOException, UnirestException {
         User user = login();
 
-        Map r = new RequestBuilder(baseUrl)
+        RequestBuilder builder = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .put("/organizations/jenkins/scm/"+ scmId+"/validate/")
-                .data(ImmutableMap.of("apiUrl",apiUrl, "userName", getUserName(), "password",getPassword()))
-                .build(Map.class);
+                .data(ImmutableMap.of("apiUrl",apiUrl, "userName", getUserName(), "password",getPassword()));
+
+        if(apiMode.equals("cloud")){
+            builder.header(X_BB_API_TEST_MODE_HEADER, apiMode);
+        }
+        Map r = builder.build(Map.class);
+
+
         assertNotNull(r);
         String credentialId = (String) r.get("credentialId");
         assertNotNull(credentialId);
         return credentialId;
+    }
+
+    protected String createCredential(String scmId) throws IOException, UnirestException {
+        return createCredential(scmId, "server");
     }
 }
