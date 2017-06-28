@@ -3,11 +3,11 @@ package io.jenkins.blueocean.service.embedded.analytics;
 import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 import com.google.common.hash.Hashing;
+import hudson.ExtensionList;
 import hudson.model.User;
-import hudson.util.VersionNumber;
+import io.jenkins.blueocean.analytics.AdditionalAnalyticsProperties;
 import io.jenkins.blueocean.analytics.Analytics;
 import io.jenkins.blueocean.commons.ServiceException;
-import jenkins.model.Jenkins;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.main.modules.instance_identity.InstanceIdentity;
 import org.kohsuke.accmod.Restricted;
@@ -36,13 +36,15 @@ public abstract class AbstractAnalytics extends Analytics {
             throw new ServiceException.BadRequestException("missing name");
         }
         Map<String, Object> allProps = req.properties == null ? Maps.<String, Object>newHashMap() : Maps.newHashMap(req.properties);
+        // Enhance with additional properties
+        for (AdditionalAnalyticsProperties enhancer : ExtensionList.lookup(AdditionalAnalyticsProperties.class)) {
+            Map<String, Object> additionalProperties = enhancer.properties(req);
+            if (additionalProperties != null) {
+                allProps.putAll(additionalProperties);
+            }
+        }
         allProps.put("jenkins", server());
         allProps.put("userId", identity());
-        VersionNumber version = Jenkins.getVersion();
-        if (version != null && version.toString() != null) {
-            allProps.put("jenkinsVersion", version.toString());
-        }
-        allProps.put("blueoceanVersion", Jenkins.getInstance().getPlugin("blueocean-rest-impl").getWrapper().getVersion());
         String msg = Objects.toStringHelper(this).add("name", req.name).add("props", allProps).toString();
         try {
             doTrack(req.name, allProps);

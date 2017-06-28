@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
+import org.jvnet.hudson.test.TestExtension;
 
 import java.util.Map;
 
@@ -99,6 +100,26 @@ public class AnalyticsTest {
             Assert.fail("did not throw exception");
         } catch (ServiceException.BadRequestException e) {
             Assert.assertEquals("missing name", e.getMessage());
+        }
+    }
+
+    @Test
+    public void testKeenConfigCanBeOverridden() {
+        KeenConfiguration config = KeenConfiguration.get();
+        Assert.assertEquals("coolProject", config.getProjectId());
+        Assert.assertEquals("myWriteKey", config.getWriteKey());
+    }
+
+    @TestExtension
+    public static class TestKeenConfiguration extends KeenConfiguration {
+        @Override
+        public String getProjectId() {
+            return "coolProject";
+        }
+
+        @Override
+        public String getWriteKey() {
+            return "myWriteKey";
         }
     }
 
