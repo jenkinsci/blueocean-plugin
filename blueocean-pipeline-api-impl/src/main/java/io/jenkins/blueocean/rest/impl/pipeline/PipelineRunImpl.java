@@ -114,15 +114,29 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         boolean isQueued = false;
         boolean isRunning = false;
         for (BluePipelineNode n : getNodes()) {
-            if (n.getStateObj().equals(BlueRunState.QUEUED)) {
+            BlueRunState nodeState = n.getStateObj();
+            if (nodeState == null) {
+                boolean foundInQueue = false;
+                for (BlueQueueItem queueItem : QueueUtil.getQueuedItems(run.getParent())) {
+                    if (queueItem.getId().equals(run.getId())) {
+                        foundInQueue = true;
+                    }
+                }
+                if (foundInQueue) {
+                    isQueued = true;
+                } else {
+                    isRunning = true;
+                }
+            } else if (nodeState.equals(BlueRunState.QUEUED)) {
                 isQueued = true;
-            } else if (n.getStateObj().equals(BlueRunState.RUNNING)) {
+            } else if (nodeState.equals(BlueRunState.RUNNING)) {
                 isRunning = true;
             }
         }
-        if (isQueued && !isRunning) {
+        if (!isRunning && (isQueued || getCauseOfBlockage() != null)) {
+            // This would mean we're explicitly queued or we have no running nodes but do have a cause of blockage,
+            // which works out the same..
             return BlueRunState.QUEUED;
-
         }
 
         return super.getStateObj();
