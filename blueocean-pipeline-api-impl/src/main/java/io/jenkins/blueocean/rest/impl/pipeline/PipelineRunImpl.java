@@ -122,6 +122,14 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
                         foundInQueue = true;
                     }
                 }
+                // Don't bother doing this if we've already seen it in queue.
+                if (!foundInQueue) {
+                    for (Queue.Item q : Queue.getInstance().getItems()) {
+                        if (q.task instanceof ExecutorStepExecution.PlaceholderTask && q.task.getOwnerTask().equals(run.getParent())) {
+                            foundInQueue = true;
+                        }
+                    }
+                }
                 if (foundInQueue) {
                     isQueued = true;
                 } else {
@@ -133,6 +141,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
                 isRunning = true;
             }
         }
+
         if (!isRunning && (isQueued || getCauseOfBlockage() != null)) {
             // This would mean we're explicitly queued or we have no running nodes but do have a cause of blockage,
             // which works out the same..

@@ -6,6 +6,7 @@ import hudson.model.FreeStyleProject;
 import hudson.model.Label;
 import hudson.model.Queue;
 import hudson.model.Run;
+import hudson.slaves.DumbSlave;
 import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
 import jenkins.branch.BranchProperty;
@@ -263,7 +264,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
         p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
         p.save();
-
+        j.jenkins.setNumExecutors(0);
         // Ensure null before first run
         Map pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
         Assert.assertNull(pipeline.get("latestRun"));
@@ -279,7 +280,42 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         Assert.assertEquals("QUEUED", latestRun.get("state"));
         Assert.assertEquals("1", latestRun.get("id"));
 
-        j.createOnlineSlave(Label.get("test"));
+        j.jenkins.setNumExecutors(2);
+
+        j.assertBuildStatusSuccess(j.waitForCompletion(r));
+    }
+
+    @Issue("JENKINS-44981")
+    @Test
+    public void declarativeQueuedAgentSecondRun() throws Exception {
+        WorkflowJob p = j.createProject(WorkflowJob.class, "project");
+
+        URL resource = Resources.getResource(getClass(), "declarativeQueuedAgent.jenkinsfile");
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+        p.save();
+
+        // Ensure null before first run
+        Map pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        Assert.assertNull(pipeline.get("latestRun"));
+
+        j.buildAndAssertSuccess(p);
+
+        // Disable the executors.
+        j.jenkins.setNumExecutors(0);
+
+        // Run until we hang.
+        WorkflowRun r = p.scheduleBuild2(0).waitForStart();
+        j.waitForMessage("Still waiting to schedule task", r);
+
+        // Get latest run for this pipeline
+        pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        Map latestRun = (Map) pipeline.get("latestRun");
+
+        Assert.assertEquals("2", latestRun.get("id"));
+        Assert.assertEquals("QUEUED", latestRun.get("state"));
+
+        j.jenkins.setNumExecutors(2);
 
         j.assertBuildStatusSuccess(j.waitForCompletion(r));
     }
