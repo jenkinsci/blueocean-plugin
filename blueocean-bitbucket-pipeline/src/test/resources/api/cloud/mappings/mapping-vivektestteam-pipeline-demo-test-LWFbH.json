@@ -1,7 +1,7 @@
 {
   "id" : "b3b9406b-992e-35cd-b314-d18847368aa0",
   "request" : {
-    "url" : "/2.0/repositories/vivektestteam/pipeline-demo-test",
+    "url" : "/api/2.0/repositories/vivektestteam/pipeline-demo-test",
     "method" : "GET"
   },
   "response" : {

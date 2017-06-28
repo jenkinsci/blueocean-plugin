@@ -1,7 +1,7 @@
 {
   "id" : "69a425d2-ec82-38db-bc1a-65531db5942b",
   "request" : {
-    "url" : "/2.0/repositoriesvivekp7/demo1/src/04553981a05754d4bffef56a59d9d996d500301c/Jenkinsfile",
+    "url" : "/api/2.0/repositoriesvivekp7/demo1/src/04553981a05754d4bffef56a59d9d996d500301c/Jenkinsfile",
     "method" : "GET"
   },
   "response" : {

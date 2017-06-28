@@ -1,7 +1,7 @@
 {
   "id" : "e76df509-031a-3424-aafd-1c400445e0f5",
   "request" : {
-    "url" : "/2.0/teams//vivektestteam",
+    "url" : "/api/2.0/teams//vivektestteam",
     "method" : "GET"
   },
   "response" : {

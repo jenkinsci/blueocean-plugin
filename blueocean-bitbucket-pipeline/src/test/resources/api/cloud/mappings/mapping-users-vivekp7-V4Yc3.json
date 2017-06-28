@@ -1,7 +1,7 @@
 {
   "id" : "f73d5452-73dc-3af8-a103-8d087f4c2119",
   "request" : {
-    "url" : "/2.0/users/vivekp7",
+    "url" : "/api/2.0/users/vivekp7",
     "method" : "GET"
   },
   "response" : {

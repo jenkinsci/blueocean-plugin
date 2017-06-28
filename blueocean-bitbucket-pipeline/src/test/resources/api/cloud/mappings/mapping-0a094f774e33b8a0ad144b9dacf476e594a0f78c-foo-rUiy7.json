@@ -1,7 +1,7 @@
 {
   "id" : "ecc0dbb8-a907-3556-93e1-718653651f1a",
   "request" : {
-    "url" : "/2.0/repositories/vivekp7/demo1/src/0a094f774e33b8a0ad144b9dacf476e594a0f78c/foo",
+    "url" : "/api/2.0/repositories/vivekp7/demo1/src/0a094f774e33b8a0ad144b9dacf476e594a0f78c/foo",
     "method" : "GET"
   },
   "response" : {

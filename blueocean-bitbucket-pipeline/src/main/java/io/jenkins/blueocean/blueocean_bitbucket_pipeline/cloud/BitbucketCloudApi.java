@@ -48,7 +48,7 @@ public class BitbucketCloudApi extends BitbucketApi {
 
     protected BitbucketCloudApi(String apiUrl, StandardUsernamePasswordCredentials credentials) {
         super(apiUrl, credentials);
-        this.baseUrl = this.apiUrl+"2.0/";
+        this.baseUrl = this.apiUrl+"api/2.0/";
     }
 
     @Nonnull
@@ -247,7 +247,7 @@ public class BitbucketCloudApi extends BitbucketApi {
             Preconditions.checkNotNull(request);
             String mode=request.getHeader(X_BB_API_TEST_MODE_HEADER);
             boolean isCloudMode =  StringUtils.isNotBlank(mode) && mode.equals("cloud");
-            return isCloudMode || apiUrl.startsWith("https://api.bitbucket.org/");
+            return isCloudMode || apiUrl.startsWith("https://bitbucket.org") || apiUrl.startsWith("https://api.bitbucket.org");
         }
 
         @Nonnull

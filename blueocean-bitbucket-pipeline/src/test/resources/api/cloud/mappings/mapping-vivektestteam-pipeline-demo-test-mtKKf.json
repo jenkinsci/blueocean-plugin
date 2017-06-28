@@ -1,7 +1,7 @@
 {
   "id" : "bb42a31d-5e33-39b8-a9d1-7181bbeb2287",
   "request" : {
-    "url" : "/2.0/repositories/vivektestteam/pipeline-demo-test/?fields=mainbranch.*,mainbranch.target.*,mainbranch.target.repository.*,mainbranch.target.repository.mainbranch.name,mainbranch.target.repository.owner.*,mainbranch.target.repository.owner.links.avatar.*",
+    "url" : "/api/2.0/repositories/vivektestteam/pipeline-demo-test/?fields=mainbranch.*,mainbranch.target.*,mainbranch.target.repository.*,mainbranch.target.repository.mainbranch.name,mainbranch.target.repository.owner.*,mainbranch.target.repository.owner.links.avatar.*",
     "method" : "GET"
   },
   "response" : {

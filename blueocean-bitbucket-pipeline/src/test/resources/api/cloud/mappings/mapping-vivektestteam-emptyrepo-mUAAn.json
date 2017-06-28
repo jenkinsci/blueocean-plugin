@@ -1,7 +1,7 @@
 {
   "id" : "35d22972-aa22-3a08-b705-862ab11239da",
   "request" : {
-    "url" : "/2.0/repositories/vivektestteam/emptyrepo/?fields=mainbranch.*,mainbranch.target.*,mainbranch.target.repository.*,mainbranch.target.repository.mainbranch.name,mainbranch.target.repository.owner.*,mainbranch.target.repository.owner.links.avatar.*",
+    "url" : "/api/2.0/repositories/vivektestteam/emptyrepo/?fields=mainbranch.*,mainbranch.target.*,mainbranch.target.repository.*,mainbranch.target.repository.mainbranch.name,mainbranch.target.repository.owner.*,mainbranch.target.repository.owner.links.avatar.*",
     "method" : "GET"
   },
   "response" : {

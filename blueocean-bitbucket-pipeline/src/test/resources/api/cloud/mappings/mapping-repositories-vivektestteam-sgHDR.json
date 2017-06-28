@@ -1,7 +1,7 @@
 {
   "id" : "ba174ecb-9006-37a2-a6f5-40de3319d8d5",
   "request" : {
-    "url" : "/2.0/repositories/vivektestteam?page=1&limit=100",
+    "url" : "/api/2.0/repositories/vivektestteam?page=1&limit=100",
     "method" : "GET"
   },
   "response" : {

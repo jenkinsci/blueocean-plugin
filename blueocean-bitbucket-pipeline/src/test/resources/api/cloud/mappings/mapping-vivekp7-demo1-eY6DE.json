@@ -1,7 +1,7 @@
 {
   "id" : "2d0f3e13-f9a7-36e9-85bb-0b9f55893aad",
   "request" : {
-    "url" : "/2.0/repositories/vivekp7/demo1/?fields=mainbranch.*,mainbranch.target.*,mainbranch.target.repository.*,mainbranch.target.repository.mainbranch.name,mainbranch.target.repository.owner.*,mainbranch.target.repository.owner.links.avatar.*",
+    "url" : "/api/2.0/repositories/vivekp7/demo1/?fields=mainbranch.*,mainbranch.target.*,mainbranch.target.repository.*,mainbranch.target.repository.mainbranch.name,mainbranch.target.repository.owner.*,mainbranch.target.repository.owner.links.avatar.*",
     "method" : "GET"
   },
   "response" : {

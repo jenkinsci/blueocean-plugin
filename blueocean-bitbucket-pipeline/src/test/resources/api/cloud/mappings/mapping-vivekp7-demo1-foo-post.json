@@ -1,6 +1,6 @@
 {
   "request" : {
-    "url" : "/2.0/repositories/vivekp7/demo1/src",
+    "url" : "/api/2.0/repositories/vivekp7/demo1/src",
     "method" : "POST"
   },
   "response" : {
