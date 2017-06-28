@@ -25,6 +25,7 @@ import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerSa
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerUser;
 import io.jenkins.blueocean.commons.ServiceException;
 import org.antlr.v4.runtime.misc.NotNull;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.fluent.Request;
@@ -331,18 +332,11 @@ public class BitbucketServerApi extends BitbucketApi {
     public static class BitbucketServerApiFactory extends BitbucketApiFactory{
         @Override
         public boolean handles(@Nonnull String apiUrl) {
-            //We test using wiremock, where api url is always localhost:PORT, so we want to check for bbApiTestMode parameter.
-            //bbApiTestMode == "server" then its server mode otherwise its cloud
-
             StaplerRequest request = Stapler.getCurrentRequest();
             Preconditions.checkNotNull(request);
-            String mode = request.getParameter("bbApiTestMode");
-            boolean isServer = true;
-            if(org.apache.commons.lang.StringUtils.isNotBlank(mode) && !mode.equals("server")){
-                isServer = false;
-            }
-
-            return !apiUrl.startsWith("https://api.bitbucket.org/") || isServer;
+            String mode=request.getHeader(X_BB_API_TEST_MODE_HEADER);
+            boolean isCloudMode =  StringUtils.isNotBlank(mode) && mode.equals("cloud"); //used for testing
+            return !isCloudMode && !apiUrl.startsWith("https://api.bitbucket.org/");
         }
 
         @Nonnull

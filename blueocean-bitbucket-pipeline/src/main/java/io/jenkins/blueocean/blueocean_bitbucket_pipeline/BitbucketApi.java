@@ -31,6 +31,9 @@ public abstract class BitbucketApi {
     protected final String userName;
     protected final String basicAuthHeaderValue;
 
+    //XXX: To be used for testing to resolve correct factory
+    public static final String X_BB_API_TEST_MODE_HEADER="X_BB_API_TEST_MODE_HEADER";
+
 
     protected BitbucketApi(String apiUrl, StandardUsernamePasswordCredentials credentials) {
         this.apiUrl = ensureTrailingSlash(apiUrl);

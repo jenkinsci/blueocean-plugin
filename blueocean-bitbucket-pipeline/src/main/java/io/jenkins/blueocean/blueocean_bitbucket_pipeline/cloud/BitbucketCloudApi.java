@@ -38,6 +38,7 @@ import java.io.InputStream;
 import java.util.Map;
 
 import static io.jenkins.blueocean.commons.JsonConverter.om;
+import static org.apache.commons.lang.StringUtils.isNotBlank;
 
 /**
  * @author Vivek Pandey
@@ -161,11 +162,11 @@ public class BitbucketCloudApi extends BitbucketApi {
                         .addTextBody(path, content)
                     .addTextBody("message", commitMessage);
 
-            if(StringUtils.isNotBlank(branch)){
+            if(isNotBlank(branch)){
                 builder.addTextBody("branch", branch);
             }
 
-            if(org.apache.commons.lang.StringUtils.isNotBlank(commitId)){
+            if(isNotBlank(commitId)){
                 builder.addTextBody("parents", commitId);
             }
             HttpEntity entity = builder.build();
@@ -238,14 +239,15 @@ public class BitbucketCloudApi extends BitbucketApi {
     public static class BitbucketCloudApiFactory extends BitbucketApiFactory {
         @Override
         public boolean handles(@Nonnull String apiUrl) {
-            //We test using wiremock, where api url is always localhost:PORT, so we want to check for bbApiTestMode parameter.
-            //bbApiTestMode == "cloud" then its cloud  api mode otherwise its cloud
+            //We test using wiremock, where api url is always localhost:PORT, so we want to check for
+            // X_BB_API_MODE parameter during test.
+            //X_BB_API_MODE == "cloud" then its cloud  api mode otherwise its server
 
             StaplerRequest request = Stapler.getCurrentRequest();
             Preconditions.checkNotNull(request);
-            String mode = request.getParameter("bbApiTestMode");
-            boolean isCloudMode = org.apache.commons.lang.StringUtils.isNotBlank(mode) && mode.equals("cloud");
-            return apiUrl.startsWith("https://api.bitbucket.org/") || isCloudMode;
+            String mode=request.getHeader(X_BB_API_TEST_MODE_HEADER);
+            boolean isCloudMode =  StringUtils.isNotBlank(mode) && mode.equals("cloud");
+            return isCloudMode || apiUrl.startsWith("https://api.bitbucket.org/");
         }
 
         @Nonnull

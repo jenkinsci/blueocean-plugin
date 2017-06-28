@@ -1,7 +1,10 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud;
 
+import hudson.Extension;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.AbstractBitbucketScm;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 
 import javax.annotation.Nonnull;
 
@@ -33,5 +36,22 @@ public class BitbucketCloudScm extends AbstractBitbucketScm {
     @Override
     protected String getDomainId() {
         return DOMAIN_NAME;
+    }
+
+    @Extension
+    public static class BbScmFactory extends ScmFactory {
+        @Override
+        public Scm getScm(String id, Reachable parent) {
+            if(id.equals(ID)){
+                return getScm(parent);
+            }
+            return null;
+        }
+
+        @Nonnull
+        @Override
+        public Scm getScm(Reachable parent) {
+            return new BitbucketCloudScm(parent);
+        }
     }
 }
