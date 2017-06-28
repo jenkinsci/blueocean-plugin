@@ -195,10 +195,15 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         Assert.assertEquals("RUNNING", latestRun.get("state"));
         Assert.assertEquals("2", latestRun.get("id"));
 
-        String idOfSecondRun = (String) latestRun.get("id");
+        // Replay this - allow a wait and a retry due to possible temporary inconsistency
+        try {
+            Thread.sleep(200);
+            request().post("/organizations/jenkins/pipelines/project/runs/2/replay/").build(String.class);
+        } catch (Exception e) {
+            Thread.sleep(200);
+            request().post("/organizations/jenkins/pipelines/project/runs/2/replay/").build(String.class);
+        }
 
-        // Replay this
-        request().post("/organizations/jenkins/pipelines/project/runs/" + idOfSecondRun + "/replay/").build(String.class);
 
         // Get latest run for this pipeline
         pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
