@@ -41,7 +41,7 @@ public class KeenAnalyticsImpl extends AbstractAnalytics {
     protected void doTrack(String name, Map<String, Object> allProps) {
         // Always set the proxy in case its configuration has changed before startup
         ProxyConfiguration proxyConfig = Jenkins.getInstance().proxy;
-        Proxy proxy = Jenkins.getInstance().proxy == null ? null : proxyConfig.createProxy(null);
+        Proxy proxy = proxyConfig == null ? null : proxyConfig.createProxy(null);
         CLIENT.setProxy(proxy);
         CLIENT.addEventAsync(name, allProps);
     }
