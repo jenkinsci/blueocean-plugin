@@ -34,12 +34,16 @@ public abstract class Analytics implements ExtensionPoint {
      * @return analytics instance
      */
     public static Analytics get() {
-        return Iterables.find(ExtensionList.lookup(Analytics.class), new Predicate<Analytics>() {
+        Analytics analytics = Iterables.find(ExtensionList.lookup(Analytics.class), new Predicate<Analytics>() {
             @Override
             public boolean apply(@Nullable Analytics input) {
                 return input != null && input.isEnabled();
             }
-        });
+        }, null);
+        if (analytics == null) {
+            throw new IllegalStateException("No analytics instance available");
+        }
+        return analytics;
     }
 
     /** Is this analytics instance enabled */

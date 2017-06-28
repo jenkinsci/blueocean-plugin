@@ -50,7 +50,8 @@ public class AnalyticsTest {
             "prop1", "value1",
             "prop2", 2,
             "jenkinsVersion", j.jenkins.getVersion().toString(),
-            "blueoceanVersion", Jenkins.getInstance().getPlugin("blueocean-commons").getWrapper().getVersion());
+            "blueoceanVersion", Jenkins.getInstance().getPlugin("blueocean-commons").getWrapper().getVersion()
+        );
         analytics.track(new TrackRequest("test", props));
 
         Map<String, Object> expectedProps = Maps.newHashMap(props);
