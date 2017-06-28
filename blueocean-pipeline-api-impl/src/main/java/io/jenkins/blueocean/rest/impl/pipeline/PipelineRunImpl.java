@@ -26,8 +26,10 @@ import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import io.jenkins.blueocean.service.embedded.rest.StoppableRun;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMRevisionAction;
+import org.jenkinsci.plugins.workflow.actions.ExecutorTaskInfoAction;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayCause;
+import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
@@ -38,6 +40,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -113,24 +116,14 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         // TODO: Probably move this elsewhere - maybe into PipelineNodeContainerImpl?
         boolean isQueued = false;
         boolean isRunning = false;
+
+        String causeOfBlockage = getCauseOfBlockage();
         for (BluePipelineNode n : getNodes()) {
             BlueRunState nodeState = n.getStateObj();
+            // Handle cases where there is a previous successful run - PipelineNodeGraphVisitor.union results in a null
+            // getStateObj().
             if (nodeState == null) {
-                boolean foundInQueue = false;
-                for (BlueQueueItem queueItem : QueueUtil.getQueuedItems(run.getParent())) {
-                    if (queueItem.getId().equals(run.getId())) {
-                        foundInQueue = true;
-                    }
-                }
-                // Don't bother doing this if we've already seen it in queue.
-                if (!foundInQueue) {
-                    for (Queue.Item q : Queue.getInstance().getItems()) {
-                        if (q.task instanceof ExecutorStepExecution.PlaceholderTask && q.task.getOwnerTask().equals(run.getParent())) {
-                            foundInQueue = true;
-                        }
-                    }
-                }
-                if (foundInQueue) {
+                if (causeOfBlockage != null) {
                     isQueued = true;
                 } else {
                     isRunning = true;
@@ -142,7 +135,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
             }
         }
 
-        if (!isRunning && (isQueued || getCauseOfBlockage() != null)) {
+        if (!isRunning && (isQueued || causeOfBlockage != null)) {
             // This would mean we're explicitly queued or we have no running nodes but do have a cause of blockage,
             // which works out the same..
             return BlueRunState.QUEUED;
@@ -250,9 +243,20 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
                 ExecutorStepExecution.PlaceholderTask task = (ExecutorStepExecution.PlaceholderTask) i.task;
                 Run r = task.runForDisplay();
                 if (r != null && r.equals(run)) {
+                    System.err.println("cause of blockage: " + i.getCauseOfBlockage());
                     String cause = i.getCauseOfBlockage().getShortDescription();
                     if (task.getCauseOfBlockage() != null) {
                         cause = task.getCauseOfBlockage().getShortDescription();
+                    } else {
+                        try {
+                            FlowNode n = task.getNode();
+
+                            if (n != null) {
+                                cause = ExecutorTaskInfoAction.getWhyBlockedForNode(n);
+                            }
+                        } catch (IOException | InterruptedException e) {
+                            logger.warn(null, e);
+                        }
                     }
                     return cause;
                 }
