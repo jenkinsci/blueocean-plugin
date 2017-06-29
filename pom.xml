@@ -10,7 +10,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.2.0-beta-1-SNAPSHOT</version>
+  <version>1.2.0-beta-2-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean Parent</name>
@@ -534,6 +534,17 @@
           <version>0.2.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>io.keen</groupId>
+            <artifactId>keen-client-api-java</artifactId>
+            <version>3.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jenkins-ci.modules</groupId>
+            <artifactId>instance-identity</artifactId>
+            <version>1.5.1</version>
+        </dependency>
 
         <!-- Needed for blueocean-display-url plugin -->
         <dependency>
