@@ -17,5 +17,5 @@ git.https.repository=
 git.https.user=
 # personal access token
 git.https.pass=
-# Name of the created pipeline (will match repo name). 
+# Name of the created pipeline (will match repo name).
 git.https.pipelineName=

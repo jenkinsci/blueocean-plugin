@@ -14,6 +14,9 @@ node() {
     configFileProvider([configFile(fileId: 'blueocean-maven-settings', variable: 'MAVEN_SETTINGS')]) {
       sh 'mv $MAVEN_SETTINGS settings.xml'
     }
+    configFileProvider([configFile(fileId: 'blueocean-ath-private-repo-keyy', variable: 'ATH_KEY')]) {
+      sh 'mv $ATH_KEY acceptance-tests/bo-ath.key'
+    }
     sh "./acceptance-tests/runner/scripts/start-selenium.sh"
   }
 
