@@ -53,7 +53,7 @@ public class BitbucketApiTest  extends BbCloudWireMock{
 
     @Test
     public void getTeams() throws JsonProcessingException {
-        BbPage<BbOrg> teams = api.getOrgs(0, 100);
+        BbPage<BbOrg> teams = api.getOrgs(1, 100);
         assertEquals(1, teams.getSize());
         assertEquals("vivektestteam", teams.getValues().get(0).getKey());
         assertEquals("Vivek's Team", teams.getValues().get(0).getName());

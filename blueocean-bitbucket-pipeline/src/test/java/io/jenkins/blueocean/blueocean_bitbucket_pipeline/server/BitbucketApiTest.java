@@ -14,6 +14,7 @@ import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbPage;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbRepo;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbSaveContentResponse;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbUser;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerBranch;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -51,7 +52,7 @@ public class BitbucketApiTest extends BbServerWireMock {
 
     @Test
     public void getProjects() throws JsonProcessingException {
-        BbPage<BbOrg> projects = api.getOrgs(0, 100);
+        BbPage<BbOrg> projects = api.getOrgs(1, 100);
         assertEquals(2, projects.getSize());
         assertEquals("TEST", projects.getValues().get(0).getKey());
         assertEquals("TESTP", projects.getValues().get(1).getKey());
@@ -93,7 +94,8 @@ public class BitbucketApiTest extends BbServerWireMock {
     public void updateRepoContent() throws JsonProcessingException, UnsupportedEncodingException {
         BbBranch branch = api.getBranch("TESTP", "pipeline-demo-test", "master");
         assertEquals("master", branch.getDisplayId());
-        assertEquals("refs/heads/master", branch.getId());
+        assertTrue(branch instanceof BbServerBranch);
+        assertEquals("refs/heads/master", ((BbServerBranch)branch).getId());
         assertNotNull(branch.getLatestCommit());
 
         String content = api.getContent("TESTP", "pipeline-demo-test", "Jenkinsfile", branch.getLatestCommit());
@@ -126,7 +128,8 @@ public class BitbucketApiTest extends BbServerWireMock {
         BbBranch branch = api.getDefaultBranch("TESTP","pipeline-demo-test");
         assertNotNull(branch);
         assertEquals("master", branch.getDisplayId());
-        assertEquals("refs/heads/master", branch.getId());
+        assertTrue(branch instanceof BbServerBranch);
+        assertEquals("refs/heads/master", ((BbServerBranch)branch).getId());
     }
 
     @Test

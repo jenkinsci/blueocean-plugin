@@ -48,12 +48,6 @@ public class BbServerRepo extends BbRepo {
     }
 
     @Override
-    @JsonProperty("scmId")
-    public String getScmId() {
-        return scmId;
-    }
-
-    @Override
     @JsonIgnore
     public boolean isGit(){
         return scmId.equals("git");

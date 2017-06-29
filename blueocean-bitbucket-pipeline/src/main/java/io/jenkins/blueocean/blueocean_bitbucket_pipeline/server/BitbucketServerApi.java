@@ -75,9 +75,9 @@ public class BitbucketServerApi extends BitbucketApi {
 
     @Override
     public @Nonnull
-    BbPage<BbOrg> getOrgs(int start, int limit){
+    BbPage<BbOrg> getOrgs(int pageNumber, int pageSize){
         try {
-            InputStream inputStream = Request.Get(String.format("%s?start=%s&limit=%s",baseUrl+"projects/", start,limit))
+            InputStream inputStream = Request.Get(String.format("%s?start=%s&limit=%s",baseUrl+"projects/", toStart(pageNumber, pageSize), pageSize))
                     .addHeader("Authorization", basicAuthHeaderValue)
                     .execute().returnContent().asStream();
             return om.readValue(inputStream, new TypeReference<BbServerPage<BbServerProject>>(){});
@@ -104,14 +104,7 @@ public class BitbucketServerApi extends BitbucketApi {
     public @Nonnull
     BbPage<BbRepo> getRepos(@Nonnull String projectKey, int pageNumber, int pageSize){
         try {
-            if(pageNumber <= 0){
-                pageNumber = 1;
-            }
-            if(pageSize <= 0){
-                pageSize = 500; //bitbucket server default
-            }
-            int start = pageSize*(pageNumber-1);
-            InputStream inputStream = Request.Get(String.format("%s?start=%s&limit=%s",baseUrl+"projects/"+projectKey+"/repos/", start,pageSize))
+            InputStream inputStream = Request.Get(String.format("%s?start=%s&limit=%s",baseUrl+"projects/"+projectKey+"/repos/", toStart(pageNumber, pageSize), pageSize))
                     .addHeader("Authorization", basicAuthHeaderValue)
                     .execute().returnContent().asStream();
             return om.readValue(inputStream, new TypeReference<BbServerPage<BbServerRepo>>(){});
@@ -195,7 +188,7 @@ public class BitbucketServerApi extends BitbucketApi {
     }
 
     @Override
-    public boolean fileExists(String projectKey, String repoSlug, String path, String branch){
+    public boolean fileExists(@Nonnull String projectKey, @Nonnull String repoSlug, @Nonnull String path, @Nonnull String branch){
         try {
             URIBuilder uriBuilder = new URIBuilder(String.format("%s/%s/repos/%s/browse/%s",baseUrl+"projects",
                     projectKey, repoSlug, path));
@@ -326,6 +319,14 @@ public class BitbucketServerApi extends BitbucketApi {
                     String.format("No default branch on project %s, repo %s. Please resubmit request with content.branch",
                             projectKey,repo));
         }
+    }
+
+    private int toStart(int pageNumber, int pageSize){
+        int start = pageSize*(pageNumber-1);
+        if(start < 0){
+            start = 0;
+        }
+        return start;
     }
 
     @Extension

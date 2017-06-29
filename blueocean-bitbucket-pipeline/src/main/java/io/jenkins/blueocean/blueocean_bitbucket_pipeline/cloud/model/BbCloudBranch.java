@@ -33,11 +33,6 @@ public class BbCloudBranch extends BbBranch{
     }
 
     @Override
-    public String getId() {
-        return name;
-    }
-
-    @Override
     public String getDisplayId() {
         return name;
     }

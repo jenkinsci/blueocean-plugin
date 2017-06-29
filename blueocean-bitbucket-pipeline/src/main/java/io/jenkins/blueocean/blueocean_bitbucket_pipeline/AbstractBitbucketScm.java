@@ -21,6 +21,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainSpecifi
 import io.jenkins.blueocean.rest.impl.pipeline.scm.AbstractScm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmOrganization;
 import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.rest.pageable.PagedResponse;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.HttpResponse;
@@ -143,7 +144,14 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
 
                 @Override
                 public Iterator<ScmOrganization> iterator(int start, int limit) {
-                    return Lists.transform(api.getOrgs(start, limit).getValues(), new Function<BbOrg, ScmOrganization>() {
+                    if(limit <= 0){
+                        limit = PagedResponse.DEFAULT_LIMIT;
+                    }
+                    if(start <0){
+                        start = 0;
+                    }
+                    int page =  (start/limit) + 1;
+                    return Lists.transform(api.getOrgs(page, limit).getValues(), new Function<BbOrg, ScmOrganization>() {
                         @Nullable
                         @Override
                         public ScmOrganization apply(@Nullable BbOrg input) {

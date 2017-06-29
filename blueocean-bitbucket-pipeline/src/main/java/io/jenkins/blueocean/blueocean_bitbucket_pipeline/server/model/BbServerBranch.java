@@ -38,7 +38,6 @@ public class BbServerBranch extends BbBranch {
         return isDefault;
     }
 
-    @Override
     @JsonProperty("id")
     public String getId() {
         return id;

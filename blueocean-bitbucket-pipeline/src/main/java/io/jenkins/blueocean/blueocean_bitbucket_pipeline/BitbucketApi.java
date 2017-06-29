@@ -22,6 +22,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**
+ * BitBucket APIs needed to perform BlueOcean pipeline creation flow.
+ *
  * @author Vivek Pandey
  */
 @Restricted(NoExternalUse.class)
@@ -35,7 +37,7 @@ public abstract class BitbucketApi {
     public static final String X_BB_API_TEST_MODE_HEADER="X_BB_API_TEST_MODE_HEADER";
 
 
-    protected BitbucketApi(String apiUrl, StandardUsernamePasswordCredentials credentials) {
+    protected BitbucketApi(@Nonnull String apiUrl, @Nonnull StandardUsernamePasswordCredentials credentials) {
         this.apiUrl = ensureTrailingSlash(apiUrl);
         this.credentials = credentials;
         try {
@@ -48,26 +50,91 @@ public abstract class BitbucketApi {
         }
     }
 
+    /**
+     * @return {@link BbUser}
+     */
     public @Nonnull BbUser getUser(){
         return getUser(this.userName);
     }
 
-    public @Nonnull abstract BbUser getUser(@Nonnull String userName);
+    /**
+     * Gives user for given userName.
+     *
+     * @param userSlug name of user, {@link BbUser#getSlug()}
+     *
+     * @return {@link BbUser}
+     */
+    public @Nonnull abstract BbUser getUser(@Nonnull String userSlug);
 
-    public @Nonnull abstract BbPage<BbOrg> getOrgs(int start, int limit);
+    /**
+     * Gives collection of Bitbucket organizations (Project/Team).
+     *
+     * @param pageNumber page number
+     * @param pageSize number of items in a page
+     * @return Collection of {@link BbOrg}s
+     */
+    public @Nonnull abstract BbPage<BbOrg> getOrgs(int pageNumber, int pageSize);
 
-    public @Nonnull abstract BbOrg getOrg(@Nonnull String projectName);
+    /**
+     * Gives {@link BbOrg} for given project/team name.
+     *
+     * @param orgName Bitbucket project/team key {@link BbOrg#getKey()}
+     *
+     * @return {@link BbOrg} instance
+     */
+    public @Nonnull abstract BbOrg getOrg(@Nonnull String orgName);
 
+    /**
+     * Gives {@link BbRepo}
+     *
+     * @param orgId Bitbucket project/team key {@link BbOrg#getKey()}
+     * @param repoSlug repo slug {@link BbRepo#getSlug()}
+     * @return {@link BbRepo} instance
+     */
     public @Nonnull abstract BbRepo getRepo(@Nonnull String orgId, String repoSlug);
 
-    public @Nonnull abstract BbPage<BbRepo> getRepos(@Nonnull String projectKey, int pageNumber, int pageSize);
+    /**
+     * Gives collection of {@link BbRepo}s.
+     *
+     * @param orgId Bitbucket project/team key {@link BbOrg#getKey()}
+     * @param pageNumber page number
+     * @param pageSize page size
+     * @return
+     */
+    public @Nonnull abstract BbPage<BbRepo> getRepos(@Nonnull String orgId, int pageNumber, int pageSize);
 
+    /**
+     * Gives content of files in Bitbucket.
+     *
+     * If given path is not available then {@link io.jenkins.blueocean.commons.ServiceException.NotFoundException}
+     * is thrown.
+     *
+     * @param orgId Bitbucket project/team key {@link BbOrg#getKey()}
+     * @param repoSlug Bitbucket repo slig {@link BbRepo#getSlug()}
+     * @param path path to file in bitbucket repo, e.g. "Jenkinsfile"
+     * @param commitId commitId of branch, path will be served off it.
+     * @return content
+     */
     public @Nonnull abstract String getContent(@Nonnull String orgId,
                                                @Nonnull String repoSlug,
                                                @Nonnull String path,
                                                @Nonnull String commitId);
 
-    public @Nonnull abstract BbSaveContentResponse saveContent(@Nonnull String projectKey,
+
+    /**
+     * Saves file to Bitbucket.
+     *
+     * @param orgId Bitbucket project/team key {@link BbOrg#getKey()}
+     * @param repoSlug Repo slug {@link BbRepo#getSlug()}
+     * @param path destination path, e.g. "Jenkinsfile"
+     * @param content file content to save
+     * @param commitMessage commit message
+     * @param branch branch name. If null then implementation should save on default branch
+     * @param commitId if not provided, then file should be saved on tip of branch.
+     * @return {@link BbSaveContentResponse} on successful save.
+     * @throws io.jenkins.blueocean.commons.ServiceException.ConflictException in case of conflict during save
+     */
+    public @Nonnull abstract BbSaveContentResponse saveContent(@Nonnull String orgId,
                                                                @Nonnull String repoSlug,
                                                                @Nonnull String path,
                                                                @Nonnull String content,
@@ -75,25 +142,71 @@ public abstract class BitbucketApi {
                                                                @Nullable String branch,
                                                                @Nullable String commitId);
 
-    public abstract boolean fileExists(String projectKey, String repoSlug, String path, String branch);
+    /**
+     * Checks if a file exists in BitBucket repo.
+     *
+     * @param orgId Bitbucket project/team key {@link BbOrg#getKey()}
+     * @param repoSlug repo slug {@link BbRepo#getSlug()}
+     * @param path path of file, e.g. "Jenkinsfile"
+     * @param branch Bitbucket branch {@link BbBranch#getDisplayId()}
+     * @return true if file exists
+     */
+    public abstract boolean fileExists(@Nonnull String orgId,
+                                       @Nonnull String repoSlug,
+                                       @Nonnull String path,
+                                       @Nonnull String branch);
 
+    /**
+     * Gives BitBucket branch
+     *
+     * @param orgId Bitbucket project/team key {@link BbOrg#getKey()}
+     * @param repoSlug Repo slug {@link BbRepo#getSlug()}
+     * @param branch branch name {@link BbBranch#getDisplayId()}
+     * @return {@link BbBranch} instance. Could be null if there is no such branch.
+     */
     public @CheckForNull abstract BbBranch getBranch(@Nonnull String orgId, @Nonnull String repoSlug, @Nonnull String branch);
 
+    /**
+     * Create branch.
+     *
+     * @param orgId Bitbucket project/team key {@link BbOrg#getKey()}
+     * @param repoSlug repo slug {@link BbRepo#getSlug()}
+     * @param payload branch payload
+     * @return Created branch
+     */
     public @Nonnull abstract BbBranch createBranch(@Nonnull String orgId,
                                                    @Nonnull String repoSlug,
                                                    Map<String, String> payload);
 
+    /**
+     * Get default branch of a repo.
+     *
+     * @param orgId Bitbucket project/team key {@link BbOrg#getKey()}
+     * @param repoSlug Repo slug {@link BbRepo#getSlug()}
+     * @return Default branch. null if it's empty repo or if the scm doesn't support default branch concept.
+     */
     public @CheckForNull abstract BbBranch getDefaultBranch(@Nonnull String orgId, @Nonnull String repoSlug);
 
+    /**
+     * Checks if its empty/un-initialized
+     * @param orgId Bitbucket project/team key {@link BbOrg#getKey()}
+     * @param repoSlug Repo slug {@link BbRepo#getSlug()}
+     * @return true if this is empty or un-initialized repo
+     */
     public abstract boolean isEmptyRepo(@NotNull String orgId, @Nonnull String repoSlug);
 
+    /**
+     * Converts thrown exception during BB HTTP call in to JSON serializable {@link ServiceException}
+     *
+     * @param e exception
+     * @return {@link ServiceException} instance
+     */
     protected ServiceException handleException(Exception e){
         if(e instanceof HttpResponseException){
             return new ServiceException(((HttpResponseException) e).getStatusCode(), e.getMessage(), e);
         }
         return new ServiceException.UnexpectedErrorException(e.getMessage(), e);
     }
-
 
     private String ensureTrailingSlash(String url){
         if(url.charAt(url.length() - 1) != '/'){

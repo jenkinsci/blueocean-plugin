@@ -66,7 +66,7 @@ public class BitbucketCloudApi extends BitbucketApi {
 
     @Nonnull
     @Override
-    public BbPage<BbOrg> getOrgs(int start, int limit) {
+    public BbPage<BbOrg> getOrgs(int pageNumber, int pageSize) {
         try {
             /*
              * Bitbucket teams API work with three roles: admin, contributor, member
@@ -76,23 +76,20 @@ public class BitbucketCloudApi extends BitbucketApi {
              *
              * see: https://developer.atlassian.com/bitbucket/api/2/reference/resource/teams
              */
-            InputStream inputStream = Request.Get(String.format("%s&page=%s&pagelen=%s",baseUrl+"teams/?role=contributor", getPage(start,limit),limit))
+            if(pageNumber <= 0){
+                pageNumber = 1;
+            }
+
+            if(pageSize <=0){
+                pageSize = PagedResponse.DEFAULT_LIMIT;
+            }
+            InputStream inputStream = Request.Get(String.format("%s&page=%s&pagelen=%s",baseUrl+"teams/?role=contributor", pageNumber,pageSize))
                     .addHeader("Authorization", basicAuthHeaderValue)
                     .execute().returnContent().asStream();
             return om.readValue(inputStream, new TypeReference<BbCloudPage<BbCloudTeam>>(){});
         } catch (IOException e) {
             throw handleException(e);
         }
-    }
-
-    private int getPage(int start, int limit){
-        if(limit <= 0){
-            limit = PagedResponse.DEFAULT_LIMIT;
-        }
-        if(start <0){
-            start = 0;
-        }
-        return (start/limit) + 1;
     }
 
     @Nonnull
@@ -125,7 +122,7 @@ public class BitbucketCloudApi extends BitbucketApi {
     @Override
     public BbPage<BbRepo> getRepos(@Nonnull String orgId, int pageNumber, int pageSize) {
         try {
-            InputStream inputStream = Request.Get(String.format("%s?page=%s&limit=%s",baseUrl+"repositories/"+orgId, pageNumber,pageSize))
+            InputStream inputStream = Request.Get(String.format("%s?page=%s&limit=%s",baseUrl+"repositories/"+orgId, pageNumber, pageSize))
                     .addHeader("Authorization", basicAuthHeaderValue)
                     .execute().returnContent().asStream();
             return om.readValue(inputStream, new TypeReference<BbCloudPage<BbCloudRepo>>(){});
@@ -189,7 +186,7 @@ public class BitbucketCloudApi extends BitbucketApi {
     }
 
     @Override
-    public boolean fileExists(String projectKey, String repoSlug, String path, String branch) {
+    public boolean fileExists(@Nonnull String orgId, @Nonnull String repoSlug, @Nonnull String path,  @Nonnull String branch) {
         throw new NotImplementedException("Not implemented");
     }
 

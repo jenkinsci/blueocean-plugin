@@ -49,11 +49,6 @@ public class BbCloudRepo extends BbRepo {
     }
 
     @Override
-    public String getScmId() {
-        return null;
-    }
-
-    @Override
     public boolean isGit() {
         return scm.equalsIgnoreCase("git");
     }
