@@ -288,10 +288,6 @@ public class PipelineStepImpl extends BluePipelineStep {
         return inputStep.canSubmit();
     }
 
-    static String removeIllegalCharacters(String input) {
-        return CharMatcher.JAVA_ISO_CONTROL.and(CharMatcher.anyOf("\r\n\t").negate()).removeFrom(input);
-    }
-
     @Override
     public Link getLink() {
         return self;
