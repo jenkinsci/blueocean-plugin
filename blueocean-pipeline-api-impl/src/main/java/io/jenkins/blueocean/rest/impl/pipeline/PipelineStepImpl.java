@@ -77,7 +77,7 @@ public class PipelineStepImpl extends BluePipelineStep {
     public String getDisplayDescription() {
         String displayDescription = ArgumentsAction.getStepArgumentsAsString(node.getNode());
         if (displayDescription != null) {
-            // Remove any control characters that may have found their way out of a script
+            // JENKINS-45099 Remove any control characters that may have found their way out of a script
             displayDescription = CharMatcher.JAVA_ISO_CONTROL.and(CharMatcher.anyOf("\r\n\t").negate()).removeFrom(displayDescription);
         }
         return displayDescription;
