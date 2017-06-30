@@ -1,9 +1,10 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 
 import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSource;
+import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSourceBuilder;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.BitbucketServerApi;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
@@ -30,17 +31,11 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
 
     @Override
     protected SCMSource createSource(@Nonnull MultiBranchProject project, @Nonnull BlueScmConfig scmConfig) {
-        BitbucketSCMSource bitbucketSCMSource =  new BitbucketSCMSource(null, (String)scmConfig.getConfig().get("repoOwner"), (String)scmConfig.getConfig().get("repository"));
-        bitbucketSCMSource.setCredentialsId(scmConfig.getCredentialId());
-
-        //Set bb server uri only in case we are talking to BB server
-        String bbUri = scmConfig.getUri();
-        if(StringUtils.isNotBlank(bbUri)) {
-            BitbucketApiFactory apiFactory = BitbucketApiFactory.resolve(bbUri);
-            if(apiFactory instanceof BitbucketServerApi.BitbucketServerApiFactory){
-                bitbucketSCMSource.setBitbucketServerUrl(scmConfig.getUri());
-            }
-        }
+        /* scmConfig.uri presence is already validated in {@link #validate} but lets check just in case */
+        Preconditions.checkNotNull(scmConfig.getUri(), "scmConfig.uri must be present");
+        BitbucketSCMSource bitbucketSCMSource = new BitbucketSCMSourceBuilder(null, scmConfig.getUri(), scmConfig.getCredentialId(),
+                (String)scmConfig.getConfig().get("repoOwner"),
+                (String)scmConfig.getConfig().get("repository")).build();
 
         //Setup Jenkins root url, if not set bitbucket cloud notification will fail
         JenkinsLocationConfiguration jenkinsLocationConfiguration = JenkinsLocationConfiguration.get();
@@ -80,6 +75,13 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
                     ErrorMessage.Error.ErrorCodes.MISSING.toString(),
                     "repository is required"));
         }
+
+        if(StringUtils.isBlank(scmConfig.getUri())){
+            errors.add(new ErrorMessage.Error("scmConfig.uri",
+                    ErrorMessage.Error.ErrorCodes.MISSING.toString(),
+                    "uri is required"));
+        }
+
         return errors;
     }
 }
