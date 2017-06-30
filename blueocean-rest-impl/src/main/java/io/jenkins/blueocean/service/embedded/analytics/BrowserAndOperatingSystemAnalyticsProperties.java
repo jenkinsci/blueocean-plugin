@@ -45,15 +45,12 @@ public class BrowserAndOperatingSystemAnalyticsProperties extends AdditionalAnal
             return null;
         }
         Client client = PARSER.parse(userAgent);
-
         String browserFamily = client.userAgent.family;
         // If we can't find the browser family then we shouldn't record anything
         if (browserFamily == null) {
             return null;
         }
-
         Map<String, Object> props = Maps.newHashMap();
-
         props.put("browserFamily", browserFamily);
         String browserVersionMajor = client.userAgent.major;
         // Versions are useful if they are available

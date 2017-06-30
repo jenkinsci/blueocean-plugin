@@ -10,8 +10,6 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
-import java.util.Map;
-
 import static org.powermock.api.mockito.PowerMockito.*;
 
 @RunWith(PowerMockRunner.class)
@@ -20,32 +18,29 @@ public class BrowserAndOperatingSystemAnalyticsPropertiesTest {
 
     @Test
     public void parsesUserAgentAndCreatesPropertiesForChrome() throws Exception {
-        Map<String, Object> expected = ImmutableMap.<String, Object>builder()
-            .put("browserVersionMajor", 41)
-            .put("osVersionMinor", 10)
-            .put("osFamily", "Mac OS X")
-            .put("browserFamily", "Chrome")
-            .put("browserVersionMinor", 0)
-            .put("osVersionMajor", 10)
-            .build();
         BrowserAndOperatingSystemAnalyticsProperties props = setup("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_10_1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2227.1 Safari/537.36");
         ImmutableMap<String, Object> actual = ImmutableMap.copyOf(props.properties(new Analytics.TrackRequest("bob", null)));
-        Assert.assertEquals(expected, actual);
+        Assert.assertEquals(6, actual.size());
+        Assert.assertEquals("41", actual.get("browserVersionMajor"));
+        Assert.assertEquals("10", actual.get("osVersionMinor"));
+        Assert.assertEquals("Mac OS X", actual.get("osFamily"));
+        Assert.assertEquals("Chrome", actual.get("browserFamily"));
+        Assert.assertEquals("0", actual.get("browserVersionMinor"));
+        Assert.assertEquals("10", actual.get("osVersionMajor"));
     }
 
     @Test
     public void parsesUserAgentAndCreatesPropertiesForSafari() throws Exception {
-        Map<String, Object> expected = ImmutableMap.<String, Object>builder()
-            .put("browserVersionMajor", 7)
-            .put("osVersionMinor", 9)
-            .put("osFamily", "Mac OS X")
-            .put("browserFamily", "Safari")
-            .put("browserVersionMinor", 0)
-            .put("osVersionMajor", 10)
-            .build();
         BrowserAndOperatingSystemAnalyticsProperties props = setup("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_9_3) AppleWebKit/537.75.14 (KHTML, like Gecko) Version/7.0.3 Safari/7046A194A");
         ImmutableMap<String, Object> actual = ImmutableMap.copyOf(props.properties(new Analytics.TrackRequest("bob", null)));
-        Assert.assertEquals(expected.entrySet(), actual.entrySet());
+
+        Assert.assertEquals(6, actual.size());
+        Assert.assertEquals("7", actual.get("browserVersionMajor"));
+        Assert.assertEquals("9", actual.get("osVersionMinor"));
+        Assert.assertEquals("Mac OS X", actual.get("osFamily"));
+        Assert.assertEquals("Safari", actual.get("browserFamily"));
+        Assert.assertEquals("0", actual.get("browserVersionMinor"));
+        Assert.assertEquals("10", actual.get("osVersionMajor"));
     }
 
     private BrowserAndOperatingSystemAnalyticsProperties setup(String userAgent) {
