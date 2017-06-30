@@ -124,7 +124,13 @@ class RunDetailsHeader extends Component {
             <div className="u-label-value" title={commitLabel + ': ' + commitIdString}>
                 <label className={labelClassName}>{ commitLabel }:</label>
                 <span className="commit">
-                     { commitIdString.substring(0, 7) }
+                    {run.changeSet.length && run.changeSet[0] !== undefined ? (
+                        <a title="Opens commit in a new window" target="_blank" href={run.changeSet[0].url}>
+                           { commitIdString.substring(0, 7) }
+                        </a>
+                    ) : (
+                        commitIdString.substring(0, 7)
+                    )}
                 </span>
             </div>
         );
