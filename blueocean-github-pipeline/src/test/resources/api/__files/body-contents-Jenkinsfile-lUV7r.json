@@ -1,0 +1,18 @@
+{
+  "name": "Jenkinsfile",
+  "path": "Jenkinsfile",
+  "sha": "e23b8ef5c2c4244889bf94db6c05cc08ea138aef",
+  "size": 55,
+  "url": "https://api.github.com/repos/cloudbeers/PR-demo/contents/Jenkinsfile?ref=master",
+  "html_url": "https://github.com/cloudbeers/PR-demo/blob/master/Jenkinsfile",
+  "git_url": "https://api.github.com/repos/cloudbeers/PR-demo/git/blobs/e23b8ef5c2c4244889bf94db6c05cc08ea138aef",
+  "download_url": "https://raw.githubusercontent.com/cloudbeers/PR-demo/master/Jenkinsfile",
+  "type": "file",
+  "content": "c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\nCnNsZWVwIDE1Cg==\n",
+  "encoding": "base64",
+  "_links": {
+    "self": "https://api.github.com/repos/cloudbeers/PR-demo/contents/Jenkinsfile?ref=master",
+    "git": "https://api.github.com/repos/cloudbeers/PR-demo/git/blobs/e23b8ef5c2c4244889bf94db6c05cc08ea138aef",
+    "html": "https://github.com/cloudbeers/PR-demo/blob/master/Jenkinsfile"
+  }
+}
