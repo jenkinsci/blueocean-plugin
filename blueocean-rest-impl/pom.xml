@@ -116,12 +116,6 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>com.spotify</groupId>
-            <artifactId>hamcrest</artifactId>
-            <version></version>
-        </dependency>
     </dependencies>
 
     <build>
