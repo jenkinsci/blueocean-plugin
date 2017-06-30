@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.google.common.base.CharMatcher;
 import com.google.common.base.Predicate;
 import hudson.ExtensionList;
 import hudson.FilePath;
@@ -74,7 +75,12 @@ public class PipelineStepImpl extends BluePipelineStep {
 
     @Override
     public String getDisplayDescription() {
-        return ArgumentsAction.getStepArgumentsAsString(node.getNode());
+        String displayDescription = ArgumentsAction.getStepArgumentsAsString(node.getNode());
+        if (displayDescription != null) {
+            // Remove any control characters that may have found their way out of a script
+            displayDescription = CharMatcher.JAVA_ISO_CONTROL.and(CharMatcher.anyOf("\r\n\t").negate()).removeFrom(displayDescription);
+        }
+        return displayDescription;
     }
 
     @Override
@@ -280,6 +286,10 @@ public class PipelineStepImpl extends BluePipelineStep {
     }
     private boolean canSubmit(InputStep inputStep){
         return inputStep.canSubmit();
+    }
+
+    static String removeIllegalCharacters(String input) {
+        return CharMatcher.JAVA_ISO_CONTROL.and(CharMatcher.anyOf("\r\n\t").negate()).removeFrom(input);
     }
 
     @Override
