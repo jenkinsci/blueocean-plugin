@@ -8,6 +8,7 @@ import hudson.model.Action;
 import hudson.model.FileParameterValue;
 import hudson.model.ParameterDefinition;
 import hudson.model.ParameterValue;
+import io.jenkins.blueocean.commons.JSON;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
@@ -74,7 +75,12 @@ public class PipelineStepImpl extends BluePipelineStep {
 
     @Override
     public String getDisplayDescription() {
-        return ArgumentsAction.getStepArgumentsAsString(node.getNode());
+        String displayDescription = ArgumentsAction.getStepArgumentsAsString(node.getNode());
+        if (displayDescription != null) {
+            // JENKINS-45099 Remove any control characters that may have found their way out of a script
+            displayDescription = JSON.sanitizeString(displayDescription);
+        }
+        return displayDescription;
     }
 
     @Override
