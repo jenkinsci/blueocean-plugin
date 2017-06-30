@@ -13,7 +13,7 @@ public class JSON {
      * @return sanitized string
      */
     public static String sanitizeString(@Nonnull String input) {
-        return CharMatcher.JAVA_ISO_CONTROL.and(CharMatcher.anyOf("\r\n\t").negate()).removeFrom(input);
+        return CharMatcher.JAVA_ISO_CONTROL.and(CharMatcher.anyOf("\r\n\t")).removeFrom(input);
     }
 
     private JSON() {}
