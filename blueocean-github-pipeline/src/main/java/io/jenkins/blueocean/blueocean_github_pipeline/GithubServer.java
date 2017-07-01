@@ -1,25 +1,17 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
-import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.commons.stapler.TreeResponse;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
+import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
+import org.kohsuke.stapler.verb.GET;
 
-import static hudson.Util.rawEncode;
-
-@ExportedBean
-public class GithubServer extends Resource {
-
-    public static final String NAME = "name";
-    public static final String API_URL = "apiUrl";
-
+public class GithubServer extends ScmServerEndpoint {
     private final Endpoint endpoint;
-    private final Link parent;
 
-    GithubServer(Endpoint endpoint, Link parent) {
+    GithubServer(Endpoint endpoint) {
         this.endpoint = endpoint;
-        this.parent = parent;
     }
 
     @Exported(name = NAME)
@@ -32,8 +24,9 @@ public class GithubServer extends Resource {
         return endpoint.getApiUri();
     }
 
-    @Override
-    public Link getLink() {
-        return parent.rel(rawEncode(endpoint.getName()));
+    @WebMethod(name="") @GET
+    @TreeResponse
+    public Object getState() {
+        return this;
     }
 }

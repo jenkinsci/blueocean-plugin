@@ -4,6 +4,7 @@ import hudson.Extension;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.AbstractBitbucketScm;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 import org.apache.commons.codec.digest.DigestUtils;
 
@@ -30,6 +31,11 @@ public class BitbucketServerScm extends AbstractBitbucketScm {
     @Override
     public String getUri() {
         return getApiUrlParameter();
+    }
+
+    @Override
+    public ScmServerEndpointContainer getServers() {
+        return new BitbucketServerEndpointContainer(this);
     }
 
     @Override

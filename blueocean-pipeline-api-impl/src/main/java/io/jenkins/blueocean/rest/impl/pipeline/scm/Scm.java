@@ -53,6 +53,16 @@ public abstract class Scm extends Resource {
     public abstract Container<ScmOrganization> getOrganizations();
 
     /**
+     * List of {@link ScmServerEndpoint}s.
+     *
+     * SCMs that do not support multiple instances can return empty list or null.
+     *
+     * @return list of {@link ScmServerEndpoint}s
+     */
+    @Navigable
+    public abstract ScmServerEndpointContainer getServers();
+
+    /**
      * Validate given credential parameters for authentication and authorization.
      *
      * Response is

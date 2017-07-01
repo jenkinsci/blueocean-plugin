@@ -9,7 +9,8 @@ import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import net.sf.json.JSONObject;
 import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -28,7 +29,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GithubServerContainer extends Container<GithubServer> {
+public class GithubServerContainer extends ScmServerEndpointContainer {
 
     private static final Logger LOGGER = Logger.getLogger(GithubServerContainer.class.getName());
 
@@ -42,7 +43,6 @@ public class GithubServerContainer extends Container<GithubServer> {
     @WebMethod(name="")
     @TreeResponse
     public @CheckForNull GithubServer create(@JsonBody JSONObject request) {
-
         List<ErrorMessage.Error> errors = Lists.newLinkedList();
 
         // Validate name
@@ -50,7 +50,7 @@ public class GithubServerContainer extends Container<GithubServer> {
         if (StringUtils.isEmpty(name)) {
             errors.add(new ErrorMessage.Error(GithubServer.NAME, ErrorMessage.Error.ErrorCodes.MISSING.toString(), GithubServer.NAME + " is required"));
         } else {
-            GithubServer byName = findByName(name);
+            ScmServerEndpoint byName = findByName(name);
             if (byName != null) {
                 errors.add(new ErrorMessage.Error(GithubServer.NAME, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), GithubServer.NAME + " already exists for server at '" + byName.getApiUrl() + "'"));
             }
@@ -61,7 +61,7 @@ public class GithubServerContainer extends Container<GithubServer> {
         if (StringUtils.isEmpty(url)) {
             errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.MISSING.toString(), GithubServer.API_URL + " is required"));
         } else {
-            GithubServer byUrl = findByURL(url);
+            ScmServerEndpoint byUrl = findByURL(url);
             if (byUrl != null) {
                 errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), GithubServer.API_URL + " is already registered as '" + byUrl.getName() + "'"));
             }
@@ -97,7 +97,7 @@ public class GithubServerContainer extends Container<GithubServer> {
                 endpoints.add(endpoint);
                 config.setEndpoints(endpoints);
                 config.save();
-                server = new GithubServer(endpoint, getLink());
+                server = new GithubServer(endpoint);
             }
             return server;
         }
@@ -109,16 +109,17 @@ public class GithubServerContainer extends Container<GithubServer> {
     }
 
     @Override
-    public GithubServer get(final String name) {
-        GithubServer githubServer = findByName(name);
+    public ScmServerEndpoint get(final String name) {
+        ScmServerEndpoint githubServer = findByName(name);
         if (githubServer == null) {
             throw new ServiceException.NotFoundException("not found");
         }
         return githubServer;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
-    public Iterator<GithubServer> iterator() {
+    public Iterator<ScmServerEndpoint> iterator() {
         GitHubConfiguration config = GitHubConfiguration.get();
         List<Endpoint> endpoints;
         synchronized (config) {
@@ -129,27 +130,27 @@ public class GithubServerContainer extends Container<GithubServer> {
                 }
             }).sortedCopy(config.getEndpoints());
         }
-        return Iterators.transform(endpoints.iterator(), new Function<Endpoint, GithubServer>() {
+        return Iterators.transform(endpoints.iterator(), new Function<Endpoint, ScmServerEndpoint>() {
             @Override
-            public GithubServer apply(Endpoint input) {
-                return new GithubServer(input, getLink());
+            public ScmServerEndpoint apply(Endpoint input) {
+                return new GithubServer(input);
             }
         });
     }
 
-    private GithubServer findByName(final String name) {
-        return Iterators.find(iterator(), new Predicate<GithubServer>() {
+    private ScmServerEndpoint findByName(final String name) {
+        return Iterators.find(iterator(), new Predicate<ScmServerEndpoint>() {
             @Override
-            public boolean apply(GithubServer input) {
+            public boolean apply(ScmServerEndpoint input) {
                 return input.getName().equals(name);
             }
         }, null);
     }
 
-    private GithubServer findByURL(final String url) {
-        return Iterators.find(iterator(), new Predicate<GithubServer>() {
+    private ScmServerEndpoint findByURL(final String url) {
+        return Iterators.find(iterator(), new Predicate<ScmServerEndpoint>() {
             @Override
-            public boolean apply(GithubServer input) {
+            public boolean apply(ScmServerEndpoint input) {
                 return input.getApiUrl().equals(url);
             }
         }, null);

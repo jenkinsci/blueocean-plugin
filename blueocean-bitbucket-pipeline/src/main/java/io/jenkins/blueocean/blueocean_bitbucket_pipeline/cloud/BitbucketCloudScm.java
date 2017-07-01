@@ -4,6 +4,7 @@ import hudson.Extension;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.AbstractBitbucketScm;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 
 import javax.annotation.Nonnull;
@@ -24,6 +25,11 @@ public class BitbucketCloudScm extends AbstractBitbucketScm {
     @Override
     public String getId() {
         return ID;
+    }
+
+    @Override
+    public ScmServerEndpointContainer getServers() {
+        return null;
     }
 
     @Nonnull
