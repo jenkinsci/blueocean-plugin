@@ -59,13 +59,13 @@ public class ActivityPage {
 
     public ActivityPage checkUrl() {
         wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity"), 30000);
-        wait.until(By.cssSelector("article.activity"), 50000);
+        wait.until(By.cssSelector("article.activity"), 60000);
         return this;
     }
 
     public ActivityPage checkUrl(String filter) {
         wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity?branch=" + URLEncoder.encode(URLEncoder.encode(filter))), 30000);
-        wait.until(By.cssSelector("article.activity"));
+        wait.until(By.cssSelector("article.activity"), 60000);
         return this;
     }
 
