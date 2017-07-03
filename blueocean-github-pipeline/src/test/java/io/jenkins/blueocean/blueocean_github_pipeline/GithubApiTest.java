@@ -150,4 +150,17 @@ public class GithubApiTest extends GithubMockBase {
 
         assertEquals("RunMyProcess-task", resp.get("name"));
     }
+
+    @Test
+    public void getOrganizationsGithubEnterprise() throws Exception {
+        String credentialId = createGithubEnterpriseCredential();
+
+        List l = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .get("/organizations/jenkins/scm/github-enterprise/organizations/?credentialId=" + credentialId+"&apiUrl="+githubApiUrl)
+            .build(List.class);
+
+        Assert.assertTrue(l.size() > 0);
+    }
 }
