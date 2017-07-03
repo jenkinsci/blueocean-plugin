@@ -119,7 +119,7 @@ public class BranchImpl extends PipelineImpl {
 
         public static Branch getBranch(final Job job) {
             try {
-                return Caches.BRANCH_METADATA.get(job.getFullName()).cacheValue;
+                return Caches.BRANCH_METADATA.get(job.getFullName()).orNull();
             } catch (ExecutionException e) {
                 throw new ServiceException.UnexpectedErrorException("loading branch metadata for '" + job.getFullName() + "'", e);
             }
@@ -175,7 +175,7 @@ public class BranchImpl extends PipelineImpl {
 
         public static PullRequest get(final Job job) {
             try {
-                return Caches.PULL_REQUEST_METADATA.get(job.getFullName()).cacheValue;
+                return Caches.PULL_REQUEST_METADATA.get(job.getFullName()).orNull();
             } catch (ExecutionException e) {
                 throw new ServiceException.UnexpectedErrorException("loading pr metadata for '" + job.getFullName() + "'", e);
             }
