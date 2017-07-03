@@ -36,6 +36,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -207,5 +208,14 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
             return null;
         }
     }
+
+    static final Comparator<BlueRun> LATEST_RUN_START_TIME_COMPARATOR = new Comparator<BlueRun>() {
+        @Override
+        public int compare(BlueRun o1, BlueRun o2) {
+            Long t1 = (o1 != null  && o1.getStartTime() != null) ? o1.getStartTime().getTime() : 0;
+            Long t2 = (o2 != null  && o2.getStartTime() != null) ? o2.getStartTime().getTime() : 0;
+            return t2.compareTo(t1);
+        }
+    };
 
 }

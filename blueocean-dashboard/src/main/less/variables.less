@@ -13,6 +13,62 @@
 
 @errorscreen-bg-color: #949393;
 
+// NB: Until we can import them, these decls must be manually kept in sync with JDL
 
-@brand-primary:         #4A90E2;
-@brand-primary-dark:    #1C436A;
+@brand-primary:             #4A90E2;
+@brand-primary-dark:        #1C436A;
+
+@action-button:             rgba(53,64,82, 0.25);
+@action-button--hover:      @brand-primary;
+
+@action-button-dark:        white;
+@action-button-dark--hover: white;
+
+.action-button-colors {
+
+    // default (light) themeing
+
+    .svg-icon {
+        // Default fill for basic shapes, can be undone with a <g fill="none">
+        fill: @action-button;
+
+        .action-button-fill {
+            // Named style to re-apply correct fill in more complex shapes
+            fill: @action-button;
+        }
+
+        &:hover {
+            fill: @action-button--hover; // Default
+
+            .action-button-fill {
+                fill: @action-button--hover; // Named
+            }
+        }
+    }
+
+    // dark themeing
+
+    &.dark {
+        .btn {
+            background: transparent;
+            color: @action-button-dark;
+            border-color: @action-button-dark;
+        }
+
+        .svg-icon {
+            fill: @action-button-dark; // Default
+
+            .action-button-fill {
+                fill: @action-button-dark; // Named
+            }
+
+            &:hover {
+                fill: @action-button-dark--hover; // Default
+
+                .action-button-fill {
+                    fill: @action-button-dark--hover; // Named
+                }
+            }
+        }
+    }
+}
