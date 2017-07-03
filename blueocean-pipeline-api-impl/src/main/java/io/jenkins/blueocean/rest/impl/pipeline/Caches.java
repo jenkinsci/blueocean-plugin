@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
@@ -16,6 +17,7 @@ import jenkins.scm.api.metadata.ObjectMetadataAction;
 import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
 import jenkins.scm.api.mixin.ChangeRequestSCMHead;
 
+import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
 
 class Caches {
@@ -30,13 +32,13 @@ class Caches {
      */
     static final long BRANCH_METADATA_CACHE_MAX_SIZE = Long.getLong("BRANCH_METADATA_CACHE_MAX_SIZE", 10000);
 
-    static final LoadingCache<String, PullRequest> PULL_REQUEST_METADATA = CacheBuilder.newBuilder()
+    static final LoadingCache<String, Optional<PullRequest>> PULL_REQUEST_METADATA = CacheBuilder.newBuilder()
             .maximumSize(PR_METADATA_CACHE_MAX_SIZE)
             .expireAfterAccess(1, TimeUnit.DAYS)
             .build(new PullRequestCacheLoader(Jenkins.getInstance().getItemGroup()));
 
 
-    static final LoadingCache<String, Branch> BRANCH_METADATA = CacheBuilder.newBuilder()
+    static final LoadingCache<String, Optional<Branch>> BRANCH_METADATA = CacheBuilder.newBuilder()
             .maximumSize(BRANCH_METADATA_CACHE_MAX_SIZE)
             .expireAfterAccess(1, TimeUnit.DAYS)
             .build(new BranchCacheLoader(Jenkins.getInstance().getItemGroup()));
@@ -75,7 +77,7 @@ class Caches {
         }
     }
 
-    static class BranchCacheLoader extends CacheLoader<String, Branch> {
+    static class BranchCacheLoader extends CacheLoader<String, Optional<Branch>> {
         private Jenkins jenkins;
 
         BranchCacheLoader(Jenkins jenkins) {
@@ -83,22 +85,22 @@ class Caches {
         }
 
         @Override
-        public Branch load(String key) throws Exception {
+        public Optional<Branch> load(String key) throws Exception {
             Job job = jenkins.getItemByFullName(key, Job.class);
             if (job == null) {
-                return null;
+                return Optional.absent();
             }
             ObjectMetadataAction om = job.getAction(ObjectMetadataAction.class);
             PrimaryInstanceMetadataAction pima = job.getAction(PrimaryInstanceMetadataAction.class);
             if (om == null && pima == null) {
-                return null;
+                return Optional.absent();
             }
             String url = om != null && om.getObjectUrl() != null ? om.getObjectUrl() : null;
-            return new Branch(url, pima != null);
+            return Optional.of(new Branch(url, pima != null));
         }
     }
 
-    static class PullRequestCacheLoader extends CacheLoader<String, PullRequest> {
+    static class PullRequestCacheLoader extends CacheLoader<String, Optional<PullRequest>> {
         private Jenkins jenkins;
 
         PullRequestCacheLoader(Jenkins jenkins) {
@@ -106,10 +108,10 @@ class Caches {
         }
 
         @Override
-        public PullRequest load(String key) throws Exception {
+        public Optional<PullRequest> load(String key) throws Exception {
             Job job = jenkins.getItemByFullName(key, Job.class);
             if (job == null) {
-                return null;
+                return Optional.absent();
             }
             // TODO probably want to be using SCMHeadCategory instances to categorize them instead of hard-coding for PRs
             SCMHead head = SCMHead.HeadByItem.findHead(job);
@@ -117,14 +119,15 @@ class Caches {
                 ChangeRequestSCMHead cr = (ChangeRequestSCMHead) head;
                 ObjectMetadataAction om = job.getAction(ObjectMetadataAction.class);
                 ContributorMetadataAction cm = job.getAction(ContributorMetadataAction.class);
-                return new PullRequest(
-                    cr.getId(),
-                    om != null ? om.getObjectUrl() : null,
-                    om != null ? om.getObjectDisplayName() : null,
-                    cm != null ? cm.getContributor() : null
+                return Optional.of(new PullRequest(
+                        cr.getId(),
+                        om != null ? om.getObjectUrl() : null,
+                        om != null ? om.getObjectDisplayName() : null,
+                        cm != null ? cm.getContributor() : null
+                    )
                 );
             }
-            return null;
+            return Optional.absent();
         }
     }
 
