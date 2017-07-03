@@ -88,6 +88,18 @@
                                         <allowedImport>hudson.model.Run</allowedImport>
                                     </allowedImports>
                                 </restrictImports>
+                                <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
+                                    <basePackage>io.jenkins.blueocean.rest.analytics.**</basePackage>
+                                    <bannedImports>
+                                        <bannedImport>jenkins.**</bannedImport>
+                                        <bannedImport>hudson.**</bannedImport>
+                                    </bannedImports>
+                                    <allowedImports>
+                                        <allowedImport>hudson.Extension</allowedImport>
+                                        <allowedImport>hudson.ExtensionPoint</allowedImport>
+                                        <allowedImport>hudson.ExtensionList</allowedImport>
+                                    </allowedImports>
+                                </restrictImports>
                             </rules>
                         </configuration>
                     </execution>

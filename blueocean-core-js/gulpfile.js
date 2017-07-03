@@ -21,7 +21,7 @@ const minimist = require('minimist');
 // Options, src/dest folders, etc
 
 const config = {
-    clean: ["coverage", "dist", "licenses", "reports"],
+    clean: ["dist", "licenses", "target"],
     react: {
         sources: "src/**/*.{js,jsx}",
         dest: "dist"
@@ -40,7 +40,8 @@ const config = {
     test: {
         sources: '.',
         match: ['**/?(*-)(spec|test).js?(x)'],
-        output: 'reports/junit.xml',
+        reports: 'target/jest-reports/junit.xml',
+        coverage: 'target/jest-coverage',
     },
 };
 
@@ -111,12 +112,13 @@ function runJest(options) {
 
 gulp.task('test-jest', () => {
     if (!process.env.JEST_JUNIT_OUTPUT) {
-        process.env.JEST_JUNIT_OUTPUT = config.test.output;
+        process.env.JEST_JUNIT_OUTPUT = config.test.reports;
     }
 
     runJest({
         config: {
             collectCoverage: true,
+            coverageDirectory: config.test.coverage,
             testMatch: config.test.match,
             testResultsProcessor: 'jest-junit',
         },
