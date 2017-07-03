@@ -9,7 +9,7 @@
 //--------------------------------------
 
 .popup-shadow {
-    filter: drop-shadow(0px 2px 4px rgba(0, 0, 0, 0.5));
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.5);
 }
 
 @popup-border-radius: 3px;
@@ -94,6 +94,10 @@
 .Dialog-content-scroll {
     overflow: auto;
     flex-shrink: 1;
+    
+    .Dialog--medium-size & {
+        max-width: 464px; 
+    }
 }
 
 .Dialog-content-margin {

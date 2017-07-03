@@ -81,6 +81,11 @@ a.JTable-row--href {
     padding-left: @table-column-spacing / 2;
     padding-right: @table-column-spacing / 2;
 
+    a&, a&:hover {
+        color: inherit;
+        text-decoration: inherit;
+    }
+
     &:first-child {
         padding-left: @table-left-right-padding;
     }
@@ -90,7 +95,16 @@ a.JTable-row--href {
     }
 }
 
+.TableCell--actions {
+    .JTable-cell-contents {
+        display: flex;
+        justify-content: flex-end;
+        flex-wrap: nowrap;
+    }
+}
+
 .JTable-cell-contents {
+    width:100%;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;

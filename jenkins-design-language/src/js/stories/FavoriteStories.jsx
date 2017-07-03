@@ -15,16 +15,10 @@ storiesOf('Favorite', module)
                     <Favorite checked label="Default, Checked" />
                 </div>
                 <div style={style}>
-                    <Favorite className="dark-yellow"label="Dark / Yellow" />
+                    <Favorite className="dark" label="Dark" />
                 </div>
                 <div style={style}>
-                    <Favorite className="dark-yellow" checked label="Dark / Yellow, Checked" />
-                </div>
-                <div style={style}>
-                    <Favorite className="dark-white" label="Dark / White" />
-                </div>
-                <div style={style}>
-                    <Favorite className="dark-white" checked label="Dark / White, Checked" />
+                    <Favorite className="dark" checked label="Dark, Checked" />
                 </div>
             </div>
         );

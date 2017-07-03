@@ -282,7 +282,7 @@ export class Dropdown extends React.Component {
 
     render() {
         // console.log('render', this.state.menuOpen);
-        const { disabled, options, style } = this.props;
+        const { disabled, options, style, title } = this.props;
         const extraClass = this.props.className || '';
         const openClass = this.state.menuOpen ? 'Dropdown-menu-open' : 'Dropdown-menu-closed';
         const promptClass = !this.state.selectedOption ? 'Dropdown-placeholder' : '';
@@ -290,6 +290,7 @@ export class Dropdown extends React.Component {
         const noOptions = !options || !options.length;
         const buttonDisabled = disabled || noOptions;
         const buttonLabel = this._optionToLabel(this.state.selectedOption) || this.props.placeholder;
+        const buttonTitle = title || buttonLabel;
         const menuWidth = this.buttonRef && this.buttonRef.offsetWidth || 0;
 
         return (
@@ -297,7 +298,7 @@ export class Dropdown extends React.Component {
                 <button ref={button => { this.buttonRef = button; }}
                     className={`Dropdown-button ${promptClass}`}
                     disabled={buttonDisabled}
-                    title={buttonLabel}
+                    title={buttonTitle}
                     onClick={this._onDropdownMouseEvent}
                 >
                     {buttonLabel}
@@ -361,6 +362,7 @@ Dropdown.propTypes = {
     placeholder: PropTypes.string,
     options: PropTypes.array,
     defaultOption: PropTypes.string,
+    title: PropTypes.string,
     labelField: PropTypes.string,
     labelFunction: PropTypes.func,
     disabled: PropTypes.bool,

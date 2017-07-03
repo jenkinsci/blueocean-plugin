@@ -40,7 +40,7 @@ export class Checkbox extends Component {
         });
     }
 
-    _toggle(e: Event) {
+    _toggle = (e: Event) => {
         if (e.target instanceof HTMLInputElement) {
             const checked = e.target.checked;
 
@@ -52,7 +52,13 @@ export class Checkbox extends Component {
                 this.props.onToggle(checked);
             }
         }
-    }
+    };
+
+    _clicked = (e: Event) => {
+        if (e.currentTarget instanceof HTMLInputElement) {
+            e.currentTarget.blur();
+        }
+    };
 
     render() {
         const extraClass = this.props.className || '';
@@ -63,10 +69,11 @@ export class Checkbox extends Component {
                        onClick={(event) => event.stopPropagation()}
                 >
                     <input type="checkbox"
-                           { ...{ name: this.props.name } }
-                           onChange={this._toggle.bind(this)}
+                           name={this.props.name}
+                           onChange={this._toggle}
                            checked={this.state.checked}
                            disabled={this.props.disabled}
+                           onClick={this._clicked}
                     />
 
                     <div className="Checkbox-indicator">
