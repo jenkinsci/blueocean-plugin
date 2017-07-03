@@ -9,7 +9,7 @@ import { RunApi } from './rest/RunApi';
 
 import { SseBus } from './sse/SseBus';
 import { ToastService } from './ToastService';
-import { AnalyticsService } from './AnalyticsService';
+import { AnalyticsService } from './analytics/AnalyticsService';
 
 // export i18n provider
 export i18nTranslator, { defaultLngDetector } from './i18n/i18n';
