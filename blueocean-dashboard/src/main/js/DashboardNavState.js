@@ -1,7 +1,11 @@
 import { action, observable } from 'mobx';
 
 
-class PipelinesActive {
+/**
+ * Used to track whether any route from blueocean-dashboard is currently active.
+ * Managed via mount/unmount in top-level Dashboard component.
+ */
+class DashboardNavState {
 
     @observable
     isActive = false;
@@ -18,4 +22,4 @@ class PipelinesActive {
 
 }
 
-export default new PipelinesActive();
+export default new DashboardNavState();

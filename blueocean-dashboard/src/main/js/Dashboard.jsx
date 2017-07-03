@@ -8,7 +8,7 @@ import {
     connect,
     createSelector,
 } from './redux';
-import pipelinesActive from './PipelinesActive';
+import navState from './DashboardNavState';
 
 
 class Dashboard extends Component {
@@ -19,6 +19,7 @@ class Dashboard extends Component {
         this._context.pipelineService = pipelineService;
         this._context.activityService = activityService;
     }
+
     getChildContext() {
         this._context.params = this.props.params;
         this._context.location = this.props.location;
@@ -26,11 +27,11 @@ class Dashboard extends Component {
     }
 
     componentWillMount() {
-        pipelinesActive.setActive();
+        navState.setActive();
     }
 
     componentWillUnmount() {
-        pipelinesActive.setInactive();
+        navState.setInactive();
     }
 
     render() {
