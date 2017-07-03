@@ -142,7 +142,7 @@ class Caches {
                     )
                 );
             }
-            return null;
+            return CacheValue.none();
         }
     }
 
