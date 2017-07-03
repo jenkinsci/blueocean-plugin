@@ -21,8 +21,9 @@ public class GithubEnterpriseOrganizationContainer extends Container<ScmOrganiza
         this.link = orgContainer.getLink();
         this.orgs = new HashMap<>();
 
-        while (orgContainer.iterator().hasNext()) {
-            ScmOrganization scmOrg = orgContainer.iterator().next();
+        Iterator<ScmOrganization> iterator = orgContainer.iterator();
+        while (iterator.hasNext()) {
+            ScmOrganization scmOrg = iterator.next();
             this.orgs.put(scmOrg.getName(), new GithubEnterpriseOrganization(scmOrg));
         }
     }
