@@ -1,0 +1,61 @@
+@list-margin: 8px;
+
+.List {
+    width: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+
+    .List-Item {
+        position: relative;
+    }
+
+    &.disabled,
+    &[disabled],
+    fieldset[disabled] & {
+        .u-disabled;
+        pointer-events: none;
+    }
+
+    // default visual styling
+    &.u-default-list-container {
+        padding: @list-margin;
+        padding-bottom: 0;
+        background-color: fade(@gray-lighter, 25%);
+        border-radius: 3px;
+
+        .List-Radio {
+            &:focus + .List-Item {
+                .focus-rect;
+            }
+        }
+
+        .List-Item {
+            margin-bottom: @list-margin;
+            background-color: #fff;
+            .control-border;
+
+            &.List-Item-selected {
+                background-color: @gray-lighter;
+            }
+
+            &:hover {
+                background-color: @gray-lighter;
+                cursor: pointer;
+            }
+        }
+
+        &.disabled,
+        &[disabled],
+        fieldset[disabled] & {
+            .List-Item:hover {
+                background-color: #fff;
+                cursor: default;
+            }
+        }
+    }
+
+    .List-DefaultRenderer {
+        overflow: hidden;
+        padding: 8px 16px;
+    }
+}

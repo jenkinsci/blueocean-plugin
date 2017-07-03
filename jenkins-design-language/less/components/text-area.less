@@ -1,0 +1,69 @@
+.TextArea {
+    .TextArea-medium;
+    display: inline-block;
+    width: 100%;
+
+    .TextArea-control {
+        width: 100%;
+        height: 100%;
+        color: @text-color;
+        .control-border;
+
+        &:focus {
+            border-color: @brand-primary;
+            outline: 0;
+        }
+
+        &[disabled],
+        fieldset[disabled] & {
+            .u-disabled;
+        }
+    }
+}
+
+// sizing
+
+.TextArea-small {
+    height: 83px; // 5 lines
+
+    .TextArea-control {
+        padding: 8px;
+    }
+}
+
+.TextArea-medium {
+    height: 102px; // 5 lines
+
+    .TextArea-control {
+        padding: 10px;
+    }
+}
+
+.TextArea-large {
+    height: 126px; // 5 lines
+
+    .TextArea-control {
+        padding: 12px;
+    }
+}
+
+.TextArea {
+    .layout-small & {
+        .TextArea-small;
+    }
+
+    .layout-large & {
+        .TextArea-large;
+    }
+}
+
+// errors
+
+.FormElement.u-error-state {
+    > .FormElement-children > .TextArea {
+        .TextArea-control {
+            .u-error-border;
+        }
+    }
+}
+
