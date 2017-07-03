@@ -55,7 +55,7 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
         String apiUrl = request.getParameter("apiUrl");
 
         if(StringUtils.isBlank(apiUrl)) {
-            throw new ServiceException.BadRequestException("apiUrl is required parameter. apiUrl is API url of bitbucket server");
+            throw new ServiceException.BadRequestException("apiUrl is required parameter.");
         }
         try {
             new URL(apiUrl);
