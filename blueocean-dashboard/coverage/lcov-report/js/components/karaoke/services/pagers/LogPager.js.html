@@ -1,0 +1,533 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for js/components/karaoke/services/pagers/LogPager.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../../../prettify.css" />
+    <link rel="stylesheet" href="../../../../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../../../../index.html">All files</a> / <a href="index.html">js/components/karaoke/services/pagers</a> LogPager.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">2.04% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>1/49</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/20</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/15</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">2.13% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>1/47</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { action, computed, observable } from 'mobx';
+import { logging } from '@jenkins-cd/blueocean-core-js';
+&nbsp;
+import { KaraokeApi } from '../../index';
+&nbsp;
+const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pager.Step');
+&nbsp;
+/**
+ * The pager fetches pages of data from the BlueOcean api. It fetches pages of data, then
+ * inserts them into the [@link BunkerService], and stores the href from the data.
+ *
+ * MobX computes a data field from the href backed by the backend cache. This allows for SSE events
+ * to be propagated to the pager.
+ *
+ * @export
+ * @class Pager
+ */
+export class LogPager {
+    /**
+     * pager is fetching data. log and detail
+     * @type {boolean}
+     */
+    @observable pending = false;
+    @observable used = false;
+    /**
+     * Will be set in an error occurs.
+     * @type {object|null}
+     */
+    @observable error = null;
+    @observable currentLogUrl;
+&nbsp;
+    /**
+     * Mobx computed value that creates an object. If either the  bunker changes,
+     * or the href change, this is recalculated and will trigger a react reaction.
+     *
+     * If item does not exist in bunker, then we just ignore it.
+     * @readonly
+     * @type {object}
+     */
+    @computed
+<span class="fstat-no" title="function not covered" >    ge</span>t log() {
+<span class="cstat-no" title="statement not covered" >        return this.bunker.getItem(this.currentLogUrl);</span>
+    }
+    /**
+     * Creates an instance of Pager and fetches the first page.
+     *
+     * @param {BunkerService} bunker - Data store
+     * @param {object} pipeline Pipeline that this pager belongs to.
+     * @param {string} branch the name of the branch we are requesting
+     * @param {string} run Run that this pager belongs to.
+     */
+<span class="fstat-no" title="function not covered" >    co</span>nstructor(bunker, augmenter, step) {
+<span class="cstat-no" title="statement not covered" >        this.bunker = bunker;</span>
+<span class="cstat-no" title="statement not covered" >        this.augmenter = augmenter;</span>
+<span class="cstat-no" title="statement not covered" >        this.step = step;</span>
+<span class="cstat-no" title="statement not covered" >        if (step.isFocused &amp;&amp; !step.isInputStep) { // we do not want to fetch when we have an input step</span>
+<span class="cstat-no" title="statement not covered" >            this.fetchLog({</span>
+                followAlong: augmenter.karaoke,
+                url: step.logUrl,
+            });
+        }
+    }
+&nbsp;
+    /**
+     * Fetches the detail from the backend and set the data
+     *
+     * @returns {Promise}
+     */
+    @action
+<span class="fstat-no" title="function not covered" >    fe</span>tchLog({ start, followAlong, url }) {
+<span class="cstat-no" title="statement not covered" >        clearTimeout(this.timeout);</span>
+        // while fetching we are pending
+<span class="cstat-no" title="statement not covered" >        this.pending = true;</span>
+        // log is text and not json, further it does not has _link in the response
+        const logData = <span class="cstat-no" title="statement not covered" >{</span>
+            _links: {
+                self: {
+                    href: url,
+                },
+            },
+        };
+        // get api data and further process it
+<span class="cstat-no" title="statement not covered" >        return KaraokeApi.getGeneralLog(url, { start })</span>
+            .then(<span class="fstat-no" title="function not covered" >re</span>sponse =&gt; {
+                const { newStart, hasMore } = <span class="cstat-no" title="statement not covered" >response;</span>
+<span class="cstat-no" title="statement not covered" >                logger.debug({ newStart, hasMore });</span>
+<span class="cstat-no" title="statement not covered" >                logData.hasMore = start === '0' ? false : hasMore;</span>
+<span class="cstat-no" title="statement not covered" >                logData.newStart = newStart;</span>
+<span class="cstat-no" title="statement not covered" >                return response.text();</span>
+            })
+            .then(action('Process pager data', <span class="fstat-no" title="function not covered" >te</span>xt =&gt; {
+<span class="cstat-no" title="statement not covered" >                if (text &amp;&amp; text.trim) {</span>
+<span class="cstat-no" title="statement not covered" >                    logData.data = text.trim().split('\n');</span>
+                    // Store item in bunker.
+<span class="cstat-no" title="statement not covered" >                    this.bunker.setItem(logData);</span>
+<span class="cstat-no" title="statement not covered" >                    logger.debug('saved data', url, logData.newStart, followAlong);</span>
+                }
+<span class="cstat-no" title="statement not covered" >                this.currentLogUrl = url;</span>
+<span class="cstat-no" title="statement not covered" >                this.pending = false;</span>
+<span class="cstat-no" title="statement not covered" >                this.used = true;</span>
+<span class="cstat-no" title="statement not covered" >                if (Number(logData.newStart) &gt; 0 &amp;&amp; followAlong) {</span>
+                    // kill current  timeout if any
+<span class="cstat-no" title="statement not covered" >                    clearTimeout(this.timeout);</span>
+                    // we need to get more input from the log stream
+<span class="cstat-no" title="statement not covered" >                    this.timeout = setTimeout(<span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                        this.followLog(logData);</span>
+                    }, 1000);
+                }
+            })).catch(<span class="fstat-no" title="function not covered" >er</span>r =&gt; {
+<span class="cstat-no" title="statement not covered" >                logger.error('Error fetching page - fetch log', err);</span>
+<span class="cstat-no" title="statement not covered" >                action('set error', <span class="fstat-no" title="function not covered" >()</span> =&gt; { <span class="cstat-no" title="statement not covered" >this.error = err; </span>});</span>
+            });
+    }
+&nbsp;
+    /**
+     * Fetches the detail from the backend and set the data
+     *
+     * @returns {Promise}
+     */
+    @action
+<span class="fstat-no" title="function not covered" >    fo</span>llowLog(logDataOrg) {
+<span class="cstat-no" title="statement not covered" >        clearTimeout(this.timeout);</span>
+        const logData = <span class="cstat-no" title="statement not covered" >{ ...logDataOrg };</span>
+<span class="cstat-no" title="statement not covered" >        return KaraokeApi.getGeneralLog(logData._links.self.href, { start: logData.newStart })</span>
+            .then(action('Process pager data following 1', <span class="fstat-no" title="function not covered" >re</span>sponse =&gt; {
+                const { newStart, hasMore } = <span class="cstat-no" title="statement not covered" >response;</span>
+<span class="cstat-no" title="statement not covered" >                logger.debug('newstart and hasmore', { newStart, hasMore });</span>
+<span class="cstat-no" title="statement not covered" >                logData.newStart = response.newStart;</span>
+<span class="cstat-no" title="statement not covered" >                return response.text();</span>
+            }))
+            .then(action('Process pager data following 2', <span class="fstat-no" title="function not covered" >te</span>xt =&gt; {
+<span class="cstat-no" title="statement not covered" >                if (text &amp;&amp; text.trim) {</span>
+                    const items = <span class="cstat-no" title="statement not covered" >text.trim().split('\n');</span>
+<span class="cstat-no" title="statement not covered" >                    logData.data = logData.data.concat(items);</span>
+                    // Store item in bunker.
+<span class="cstat-no" title="statement not covered" >                    this.bunker.setItem(logData);</span>
+<span class="cstat-no" title="statement not covered" >                    logger.debug('saved data', logData._links.self.href, logData.newStart);</span>
+                }
+<span class="cstat-no" title="statement not covered" >                if (logData.newStart !== null) {</span>
+                    // kill current  timeout if any
+                    // we need to get mpre input from the log stream
+<span class="cstat-no" title="statement not covered" >                    this.timeout = setTimeout(<span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >                        this.followLog(logData);</span>
+                    }, 1000);
+                }
+            })).catch(<span class="fstat-no" title="function not covered" >er</span>r =&gt; {
+<span class="cstat-no" title="statement not covered" >                logger.error('Error fetching page - follow log', err);</span>
+<span class="cstat-no" title="statement not covered" >                action('set error', <span class="fstat-no" title="function not covered" >()</span> =&gt; { <span class="cstat-no" title="statement not covered" >this.error = err; </span>});</span>
+            });
+    }
+&nbsp;
+&nbsp;
+<span class="fstat-no" title="function not covered" >    cl</span>ear() {
+<span class="cstat-no" title="statement not covered" >        clearTimeout(this.timeout);</span>
+    }
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Sun Jul 02 2017 11:08:56 GMT+0530 (IST)
+</div>
+</div>
+<script src="../../../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../../../sorter.js"></script>
+</body>
+</html>

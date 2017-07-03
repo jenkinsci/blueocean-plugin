@@ -1,0 +1,413 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for js/components/RunDetailsPipeline.jsx</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../index.html">All files</a> / <a href="index.html">js/components</a> RunDetailsPipeline.jsx
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>0/98</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/73</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/18</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>0/51</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117</td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React,<span class="cstat-no" title="statement not covered" > { Component, PropTypes } from 'react';<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>
+import { logging } from<span class="cstat-no" title="statement not covered" > '@jenkins-cd/blueocean-core-js';</span>
+import { observer<span class="cstat-no" title="statement not covered" > } from 'mobx-react';</span>
+import Extensions fr<span class="cstat-no" title="statement not covered" >om '@jenkins-cd/js-extensions';<span class="cstat-no" title="statement not covered" ></span></span>
+import { Augmente<span class="cstat-no" title="statement not covered" >r } from './karaoke/services/Augmenter';</span>
+&nbsp;
+import { Karaok<span class="cstat-no" title="statement not covered" >eConfig } from './kar</span>aoke';<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>
+&nbsp;
+const logger <span class="cstat-no" title="statement not covered" >= logging.logger('io.jenkins.blueocean.dashboard.karaoke.RunDetailsPipeline');</span>
+@observer
+export class RunDetai<span class="cstat-no" title="statement not covered" >lsPipeline extends Component {<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+    construct<span class="fstat-no" title="function not covered" >or(props) {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span></span>
+        super(props);
+<span class="cstat-no" title="statement not covered" >        this._handleKeys = this._handleKeys.bind(this);</span>
+<span class="cstat-no" title="statement not covered" >        this._onScrollHandler = this._onScrollHandler.bind(this);<span class="cstat-no" title="statement not covered" ></span></span>
+    }<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span>
+    componentWillMount() {
+        if (<span class="cstat-no" title="statement not covered" >this.props.params) {</span>
+            logg<span class="cstat-no" title="statement not covered" >er.debug('Augmenting this.properties');</span>
+            this<span class="cstat-no" title="statement not covered" >.augment(this.props);</span>
+        }
+    }<span class="fstat-no" title="function not covered" ></span>
+    componentDidMount() {
+        const { resul<span class="cstat-no" title="statement not covered" >t } = this.props;</span>
+        if (<span class="cstat-no" title="statement not covered" >!result.isQueued()) {</span>
+            docu<span class="cstat-no" title="statement not covered" >ment.addEventListener('wheel', this._onScrollHandler, false);</span>
+            docu<span class="cstat-no" title="statement not covered" >ment.addEventListener('keydown', this._handleKeys, false);</span>
+        }
+    }<span class="fstat-no" title="function not covered" ></span>
+    componentWillReceiveProps(nextProps) {
+        if (<span class="cstat-no" title="statement not covered" >KaraokeConfig.getPreference('runDetails.pipeline.updateOnFinish').value !== 'never') {</span>
+            logg<span class="cstat-no" title="statement not covered" >er.debug('Augmenting next properties');</span>
+            this<span class="cstat-no" title="statement not covered" >.augment(nextProps);</span>
+        } else if (<span class="cstat-no" title="statement not covered" >((nextProps.params.runId !== this.props.params.runId) || nextProps.result.id !== this.props.result.id)</span>
+            &amp;&amp; KaraokeConfig.getPreference('runDetails.pipeline.updateOnFinish').value === 'never') {
+            logg<span class="cstat-no" title="statement not covered" >er.debug('Augmenting next properties - new run needs update');</span>
+            this<span class="cstat-no" title="statement not covered" >.augment(nextProps);</span>
+        } else {
+            logg<span class="cstat-no" title="statement not covered" >er.debug('EarlyOut - dropping nextProps on the floor.');</span>
+        }
+    }<span class="fstat-no" title="function not covered" ></span>
+    componentWillUnmount() {
+        docu<span class="cstat-no" title="statement not covered" >ment.removeEventListener('keydown', this._handleKeys);</span>
+        docu<span class="cstat-no" title="statement not covered" >ment.removeEventListener('wheel', this._onScrollHandler);</span>
+    }
+ // we bail out on arrow_up key
+    _handleKeys(event) {<span class="fstat-no" title="function not covered" ></span>
+        if (<span class="cstat-no" title="statement not covered" >event.keyCode === 38 &amp;&amp; this.augmenter.karaoke) {</span>
+            logg<span class="cstat-no" title="statement not covered" >er.debug('stop follow along by key up');</span>
+            this<span class="cstat-no" title="statement not covered" >.augmenter.setKaraoke(false);</span>
+        }
+    }
+    // need to register handler to step out of karaoke mode
+    // we bail out on scroll up
+    _onScrollHandler(elem) {<span class="fstat-no" title="function not covered" ></span>
+        if (<span class="cstat-no" title="statement not covered" >elem.deltaY &lt; 0 &amp;&amp; this.augmenter.karaoke) {</span>
+            logg<span class="cstat-no" title="statement not covered" >er.debug('stop follow along by scroll up');</span>
+            this<span class="cstat-no" title="statement not covered" >.augmenter.setKaraoke(false);</span>
+        }
+    }<span class="fstat-no" title="function not covered" ></span>
+    augment(props) {
+        // we do not want to follow any builds that are finished
+        const { result<span class="cstat-no" title="statement not covered" >: run, pipeli</span>ne, params:<span class="cstat-no" title="statement not covered" > { branch } } =</span> props;<span class="cstat-no" title="statement not covered" ></span>
+        const followAlong = pr<span class="cstat-no" title="statement not covered" >ops &amp;&amp; props.result &amp;&amp; props.result.state !== 'FINISHED' || false;</span>
+        this<span class="cstat-no" title="statement not covered" >.augmenter = new Augmenter(pipeline, branch, run, followAlong);</span>
+    }<span class="fstat-no" title="function not covered" ></span>
+    render() {
+        cons<span class="cstat-no" title="statement not covered" >t { result:</span> run, <span class="cstat-no" title="statement not covered" >pipeline, para</span>ms: { branc<span class="cstat-no" title="statement not covered" >h }, t } = this.</span>props;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span>
+        cons<span class="cstat-no" title="statement not covered" >t { router, l</span>ocation }<span class="cstat-no" title="statement not covered" > = this.context;<span class="cstat-no" title="statement not covered" ></span></span>
+        const commonProps = {<span class="cstat-no" title="statement not covered" ></span>
+            scrollToBottom: this.augmenter.karaoke || (run &amp;&amp; run.result === 'FAILURE'),
+            augmenter: this.augmenter,
+            t,
+            run,
+            pipeline,
+            branch,
+            router,
+            location,
+            params: this.props.params,
+        };
+        let provider;<span class="cstat-no" title="statement not covered" ></span>
+        const stepScrollAreaClass = `s<span class="cstat-no" title="statement not covered" >tep-scroll-area ${this.augmenter.karaoke ? 'follow-along-on' : 'follow-along-off'}`;</span>
+        if (<span class="cstat-no" title="statement not covered" >this.augmenter.isFreeStyle) {</span>
+            prov<span class="cstat-no" title="statement not covered" >ider = (&lt;Extensions.Renderer {</span>
+                    ...{
+                        extensionPoint: 'jenkins.pipeline.karaoke.freestyle.provider',
+                        ...commonProps,
+                    }
+                }
+            /&gt;);
+        }
+        if (<span class="cstat-no" title="statement not covered" >!this.classicLog &amp;&amp; this.augmenter.isPipeline) {</span>
+            prov<span class="cstat-no" title="statement not covered" >ider = (&lt;Extensions.Renderer {</span>
+                    ...{
+                        extensionPoint: 'jenkins.pipeline.karaoke.pipeline.provider',
+                        ...commonProps,
+                    }
+                }
+            /&gt;);
+        }
+        retu<span class="cstat-no" title="statement not covered" >rn (&lt;div className={stepScrollAreaClass} &gt;</span>
+            { provider }
+        &lt;/div&gt;);
+    }<span class="cstat-no" title="statement not covered" ></span>
+}
+<span class="cstat-no" title="statement not covered" >RunDetailsPipeline.propTypes = {</span>
+    pipeline: PropTypes.object,
+    result: PropTypes.object,
+    params: PropTypes.object,
+    t: PropTypes.func,
+};
+<span class="cstat-no" title="statement not covered" >RunDetailsPipeline.contextTypes = {</span>
+    router: PropTypes.object.isRequired, // From react-router
+    location: PropTypes.object.isRequired, // From react-router
+};<span class="cstat-no" title="statement not covered" ></span>
+export default RunDetailsPipeline;
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Sun Jul 02 2017 11:08:56 GMT+0530 (IST)
+</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

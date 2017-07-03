@@ -1,0 +1,401 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for js/components/ColumnFilter.jsx</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../index.html">All files</a> / <a href="index.html">js/components</a> ColumnFilter.jsx
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">3.13% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>1/32</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/30</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/20</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">3.13% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>1/32</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { Component, PropTypes } from 'react';
+import { Icon } from '@jenkins-cd/react-material-icons';
+import Autocomplete from 'react-autocomplete';
+&nbsp;
+/**
+ * Simple column filter
+ *
+ * FIXME: Replace react-autocomplete which is broken WRT scrolling, with JDL dropdown
+ */
+export class ColumnFilter extends Component {
+<span class="fstat-no" title="function not covered" >    co</span>nstructor(props) {
+<span class="cstat-no" title="statement not covered" >        super(props);</span>
+<span class="cstat-no" title="statement not covered" >        this.state = { value: props.value, visible: false };</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    co</span>mponentWillReceiveProps(newProps) {
+<span class="cstat-no" title="statement not covered" >        if (this.state.value !== newProps.value) {</span>
+<span class="cstat-no" title="statement not covered" >            this.setState({ value: newProps.value });</span>
+        }
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    on</span>Change(event, value) {
+        const { onChange } = <span class="cstat-no" title="statement not covered" >this.props;</span>
+<span class="cstat-no" title="statement not covered" >        this.setState({ value });</span>
+        // only update on enter press or click
+<span class="cstat-no" title="statement not covered" >        if (event.type === 'select'</span>
+            || event.type === 'blur'
+            || (event.type === 'keypress' &amp;&amp; event.key === 'Enter')) {
+<span class="cstat-no" title="statement not covered" >            onChange(value);</span>
+        }
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    cl</span>earInput() {
+<span class="cstat-no" title="statement not covered" >        this.onChange({ type: 'select' }, '');</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    fo</span>cus(e) {
+<span class="cstat-no" title="statement not covered" >        this.setState({ focused: true });</span>
+<span class="cstat-no" title="statement not covered" >        e.target.select();</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    bl</span>ur() {
+<span class="cstat-no" title="statement not covered" >        this.setState({ focused: false });</span>
+    }
+&nbsp;
+    // hack due to strange behavior of triggering onChange from autocomplete when
+    // clicking on the input when the dropdown is open and an item is selected
+<span class="fstat-no" title="function not covered" >    pr</span>eventStupidInput(e) {
+<span class="cstat-no" title="statement not covered" >        if (this.state.visible &amp;&amp; e.target.tagName &amp;&amp; e.target.tagName.toLowerCase() === 'input') {</span>
+<span class="cstat-no" title="statement not covered" >            this.refs.autocomplete._ignoreClick = true;</span>
+        }
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    ha</span>ndleEmptyEnterPressBetter(event) {
+<span class="cstat-no" title="statement not covered" >        if (this.state.visible &amp;&amp; event.key === 'Enter' &amp;&amp; this.state.value === '') {</span>
+<span class="cstat-no" title="statement not covered" >            this.clearInput();</span>
+        }
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    re</span>nder() {
+        const { placeholder, options } = <span class="cstat-no" title="statement not covered" >this.props;</span>
+        const { value, focused } = <span class="cstat-no" title="statement not covered" >this.state;</span>
+&nbsp;
+        const wrapperStyle = <span class="cstat-no" title="statement not covered" >{</span>
+            display: 'inline-block',
+            width: '100%',
+        };
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return (&lt;div className={`ColumnFilter ${value ? '' : 'empty'} ${focused ? 'focused' : ''}`}&gt;</span>
+            &lt;Autocomplete
+                wrapperStyle={wrapperStyle}
+                ref="autocomplete"
+                value={value}
+                inputProps={{
+                    className: 'autocomplete',
+                    name: 'Filter',
+                    placeholder: focused ? '' : placeholder,
+                    onMouseDown: <span class="fstat-no" title="function not covered" >e </span>=&gt; <span class="cstat-no" title="statement not covered" >this.preventStupidInput(e),</span>
+                    onKeyDown: <span class="fstat-no" title="function not covered" >e </span>=&gt; <span class="cstat-no" title="statement not covered" >this.handleEmptyEnterPressBetter(e),</span>
+                    onFocus: <span class="fstat-no" title="function not covered" >e </span>=&gt; <span class="cstat-no" title="statement not covered" >this.focus(e),</span>
+                    onBlur: <span class="fstat-no" title="function not covered" >e </span>=&gt; <span class="cstat-no" title="statement not covered" >this.blur(e) </span>}}
+                menuStyle={{
+                    position: 'fixed',
+                    overflow: 'auto',
+                    maxHeight: '50%' }}
+                items={options}
+                autoHighlight
+                getItemValue={<span class="fstat-no" title="function not covered" >(i</span>tem) =&gt; <span class="cstat-no" title="statement not covered" >item}</span>
+                shouldItemRender={<span class="fstat-no" title="function not covered" >(i</span>tem, v) =&gt; <span class="cstat-no" title="statement not covered" >item.toLowerCase().indexOf(v.toLowerCase()) &gt;= 0}</span>
+                onChange={<span class="fstat-no" title="function not covered" >(e</span>vent, v) =&gt; <span class="cstat-no" title="statement not covered" >this.setState({ value: v }) || this.onChange(event, v)}</span>
+                onSelect={<span class="fstat-no" title="function not covered" >v </span>=&gt; <span class="cstat-no" title="statement not covered" >this.setState({ value: v }) || this.onChange({ type: 'select' }, v)}</span>
+                onMenuVisibilityChange={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >this.setState({ visible: !this.state.visible })}</span>
+                renderItem={<span class="fstat-no" title="function not covered" >(i</span>tem, selected) =&gt; (
+<span class="cstat-no" title="statement not covered" >                  &lt;div className={selected ? 'item selected' : 'item'} key={item} title={item}&gt;{item}&lt;/div&gt;</span>
+                )}
+            /&gt;
+            &lt;span className="Icon-filter"&gt;
+                &lt;Icon icon="filter_list" size={15} /&gt;
+            &lt;/span&gt;
+            &lt;span className="Icon-clear" onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >this.clearInput()}</span>&gt;
+                &lt;Icon icon="clear" size={15} /&gt;
+            &lt;/span&gt;
+          &lt;/div&gt;);
+    }
+}
+&nbsp;
+ColumnFilter.propTypes = {
+    placeholder: PropTypes.string,
+    onChange: PropTypes.func,
+    value: PropTypes.object,
+    options: PropTypes.array,
+};
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Sun Jul 02 2017 11:08:56 GMT+0530 (IST)
+</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

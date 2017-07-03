@@ -1,0 +1,788 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for js/components/Activity.jsx</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../index.html">All files</a> / <a href="index.html">js/components</a> Activity.jsx
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">66.67% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>50/75</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">64.06% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>41/64</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">63.64% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>7/11</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">66.67% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>50/75</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line medium'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200
+201
+202
+203
+204
+205
+206
+207
+208
+209
+210
+211
+212
+213
+214
+215
+216
+217
+218
+219
+220
+221
+222
+223
+224
+225
+226
+227
+228
+229
+230
+231
+232
+233
+234
+235
+236
+237
+238
+239
+240
+241
+242</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { Component, PropTypes } from 'react';
+import {
+    JTable,
+    TableRow,
+    TableHeader,
+    TableCell,
+} from '@jenkins-cd/design-language';
+import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+import { observer } from 'mobx-react';
+import { RunDetailsRow } from './RunDetailsRow';
+import { ChangeSetRecord } from './records';
+import { MULTIBRANCH_PIPELINE } from '../Capabilities';
+import { buildPipelineUrl } from '../util/UrlUtils';
+import { ColumnFilter } from './ColumnFilter';
+import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
+import {
+    NoRunsDefaultPlaceholder,
+    NoRunsForBranchPlaceholder,
+    NoRunsMultibranchPlaceholder,
+} from './placeholder/NoRunsPlaceholder';
+&nbsp;
+import Extensions from '@jenkins-cd/js-extensions';
+&nbsp;
+const { object, array, func, string } = PropTypes;
+&nbsp;
+function extractLatestRecord(run) {
+    const changeset = run.changeSet;
+    let latestRecord = {};
+&nbsp;
+    if (changeset &amp;&amp; changeset.length &gt; 0) {
+        latestRecord = new ChangeSetRecord(changeset[changeset.length - 1]);
+    }
+&nbsp;
+    return [run, latestRecord];
+}
+&nbsp;
+@observer
+export class Activity extends Component {
+&nbsp;
+    state = {
+        actionExtensionCount: 0,
+    };
+&nbsp;
+    componentWillMount() {
+        <span class="missing-if-branch" title="else path not taken" >E</span>if (this.context.params) {
+            const organization = this.context.params.organization;
+            const pipeline = this.context.params.pipeline;
+            const branch = this._branchFromProps(this.props);
+            this.pager = this.context.activityService.activityPager(organization, pipeline, branch);
+        }
+        this._countExtensions();
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    co</span>mponentWillReceiveProps(newProps) {
+<span class="cstat-no" title="statement not covered" >        if (this.props.params &amp;&amp; this._branchFromProps(this.props) !== this._branchFromProps(newProps)) {</span>
+            const organization = <span class="cstat-no" title="statement not covered" >newProps.params.organization;</span>
+            const pipeline = <span class="cstat-no" title="statement not covered" >newProps.params.pipeline;</span>
+            const branch = <span class="cstat-no" title="statement not covered" >this._branchFromProps(newProps);</span>
+<span class="cstat-no" title="statement not covered" >            this.pager = this.context.activityService.activityPager(organization, pipeline, branch);</span>
+        }
+    }
+&nbsp;
+    // Figure out how many extensions we have for the action buttons column so we can size it appropriately
+    _countExtensions() {
+        Extensions.store.getExtensions('jenkins.pipeline.activity.list.action', extensions =&gt; {
+            const count = extensions &amp;&amp; typeof(extensions.length) === 'number' ? extensions.length : <span class="branch-1 cbranch-no" title="branch not covered" >0;</span>
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (count !== this.state.actionExtensionCount) {
+<span class="cstat-no" title="statement not covered" >                this.setState({ actionExtensionCount: count });</span>
+            }
+        });
+    }
+&nbsp;
+    _branchFromProps(props) {
+        return ((props.location || {}).query || {}).branch;
+    }
+&nbsp;
+    navigateToBranch = <span class="fstat-no" title="function not covered" >br</span>anch =&gt; {
+        const organization = <span class="cstat-no" title="statement not covered" >this.context.params.organization;</span>
+        const pipeline = <span class="cstat-no" title="statement not covered" >this.context.params.pipeline;</span>
+        const baseUrl = <span class="cstat-no" title="statement not covered" >buildPipelineUrl(organization, pipeline);</span>
+        let activitiesURL = <span class="cstat-no" title="statement not covered" >`${baseUrl}/activity`;</span>
+<span class="cstat-no" title="statement not covered" >        if (branch) {</span>
+<span class="cstat-no" title="statement not covered" >            activitiesURL += '?branch=' + encodeURIComponent(branch);</span>
+        }
+<span class="cstat-no" title="statement not covered" >        this.context.router.push(activitiesURL);</span>
+    };
+&nbsp;
+    render() {
+        const { pipeline, t, locale } = this.props;
+        const { actionExtensionCount } = this.state;
+        const actionsInRowCount = RunDetailsRow.actionItemsCount; // Non-extension actions
+&nbsp;
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (!pipeline) {
+<span class="cstat-no" title="statement not covered" >            return null;</span>
+        }
+&nbsp;
+        const runs = this.pager.data;
+        const isLoading = this.pager.pending;
+        const branch = this._branchFromProps(this.props);
+&nbsp;
+        const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
+        const hasBranches = pipeline.branchNames &amp;&amp; !!pipeline.branchNames.length;
+&nbsp;
+        const onNavigation = <span class="fstat-no" title="function not covered" >(u</span>rl) =&gt; {
+<span class="cstat-no" title="statement not covered" >            this.context.location.pathname = url;</span>
+<span class="cstat-no" title="statement not covered" >            this.context.router.push(this.context.location);</span>
+        };
+&nbsp;
+        const latestRun = runs &amp;&amp; runs[0];
+        // Only show the Run button for non multi-branch pipelines.
+        // Multi-branch pipelines have the Run/play button beside them on
+        // the Branches/PRs tab.
+        const runButton = !isMultiBranchPipeline &amp;&amp; (
+            &lt;RunButton
+                buttonType="run-only"
+                innerButtonClasses="btn-secondary"
+                runnable={pipeline}
+                latestRun={latestRun}
+                onNavigation={onNavigation}
+            /&gt;
+        );
+&nbsp;
+        if (!isLoading) {
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (isMultiBranchPipeline &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >!hasBranches)</span> {
+<span class="cstat-no" title="statement not covered" >                return &lt;NoBranchesPlaceholder t={t} /&gt;;</span>
+            }
+            <span class="missing-if-branch" title="if path not taken" >I</span>if (!runs || !runs.length) {
+<span class="cstat-no" title="statement not covered" >                if (!isMultiBranchPipeline) {</span>
+<span class="cstat-no" title="statement not covered" >                    return &lt;NoRunsDefaultPlaceholder t={t} runButton={runButton} /&gt;;</span>
+                } else <span class="cstat-no" title="statement not covered" >if (!branch) {</span>
+                    const { params } = <span class="cstat-no" title="statement not covered" >this.context;</span>
+                    const branchesUrl = <span class="cstat-no" title="statement not covered" >buildPipelineUrl(params.organization, params.pipeline, 'branches');</span>
+<span class="cstat-no" title="statement not covered" >                    return &lt;NoRunsMultibranchPlaceholder t={t} branchName={branch} branchesUrl={branchesUrl} /&gt;;</span>
+                }
+            }
+        }
+&nbsp;
+        const showTable = branch || (runs &amp;&amp; runs.length &gt; 0);
+        const head = 'pipelinedetail.activity.header';
+&nbsp;
+        const status = t(`${head}.status`, { defaultValue: 'Status' });
+        const runHeader = t(`${head}.run`, { defaultValue: 'Run' });
+        const commit = t(`${head}.commit`, { defaultValue: 'Commit' });
+        const message = t(`${head}.message`, { defaultValue: 'Message' });
+        const duration = t(`${head}.duration`, { defaultValue: 'Duration' });
+        const completed = t(`${head}.completed`, { defaultValue: 'Completed' });
+        const branchText = t(`${head}.branch`, { defaultValue: 'Branch' });
+        const decodedBranchName = branch ? <span class="branch-0 cbranch-no" title="branch not covered" >decodeURIComponent(branch) </span>: branch;
+&nbsp;
+        const branchFilter = isMultiBranchPipeline &amp;&amp; (
+<span class="branch-1 cbranch-no" title="branch not covered" >            &lt;ColumnFilter placeholder={branchText}</span>
+                          value={decodedBranchName}
+                          onChange={this.navigateToBranch}
+                          options={pipeline.branchNames.map(<span class="fstat-no" title="function not covered" >b </span>=&gt; <span class="cstat-no" title="statement not covered" >decodeURIComponent(b))</span>}
+            /&gt;
+        );
+&nbsp;
+        // Build up our column metadata
+&nbsp;
+        const columns = [
+            JTable.column(60, status, false),
+            JTable.column(60, runHeader, false),
+            JTable.column(60, commit, false),
+        ];
+&nbsp;
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (isMultiBranchPipeline) {
+<span class="cstat-no" title="statement not covered" >            columns.push(JTable.column(160, 'branches', false));</span>
+        }
+&nbsp;
+        columns.push(
+            JTable.column(480, message, true),
+            JTable.column(100, duration, false),
+            JTable.column(100, completed, false),
+            JTable.column((actionExtensionCount + actionsInRowCount) * 24, '', false),
+        );
+&nbsp;
+        // Build main display table
+&nbsp;
+        const runsTable = showTable &amp;&amp; (
+                &lt;JTable columns={columns} className="activity-table"&gt;
+                    &lt;TableRow&gt;
+                        &lt;TableHeader&gt;{ status }&lt;/TableHeader&gt;
+                        &lt;TableHeader&gt;{ runHeader }&lt;/TableHeader&gt;
+                        &lt;TableHeader&gt;{ commit }&lt;/TableHeader&gt;
+                        { isMultiBranchPipeline &amp;&amp; (
+<span class="branch-1 cbranch-no" title="branch not covered" >                            &lt;TableCell&gt;{ branchFilter }&lt;/TableCell&gt;</span>
+                        )}
+                        &lt;TableHeader&gt;{ message }&lt;/TableHeader&gt;
+                        &lt;TableHeader&gt;{ duration }&lt;/TableHeader&gt;
+                        &lt;TableHeader&gt;{ completed }&lt;/TableHeader&gt;
+                        &lt;TableHeader /&gt;
+                    &lt;/TableRow&gt;
+                    {
+                        runs.map(extractLatestRecord).map(
+                            ([run, changeset], index) =&gt; (
+                                &lt;RunDetailsRow t={t}
+                                               locale={locale}
+                                               run={run}
+                                               pipeline={pipeline}
+                                               key={index}
+                                               changeset={changeset}
+                                               isMultibranch={isMultiBranchPipeline}
+                                /&gt;
+                            ))
+                    }
+                &lt;/JTable&gt;
+            );
+&nbsp;
+        return (&lt;main&gt;
+            &lt;article className="activity"&gt;
+                { runButton }
+                { runsTable }
+                { !isLoading &amp;&amp; !runs.length &amp;&amp; <span class="branch-2 cbranch-no" title="branch not covered" >branch </span>&amp;&amp;
+<span class="branch-3 cbranch-no" title="branch not covered" >                    &lt;NoRunsForBranchPlaceholder t={t} branchName={branch} /&gt;</span>
+                }
+                { runs &amp;&amp; runs.length &gt; 0 &amp;&amp;
+                  &lt;ShowMoreButton pager={this.pager} /&gt;
+                }
+            &lt;/article&gt;
+        &lt;/main&gt;);
+    }
+}
+&nbsp;
+Activity.contextTypes = {
+    params: object.isRequired,
+    location: object.isRequired,
+    config: object.isRequired,
+    router: object.isRequired,
+    activityService: object.isRequired,
+};
+&nbsp;
+Activity.propTypes = {
+    runs: array,
+    pipeline: object,
+    locale: string,
+    t: func,
+    params: object,
+    location: object.isRequired,
+};
+&nbsp;
+export default Activity;
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Sun Jul 02 2017 11:08:56 GMT+0530 (IST)
+</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

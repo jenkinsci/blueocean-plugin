@@ -1,0 +1,458 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for js/util/logDisplayHelper.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../prettify.css" />
+    <link rel="stylesheet" href="../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../index.html">All files</a> / <a href="index.html">js/util</a> logDisplayHelper.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">98.39% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>61/62</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">95.65% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>66/69</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">100% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>13/13</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">98.36% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>60/61</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line high'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-yes">10x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-yes">110x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">16x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-yes">20x</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-yes">150x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">166x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">9x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import keymirror from 'keymirror';
+import { capable } from '@jenkins-cd/blueocean-core-js';
+&nbsp;
+export const RESULTS = keymirror({
+    UNKNOWN: null,
+    SUCCESS: null,
+    FAILURE: null,
+});
+&nbsp;
+export const STATES = keymirror({
+    RUNNING: null,
+    PAUSED: null,
+    FINISHED: null,
+});
+&nbsp;
+function isRunningNode(item) {
+    return item.state === STATES.RUNNING || item.state === STATES.PAUSED;
+}
+&nbsp;
+export const getNodesInformation = (nodes) =&gt; {
+    // calculation of information about stages
+    // nodes in Runing state
+    const runningNodes = nodes
+        .filter((item) =&gt; isRunningNode(item) &amp;&amp; (!item.edges || item.edges.length &lt; 2))
+        .map((item) =&gt; item.id);
+    // nodes with error result
+    const errorNodes = nodes
+        .filter((item) =&gt; item.result === RESULTS.FAILURE)
+        .map((item) =&gt; item.id);
+    const queuedNodes = nodes
+        .filter((item) =&gt; item.state === null &amp;&amp; item.result === null)
+        .map((item) =&gt; item.id);
+    // nodes without information
+    const hasResultsForSteps = nodes
+            .filter((item) =&gt; item.state === null &amp;&amp; item.result === null).length !== nodes.length;
+    // principal model mapper
+    let wasFocused = false; // we only want one node to be focused if any
+    let parallelNodes = [];
+    let parent;
+    // a job that is in queue would be marked as finished since
+    // there will be no running nodes yet, that is why we check for that
+    const finished = runningNodes.length === 0 &amp;&amp; queuedNodes.length !== nodes.length;
+    const error = !(errorNodes.length === 0);
+    const model = nodes.map((item, index) =&gt; {
+        const hasFailingNode = item.edges &amp;&amp; item.edges.length &gt;= 2 ? item.edges
+            .filter((itemError) =&gt; errorNodes.indexOf(itemError.id) &gt; -1).length &gt; 0 : false;
+        const isFailingNode = errorNodes.indexOf(item.id) &gt; -1;
+        const isRunning = runningNodes.indexOf(item.id) &gt; -1;
+        /*
+         * are we in a node that indicates that we have parallel nodes?
+         */
+        if (item.edges &amp;&amp; item.edges.length &gt;= 2) {
+            parallelNodes = item.edges.map((itemParallel) =&gt; itemParallel.id);
+        }
+        // in case we had been in a parallel node before, we will indicate it and remove the id of the parallel array
+        const indexParallel = parallelNodes.indexOf(item.id);
+        const isParallel = indexParallel !== -1;
+        if (isParallel) {
+            // remove the match from the array
+            parallelNodes.splice(indexParallel, 1);
+        }
+        const logActions = item.actions ? item.actions
+            .filter(action =&gt; capable(action, 'org.jenkinsci.plugins.workflow.actions.LogAction')) : [];
+        const hasLogs = logActions.length &gt; 0;
+        const isCompleted = item.result !== 'UNKNOWN' &amp;&amp; item.result !== null;
+        const computedResult = isCompleted ? item.result : item.state;
+        const isInputStep = item.input &amp;&amp; <span class="branch-1 cbranch-no" title="branch not covered" >item.input !== null;</span>
+        const key = index + isRunning + computedResult;
+        const title = item.displayDescription ? item.displayName + ': ' + item.displayDescription : item.displayName;
+        const modelItem = {
+            _links: item._links,
+            key: key || undefined,
+            id: item.id,
+            edges: item.edges,
+            displayName: item.displayName,
+            displayDescription: item.displayDescription,
+            title: title || `runId: ${item.id}`,
+            durationInMillis: item.durationInMillis || undefined,
+            startTime: item.startTime || undefined,
+            result: item.result || undefined,
+            state: item.state || undefined,
+            hasLogs,
+            logUrl: hasLogs ? <span class="branch-0 cbranch-no" title="branch not covered" >logActions[0]._links.self.href </span>: undefined,
+            isParallel,
+            parent,
+            isRunning,
+            isCompleted,
+            computedResult,
+            isInputStep,
+        };
+        // do not set the parent node in parallel, since we already have this information
+        if (!isParallel) {
+            parent = item.id;
+        }
+        if (item.type === 'WorkflowRun') {
+            modelItem.estimatedDurationInMillis = item.estimatedDurationInMillis;
+            modelItem.isMultiBranch = true;
+        }
+        if ((isRunning || (isFailingNode &amp;&amp; !hasFailingNode &amp;&amp; finished)) &amp;&amp; !wasFocused) {
+            wasFocused = true;
+            modelItem.isFocused = true;
+        }
+        <span class="missing-if-branch" title="if path not taken" >I</span>if (isInputStep) {
+<span class="cstat-no" title="statement not covered" >            modelItem.input = item.input;</span>
+        }
+        return modelItem;
+    });
+    // in case we have all null we will focuse the first node since we assume that this would
+    // be the next node to be started
+    if (queuedNodes.length === nodes.length &amp;&amp; !wasFocused &amp;&amp; model[0]) {
+        model[0].isFocused = true;
+    }
+    // creating the response object
+    const information = {
+        isFinished: finished,
+        hasResultsForSteps,
+        model,
+    };
+    // on not finished we return null and not a bool since we do not know the result yet
+    if (!finished) {
+        information.isError = null;
+    } else {
+        information.isError = error;
+    }
+    if (!finished) {
+        information.runningNodes = runningNodes;
+    } else if (error) {
+        information.errorNodes = errorNodes;
+    }
+    return information;
+};
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Sun Jul 02 2017 11:08:56 GMT+0530 (IST)
+</div>
+</div>
+<script src="../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../sorter.js"></script>
+</body>
+</html>

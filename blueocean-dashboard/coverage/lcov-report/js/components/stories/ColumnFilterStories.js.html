@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for js/components/stories/ColumnFilterStories.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../../index.html">All files</a> / <a href="index.html">js/components/stories</a> ColumnFilterStories.js
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>0/15</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/4</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/4</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>0/12</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">/* eslint-disable */
+import React,<span class="cstat-no" title="statement not covered" > {Component} from</span> 'react';<span class="cstat-no" title="statement not covered" ></span>
+import {storiesOf<span class="cstat-no" title="statement not covered" >, action} from '@kadira/story</span>book';
+import {ColumnFilter<span class="cstat-no" title="statement not covered" >} from '../ColumnFilter'<span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ></span></span></span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >storiesOf('ColumnFilter', module)</span>
+    .add('Toggle', basic)
+;
+&nbsp;
+function <span class="fstat-no" title="function not covered" >wrap(</span>content) {
+    const wrapperStyle <span class="cstat-no" title="statement not covered" >= {</span>
+        margin: '2em'
+    };
+<span class="cstat-no" title="statement not covered" >    return (</span>
+        &lt;div style={wrapperStyle}&gt;{content}&lt;/div&gt;
+    );
+}
+&nbsp;
+function <span class="fstat-no" title="function not covered" >columnFilterChange(</span>...<span class="cstat-no" title="statement not covered" >args) {<span class="cstat-no" title="statement not covered" ></span></span>
+<span class="cstat-no" title="statement not covered" >    console.log('columnFilterChange', args);</span>
+}
+&nbsp;
+const people <span class="cstat-no" title="statement not covered" >= ["Homer Simpson", "Marge Simpson", "Bart Simpson", "Lisa Simpson", "Maggie Simpson", "Akira",</span>
+    "Jasper Beardly", "Wendell Borton", "Patty Bouvier", "Selma Bouvier", "Kent Brockman", "Bumblebee Man",
+    "Charles Montgomery Burns", "Capital City Goofball", "Carl Carlson", "Crazy Cat Lady",
+    "Superintendent Gary Chalmers", "Comic Book Guy", "Disco Stu", "Dolph", "Lunchlady Doris", "Duffman", "Eddie",
+    "Lou", "Fat Tony", "Ned Flanders", "Rod Flanders", "Todd Flanders", "Frankie the Squealer", "Professor John Frink",
+    "Barney Gumble", "Gil Gunderson", "Dr. Julius Hibbert", "Lionel Hutz", "Jacques", "Jimbo Jones", "Kang", "Kodos",
+    "Kearney Zzyzwicz", "Kearney Zzyzwicz Jr.", "Edna Krabappel", "Rabbi Hyman Krustofski", "Krusty the Clown",
+    "Cookie Kwan", "Lenny Leonard", "Lewis", "Helen Lovejoy", "Reverend Timothy Lovejoy", "Coach Lugash", "Luigi",
+    "Lurleen Lumpkin", "Otto Mann", "Troy McClure", "Hans Moleman", "Dr. Marvin Monroe", "Nelson Muntz",
+    "Bleeding Gums Murphy", "Lindsey Naegle", "Apu Nahasapeemapetilon", "Arnie Pye", "Herbert Powell", "Martin Prince",
+    "Mayor \"Diamond Joe\" Quimby", "Radioactive Man", "The Rich Texan", "Dr. Nick Riviera", "Santa's Little Helper",
+    "Sherri and Terri", "Sideshow Bob", "Sideshow Mel", "Grampa Abraham Simpson", "Agnes Skinner",
+    "Principal Seymour Skinner", "Waylon Smithers", "Snake Jailbird", "Judge Roy Snyder", "Jebediah Springfield",
+    "Cletus Spuckler", "Brandine Spuckler", "Squeaky-Voiced Teen", "Moe Szyslak", "Mr. Teeny", "Cecil Terwilliger",
+    "Johnny Tightlips", "Üter", "Kirk Van Houten", "Luann Van Houten", "Milhouse Van Houten", "Chief Clancy Wiggum",
+    "Ralph Wiggum", "Groundskeeper Willie", "Wiseguy", "Rainier Wolfcastle", "Artie Ziff"];
+&nbsp;
+function <span class="fstat-no" title="function not covered" >basic(</span>) {
+&nbsp;
+    const nestedDivStyle <span class="cstat-no" title="statement not covered" >= {</span>
+        border: "solid 1px #ccc",
+        padding: "1em",
+        width: "20em",
+        overflow: "hidden"
+    };
+&nbsp;
+    const spacingStyle <span class="cstat-no" title="statement not covered" >= {</span>
+        padding: "50em 5em"
+    };
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    return wrap(</span>
+        &lt;section&gt;
+            &lt;h1&gt;Basic&lt;/h1&gt;
+            &lt;p&gt;Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ab alias aliquam asperiores consequuntur eius esse fuga illum incidunt iure labore maiores maxime, neque officia omnis provident sequi sunt temporibus ullam!&lt;/p&gt;
+            &lt;div style={nestedDivStyle}&gt;
+                &lt;ColumnFilter placeholder="Placeholder" options={people} onChange={columnFilterChange}/&gt;
+            &lt;/div&gt;
+            &lt;p style={spacingStyle}&gt;Spacing for scrolling&lt;/p&gt;
+        &lt;/section&gt;
+    );
+}
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Sun Jul 02 2017 11:08:56 GMT+0530 (IST)
+</div>
+</div>
+<script src="../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../sorter.js"></script>
+</body>
+</html>

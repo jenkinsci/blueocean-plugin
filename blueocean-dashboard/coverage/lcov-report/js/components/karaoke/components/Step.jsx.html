@@ -1,0 +1,602 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for js/components/karaoke/components/Step.jsx</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../../prettify.css" />
+    <link rel="stylesheet" href="../../../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../../../index.html">All files</a> / <a href="index.html">js/components/karaoke/components</a> Step.jsx
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">4.48% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>3/67</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/54</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/9</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">4.48% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>3/67</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { Component, PropTypes } from 'react';
+import { ResultItem, TimeDuration } from '@jenkins-cd/design-language';
+import { AppConfig, logging, TimeManager } from '@jenkins-cd/blueocean-core-js';
+import { observer } from 'mobx-react';
+import { KaraokeService } from '../index';
+import LogConsole from './LogConsole';
+import InputStep from './InputStep';
+import { prefixIfNeeded } from '../urls/prefixIfNeeded';
+&nbsp;
+const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Step');
+const timeManager = new TimeManager();
+&nbsp;
+function <span class="fstat-no" title="function not covered" >createStepLabel(</span>step) {
+    const { displayName, displayDescription } = <span class="cstat-no" title="statement not covered" >step;</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    if (displayDescription) {</span>
+<span class="cstat-no" title="statement not covered" >        return [</span>
+            &lt;span className="result-item-label-desc"&gt;{displayDescription}&lt;/span&gt;,
+            &lt;span className="result-item-label-name"&gt;&amp;mdash; {displayName}&lt;/span&gt;,
+        ];
+    }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >    return displayName;</span>
+}
+&nbsp;
+@observer
+export class Step extends Component {
+<span class="fstat-no" title="function not covered" >    co</span>nstructor(props) {
+<span class="cstat-no" title="statement not covered" >        super(props);</span>
+        const { augmenter, step } = <span class="cstat-no" title="statement not covered" >props;</span>
+        const focused = <span class="cstat-no" title="statement not covered" >this.isFocused(props);</span>
+        // if we are called with anchor that means that we need to fetch the log to display it
+        const { isFocused, ...rest } = <span class="cstat-no" title="statement not covered" >step;</span> // this will remove isFocused from the rest, so we can pass the updated state
+<span class="cstat-no" title="statement not covered" >        this.pager = KaraokeService.logPager(augmenter, { ...rest, isFocused: focused });</span>
+<span class="cstat-no" title="statement not covered" >        logger.debug('isFocused initial', isFocused, 'after', focused);</span>
+<span class="cstat-no" title="statement not covered" >        this.state = {</span>
+            expanded: focused,
+        };
+    }
+&nbsp;
+    /**
+     * Mainly implemented because
+     * - we need to create a reference time for running jobs
+     */
+<span class="fstat-no" title="function not covered" >    co</span>mponentWillMount() {
+        const { step } = <span class="cstat-no" title="statement not covered" >this.props;</span>
+        // needed for running steps as reference
+<span class="cstat-no" title="statement not covered" >        this.durationInMillis = (this.durationHarmonize(step)).durationInMillis;</span>
+<span class="cstat-no" title="statement not covered" >        logger.debug('durationInMillis mounting', this.durationInMillis);</span>
+    }
+    /**
+     * Mainly implemented due to fetch full log `start=0` for a step
+     * @param nextProps
+     */
+<span class="fstat-no" title="function not covered" >    co</span>mponentWillReceiveProps(nextProps) {
+        const nextStart = <span class="cstat-no" title="statement not covered" >nextProps.location &amp;&amp; nextProps.location.query ? nextProps.location.query.start : undefined;</span>
+        const currentStart = <span class="cstat-no" title="statement not covered" >this.props.location &amp;&amp; this.props.location.query ? this.props.location.query.start : undefined;</span>
+<span class="cstat-no" title="statement not covered" >        logger.debug('newProps mate', nextStart, currentStart);</span>
+<span class="cstat-no" title="statement not covered" >        if (currentStart !== nextStart &amp;&amp; nextStart !== undefined) {</span>
+<span class="cstat-no" title="statement not covered" >            logger.debug('re-fetching since result changed and we want to display the full log');</span>
+<span class="cstat-no" title="statement not covered" >            this.pager.fetchLog({ url: nextProps.step.logUrl, start: nextStart });</span>
+        }
+    }
+    /*
+     * Calculate whether we need to expand the step due to linking.
+     * When we trigger a log-0 that means we want to see the full log
+     */
+<span class="fstat-no" title="function not covered" >    is</span>Focused(props) {
+        const { step, location: { hash: anchorName } } = <span class="cstat-no" title="statement not covered" >props;</span>
+        const stepFocus = <span class="cstat-no" title="statement not covered" >step.isFocused !== undefined &amp;&amp; step.isFocused;</span>
+        const stateFocus = <span class="cstat-no" title="statement not covered" >this.state ? this.state.expanded : undefined;</span>
+        let isFocused = <span class="cstat-no" title="statement not covered" >stateFocus !== undefined ? stateFocus : stepFocus;</span>
+        // e.g. #step-10-log-1 or #step-10
+<span class="cstat-no" title="statement not covered" >        if (anchorName) {</span>
+<span class="cstat-no" title="statement not covered" >            logger.debug('expandAnchor', anchorName);</span>
+            const stepReg = <span class="cstat-no" title="statement not covered" >/step-([0-9]{1,})?($|-log-([0-9]{1,})$)/;</span>
+            const match = <span class="cstat-no" title="statement not covered" >stepReg.exec(anchorName);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            if (match &amp;&amp; match[1] &amp;&amp; match[1] === step.id) {</span>
+<span class="cstat-no" title="statement not covered" >                isFocused = true;</span>
+            }
+        }
+<span class="cstat-no" title="statement not covered" >        return isFocused || false;</span>
+    }
+&nbsp;
+    // needed to calculated running times
+<span class="fstat-no" title="function not covered" >    du</span>rationHarmonize(step) {
+        const skewMillis = <span class="cstat-no" title="statement not covered" >AppConfig.getServerBrowserTimeSkewMillis();</span>
+        // the time when we started the run harmonized with offset
+<span class="cstat-no" title="statement not covered" >        return timeManager.harmonizeTimes({ ...step }, skewMillis);</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    re</span>nder() {
+        const { step, locale, router, location, t, scrollToBottom } = <span class="cstat-no" title="statement not covered" >this.props;</span>
+<span class="cstat-no" title="statement not covered" >        if (step === undefined || !step) {</span>
+<span class="cstat-no" title="statement not covered" >            return null;</span>
+        }
+        const { durationInMillis } = <span class="cstat-no" title="statement not covered" >this.durationHarmonize(step);</span>
+        const isFocused = <span class="cstat-no" title="statement not covered" >this.isFocused(this.props);</span>
+        const { data: logArray, hasMore } = <span class="cstat-no" title="statement not covered" >this.pager.log || {};</span>
+        let children = <span class="cstat-no" title="statement not covered" >null;</span>
+<span class="cstat-no" title="statement not covered" >        if (logArray &amp;&amp; !step.isInputStep) {</span>
+            const currentLogUrl = <span class="cstat-no" title="statement not covered" >prefixIfNeeded(this.pager.currentLogUrl);</span>
+<span class="cstat-no" title="statement not covered" >            logger.debug('Updating children');</span>
+<span class="cstat-no" title="statement not covered" >            children = (&lt;LogConsole {...{</span>
+                t,
+                router,
+                location,
+                hasMore,
+                scrollToBottom,
+                logArray,
+                currentLogUrl,
+                key: step.logUrl,
+                prefix: `step-${step.id}-`,
+            }}
+            /&gt;);
+        } else <span class="cstat-no" title="statement not covered" >if (step.isInputStep) {</span>
+<span class="cstat-no" title="statement not covered" >            children = &lt;InputStep {...{ step, key: 'step' }} /&gt;;</span>
+        } else <span class="cstat-no" title="statement not covered" >if (!logArray &amp;&amp; step.hasLogs) {</span>
+<span class="cstat-no" title="statement not covered" >            children = &lt;span key={'span'}&gt;&amp;nbsp;&lt;/span&gt;;</span>
+        }
+        const getLogForNode = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >            if (this.pager.log === undefined || (this.pager.log &amp;&amp; !this.pager.log.data)) {</span>
+                const cfg = <span class="cstat-no" title="statement not covered" >{ url: step.logUrl };</span>
+<span class="cstat-no" title="statement not covered" >                logger.debug('getLogForNode called will fetch now with cfg.', cfg);</span>
+<span class="cstat-no" title="statement not covered" >                this.pager.fetchLog(cfg);</span>
+                // we are now want to expand the result item
+<span class="cstat-no" title="statement not covered" >                this.setState({ expanded: true });</span>
+            }
+        };
+        const removeFocus = <span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" >()</span> =&gt; {</span>
+<span class="cstat-no" title="statement not covered" >            this.setState({ expanded: false });</span>
+            // we need to remove the hash on collapse otherwise the result item will not be collapsed
+<span class="cstat-no" title="statement not covered" >            if (location.hash) {</span>
+<span class="cstat-no" title="statement not covered" >                delete location.hash;</span>
+<span class="cstat-no" title="statement not covered" >                router.push(location);</span>
+            }
+        };
+        // some ATH hook enhancements
+        const logConsoleClass = <span class="cstat-no" title="statement not covered" >`logConsole step-${step.id}`;</span>
+        // duration calaculations
+        const duration = <span class="cstat-no" title="statement not covered" >step.isRunning ? this.durationInMillis : durationInMillis;</span>
+<span class="cstat-no" title="statement not covered" >        logger.debug('duration', duration, step.isRunning);</span>
+        const time = (<span class="cstat-no" title="statement not covered" >&lt;TimeDuration</span>
+            millis={duration }
+            liveUpdate={step.isRunning}
+            updatePeriod={1000}
+            locale={locale}
+            displayFormat={t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' })}
+            liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
+            hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
+        /&gt;);
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return (&lt;div className={logConsoleClass}&gt;</span>
+            &lt;ResultItem {...{
+                extraInfo: time,
+                key: step.key,
+                result: step.computedResult.toLowerCase(),
+                expanded: isFocused,
+                label: createStepLabel(step),
+                onCollapse: removeFocus,
+                onExpand: getLogForNode,
+            }}
+            &gt;
+                { children }
+            &lt;/ResultItem&gt;
+        &lt;/div&gt;);
+    }
+}
+&nbsp;
+Step.propTypes = {
+    augmenter: PropTypes.object,
+    step: PropTypes.object.isRequired,
+    location: PropTypes.object,
+    router: PropTypes.shape,
+    locale: PropTypes.object,
+    t: PropTypes.func,
+    scrollToBottom: PropTypes.bool,
+};
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Sun Jul 02 2017 11:08:56 GMT+0530 (IST)
+</div>
+</div>
+<script src="../../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../../sorter.js"></script>
+</body>
+</html>

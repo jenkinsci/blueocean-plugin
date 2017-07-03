@@ -1,0 +1,662 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for js/creation/git/GitConnectStep.jsx</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../../index.html">All files</a> / <a href="index.html">js/creation/git</a> GitConnectStep.jsx
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">3.92% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>2/51</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/24</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/20</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">3.92% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>2/51</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162
+163
+164
+165
+166
+167
+168
+169
+170
+171
+172
+173
+174
+175
+176
+177
+178
+179
+180
+181
+182
+183
+184
+185
+186
+187
+188
+189
+190
+191
+192
+193
+194
+195
+196
+197
+198
+199
+200</td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React, { PropTypes } from 'react';
+import { observer } from 'mobx-react';
+import debounce from 'lodash.debounce';
+&nbsp;
+import { Dropdown, FormElement, TextInput } from '@jenkins-cd/design-language';
+&nbsp;
+import FlowStep from '../flow2/FlowStep';
+&nbsp;
+import { CreateCredentialDialog } from '../credentials/CreateCredentialDialog';
+import { CreatePipelineOutcome } from './GitCreationApi';
+import STATE from './GitCreationState';
+&nbsp;
+&nbsp;
+let t = null;
+&nbsp;
+function <span class="fstat-no" title="function not covered" >validateUrl(</span>url) {
+<span class="cstat-no" title="statement not covered" >    return !!url &amp;&amp; !!url.trim();</span>
+}
+&nbsp;
+&nbsp;
+/**
+ * Component that accepts repository URL and credentials to initiate
+ * creation of a new pipeline.
+ */
+@observer
+export default class GitConnectStep extends React.Component {
+&nbsp;
+<span class="fstat-no" title="function not covered" >    co</span>nstructor(props) {
+<span class="cstat-no" title="statement not covered" >        super(props);</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        this.state = {</span>
+            repositoryUrl: null,
+            repositoryErrorMsg: null,
+            credentialErrorMsg: null,
+            selectedCredential: null,
+            showCreateCredentialDialog: false,
+        };
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        t = this.props.flowManager.translate;</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    co</span>mponentWillMount() {
+        const { noCredentialsOption } = <span class="cstat-no" title="statement not covered" >this.props.flowManager;</span>
+<span class="cstat-no" title="statement not covered" >        this._selectedCredentialChange(noCredentialsOption);</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    _b</span>indDropdown(dropdown) {
+<span class="cstat-no" title="statement not covered" >        this.dropdown = dropdown;</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    _r</span>epositoryUrlChange(value) {
+<span class="cstat-no" title="statement not covered" >        this.setState({</span>
+            repositoryUrl: value,
+        });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        this._updateRepositoryErrorMsg();</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    _g</span>etRepositoryErrorMsg(outcome) {
+<span class="cstat-no" title="statement not covered" >        if (this.state.repositoryErrorMsg) {</span>
+<span class="cstat-no" title="statement not covered" >            return this.state.repositoryErrorMsg;</span>
+        } else <span class="cstat-no" title="statement not covered" >if (outcome === CreatePipelineOutcome.INVALID_URI) {</span>
+<span class="cstat-no" title="statement not covered" >            return t('creation.git.step1.repo_error_invalid');</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return null;</span>
+    }
+&nbsp;
+    _updateRepositoryErrorMsg = debounce(<span class="fstat-no" title="function not covered" >()</span> =&gt; {
+<span class="cstat-no" title="statement not covered" >        if (validateUrl(this.state.repositoryUrl)) {</span>
+<span class="cstat-no" title="statement not covered" >            this.setState({</span>
+                repositoryErrorMsg: null,
+            });
+        }
+    }, 200);
+&nbsp;
+<span class="fstat-no" title="function not covered" >    _s</span>electedCredentialChange(credential) {
+<span class="cstat-no" title="statement not covered" >        this.setState({</span>
+            selectedCredential: credential,
+        });
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    _g</span>etCredentialErrorMsg(outcome) {
+<span class="cstat-no" title="statement not covered" >        if (this.state.credentialErrorMsg) {</span>
+<span class="cstat-no" title="statement not covered" >            return this.state.credentialErrorMsg;</span>
+        } else <span class="cstat-no" title="statement not covered" >if (outcome === CreatePipelineOutcome.INVALID_CREDENTIAL) {</span>
+<span class="cstat-no" title="statement not covered" >            return t('creation.git.step1.credentials_error_invalid');</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return null;</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    _o</span>nCreateCredentialClick() {
+<span class="cstat-no" title="statement not covered" >        this.setState({</span>
+            showCreateCredentialDialog: true,
+        });
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    _o</span>nCreateCredentialClosed(credential) {
+        const newState = <span class="cstat-no" title="statement not covered" >{</span>
+            showCreateCredentialDialog: false,
+        };
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (credential) {</span>
+<span class="cstat-no" title="statement not covered" >            newState.selectedCredential = credential;</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        this.setState(newState);</span>
+&nbsp;
+        // TODO: control this more cleanly via a future 'selectedOption' prop on Dropdown
+<span class="cstat-no" title="statement not covered" >        this.dropdown.setState({</span>
+            selectedOption: credential,
+        });
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    _p</span>erformValidation() {
+<span class="cstat-no" title="statement not covered" >        if (!validateUrl(this.state.repositoryUrl)) {</span>
+<span class="cstat-no" title="statement not covered" >            this.setState({</span>
+                repositoryErrorMsg: t('creation.git.step1.repo_error_required'),
+            });
+&nbsp;
+<span class="cstat-no" title="statement not covered" >            return false;</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return true;</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    _b</span>eginCreation() {
+        const isValid = <span class="cstat-no" title="statement not covered" >this._performValidation();</span>
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        if (!isValid) {</span>
+<span class="cstat-no" title="statement not covered" >            return;</span>
+        }
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        this.props.flowManager.createPipeline(this.state.repositoryUrl, this.state.selectedCredential);</span>
+    }
+&nbsp;
+<span class="fstat-no" title="function not covered" >    re</span>nder() {
+        const { noCredentialsOption } = <span class="cstat-no" title="statement not covered" >this.props.flowManager;</span>
+        const { flowManager } = <span class="cstat-no" title="statement not covered" >this.props;</span>
+        const repositoryErrorMsg = <span class="cstat-no" title="statement not covered" >this._getRepositoryErrorMsg(flowManager.outcome);</span>
+        const credentialErrorMsg = <span class="cstat-no" title="statement not covered" >this._getCredentialErrorMsg(flowManager.outcome);</span>
+&nbsp;
+        const disabled = <span class="cstat-no" title="statement not covered" >flowManager.stateId !== STATE.STEP_CONNECT &amp;&amp; flowManager.stateId !== STATE.COMPLETE;</span>
+        const createButtonLabel = <span class="cstat-no" title="statement not covered" >!disabled ?</span>
+            t('creation.git.step1.create_button') :
+            t('creation.git.step1.create_button_progress');
+&nbsp;
+<span class="cstat-no" title="statement not covered" >        return (</span>
+            &lt;FlowStep {...this.props} className="git-step-connect" title={t('creation.git.step1.title')} disabled={disabled}&gt;
+                &lt;p className="instructions"&gt;
+                    {t('creation.git.step1.instructions')} &amp;nbsp;
+                    &lt;a href="https://jenkins.io/doc/book/pipeline/jenkinsfile/" target="_blank"&gt;{t('creation.git.step1.instructions_link')}&lt;/a&gt;
+                &lt;/p&gt;
+&nbsp;
+                &lt;FormElement title={t('creation.git.step1.repo_title')} errorMessage={repositoryErrorMsg}&gt;
+                    &lt;TextInput className="text-repository-url" onChange={<span class="fstat-no" title="function not covered" >va</span>l =&gt; <span class="cstat-no" title="statement not covered" >this._repositoryUrlChange(val)}</span> /&gt;
+                &lt;/FormElement&gt;
+&nbsp;
+                &lt;FormElement title={t('creation.git.step1.credentials')} errorMessage={credentialErrorMsg}&gt;
+                    &lt;Dropdown
+                      ref={<span class="fstat-no" title="function not covered" >dr</span>opdown =&gt; <span class="cstat-no" title="statement not covered" >this._bindDropdown(dropdown)}</span>
+                      className="dropdown-credentials"
+                      options={flowManager.credentials}
+                      defaultOption={noCredentialsOption}
+                      labelField="displayName"
+                      onChange={<span class="fstat-no" title="function not covered" >op</span>t =&gt; <span class="cstat-no" title="statement not covered" >this._selectedCredentialChange(opt)}</span>
+                    /&gt;
+&nbsp;
+                    &lt;button
+                      className="button-create-credential btn-secondary"
+                      onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >this._onCreateCredentialClick()}</span>
+                    &gt;
+                        {t('creation.git.step1.create_credential_button')}
+                    &lt;/button&gt;
+                &lt;/FormElement&gt;
+&nbsp;
+                { this.state.showCreateCredentialDialog &amp;&amp;
+                    &lt;CreateCredentialDialog
+                      flowManager={flowManager}
+                      onClose={<span class="fstat-no" title="function not covered" >cr</span>ed =&gt; <span class="cstat-no" title="statement not covered" >this._onCreateCredentialClosed(cred)}</span>
+                    /&gt;
+                }
+&nbsp;
+                &lt;button
+                  className="button-create-pipeline"
+                  onClick={<span class="fstat-no" title="function not covered" >()</span> =&gt; <span class="cstat-no" title="statement not covered" >this._beginCreation()}</span>
+                &gt;
+                    {createButtonLabel}
+                &lt;/button&gt;
+&nbsp;
+            &lt;/FlowStep&gt;
+        );
+    }
+}
+&nbsp;
+GitConnectStep.propTypes = {
+    flowManager: PropTypes.object,
+};
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Sun Jul 02 2017 11:08:56 GMT+0530 (IST)
+</div>
+</div>
+<script src="../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../sorter.js"></script>
+</body>
+</html>

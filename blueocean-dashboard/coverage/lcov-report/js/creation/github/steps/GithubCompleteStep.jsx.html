@@ -1,0 +1,548 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <title>Code coverage report for js/creation/github/steps/GithubCompleteStep.jsx</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../../prettify.css" />
+    <link rel="stylesheet" href="../../../../base.css" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+<body>
+<div class='wrapper'>
+  <div class='pad1'>
+    <h1>
+      <a href="../../../../index.html">All files</a> / <a href="index.html">js/creation/github/steps</a> GithubCompleteStep.jsx
+    </h1>
+    <div class='clearfix'>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Statements</span>
+        <span class='fraction'>0/128</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Branches</span>
+        <span class='fraction'>0/99</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Functions</span>
+        <span class='fraction'>0/24</span>
+      </div>
+      <div class='fl pad1y space-right2'>
+        <span class="strong">0% </span>
+        <span class="quiet">Lines</span>
+        <span class='fraction'>0/76</span>
+      </div>
+    </div>
+  </div>
+  <div class='status-line low'></div>
+<pre><table class="coverage">
+<tr><td class="line-count quiet">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95
+96
+97
+98
+99
+100
+101
+102
+103
+104
+105
+106
+107
+108
+109
+110
+111
+112
+113
+114
+115
+116
+117
+118
+119
+120
+121
+122
+123
+124
+125
+126
+127
+128
+129
+130
+131
+132
+133
+134
+135
+136
+137
+138
+139
+140
+141
+142
+143
+144
+145
+146
+147
+148
+149
+150
+151
+152
+153
+154
+155
+156
+157
+158
+159
+160
+161
+162</td><td class="line-coverage quiet"><span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import React,<span class="cstat-no" title="statement not covered" > { PropTypes } from 'react';<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>
+import { observer<span class="cstat-no" title="statement not covered" > } from 'mobx-react';</span>
+&nbsp;
+import { buildPi<span class="cstat-no" title="statement not covered" >pelineUrl } from '../../../util/Ur</span>lUtils';
+&nbsp;
+import FlowStep <span class="cstat-no" title="statement not covered" >from '../../flow2/FlowStep';<span class="cstat-no" title="statement not covered" ></span></span>
+import FlowStepStatus <span class="cstat-no" title="statement not covered" >from '../../flow2/FlowStepStatus';<span class="cstat-no" title="statement not covered" ></span></span>
+import STATE from '../Githu<span class="cstat-no" title="statement not covered" >bCreationState';<span class="cstat-no" title="statement not covered" ></span></span>
+&nbsp;
+import Extensions fr<span class="cstat-no" title="statement not covered" >om '@jenkins-cd/js-extensions';<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span></span>
+&nbsp;
+@observer
+export default class <span class="cstat-no" title="statement not covered" >GithubCompleteStep extends React.C<span class="fstat-no" title="function not covered" >om</span>ponent {<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ><span class="fstat-no" title="function not covered" ><span class="fstat-no" title="function not covered" ></span></span></span></span></span></span></span>
+&nbsp;
+    navigateDashboard() {
+        this<span class="cstat-no" title="statement not covered" >.props.flowManager.completeFlow({ url: '/pipelines' });</span>
+    }<span class="fstat-no" title="function not covered" ></span>
+&nbsp;
+    navigatePipeline() {
+        const { savedPipelin<span class="cstat-no" title="statement not covered" >e } = this.props.flowManager;</span>
+        const { organizatio<span class="cstat-no" title="statement not covered" >n, fullName } = savedPipeli</span>ne;<span class="cstat-no" title="statement not covered" ></span>
+        const url = bu<span class="cstat-no" title="statement not covered" >ildPipelineUrl(organization, fullName, 'activity');</span>
+        this<span class="cstat-no" title="statement not covered" >.props.flowManager.completeFlow({ url });</span>
+    }<span class="fstat-no" title="function not covered" ></span>
+&nbsp;
+    _getStatus(state, status) {
+        if (<span class="cstat-no" title="statement not covered" >state === STATE.STEP_COMPLETE_SUCCESS) {</span>
+            retu<span class="cstat-no" title="statement not covered" >rn FlowStepStatus.COMPLETE;</span>
+        }
+&nbsp;
+        retu<span class="cstat-no" title="statement not covered" >rn status;</span>
+    }<span class="fstat-no" title="function not covered" ></span>
+&nbsp;
+    _getTitle(state, autoDiscover, repo, count) {
+        if (<span class="cstat-no" title="statement not covered" >state === STATE.PENDING_CREATION_SAVING) {</span>
+            retu<span class="cstat-no" title="statement not covered" >rn autoDiscover ? 'Discovering Pipelines...' : 'Creating Pipeline...';</span>
+        } else if (<span class="cstat-no" title="statement not covered" >state === STATE.STEP_COMPLETE_SAVING_ERROR) {</span>
+            retu<span class="cstat-no" title="statement not covered" >rn 'Error Saving Organization';</span>
+        } else if (<span class="cstat-no" title="statement not covered" >state === STATE.PENDING_CREATION_EVENTS) {</span>
+            if (<span class="cstat-no" title="statement not covered" >autoDiscover &amp;&amp; count &gt; 0) {</span>
+                retu<span class="cstat-no" title="statement not covered" >rn `Discovered ${count} Pipelines...`;</span>
+            }
+            retu<span class="cstat-no" title="statement not covered" >rn autoDiscover ? 'Discovering Pipelines...' : 'Creating Pipeline...';</span>
+        } else if (<span class="cstat-no" title="statement not covered" >state === STATE.STEP_COMPLETE_EVENT_ERROR) {</span>
+            retu<span class="cstat-no" title="statement not covered" >rn autoDiscover ? 'Error Creating Pipelines' : 'Error Creating Pipeline';</span>
+        } else if (<span class="cstat-no" title="statement not covered" >state === STATE.STEP_COMPLETE_EVENT_TIMEOUT) {</span>
+            retu<span class="cstat-no" title="statement not covered" >rn 'Pipeline Creation Pending...';</span>
+        } else if (<span class="cstat-no" title="statement not covered" >state === STATE.STEP_COMPLETE_MISSING_JENKINSFILE) {</span>
+            retu<span class="cstat-no" title="statement not covered" >rn &lt;span&gt;There are no Jenkinsfiles in &lt;i&gt;{repo.name}&lt;/i&gt;&lt;/span&gt;;</span>
+        } else if (<span class="cstat-no" title="statement not covered" >state === STATE.STEP_COMPLETE_SUCCESS) {</span>
+            if (<span class="cstat-no" title="statement not covered" >autoDiscover &amp;&amp; count === 0) {</span>
+                retu<span class="cstat-no" title="statement not covered" >rn 'No Jenkinsfiles found in any of your repositories';</span>
+            }
+            retu<span class="cstat-no" title="statement not covered" >rn 'Completed';</span>
+        }
+&nbsp;
+        retu<span class="cstat-no" title="statement not covered" >rn 'Something Unexpected Happened';</span>
+    }<span class="fstat-no" title="function not covered" ></span>
+&nbsp;
+    _getLoading(state) {
+        retu<span class="cstat-no" title="statement not covered" >rn state === STATE.PENDING_CREATION_SAVING ||</span>
+            state === STATE.PENDING_CREATION_EVENTS;
+    }<span class="fstat-no" title="function not covered" ></span>
+&nbsp;
+    _getError(state) {
+        retu<span class="cstat-no" title="statement not covered" >rn state === STATE.STEP_COMPLETE_SAVING_ERROR ||</span>
+                state === STATE.STEP_COMPLETE_EVENT_ERROR;
+    }<span class="fstat-no" title="function not covered" ></span>
+&nbsp;
+    _getContent(state, autoDiscover, repo, count) {<span class="cstat-no" title="statement not covered" ></span>
+        cons<span class="cstat-no" title="statement not covered" >t { selectedOrganizatio</span>n, selectedRepository, <span class="cstat-no" title="statement not covered" >redirectTimeout } = this.props.flowManag</span>er;<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span>
+&nbsp;
+        let copy = '';<span class="cstat-no" title="statement not covered" ></span>
+        let showOrgScanWithNoRepos = fals<span class="cstat-no" title="statement not covered" >e;</span>
+        let showDashboardLink = fals<span class="cstat-no" title="statement not covered" >e;</span>
+        let showCreateLink = fals<span class="cstat-no" title="statement not covered" >e;</span>
+&nbsp;
+        if (<span class="cstat-no" title="statement not covered" >state === STATE.STEP_COMPLETE_SAVING_ERROR) {</span>
+            copy<span class="cstat-no" title="statement not covered" > = 'An error occurrred while saving this pipeline.';</span>
+        } else if (<span class="cstat-no" title="statement not covered" >state === STATE.PENDING_CREATION_EVENTS) {</span>
+            if (<span class="cstat-no" title="statement not covered" >count &gt; 0) {</span>
+                if (<span class="cstat-no" title="statement not covered" >autoDiscover) {</span>
+                    setT<span class="cstat-no" title="statement not covered" >imeout(() =<span class="fstat-no" title="function not covered" >&gt; </span>this.naviga<span class="cstat-no" title="statement not covered" >teDashboard(), redirectTimeout);</span></span>
+                } else {
+                    setT<span class="cstat-no" title="statement not covered" >imeout(() =<span class="fstat-no" title="function not covered" >&gt; </span>this.naviga<span class="cstat-no" title="statement not covered" >tePipeline(), redirectTimeout);</span></span>
+                }
+            }
+        } else if (<span class="cstat-no" title="statement not covered" >state === STATE.STEP_COMPLETE_EVENT_ERROR) {</span>
+            copy<span class="cstat-no" title="statement not covered" > = 'An error occurred while discovering pipelines.';</span>
+            show<span class="cstat-no" title="statement not covered" >DashboardLink = true;</span>
+        } else if (<span class="cstat-no" title="statement not covered" >state === STATE.STEP_COMPLETE_EVENT_TIMEOUT) {</span>
+            copy<span class="cstat-no" title="statement not covered" > = 'Pipelines are still waiting to be created.';</span>
+            show<span class="cstat-no" title="statement not covered" >DashboardLink = true;</span>
+        } else if (<span class="cstat-no" title="statement not covered" >state === STATE.STEP_COMPLETE_MISSING_JENKINSFILE) {</span>
+            show<span class="cstat-no" title="statement not covered" >CreateLink = true;</span>
+        } else if (<span class="cstat-no" title="statement not covered" >state === STATE.STEP_COMPLETE_SUCCESS) {</span>
+            if (<span class="cstat-no" title="statement not covered" >autoDiscover) {</span>
+                if (<span class="cstat-no" title="statement not covered" >count &gt; 0) {</span>
+                    setT<span class="cstat-no" title="statement not covered" >imeout(() =<span class="fstat-no" title="function not covered" >&gt; </span>this.naviga<span class="cstat-no" title="statement not covered" >teDashboard(), redirectTimeout);</span></span>
+                } else {
+                    show<span class="cstat-no" title="statement not covered" >OrgScanWithNoRepos = true;</span>
+                }
+            } else {
+                setT<span class="cstat-no" title="statement not covered" >imeout(() =<span class="fstat-no" title="function not covered" >&gt; </span>this.naviga<span class="cstat-no" title="statement not covered" >tePipeline(), redirectTimeout);</span></span>
+            }
+        }
+&nbsp;
+        retu<span class="cstat-no" title="statement not covered" >rn (</span>
+            &lt;div&gt;
+                &lt;p className="instructions"&gt;{copy}&lt;/p&gt;
+&nbsp;
+                { showDashboardLink &amp;&amp;
+                &lt;div&gt;
+                    &lt;p&gt;You may now return to the Dashboard to check for new pipelines.&lt;/p&gt;
+&nbsp;
+                    &lt;button onClick={() =&gt; this.navigateDashboard()}&gt;Dashboard&lt;/butt<span class="fstat-no" title="function not covered" >on&gt;<span class="cstat-no" title="statement not covered" ></span></span>
+                &lt;/div&gt;
+                }
+&nbsp;
+                { showOrgScanWithNoRepos &amp;&amp;
+                &lt;div&gt;
+                    &lt;p&gt;A Jenkinsfile is stored in your repository and describes how your Pipeline will run –
+                        &amp;nbsp;&lt;a href="https://jenkins.io/doc/" target="_blank"&gt;Learn more&lt;/a&gt;
+                    &lt;/p&gt;
+&nbsp;
+                    &lt;button onClick={() =&gt; this.props.flowManager.saveAutoDiscover()<span class="fstat-no" title="function not covered" >}&gt;Check </span>aga<span class="cstat-no" title="statement not covered" >in&lt;/button&gt;</span>
+                &lt;/div&gt;
+                }
+&nbsp;
+                { showCreateLink &amp;&amp;
+                &lt;div&gt;
+                    &lt;Extensions.Renderer extensionPoint="jenkins.pipeline.create.missing.jenkinsfile"
+                        organization={'jenkins'} fullName={selectedOrganization.name + '/' + selectedRepository.name}
+                    /&gt;
+                &lt;/div&gt;
+                }
+            &lt;/div&gt;
+        );
+    }<span class="fstat-no" title="function not covered" ></span>
+&nbsp;
+    render() {
+        const { flowManage<span class="cstat-no" title="statement not covered" >r } = this.props;</span>
+        const status = th<span class="cstat-no" title="statement not covered" >is._getStatus(flowManager.stateId, this.props.status);</span>
+        const loading = th<span class="cstat-no" title="statement not covered" >is._getLoading(flowManager.stateId);</span>
+        const error = th<span class="cstat-no" title="statement not covered" >is._getError(flowManager.stateId);</span>
+        const title = th<span class="cstat-no" title="statement not covered" >is._getTitle(flowManager.stateId, flowManager.selectedAutoDiscover, flowManager.selectedRepository, flowManager.pipelineCount);</span>
+        const content = th<span class="cstat-no" title="statement not covered" >is._getContent(flowManager.stateId, flowManager.selectedAutoDiscover, flowManager.selectedRepository, flowManager.pipelineCount);</span>
+&nbsp;
+        retu<span class="cstat-no" title="statement not covered" >rn (</span>
+            &lt;FlowStep {...this.props} className="github-complete-step" title={title} status={status} loading={loading} error={error}&gt;
+                {content}
+            &lt;/FlowStep&gt;
+        );
+    }<span class="cstat-no" title="statement not covered" ><span class="cstat-no" title="statement not covered" ></span></span>
+&nbsp;
+}
+&nbsp;
+<span class="cstat-no" title="statement not covered" >GithubCompleteStep.propTypes = {</span>
+    flowManager: PropTypes.object,
+    status: PropTypes.string,
+};
+&nbsp;</pre></td></tr>
+</table></pre>
+<div class='push'></div><!-- for sticky footer -->
+</div><!-- /wrapper -->
+<div class='footer quiet pad2 space-top1 center small'>
+  Code coverage
+  generated by <a href="https://istanbul.js.org/" target="_blank">istanbul</a> at Sun Jul 02 2017 11:08:56 GMT+0530 (IST)
+</div>
+</div>
+<script src="../../../../prettify.js"></script>
+<script>
+window.onload = function () {
+        if (typeof prettyPrint === 'function') {
+            prettyPrint();
+        }
+};
+</script>
+<script src="../../../../sorter.js"></script>
+</body>
+</html>
