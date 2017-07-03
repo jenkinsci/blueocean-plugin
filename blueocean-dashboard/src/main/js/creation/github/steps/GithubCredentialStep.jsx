@@ -2,12 +2,22 @@ import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 import { FormElement, PasswordInput } from '@jenkins-cd/design-language';
 
+import GithubApiUtils from '../api/GithubApiUtils';
 import FlowStep from '../../flow2/FlowStep';
 import { GithubAccessTokenState } from '../GithubAccessTokenState';
 import { Button } from '../Button';
 
 
-const GITHUB_URL = 'https://github.com/settings/tokens/new?scopes=repo,read:user,user:email';
+function getCreateTokenUrl(apiUrl) {
+    let baseUrl = 'https://github.com';
+
+    // will default to above for blank value or api.github.com usages
+    if (apiUrl && apiUrl.indexOf('https://api.github.com') !== 0) {
+        baseUrl = GithubApiUtils.extractProtocolHost(apiUrl);
+    }
+
+    return `${baseUrl}/settings/tokens/new?scopes=repo,read:user,user:email`;
+}
 
 
 @observer
@@ -49,7 +59,7 @@ export default class GithubCredentialsStep extends React.Component {
         const manager = this.props.flowManager.accessTokenManager;
         const title = 'Connect to Github';
         const errorMessage = this._getErrorMessage(manager.stateId);
-
+        const tokenUrl = getCreateTokenUrl(this.props.flowManager.getApiUrl());
         const disabled = manager.stateId === GithubAccessTokenState.SAVE_SUCCESS;
 
         let result = null;
@@ -68,7 +78,7 @@ export default class GithubCredentialsStep extends React.Component {
             <FlowStep {...this.props} className="github-credentials-step" disabled={disabled} title={title}>
                 <p className="instructions">
                     Jenkins needs an access key to authorize itself with Github. &nbsp;
-                    <a href={GITHUB_URL} target="_blank">Create an access key here.</a>
+                    <a href={tokenUrl} target="_blank">Create an access key here.</a>
                 </p>
 
                 <FormElement errorMessage={errorMessage}>

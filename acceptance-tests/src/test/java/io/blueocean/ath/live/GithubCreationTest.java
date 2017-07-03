@@ -2,19 +2,14 @@ package io.blueocean.ath.live;
 
 import com.google.common.io.Resources;
 import io.blueocean.ath.ATHJUnitRunner;
+import io.blueocean.ath.CustomJenkinsServer;
 import io.blueocean.ath.Login;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
-import io.blueocean.ath.model.Folder;
-import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.pages.blue.EditorPage;
 import io.blueocean.ath.pages.blue.GithubCreationPage;
 import io.blueocean.ath.sse.SSEClientRule;
 import org.apache.log4j.Logger;
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.kohsuke.github.GHContentUpdateResponse;
 import org.kohsuke.github.GHRepository;
@@ -54,6 +49,9 @@ public class GithubCreationTest{
     public SSEClientRule sseClient;
 
     @Inject EditorPage editorPage;
+
+    @Inject
+    CustomJenkinsServer jenkins;
 
     /**
      * Cleans up repostory after the test has completed.
@@ -118,7 +116,7 @@ public class GithubCreationTest{
      * TODO: Add PR coverage.
      */
     @Test
-    public void testGithubCreation() throws IOException {
+    public void testCreatePipelineFull() throws IOException {
         URL jenkinsFileUrl = Resources.getResource(this.getClass(), "Jenkinsfile");
         byte[] content = Resources.toByteArray(jenkinsFileUrl);
         GHContentUpdateResponse updateResponse = ghRepository.createContent(content, "Jenkinsfile", "Jenkinsfile", "master");
@@ -127,6 +125,15 @@ public class GithubCreationTest{
         ghRepository.createContent("hi there","newfile", "newfile", "branch1");
 
         creationPage.createPipeline(token, organization, repo);
+    }
+
+    @Test
+    public void testTokenValidation_failed() throws IOException {
+        jenkins.deleteUserDomainCredential("alice", "blueocean-github-domain", "github");
+        creationPage.navigateToCreation();
+        creationPage.selectGithubCreation();
+        creationPage.validateGithubOauthToken("foo");
+        creationPage.findFormErrorMessage("Invalid access token.");
     }
 
 }

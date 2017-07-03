@@ -13,8 +13,11 @@ extensions:
 # creation for Git repos
   - component: creation/git/GitScmProvider
     extensionPoint: jenkins.pipeline.create.scm.provider
-# creation for Github
+# creation for GitHub
   - component: creation/github/GithubScmProvider
+    extensionPoint: jenkins.pipeline.create.scm.provider
+# creation for GitHub Enterprise
+  - component: creation/github-enterprise/GithubEnterpriseScmProvider
     extensionPoint: jenkins.pipeline.create.scm.provider
 # Karaoke
   - component: components/karaoke/components/FreeStyle
