@@ -24,10 +24,9 @@ import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.concurrent.ExecutionException;
 
-import static io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.PullRequest.PULL_REQUEST;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_BRANCH;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_JOB;
-
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.PULL_REQUEST;
 
 /**
  * @author Vivek Pandey
@@ -44,7 +43,7 @@ public class BranchImpl extends PipelineImpl {
         this.parent = parent;
     }
 
-    @Exported(name = PULL_REQUEST, inline = true, skipNull =  true)
+    @Exported(name = PullRequest.PULL_REQUEST, inline = true, skipNull =  true)
     public PullRequest getPullRequest() {
         return PullRequest.get(job);
     }
