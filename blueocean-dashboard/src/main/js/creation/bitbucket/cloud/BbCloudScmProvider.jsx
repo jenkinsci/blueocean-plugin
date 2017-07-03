@@ -1,7 +1,7 @@
 import React from 'react';
 import ScmProvider from '../../ScmProvider';
 
-import { BbCreationApi } from '../api/BBCreationApi';
+import { BbCreationApi } from '../api/BbCreationApi';
 import { BbCredentialsApi } from '../api/BbCredentialsApi';
 
 import BbDefaultOption from '../BbDefaultOption';

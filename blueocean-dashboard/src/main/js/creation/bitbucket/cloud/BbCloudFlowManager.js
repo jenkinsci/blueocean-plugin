@@ -120,7 +120,7 @@ export default class BbCloudFlowManager extends FlowManager {
             this.listOrganizations();
         } else {
             this.renderStep({
-                stateId: STATE.STEP_ACCESS_TOKEN,
+                stateId: STATE.STEP_CREDENTIAL,
                 stepElement: <BbCredentialsStep />,
             });
         }
@@ -169,12 +169,11 @@ export default class BbCloudFlowManager extends FlowManager {
     @action
     selectOrganization(organization) {
         this.selectedOrganization = organization;
-        this._loadAllRepositories(this.selectedOrganization);
         this.renderStep({
             stateId: STATE.PENDING_LOADING_REPOSITORIES,
             stepElement: <BbLoadingStep />,
-            afterStateId: STATE.STEP_CHOOSE_DISCOVER,
         });
+        this._loadAllRepositories(this.selectedOrganization);
     }
 
     @action
