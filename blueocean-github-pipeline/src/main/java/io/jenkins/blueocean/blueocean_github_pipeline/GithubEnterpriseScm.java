@@ -12,7 +12,6 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmOrganization;
 import io.jenkins.blueocean.rest.model.Container;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.kohsuke.stapler.WebMethod;
@@ -20,7 +19,6 @@ import org.kohsuke.stapler.verb.GET;
 import org.parboiled.common.StringUtils;
 
 import javax.annotation.Nonnull;
-import java.util.Iterator;
 
 /**
  * @author Vivek Pandey

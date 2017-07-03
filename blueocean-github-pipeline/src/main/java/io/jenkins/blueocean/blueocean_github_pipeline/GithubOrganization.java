@@ -2,7 +2,6 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepositoryContainer;
 import org.kohsuke.github.GHOrganization;
 
