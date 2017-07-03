@@ -30,16 +30,6 @@ NoChangesPlaceholder.propTypes = {
     t: PropTypes.func,
 };
 
-
-const CommitLink = (commit) => {
-    if (commit.url) {
-        return (<a href={commit.url}>
-            <CommitHash commitId={commit.commitId} />
-        </a>);
-    }
-    return <CommitHash commitId={commit.commitId} />;
-};
-
 export default class RunDetailsChanges extends Component {
 
     render() {
@@ -68,7 +58,7 @@ export default class RunDetailsChanges extends Component {
             <Table headers={headers} className="changeset-table">
                 { changeSet.map(commit => (
                     <tr key={commit.commitId}>
-                        <td><CommitLink {...commit} /></td>
+                        <td><CommitHash commitId={commit.commitId} url={commit.url} /></td>
                         <td>{commit.author.fullName}</td>
                         <td className="multipleLines">{commit.msg}</td>
                         <td>

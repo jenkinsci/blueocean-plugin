@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/react-material-icons';
 import { AppConfig, logging, ResultPageHeader, TimeManager } from '@jenkins-cd/blueocean-core-js';
-import { ExpandablePath, ReadableDate, TimeDuration } from '@jenkins-cd/design-language';
+import { ExpandablePath, ReadableDate, TimeDuration, CommitHash } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import { Link } from 'react-router';
 import { buildPipelineUrl } from '../util/UrlUtils';
@@ -119,18 +119,13 @@ class RunDetailsHeader extends Component {
             </div>
         );
 
-        const commitIdString = run.commitId || '—';
+        const commitIdString = changeSet.length && changeSet[0].commitId || '—';
+        const commitUrl = changeSet.length && changeSet[0].url || '';
         const commitSourceDetails = (
             <div className="u-label-value" title={commitLabel + ': ' + commitIdString}>
                 <label className={labelClassName}>{ commitLabel }:</label>
                 <span className="commit">
-                    {run.changeSet.length && run.changeSet[0] !== undefined ? (
-                        <a title="Opens commit in a new window" target="_blank" href={run.changeSet[0].url}>
-                           { commitIdString.substring(0, 7) }
-                        </a>
-                    ) : (
-                        commitIdString.substring(0, 7)
-                    )}
+                    <CommitHash commitId={commitIdString} url={commitUrl} />
                 </span>
             </div>
         );
