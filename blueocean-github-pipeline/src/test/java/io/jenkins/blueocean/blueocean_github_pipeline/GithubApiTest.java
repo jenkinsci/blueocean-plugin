@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -162,5 +163,11 @@ public class GithubApiTest extends GithubMockBase {
             .build(List.class);
 
         Assert.assertTrue(l.size() > 0);
+
+        Iterator<Map<String,String>> it = l.iterator();
+        while(it.hasNext()) {
+            Map<String, String> org = it.next();
+            assertNull(org.get("avatar"));
+        }
     }
 }
