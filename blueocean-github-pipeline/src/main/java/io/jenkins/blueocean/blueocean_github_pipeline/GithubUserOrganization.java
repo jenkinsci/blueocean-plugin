@@ -29,7 +29,11 @@ public class GithubUserOrganization  extends AbstractGithubOrganization{
 
     @Override
     public String getAvatar() {
-        return getAvatarWithSize(user.getAvatarUrl());
+        if (parent.isOrganizationAvatarSupported()) {
+            return getAvatarWithSize(user.getAvatarUrl());
+        }
+
+        return null;
     }
 
     @Override

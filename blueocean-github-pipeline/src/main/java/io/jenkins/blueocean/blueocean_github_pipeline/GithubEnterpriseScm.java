@@ -67,9 +67,8 @@ public class GithubEnterpriseScm extends GithubScm {
     }
 
     @Override
-    public Container<ScmOrganization> getOrganizations() {
-        final Container<ScmOrganization> orgs = super.getOrganizations();
-        return new GithubEnterpriseOrganizationContainer(orgs);
+    public boolean isOrganizationAvatarSupported() {
+        return false;
     }
 
     @WebMethod(name="") @GET @TreeResponse
