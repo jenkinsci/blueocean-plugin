@@ -67,7 +67,7 @@ describe('RunDetailsChanges', () => {
             assert.equal(tree.everySubTree('tr').length, 2);
 
             const cols = tree.subTree('tr').everySubTree('td');
-            assert.equal(cols[0].text(), '<CommitLink />');
+            assert.equal(cols[0].text(), '<CommitId />');
             assert.equal(cols[1].text(), 'tscherler');
             assert.equal(cols[2].text(), 'Update Jenkinsfile');
             assert.equal(cols[3].text(), '<ReadableDate />');
