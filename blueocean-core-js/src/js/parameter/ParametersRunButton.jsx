@@ -148,7 +148,7 @@ export class ParametersRunButton extends Component {
                 buttons={[okButton, cancelButton]}
                 onDismiss={this.hide.bind(this)}
                 title={message}
-                className="Dialog--input"
+                className="Dialog--input Dialog--medium-size"
             >
                 <ParametersRender
                     parameters={parameters}

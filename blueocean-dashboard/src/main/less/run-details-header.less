@@ -19,6 +19,14 @@
         display: flex;
         align-items: center;
 
+        &.causes {
+            text-overflow: ellipsis;
+            overflow: hidden;
+            display: block;
+            white-space: nowrap;
+            max-width: 99.99%;
+        }
+
         svg+* {
             margin-left: 8px;
         }
@@ -49,10 +57,12 @@
         }
 
         span {
+            position: relative;
             display: block;
             white-space: nowrap;
             overflow: hidden;
             text-overflow: ellipsis;
+            padding-right: 17px;
 
             svg {
                 display: block;
@@ -61,9 +71,14 @@
                 margin-left: 3px;
             }
 
-            .inline-svg svg{
-                display: inline-block;
-                vertical-align: middle;
+            .inline-svg {
+                position: absolute;
+                right: 0;
+
+                svg{
+                    display: inline-block;
+                    vertical-align: middle;
+                }
             }
         }
 
