@@ -22,6 +22,8 @@ public class GithubEnterpriseOrganization extends ScmOrganization {
 
     @Override
     public String getAvatar() {
+        // GitHub Enterprise requires user to be authenticated to view org images
+        // as Blue Ocean user likely won't be auth'd, return null as a clue to the UI to show placeholder
         return null;
     }
 

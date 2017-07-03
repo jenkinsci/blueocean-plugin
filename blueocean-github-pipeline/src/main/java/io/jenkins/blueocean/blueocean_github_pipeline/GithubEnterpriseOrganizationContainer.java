@@ -24,6 +24,7 @@ public class GithubEnterpriseOrganizationContainer extends Container<ScmOrganiza
         Iterator<ScmOrganization> iterator = orgContainer.iterator();
         while (iterator.hasNext()) {
             ScmOrganization scmOrg = iterator.next();
+            // wrap the existing ScmOrg with class that will prevent 'avatar' prop from being returned
             this.orgs.put(scmOrg.getName(), new GithubEnterpriseOrganization(scmOrg));
         }
     }
