@@ -1,9 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { Table } from '@jenkins-cd/design-language';
+import { JTable, TableHeaderRow } from '@jenkins-cd/design-language';
 import { capable, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 
 import PullRequest from './PullRequest';
+import PullRequestRow from './PullRequestRow';
 import { RunsRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { NoPullRequestsPlaceholder } from './placeholder/NoPullRequestsPlaceholder';
@@ -52,7 +54,7 @@ export class PullRequests extends Component {
         const summary = t(`${head}.summary`, { defaultValue: 'Summary' });
         const completed = t(`${head}.completed`, { defaultValue: 'Completed' });
 
-        const headers = [
+        const headers = [  // TODO: RM
             status,
             { label: runHeader, className: 'run' },
             { label: summary, className: 'summary' },
@@ -61,12 +63,38 @@ export class PullRequests extends Component {
             { label: '', className: 'run' },
         ];
 
+        const actionExtensionCount = 2; // TODO: Measure!
+
+        const columns = [
+            JTable.column(60, status),
+            JTable.column(60, runHeader),
+            JTable.column(530, summary, true),
+            JTable.column(60, author),
+            JTable.column(100, completed),
+            JTable.column(actionExtensionCount * 24, ''),
+        ];
+
+        const runRecords = pullRequests.map(run => new RunsRecord(run));
+
         return (
             <main>
                 <article>
+
+                    <JTable columns={columns}>
+                        <TableHeaderRow/>
+                        { runRecords.map((result, index) =>
+                            <PullRequestRow t={t}
+                                            locale={locale}
+                                            pipeline={pipeline}
+                                            key={index}
+                                            pr={result} />
+                        )}
+                    </JTable>
+
+                    <p style={{padding:"3em"}}>this space intentionally left blank</p>
+
                     <Table className="pr-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
-                        {pullRequests.map((run, index) => {
-                            const result = new RunsRecord(run);
+                        {runRecords.map((result, index) => {
                             return (<PullRequest
                               t={t}
                               locale={locale}
