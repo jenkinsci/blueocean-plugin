@@ -1,0 +1,65 @@
+@import "_elements";
+
+div#content {
+  max-width: 1300px;
+  margin: 20px auto;
+  padding: 0px 40px;
+  code {
+    display: inline-block;
+    padding: 10px;
+    width: auto;
+  }
+}
+
+header {
+  padding: 10px 20px 20px 20px;
+
+  .nav {
+    padding-top: 25px;
+    p {
+      margin: 0;
+    }
+  }
+}
+
+h2 {
+  margin-top: 20px;
+}
+
+iframe {
+  width: 100%;
+}
+
+.jdl-storybook {
+  padding: 2px;
+  border: solid 1px #d3d3d3;
+  background: #f4f4f4;
+  .rounded(3px);
+}
+
+.not-found {
+  margin-top: 100px;
+  text-align: center;
+
+  .octicon-alert {
+    margin-bottom: 30px;
+    color: #ff0000;
+    font-size: 80px;
+  }
+
+  h1 {
+    margin-bottom: 10px;
+  }
+}
+
+div#content, body.componentdoc {
+  font-size: 150%;
+}
+
+pre.prettyprint {
+  margin: 10px;
+  padding: 5px;
+  border: 1px solid #cccccc;
+  .rounded(3px);
+  font-size: 10px;
+}

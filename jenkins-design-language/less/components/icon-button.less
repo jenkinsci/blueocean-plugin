@@ -1,0 +1,77 @@
+button.IconButton {
+    .IconButton-medium;
+
+    .IconButton-wrapper {
+        display: flex;
+        align-items: center;
+    }
+
+    // prevent excess vertical space which throws off alignment
+    .IconButton-icon > * {
+        display: block;
+    }
+
+    .IconButton-icon .svg-icon {
+        fill: #fff;
+    }
+
+    &.monochrome {
+        .IconButton-icon .svg-icon {
+            fill: @text-color;
+        }
+    }
+}
+
+.IconButton-small {
+    padding-top: 3.5px;
+    padding-bottom: 3.5px;
+
+    .IconButton-icon > * {
+        width: 16px;
+        height: 16px;
+    }
+
+    &.u-inner-margin .IconButton-icon {
+        margin-right: 5px;
+    }
+}
+
+.IconButton-medium {
+    padding-top: 4px;
+    padding-bottom: 4px;
+
+    .IconButton-icon > * {
+        width: 20px;
+        height: 20px;
+    }
+
+    &.u-inner-margin .IconButton-icon {
+        margin-right: 10px;
+    }
+}
+
+.IconButton-large {
+    padding-top: 6px;
+    padding-bottom: 6px;
+
+    .IconButton-icon > * {
+        width: 24px;
+        height: 24px;
+    }
+
+    &.u-inner-margin .IconButton-icon {
+        margin-right: 12px;
+    }
+}
+
+// sizing
+
+.IconButton {
+    .layout-small & {
+        .IconButton-small;
+    }
+
+    .layout-large & {
+        .IconButton-large;
+    }
+}

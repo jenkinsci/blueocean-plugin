@@ -1,0 +1,127 @@
+@import "../mixins/browsers";
+
+.RadioButtonGroup {
+    .RadioButtonGroup-medium;
+    // by default, stack vertically
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+
+    .RadioButtonGroup-item {
+        display: flex;
+        align-items: center;
+
+        // hide the radio entirely but keep accessible
+        input[type="radio"] {
+            .cloak;
+        }
+
+        .RadioButtonGroup-indicator {
+            position: relative;
+            cursor: pointer;
+            flex-shrink: 0;
+
+            .svg-shape {
+                display: block;
+            }
+
+            .outer-circle {
+                stroke: @gray-light;
+            }
+
+            .RadioButtonGroup-focus {
+                position: absolute;
+                top: 0;
+                border-radius: 100%;
+            }
+        }
+
+        .RadioButtonGroup-text {
+            margin-left: 5px;
+            cursor: pointer;
+        }
+
+        input[type="radio"]:checked + .RadioButtonGroup-indicator {
+            .outer-circle {
+                fill: @brand-primary;
+                stroke: @brand-primary;
+            }
+        }
+
+        input[type="radio"]:focus + .RadioButtonGroup-indicator {
+            .RadioButtonGroup-focus {
+                .focus-styles;
+            }
+        }
+
+        input[type="radio"][disabled],
+        fieldset[disabled] & input[type="radio"] {
+            & ~ .RadioButtonGroup-indicator, & ~ .RadioButtonGroup-text {
+                .u-disabled;
+            }
+        }
+    }
+
+    &.u-layout-horizontal {
+        flex-direction: row;
+
+        .RadioButtonGroup-item {
+            margin-right: 10px;
+        }
+    }
+}
+
+.browser-ie11up({
+    input[type="radio"]:focus + .RadioButtonGroup-indicator {
+        .RadioButtonGroup-focus {
+            .ie11-focus-rect;
+            margin-top: -1px;
+        }
+    }
+});
+
+
+// sizing
+
+.RadioButtonGroup-small {
+    .RadioButtonGroup-item {
+        margin-bottom: 4px;
+    }
+
+    .RadioButtonGroup-indicator, .RadioButtonGroup-focus {
+        width: 16px;
+        height: 16px;
+    }
+}
+
+.RadioButtonGroup-medium {
+    .RadioButtonGroup-item {
+        margin-bottom: 6px;
+    }
+
+    .RadioButtonGroup-indicator, .RadioButtonGroup-focus {
+        width: 20px;
+        height: 20px;
+    }
+}
+
+.RadioButtonGroup-large {
+    .RadioButtonGroup-item {
+        margin-bottom: 10px;
+    }
+
+    .RadioButtonGroup-indicator, .RadioButtonGroup-focus {
+        width: 24px;
+        height: 24px;
+    }
+}
+
+.RadioButtonGroup {
+    .layout-small & {
+        .RadioButtonGroup-small;
+    }
+
+    .layout-large & {
+        .RadioButtonGroup-large;
+    }
+}

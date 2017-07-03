@@ -1,0 +1,89 @@
+.Favorite {
+
+    @resting: @action-button;
+    @selected: #E79713;
+
+    @resting-dark: @action-button-dark;
+    @selected-dark: white;
+
+    @hover: #E79713;
+    @hover-dark: white;
+
+    .Checkbox-indicator {
+        border: 0;
+        width: 24px;
+        height: 24px;
+        overflow: hidden;
+
+        .star-icon {
+            flex-shrink: 0;
+        }
+    }
+
+    // animate to a 'filled in' star
+    input[type="checkbox"]:checked + .Checkbox-indicator {
+        background: none;
+
+        .star-icon {
+            transform: translate(-264px, 0px);
+            transition: 0.3s steps(11);
+        }
+    }
+
+    .Favorite-fill {
+        fill: @resting;
+    }
+
+    .Favorite-fill--selected {
+        fill: @selected;
+    }
+
+    .Favorite-stroke--selected {
+        stroke: @selected;
+    }
+
+    // hover states for unchecked and checked
+    &:hover {
+        .Favorite-fill {
+            fill: @hover;
+        }
+
+        .Favorite-fill--selected {
+            fill: @hover;
+        }
+
+        .Favorite-stroke--selected {
+            stroke: @hover;
+        }
+    }
+
+
+    &.dark {
+        .Favorite-fill {
+            fill: @resting-dark;
+        }
+
+        .Favorite-fill--selected {
+            fill: @selected-dark;
+        }
+
+        .Favorite-stroke--selected {
+            stroke: @selected-dark;
+        }
+
+        // hover states for unchecked and checked
+        &:hover {
+            .Favorite-fill {
+                fill: @hover-dark;
+            }
+
+            .Favorite-fill--selected {
+                fill: @hover-dark;
+            }
+
+            .Favorite-stroke--selected {
+                stroke: @hover-dark;
+            }
+        }
+    }
+}
