@@ -10,7 +10,6 @@ import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
-import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.Branch;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.PullRequest;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
@@ -27,6 +26,7 @@ import io.jenkins.blueocean.service.embedded.rest.StoppableRun;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMRevisionAction;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
+import org.jenkinsci.plugins.workflow.cps.replay.ReplayCause;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
@@ -35,6 +35,8 @@ import org.kohsuke.stapler.export.Exported;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.Nonnull;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -49,7 +51,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW
 @Capability(JENKINS_WORKFLOW_RUN)
 public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     private static final Logger logger = LoggerFactory.getLogger(PipelineRunImpl.class);
-    public PipelineRunImpl(WorkflowRun run, Link parent) {
+    public PipelineRunImpl(WorkflowRun run, Reachable parent) {
         super(run, parent);
     }
 
@@ -69,18 +71,30 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     }
 
     @Override
+    @Nonnull
     public Container<BlueChangeSetEntry> getChangeSet() {
-        Map<String, BlueChangeSetEntry> m = new LinkedHashMap<>();
-        int cnt = 0;
-        for (ChangeLogSet<? extends Entry> cs : run.getChangeSets()) {
-            for (ChangeLogSet.Entry e : cs) {
-                cnt++;
-                String id = e.getCommitId();
-                if (id == null) id = String.valueOf(cnt);
-                m.put(id, new ChangeSetResource(e, this));
+        // If this run is a replay then return the changesets from the original run
+        ReplayCause replayCause = run.getCause(ReplayCause.class);
+        if (replayCause != null) {
+            Run run = this.run.getParent().getBuildByNumber(replayCause.getOriginalNumber());
+            if (run == null) {
+                return Containers.empty(getLink());
+            } else {
+                return AbstractRunImpl.getBlueRun(run, parent).getChangeSet();
             }
+        } else {
+            Map<String, BlueChangeSetEntry> m = new LinkedHashMap<>();
+            int cnt = 0;
+            for (ChangeLogSet<? extends Entry> cs : run.getChangeSets()) {
+                for (ChangeLogSet.Entry e : cs) {
+                    cnt++;
+                    String id = e.getCommitId();
+                    if (id == null) id = String.valueOf(cnt);
+                    m.put(id, new ChangeSetResource(e, this));
+                }
+            }
+            return Containers.fromResourceMap(getLink(), m);
         }
-        return Containers.fromResourceMap(getLink(),m);
     }
 
     @Override
@@ -100,7 +114,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     public BlueRun replay() {
         ReplayAction replayAction = run.getAction(ReplayAction.class);
         if(!isReplayable(replayAction)) {
-            throw new ServiceException.BadRequestExpception("This run does not support replay");
+            throw new ServiceException.BadRequestException("This run does not support replay");
         }
 
         Queue.Item item = replayAction.run2(replayAction.getOriginalScript(), replayAction.getOriginalLoadedScripts());
@@ -189,10 +203,19 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         @Override
         public BlueRun getRun(Run run, Reachable parent) {
             if(run instanceof WorkflowRun) {
-                return new PipelineRunImpl((WorkflowRun) run, parent.getLink());
+                return new PipelineRunImpl((WorkflowRun) run, parent);
             }
             return null;
         }
     }
+
+    static final Comparator<BlueRun> LATEST_RUN_START_TIME_COMPARATOR = new Comparator<BlueRun>() {
+        @Override
+        public int compare(BlueRun o1, BlueRun o2) {
+            Long t1 = (o1 != null  && o1.getStartTime() != null) ? o1.getStartTime().getTime() : 0;
+            Long t2 = (o2 != null  && o2.getStartTime() != null) ? o2.getStartTime().getTime() : 0;
+            return t2.compareTo(t1);
+        }
+    };
 
 }

@@ -158,7 +158,7 @@ public class RunContainerImpl extends BlueRunContainer {
         try {
             JSONObject body = JSONObject.fromObject(IOUtils.toString(request.getReader()));
             if (body.get("parameters") == null && pp.getParameterDefinitions().size() > 0) {
-                throw new ServiceException.BadRequestExpception("This is parameterized job, requires parameters");
+                throw new ServiceException.BadRequestException("This is parameterized job, requires parameters");
             }
             if (body.get("parameters") != null) {
                 JSONArray pds = JSONArray.fromObject(body.get("parameters"));
@@ -166,18 +166,18 @@ public class RunContainerImpl extends BlueRunContainer {
                     JSONObject p = (JSONObject) o;
                     String name = (String) p.get("name");
                     if (name == null) {
-                        throw new ServiceException.BadRequestExpception("parameters.name is required element");
+                        throw new ServiceException.BadRequestException("parameters.name is required element");
                     }
                     ParameterDefinition pd = pp.getParameterDefinition(name);
                     if (pd == null) {
-                        throw new ServiceException.BadRequestExpception("No such parameter definition: " + name);
+                        throw new ServiceException.BadRequestException("No such parameter definition: " + name);
                     }
                     ParameterValue parameterValue = pd.createValue(request, p);
                     if (parameterValue != null) {
                         values.add(parameterValue);
                         pdsInRequest.add(pd);
                     } else {
-                        throw new ServiceException.BadRequestExpception("Invalid value. Cannot retrieve the parameter value: " + name);
+                        throw new ServiceException.BadRequestException("Invalid value. Cannot retrieve the parameter value: " + name);
                     }
                 }
 
@@ -187,7 +187,7 @@ public class RunContainerImpl extends BlueRunContainer {
                         if(!pdsInRequest.contains(pd)){
                             ParameterValue v = pd.getDefaultParameterValue();
                             if(v == null || v.getValue() == null){
-                                throw new ServiceException.BadRequestExpception("Missing parameter: "+pd.getName());
+                                throw new ServiceException.BadRequestException("Missing parameter: "+pd.getName());
                             }
                             values.add(v);
                         }

@@ -1,4 +1,4 @@
-JENKINS_VERSION=2.7.3
+JENKINS_VERSION=2.7.4
 SELENIUM_VERSION=2.53
 
 MAVEN_SETTINGS=""
@@ -11,7 +11,7 @@ AGGREGATOR_DIR=""
 DEV_JENKINS=false
 PROFILES="-P runTests"
 JENKINS_JAVA_OPTS="-Djava.util.logging.config.file=./logging.properties"
-TEST_TO_RUN="-Dtest=AllTest"
+TEST_TO_RUN=""
 
 for i in "$@"
 do
@@ -74,14 +74,7 @@ fi
 # For now, the location of the aggregator plugin must be defined until we have
 # blueocean plugins in the Update Center.
 if [ "${AGGREGATOR_DIR}" == "" ]; then
-    echo ""
-    echo " *********************************************************************"
-    echo "    You must specify the location of the Blue Ocean"
-    echo "    aggregator plugin e.g."
-    echo "    ./run.sh -a=/Users/tfennelly/projects/blueocean/blueocean-plugin"
-    echo " *********************************************************************"
-    echo ""
-    exit 1
+    AGGREGATOR_DIR="../blueocean/"
 fi
 if [ ! -d "${AGGREGATOR_DIR}" ]; then
     echo ""

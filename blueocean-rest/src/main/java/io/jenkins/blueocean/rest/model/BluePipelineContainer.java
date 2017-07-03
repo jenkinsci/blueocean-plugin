@@ -36,12 +36,8 @@ public abstract class BluePipelineContainer extends Container<BluePipeline>{
             err.add(new ErrorMessage.Error("$class", ErrorMessage.Error.ErrorCodes.MISSING.toString(), "$class is required"));
         }
 
-        if(body.get("organization") == null){
-            err.add(new ErrorMessage.Error("organization", ErrorMessage.Error.ErrorCodes.MISSING.toString(), "organization is required"));
-        }
-
         if(!err.getErrors().isEmpty()){
-            throw new ServiceException.BadRequestExpception(err);
+            throw new ServiceException.BadRequestException(err);
         }
 
         BluePipelineCreateRequest request = staplerRequest.bindJSON(BluePipelineCreateRequest.class, body);

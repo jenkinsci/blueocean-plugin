@@ -7,6 +7,10 @@ import WithContext from '@jenkins-cd/design-language/dist/js/stories/WithContext
 import moment from 'moment';
 import { TimeHarmonizer, TimeHarmonizerUtil } from '../../../src/js';
 
+
+jest.mock('../../../src/js/i18n/i18n');
+
+
 class UselessComponent extends Component {
 
     render() {

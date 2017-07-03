@@ -14,6 +14,7 @@ import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -23,29 +24,13 @@ public class GithubApiTest extends GithubMockBase {
     @Test
     public void validateGithubToken() throws IOException, UnirestException {
         //check credentialId of this SCM, should be null
-        Map r = new RequestBuilder(baseUrl)
-                .status(200)
-                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .get("/organizations/jenkins/scm/github/")
-                .build(Map.class);
-        Assert.assertNull(r.get("credentialId"));
-        assertEquals("github", r.get("id"));
-
-        r = new RequestBuilder(baseUrl)
-                .data(ImmutableMap.of("accessToken", accessToken))
-                .status(200)
-                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .put("/organizations/jenkins/scm/github/validate/")
-                .build(Map.class);
-
-        assertEquals("github", r.get("credentialId"));
-
+        createGithubCredential();
         //check if this credentialId is created in correct user domain
         Domain domain = CredentialsUtils.findDomain("github", user);
         assertEquals("blueocean-github-domain", domain.getName());
 
         //now that there is github credentials setup, calling scm api to get credential should simply return that.
-        r = new RequestBuilder(baseUrl)
+        Map r = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .get("/organizations/jenkins/scm/github/")
@@ -59,7 +44,7 @@ public class GithubApiTest extends GithubMockBase {
                 .data(ImmutableMap.of("accessToken", accessToken))
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .put("/organizations/jenkins/scm/github/validate/")
+                .put("/organizations/jenkins/scm/github/validate/?apiUrl="+githubApiUrl)
                 .build(Map.class);
 
         assertEquals("github", r.get("credentialId"));
@@ -67,45 +52,86 @@ public class GithubApiTest extends GithubMockBase {
 
     @Test
     public void validateGithubEnterpriseToken() throws IOException, UnirestException {
-        //check credentialId of this SCM, should be null
+        String credentialId = createGithubEnterpriseCredential();
+        assertEquals("github-enterprise:" + getGithubApiUrlEncoded(), credentialId);
+
+        //check if this credentialId is created in correct user domain
+        Domain domain = CredentialsUtils.findDomain(credentialId, user);
+        assertEquals("blueocean-github-enterprise-domain", domain.getName());
+    }
+
+    @Test
+    public void validateGithubEnterpriseToken_apiUrlRequired() throws UnirestException {
         Map r = new RequestBuilder(baseUrl)
-                .status(200)
-                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .get("/organizations/jenkins/scm/github-enterprise/")
-                .build(Map.class);
-        Assert.assertNull(r.get("credentialId"));
-        assertEquals("github-enterprise", r.get("id"));
+            .data(ImmutableMap.of("accessToken", accessToken))
+            .status(400)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .put("/organizations/jenkins/scm/github-enterprise/validate")
+            .build(Map.class);
+        assertEquals(400, r.get("code"));
+    }
+
+    @Test
+    public void fetchExistingGithubEnterpriseToken_withCredential() throws IOException, UnirestException {
+        createGithubEnterpriseCredential();
+
+        //now that there is github credentials setup, calling scm api to get credential should simply return that.
+        Map r = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .get("/organizations/jenkins/scm/github-enterprise/?apiUrl=" + githubApiUrl)
+            .build(Map.class);
+
+        assertEquals("github-enterprise:" + getGithubApiUrlEncoded(), r.get("credentialId"));
+        assertEquals(githubApiUrl, r.get("uri"));
+    }
+
+    @Test
+    public void fetchExistingGithubEnterpriseToken_apiUrlRequired() throws IOException, UnirestException {
+        // fetch the github-enterprise endpoint without specifiying apirUrl
+        Map r = new RequestBuilder(baseUrl)
+            .status(400)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .get("/organizations/jenkins/scm/github-enterprise/")
+            .build(Map.class);
+        assertEquals(400, r.get("code"));
+    }
+
+    @Test
+    public void fetchExistingGithubEnterpriseToken_withoutCredential() throws IOException, UnirestException {
+        // create a credential using default apiUrl
+        createGithubEnterpriseCredential();
+
+        String bogusUrl = "https://foo.com";
+
+        // look up credential for apiUrl that's invalid
+        Map r = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .get("/organizations/jenkins/scm/github-enterprise/?apiUrl="+bogusUrl)
+            .build(Map.class);
+
+        assertNull(r.get("credentialId"));
+        assertEquals(bogusUrl, r.get("uri"));
     }
 
     @Test
     public void getOrganizationsAndRepositories() throws Exception {
-        //check credentialId of this SCM, should be null
-        Map r = new RequestBuilder(baseUrl)
-                .data(ImmutableMap.of("accessToken", accessToken))
-                .status(200)
-                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .put("/organizations/jenkins/scm/github/validate/")
-                .build(Map.class);
-
-
-        assertEquals("github", r.get("credentialId"));
-        String credentialId = (String) r.get("credentialId");
-
+        String credentialId = createGithubCredential();
 
         List l = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .get("/organizations/jenkins/scm/github/organizations/?credentialId=" + credentialId)
+                .get("/organizations/jenkins/scm/github/organizations/?credentialId=" + credentialId+"&apiUrl="+githubApiUrl)
                 .header(Scm.X_CREDENTIAL_ID, credentialId + "sdsdsd") //it must be ignored as credentialId query parameter overrides it.
                 .build(List.class);
 
         Assert.assertTrue(l.size() > 0);
 
-
         Map resp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/?credentialId=" + credentialId + "&pageSize=10&page=1")
+                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/?credentialId=" + credentialId + "&pageSize=10&page=1"+"&apiUrl="+githubApiUrl)
                 .header(Scm.X_CREDENTIAL_ID, credentialId + "sdsdsd") //it must be ignored as credentialId query parameter overrides it.
                 .build(Map.class);
 
@@ -118,7 +144,7 @@ public class GithubApiTest extends GithubMockBase {
         resp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/RunMyProcess-task/?credentialId=" + credentialId)
+                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/RunMyProcess-task/?credentialId=" + credentialId+"&apiUrl="+githubApiUrl)
                 .header(Scm.X_CREDENTIAL_ID, credentialId + "sdsdsd") //it must be ignored as credentialId query parameter overrides it.
                 .build(Map.class);
 

@@ -43,8 +43,8 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
     private static final String ERROR_NAME = "name";
     private static final String ERROR_FIELD_SCM_CREDENTIAL_ID = "scm.credentialId";
 
-    public AbstractMultiBranchCreateRequest(String name, String organization, BlueScmConfig scmConfig) {
-        super(name, organization, scmConfig);
+    public AbstractMultiBranchCreateRequest(String name, BlueScmConfig scmConfig) {
+        super(name, scmConfig);
     }
 
     @Override
@@ -93,14 +93,14 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
         if(StringUtils.isNotBlank(scmConfig.getCredentialId())) {
             Domain domain = CredentialsUtils.findDomain(scmConfig.getCredentialId(), authenticatedUser);
             if(domain == null){
-                throw new ServiceException.BadRequestExpception(
+                throw new ServiceException.BadRequestException(
                     new ErrorMessage(400, "Failed to create pipeline")
                         .add(new Error(ERROR_FIELD_SCM_CREDENTIAL_ID,
                             Error.ErrorCodes.INVALID.toString(),
                             "No domain in user credentials found for credentialId: "+ scmConfig.getCredentialId())));
             }
             if (StringUtils.isEmpty(scmConfig.getUri())) {
-                throw new ServiceException.BadRequestExpception("uri not specified");
+                throw new ServiceException.BadRequestException("uri not specified");
             }
             if(domain.test(new BlueOceanDomainRequirement())) { //this is blueocean specific domain
                 project.addProperty(
@@ -113,7 +113,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
 
     private void validateInternal(String name, BlueScmConfig scmConfig) {
         User authenticatedUser =  User.current();
-            if(authenticatedUser == null){
+        if(authenticatedUser == null){
             throw new ServiceException.UnauthorizedException("Must login to create a pipeline");
         }
 
@@ -151,7 +151,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
     private static ServiceException fail(List<Error> errors) {
         ErrorMessage errorMessage = new ErrorMessage(400, "Failed to create pipeline");
         errorMessage.addAll(errors);
-        return new ServiceException.BadRequestExpception(errorMessage);
+        return new ServiceException.BadRequestException(errorMessage);
     }
 
     private static ServiceException fail(Error... errors) {

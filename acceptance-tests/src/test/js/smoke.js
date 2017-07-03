@@ -12,6 +12,7 @@ module.exports = {
      * @param browser
      */
     'Step 01': function (browser) {
+        browser.login();
         const pipelinesCreate = browser.page.pipelineCreate().navigate();
         pipelinesCreate.createPipeline('my-pipeline', 'three-stages.groovy');
     },
@@ -27,7 +28,7 @@ module.exports = {
         // make sure the open blue ocean button works. In this case,
         // it should bring the browser to an empty pipeline activity
         // page.
-        browser.openBlueOcean();
+        browser.page.openBlueOcean().open();
         bluePipelineActivity.assertEmptyLayoutOkay('my-pipeline');
         browser.assert.urlEndsWith('/blue/organizations/jenkins/my-pipeline/activity');
 
@@ -42,7 +43,7 @@ module.exports = {
      */
     'Step 03': function (browser) {
         const blueActivityPage = browser.page.bluePipelineActivity().forJob('my-pipeline', 'jenkins');
-        
+
         blueActivityPage.assertBasicLayoutOkay();
         blueActivityPage.waitForElementVisible('@emptyStateShoes');
     },
@@ -66,12 +67,12 @@ module.exports = {
      */
     'Step 05': function (browser) {
         const blueActivityPage = browser.page.bluePipelineActivity().forJob('my-pipeline', 'jenkins');
-        
+
         blueActivityPage.assertBasicLayoutOkay();
         blueActivityPage.expect.element('@emptyStateShoes').to.not.be.present.before(1000);
-        
+
         // Check the run itself
-        blueActivityPage.waitForRunSuccessVisible('my-pipeline-1');
+        blueActivityPage.waitForRunSuccessVisible('my-pipeline', '1');
     },
 
     /**
@@ -80,7 +81,7 @@ module.exports = {
      */
     'Step 06': function (browser) {
         const blueRunDetailPage = browser.page.bluePipelineRunDetail().forRun('my-pipeline', 'jenkins', 1);
-        
+
         blueRunDetailPage.assertBasicLayoutOkay();
     },
 

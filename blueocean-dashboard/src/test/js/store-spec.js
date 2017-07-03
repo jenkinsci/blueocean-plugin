@@ -25,7 +25,7 @@ const mockStore = configureMockStore(middlewares);
 
 const actionsFetch = Fetch.fetchJSON;
 
-describe("Redux Store - ", () => {
+xdescribe("Redux Store - ", () => {
     afterEach(() => {
         nock.cleanAll();
         Fetch.fetchJSON = actionsFetch;
@@ -54,7 +54,7 @@ describe("Redux Store - ", () => {
         nock(baseUrl)
             .get(ruleId)
             .reply(200, latestRuns);
-        
+
         mockFetch(
             '/jenkins/blue/rest/organizations/orgg/pipelines/xxx/activities/',
             latestRuns);

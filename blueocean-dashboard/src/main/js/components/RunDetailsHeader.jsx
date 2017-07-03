@@ -81,7 +81,7 @@ class RunDetailsHeader extends Component {
         // Sub-trees
         const title = (
             <h1 className="RunDetailsHeader-title">
-                {AppConfig.showOrg() && <span><a onClick={ onOrganizationClick }>{ run.organization }</a>
+                {AppConfig.showOrg() && <span><a onClick={ onOrganizationClick }>{ run.organization === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : run.organization }</a>
                 <span>&nbsp;/&nbsp;</span></span>}
                 <a className="path-link" onClick={ onNameClick }>
                     <ExpandablePath path={ fullDisplayName } hideFirst className="dark-theme" iconSize={ 20 } />
@@ -99,6 +99,11 @@ class RunDetailsHeader extends Component {
                 {isMultiBranch ? (
                     <span className={labelClassName}>
                         <Link to={ branchUrl }>{ displayName }</Link>
+                        { !run.pullRequest && run.branch && run.branch.url &&
+                            <a className="inline-svg" title="Opens branch in a new window" target="_blank" href={ run.branch.url }>
+                                <Icon size={14} icon="launch" />
+                            </a>
+                        }
                     </span>
                   ) : (
                     <span>&mdash;</span>
@@ -152,8 +157,8 @@ class RunDetailsHeader extends Component {
             </div>
         );
 
-        const causeMessage = (run && run.causes.length > 0 && run.causes[0].shortDescription) || null;
-        const cause = (<div className="causes">{causeMessage}</div>);
+        const causeMessage = (run && run.causes.length > 0 && run.causes[run.causes.length - 1].shortDescription) || null;
+        const cause = (<div className="causes" title={ causeMessage }>{ causeMessage }</div>);
 
         return (
             <ResultPageHeader startTime={ startTime }

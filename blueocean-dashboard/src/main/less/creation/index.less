@@ -2,6 +2,7 @@
 
 @import 'git';
 @import 'github';
+@import 'github-enterprise';
 
 .create-pipeline {
     .ContentPageHeader-main {
@@ -13,8 +14,6 @@
 
             .svg-icon {
                 fill: #fff;
-                width: 16px;
-                height: 16px;
                 margin-right: 8px;
             }
         }
@@ -28,10 +27,12 @@
     .scm-provider-list {
         display: flex;
         flex-flow: row wrap;
+        justify-content: space-between;
 
         .provider-button {
             .IconButton {
-                margin-right: 20px;
+                padding: 15px;
+                margin-bottom: 10px;
                 min-width: 220px;
                 height: 56px;
             }

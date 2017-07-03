@@ -113,7 +113,11 @@ The best way to get started is to look at the tutorial and Yeoman starter projec
 https://www.npmjs.com/package/generator-blueocean-usain
 The usual plugin guide also applies for Jenkins: https://wiki.jenkins-ci.org/display/JENKINS/Plugin+tutorial#Plugintutorial-CreatingaNewPlugin 
 
-Ask for help in #jenkins-ci or on the mailing list if you are working on a plugin. 
+Ask for help in the gitter room or on the jenkins-ux google group if you are working on a plugin. 
+
+#### Extension points
+
+Blue Ocean has javascript extension points that currently work with react components. This area is a work in progress, and there is no programmatic listing of all the current extension points in a plugin. However, you can grep/search for '<Extensions.Renderer extensionPoint=' and find named extension points. Plugins can contribute to these by declaring what components to plugin in those extension points in their jenkins-js-extension.yaml file (see https://github.com/jenkinsci/blueocean-pipeline-editor-plugin/blob/master/src/main/js/jenkins-js-extension.yaml for a real world example - the editor implements a few extension points as react components, even css). The editor plugin is a good reference point for blue ocean plugins: https://github.com/jenkinsci/blueocean-pipeline-editor-plugin.
 
 
 #### Tools needed

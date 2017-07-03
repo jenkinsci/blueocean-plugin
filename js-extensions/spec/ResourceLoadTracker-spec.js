@@ -104,4 +104,42 @@ describe("ResourceLoadTracker.js", function () {
             done();
         });
     });
+
+    it("- test loading extension CSS from another location for a specific plugin", function (done) {
+        jsTest.onPage(function() {
+            var javaScriptExtensionInfo = require('./javaScriptExtensionInfo-02.json');
+            var jsModules = require('@jenkins-cd/js-modules');
+            var ResourceLocationResolver = require('@jenkins-cd/js-modules/js/ResourceLocationResolver');
+
+            // get the 'plugin-1' resources from another host
+            // continue to get 'plugin-2' resources from Jenkins adjuncts
+            jsModules.addResourceLocationResolver(
+                new ResourceLocationResolver(function(moduleSpec) {
+                    // 'plugin-1' is the hpiPluginId set in ./javaScriptExtensionInfo-02.json
+                    return (moduleSpec.namespace === 'plugin-1');
+                }, function(moduleSpec, srcPath) {
+                    return "http://resources.acme.com/javascript/" + srcPath;
+                })
+            );
+
+            // Initialise the load tracker with plugin extension point info.
+            ResourceLoadTracker.setExtensionPointMetadata(javaScriptExtensionInfo);
+
+            // Verify that there's no link elements on the page.
+            var cssElements = document.getElementsByTagName('link');
+            expect(cssElements.length).to.equal(0);
+
+            // Mounting ep-* should result in the CSS for both plugins being
+            // loaded ...
+            ResourceLoadTracker.onMount('ep-1');
+            ResourceLoadTracker.onMount('ep-2');
+            ResourceLoadTracker.onMount('ep-3');
+            cssElements = document.getElementsByTagName('link');
+            expect(cssElements.length).to.equal(2);
+            expect(cssElements[0].getAttribute('href')).to.equal('http://resources.acme.com/javascript/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
+            expect(cssElements[1].getAttribute('href')).to.equal('/jenkins/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-2/extensions.css');
+
+            done();
+        });
+    });
 });

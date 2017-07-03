@@ -6,7 +6,7 @@ import { assert } from 'chai';
 import { shallow } from 'enzyme';
 
 import { DashboardCards } from '../../../main/js/components/DashboardCards';
-import { CapabilityTestUtils } from '../CapabilityTestUtils';
+
 
 const noLatestRun = [{
     "_class": "io.jenkins.blueocean.service.embedded.rest.FavoriteImpl",
@@ -50,23 +50,9 @@ const noLatestRun = [{
 
 describe('DashboardCards', () => {
     let favorites;
-    let testUtils;
 
-    beforeEach((done) => {
+    beforeEach(() => {
         favorites = require('../data/favorites.json');
-
-        testUtils = new CapabilityTestUtils();
-        testUtils.bindCapability(
-            'io.jenkins.blueocean.rest.impl.pipeline.BranchImpl',
-            'io.jenkins.blueocean.rest.model.BlueBranch'
-        );
-        testUtils.augment(favorites);
-
-        done();
-    });
-
-    afterEach(() => {
-        testUtils.unbindAll();
     });
 
     it('renders without error for empty props', () => {

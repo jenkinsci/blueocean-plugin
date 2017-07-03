@@ -66,11 +66,18 @@ export const TestSummaryRecord = Record({
     },
 });
 
+export const branchDetailsRecord = Record({
+    branch: {
+        url: null,
+        isPrimary: false,
+    },
+});
+
 export class RunRecord extends Record({
     _class: null,
     _capabilities: [],
     _links: null,
-    changeSet: ChangeSetRecord,
+    changeSet: [],
     causes: [],
     causeOfBlockage: null,
     artifacts: null,
@@ -91,9 +98,10 @@ export class RunRecord extends Record({
     commitId: null,
     parameters: null,
     artifactsZipFile: null,
-    pullRequest: PullRequestRecord,
+    pullRequest: null,
     testSummary: TestSummaryRecord,
     replayable: null,
+    branch: branchDetailsRecord,
 }) {
     isQueued() {
         return this.state === 'QUEUED';

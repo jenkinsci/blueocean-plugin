@@ -1,4 +1,5 @@
 import jsModules from '@jenkins-cd/js-modules';
+import ModuleSpec from '@jenkins-cd/js-modules/js/ModuleSpec';
 
 /**
  * CSS load tracker.
@@ -12,7 +13,7 @@ export default class ResourceLoadTracker {
         // Key:     Extension point name.
         // Value:   An array of CSS adjunct URLs that need to be activated when the extension point is rendered.
         this.pointCSSs = {};
-    
+
         // Active CSS.
         // Key:     CSS URL.
         // Value:   Counter of the number of mounted Extension Points that need the CSS to be active.
@@ -20,7 +21,7 @@ export default class ResourceLoadTracker {
         //               counter gets back to zero, the CSS can be removed from the page.
         this.activeCSSs = {};
     }
-    
+
     /**
      * Initialize the loader with the extension point information.
      * @param extensionPointList The Extension point list. An array containing ExtensionPoint
@@ -31,31 +32,34 @@ export default class ResourceLoadTracker {
         // Reset - for testing.
         this.pointCSSs = {};
         this.activeCSSs = {};
-    
+
         // Iterate through each plugin /jenkins-js-extension.json
         for(var i1 = 0; i1 < extensionPointList.length; i1++) {
             var pluginMetadata = extensionPointList[i1];
             var extensions = pluginMetadata.extensions; // All the extensions defined on the plugin
             var pluginCSS = pluginMetadata.extensionCSS; // The plugin CSS URL (adjunct URL).
-    
+
             // Iterate through the ExtensionPoints defined in each plugin
             for (var i2 = 0; i2 < extensions.length; i2++) {
                 var extensionPoint = extensions[i2].extensionPoint; // The extension point name.
                 var pointCSS = this.pointCSSs[extensionPoint]; // The current list of CSS URLs for the named extension point.
-    
+
                 if (!pointCSS) {
                     pointCSS = [];
                     this.pointCSSs[extensionPoint] = pointCSS;
                 }
-    
+
                 // Add the plugin CSS if it's not already in the list.
-                if (pointCSS.indexOf(pluginCSS) === -1) {
-                    pointCSS.push(pluginCSS);
+                if (pointCSS.filter((pluginCSSEntry) => pluginCSSEntry.url === pluginCSS).length === 0) {
+                    pointCSS.push({
+                        url: pluginCSS,
+                        hpiPluginId: pluginMetadata.hpiPluginId
+                    });
                 }
             }
         }
     }
-    
+
     /**
      * Called when a Jenkins ExtensionPoint is mounted.
      * <p/>
@@ -65,15 +69,28 @@ export default class ResourceLoadTracker {
      *
      * @param extensionPointName The extension point name.
      */
-    onMount(extensionPointName) {
+    onMount(extensionPointName, callback) {
         const pointCSS = this.pointCSSs[extensionPointName];
         if (pointCSS) {
-            for (var i = 0; i < pointCSS.length; i++) {
-                this._requireCSS(pointCSS[i]);
+            let counter = 0;
+
+            function onLoad() {
+                counter++;
+                if (counter === pointCSS.length) {
+                    callback();
+                }
             }
+
+            for (var i = 0; i < pointCSS.length; i++) {
+                this._requireCSS(pointCSS[i], () => {
+                    onLoad();
+                });
+            }
+        } else {
+            callback();
         }
     }
-    
+
     /**
      * Called when a Jenkins ExtensionPoint is unmounted.
      * <p/>
@@ -92,16 +109,16 @@ export default class ResourceLoadTracker {
         }
     }
 
-    _requireCSS(url) {
-        if (!this.activeCSSs[url]) {
-            this._addCSS(url);
-            this.activeCSSs[url] = true;
+    _requireCSS(pluginCSS) {
+        if (!this.activeCSSs[pluginCSS.url]) {
+            this._addCSS(pluginCSS);
+            this.activeCSSs[pluginCSS.url] = true;
         }
     }
 
-    _unrequireCSS(url) {
-        var activeCount = this.activeCSSs[url];
-    
+    _unrequireCSS(pluginCSS) {
+        var activeCount = this.activeCSSs[pluginCSS.url];
+
         if (!activeCount) {
             // Huh?
             console.warn('Unexpected call to deactivate an inactive Jenkins Extension Point CSS: ' + url);
@@ -111,27 +128,43 @@ export default class ResourceLoadTracker {
             activeCount--;
             if (activeCount === 0) {
                 // All extension points using this CSS have been unmounted.
-                delete this.activeCSSs[url];
-                this._removeCSS(url);
+                delete this.activeCSSs[pluginCSS.url];
+                this._removeCSS(pluginCSS);
             } else {
-                this.activeCSSs[url] = activeCount;
+                this.activeCSSs[pluginCSS.url] = activeCount;
             }
         }
     }
-    
-    _addCSS(url) {
-        const cssURLPrefix = jsModules.getAdjunctURL();
-        jsModules.addCSSToPage(cssURLPrefix + '/' + url);
+
+    _addCSS(pluginCSS) {
+        const cssURL = getPluginCSSURL(pluginCSS);
+        jsModules.addCSSToPage(cssURL);
     }
-    
-    _removeCSS(url) {
-        const cssURLPrefix = jsModules.getAdjunctURL();
-        const cssURL = cssURLPrefix + '/' + url;
+
+    _removeCSS(pluginCSS) {
+        const cssURL = getPluginCSSURL(pluginCSS);
         const linkElId = jsModules.toCSSId(cssURL);
         const linkEl = document.getElementById(linkElId);
-    
+
         if (linkEl) {
             linkEl.parentNode.removeChild(linkEl);
         }
+    }
+}
+
+function getPluginCSSURL(pluginCSS) {
+    const moduleSpec = new ModuleSpec(`${pluginCSS.hpiPluginId}:jenkins-js-extension`);
+    let resolver;
+
+    // Backward compatibility - in case of an older version of js-modules
+    if (typeof jsModules.getResourceLocationResolver === 'function') {
+        resolver = jsModules.getResourceLocationResolver(moduleSpec);
+    }
+
+    if (resolver) {
+        return resolver(pluginCSS.url);
+    } else {
+        const adjunctUrl = jsModules.getAdjunctURL();
+        return adjunctUrl + '/' + pluginCSS.url;
     }
 }

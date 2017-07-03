@@ -1,5 +1,7 @@
 import { capabilityAugmenter, capable, Fetch, UrlConfig, Utils, AppConfig } from '@jenkins-cd/blueocean-core-js';
+
 import { Enum } from '../../flow2/Enum';
+import GithubApiUtils from './GithubApiUtils';
 
 const INVALID_ACCESS_TOKEN_CODE = 428;
 const INVALID_ACCESS_TOKEN_MSG = 'Invalid Github accessToken';
@@ -18,14 +20,16 @@ export const ListOrganizationsOutcome = new Enum({
  */
 export class GithubCreationApi {
 
-    constructor(fetch) {
-        this._fetch = fetch || Fetch.fetchJSON;
+    constructor(scmId) {
+        this._fetch = Fetch.fetchJSON;
         this.organization = AppConfig.getOrganizationName();
+        this.scmId = scmId || 'github';
     }
 
-    listOrganizations(credentialId) {
+    listOrganizations(credentialId, apiUrl) {
         const path = UrlConfig.getJenkinsRootURL();
-        const orgsUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/github/organizations/?credentialId=${credentialId}`, false);
+        let orgsUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/organizations/?credentialId=${credentialId}`, false);
+        orgsUrl = GithubApiUtils.appendApiUrlParam(orgsUrl, apiUrl);
 
         return this._fetch(orgsUrl)
             .then(orgs => capabilityAugmenter.augmentCapabilities(orgs))
@@ -65,11 +69,12 @@ export class GithubCreationApi {
         };
     }
 
-    listRepositories(credentialId, organizationName, pageNumber = 1, pageSize = 100) {
+    listRepositories(credentialId, apiUrl, organizationName, pageNumber = 1, pageSize = 100) {
         const path = UrlConfig.getJenkinsRootURL();
-        const reposUrl = Utils.cleanSlashes(
-            `${path}/blue/rest/organizations/${this.organization}/scm/github/organizations/${organizationName}/repositories/` +
+        let reposUrl = Utils.cleanSlashes(
+            `${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/organizations/${organizationName}/repositories/` +
             `?credentialId=${credentialId}&pageNumber=${pageNumber}&pageSize=${pageSize}`);
+        reposUrl = GithubApiUtils.appendApiUrlParam(reposUrl, apiUrl);
 
         return this._fetch(reposUrl)
             .then(response => capabilityAugmenter.augmentCapabilities(response));
@@ -127,12 +132,12 @@ export class GithubCreationApi {
         };
     }
 
-    createOrgFolder(credentialId, githubOrganization, repoNames = []) {
+    createOrgFolder(credentialId, apiUrl, githubOrganization, repoNames = []) {
         const path = UrlConfig.getJenkinsRootURL();
         const createUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/pipelines/`);
 
         const requestBody = this._buildRequestBody(
-            credentialId, githubOrganization.name, githubOrganization.name, repoNames,
+            credentialId, apiUrl, githubOrganization.name, githubOrganization.name, repoNames,
         );
 
         const fetchOptions = {
@@ -147,14 +152,13 @@ export class GithubCreationApi {
             .then(pipeline => capabilityAugmenter.augmentCapabilities(pipeline));
     }
 
-    _buildRequestBody(credentialId, itemName, organizationName, repoNames) {
+    _buildRequestBody(credentialId, apiUrl, itemName, organizationName, repoNames) {
         return {
             name: itemName,
-            organization: this.organization,
             $class: 'io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest',
             scmConfig: {
                 credentialId,
-                uri: 'https://api.github.com', // optional for github! required for enterprise where it should be http://ghe.acme.com/api/v3
+                uri: apiUrl,
                 config: {
                     orgName: organizationName,
                     repos: repoNames,

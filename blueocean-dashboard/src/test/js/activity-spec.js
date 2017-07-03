@@ -6,6 +6,7 @@ import { Activity } from '../../main/js/components/Activity.jsx';
 import { CapabilityRecord } from '../../main/js/components/Capability.jsx';
 
 import { pipelines } from './data/pipelines/pipelinesSingle';
+import { mockExtensionsForI18n } from './mock-extensions-i18n';
 
 
 const
@@ -174,6 +175,8 @@ data.$success = true; // fetch flag
 const t = () => {};
 
 describe('Activity', () => {
+    beforeAll(() => mockExtensionsForI18n());
+
     it('render the Activity with data', () => {
         const wrapper = shallow(<Activity t={t} runs={data} pipeline={pipeline} capabilities={capabilities} />, { context });
 
@@ -189,6 +192,8 @@ describe('Activity', () => {
 });
 
 describe('Pipeline -> Activity List', () => {
+    beforeAll(() => mockExtensionsForI18n());
+
     it('should contain cause', () => {
         const wrapper = shallow(<Activity t={t} runs={data} pipeline={pipeline} capabilities={capabilities} />, { context });
         assert.isNotNull(wrapper);

@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
+import hudson.Functions;
 import hudson.Util;
 import hudson.model.AbstractItem;
 import hudson.model.Item;
@@ -41,6 +42,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -83,10 +85,8 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     @Override
     public BlueRun getLatestRun() {
-        if(job.getLastBuild() == null){
-            return null;
-        }
-        return AbstractRunImpl.getBlueRun(job.getLastBuild(), this);
+        Iterator<BlueRun> iterator = getRuns().iterator();
+        return iterator.hasNext() ? iterator.next() : null;
     }
 
     @Override
@@ -120,7 +120,7 @@ public class AbstractPipelineImpl extends BluePipeline {
     @Override
     public BlueFavorite favorite(@JsonBody BlueFavoriteAction favoriteAction) {
         if(favoriteAction == null) {
-            throw new ServiceException.BadRequestExpception("Must provide pipeline name");
+            throw new ServiceException.BadRequestException("Must provide pipeline name");
         }
         FavoriteUtil.toggle(favoriteAction, job);
         return FavoriteUtil.getFavorite(job, new Reachable() {
@@ -134,57 +134,63 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     @Override
     public String getFullName(){
-        return job.getFullName();
+        return getFullName(org, job);
     }
 
     @Override
     public String getFullDisplayName() {
-        return getFullDisplayName(job.getParent(), Util.rawEncode(job.getDisplayName()));
+        return getFullDisplayName(org, job);
     }
 
     /**
-     * Returns full display name. Each display name is separated by '/' and each display name is url encoded. If the
-     * item is inside an org, it will be looked up.
-     * 
-     * @param parent parent folder
-     * @param displayName URL encoded display name. Caller must pass urlencoded name
-     *
-     * @return full display name
-     */
-    public static String getFullDisplayName(@Nonnull ItemGroup parent, @Nullable String displayName){
-        return getFullDisplayName(OrganizationFactory.getInstance().getContainingOrg(parent), parent, displayName);
-    }
-
-    /**
-     * Returns full display name. Each display name is separated by '/' and each display name is url encoded.
+     * Returns full display name relative to the <code>BlueOrganization</code> base. Each display name is separated by
+     * '/' and each display name is url encoded
      *
      * @param org the organization the item belongs to
-     * @param parent parent folder
-     * @param displayName URL encoded display name. Caller must pass urlencoded name
+     * @param item to return the full display name of
      *
      * @return full display name
      */
-    public static String getFullDisplayName(@Nullable BlueOrganization org, @Nonnull ItemGroup parent, @Nullable String displayName) {
-        //Stop if we are on an org and reached the top
+    public static String getFullDisplayName(@Nullable BlueOrganization org, @Nonnull Item item) {
+        ItemGroup<?> group = getBaseGroup(org);
+        String[] displayNames = Functions.getRelativeDisplayNameFrom(item, group).split(" » ");
+
+        StringBuilder encondedDisplayName=new StringBuilder();
+        for(int i=0;i<displayNames.length;i++) {
+            if(i!=0) {
+                encondedDisplayName.append(String.format("/%s", Util.rawEncode(displayNames[i])));
+            }else {
+                encondedDisplayName.append(String.format("%s", Util.rawEncode(displayNames[i])));
+            }
+        }
+
+        return encondedDisplayName.toString();
+    }
+
+    /**
+     * Returns full name relative to the <code>BlueOrganization</code> base. Each name is separated by '/'
+     *
+     * @param org the organization the item belongs to
+     * @param item to return the full name of
+     * @return
+     */
+    public static String getFullName(@Nullable BlueOrganization org, @Nonnull Item item) {
+        ItemGroup<?> group = getBaseGroup(org);
+        return Functions.getRelativeNameFrom(item, group);
+    }
+
+    /**
+     * Tries to obtain the base group for a <code>BlueOrganization</code>
+     *
+     * @param org to get the base group of
+     * @return the base group
+     */
+    public static ItemGroup<?> getBaseGroup(BlueOrganization org) {
+        ItemGroup<?> group = null;
         if (org != null && org instanceof AbstractOrganization) {
-            ItemGroup group = ((AbstractOrganization) org).getGroup();
-            if (group == parent) {
-                return displayName;
-            }
+            group = ((AbstractOrganization) org).getGroup();
         }
-
-        String name = parent.getDisplayName();
-        if (name.length() == 0)
-            return displayName;
-
-        if (name.length() > 0 && parent instanceof AbstractItem) {
-            if (displayName == null) {
-                return getFullDisplayName(((AbstractItem) parent).getParent(), String.format("%s", Util.rawEncode(name)));
-            } else {
-                return getFullDisplayName(((AbstractItem) parent).getParent(), String.format("%s/%s", Util.rawEncode(name), displayName));
-            }
-        }
-        return displayName;
+        return group;
     }
 
     @Override
@@ -192,6 +198,12 @@ public class AbstractPipelineImpl extends BluePipeline {
         return org.getLink().rel("pipelines").rel(getRecursivePathFromFullName(this));
     }
 
+    /**
+     * Calculates the recursive path for the <code>BluePipeline</code>. The path is relative to the org base
+     *
+     * @param pipeline to get the recursive path from
+     * @return the recursive path
+     */
     public static String getRecursivePathFromFullName(BluePipeline pipeline){
         StringBuilder pipelinePath = new StringBuilder();
         String[] names = pipeline.getFullName().split("/");

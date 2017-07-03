@@ -1,19 +1,20 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.google.common.base.Function;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
 import hudson.model.Job;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.pageable.PagedResponse;
 import io.jenkins.blueocean.service.embedded.rest.ContainerFilter;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.List;
 
 /**
  * @author Vivek Pandey
@@ -27,7 +28,7 @@ public class BranchContainerImpl extends BluePipelineContainer {
      * - Favourites ordered by last run time
      * - All other branches ordered by last run time
      */
-    private static final Comparator<BluePipeline> BRANCH_COMPARITOR = new Comparator<BluePipeline>() {
+    private static final Comparator<BluePipeline> BRANCH_COMPARATOR = new Comparator<BluePipeline>() {
         @Override
         public int compare(BluePipeline _pipeline1, BluePipeline _pipeline2) {
             BranchImpl pipeline1 = (BranchImpl)_pipeline1;
@@ -137,16 +138,27 @@ public class BranchContainerImpl extends BluePipelineContainer {
     }
 
     @Override
-    @SuppressWarnings("unchecked")
     public Iterator<BluePipeline> iterator() {
-        List<BluePipeline> branches = new ArrayList<>();
-        Collection<Job> jobs = pipeline.mbp.getAllJobs();
-        jobs = ContainerFilter.filter(jobs);
-        for(Job j: jobs){
-            branches.add(new BranchImpl(j, getLink()));
-        }
+        return iterator(0, PagedResponse.DEFAULT_LIMIT);
+    }
 
-        return Ordering.from(BRANCH_COMPARITOR).sortedCopy(branches).iterator();
+    @Override
+    @SuppressWarnings("unchecked")
+    public Iterator<BluePipeline> iterator(int start, int limit) {
+        final Link link = getLink();
+        // Filter will decide if the requester wants branches or pull requests
+        Collection allJobsMatchinFilter = ContainerFilter.filter(pipeline.mbp.getAllJobs());
+        // Transform all of these to branches (these represent branches or pull requests)
+        Iterable<BluePipeline> branches = Iterables.transform(allJobsMatchinFilter, new Function<Job, BluePipeline>() {
+            @Override
+            public BluePipeline apply(Job input) {
+                return new BranchImpl(input, link);
+            }
+        });
+        // Order them using the comparator
+        branches = Ordering.from(BRANCH_COMPARATOR).sortedCopy(branches);
+        // Return the page requested by the client
+        return Iterables.limit(Iterables.skip(branches, start), limit).iterator();
     }
 
     @Override

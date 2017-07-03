@@ -12,6 +12,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Rule;
 
 import java.io.File;
@@ -20,7 +21,6 @@ import java.util.Map;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
-import static io.jenkins.blueocean.blueocean_github_pipeline.GithubScm.GITHUB_API_URL_PROPERTY;
 import static org.junit.Assert.assertEquals;
 
 /**
@@ -74,19 +74,33 @@ public abstract class GithubMockBase extends PipelineBaseTest {
 
         this.user = login("vivek", "Vivek Pandey", "vivek.pandey@gmail.com");
         this.githubApiUrl = String.format("http://localhost:%s",githubApi.port());
-        System.setProperty(GITHUB_API_URL_PROPERTY, githubApiUrl);
     }
 
-    protected String CreateGithubCredential() throws UnirestException {
+    protected String createGithubCredential() throws UnirestException {
         Map r = new RequestBuilder(baseUrl)
                 .data(ImmutableMap.of("accessToken", accessToken))
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .put("/organizations/jenkins/scm/github/validate/")
+                .put("/organizations/jenkins/scm/github/validate/?apiUrl="+githubApiUrl)
                 .build(Map.class);
         String credentialId = (String) r.get("credentialId");
         assertEquals("github", credentialId);
         return credentialId;
     }
 
+    protected String createGithubEnterpriseCredential() throws UnirestException {
+        Map r = new RequestBuilder(baseUrl)
+            .data(ImmutableMap.of("accessToken", accessToken))
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .put("/organizations/jenkins/scm/github-enterprise/validate/?apiUrl="+githubApiUrl)
+            .build(Map.class);
+        String credentialId = (String) r.get("credentialId");
+        assertEquals(GithubEnterpriseScm.ID+":"+ getGithubApiUrlEncoded(), credentialId);
+        return credentialId;
+    }
+
+    protected String getGithubApiUrlEncoded() {
+        return DigestUtils.sha256Hex(githubApiUrl);
+    }
 }

@@ -12,8 +12,10 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.rest.model.Containers;
 import org.kohsuke.stapler.export.Exported;
 
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Date;
 
@@ -68,9 +70,10 @@ public class QueuedBlueRun extends BlueRun {
         return null;
     }
 
+    @Nonnull
     @Override
     public Container<BlueChangeSetEntry> getChangeSet() {
-        return null;
+        return Containers.empty(getLink());
     }
 
     @Override

@@ -1,0 +1,23 @@
+
+//--------------------------------------------------------------------------
+//
+//  Tweaks and specifics of Dashboard tables
+//
+//--------------------------------------------------------------------------
+
+//--------------------------------------
+//  Common
+//--------------------------------------
+
+.TableCell--actions .ExtensionPoint
+{
+    display: flex;
+    flex-wrap: nowrap;
+
+    // Constrain the children in size, there should only be icons here.
+    div[react-dataroot] > * {
+        width:24px;
+        height:24px;
+        overflow: hidden;
+    }
+}

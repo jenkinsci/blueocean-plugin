@@ -23,13 +23,13 @@
  */
 package io.jenkins.blueocean;
 
-import hudson.model.FreeStyleBuild;
-import hudson.model.FreeStyleProject;
-import io.jenkins.blueocean.rest.model.scm.GitSampleRepoRule;
+import hudson.Util;
+import io.jenkins.blueocean.rest.factory.BlueOceanUrlMapper;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
 import jenkins.plugins.git.GitSCMSource;
+import jenkins.plugins.git.GitSampleRepoRule;
 import jenkins.scm.api.SCMSource;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -42,15 +42,14 @@ import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.MockFolder;
 
 import java.io.IOException;
-import java.util.concurrent.ExecutionException;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class BlueOceanWebURLBuilderTest {
+    private BlueOceanUrlMapper urlMapper;
 
     @Rule
     public JenkinsRule jenkinsRule = new JenkinsRule();
@@ -58,21 +57,11 @@ public class BlueOceanWebURLBuilderTest {
     @Rule
     public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();
 
-    @Test
-    public void test_freestyle() throws IOException, ExecutionException, InterruptedException {
-        MockFolder folder1 = jenkinsRule.createFolder("folder1");
-        MockFolder folder2 = folder1.createProject(MockFolder.class, "folder two with spaces");
-        FreeStyleProject freestyleProject = folder2.createProject(FreeStyleProject.class, "freestyle with spaces");
-        String blueOceanURL;
-
-        blueOceanURL = BlueOceanWebURLBuilder.toBlueOceanURL(freestyleProject);
-        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Ffreestyle%20with%20spaces", blueOceanURL);
-
-        FreeStyleBuild run = freestyleProject.scheduleBuild2(0).get();
-        blueOceanURL = BlueOceanWebURLBuilder.toBlueOceanURL(run);
-        assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Ffreestyle%20with%20spaces/detail/freestyle%20with%20spaces/1", blueOceanURL);
+    @Before
+    public void setup(){
+        assertTrue(BlueOceanUrlMapper.all().size() > 0);
+        urlMapper = BlueOceanUrlMapper.all().get(0);
     }
-
 
     @Test
     public void getMultiBranchPipelineInsideFolder() throws Exception {
@@ -82,7 +71,7 @@ public class BlueOceanWebURLBuilderTest {
 
         String blueOceanURL;
 
-        blueOceanURL = BlueOceanWebURLBuilder.toBlueOceanURL(mp);
+        blueOceanURL = urlMapper.getUrl(mp);
         assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/branches", blueOceanURL);
 
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false), new DefaultBranchPropertyStrategy(new BranchProperty[0])));
@@ -96,24 +85,24 @@ public class BlueOceanWebURLBuilderTest {
         // All branch jobs should just resolve back to the same top level branches
         // page for the multibranch job in Blue Ocean.
         WorkflowJob masterJob = findBranchProject(mp, "master");
-        blueOceanURL = BlueOceanWebURLBuilder.toBlueOceanURL(masterJob);
+        blueOceanURL = urlMapper.getUrl(masterJob);
         assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/branches", blueOceanURL);
         WorkflowJob featureUx1Job = findBranchProject(mp, "feature/ux-1");
-        blueOceanURL = BlueOceanWebURLBuilder.toBlueOceanURL(featureUx1Job);
+        blueOceanURL = urlMapper.getUrl(featureUx1Job);
         assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/branches", blueOceanURL);
         WorkflowJob feature2Job = findBranchProject(mp, "feature2");
-        blueOceanURL = BlueOceanWebURLBuilder.toBlueOceanURL(feature2Job);
+        blueOceanURL = urlMapper.getUrl(feature2Job);
         assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/branches", blueOceanURL);
 
         // Runs on the jobs
-        blueOceanURL = BlueOceanWebURLBuilder.toBlueOceanURL(masterJob.getFirstBuild());
+        blueOceanURL = urlMapper.getUrl(masterJob.getFirstBuild());
         assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/detail/master/1", blueOceanURL);
-        blueOceanURL = BlueOceanWebURLBuilder.toBlueOceanURL(featureUx1Job.getFirstBuild());
+        blueOceanURL = urlMapper.getUrl(featureUx1Job.getFirstBuild());
         assertURL("blue/organizations/jenkins/folder1%2Ffolder%20two%20with%20spaces%2Fp/detail/feature%2Fux-1/1", blueOceanURL);
     }
 
     private WorkflowJob findBranchProject(WorkflowMultiBranchProject mp, String name) throws Exception {
-        WorkflowJob p = mp.getItem(BlueOceanWebURLBuilder.encodeURIComponent(name));
+        WorkflowJob p = mp.getItem(Util.rawEncode(name));
         if (p == null) {
             mp.getIndexing().writeWholeLogTo(System.out);
             fail(name + " project not found");

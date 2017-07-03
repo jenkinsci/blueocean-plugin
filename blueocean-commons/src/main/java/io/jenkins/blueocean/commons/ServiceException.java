@@ -108,20 +108,20 @@ public class ServiceException extends RuntimeException implements HttpResponse {
         }
     }
 
-    public static class BadRequestExpception extends ServiceException{
+    public static class BadRequestException extends ServiceException {
 
-        public BadRequestExpception(String message) {
+        public BadRequestException(String message) {
             super(BAD_REQUEST, message);
         }
 
-        public BadRequestExpception(String message, Throwable throwable ) {
+        public BadRequestException(String message, Throwable throwable ) {
             super(BAD_REQUEST, message, throwable);
         }
 
-        public BadRequestExpception(ErrorMessage errorMessage) {
+        public BadRequestException(ErrorMessage errorMessage) {
             super(BAD_REQUEST, errorMessage, null);
         }
-        public BadRequestExpception(ErrorMessage errorMessage, Throwable throwable ) {
+        public BadRequestException(ErrorMessage errorMessage, Throwable throwable ) {
             super(BAD_REQUEST, errorMessage, throwable);
         }
     }

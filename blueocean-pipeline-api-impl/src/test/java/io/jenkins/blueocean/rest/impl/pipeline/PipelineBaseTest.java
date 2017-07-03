@@ -536,7 +536,7 @@ public abstract class PipelineBaseTest{
                 }
 
                 HttpResponse<T> response = request.asObject(clzzz);
-                Assert.assertEquals(expectedStatus, response.getStatus());
+                Assert.assertEquals(response.getStatusText(), expectedStatus, response.getStatus());
                 return response.getBody();
             } catch (UnirestException e) {
                 throw new RuntimeException(e);

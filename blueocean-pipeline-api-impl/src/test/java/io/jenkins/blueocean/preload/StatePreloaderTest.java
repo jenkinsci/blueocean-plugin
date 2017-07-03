@@ -25,7 +25,7 @@ package io.jenkins.blueocean.preload;
 
 import hudson.model.FreeStyleBuild;
 import hudson.model.FreeStyleProject;
-import io.jenkins.blueocean.BlueOceanWebURLBuilder;
+import io.jenkins.blueocean.rest.factory.BlueOceanUrlMapper;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -51,7 +51,9 @@ public class StatePreloaderTest extends PipelineBaseTest {
         // Lets request the activity page for that project. The page should
         // contain some prefetched javascript for the pipeline
         // details + the runs on the page
-        String projectBlueUrl = j.jenkins.getRootUrl() + BlueOceanWebURLBuilder.toBlueOceanURL(freestyleProject);
+        Assert.assertTrue(BlueOceanUrlMapper.all().size()> 0);
+        BlueOceanUrlMapper mapper = BlueOceanUrlMapper.all().get(0);
+        String projectBlueUrl = j.jenkins.getRootUrl() + mapper.getUrl(freestyleProject);
         Document doc = Jsoup.connect(projectBlueUrl + "/activity/").get();
         String script = doc.select("head script").toString();
 

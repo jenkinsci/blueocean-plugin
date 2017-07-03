@@ -10,6 +10,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.POST;
 import org.kohsuke.stapler.verb.PUT;
 
+import javax.annotation.Nonnull;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
@@ -87,6 +88,7 @@ public abstract class BlueRun extends Resource {
      * @return Gives change set of a run
      */
     @Exported(inline = true)
+    @Nonnull
     public abstract Container<BlueChangeSetEntry> getChangeSet();
 
     /**

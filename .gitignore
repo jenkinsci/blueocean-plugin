@@ -26,3 +26,6 @@ reports
 /website/storybook
 /website/component-docs/doc*
 /website-build
+acceptance-tests/runner/.blueocean-ath-jenkins-url
+acceptance-tests/live.properties
+src/main/groovy/pipeline.gdsl

@@ -70,7 +70,7 @@ module.exports = {
         // it should bring the browser to an empty pipeline activity
         // page.
         var bluePipelineActivity = browser.page.bluePipelineActivity();
-        browser.openBlueOcean();
+        browser.page.openBlueOcean().open();
         bluePipelineActivity.assertEmptyLayoutOkay(jobName);
         browser.assert.urlEndsWith('/blue/organizations/jenkins/firstFolder%2F三百%2Fñba%2F七%2FSohn/activity');
     },
@@ -193,7 +193,7 @@ module.exports = {
 
         // make sure the open blue ocean button works. In this case,
         // it should bring the browser to the run details page for the first run.
-        browser.openBlueOcean();
+        browser.page.openBlueOcean().open();
         browser.url(function (response) {
            sanityCheck(browser, response);
            response.value.endsWith('/blue/organizations/jenkins/anotherFolder%2F三百%2Fñba%2F七%2FSohn/detail/feature%2F1/1/pipeline');
@@ -220,7 +220,7 @@ module.exports = {
         // make sure the open blue ocean button works. In this case,
         // it should bring the browser to the main top-level pipelines page.
         // See https://issues.jenkins-ci.org/browse/JENKINS-39842
-        browser.openBlueOcean();
+        browser.page.openBlueOcean().open();
         browser.url(function (response) {
             sanityCheck(browser, response);
             response.value.endsWith('/blue/pipelines');
