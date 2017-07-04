@@ -1,0 +1,97 @@
+.toaster {
+    width: 100%;
+    height: 100%;
+
+    .toast {
+        margin-bottom: 10px;
+    }
+
+    // the css-transitions-group container that toasts are added to
+    // lay out children from bottom to top, clipping if too many
+    > span {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column-reverse;
+        justify-content: flex-start;
+        align-items: flex-start;
+        overflow-y: hidden;
+    }
+}
+
+.toast {
+    display: inline-flex;
+    max-width: 350px;
+    flex-shrink: 0;
+    padding: 20px;
+    background-color: @text-color;
+    border-radius: @border-radius-base;
+    /* TODO: get proper values from updated sketch file */
+    .box-shadow(1px 2px 2px rgba(0, 0, 0, .5));
+
+    &.success, &.error {
+        border-left: 5px solid;
+    }
+    &.success {
+        border-left-color: @brand-success-lite;
+    }
+    &.error {
+        border-left-color: @brand-danger-lite;
+    }
+
+    .caption {
+        margin-bottom: 10px;
+    }
+
+    .text, .action, .dismiss {
+        align-self: center;
+    }
+
+    .text {
+        font-family: @font-family-ss-medium;
+        color: white;
+        max-height: 85px; // 5 lines @ line-height: 17px
+        overflow: hidden;
+    }
+
+    .action, .dismiss {
+        cursor: pointer;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+
+    .action {
+        margin: 0 20px;
+        text-transform: uppercase;
+    }
+
+    .dismiss {
+        color: white;
+
+        svg {
+            vertical-align: middle;
+        }
+    }
+}
+
+.toast-enter, .toast-appear {
+    opacity: 0.01;
+}
+
+.toast-enter.toast-enter-active, .toast-appear.toast-appear-active {
+    opacity: 1;
+    transition: all 300ms ease-in;
+}
+
+.toast-leave {
+    opacity: 1;
+    max-height: 150px;
+}
+
+.toast-leave.toast-leave-active {
+    opacity: 0.01;
+    max-height: 0;
+    transition: all 300ms ease-in;
+}

@@ -1,0 +1,159 @@
+//--------------------------------------------------------------------------
+//
+//  Updated headers for 1.0
+//
+//--------------------------------------------------------------------------
+
+//--------------------------------------
+//  Basic / Outer header - Layout
+//--------------------------------------
+
+.BasicHeader {
+    flex-shrink: 0;
+    display: flex;
+    flex-direction: column;
+}
+
+//--------------------------------------
+//  Basic / Outer header - Themes
+//--------------------------------------
+
+.header-color-status(@status, @bg) {
+    .BasicHeader--@{status} {
+        background: @bg;
+        color: white;
+    }
+}
+
+.header-color-status(default, @brand-primary);
+.header-color-status(unknown, @brand-unknown);
+.header-color-status(success, @brand-success);
+.header-color-status(failure, @brand-danger);
+.header-color-status(running, @brand-info);
+.header-color-status(notBuilt, @brand-grey-lite);
+.header-color-status(unstable, @brand-warning);
+.header-color-status(aborted, @brand-grey-lite);
+.header-color-status(paused, @brand-paused);
+
+
+//--------------------------------------
+//  Top Nav
+//--------------------------------------
+
+.Header-topNav {
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.Header-topNav-inner {
+
+    height: 48px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .u-content-page-sizing;
+
+    nav {
+        display: flex;
+        height:100%;
+    }
+
+    nav a {
+        display: inline-block;
+        align-items: center;
+        height: 100%;
+        color: white;
+        text-decoration: none;
+        font-size: 14px;
+        padding: 0 20px;
+        line-height: 47px;
+
+        .u-no-padding {
+            padding: 0;
+        }
+    }
+
+    nav a:hover,
+    nav a.selected,
+    nav:hover a.selected:hover {
+        background: rgba(0, 0, 0, 0.1);
+    }
+
+    nav:hover a.selected {
+        background: none;
+    }
+}
+
+.Header-title {
+    display:flex;
+    flex-grow: 1;
+    align-items: center;
+}
+
+//--------------------------------------
+//  Sub Nav / details
+//--------------------------------------
+
+.Header-details {
+    width: 100%;
+    height: 72px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+
+    .u-content-page-sizing;
+}
+
+.Header-pageTabs {
+    height: 100%;
+    display:flex;
+
+    a {
+        color: white;
+        display: flex;
+        padding: 0 20px;
+        height: 100%;
+        align-items: center;
+        text-decoration: none;
+
+        // For transforming underline
+        position: relative;
+        overflow:hidden;
+        transform: translateZ(0);
+
+        // Fix text styles on hover
+        &:hover {
+            text-decoration: none;
+            color: white;
+        }
+    }
+
+    // Tab underline definition
+    a:before {
+        content: "";
+        position: absolute;
+        z-index: -1;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: white;
+        height: 3px;
+        transition-timing-function: ease-out;
+        transition-duration: 0.2s;
+        transform: translateY(3px);
+        transition-property: transform;
+    }
+
+    a:hover:before,
+    a.selected:before,
+    &:hover a.selected:hover:before {
+        // For transforming underline
+        transform: translateY(0);
+    }
+
+    &:hover a.selected:before {
+        // For transforming underline
+        transform: translateY(3px);
+    }
+}

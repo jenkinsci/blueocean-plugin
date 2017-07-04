@@ -1,0 +1,67 @@
+.expandable-path {
+    display: inline-flex;
+
+    .link {
+        cursor: pointer;
+    }
+
+    .path-list {
+        display: inline-flex;
+        list-style-type: none;
+        flex-wrap: wrap;
+        margin: 0;
+        padding: 0;
+
+        .path-item {
+            display: inline-flex;
+            align-items: center;
+
+            &.show-label {
+                .svg-icon.folder {
+                    display: none;
+                }
+
+                .path-text{
+                    display: inline;
+                }
+            }
+
+            &.show-folder {
+                .svg-icon.folder {
+                    display: inline;
+                }
+
+                .path-text {
+                    display: none;
+                }
+            }
+        }
+
+        /* always hide the last slash */
+        .path-item:last-child {
+            .separator {
+                display: none;
+            }
+        }
+
+        /* on hover, show all labels */
+        &:hover {
+            .svg-icon.folder {
+                display: none !important;
+            }
+
+            .path-text{
+                display: inline !important;
+            }
+        }
+    }
+
+    .svg-icon.folder {
+        fill: #ccc;
+    }
+
+    &.dark-theme .svg-icon.folder {
+        fill: #fff;
+        opacity: 0.5;
+    }
+}

@@ -54,7 +54,7 @@ public class CachesTest {
         when(job.getAction(PrimaryInstanceMetadataAction.class)).thenReturn(instanceMetadataAction);
 
         Caches.BranchCacheLoader loader = new Caches.BranchCacheLoader(jenkins);
-        BranchImpl.Branch branch = loader.load(job.getFullName());
+        BranchImpl.Branch branch = loader.load(job.getFullName()).orNull();
 
         assertNotNull(branch);
         assertTrue(branch.isPrimary());
@@ -68,7 +68,7 @@ public class CachesTest {
         when(job.getFullName()).thenReturn("cool-branch");
 
         Caches.BranchCacheLoader loader = new Caches.BranchCacheLoader(jenkins);
-        BranchImpl.Branch branch = loader.load(job.getFullName());
+        BranchImpl.Branch branch = loader.load(job.getFullName()).orNull();
 
         assertNotNull(branch);
         assertTrue(branch.isPrimary());
@@ -82,7 +82,7 @@ public class CachesTest {
         when(job.getFullName()).thenReturn("cool-branch");
 
         Caches.BranchCacheLoader loader = new Caches.BranchCacheLoader(jenkins);
-        BranchImpl.Branch branch = loader.load(job.getFullName());
+        BranchImpl.Branch branch = loader.load(job.getFullName()).orNull();
 
         assertNotNull(branch);
         assertFalse(branch.isPrimary());
@@ -104,7 +104,7 @@ public class CachesTest {
         when(ExtensionList.lookup(SCMHead.HeadByItem.class)).thenReturn(extensionList);
 
         Caches.PullRequestCacheLoader loader = new Caches.PullRequestCacheLoader(jenkins);
-        BranchImpl.PullRequest pr = loader.load(job.getFullName());
+        BranchImpl.PullRequest pr = loader.load(job.getFullName()).orNull();
 
         assertNotNull(pr);
         assertEquals("Hates Cake", pr.getAuthor());
@@ -128,7 +128,7 @@ public class CachesTest {
         when(ExtensionList.lookup(SCMHead.HeadByItem.class)).thenReturn(extensionList);
 
         Caches.PullRequestCacheLoader loader = new Caches.PullRequestCacheLoader(jenkins);
-        BranchImpl.PullRequest pr = loader.load(job.getFullName());
+        BranchImpl.PullRequest pr = loader.load(job.getFullName()).orNull();
 
         assertNull(pr);
     }
@@ -146,7 +146,7 @@ public class CachesTest {
         when(ExtensionList.lookup(SCMHead.HeadByItem.class)).thenReturn(extensionList);
 
         Caches.PullRequestCacheLoader loader = new Caches.PullRequestCacheLoader(jenkins);
-        BranchImpl.PullRequest pr = loader.load(job.getFullName());
+        BranchImpl.PullRequest pr = loader.load(job.getFullName()).orNull();
 
         assertNotNull(pr);
         assertEquals("Hates Cake", pr.getAuthor());
@@ -155,7 +155,7 @@ public class CachesTest {
         assertNull(pr.getUrl());
     }
 
-    public class HeadByItemForTest extends SCMHead.HeadByItem {
+    public static class HeadByItemForTest extends SCMHead.HeadByItem {
         @Override
         public SCMHead getHead(Item item) {
             return new MockChangeRequestSCMHead(1, "foo");

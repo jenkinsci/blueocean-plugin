@@ -1,0 +1,31 @@
+
+.weather-icon {
+  display: inline-block;
+  width: 32px;
+  height: 32px;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center center;
+
+  &.large-icon {
+    width: 60px;
+    height: 60px;
+  }
+}
+
+.jdl-table td .weather-icon {
+  vertical-align: middle;
+}
+
+.icon(@className, @file) {
+  @escapedFilename: escape(@file);
+  &.@{className} {
+    background-image: url("../icons/weather/@{escapedFilename}");
+  }
+}
+
+.icon(weather-sunny, "Sunny.svg");
+.icon(weather-partially-sunny, "Partially Sunny.svg");
+.icon(weather-cloudy, "Cloudy.svg");
+.icon(weather-raining, "Raining.svg");
+.icon(weather-storm, "Storm.svg");
