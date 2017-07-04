@@ -1,31 +1,42 @@
 import React, { Component, PropTypes } from 'react';
-import { Table } from '@jenkins-cd/design-language';
 import { JTable, TableHeaderRow } from '@jenkins-cd/design-language';
 import { capable, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 
-import PullRequest from './PullRequest';
 import PullRequestRow from './PullRequestRow';
 import { RunsRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { NoPullRequestsPlaceholder } from './placeholder/NoPullRequestsPlaceholder';
 import { UnsupportedPlaceholder } from './placeholder/UnsupportedPlaceholder';
 
-
-const { object, string, func } = PropTypes;
-
-
 @observer
 export class PullRequests extends Component {
+
+    state = {
+        actionExtensionCount: 0,
+    };
+
     componentWillMount() {
         if (this.props.pipeline && this.props.params && capable(this.props.pipeline, MULTIBRANCH_PIPELINE)) {
             this.pager = this.context.pipelineService.prPager(this.props.params.organization, this.props.params.pipeline);
         }
+        this._countExtensions();
     }
 
+    // Figure out how many extensions we have for the action buttons column so we can size it appropriately
+    _countExtensions() {
+        Extensions.store.getExtensions('jenkins.pipeline.pullrequests.list.action', extensions => {
+            const count = extensions && typeof(extensions.length) === 'number' ? extensions.length : 0;
+            if (count !== this.state.actionExtensionCount) {
+                this.setState({ actionExtensionCount: count });
+            }
+        });
+    }
 
     render() {
-        const { t, locale, pipeline } = this.props;
+        const { t, locale, pipeline } = this.props;     const { actionExtensionCount } = this.state;
+        const { actionExtensionCount } = this.state;
+        const actionsInRowCount = PullRequestRow.actionItemsCount; // Non-extension actions
 
         if (!capable(pipeline, MULTIBRANCH_PIPELINE)) {
             const childProps = {
@@ -54,24 +65,13 @@ export class PullRequests extends Component {
         const summary = t(`${head}.summary`, { defaultValue: 'Summary' });
         const completed = t(`${head}.completed`, { defaultValue: 'Completed' });
 
-        const headers = [  // TODO: RM
-            status,
-            { label: runHeader, className: 'run' },
-            { label: summary, className: 'summary' },
-            author,
-            { label: completed, className: 'completed' },
-            { label: '', className: 'run' },
-        ];
-
-        const actionExtensionCount = 2; // TODO: Measure!
-
         const columns = [
             JTable.column(60, status),
             JTable.column(60, runHeader),
             JTable.column(530, summary, true),
             JTable.column(60, author),
             JTable.column(100, completed),
-            JTable.column(actionExtensionCount * 24, ''),
+            JTable.column((actionExtensionCount + actionsInRowCount) * 24, ''),
         ];
 
         const runRecords = pullRequests.map(run => new RunsRecord(run));
@@ -79,31 +79,17 @@ export class PullRequests extends Component {
         return (
             <main>
                 <article>
-
                     <JTable columns={columns}>
-                        <TableHeaderRow/>
+                        <TableHeaderRow />
                         { runRecords.map((result, index) =>
                             <PullRequestRow t={t}
                                             locale={locale}
                                             pipeline={pipeline}
                                             key={index}
-                                            pr={result} />
+                                            pr={result}
+                            />,
                         )}
                     </JTable>
-
-                    <p style={{padding:"3em"}}>this space intentionally left blank</p>
-
-                    <Table className="pr-table u-highlight-rows u-table-lr-indents" headers={headers} disableDefaultPadding>
-                        {runRecords.map((result, index) => {
-                            return (<PullRequest
-                              t={t}
-                              locale={locale}
-                              pipeline={pipeline}
-                              key={index}
-                              pr={result}
-                            />);
-                        })}
-                    </Table>
                     <ShowMoreButton pager={this.pager} />
                 </article>
             </main>
@@ -112,16 +98,16 @@ export class PullRequests extends Component {
 }
 
 PullRequests.contextTypes = {
-    config: object.isRequired,
-    params: object.isRequired,
-    pipelineService: object.isRequired,
+    config: PropTypes.object.isRequired,
+    params: PropTypes.object.isRequired,
+    pipelineService: PropTypes.object.isRequired,
 };
 
 PullRequests.propTypes = {
-    locale: string,
-    t: func,
-    pipeline: object,
-    params: object,
+    locale: PropTypes.string,
+    t: PropTypes.func,
+    pipeline: PropTypes.object,
+    params: PropTypes.object,
 };
 
 export default PullRequests;
