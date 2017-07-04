@@ -119,8 +119,8 @@ class RunDetailsHeader extends Component {
             </div>
         );
 
-        const commitIdString = changeSet.length && changeSet[changeSet.length - 1].commitId || '—';
-        const commitUrl = changeSet.length && changeSet[changeSet.length - 1].url || '';
+        const commitIdString = changeSet.length && changeSet[changeSet.length - 1].commitId;
+        const commitUrl = changeSet.length && changeSet[changeSet.length - 1].url;
         const commitSourceDetails = (
             <div className="u-label-value" title={commitLabel + ': ' + commitIdString}>
                 <label className={labelClassName}>{ commitLabel }:</label>
