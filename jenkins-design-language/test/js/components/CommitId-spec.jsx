@@ -24,4 +24,9 @@ describe("CommitId", () => {
         assert.equal(wrapper.text().length, 7);
         assert.equal(wrapper.text(), '676b757');
     });
+
+    it("renders link when url prop is passed along", () => {
+        const wrapper = shallow(<CommitId commitId="123" url="link" />);
+        assert.isTrue(wrapper.is('a[href="link"]'));
+    });
 });
