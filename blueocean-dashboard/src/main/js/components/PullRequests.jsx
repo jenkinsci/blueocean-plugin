@@ -9,6 +9,8 @@ import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { NoPullRequestsPlaceholder } from './placeholder/NoPullRequestsPlaceholder';
 import { UnsupportedPlaceholder } from './placeholder/UnsupportedPlaceholder';
 
+import Extensions from '@jenkins-cd/js-extensions';
+
 @observer
 export class PullRequests extends Component {
 
@@ -34,7 +36,7 @@ export class PullRequests extends Component {
     }
 
     render() {
-        const { t, locale, pipeline } = this.props;     const { actionExtensionCount } = this.state;
+        const { t, locale, pipeline } = this.props;
         const { actionExtensionCount } = this.state;
         const actionsInRowCount = PullRequestRow.actionItemsCount; // Non-extension actions
 
