@@ -33,9 +33,7 @@ import org.kohsuke.github.GHMyself;
 import org.kohsuke.github.GHOrganization;
 import org.kohsuke.github.GHUser;
 import org.kohsuke.github.GitHub;
-import org.kohsuke.github.GitHubBuilder;
 import org.kohsuke.github.HttpException;
-import org.kohsuke.github.RateLimitHandler;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -75,21 +73,21 @@ public class GithubScm extends Scm {
     static final String DOMAIN_NAME="blueocean-github-domain";
     static final String CREDENTIAL_DESCRIPTION = "GitHub Access Token";
 
-    private final Link self;
-
     static final ObjectMapper om = new ObjectMapper();
     static {
         om.setVisibilityChecker(new VisibilityChecker.Std(NONE, NONE, NONE, NONE, ANY));
         om.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
     }
 
+    protected final Reachable parent;
+
     public GithubScm(Reachable parent) {
-        this.self = parent.getLink().rel("github");
+        this.parent = parent;
     }
 
     @Override
     public Link getLink() {
-        return self;
+        return parent.getLink().rel("github");
     }
 
     @Override
@@ -138,9 +136,7 @@ public class GithubScm extends Scm {
         String accessToken = credential.getPassword().getPlainText();
 
         try {
-            GitHub github = new GitHubBuilder().withOAuthToken(accessToken)
-                    .withRateLimitHandler(new RateLimitHandlerImpl())
-                    .withEndpoint(getUri()).build();
+            GitHub github = GitHubFactory.connect(accessToken, getUri());
 
             final Link link = getLink().rel("organizations");
 
@@ -235,13 +231,6 @@ public class GithubScm extends Scm {
         return credentialId;
     }
 
-    static class RateLimitHandlerImpl extends RateLimitHandler{
-        @Override
-        public void onError(IOException e, HttpURLConnection httpURLConnection) throws IOException {
-            throw new ServiceException.BadRequestException("API rate limit reached."+e.getMessage(), e);
-        }
-    }
-
     @Override
     public HttpResponse validateAndCreate(@JsonBody JSONObject request) {
         String accessToken = (String) request.get("accessToken");
@@ -294,7 +283,7 @@ public class GithubScm extends Scm {
         }
     }
 
-    static HttpURLConnection connect(String apiUrl, String accessToken) throws IOException {
+    protected static HttpURLConnection connect(String apiUrl, String accessToken) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
 
         connection.setDoOutput(true);

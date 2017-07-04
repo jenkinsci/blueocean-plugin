@@ -1,0 +1,13 @@
+# Warning!
+# This file must be the same as .gitignore, but MUST NOT CONTAIN "dist"
+
+node_modules/
+npm-debug.log
+.DS_Store
+*.iml
+.idea/
+/.project
+reports
+/website/storybook
+/website/component-docs/doc*
+/website-build

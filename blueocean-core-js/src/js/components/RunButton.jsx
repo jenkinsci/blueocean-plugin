@@ -119,7 +119,7 @@ export class RunButton extends Component {
                     <svg className="svg-icon" width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <g fill="none" fill-rule="evenodd">
                             <path d="M-2-2h24v24H-2z" />
-                            <path className="svg-icon-inner" d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zM7 7h6v6H7V7zm3 11c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="#4A90E2" />
+                            <path className="svg-icon-inner action-button-fill" d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zM7 7h6v6H7V7zm3 11c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
                         </g>
                     </svg>
                     { /* eslint-enable max-len */ }

@@ -75,7 +75,7 @@ public class GitCreationPage {
         MultiBranchPipeline pipeline = multiBranchPipelineFactory.pipeline(pipelineName);
         wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity"), 30000);
         driver.navigate().refresh();
-        pipeline.getActivityPage().checkUrl();
+        pipeline.getActivityPage().checkUrl();`
         return pipeline;
     }
 }

@@ -166,6 +166,12 @@
         }
     }
 
+    @supports (-ms-ime-align:auto) {
+        .fastsearch-input ~ div.clear-icon-container.TextInput-icon { 
+            display: none;
+        } 
+    }
+
     input.TextInput-control {
         width: 250px;
         border: none;

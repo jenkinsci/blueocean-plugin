@@ -328,7 +328,7 @@ export function PipelineCardRenderer(props) {
                 />
 
                 <Favorite checked={favoriteChecked}
-                          className="dark-white"
+                          className="dark"
                           onToggle={onFavoriteToggle}
                 />
             </span>
