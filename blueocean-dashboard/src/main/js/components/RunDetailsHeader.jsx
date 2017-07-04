@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/react-material-icons';
 import { AppConfig, logging, ResultPageHeader, TimeManager } from '@jenkins-cd/blueocean-core-js';
-import { ExpandablePath, ReadableDate, TimeDuration, CommitHash } from '@jenkins-cd/design-language';
+import { ExpandablePath, ReadableDate, TimeDuration, CommitId } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import { Link } from 'react-router';
 import { buildPipelineUrl } from '../util/UrlUtils';
@@ -125,7 +125,7 @@ class RunDetailsHeader extends Component {
             <div className="u-label-value" title={commitLabel + ': ' + commitIdString}>
                 <label className={labelClassName}>{ commitLabel }:</label>
                 <span className="commit">
-                    <CommitHash commitId={commitIdString} url={commitUrl} />
+                    <CommitId commitId={commitIdString} url={commitUrl} />
                 </span>
             </div>
         );

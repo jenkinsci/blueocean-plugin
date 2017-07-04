@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { CommitHash, PlaceholderTable, ReadableDate, Table } from '@jenkins-cd/design-language';
+import { CommitId, PlaceholderTable, ReadableDate, Table } from '@jenkins-cd/design-language';
 import Icon from './placeholder/Icon';
 import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
 
@@ -58,7 +58,7 @@ export default class RunDetailsChanges extends Component {
             <Table headers={headers} className="changeset-table">
                 { changeSet.map(commit => (
                     <tr key={commit.commitId}>
-                        <td><CommitHash commitId={commit.commitId} url={commit.url} /></td>
+                        <td><CommitId commitId={commit.commitId} url={commit.url} /></td>
                         <td>{commit.author.fullName}</td>
                         <td className="multipleLines">{commit.msg}</td>
                         <td>
