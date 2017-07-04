@@ -1,0 +1,28 @@
+[ignore]
+
+# FBJS seems to be bad
+.*/node_modules/fbjs/.*
+
+.*/node_modules/react/.*
+
+# Yay for dependencies that are bloated with tests, and .json files that aren't JSON
+.*/node_modules/cjson/test.*
+
+.*/node_modules/config-chain/test/broken.json
+.*/node_modules/npmconf/test/fixtures/package.json
+
+[libs]
+src/js/declarations
+
+[include]
+src/js/declarations/browser.js.flow
+
+[options]
+
+# Static fields for React stuff
+# Instance fields for this-bound listeners via arrow funs
+esproposal.class_static_fields=enable
+esproposal.class_instance_fields=enable
+
+# allow getters
+unsafe.enable_getters_and_setters=true

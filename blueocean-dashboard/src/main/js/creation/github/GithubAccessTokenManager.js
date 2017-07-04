@@ -29,8 +29,8 @@ export class GithubAccessTokenManager {
         this._credentialsApi = credentialsApi;
     }
 
-    findExistingCredential() {
-        return this._credentialsApi.findExistingCredential()
+    findExistingCredential(apiUrl) {
+        return this._credentialsApi.findExistingCredential(apiUrl)
             .then(waitAtLeast(MIN_DELAY))
             .then(
                 cred => this._findExistingCredentialSuccess(cred),
@@ -66,10 +66,10 @@ export class GithubAccessTokenManager {
     }
 
     @action
-    createAccessToken(token) {
+    createAccessToken(token, apiUrl) {
         this.pendingValidation = true;
 
-        return this._credentialsApi.createAccessToken(token)
+        return this._credentialsApi.createAccessToken(token, apiUrl)
             .then(waitAtLeast(MIN_DELAY))
             .then(response => this._createTokenComplete(response));
     }

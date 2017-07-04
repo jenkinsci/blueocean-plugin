@@ -98,6 +98,11 @@
         </dependency>
 
         <dependency>
+            <groupId>ua_parser</groupId>
+            <artifactId>ua-parser</artifactId>
+        </dependency>
+
+        <dependency>
             <groupId>org.jenkins-ci.main</groupId>
             <artifactId>maven-plugin</artifactId>
             <scope>test</scope>

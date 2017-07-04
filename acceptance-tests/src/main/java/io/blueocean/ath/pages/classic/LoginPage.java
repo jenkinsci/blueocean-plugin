@@ -33,6 +33,14 @@ public class LoginPage{
         PageFactory.initElements(driver, this);
     }
 
+    public static String getUsername() {
+        return "alice";
+    }
+
+    public static String getPassword() {
+        return "alice";
+    }
+
     @Inject
     WaitUtil wait;
     public void open() {
@@ -44,9 +52,9 @@ public class LoginPage{
         open();
 
 
-        wait.until(loginUsername).sendKeys("alice");
+        wait.until(loginUsername).sendKeys(getUsername());
 
-        wait.until(loginPassword).sendKeys("alice");
+        wait.until(loginPassword).sendKeys(getPassword());
 
         wait.until(By.xpath("//*/button[contains(text(), 'log')]")).click();
 

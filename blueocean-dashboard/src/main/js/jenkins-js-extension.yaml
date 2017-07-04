@@ -2,8 +2,8 @@
 # NB: "component" currently maps to modules, not "symbols" so make sure to "export default"
 # WARNING: If you change this you'll have to change io.jenkins.blueocean.jsextensions.JenkinsJSExtensionsTest as well :(
 extensions:
-  - component: AdminNavLink
-    extensionPoint: jenkins.logo.top
+  - component: TopPipelinesLink
+    extensionPoint: jenkins.blueocean.top.pipelines
   - component: PipelineRoutes
     extensionPoint: jenkins.main.routes
   - component: PipelineStore
@@ -13,8 +13,11 @@ extensions:
 # creation for Git repos
   - component: creation/git/GitScmProvider
     extensionPoint: jenkins.pipeline.create.scm.provider
-# creation for Github
+# creation for GitHub
   - component: creation/github/GithubScmProvider
+    extensionPoint: jenkins.pipeline.create.scm.provider
+# creation for GitHub Enterprise
+  - component: creation/github-enterprise/GithubEnterpriseScmProvider
     extensionPoint: jenkins.pipeline.create.scm.provider
 # Karaoke
   - component: components/karaoke/components/FreeStyle
