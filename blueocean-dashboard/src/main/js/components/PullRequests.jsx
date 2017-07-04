@@ -70,8 +70,8 @@ export class PullRequests extends Component {
         const columns = [
             JTable.column(60, status),
             JTable.column(60, runHeader),
-            JTable.column(530, summary, true),
-            JTable.column(60, author),
+            JTable.column(500, summary, true),
+            JTable.column(110, author),
             JTable.column(100, completed),
             JTable.column((actionExtensionCount + actionsInRowCount) * 24, ''),
         ];
