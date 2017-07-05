@@ -9,16 +9,24 @@ export default function GitHubDefaultOption(props) {
             props.onSelect();
         }
     }
-    const className = `monochrome ${props.isSelected ? 'active' : ''}`;
-    
+
+    const className = `${props.className} monochrome ${props.isSelected ? 'active' : ''}`;
+
     return (
-        <IconButton className={className} label="Github" onClick={onSelect}>
+        <IconButton className={className} label={props.label} onClick={onSelect}>
             <GithubIcon />
         </IconButton>
     );
 }
 
 GitHubDefaultOption.propTypes = {
+    className: PropTypes.string,
+    label: PropTypes.string,
     onSelect: PropTypes.func,
     isSelected: PropTypes.bool,
+};
+
+GitHubDefaultOption.defaultProps = {
+    className: 'github-creation',
+    label: 'GitHub',
 };

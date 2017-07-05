@@ -55,8 +55,8 @@ public class JenkinsJSExtensionsTest extends BaseTest {
             Assert.assertNotNull(extensionPoints);
 
             if ("blueocean-dashboard".equals(pluginId)) {
-                Assert.assertEquals("AdminNavLink", extensionPoints.getJSONObject(0).get("component"));
-                Assert.assertEquals("jenkins.logo.top", extensionPoints.getJSONObject(0).get("extensionPoint"));
+                Assert.assertEquals("TopPipelinesLink", extensionPoints.getJSONObject(0).get("component"));
+                Assert.assertEquals("jenkins.blueocean.top.pipelines", extensionPoints.getJSONObject(0).get("extensionPoint"));
             } else if ("blueocean-personalization".equals(pluginId)) {
                 Assert.assertEquals("redux/FavoritesStore", extensionPoints.getJSONObject(0).get("component"));
                 Assert.assertEquals("jenkins.main.stores", extensionPoints.getJSONObject(0).get("extensionPoint"));
@@ -74,7 +74,7 @@ public class JenkinsJSExtensionsTest extends BaseTest {
         // Calling JenkinsJSExtensions.getJenkinsJSExtensionData() multiple times should
         // result in the same object instance being returned because the list of plugin
         // has not changed i.e. we have a simple optimization in there where we only scan
-        // the classpath if the active plugin lust has changed.
+        // the classpath if the active plugin list has changed.
         Assert.assertEquals(
             JenkinsJSExtensions.getJenkinsJSExtensionData(),
             JenkinsJSExtensions.getJenkinsJSExtensionData()

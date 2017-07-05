@@ -11,6 +11,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 
+import java.net.UnknownHostException;
 import java.util.List;
 import java.util.Map;
 
@@ -72,7 +73,7 @@ public class GithubServerTest extends PipelineBaseTest {
 
         Map error1 = (Map) errors.get(0);
         Assert.assertEquals("apiUrl", error1.get("field"));
-        Assert.assertEquals("Could not connect to Github", error1.get("message"));
+        Assert.assertEquals(new UnknownHostException("foobar").toString(), error1.get("message"));
         Assert.assertEquals("INVALID", error1.get("code"));
     }
 

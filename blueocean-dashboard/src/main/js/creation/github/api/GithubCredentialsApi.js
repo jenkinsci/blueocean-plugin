@@ -1,8 +1,11 @@
 import { capabilityAugmenter, Fetch, UrlConfig, Utils, AppConfig } from '@jenkins-cd/blueocean-core-js';
 
+import GithubApiUtils from './GithubApiUtils';
+
 // TODO: temporary until we get more structured errors
 const INVALID_TOKEN = 'Invalid accessToken';
 const INVALID_SCOPES = 'missing scopes';
+const INVALID_API_URL = 'Invalid apiUrl';
 
 
 /**
@@ -10,22 +13,25 @@ const INVALID_SCOPES = 'missing scopes';
  */
 export class GithubCredentialsApi {
 
-    constructor(fetch) {
-        this._fetch = fetch || Fetch.fetchJSON;
+    constructor(scmId) {
+        this._fetch = Fetch.fetchJSON;
         this.organization = AppConfig.getOrganizationName();
+        this.scmId = scmId || 'github';
     }
 
-    findExistingCredential() {
+    findExistingCredential(apiUrl) {
         const path = UrlConfig.getJenkinsRootURL();
-        const credUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/github`);
+        let credUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}`);
+        credUrl = GithubApiUtils.appendApiUrlParam(credUrl, apiUrl);
 
         return this._fetch(credUrl)
             .then(credential => capabilityAugmenter.augmentCapabilities(credential));
     }
 
-    createAccessToken(accessToken) {
+    createAccessToken(accessToken, apiUrl) {
         const path = UrlConfig.getJenkinsRootURL();
-        const tokenUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/github/validate`);
+        let tokenUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/validate`);
+        tokenUrl = GithubApiUtils.appendApiUrlParam(tokenUrl, apiUrl);
 
         const requestBody = {
             accessToken,
@@ -55,12 +61,14 @@ export class GithubCredentialsApi {
     }
 
     _createAccessTokenFailure(error) {
-        const { message } = error.responseBody;
+        const { code, message } = error.responseBody;
+        const invalidApiUrl = code === 404 || message.indexOf(INVALID_API_URL) !== -1;
 
         return {
             success: false,
             invalid: message.indexOf(INVALID_TOKEN) !== -1,
             scopes: message.indexOf(INVALID_SCOPES) !== -1,
+            invalidApiUrl,
         };
     }
 

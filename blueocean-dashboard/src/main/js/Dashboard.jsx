@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { pipelineService, activityService } from '@jenkins-cd/blueocean-core-js';
+
 import {
     actions,
     allPipelines as allPipelinesSelector,
@@ -7,6 +8,8 @@ import {
     connect,
     createSelector,
 } from './redux';
+import navState from './DashboardNavState';
+
 
 class Dashboard extends Component {
 
@@ -16,10 +19,19 @@ class Dashboard extends Component {
         this._context.pipelineService = pipelineService;
         this._context.activityService = activityService;
     }
+
     getChildContext() {
         this._context.params = this.props.params;
         this._context.location = this.props.location;
         return this._context;
+    }
+
+    componentWillMount() {
+        navState.setActive();
+    }
+
+    componentWillUnmount() {
+        navState.setInactive();
     }
 
     render() {

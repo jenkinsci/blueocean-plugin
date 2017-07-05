@@ -33,9 +33,7 @@ import org.kohsuke.github.GHMyself;
 import org.kohsuke.github.GHOrganization;
 import org.kohsuke.github.GHUser;
 import org.kohsuke.github.GitHub;
-import org.kohsuke.github.GitHubBuilder;
 import org.kohsuke.github.HttpException;
-import org.kohsuke.github.RateLimitHandler;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -138,9 +136,7 @@ public class GithubScm extends Scm {
         String accessToken = credential.getPassword().getPlainText();
 
         try {
-            GitHub github = new GitHubBuilder().withOAuthToken(accessToken)
-                    .withRateLimitHandler(new RateLimitHandlerImpl())
-                    .withEndpoint(getUri()).build();
+            GitHub github = GitHubFactory.connect(accessToken, getUri());
 
             final Link link = getLink().rel("organizations");
 
@@ -192,6 +188,10 @@ public class GithubScm extends Scm {
         }
     }
 
+    public boolean isOrganizationAvatarSupported() {
+        return true;
+    }
+
     protected @Nonnull String createCredentialId(@Nonnull String apiUrl) {
         return ID;
     }
@@ -233,13 +233,6 @@ public class GithubScm extends Scm {
             throw new ServiceException.BadRequestException("Missing credential id. It must be provided either as HTTP header: " + X_CREDENTIAL_ID+" or as query parameter 'credentialId'");
         }
         return credentialId;
-    }
-
-    static class RateLimitHandlerImpl extends RateLimitHandler{
-        @Override
-        public void onError(IOException e, HttpURLConnection httpURLConnection) throws IOException {
-            throw new ServiceException.BadRequestException("API rate limit reached."+e.getMessage(), e);
-        }
     }
 
     @Override
