@@ -10,7 +10,7 @@ import Autocomplete from 'react-autocomplete';
 export class ColumnFilter extends Component {
     constructor(props) {
         super(props);
-        this.state = { value: props.value, visible: false };
+        this.state = { value: props.value, originalValue: props.value ? props.value : '', visible: false };
     }
 
     componentWillReceiveProps(newProps) {
@@ -26,7 +26,11 @@ export class ColumnFilter extends Component {
         if (event.type === 'select'
             || event.type === 'blur'
             || (event.type === 'keypress' && event.key === 'Enter')) {
+            this.setState({ originalValue: value });
             onChange(value);
+            setTimeout(() => {
+                this.refs.autocomplete.refs.input.blur();
+            }, 0);
         }
     }
 
@@ -39,8 +43,14 @@ export class ColumnFilter extends Component {
         e.target.select();
     }
 
-    blur() {
+    blur = e => {
+        const targetElem = e.target;
         this.setState({ focused: false });
+        if (targetElem.value == '') {
+            setTimeout(() => {
+                targetElem.value = this.state.originalValue;
+            }, 0);
+        }
     }
 
     // hack due to strange behavior of triggering onChange from autocomplete when
