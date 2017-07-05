@@ -16,7 +16,7 @@ export class CommitId extends Component {
         } else if (commitId) {
             displayValue = commitId;
         } else {
-            displayValue = '–';
+            displayValue = '—';
         }
 
         if (url) {
