@@ -133,7 +133,16 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
                 GitHubSCMNavigator gitHubSCMNavigator = organizationFolder.getNavigators().get(GitHubSCMNavigator.class);
 
                 StringBuilder sb = new StringBuilder();
+                String includes = GitHubSCMNavigator.DescriptorImpl.defaultIncludes;
+                String excludes = GitHubSCMNavigator.DescriptorImpl.defaultExcludes;
+                boolean buildOriginBranch = GitHubSCMNavigator.DescriptorImpl.defaultBuildOriginBranch;
+                boolean buildOriginBranchWithPR = GitHubSCMNavigator.DescriptorImpl.defaultBuildOriginBranchWithPR;
+                boolean buildOriginPRHead = GitHubSCMNavigator.DescriptorImpl.defaultBuildOriginPRHead;
+                boolean buildOriginPRMerge = GitHubSCMNavigator.DescriptorImpl.defaultBuildOriginPRMerge;
+                boolean buildForkPRHead = GitHubSCMNavigator.DescriptorImpl.defaultBuildForkPRHead;
+                boolean buildForkPRMerge = GitHubSCMNavigator.DescriptorImpl.defaultBuildForkPRMerge;
                 if (gitHubSCMNavigator != null) {
+
                     // currently, we are setting a series of regular expressions to match the repositories
                     // so we need to extract the current set for incoming create requests to keep them
                     // see a few lines below for the pattern being used
@@ -156,9 +165,26 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
                     if (credentialId == null) {
                         credentialId = gitHubSCMNavigator.getScanCredentialsId();
                     }
+
+                    includes = gitHubSCMNavigator.getIncludes();
+                    excludes = gitHubSCMNavigator.getExcludes();
+                    buildOriginBranch = gitHubSCMNavigator.getBuildOriginBranch();
+                    buildOriginBranchWithPR = gitHubSCMNavigator.getBuildOriginBranchWithPR();
+                    buildOriginPRHead = gitHubSCMNavigator.getBuildOriginPRHead();
+                    buildOriginPRMerge = gitHubSCMNavigator.getBuildOriginPRMerge();
+                    buildForkPRHead = gitHubSCMNavigator.getBuildForkPRHead();
+                    buildForkPRMerge = gitHubSCMNavigator.getBuildForkPRMerge();
                 }
 
                 gitHubSCMNavigator = new GitHubSCMNavigator(apiUrl, orgName, credentialId, credentialId);
+                gitHubSCMNavigator.setIncludes(includes);
+                gitHubSCMNavigator.setExcludes(excludes);
+                gitHubSCMNavigator.setBuildOriginBranch(buildOriginBranch);
+                gitHubSCMNavigator.setBuildOriginBranchWithPR(buildOriginBranchWithPR);
+                gitHubSCMNavigator.setBuildOriginPRHead(buildOriginPRHead);
+                gitHubSCMNavigator.setBuildOriginPRMerge(buildOriginPRMerge);
+                gitHubSCMNavigator.setBuildForkPRHead(buildForkPRHead);
+                gitHubSCMNavigator.setBuildForkPRMerge(buildForkPRMerge);
                 organizationFolder.getNavigators().replace(gitHubSCMNavigator);
 
                 for (String r : repos) {
