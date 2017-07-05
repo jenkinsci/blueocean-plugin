@@ -2,6 +2,7 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 
 import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSource;
 import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSourceBuilder;
+import com.cloudbees.jenkins.plugins.bitbucket.BranchDiscoveryTrait;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
@@ -35,7 +36,9 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
         Preconditions.checkNotNull(scmConfig.getUri(), "scmConfig.uri must be present");
         BitbucketSCMSource bitbucketSCMSource = new BitbucketSCMSourceBuilder(null, scmConfig.getUri(), scmConfig.getCredentialId(),
                 (String)scmConfig.getConfig().get("repoOwner"),
-                (String)scmConfig.getConfig().get("repository")).build();
+                (String)scmConfig.getConfig().get("repository"))
+                .withTrait(new BranchDiscoveryTrait(3)) //take all branches
+                .build();
 
         //Setup Jenkins root url, if not set bitbucket cloud notification will fail
         JenkinsLocationConfiguration jenkinsLocationConfiguration = JenkinsLocationConfiguration.get();
