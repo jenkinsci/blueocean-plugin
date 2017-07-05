@@ -56,7 +56,7 @@ public class GitCreationTest extends BaseTest{
         MultiBranchPipeline pipeline = gitCreationPage.createPipeline(pipelineName, gitUrl, key, null, null);
 
         // we need to wait and refresh due to JENKINS-45302:
-        Thread.sleep(10000);
+        Thread.sleep(20000);
         pipeline.getActivityPage().open();
 
         pipeline.getActivityPage().testNumberRunsComplete(1);
@@ -75,7 +75,7 @@ public class GitCreationTest extends BaseTest{
         Pipeline pipeline = gitCreationPage.createPipeline(pipelineName, gitUrl, null, user, pass);
 
         // we need to wait and refresh due to JENKINS-45302:
-        Thread.sleep(10000);
+        Thread.sleep(20000);
         pipeline.getActivityPage().open();
 
         pipeline.getActivityPage().testNumberRunsComplete(1);
