@@ -197,8 +197,15 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
         String idOfSecondRun = (String) latestRun.get("id");
 
-        // Replay this
-        request().post("/organizations/jenkins/pipelines/project/runs/" + idOfSecondRun + "/replay/").build(String.class);
+        // Replay this - with limited retry
+        try {
+            Thread.sleep(200);
+            request().post("/organizations/jenkins/pipelines/project/runs/" + idOfSecondRun + "/replay/").build(String.class);
+        } catch (Exception e) {
+            Thread.sleep(200);
+            request().post("/organizations/jenkins/pipelines/project/runs/" + idOfSecondRun + "/replay/").build(String.class);
+        }
+
 
         // Get latest run for this pipeline
         pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
