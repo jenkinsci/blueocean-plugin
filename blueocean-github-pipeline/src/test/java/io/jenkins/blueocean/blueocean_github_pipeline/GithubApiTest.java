@@ -9,6 +9,7 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -149,5 +150,24 @@ public class GithubApiTest extends GithubMockBase {
                 .build(Map.class);
 
         assertEquals("RunMyProcess-task", resp.get("name"));
+    }
+
+    @Test
+    public void getOrganizationsGithubEnterprise() throws Exception {
+        String credentialId = createGithubEnterpriseCredential();
+
+        List l = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .get("/organizations/jenkins/scm/github-enterprise/organizations/?credentialId=" + credentialId+"&apiUrl="+githubApiUrl)
+            .build(List.class);
+
+        Assert.assertTrue(l.size() > 0);
+
+        Iterator<Map<String,String>> it = l.iterator();
+        while(it.hasNext()) {
+            Map<String, String> org = it.next();
+            assertNull(org.get("avatar"));
+        }
     }
 }

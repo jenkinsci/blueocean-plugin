@@ -64,6 +64,11 @@ public class GithubEnterpriseScm extends GithubScm {
         return DOMAIN_NAME;
     }
 
+    @Override
+    public boolean isOrganizationAvatarSupported() {
+        return false;
+    }
+
     @WebMethod(name="") @GET @TreeResponse
     public Object getState() {
         // will produce a 400 if apiUrl wasn't sent

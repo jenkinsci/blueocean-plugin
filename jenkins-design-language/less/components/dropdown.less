@@ -1,0 +1,82 @@
+.Dropdown {
+    display: inline-flex;
+    width: 100%;
+    align-items: center;
+
+    .Dropdown-button {
+        width: 100%;
+        padding: 6px 8px;
+        padding-right: 25px;
+        flex-grow: 0;
+        text-align: left;
+        color: @text-color;
+        background-color: #fff;
+        font-family: @font-family-base;
+        .control-border;
+        .text-overflow;
+
+        &[disabled]:hover, fieldset[disabled]:hover & {
+            background-color: #fff;
+        }
+    }
+
+    .Dropdown-thumb {
+        width: 16px;
+        height: 16px;
+        // nudge the thumb over the button
+        margin-left: -25px;
+        // but apply a right margin so total width of .Dropdown matches button
+        // (-25 + 16 + 9) = 0
+        margin-right: 9px;
+        flex-shrink: 0;
+        cursor: pointer;
+
+        .svg-icon.keyboard_arrow_down {
+            display: block;
+            width: 100%;
+            height: 100%;
+            fill: #949494;
+        }
+    }
+
+    .Dropdown-menu {
+        width: 100%;
+        overflow-y: scroll;
+        max-height: 200px;
+        list-style-type: none;
+        padding: 0;
+        margin: 0;
+        background: #fff;
+        .control-border;
+        border-color: @brand-primary;
+
+        .Dropdown-menu-item {
+            display: inline-block;
+            width: 100%;
+            height: 100%;
+            padding: 5px 10px;
+            cursor: pointer;
+            color: @text-color;
+
+            &.Dropdown-menu-item-selected {
+            }
+
+            &:hover {
+                text-decoration: none;
+                background: fadeout(@brand-primary, 85%);
+            }
+
+            &:focus {
+                background: fadeout(@brand-primary, 85%);
+                outline: 0;
+            }
+        }
+    }
+
+    &.Dropdown-menu-open {
+        .Dropdown-button {
+            border-color: @brand-primary;
+        }
+    }
+
+}

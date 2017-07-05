@@ -1,0 +1,51 @@
+.Alert {
+    font-size: 14px;
+    min-height: 48px;
+    border-radius: 3px;
+    background-color: #ffffff;
+    border: solid 1px #e6eaee;
+    display: flex;
+    align-items: stretch;
+}
+
+.Alert .border {
+    flex: 0 0 6px;
+    min-height: 100%;
+    margin-top: -1px;
+    margin-bottom: -1px;
+}
+
+.Alert .title-div {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+}
+
+.Alert .title {
+    padding-left: 24px;
+    font-weight: bold;
+}
+
+.Alert .message {
+    color: @text-color;
+    line-height: 1.71;
+    padding-left: 16px;
+}
+
+.Alert.Info {
+    .alerts-variant(@brand-info-lite);
+}
+
+
+.Alert.Warning {
+    .alerts-variant(@brand-warning);
+}
+
+
+.Alert.Error {
+    .alerts-variant(@brand-danger-lite);
+}
+
+.Alert.Success {
+    .alerts-variant(@brand-success);
+}

@@ -194,6 +194,10 @@ public class GithubScm extends Scm {
         return null;
     }
 
+    public boolean isOrganizationAvatarSupported() {
+        return true;
+    }
+
     protected @Nonnull String createCredentialId(@Nonnull String apiUrl) {
         return ID;
     }
