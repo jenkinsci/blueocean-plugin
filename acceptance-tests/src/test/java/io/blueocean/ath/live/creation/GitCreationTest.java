@@ -43,7 +43,7 @@ public class GitCreationTest extends BaseTest{
     WaitUtil wait;
 
     @Test
-    public void testSSHPrivateRepostory() throws IOException, GitAPIException, URISyntaxException {
+    public void testSSHPrivateRepostory() throws IOException, GitAPIException, URISyntaxException, InterruptedException {
         String gitUrl = liveProperties.getProperty("git.ssh.repository");
         String privateKeyFile = liveProperties.getProperty("git.ssh.keyfile");
         String pipelineName = liveProperties.getProperty("git.ssh.pipelineName");
@@ -54,11 +54,16 @@ public class GitCreationTest extends BaseTest{
         String key = IOUtils.toString(new FileInputStream(privateKeyFile));
 
         MultiBranchPipeline pipeline = gitCreationPage.createPipeline(pipelineName, gitUrl, key, null, null);
+
+        // we need to wait and refresh due to JENKINS-45302:
+        Thread.sleep(10000);
+        pipeline.getActivityPage().open();
+
         pipeline.getActivityPage().testNumberRunsComplete(1);
     }
 
     @Test
-    public void testHttpsPrivateRepository() throws IOException, GitAPIException, URISyntaxException {
+    public void testHttpsPrivateRepository() throws IOException, GitAPIException, URISyntaxException, InterruptedException {
         String gitUrl = liveProperties.getProperty("git.https.repository");
         String user = liveProperties.getProperty("git.https.user");
         String pass = liveProperties.getProperty("git.https.pass");
@@ -68,6 +73,11 @@ public class GitCreationTest extends BaseTest{
         Assert.assertNotNull(pass);
         Assert.assertNotNull(pipelineName);
         Pipeline pipeline = gitCreationPage.createPipeline(pipelineName, gitUrl, null, user, pass);
+
+        // we need to wait and refresh due to JENKINS-45302:
+        Thread.sleep(10000);
+        pipeline.getActivityPage().open();
+
         pipeline.getActivityPage().testNumberRunsComplete(1);
     }
 }
