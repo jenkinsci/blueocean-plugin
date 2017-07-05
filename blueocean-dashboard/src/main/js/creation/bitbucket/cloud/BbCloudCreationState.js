@@ -18,6 +18,7 @@ const BbCloudCreationState = new Enum({
     STEP_COMPLETE_EVENT_ERROR: 'step_complete_event_error',
     STEP_COMPLETE_EVENT_TIMEOUT: 'step_complete_event_timeout',
     STEP_COMPLETE_MISSING_JENKINSFILE: 'step_complete_missing_jenkinsfile',
+    STEP_RENAME: 'step_rename',
     STEP_COMPLETE_SUCCESS: 'step_complete_success',
     ERROR_UNKOWN: 'error_unkown',
 });

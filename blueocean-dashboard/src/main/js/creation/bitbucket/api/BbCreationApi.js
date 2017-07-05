@@ -1,11 +1,40 @@
 import { capabilityAugmenter, Fetch, UrlConfig, Utils, AppConfig } from '@jenkins-cd/blueocean-core-js';
 import { Enum } from '../../flow2/Enum';
 
+const ERROR_FIELD_SCM_CREDENTIAL = 'credentialId';
+const CODE_VALIDATION_FAILED = 400;
+
+const ERROR_FIELD_CODE_CONFLICT = 'ALREADY_EXISTS';
+
+const ERROR_FIELD_SCM_URI = 'scmConfig.uri';
+
+
 export const ListOrganizationsOutcome = new Enum({
     SUCCESS: 'success',
     INVALID_CREDENTIAL_ID: 'invalid_credential_id',
     ERROR: 'error',
 });
+
+export const CreateMbpOutcome = new Enum({
+    SUCCESS: 'success',
+    INVALID_URI: 'invalid_uri',
+    INVALID_CREDENTIAL: 'invalid_credential',
+    INVALID_NAME: 'invalid_name',
+    ERROR: 'error',
+});
+
+
+function hasErrorFieldName(errors, fieldName) {
+    return errors
+            .filter(err => err.field === fieldName)
+            .length > 0;
+}
+
+function hasErrorFieldCode(errors, code) {
+    return errors
+            .filter(err => err.code === code)
+            .length > 0;
+}
 
 export class BbCreationApi {
     constructor(scmId, fetch) {
@@ -36,10 +65,10 @@ export class BbCreationApi {
     }
 
     _listOrganizationsFailure(error) {
-        const { code, message } = error.responseBody;
+        const { code, message, errors } = error.responseBody;
+
         if (code === 400) {
-            const e = JSON.parse(message);
-            if (e.field === 'credentialId') {
+            if (hasErrorFieldName(errors, ERROR_FIELD_SCM_CREDENTIAL)) {
                 return {
                     outcome: ListOrganizationsOutcome.INVALID_CREDENTIAL_ID,
                 };
@@ -61,12 +90,12 @@ export class BbCreationApi {
             .then(response => capabilityAugmenter.augmentCapabilities(response));
     }
 
-    createMbp(credentialId, apiUrl, bbOrganization, repoName) {
+    createMbp(credentialId, apiUrl, itemName, bbOrganizationKey, repoName) {
         const path = UrlConfig.getJenkinsRootURL();
         const createUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/pipelines/`);
 
         const requestBody = this._buildRequestBody(
-            credentialId, apiUrl, `${bbOrganization.name}/${repoName}`, bbOrganization.key, repoName,
+            credentialId, apiUrl, itemName, bbOrganizationKey, repoName,
         );
 
         const fetchOptions = {
@@ -78,7 +107,61 @@ export class BbCreationApi {
         };
 
         return this._fetch(createUrl, { fetchOptions })
-            .then(pipeline => capabilityAugmenter.augmentCapabilities(pipeline));
+            .then(data => capabilityAugmenter.augmentCapabilities(data))
+            .then(
+                pipeline => this._createMbpSuccess(pipeline),
+                error => this._createMbpFailure(error),
+            );
+    }
+
+    checkPipelineNameAvailable(name) {
+        const path = UrlConfig.getRestBaseURL();
+        const checkUrl = Utils.cleanSlashes(`${path}/organizations/${this.organization}/pipelines/${name}`);
+
+        const fetchOptions = {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        };
+
+        return this._fetch(checkUrl, { fetchOptions })
+            .then(() => false, () => true);
+    }
+
+
+    _createMbpSuccess(pipeline) {
+        return {
+            outcome: CreateMbpOutcome.SUCCESS,
+            pipeline,
+        };
+    }
+
+    _createMbpFailure(error) {
+        const { code, errors } = error.responseBody;
+
+        if (code === CODE_VALIDATION_FAILED) {
+            if (errors.length === 1 && hasErrorFieldCode(errors, ERROR_FIELD_CODE_CONFLICT)) {
+                return {
+                    outcome: CreateMbpOutcome.INVALID_NAME,
+                };
+            }
+
+            if (hasErrorFieldName(errors, ERROR_FIELD_SCM_URI)) {
+                return {
+                    outcome: CreateMbpOutcome.INVALID_URI,
+                };
+            } else if (hasErrorFieldName(errors, ERROR_FIELD_SCM_CREDENTIAL)) {
+                return {
+                    outcome: CreateMbpOutcome.INVALID_CREDENTIAL,
+                };
+            }
+        }
+
+        return {
+            outcome: CreateMbpOutcome.ERROR,
+            error: error.responseBody,
+        };
     }
 
     _buildRequestBody(credentialId, apiUrl, itemName, organizationName, repoName) {
@@ -95,5 +178,4 @@ export class BbCreationApi {
             },
         };
     }
-
 }

@@ -32,6 +32,10 @@ export default class BbServerFlowManager extends BbCloudFlowManager {
         return STATE.values();
     }
 
+    getState() {
+        return STATE;
+    }
+
     getInitialStep() {
         return {
             stateId: STATE.PENDING_LOADING_SERVERS,

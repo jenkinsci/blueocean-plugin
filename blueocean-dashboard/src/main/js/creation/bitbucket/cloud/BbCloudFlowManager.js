@@ -11,6 +11,7 @@ import STATE from './BbCloudCreationState';
 
 import { BbCredentialManager } from '../BbCredentialManager';
 import { ListOrganizationsOutcome } from '../api/BbCreationApi';
+import { CreateMbpOutcome } from '../api/BbCreationApi';
 
 import BbLoadingStep from '../steps/BbLoadingStep';
 import BbCredentialsStep from '../steps/BbCredentialStep';
@@ -18,6 +19,7 @@ import BbOrgListStep from '../steps/BbOrgListStep';
 import BbRepositoryStep from '../steps/BbRepositoryStep';
 import BbCloudCompleteStep from './steps/BbCloudCompleteStep';
 import BbUnknownErrorStep from '../steps/BbUnknownErrorStep';
+import BbRenameStep from '../steps/BbRenameStep';
 
 const LOGGER = logging.logger('io.jenkins.blueocean.bitbucket-cloud-pipeline');
 const MIN_DELAY = 500;
@@ -58,16 +60,14 @@ export default class BbCloudFlowManager extends FlowManager {
     selectedRepository = null;
 
     @computed get stepsDisabled() {
-        return this.stateId === STATE.PENDING_CREATION_SAVING ||
-            this.stateId === STATE.STEP_COMPLETE_SAVING_ERROR ||
-            this.stateId === STATE.PENDING_CREATION_EVENTS ||
+        return this.stateId === STATE.STEP_COMPLETE_SAVING_ERROR ||
             this.stateId === STATE.STEP_COMPLETE_EVENT_ERROR ||
             this.stateId === STATE.STEP_COMPLETE_EVENT_TIMEOUT ||
             this.stateId === STATE.STEP_COMPLETE_MISSING_JENKINSFILE ||
             this.stateId === STATE.STEP_COMPLETE_SUCCESS;
     }
 
-    savedPipeline = null;
+    pipeline = null;
 
     _repositoryCache = {};
 
@@ -79,7 +79,6 @@ export default class BbCloudFlowManager extends FlowManager {
 
     constructor(creationApi, credentialsApi) {
         super();
-
         this._creationApi = creationApi;
         this.credentialManager = new BbCredentialManager(credentialsApi);
     }
@@ -90,6 +89,10 @@ export default class BbCloudFlowManager extends FlowManager {
 
     getStates() {
         return STATE.values();
+    }
+
+    getState() {
+        return STATE;
     }
 
     getInitialStep() {
@@ -133,13 +136,26 @@ export default class BbCloudFlowManager extends FlowManager {
 
     _createCredentialComplete(response) {
         if (response.success) {
-            this.renderStep({
-                stateId: STATE.PENDING_LOADING_ORGANIZATIONS,
-                stepElement: <BbLoadingStep />,
-            });
-
-            this.listOrganizations();
+            this._renderLoadingOrganizations();
         }
+    }
+
+    _renderLoadingOrganizations() {
+        this.renderStep({
+            stateId: STATE.PENDING_LOADING_ORGANIZATIONS,
+            stepElement: <BbLoadingStep />,
+            afterStateId: STATE.STEP_CREDENTIAL,
+        });
+
+        this.listOrganizations();
+    }
+
+    checkPipelineNameAvailable(name) {
+        if (!name) {
+            return new Promise(resolve => resolve(false));
+        }
+
+        return this._creationApi.checkPipelineNameAvailable(name);
     }
 
     @action
@@ -158,6 +174,13 @@ export default class BbCloudFlowManager extends FlowManager {
                 stateId: STATE.STEP_CHOOSE_ORGANIZATION,
                 stepElement: <BbOrgListStep />,
             });
+        } else if (response.outcome === ListOrganizationsOutcome.INVALID_CREDENTIAL_ID) {
+            this.organizations = response.organizations;
+
+            this.renderStep({
+                stateId: STATE.STEP_CREDENTIAL,
+                stepElement: <BbCredentialsStep />,
+            });
         } else {
             this.renderStep({
                 stateId: STATE.ERROR_UNKOWN,
@@ -170,8 +193,9 @@ export default class BbCloudFlowManager extends FlowManager {
     selectOrganization(organization) {
         this.selectedOrganization = organization;
         this.renderStep({
-            stateId: STATE.PENDING_LOADING_REPOSITORIES,
+            stateId: STATE.PENDING_LOADING_ORGANIZATIONS,
             stepElement: <BbLoadingStep />,
+            afterStateId: STATE.STEP_CHOOSE_ORGANIZATION,
         });
         this._loadAllRepositories(this.selectedOrganization);
     }
@@ -179,6 +203,7 @@ export default class BbCloudFlowManager extends FlowManager {
     @action
     selectRepository(repo) {
         this.selectedRepository = repo;
+        this.pipelineName = this.selectedRepository.name;
     }
 
     @action
@@ -226,47 +251,81 @@ export default class BbCloudFlowManager extends FlowManager {
             this.renderStep({
                 stateId: STATE.STEP_CHOOSE_REPOSITORY,
                 stepElement: <BbRepositoryStep />,
+                afterStateId: STATE.STEP_CHOOSE_ORGANIZATION,
             });
         }
     }
 
     saveRepo() {
-        this._saveRepo(this.selectedRepository.name);
+        this._saveRepo();
     }
 
     @action
-    _saveRepo(repoName) {
+    _saveRepo() {
+        const afterStateId = this.isStateAdded(STATE.STEP_RENAME) ?
+            STATE.STEP_RENAME : STATE.STEP_CHOOSE_REPOSITORY;
+
         this.renderStep({
-            stateId: STATE.PENDING_CREATION_SAVING,
+            stateId: STATE.STEP_COMPLETE_SUCCESS,
             stepElement: <BbCloudCompleteStep />,
+            afterStateId,
         });
 
         this.setPlaceholders();
 
         this._initListeners();
 
-        this._creationApi.createMbp(this.credentialId, this.getApiUrl(), this.selectedOrganization, repoName)
+        this._creationApi.createMbp(this.credentialId, this.getApiUrl(), this.pipelineName, this.selectedOrganization.key, this.selectedRepository.name)
             .then(waitAtLeast(MIN_DELAY * 2))
-            .then(r => this._saveRepoSuccess(r), e => this._saveRepoFailure(e));
+            .then(result => this._createPipelineComplete(result));
+    }
+
+    saveRenamedPipeline(pipelineName) {
+        this.pipelineName = pipelineName;
+        return this._saveRepo();
     }
 
     @action
-    _saveRepoSuccess(orgFolder) {
-        LOGGER.debug(`org folder saved successfully: ${orgFolder.name}`);
-        this.changeState(STATE.PENDING_CREATION_EVENTS);
-        this.savedOrgFolder = orgFolder;
+    _createPipelineComplete(result) {
+        this.outcome = result.outcome;
+        if (result.outcome === CreateMbpOutcome.SUCCESS) {
+            this.changeState(STATE.STEP_COMPLETE_SUCCESS);
+            this.pipeline = result.pipeline;
+        } else if (result.outcome === CreateMbpOutcome.INVALID_NAME) {
+            this.renderStep({
+                stateId: STATE.STEP_RENAME,
+                stepElement: <BbRenameStep pipelineName={this.pipelineName} />,
+                afterStateId: STATE.STEP_CHOOSE_REPOSITORY,
+            });
+            this._showPlaceholder();
+        } else if (result.outcome === CreateMbpOutcome.INVALID_URI || result.outcome === CreateMbpOutcome.INVALID_CREDENTIAL) {
+            this.removeSteps({ afterStateId: STATE.STEP_CREDENTIAL });
+            this._showPlaceholder();
+        } else if (result.outcome === CreateMbpOutcome.ERROR) {
+            this.renderStep({
+                stateId: STATE.ERROR,
+                stepElement: <BbUnknownErrorStep error={result.error} />,
+                afterStateId: STATE.STEP_CONNECT,
+            });
+        }
+    }
+
+    @action
+    _saveRepoSuccess(mbp) {
+        LOGGER.debug(`Multi-branch pipeline creation successfully: ${mbp.name}`);
+        this.changeState(STATE.STEP_COMPLETE_SUCCESS);
+        this.pipeline = mbp.name;
     }
 
     _saveRepoFailure() {
-        LOGGER.error('org folder save failed!');
+        LOGGER.error('Multi-branch pipeline creation failed');
         this.changeState(STATE.STEP_COMPLETE_SAVING_ERROR);
     }
-
 
     _initListeners() {
         this._cleanupListeners();
 
-        LOGGER.debug('listening for org folder and multibranch indexing events...');
+        LOGGER.debug('listening for org folder and multi-branch indexing events...');
 
         this._sseSubscribeId = sseService.registerHandler(event => this._onSseEvent(event));
         this._sseTimeoutId = setTimeout(() => {
@@ -306,72 +365,20 @@ export default class BbCloudFlowManager extends FlowManager {
             this._finishListening(STATE.STEP_COMPLETE_EVENT_ERROR);
         }
 
-        const pipelineFullName = `${this.selectedRepository.name}`;
         const multiBranchIndexingComplete = event.job_multibranch_indexing_result === 'SUCCESS' &&
-            event.blueocean_job_pipeline_name === pipelineFullName;
+            event.blueocean_job_pipeline_name === this.pipelineName;
 
         if (multiBranchIndexingComplete) {
-            this._checkForSingleRepoCreation(pipelineFullName, multiBranchIndexingComplete, ({ isFound, pipeline }) => {
-                if (isFound) {
-                    this._completeSingleRepo(pipeline);
-                } else {
-                    this._finishListening(STATE.STEP_COMPLETE_MISSING_JENKINSFILE);
-                }
-            });
+            this.savedPipeline = this.pipelineName;
+            LOGGER.info(`creation succeeeded for ${this.pipelineName}`);
+            this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
         }
-    }
-
-    /**
-     * Complete creation process after an individual pipeline was created.
-     * @param pipeline
-     * @private
-     */
-    _completeSingleRepo(pipeline) {
-        this.savedPipeline = pipeline;
-        LOGGER.info(`creation succeeeded for ${pipeline.fullName}`);
-
-        this._incrementPipelineCount();
-        this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
-    }
-
-    /**
-     * Check for creation of a single pipeline within an org folder
-     * @param {string} pipelineName
-     * @param {boolean} multiBranchIndexingComplete
-     * @private
-     */
-    _checkForSingleRepoCreation(pipelineName, multiBranchIndexingComplete, onComplete) {
-        // if the multibranch pipeline has finished indexing,
-        // we can aggressively check for the pipeline's existence to complete creation
-        // if org indexing finished, be more conservative in the delay
-        const delay = multiBranchIndexingComplete ? 500 : 5000;
-
-        if (multiBranchIndexingComplete) {
-            LOGGER.debug(`multibranch indexing for ${pipelineName} completed`);
-        } else {
-            LOGGER.debug('org folder indexing completed but no pipeline has been created (yet?)');
-        }
-
-        LOGGER.debug(`will check for single repo creation of ${pipelineName} in ${delay}ms`);
-
-        setTimeout(() => {
-            this._creationApi.findExistingOrgFolderPipeline(pipelineName)
-                .then(data => {
-                    LOGGER.debug(`check for pipeline complete. created? ${data.isFound}`);
-                    onComplete(data);
-                });
-        }, delay);
     }
 
     _finishListening(stateId) {
         LOGGER.debug('finishListening', stateId);
         this.changeState(stateId);
         this._cleanupListeners();
-    }
-
-    @action
-    _incrementPipelineCount() {
-        this.pipelineCount++;
     }
 
     _onSseTimeout() {

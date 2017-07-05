@@ -69,6 +69,10 @@ export class BbCredentialManager {
         if (response.success) {
             this.credential = response.credential;
             this.stateId = BbCredentialState.SAVE_SUCCESS;
+        } else if (response.code === 401) {
+            this.stateId = BbCredentialState.INVALID_CREDENTIAL;
+        } else {
+            this.stateId = BbCredentialState.UNEXPECTED_ERROR_CREDENTIAL;
         }
 
         return response;

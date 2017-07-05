@@ -6,6 +6,8 @@ import { FormElement, PasswordInput, TextInput } from '@jenkins-cd/design-langua
 import FlowStep from '../../flow2/FlowStep';
 import { BbCredentialState } from '../BbCredentialState';
 import { Button } from '../../github/Button';
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+const t = i18nTranslator('blueocean-dashboard');
 
 @observer
 export default class BbCredentialsStep extends React.Component {
@@ -22,11 +24,40 @@ export default class BbCredentialsStep extends React.Component {
     }
 
     _createCredential() {
+        const valid = this._performValidation();
+        if (!valid) {
+            return;
+        }
         this.props.flowManager.createCredential(this.state.usernameValue, this.state.passwordValue);
     }
 
-    _getErrorMessage() {
+    _getErrorMessage(stateId) {
+        if (stateId === BbCredentialState.INVALID_CREDENTIAL) {
+            return 'Invalid userName and secret';
+        } else if (stateId === BbCredentialState.UNEXPECTED_ERROR_CREDENTIAL) {
+            return 'BitBucket credential validation failed with unexpected error. Please try again';
+        }
         return null;
+    }
+
+    _performValidation() {
+        let result = true;
+        if (!this.state.usernameValue) {
+            this.setState({
+                usernameErrorMsg: t('creation.git.create_credential.username_error'),
+            });
+
+            result = false;
+        }
+
+        if (!this.state.passwordValue) {
+            this.setState({
+                passwordErrorMsg: t('creation.git.create_credential.password_error'),
+            });
+
+            result = false;
+        }
+        return result;
     }
 
     _usernameChange(value) {
@@ -64,7 +95,7 @@ export default class BbCredentialsStep extends React.Component {
     render() {
         const manager = this.props.flowManager.credentialManager;
         const title = 'Connect to BitBucket';
-        const errorMessage = this._getErrorMessage();
+        const errorMessage = this._getErrorMessage(manager.stateId);
 
         const disabled = manager.stateId === BbCredentialState.SAVE_SUCCESS;
 
@@ -85,12 +116,19 @@ export default class BbCredentialsStep extends React.Component {
                 <p className="instructions">
                     Jenkins needs user credential to authorize itself with BitBucket. &nbsp;
                 </p>
-
-                <FormElement errorMessage={errorMessage}>
-                    <TextInput className="text-username" onChange={val => this._usernameChange(val)} />
-                    <PasswordInput className="text-password" onChange={val => this._passwordChange(val)} />
-                    <Button className="button-connect" status={status} onClick={() => this._createCredential()}>Connect</Button>
+                <FormElement
+                    className="credentials-new"
+                    errorMessage={errorMessage}
+                    verticalLayout
+                >
+                    <FormElement title={t('creation.git.create_credential.username_title')} errorMessage={this.state.usernameErrorMsg}>
+                        <TextInput className="text-username" onChange={val => this._usernameChange(val)} />
+                    </FormElement>
+                    <FormElement title={t('creation.git.create_credential.password_title')} errorMessage={this.state.passwordErrorMsg}>
+                        <PasswordInput className="text-password" onChange={val => this._passwordChange(val)} />
+                    </FormElement>
                 </FormElement>
+                <Button className="button-create-credental" status={status} onClick={() => this._createCredential()}>Connect</Button>
             </FlowStep>
         );
     }

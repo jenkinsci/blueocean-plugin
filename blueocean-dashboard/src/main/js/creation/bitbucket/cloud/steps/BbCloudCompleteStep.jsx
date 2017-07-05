@@ -17,8 +17,8 @@ export default class BbCloudCompleteStep extends React.Component {
     }
 
     navigatePipeline() {
-        const { savedPipeline } = this.props.flowManager;
-        const { organization, fullName } = savedPipeline;
+        const { pipeline } = this.props.flowManager;
+        const { organization, fullName } = pipeline;
         const url = buildPipelineUrl(organization, fullName, 'activity');
         this.props.flowManager.completeFlow({ url });
     }
@@ -31,13 +31,9 @@ export default class BbCloudCompleteStep extends React.Component {
         return status;
     }
 
-    _getTitle(state, repo, count) {
-        if (state === STATE.PENDING_CREATION_SAVING) {
-            return 'Creating Pipeline...';
-        } else if (state === STATE.STEP_COMPLETE_SAVING_ERROR) {
+    _getTitle(state, repo) {
+        if (state === STATE.STEP_COMPLETE_SAVING_ERROR) {
             return 'Error Creating Pipeline';
-        } else if (state === STATE.PENDING_CREATION_EVENTS) {
-            return 'Creating Pipeline...';
         } else if (state === STATE.STEP_COMPLETE_EVENT_ERROR) {
             return 'Error Creating Pipeline';
         } else if (state === STATE.STEP_COMPLETE_EVENT_TIMEOUT) {
@@ -45,18 +41,10 @@ export default class BbCloudCompleteStep extends React.Component {
         } else if (state === STATE.STEP_COMPLETE_MISSING_JENKINSFILE) {
             return <span>There are no Jenkinsfiles in <i>{repo.name}</i></span>;
         } else if (state === STATE.STEP_COMPLETE_SUCCESS) {
-            if (count === 0) {
-                return `No Jenkinsfiles found in ${repo.name}`;
-            }
             return 'Completed';
         }
 
         return 'Something Unexpected Happened';
-    }
-
-    _getLoading(state) {
-        return state === STATE.PENDING_CREATION_SAVING ||
-            state === STATE.PENDING_CREATION_EVENTS;
     }
 
     _getError(state) {
@@ -64,8 +52,8 @@ export default class BbCloudCompleteStep extends React.Component {
             state === STATE.STEP_COMPLETE_EVENT_ERROR;
     }
 
-    _getContent(state, repo, count) {
-        const { selectedOrganization, selectedRepository, redirectTimeout } = this.props.flowManager;
+    _getContent(state) {
+        const { redirectTimeout, pipelineName } = this.props.flowManager;
 
         let copy = '';
         let showDashboardLink = false;
@@ -73,12 +61,8 @@ export default class BbCloudCompleteStep extends React.Component {
 
         if (state === STATE.STEP_COMPLETE_SAVING_ERROR) {
             copy = 'An error occurrred while saving this pipeline.';
-        } else if (state === STATE.PENDING_CREATION_EVENTS) {
-            if (count > 0) {
-                setTimeout(() => this.navigatePipeline(), redirectTimeout);
-            }
         } else if (state === STATE.STEP_COMPLETE_EVENT_ERROR) {
-            copy = 'An error occurred while discovering pipelines.';
+            copy = 'An error occurred while creating pipelines.';
             showDashboardLink = true;
         } else if (state === STATE.STEP_COMPLETE_EVENT_TIMEOUT) {
             copy = 'Pipelines are still waiting to be created.';
@@ -104,7 +88,7 @@ export default class BbCloudCompleteStep extends React.Component {
                 { showCreateLink &&
                 <div>
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.create.missing.jenkinsfile"
-                                         organization={'jenkins'} fullName={selectedOrganization.name + '/' + selectedRepository.name}
+                                         organization={'jenkins'} fullName={pipelineName}
                     />
                 </div>
                 }
@@ -115,18 +99,16 @@ export default class BbCloudCompleteStep extends React.Component {
     render() {
         const { flowManager } = this.props;
         const status = this._getStatus(flowManager.stateId, this.props.status);
-        const loading = this._getLoading(flowManager.stateId);
         const error = this._getError(flowManager.stateId);
-        const title = this._getTitle(flowManager.stateId, flowManager.selectedAutoDiscover, flowManager.selectedRepository, flowManager.pipelineCount);
-        const content = this._getContent(flowManager.stateId, flowManager.selectedAutoDiscover, flowManager.selectedRepository, flowManager.pipelineCount);
+        const title = this._getTitle(flowManager.stateId, flowManager.selectedRepository);
+        const content = this._getContent(flowManager.stateId);
 
         return (
-            <FlowStep {...this.props} className="github-complete-step" title={title} status={status} loading={loading} error={error}>
+            <FlowStep {...this.props} className="github-complete-step" title={title} status={status} error={error}>
                 {content}
             </FlowStep>
         );
     }
-
 }
 
 BbCloudCompleteStep.propTypes = {

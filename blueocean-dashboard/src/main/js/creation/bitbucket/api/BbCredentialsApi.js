@@ -49,10 +49,11 @@ export class BbCredentialsApi {
     }
 
     __createCredentialFailure(error) {
-        const { message } = error.responseBody;
+        const { code, message } = error.responseBody;
 
         return {
             success: false,
+            code,
             message,
         };
     }
