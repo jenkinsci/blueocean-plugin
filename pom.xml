@@ -357,7 +357,7 @@
             <artifactId>workflow-basic-steps</artifactId>
             <version>2.6</version>
         </dependency>
-        
+
         <!--
             workflow-scm-step >= 2.6 requires a Jenkins core >= 2.60.
             Do not upgrade this dependency without a discussion on jenkinsci-ux@googlegroups.com
@@ -523,10 +523,12 @@
             <version>3.0.0</version>
         </dependency>
 
+        <!-- Included in core -->
         <dependency>
             <groupId>org.jenkins-ci.modules</groupId>
             <artifactId>instance-identity</artifactId>
             <version>2.1</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
