@@ -4,7 +4,6 @@ import hudson.Extension;
 import hudson.init.Initializer;
 import hudson.util.PluginServletFilter;
 import io.jenkins.blueocean.auth.jwt.JwtTokenVerifier;
-import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
@@ -94,7 +93,7 @@ public class JwtAuthenticationFilter implements Filter {
      * Returns true for requests that JWT token processing should apply.
      */
     protected boolean shouldApply(HttpServletRequest req) {
-        if (!BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION)
+        if (!Boolean.getBoolean("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION"))
             return false;
 
         String path = req.getRequestURI().substring(req.getContextPath().length());
