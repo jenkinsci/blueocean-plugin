@@ -73,7 +73,7 @@ public abstract class GithubMockBase extends PipelineBaseTest {
         githubApi.stubFor(
                 WireMock.get(urlMatching(".*")).atPriority(10).willReturn(aResponse().proxiedFrom("https://api.github.com/")));
 
-        this.user = login("vivek", "Vivek Pandey", "vivek.pandey@gmail.com");
+        this.user = login();
         this.githubApiUrl = String.format("http://localhost:%s",githubApi.port());
         System.setProperty(GITHUB_API_URL_PROPERTY, githubApiUrl);
     }

@@ -87,6 +87,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
         OrganizationFolder orgFolder = mockOrgFolder(user, aliceCredentialId);
 
         try {
+            //Bob trying to access content but his credential is not setup so should fail
             new GithubScmContentProvider().getContent(staplerRequest, orgFolder);
         }catch (ServiceException.PreconditionRequired e){
             assertEquals("Can't access content from github: no credential found", e.getMessage());
@@ -110,6 +111,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
         MultiBranchProject mbp = mockMbp(organizationFolder, aliceCredentialId);
 
         try {
+            //Bob trying to access content but his credential is not setup so should fail
             new GithubScmContentProvider().getContent(staplerRequest, mbp);
         }catch (ServiceException.PreconditionRequired e){
             assertEquals("Can't access content from github: no credential found", e.getMessage());
@@ -182,6 +184,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
         when(staplerRequest.getReader()).thenReturn(new BufferedReader(new StringReader(request), request.length()));
         try {
+            //Bob trying to access content but his credential is not setup so should fail
             new GithubScmContentProvider().saveContent(staplerRequest, orgFolder);
         }catch (ServiceException.PreconditionRequired e){
             assertEquals("Can't access content from github: no credential found", e.getMessage());
@@ -258,6 +261,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
         when(staplerRequest.getReader()).thenReturn(new BufferedReader(new StringReader(request), request.length()));
 
         try {
+            //Bob trying to access content but his credential is not setup so should fail
             new GithubScmContentProvider().saveContent(staplerRequest, mbp);
         }catch (ServiceException.PreconditionRequired e){
             assertEquals("Can't access content from github: no credential found", e.getMessage());
