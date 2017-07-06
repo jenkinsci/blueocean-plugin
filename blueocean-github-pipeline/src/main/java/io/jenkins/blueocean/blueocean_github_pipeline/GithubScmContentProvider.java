@@ -1,22 +1,27 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
-import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
+import com.google.common.base.Preconditions;
 import hudson.Extension;
 import hudson.model.Item;
+import hudson.model.User;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.credential.CredentialsUtils;
+import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.ScmContentProvider;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
 import jenkins.scm.api.SCMFile;
 import jenkins.scm.api.SCMNavigator;
 import jenkins.scm.api.SCMSource;
-import jenkins.scm.api.SCMSourceOwner;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
-import org.jenkinsci.plugins.github_branch_source.Connector;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.kohsuke.stapler.StaplerRequest;
@@ -67,6 +72,8 @@ public class GithubScmContentProvider extends ScmContentProvider {
                     new ErrorMessage(400, "Failed to load scm file").addAll(errors));
         }
 
+        StandardUsernamePasswordCredentials credentials = getCredentialForUser(item);
+        String accessToken = credentials.getPassword().getPlainText();
         ScmParamsFromItem scmParamsFromItem = new ScmParamsFromItem(item);
 
         //if no repo param, then see if its there in given Item.
@@ -95,7 +102,7 @@ public class GithubScmContentProvider extends ScmContentProvider {
         }
         try {
             Map ghContent = HttpRequest.get(url)
-                    .withAuthorization("token " + scmParamsFromItem.accessToken)
+                    .withAuthorization("token " + accessToken)
                     .to(Map.class);
 
             if(ghContent == null){
@@ -143,8 +150,6 @@ public class GithubScmContentProvider extends ScmContentProvider {
         String apiUrl = GithubScm.DEFAULT_API_URI;
         String owner = null;
         String repo = null;
-        String accessToken = null;
-        String credentialId = null;
         if (item instanceof OrganizationFolder) {
             List<SCMNavigator> navigators = ((OrganizationFolder) item).getSCMNavigators();
             if (!navigators.isEmpty() && navigators.get(0) instanceof GitHubSCMNavigator) {
@@ -152,7 +157,6 @@ public class GithubScmContentProvider extends ScmContentProvider {
                 if (navigator.getApiUri() != null) {
                     apiUrl = navigator.getApiUri();
                 }
-                credentialId = navigator.getScanCredentialsId();
                 owner = navigator.getRepoOwner();
             }
         } else if (item instanceof MultiBranchProject) {
@@ -162,19 +166,12 @@ public class GithubScmContentProvider extends ScmContentProvider {
                 if (source.getApiUri() != null) {
                     apiUrl = source.getApiUri();
                 }
-                credentialId = source.getScanCredentialsId();
                 owner = owner(source);
                 repo = repo(source);
             }
         }
-        if (credentialId != null) {
-            StandardCredentials credentials = Connector.lookupScanCredentials((SCMSourceOwner) item, apiUrl, credentialId);
-            if (credentials instanceof StandardUsernamePasswordCredentials) {
-                accessToken = ((StandardUsernamePasswordCredentials) credentials).getPassword().getPlainText();
-            } else {
-                throw new ServiceException.BadRequestException("accessToken not found in pipeline: " + item.getFullName());
-            }
-        }
+        StandardUsernamePasswordCredentials credentials = getCredentialForUser(item);
+        String accessToken = credentials.getPassword().getPlainText();
         return githubRequest.save(apiUrl, owner, repo, accessToken);
     }
 
@@ -221,14 +218,11 @@ public class GithubScmContentProvider extends ScmContentProvider {
         private final String apiUrl;
         private final String owner;
         private final String repo;
-        private final String accessToken;
 
         public ScmParamsFromItem(Item item) {
             String apiUrl = null;
             String owner=null;
             String repo = null;
-            String accessToken = null;
-            String credentialId = null;
             if (item instanceof OrganizationFolder) {
                 List<SCMNavigator> navigators = ((OrganizationFolder) item).getSCMNavigators();
                 if (!navigators.isEmpty() && navigators.get(0) instanceof GitHubSCMNavigator) {
@@ -236,7 +230,6 @@ public class GithubScmContentProvider extends ScmContentProvider {
                     if (navigator.getApiUri() != null) {
                         apiUrl = navigator.getApiUri();
                     }
-                    credentialId = navigator.getScanCredentialsId();
                     owner = navigator.getRepoOwner();
                 }
             } else if (item instanceof MultiBranchProject) {
@@ -246,33 +239,44 @@ public class GithubScmContentProvider extends ScmContentProvider {
                     if (source.getApiUri() != null) {
                         apiUrl = source.getApiUri();
                     }
-                    credentialId = source.getScanCredentialsId();
                     owner = owner(source);
                     repo = repo(source);
                 }
             }
             this.apiUrl = apiUrl == null ? GithubScm.DEFAULT_API_URI : apiUrl;
 
-            if (credentialId != null) {
-                StandardCredentials credentials = Connector.lookupScanCredentials((SCMSourceOwner) item, this.apiUrl, credentialId);
-                if (credentials instanceof StandardUsernamePasswordCredentials) {
-                    accessToken = ((StandardUsernamePasswordCredentials) credentials).getPassword().getPlainText();
-                } else {
-                    throw new ServiceException.BadRequestException("accessToken not found in pipeline: " + item.getFullName());
-                }
-            }
+
             if(owner == null){
                 throw new ServiceException.BadRequestException(
                         String.format("Pipeline %s is not configured with github source correctly, no github user/org found", item.getFullName()));
             }
-            if(accessToken == null){
-                throw new ServiceException.BadRequestException(
-                        String.format("Pipeline %s is not configured with github source correctly, no credentials with github accessToken found", item.getFullName()));
-            }
             this.owner = owner;
             this.repo = repo;
-            this.accessToken = accessToken;
         }
+    }
+
+    private StandardUsernamePasswordCredentials getCredentialForUser(final Item item){
+        User user = User.current();
+        if(user == null){ //ensure this session has authenticated user
+            throw new ServiceException.UnauthorizedException("No logged in user found");
+        }
+        //get credential for this user
+        GithubScm scm = new GithubScm(new Reachable() {
+            @Override
+            public Link getLink() {
+                BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(item);
+                Preconditions.checkNotNull(organization);
+                return organization.getLink().rel("scm");
+            }
+        });
+
+        //pick up github credential from user's store
+        StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(scm.getId(), StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+
+        if(githubCredential == null){
+            throw new ServiceException.PreconditionRequired("Can't access content from github: no credential found");
+        }
+        return githubCredential;
     }
 }
 

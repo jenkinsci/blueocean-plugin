@@ -5,7 +5,10 @@ import com.cloudbees.hudson.plugins.folder.AbstractFolderPropertyDescriptor;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.collect.Lists;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import hudson.model.User;
+import hudson.tasks.Mailer;
 import hudson.util.DescribableList;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
@@ -28,6 +31,7 @@ import java.io.IOException;
 import java.io.StringReader;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
 import static org.powermock.api.mockito.PowerMockito.*;
 
 /**
@@ -40,11 +44,11 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void getContentForOrgFolder() throws UnirestException {
-        String credentialId = CreateGithubCredential();
+        String credentialId = createGithubCredential();
 
         StaplerRequest staplerRequest = mockStapler();
 
-        OrganizationFolder orgFolder = mockOrgFolder(credentialId);
+        OrganizationFolder orgFolder = mockOrgFolder(user, credentialId);
 
         GithubFile content = (GithubFile) new GithubScmContentProvider().getContent(staplerRequest, orgFolder);
         assertEquals("Jenkinsfile", content.getContent().getName());
@@ -55,11 +59,11 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void getContentForMbp() throws UnirestException {
-        String credentialId = CreateGithubCredential();
+        String credentialId = createGithubCredential();
 
         StaplerRequest staplerRequest = mockStapler();
 
-        OrganizationFolder organizationFolder = mockOrgFolder(credentialId);
+        OrganizationFolder organizationFolder = mockOrgFolder(user, credentialId);
 
         MultiBranchProject mbp = mockMbp(organizationFolder, credentialId);
 
@@ -71,8 +75,52 @@ public class GithubScmContentProviderTest extends GithubMockBase{
     }
 
     @Test
+    public void unauthorizedAccessToContentForOrgFolderShouldFail() throws UnirestException, IOException {
+        User alice = j.jenkins.getUser("alice");
+        alice.setFullName("Alice Cooper");
+        alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
+
+        String aliceCredentialId = createGithubCredential(alice);
+
+        StaplerRequest staplerRequest = mockStapler();
+
+        OrganizationFolder orgFolder = mockOrgFolder(user, aliceCredentialId);
+
+        try {
+            new GithubScmContentProvider().getContent(staplerRequest, orgFolder);
+        }catch (ServiceException.PreconditionRequired e){
+            assertEquals("Can't access content from github: no credential found", e.getMessage());
+            return;
+        }
+        fail("Should have failed with PreConditionException");
+    }
+
+    @Test
+    public void unauthorizedAccessToContentForMbpShouldFail() throws UnirestException, IOException {
+        User alice = j.jenkins.getUser("alice");
+        alice.setFullName("Alice Cooper");
+        alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
+
+        String aliceCredentialId = createGithubCredential(alice);
+
+        StaplerRequest staplerRequest = mockStapler();
+
+        OrganizationFolder organizationFolder = mockOrgFolder(alice, aliceCredentialId);
+
+        MultiBranchProject mbp = mockMbp(organizationFolder, aliceCredentialId);
+
+        try {
+            new GithubScmContentProvider().getContent(staplerRequest, mbp);
+        }catch (ServiceException.PreconditionRequired e){
+            assertEquals("Can't access content from github: no credential found", e.getMessage());
+            return;
+        }
+        fail("Should have failed with PreConditionException");
+    }
+
+    @Test
     public void saveContentToOrgFolder() throws UnirestException, IOException {
-        String credentialId = CreateGithubCredential();
+        String credentialId = createGithubCredential();
 
         StaplerRequest staplerRequest = mockStapler();
 
@@ -81,7 +129,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
         when(staplerRequest.bindJSON(Mockito.eq(GithubScmSaveFileRequest.class), Mockito.any(JSONObject.class))).thenReturn(new GithubScmSaveFileRequest(content));
 
-        OrganizationFolder orgFolder = mockOrgFolder(credentialId);
+        OrganizationFolder orgFolder = mockOrgFolder(user, credentialId);
 
         String request = "{\n" +
                 "  \"content\" : {\n" +
@@ -104,8 +152,13 @@ public class GithubScmContentProviderTest extends GithubMockBase{
     }
 
     @Test
-    public void saveContentToMbp() throws UnirestException, IOException {
-        String credentialId = CreateGithubCredential();
+    public void unauthorizedSaveContentToOrgFolderShouldFail() throws UnirestException, IOException {
+        User alice = j.jenkins.getUser("alice");
+        alice.setFullName("Alice Cooper");
+        alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
+
+        String aliceCredentialId = createGithubCredential(alice);
+
 
         StaplerRequest staplerRequest = mockStapler();
 
@@ -114,7 +167,41 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
         when(staplerRequest.bindJSON(Mockito.eq(GithubScmSaveFileRequest.class), Mockito.any(JSONObject.class))).thenReturn(new GithubScmSaveFileRequest(content));
 
-        OrganizationFolder orgFolder = mockOrgFolder(credentialId);
+        OrganizationFolder orgFolder = mockOrgFolder(user, aliceCredentialId);
+
+        String request = "{\n" +
+                "  \"content\" : {\n" +
+                "    \"message\" : \"first commit\",\n" +
+                "    \"path\" : \"Jenkinsfile\",\n" +
+                "    \"branch\" : \"test1\",\n" +
+                "    \"repo\" : \"PR-demo\",\n" +
+                "    \"sha\" : \"e23b8ef5c2c4244889bf94db6c05cc08ea138aef\",\n" +
+                "    \"base64Data\" : "+"\"c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n\""+
+                "  }\n" +
+                "}";
+
+        when(staplerRequest.getReader()).thenReturn(new BufferedReader(new StringReader(request), request.length()));
+        try {
+            new GithubScmContentProvider().saveContent(staplerRequest, orgFolder);
+        }catch (ServiceException.PreconditionRequired e){
+            assertEquals("Can't access content from github: no credential found", e.getMessage());
+            return;
+        }
+        fail("Should have failed with PreConditionException");
+    }
+
+    @Test
+    public void saveContentToMbp() throws UnirestException, IOException {
+        String credentialId = createGithubCredential();
+
+        StaplerRequest staplerRequest = mockStapler();
+
+        GithubContent content = new GithubContent.Builder().autoCreateBranch(true).base64Data("c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n")
+                .branch("test1").message("another commit").owner("cloudbeers").path("Jankinsfile").repo("PR-demo").sha("e23b8ef5c2c4244889bf94db6c05cc08ea138aef").build();
+
+        when(staplerRequest.bindJSON(Mockito.eq(GithubScmSaveFileRequest.class), Mockito.any(JSONObject.class))).thenReturn(new GithubScmSaveFileRequest(content));
+
+        OrganizationFolder orgFolder = mockOrgFolder(user, credentialId);
 
         MultiBranchProject mbp = mockMbp(orgFolder, credentialId);
 
@@ -139,8 +226,49 @@ public class GithubScmContentProviderTest extends GithubMockBase{
     }
 
     @Test
+    public void unauthorizedSaveContentToMbpShouldFail() throws UnirestException, IOException {
+        User alice = j.jenkins.getUser("alice");
+        alice.setFullName("Alice Cooper");
+        alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
+
+        String aliceCredentialId = createGithubCredential(alice);
+
+        StaplerRequest staplerRequest = mockStapler();
+
+        GithubContent content = new GithubContent.Builder().autoCreateBranch(true).base64Data("c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n")
+                .branch("test1").message("another commit").owner("cloudbeers").path("Jankinsfile").repo("PR-demo").sha("e23b8ef5c2c4244889bf94db6c05cc08ea138aef").build();
+
+        when(staplerRequest.bindJSON(Mockito.eq(GithubScmSaveFileRequest.class), Mockito.any(JSONObject.class))).thenReturn(new GithubScmSaveFileRequest(content));
+
+        OrganizationFolder orgFolder = mockOrgFolder(user, aliceCredentialId);
+
+        MultiBranchProject mbp = mockMbp(orgFolder, aliceCredentialId);
+
+        String request = "{\n" +
+                "  \"content\" : {\n" +
+                "    \"message\" : \"first commit\",\n" +
+                "    \"path\" : \"Jenkinsfile\",\n" +
+                "    \"branch\" : \"test1\",\n" +
+                "    \"repo\" : \"PR-demo\",\n" +
+                "    \"sha\" : \"e23b8ef5c2c4244889bf94db6c05cc08ea138aef\",\n" +
+                "    \"base64Data\" : "+"\"c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n\""+
+                "  }\n" +
+                "}";
+
+        when(staplerRequest.getReader()).thenReturn(new BufferedReader(new StringReader(request), request.length()));
+
+        try {
+            new GithubScmContentProvider().saveContent(staplerRequest, mbp);
+        }catch (ServiceException.PreconditionRequired e){
+            assertEquals("Can't access content from github: no credential found", e.getMessage());
+            return;
+        }
+        fail("Should have failed with PreConditionException");
+    }
+
+    @Test
     public void saveContentToMbpMissingBranch() throws UnirestException, IOException {
-        String credentialId = CreateGithubCredential();
+        String credentialId = createGithubCredential();
 
         StaplerRequest staplerRequest = mockStapler();
 
@@ -149,7 +277,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
         when(staplerRequest.bindJSON(Mockito.eq(GithubScmSaveFileRequest.class), Mockito.any(JSONObject.class))).thenReturn(new GithubScmSaveFileRequest(content));
 
-        OrganizationFolder orgFolder = mockOrgFolder(credentialId);
+        OrganizationFolder orgFolder = mockOrgFolder(user, credentialId);
 
         MultiBranchProject mbp = mockMbp(orgFolder, credentialId);
 
@@ -183,7 +311,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
         return staplerRequest;
     }
 
-    private OrganizationFolder mockOrgFolder(String credentialId){
+    private OrganizationFolder mockOrgFolder(User user, String credentialId){
 
         OrganizationFolder orgFolder = mock(OrganizationFolder.class);
 
@@ -204,6 +332,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
                 BlueOceanCredentialsProvider.createDomain(githubApiUrl)
         ));
         when(orgFolder.getProperties()).thenReturn(properties);
+        when(orgFolder.getParent()).thenReturn(j.jenkins);
         Domain domain = mock(Domain.class);
         when(domain.getName()).thenReturn(GithubScm.DOMAIN_NAME);
         when(folderProperty.getDomain()).thenReturn(domain);

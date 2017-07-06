@@ -78,7 +78,11 @@ public abstract class GithubMockBase extends PipelineBaseTest {
         System.setProperty(GITHUB_API_URL_PROPERTY, githubApiUrl);
     }
 
-    protected String CreateGithubCredential() throws UnirestException {
+    protected String createGithubCredential() throws UnirestException {
+        return createGithubCredential(this.user);
+    }
+
+    protected String createGithubCredential(User user) throws UnirestException {
         Map r = new RequestBuilder(baseUrl)
                 .data(ImmutableMap.of("accessToken", accessToken))
                 .status(200)
