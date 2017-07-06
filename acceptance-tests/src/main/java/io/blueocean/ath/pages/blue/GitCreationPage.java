@@ -7,6 +7,8 @@ import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.factory.PipelineFactory;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.model.Pipeline;
+import io.blueocean.ath.sse.SSEClientRule;
+import io.blueocean.ath.sse.SSEEvents;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
@@ -47,7 +49,7 @@ public class GitCreationPage {
         return this;
     }
 
-    public MultiBranchPipeline createPipeline(String pipelineName, String url, String sshPrivateKey, String user, String pass) throws IOException {
+    public MultiBranchPipeline createPipeline(SSEClientRule sseCLient, String pipelineName, String url, String sshPrivateKey, String user, String pass) throws IOException {
         jobApi.deletePipeline(pipelineName);
         dashboardPage.clickNewPipelineBtn();
         clickGitCreationOption();
@@ -74,8 +76,9 @@ public class GitCreationPage {
 
         MultiBranchPipeline pipeline = multiBranchPipelineFactory.pipeline(pipelineName);
         wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity"), 30000);
+        sseCLient.untilEvents(SSEEvents.activityComplete(pipeline.getName()));
         driver.navigate().refresh();
-        pipeline.getActivityPage().checkUrl();`
+        pipeline.getActivityPage().checkUrl();
         return pipeline;
     }
 }
