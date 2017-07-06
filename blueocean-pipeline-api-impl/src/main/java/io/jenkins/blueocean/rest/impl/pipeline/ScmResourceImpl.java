@@ -30,7 +30,7 @@ public class ScmResourceImpl extends BluePipelineScm {
         this.item = item;
         this.branchJob = branchJob;
         this.self = parent.getLink().rel("scm");
-        User user = checkPermission();
+        checkPermission();
     }
 
     @Override

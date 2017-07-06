@@ -53,7 +53,7 @@ public class PipelineScmTest extends PipelineBaseTest {
     }
     
     @Test
-    public void AuthorizedUserContentAccessShouldSucceed() throws IOException, ExecutionException, InterruptedException, UnirestException {
+    public void authorizedUserContentAccessShouldSucceed() throws IOException, ExecutionException, InterruptedException, UnirestException {
         WorkflowMultiBranchProject mp = j.createProject(WorkflowMultiBranchProject.class, "mbp");
         mp.setDisplayName("My MBP");
 

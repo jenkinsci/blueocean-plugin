@@ -154,8 +154,9 @@ public class GithubScmContentProvider extends ScmContentProvider {
             List<SCMNavigator> navigators = ((OrganizationFolder) item).getSCMNavigators();
             if (!navigators.isEmpty() && navigators.get(0) instanceof GitHubSCMNavigator) {
                 GitHubSCMNavigator navigator = (GitHubSCMNavigator) navigators.get(0);
-                if (navigator.getApiUri() != null) {
-                    apiUrl = navigator.getApiUri();
+                String url = navigator.getApiUri();
+                if (url != null) {
+                    apiUrl = url;
                 }
                 owner = navigator.getRepoOwner();
             }
@@ -163,8 +164,9 @@ public class GithubScmContentProvider extends ScmContentProvider {
             List<SCMSource> sources = ((MultiBranchProject) item).getSCMSources();
             if (!sources.isEmpty() && sources.get(0) instanceof GitHubSCMSource) {
                 GitHubSCMSource source = (GitHubSCMSource) sources.get(0);
-                if (source.getApiUri() != null) {
-                    apiUrl = source.getApiUri();
+                String url = source.getApiUri();
+                if (url != null) {
+                    apiUrl = url;
                 }
                 owner = owner(source);
                 repo = repo(source);
