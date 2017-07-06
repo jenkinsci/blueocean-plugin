@@ -49,21 +49,8 @@
 }
 
 .changeset-table {
-    th {
-        width: 100px;
-    }
-
-    .author {
-        width: 150px;
-    }
-
-    .message {
-        width: 100%;
-    }
-
-    .date {
-        width: 125px;
-    }
+    margin-left:auto;
+    margin-right:auto;
 }
 
 .artifacts-table {
@@ -182,15 +169,14 @@ code div a.btn-secondary.inverse:hover{
     background-color: @pre-color-hover;
 }
 
-.jdl-table {
-    td.multipleLines {
-        white-space: pre-wrap;
-    }
-}
+.JTable-cell.multipleLines {
 
-.changeset-table {
-    td {
-        vertical-align: top;
+    height:auto;
+    padding-top: 16px;
+    padding-bottom: 16px;
+
+    .JTable-cell-contents {
+        white-space: pre-wrap;
     }
 }
 
@@ -279,7 +265,7 @@ code div a.btn-secondary.inverse:hover{
 
 // FIXME: Remove this once all <table> usages are converted
 .u-table-lr-indents {
-    .cell-link, 
+    .cell-link,
     td, th {
         &:first-child {
             padding-left: 1rem;
