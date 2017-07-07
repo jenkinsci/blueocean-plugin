@@ -113,8 +113,11 @@ export default class RunDetailsArtifacts extends Component {
                         <FileSize bytes={artifact.size} />
                     </TableCell>
                     <TableCell className="TableCell--actions">
-                        <a target="_blank" download={fileName} title={downloadLabel} href={`${rootURL}${artifact.url}`}>
-                            <Icon style={style} className="action-button-colors" icon="file_download" />
+                        <a target="_blank"
+                           className="action-button-colors"
+                           download={fileName} title={downloadLabel}
+                           href={`${rootURL}${artifact.url}`}>
+                            <Icon icon="file_download" />
                         </a>
                     </TableCell>
                 </TableRow>
@@ -137,8 +140,8 @@ export default class RunDetailsArtifacts extends Component {
                         </TableCell>
                         <TableCell>-</TableCell>
                         <TableCell className="TableCell--actions">
-                            <a target="_blank" title={downloadLabel} href={logDownloadURL}>
-                                <Icon style={style} icon="file_download" />
+                            <a target="_blank" className="action-button-colors" title={downloadLabel} href={logDownloadURL}>
+                                <Icon icon="file_download" />
                             </a>
                         </TableCell>
                     </TableRow>
