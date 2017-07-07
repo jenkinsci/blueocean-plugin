@@ -47,7 +47,7 @@ public class GitCreationTest extends BaseTest{
 
     @Inject @Rule
     public SSEClientRule sseClient;
-    
+
     @Test
     public void testHttpsPrivateRepository() throws IOException, GitAPIException, URISyntaxException {
         String gitUrl = liveProperties.getProperty("git.https.repository");
@@ -58,6 +58,8 @@ public class GitCreationTest extends BaseTest{
         Assert.assertNotNull(user);
         Assert.assertNotNull(pass);
         Assert.assertNotNull(pipelineName);
+        logger.info("PipelineNameHttps: " + pipelineName);
+        logger.info("git repo - " + gitUrl);
         Pipeline pipeline = gitCreationPage.createPipeline(sseClient, pipelineName, gitUrl, null, user, pass);
         pipeline.getActivityPage().testNumberRunsComplete(1);
     }
