@@ -11,6 +11,7 @@ import io.blueocean.ath.pages.blue.DashboardPage;
 import io.blueocean.ath.pages.blue.GitCreationPage;
 import io.blueocean.ath.sse.SSEClientRule;
 import org.apache.commons.io.IOUtils;
+import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.Assert;
 import org.junit.Ignore;
@@ -31,6 +32,7 @@ import java.util.Properties;
 @Login
 @RunWith(ATHJUnitRunner.class)
 public class GitCreationTest extends BaseTest{
+    private Logger logger = Logger.getLogger(GitCreationTest.class);
 
     @Inject @Named("live")
     Properties liveProperties;
@@ -54,7 +56,8 @@ public class GitCreationTest extends BaseTest{
         Assert.assertNotNull(gitUrl);
         Assert.assertNotNull(privateKeyFile);
         Assert.assertNotNull(pipelineName);
-
+        logger.info("PipelineName: " + pipelineName);
+        logger.info("git repo - " + gitUrl);
         String key = IOUtils.toString(new FileInputStream(privateKeyFile));
 
         MultiBranchPipeline pipeline = gitCreationPage.createPipeline(sseClient, pipelineName, gitUrl, key, null, null);
