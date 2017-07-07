@@ -47,6 +47,20 @@ public class GitCreationTest extends BaseTest{
 
     @Inject @Rule
     public SSEClientRule sseClient;
+    
+    @Test
+    public void testHttpsPrivateRepository() throws IOException, GitAPIException, URISyntaxException {
+        String gitUrl = liveProperties.getProperty("git.https.repository");
+        String user = liveProperties.getProperty("git.https.user");
+        String pass = liveProperties.getProperty("git.https.pass");
+        String pipelineName = liveProperties.getProperty("git.https.pipelineName");
+        Assert.assertNotNull(gitUrl);
+        Assert.assertNotNull(user);
+        Assert.assertNotNull(pass);
+        Assert.assertNotNull(pipelineName);
+        Pipeline pipeline = gitCreationPage.createPipeline(sseClient, pipelineName, gitUrl, null, user, pass);
+        pipeline.getActivityPage().testNumberRunsComplete(1);
+    }
 
     @Test
     public void testSSHPrivateRepostory() throws IOException, GitAPIException, URISyntaxException {
@@ -64,17 +78,5 @@ public class GitCreationTest extends BaseTest{
         pipeline.getActivityPage().testNumberRunsComplete(1);
     }
 
-    @Test
-    public void testHttpsPrivateRepository() throws IOException, GitAPIException, URISyntaxException {
-        String gitUrl = liveProperties.getProperty("git.https.repository");
-        String user = liveProperties.getProperty("git.https.user");
-        String pass = liveProperties.getProperty("git.https.pass");
-        String pipelineName = liveProperties.getProperty("git.https.pipelineName");
-        Assert.assertNotNull(gitUrl);
-        Assert.assertNotNull(user);
-        Assert.assertNotNull(pass);
-        Assert.assertNotNull(pipelineName);
-        Pipeline pipeline = gitCreationPage.createPipeline(sseClient, pipelineName, gitUrl, null, user, pass);
-        pipeline.getActivityPage().testNumberRunsComplete(1);
-    }
+
 }
