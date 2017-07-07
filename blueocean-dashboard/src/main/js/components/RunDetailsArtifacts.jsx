@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { FileSize, Table } from '@jenkins-cd/design-language';
+import { FileSize, JTable, TableRow, TableCell, TableHeaderRow } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/react-material-icons';
 import { observer } from 'mobx-react';
 import mobxUtils from 'mobx-utils';
@@ -61,7 +61,7 @@ export default class RunDetailsArtifacts extends Component {
     }
 
     componentWillUnmount() {
-        this.artifacts = null;
+        this.artifactsPromisePromise = null;
     }
 
     _fetchArtifacts(props) {
@@ -69,86 +69,86 @@ export default class RunDetailsArtifacts extends Component {
         if (!result) {
             return;
         }
-        this.artifacts = this.context.activityService.fetchArtifacts(result._links.self.href);
+        this.artifactsPromise = this.context.activityService.fetchArtifacts(result._links.self.href);
     }
 
     render() {
         const { result, t } = this.props;
 
-        if (!result || !this.artifacts) {
+        const promise = this.artifactsPromise;
+        if (!result || !promise || promise.state === mobxUtils.PENDING || promise.state === mobxUtils.REJECTED) {
             return null;
         }
-        switch (this.artifacts.state) {
-        case mobxUtils.PENDING: return null; // <div>Loading</div>;
-        case mobxUtils.REJECTED: return null; // <div>Not found</div>;
-        default:
-        }
-        const { artifactsZipFile: zipFile } = result;
-        const artifacts = this.artifacts.value;
 
-        const headers = [
-            { label: t('rundetail.artifacts.header.name', { defaultValue: 'Name' }), className: 'name' },
-            { label: t('rundetail.artifacts.header.size', { defaultValue: 'Size' }), className: 'size' },
-            { label: '', className: 'actions' },
+        const { artifactsZipFile: zipFile } = result;
+        const artifacts = promise.value;
+
+        const nameLabel = t('rundetail.artifacts.header.name', { defaultValue: 'Name' });
+        const sizeLabel = t('rundetail.artifacts.header.size', { defaultValue: 'Size' });
+        const downloadLabel = t('rundetail.artifacts.button.download', { defaultValue: 'Download the artifact' });
+        const openLabel = t('rundetail.artifacts.button.open', { defaultValue: 'Open the artifact' });
+
+        const columns = [
+            JTable.column(500, nameLabel, true),
+            JTable.column(120, sizeLabel),
+            JTable.column(50, ''),
         ];
 
         const style = { fill: '#4a4a4a' };
+
+        const rootURL = UrlConfig.getJenkinsRootURL();
 
         const artifactsRendered = artifacts.map(artifact => {
             const urlArray = artifact.url.split('/');
             const fileName = urlArray[urlArray.length - 1];
             logger.debug('artifact - url:', artifact.url, 'artifact - fileName:', fileName);
             return (
-                <tr key={artifact.url}>
-                    <td>
-                        <a target="_blank" title={t('rundetail.artifacts.button.open', { defaultValue: 'Open the artifact' })} href={`${UrlConfig.getJenkinsRootURL()}${artifact.url}`}>
+                <TableRow key={artifact.url}>
+                    <TableCell>
+                        <a target="_blank" title={openLabel} href={`${rootURL}${artifact.url}`}>
                             {artifact.path}
                         </a>
-                    </td>
-                    <td>
+                    </TableCell>
+                    <TableCell>
                         <FileSize bytes={artifact.size} />
-                    </td>
-                    <td className="download">
-                        <a target="_blank" download={fileName} title={t('rundetail.artifacts.button.download', { defaultValue: 'Download the artifact' })} href={`${UrlConfig.getJenkinsRootURL()}${artifact.url}`}>
-                            <Icon style={style} icon="file_download" />
+                    </TableCell>
+                    <TableCell className="TableCell--actions">
+                        <a target="_blank" download={fileName} title={downloadLabel} href={`${rootURL}${artifact.url}`}>
+                            <Icon style={style} className="action-button-colors" icon="file_download" />
                         </a>
-                    </td>
-                </tr>
+                    </TableCell>
+                </TableRow>
             );
         });
+
+        const logOpenURL = `${rootURL}${result._links.self.href}log/?start=0`;
+        const logDownloadURL = `${rootURL}${result._links.self.href}log/?start=0&download=true`;
 
         return (
             <div>
                 { artifacts.length > 100 && <ArtifactListingLimited t={t} /> }
-                <Table headers={headers} className="artifacts-table">
-                    <tr>
-                        <td>
-                            <a target="_blank"
-                                title={t('rundetail.artifacts.button.open', { defaultValue: 'Open the artifact' })}
-                                href={`${UrlConfig.getJenkinsRootURL()}${result._links.self.href}log/?start=0`}
-                            >
+                <JTable columns={columns} className="artifacts-table">
+                    <TableHeaderRow />
+                    <TableRow>
+                        <TableCell>
+                            <a target="_blank" title={openLabel} href={logOpenURL}>
                                 pipeline.log
                             </a>
-                        </td>
-                        <td>-</td>
-                        <td className="download">
-                            <a target="_blank"
-                                title={t('rundetail.artifacts.button.download', { defaultValue: 'Download the artifact' })}
-                                href={`${UrlConfig.getJenkinsRootURL()}${result._links.self.href}log/?start=0&download=true`}
-                            >
+                        </TableCell>
+                        <TableCell>-</TableCell>
+                        <TableCell className="TableCell--actions">
+                            <a target="_blank" title={downloadLabel} href={logDownloadURL}>
                                 <Icon style={style} icon="file_download" />
                             </a>
-                        </td>
-                    </tr>
+                        </TableCell>
+                    </TableRow>
                     { artifactsRendered }
-                    <td colSpan="3"></td>
-                </Table>
-               <ZipFileDownload zipFile={zipFile} t={t} />
+                </JTable>
+                <ZipFileDownload zipFile={zipFile} t={t} />
             </div>
         );
     }
 }
-
 
 RunDetailsArtifacts.contextTypes = {
     activityService: object.isRequired,
