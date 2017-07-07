@@ -94,8 +94,6 @@ export default class RunDetailsArtifacts extends Component {
             JTable.column(50, ''),
         ];
 
-        const style = { fill: '#4a4a4a' };
-
         const rootURL = UrlConfig.getJenkinsRootURL();
 
         const artifactsRendered = artifacts.map(artifact => {
@@ -116,7 +114,8 @@ export default class RunDetailsArtifacts extends Component {
                         <a target="_blank"
                            className="action-button-colors"
                            download={fileName} title={downloadLabel}
-                           href={`${rootURL}${artifact.url}`}>
+                           href={`${rootURL}${artifact.url}`}
+                        >
                             <Icon icon="file_download" />
                         </a>
                     </TableCell>
