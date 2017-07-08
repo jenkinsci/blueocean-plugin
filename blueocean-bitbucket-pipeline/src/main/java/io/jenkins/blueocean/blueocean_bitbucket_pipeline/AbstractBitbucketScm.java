@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 
+import com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketEndpointConfiguration;
 import com.cloudbees.plugins.credentials.CredentialsScope;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainSpecification;
@@ -24,6 +25,8 @@ import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.pageable.PagedResponse;
 import net.sf.json.JSONObject;
 import org.apache.commons.lang.StringUtils;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
@@ -79,9 +82,6 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
     @Override
     public String getCredentialId() {
         String apiUrl = getApiUrlParameter();
-        if(apiUrl == null){ //no credentialId without apiUrl parameter
-            return null;
-        }
         String credentialId = createCredentialId(apiUrl);
 
         //check if this credentialId could be found
@@ -256,6 +256,12 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
         return apiFactory.newInstance(apiUrl, credentials);
     }
 
+    /**
+     *  Caller must ensure apiUrl is not blank or null
+     *
+     * @param apiUrl must be normalized url using {@link BitbucketEndpointConfiguration#normalizeServerUrl(String)}
+     * @return url
+     */
     protected  abstract @Nonnull String createCredentialId(@Nonnull String apiUrl);
 
     protected abstract @Nonnull String getDomainId();
@@ -266,11 +272,22 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
         return request;
     }
 
-    protected String getApiUrlParameter(){
+    protected @Nonnull String getApiUrlParameter(){
         return getApiUrlParameter(getStaplerRequest());
     }
 
-    private String getApiUrlParameter(StaplerRequest request){
-        return request.getParameter("apiUrl");
+    private @Nonnull String getApiUrlParameter(StaplerRequest request){
+        String apiUrl =  request.getParameter("apiUrl");
+        // Ensure apiUrl is not blank/null, otherwise BitbucketEndpointConfiguration.normalizeServerUrl() will
+        // return bitbucket cloud API
+        if(StringUtils.isBlank(apiUrl)){
+            throw new ServiceException.BadRequestException("apiUrl is required parameter");
+        }
+        return normalizeApiUrl(apiUrl);
+    }
+
+    @Restricted(NoExternalUse.class)
+    public static @Nonnull String normalizeApiUrl(@Nonnull String apiUrl){
+        return BitbucketEndpointConfiguration.normalizeServerUrl(apiUrl);
     }
 }

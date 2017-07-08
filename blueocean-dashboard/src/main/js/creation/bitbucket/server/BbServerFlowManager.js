@@ -20,7 +20,6 @@ export default class BbServerFlowManager extends BbCloudFlowManager {
 
     constructor(creationApi, credentialsApi, serverApi) {
         super(creationApi, credentialsApi);
-
         this.serverManager = new BbServerManager(serverApi);
     }
 

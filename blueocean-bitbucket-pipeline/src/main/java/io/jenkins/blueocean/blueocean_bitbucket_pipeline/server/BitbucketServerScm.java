@@ -40,11 +40,7 @@ public class BitbucketServerScm extends AbstractBitbucketScm {
 
     @Override
     protected  @Nonnull String createCredentialId(@Nonnull String apiUrl){
-        String url = apiUrl;
-        if(url.charAt(url.length()-1) != '/'){ //ensure trailing slash
-            url = url + "/";
-        }
-        return String.format("%s:%s",getId(),DigestUtils.sha256Hex(url));
+        return String.format("%s:%s",getId(),DigestUtils.sha256Hex(apiUrl));
     }
 
     @Nonnull

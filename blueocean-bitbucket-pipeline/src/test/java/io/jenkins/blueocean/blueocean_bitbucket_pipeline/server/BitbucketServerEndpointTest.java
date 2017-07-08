@@ -48,7 +48,6 @@ public class BitbucketServerEndpointTest extends PipelineBaseTest {
                 .status(400)
                 .jwtToken(token)
                 .data(ImmutableMap.of(
-                        "name", "My Server",
                         "apiUrl", getApiUrl()
                 ))
                 .post(URL)
@@ -70,7 +69,6 @@ public class BitbucketServerEndpointTest extends PipelineBaseTest {
                 .status(400)
                 .jwtToken(token)
                 .data(ImmutableMap.of(
-                        "name", "My Server",
                         "apiUrl", "http://foobar/"
                 ))
                 .post(URL)
@@ -97,12 +95,9 @@ public class BitbucketServerEndpointTest extends PipelineBaseTest {
         Assert.assertNotNull(resp);
 
         List errors = (List) resp.get("errors");
-        assertEquals(2, errors.size());
+        assertEquals(1, errors.size());
 
-        Map error1 = (Map) errors.get(0);
-        assertEquals("name", error1.get("field"));
-
-        Map error2 = (Map) errors.get(1);
+        Map error2 = (Map) errors.get(0);
         assertEquals("apiUrl", error2.get("field"));
     }
 
@@ -112,7 +107,7 @@ public class BitbucketServerEndpointTest extends PipelineBaseTest {
         Map resp = request()
                 .status(400)
                 .jwtToken(token)
-                .data(ImmutableMap.of("name", "foo"))
+                .data(ImmutableMap.of())
                 .post(URL)
                 .build(Map.class);
         Assert.assertNotNull(resp);
@@ -127,118 +122,54 @@ public class BitbucketServerEndpointTest extends PipelineBaseTest {
     }
 
     @Test
-    public void testMissingNameParam() throws Exception {
-        validBitbucketServer(true);
-        Map resp = request()
-                .status(400)
-                .jwtToken(token)
-                .data(ImmutableMap.of("apiUrl", getApiUrl()))
-                .post(URL)
-                .build(Map.class);
-        Assert.assertNotNull(resp);
-
-        List errors = (List) resp.get("errors");
-        assertEquals(1, errors.size());
-
-        Map error1 = (Map) errors.get(0);
-        assertEquals("name", error1.get("field"));
-        assertEquals("MISSING", error1.get("code"));
-        assertNotNull(error1.get("message"));
-    }
-
-    @Test
-    public void avoidDuplicateByUrl() throws Exception {
+    public void duplicateUrlIdempotency() throws Exception {
         validBitbucketServer(true);
         // Create a server
         Map server = request()
                 .status(200)
                 .jwtToken(token)
                 .data(ImmutableMap.of(
-                        "name", "My Server",
                         "apiUrl", getApiUrl()
                 ))
                 .post(URL)
                 .build(Map.class);
+        assertEquals(getApiUrl(), server.get("apiUrl"));
 
         // Create a server
-        Map resp = server = request()
-                .status(400)
-                .jwtToken(token)
-                .data(ImmutableMap.of(
-                        "name", "My Server 2",
-                        "apiUrl", getApiUrl()
-                ))
-                .post(URL)
-                .build(Map.class);
-
-        List errors = (List) resp.get("errors");
-        assertEquals(1, errors.size());
-
-        Map error1 = (Map) errors.get(0);
-        assertEquals("apiUrl", error1.get("field"));
-        assertEquals("ALREADY_EXISTS", error1.get("code"));
-        assertNotNull(error1.get("message"));
-    }
-
-    @Test
-    public void avoidDuplicateByName() throws Exception {
-        validBitbucketServer(true);
-        // Create a server
-        Map server = request()
+        server = request()
                 .status(200)
                 .jwtToken(token)
                 .data(ImmutableMap.of(
-                        "name", "My Server",
                         "apiUrl", getApiUrl()
                 ))
                 .post(URL)
                 .build(Map.class);
 
-        // Create a server
-        Map resp = request()
-                .status(400)
-                .jwtToken(token)
-                .data(ImmutableMap.of(
-                        "name", "My Server",
-                        "apiUrl", getApiUrl()
-                ))
-                .post(URL)
-                .build(Map.class);
-
-        List errors = (List) resp.get("errors");
-        assertEquals(2, errors.size());
-
-        Map error1 = (Map) errors.get(0);
-        assertEquals("name", error1.get("field"));
-        assertEquals("ALREADY_EXISTS", error1.get("code"));
-        assertNotNull(error1.get("message"));
+        assertEquals(getApiUrl(), server.get("apiUrl"));
     }
 
     @Test
     public void createAndList() throws Exception {
         validBitbucketServer(true);
-        assertEquals(1, getServers().size()); //there is always bitbucket cloud endpoint
+        assertEquals(0, getServers().size());
 
         // Create a server
         Map server = request()
                 .status(200)
                 .jwtToken(token)
                 .data(ImmutableMap.of(
-                        "name", "My Server",
                         "apiUrl", getApiUrl()
                 ))
                 .post(URL)
                 .build(Map.class);
 
-        assertEquals("My Server", server.get("name"));
         assertEquals(getApiUrl(), server.get("apiUrl"));
 
         // Get the list of servers and check that it persisted
         List servers = getServers();
-        assertEquals(2, servers.size());
+        assertEquals(1, servers.size());
 
-        server = (Map) servers.get(1);
-        assertEquals("My Server", server.get("name"));
+        server = (Map) servers.get(0);
         assertEquals(getApiUrl(), server.get("apiUrl"));
     }
 

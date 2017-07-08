@@ -18,30 +18,12 @@ class BBAddServerDialog extends React.Component {
         this.state = {
             pending: false,
             unknownError: null,
-            nameValue: null,
-            nameErrorMsg: null,
             urlValue: null,
             urlErrorMsg: null,
         };
 
         t = props.flowManager.translate;
     }
-
-    _nameChange(value) {
-        this.setState({
-            nameValue: value,
-        });
-
-        this._updateNameErrorMsg();
-    }
-
-    _updateNameErrorMsg = debounce(() => {
-        if (this.state.nameErrorMsg && this.state.nameValue) {
-            this.setState({
-                nameErrorMsg: null,
-            });
-        }
-    }, 200);
 
     _urlChange(value) {
         this.setState({
@@ -68,7 +50,7 @@ class BBAddServerDialog extends React.Component {
 
         const { serverManager } = this.props.flowManager;
 
-        serverManager.createServer(this.state.nameValue, this.state.urlValue)
+        serverManager.createServer(this.state.urlValue)
             .then(
                 server => this._onCreateServerSuccess(server),
                 error => this._onCreateServerFailure(error),
@@ -81,14 +63,6 @@ class BBAddServerDialog extends React.Component {
 
     _performValidation() {
         let result = true;
-
-        if (!this.state.nameValue) {
-            this.setState({
-                nameErrorMsg: t('creation.bbserver.add_server.text_name_error_required'),
-            });
-
-            result = false;
-        }
 
         if (!this.state.urlValue) {
             this.setState({
@@ -116,13 +90,8 @@ class BBAddServerDialog extends React.Component {
         const newState = {
             pending: false,
             unknownError: null,
-            nameErrorMsg: null,
             urlErrorMsg: null,
         };
-
-        if (duplicateName) {
-            newState.nameErrorMsg = t('creation.bbserver.add_server.text_name_error_duplicate');
-        }
 
         if (duplicateUrl) {
             newState.urlErrorMsg = t('creation.bbserver.add_server.text_url_error_duplicate');
@@ -167,10 +136,6 @@ class BBAddServerDialog extends React.Component {
                     verticalLayout
                 >
                     { this.state.unknownError && <ServerErrorRenderer error={this.state.unknownError} /> }
-
-                    <FormElement title={t('creation.bbserver.add_server.text_name_title')} errorMessage={this.state.nameErrorMsg}>
-                        <TextInput className="text-name" placeholder={t('creation.bbserver.add_server.text_name_placeholder')} onChange={val => this._nameChange(val)} />
-                    </FormElement>
 
                     <FormElement title={t('creation.bbserver.add_server.text_url_title')} errorMessage={this.state.urlErrorMsg}>
                         <TextInput className="text-url" placeholder={t('creation.bbserver.add_server.text_url_placeholder')} onChange={val => this._urlChange(val)} />

@@ -5,7 +5,7 @@ import com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketEndpointConfig
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Ordering;
+import hudson.security.ACL;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
@@ -13,7 +13,8 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import net.sf.json.JSONObject;
-import org.apache.commons.collections.ComparatorUtils;
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.Header;
 import org.apache.http.client.fluent.Request;
@@ -22,7 +23,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,12 +46,6 @@ public class BitbucketServerEndpointContainer extends ScmServerEndpointContainer
     public ScmServerEndpoint create(JSONObject request) {
         List<ErrorMessage.Error> errors = Lists.newLinkedList();
 
-        // Validate name
-        final String name = (String) request.get(ScmServerEndpoint.NAME);
-        if(StringUtils.isBlank(name)){
-            errors.add(new ErrorMessage.Error(ScmServerEndpoint.NAME, ErrorMessage.Error.ErrorCodes.MISSING.toString(), ScmServerEndpoint.NAME + " is required"));
-        }
-
         final String url = (String) request.get(ScmServerEndpoint.API_URL);
         if(StringUtils.isBlank(url)){
             errors.add(new ErrorMessage.Error(ScmServerEndpoint.API_URL, ErrorMessage.Error.ErrorCodes.MISSING.toString(), ScmServerEndpoint.API_URL + " is required"));
@@ -64,32 +58,28 @@ public class BitbucketServerEndpointContainer extends ScmServerEndpointContainer
                 }
             } catch (IOException e) {
                 errors.add(new ErrorMessage.Error(BitbucketServerEndpoint.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Could not connect to Bitbucket server"));
-                LOGGER.error("Could not connect to Bitbucket", e);
+                LOGGER.error("Could not connect to BitBucket", e);
             }
         }
 
         //validate presence of endpoint with same name
-        BitbucketEndpointConfiguration endpointConfiguration = BitbucketEndpointConfiguration.get();
-
-        for(AbstractBitbucketEndpoint endpoint:endpointConfiguration.getEndpoints()){
-            if(StringUtils.isNotBlank(name)) {
-                String displayName = endpoint.getDisplayName();
-                if (StringUtils.isNotBlank(displayName) && displayName.equals(name)) {
-                    errors.add(new ErrorMessage.Error(ScmServerEndpoint.NAME, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), ScmServerEndpoint.NAME + " already exists"));
-                }
-            }
-            if(StringUtils.isNotBlank(url)) {
-                if (url.startsWith(endpoint.getServerUrl())) {
-                    errors.add(new ErrorMessage.Error(ScmServerEndpoint.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), ScmServerEndpoint.API_URL + " already exists"));
-                }
-            }
-        }
+        final BitbucketEndpointConfiguration endpointConfiguration = BitbucketEndpointConfiguration.get();
 
         if(!errors.isEmpty()){
             throw new ServiceException.BadRequestException(new ErrorMessage(400, "Failed to create BitBucket server endpoint").addAll(errors));
         }
-        com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketServerEndpoint endpoint = new com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketServerEndpoint(name, url, false, null);
-        endpointConfiguration.addEndpoint(endpoint);
+        final com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketServerEndpoint endpoint = new com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketServerEndpoint(null, url, false, null);
+        SecurityContext old=null;
+        try {
+            // We need to escalate privilege to add user defined endpoint to
+            old = ACL.impersonate(ACL.SYSTEM);
+            endpointConfiguration.addEndpoint(endpoint);
+        }finally {
+            //reset back to original privilege level
+            if(old != null){
+                SecurityContextHolder.setContext(old);
+            }
+        }
         return new BitbucketServerEndpoint(endpoint);
     }
 
@@ -103,14 +93,10 @@ public class BitbucketServerEndpointContainer extends ScmServerEndpointContainer
     @Override
     public Iterator<ScmServerEndpoint> iterator() {
         BitbucketEndpointConfiguration endpointConfiguration = BitbucketEndpointConfiguration.get();
-        List<AbstractBitbucketEndpoint> endpoints = Ordering.from(new Comparator<AbstractBitbucketEndpoint>() {
-            @Override
-            public int compare(AbstractBitbucketEndpoint o1, AbstractBitbucketEndpoint o2) {
-                return ComparatorUtils.NATURAL_COMPARATOR.compare(o1.getDisplayName(), o2.getDisplayName());
-            }
-        }).sortedCopy(endpointConfiguration.getEndpoints());
-
-        return Iterators.transform(endpoints.iterator(), new Function<AbstractBitbucketEndpoint, ScmServerEndpoint>() {
+        Iterator<com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketServerEndpoint> serverEndpoints =  Iterators
+                .filter(endpointConfiguration.getEndpoints().iterator(),
+                        com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketServerEndpoint.class);
+        return Iterators.transform(serverEndpoints, new Function<AbstractBitbucketEndpoint, ScmServerEndpoint>() {
             @Override
             public ScmServerEndpoint apply(AbstractBitbucketEndpoint input) {
                 return new BitbucketServerEndpoint(input);

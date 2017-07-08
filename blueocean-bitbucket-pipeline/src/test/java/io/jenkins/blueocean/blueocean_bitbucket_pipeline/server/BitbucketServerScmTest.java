@@ -1,6 +1,8 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
 
+import com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketEndpointConfiguration;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
 
 import java.io.IOException;
@@ -35,6 +37,45 @@ public class BitbucketServerScmTest extends BbServerWireMock {
         assertEquals(BitbucketServerScm.ID, r.get("id"));
         assertEquals(apiUrl, r.get("uri"));
         assertNull(r.get("credentialId"));
+    }
+
+
+    /**
+     * Checks different server urls and consistency of generated credentialId
+     */
+    @Test
+    public void getScmNormalizedUrlTest() throws IOException, UnirestException {
+        String credentialId = createCredential(BitbucketServerScm.ID);
+
+        String apiUrl = this.apiUrl;
+        String normalizedUrl = BitbucketEndpointConfiguration.normalizeServerUrl(apiUrl);
+        String expectedCredId = BitbucketServerScm.ID+":"+ DigestUtils.sha256Hex(normalizedUrl);
+        assertEquals(credentialId, expectedCredId);
+
+        Map r = new RequestBuilder(baseUrl)
+                .status(200)
+                .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
+                .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+String.format("?apiUrl=%s",apiUrl))
+                .build(Map.class);
+
+        assertEquals(normalizedUrl, r.get("uri"));
+        assertEquals(expectedCredId, r.get("credentialId"));
+        String apiUrlWithSlash = this.apiUrl+"/";
+        assertNotEquals(apiUrl, apiUrlWithSlash);
+        String normalizedUrlWithSlash = BitbucketEndpointConfiguration.normalizeServerUrl(apiUrl);
+        assertEquals(normalizedUrl, normalizedUrlWithSlash);
+
+        String expectedCredIdWithSlash = BitbucketServerScm.ID+":"+ DigestUtils.sha256Hex(normalizedUrlWithSlash);
+        assertEquals(expectedCredId, expectedCredIdWithSlash);
+
+        r = new RequestBuilder(baseUrl)
+                .status(200)
+                .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
+                .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+String.format("?apiUrl=%s",apiUrl))
+                .build(Map.class);
+
+        assertEquals(expectedCredId, r.get("credentialId"));
+        assertEquals(normalizedUrl, r.get("uri"));
     }
 
     @Test

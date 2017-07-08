@@ -69,16 +69,16 @@ class BbChooseServerStep extends React.Component {
 
         return (
             <FlowStep {...this.props} className="github-enterprise-choose-server-step" disabled={disabled} title={title}>
-                <FormElement title={t('creation.githubent.choose_server.instructions')}>
+                <FormElement title={t('creation.bbserver.choose_server.instructions')}>
                     <Dropdown
                         ref={dropdown => { this.dropdown = dropdown; }}
                         className="dropdown-server"
                         options={serverManager.servers}
-                        labelField="name"
+                        labelField="apiUrl"
                         onChange={option => this._onChangeServerDropdown(option)}
                     />
                     <button className="button-add-server btn-secondary" onClick={() => this._onClickAddButton()}>
-                        {t('creation.githubent.choose_server.button_add')}
+                        {t('creation.bbserver.choose_server.button_add')}
                     </button>
                 </FormElement>
 
