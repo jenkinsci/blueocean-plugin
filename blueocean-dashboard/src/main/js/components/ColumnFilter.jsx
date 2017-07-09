@@ -46,7 +46,7 @@ export class ColumnFilter extends Component {
     blur = e => {
         const targetElem = e.target;
         this.setState({ focused: false });
-        if (targetElem.value == '') {
+        if (targetElem.value === '') {
             setTimeout(() => {
                 targetElem.value = this.state.originalValue;
             }, 0);
