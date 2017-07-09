@@ -17,6 +17,7 @@ import jenkins.scm.api.SCMNavigator;
 import jenkins.scm.api.SCMSource;
 import net.sf.json.JSONObject;
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -61,6 +62,7 @@ public class BitbucketScmContentProvider extends AbstractScmContentProvider {
                     .owner(request.getOwner())
                     .repo(request.getRepo())
                     .name(request.getPath())
+                    .sha(sha(content))
                     .commitId(branch.getLatestCommit())
                     .build();
 
@@ -117,6 +119,7 @@ public class BitbucketScmContentProvider extends AbstractScmContentProvider {
                 .path(gitContent.getPath())
                 .owner(gitContent.getOwner())
                 .repo(gitContent.getRepo())
+                .sha(sha(content))
                 .name(gitContent.getPath())
                 .commitId(response.getCommitId())
                 .build();
@@ -137,6 +140,11 @@ public class BitbucketScmContentProvider extends AbstractScmContentProvider {
             return (!sources.isEmpty() && sources.get(0) instanceof BitbucketSCMSource);
         }
         return false;
+    }
+
+    //bitbucket api doesn't give SHA of content, we compute it ourselves
+    private String sha(String data){
+        return DigestUtils.sha1Hex("blob " + data.length() + "\0" + data);
     }
 
     static class BitbucketScmParams extends ScmContentProviderParams {
@@ -170,7 +178,7 @@ public class BitbucketScmContentProvider extends AbstractScmContentProvider {
         @Override
         protected String apiUrl(@Nonnull SCMSource scmSource) {
             if (scmSource instanceof BitbucketSCMSource) {
-                return ((BitbucketSCMSource)scmSource).getBitbucketServerUrl();
+                return ((BitbucketSCMSource)scmSource).getServerUrl();
             }
             return null;
         }

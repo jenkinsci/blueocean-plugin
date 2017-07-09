@@ -130,7 +130,7 @@ public class BitbucketContentProviderTest extends BbServerWireMock {
         when(mbp.getName()).thenReturn("pipeline1");
         when(mbp.getParent()).thenReturn(j.jenkins);
         BitbucketSCMSource scmSource = mock(BitbucketSCMSource.class);
-        when(scmSource.getBitbucketServerUrl()).thenReturn(apiUrl);
+        when(scmSource.getServerUrl()).thenReturn(apiUrl);
         when(scmSource.getCredentialsId()).thenReturn(credentialId);
         when(scmSource.getRepoOwner()).thenReturn("TESTP");
         when(scmSource.getRepository()).thenReturn("pipeline-demo-test");

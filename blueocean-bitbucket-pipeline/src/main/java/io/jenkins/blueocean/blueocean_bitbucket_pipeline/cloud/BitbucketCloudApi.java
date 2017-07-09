@@ -215,7 +215,7 @@ public class BitbucketCloudApi extends BitbucketApi {
     @Override
     public BbBranch getBranch(@Nonnull String orgId, @Nonnull String repoSlug, @Nonnull String branch) {
         try {
-            InputStream inputStream = Request.Get(String.format("%s/%s/refs/branches/%s?fields\\=target.hash,target.repository.mainbranch.name,target.repository.\\*,target.repository.owner.\\*,target.repository.owner.links.avatar.href,name",
+            InputStream inputStream = Request.Get(String.format("%s/%s/refs/branches/%s?fields=target.hash,target.repository.mainbranch.name,target.repository.*,target.repository.owner.*,target.repository.owner.links.avatar.href,name",
                     baseUrl+"repositories/"+orgId,
                     repoSlug,
                     branch))
