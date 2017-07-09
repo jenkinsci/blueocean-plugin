@@ -4,8 +4,8 @@ import hudson.Extension;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.AbstractBitbucketScm;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 
 import javax.annotation.Nonnull;
 

@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.google.common.collect.ImmutableList;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbPage;
 
 import javax.annotation.Nonnull;
@@ -26,7 +27,7 @@ public class BbCloudPage<T> extends BbPage<T> {
         this.page = page;
         this.size = size;
         this.next = next;
-        this.values = values;
+        this.values = ImmutableList.copyOf(values);
     }
 
     @Override
@@ -51,6 +52,10 @@ public class BbCloudPage<T> extends BbPage<T> {
     @Override
     public List<T> getValues() {
         return values;
+    }
+
+    public String getNext(){
+        return next;
     }
 
     @Override

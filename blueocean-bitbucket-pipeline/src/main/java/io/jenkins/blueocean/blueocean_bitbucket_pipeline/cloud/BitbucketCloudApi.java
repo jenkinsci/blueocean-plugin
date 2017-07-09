@@ -35,6 +35,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static io.jenkins.blueocean.commons.JsonConverter.om;
@@ -86,7 +88,22 @@ public class BitbucketCloudApi extends BitbucketApi {
             InputStream inputStream = Request.Get(String.format("%s&page=%s&pagelen=%s",baseUrl+"teams/?role=contributor", pageNumber,pageSize))
                     .addHeader("Authorization", basicAuthHeaderValue)
                     .execute().returnContent().asStream();
-            return om.readValue(inputStream, new TypeReference<BbCloudPage<BbCloudTeam>>(){});
+            BbPage<BbOrg> page =  om.readValue(inputStream, new TypeReference<BbCloudPage<BbCloudTeam>>(){});
+            if(pageNumber == 1){ //add user org as the first org on first page
+                BbUser user = getUser();
+                if(page instanceof BbCloudPage) {
+                    List<BbOrg> teams = new ArrayList<>();
+                    teams.add(new BbCloudTeam(user.getSlug(), user.getDisplayName(), user.getAvatar()));
+                    int newSize = page.getSize() + 1;
+                    int newPageLength = page.getLimit();
+                    if (page.getSize() > page.getLimit()) {
+                        newPageLength++;
+                    }
+                    teams.addAll(page.getValues());
+                    return new BbCloudPage<>(newPageLength, pageNumber, newSize, ((BbCloudPage) page).getNext(), teams);
+                }
+            }
+            return page;
         } catch (IOException e) {
             throw handleException(e);
         }
@@ -96,6 +113,11 @@ public class BitbucketCloudApi extends BitbucketApi {
     @Override
     public BbOrg getOrg(@Nonnull String orgName) {
         try {
+            // If user org, get user and return BbCloudTeam model
+            if(orgName.equalsIgnoreCase(userName)){
+                BbUser user = getUser();
+                return new BbCloudTeam(user.getSlug(), user.getDisplayName(), user.getAvatar());
+            }
             InputStream inputStream = Request.Get(String.format("%s/%s",baseUrl+"teams", orgName))
                     .addHeader("Authorization", basicAuthHeaderValue)
                     .execute().returnContent().asStream();

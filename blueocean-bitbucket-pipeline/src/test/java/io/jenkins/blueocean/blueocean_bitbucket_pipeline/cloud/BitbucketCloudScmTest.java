@@ -47,9 +47,11 @@ public class BitbucketCloudScmTest extends BbCloudWireMock {
                 .get("/organizations/jenkins/scm/"+BitbucketCloudScm.ID+"/organizations/"+getApiUrlParam()+"&credentialId="+credentialId)
                 .header(X_BB_API_TEST_MODE_HEADER, "cloud")
                 .build(List.class);
-        assertEquals(1, orgs.size());
-        assertEquals("vivektestteam", ((Map)orgs.get(0)).get("key"));
-        assertEquals("Vivek's Team", ((Map)orgs.get(0)).get("name"));
+        assertEquals(2, orgs.size());
+        assertEquals("vivekp7", ((Map)orgs.get(0)).get("key"));
+        assertEquals("Vivek Pandey", ((Map)orgs.get(0)).get("name"));
+        assertEquals("vivektestteam", ((Map)orgs.get(1)).get("key"));
+        assertEquals("Vivek's Team", ((Map)orgs.get(1)).get("name"));
     }
 
     @Test

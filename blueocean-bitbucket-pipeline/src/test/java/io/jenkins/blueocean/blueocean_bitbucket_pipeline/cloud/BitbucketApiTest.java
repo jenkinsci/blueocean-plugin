@@ -54,11 +54,24 @@ public class BitbucketApiTest  extends BbCloudWireMock{
     @Test
     public void getTeams() throws JsonProcessingException {
         BbPage<BbOrg> teams = api.getOrgs(1, 100);
-        assertEquals(1, teams.getSize());
-        assertEquals("vivektestteam", teams.getValues().get(0).getKey());
-        assertEquals("Vivek's Team", teams.getValues().get(0).getName());
-        assertEquals("https://bitbucket.org/account/vivektestteam/avatar/50/", teams.getValues().get(0).getAvatar());
+        assertEquals(2, teams.getSize());
+        assertEquals("vivekp7", teams.getValues().get(0).getKey());
+        assertEquals("Vivek Pandey", teams.getValues().get(0).getName());
+        assertEquals("https://bitbucket.org/account/vivekp7/avatar/50/", teams.getValues().get(0).getAvatar());
+
+        assertEquals("vivektestteam", teams.getValues().get(1).getKey());
+        assertEquals("Vivek's Team", teams.getValues().get(1).getName());
+        assertEquals("https://bitbucket.org/account/vivektestteam/avatar/50/", teams.getValues().get(1).getAvatar());
     }
+
+    @Test
+    public void getUserTeam() throws JsonProcessingException {
+        BbOrg team = api.getOrg("vivekp7");
+        assertEquals("vivekp7", team.getKey());
+        assertEquals("Vivek Pandey", team.getName());
+        assertEquals("https://bitbucket.org/account/vivekp7/avatar/50/", team.getAvatar());
+    }
+
 
     @Test
     public void getTeam() throws JsonProcessingException {

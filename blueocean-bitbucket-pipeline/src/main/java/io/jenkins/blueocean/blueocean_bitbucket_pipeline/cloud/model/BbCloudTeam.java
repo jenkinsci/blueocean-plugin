@@ -30,6 +30,14 @@ public class BbCloudTeam extends BbOrg {
         }
     }
 
+    public BbCloudTeam(String teamName,
+                       String displayName,
+                       String avatar) {
+        this.teamName = teamName;
+        this.displayName = displayName;
+        this.avatar = avatar;
+    }
+
     @Override
     public String getKey() {
         return teamName;
