@@ -2,6 +2,9 @@ import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 
 import FlowStep from '../../flow2/FlowStep';
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+const t = i18nTranslator('blueocean-dashboard');
+
 
 @observer
 export default class BbUnknownErrorStep extends React.Component {
@@ -10,7 +13,7 @@ export default class BbUnknownErrorStep extends React.Component {
         return (
             <FlowStep {...this.props} title="Unknown Error" error>
                 <div className="instructions">
-                    An unknown error has occurred. You may try again.
+                    {t('creation.core.error.unexpected.try_again')}
                 </div>
 
                 <p className="instructions">

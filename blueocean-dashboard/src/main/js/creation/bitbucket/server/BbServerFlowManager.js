@@ -44,7 +44,7 @@ export default class BbServerFlowManager extends BbCloudFlowManager {
 
     onInitialized() {
         this._loadServerList();
-        this.setPlaceholders('Complete');
+        this.setPlaceholders(t('creation.core.status.completed'));
     }
 
     getApiUrl() {

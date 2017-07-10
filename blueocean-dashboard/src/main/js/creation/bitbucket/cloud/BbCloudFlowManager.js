@@ -1,8 +1,7 @@
 import React from 'react';
 import { action, computed, observable } from 'mobx';
 import { sseService } from '@jenkins-cd/blueocean-core-js';
-import { logging } from '@jenkins-cd/blueocean-core-js';
-
+import { logging, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 import waitAtLeast from '../../flow2/waitAtLeast';
 
 import FlowManager from '../../flow2/FlowManager';
@@ -26,7 +25,7 @@ const MIN_DELAY = 500;
 const FIRST_PAGE = 1;
 const PAGE_SIZE = 100;
 const SSE_TIMEOUT_DELAY = 1000 * 60;
-
+const translate = i18nTranslator('blueocean-dashboard');
 
 export default class BbCloudFlowManager extends FlowManager {
 
@@ -83,6 +82,10 @@ export default class BbCloudFlowManager extends FlowManager {
         this.credentialManager = new BbCredentialManager(credentialsApi);
     }
 
+    translate(key, opts) {
+        return translate(key, opts);
+    }
+
     getApiUrl() {
         return 'https://bitbucket.org';
     }
@@ -104,7 +107,7 @@ export default class BbCloudFlowManager extends FlowManager {
 
     onInitialized() {
         this.findExistingCredential();
-        this.setPlaceholders('Complete');
+        this.setPlaceholders(translate('creation.core.status.completed'));
     }
 
     destroy() {
@@ -316,6 +319,13 @@ export default class BbCloudFlowManager extends FlowManager {
         }
     }
 
+    _showPlaceholder() {
+        this.setPlaceholders([
+            this.translate('creation.core.status.completed'),
+        ]);
+    }
+
+
     @action
     _saveRepoSuccess(mbp) {
         LOGGER.debug(`Multi-branch pipeline creation successfully: ${mbp.name}`);
@@ -376,7 +386,7 @@ export default class BbCloudFlowManager extends FlowManager {
 
         if (multiBranchIndexingComplete) {
             this.savedPipeline = this.pipelineName;
-            LOGGER.info(`creation succeeeded for ${this.pipelineName}`);
+            LOGGER.info(`creation succeeded for ${this.pipelineName}`);
             this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
         }
     }

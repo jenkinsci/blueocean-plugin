@@ -33,9 +33,9 @@ export default class BbCredentialsStep extends React.Component {
 
     _getErrorMessage(stateId) {
         if (stateId === BbCredentialState.INVALID_CREDENTIAL) {
-            return 'Invalid userName and secret';
+            return t('creation.bitbucket.connect.invalid_username_password');
         } else if (stateId === BbCredentialState.UNEXPECTED_ERROR_CREDENTIAL) {
-            return 'Bitbucket credential validation failed with unexpected error. Please try again';
+            return t('creation.bitbucket.connect.unexpected_error');
         }
         return null;
     }
@@ -94,7 +94,7 @@ export default class BbCredentialsStep extends React.Component {
 
     render() {
         const manager = this.props.flowManager.credentialManager;
-        const title = 'Connect to Bitbucket';
+        const title = t('creation.bitbucket.connect');
         const errorMessage = this._getErrorMessage(manager.stateId);
 
         const disabled = manager.stateId === BbCredentialState.SAVE_SUCCESS;
@@ -114,7 +114,7 @@ export default class BbCredentialsStep extends React.Component {
         return (
             <FlowStep {...this.props} className="github-credentials-step" disabled={disabled} title={title}>
                 <p className="instructions">
-                    Jenkins needs user credential to authorize itself with Bitbucket. &nbsp;
+                    {t('creation.bitbucket.connect.authorize')}. &nbsp;
                 </p>
                 <FormElement
                     className="credentials-new"

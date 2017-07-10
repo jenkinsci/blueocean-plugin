@@ -3,7 +3,8 @@ import { observer } from 'mobx-react';
 import { List } from '@jenkins-cd/design-language';
 
 import FlowStep from '../../flow2/FlowStep';
-
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+const t = i18nTranslator('blueocean-dashboard');
 
 function OrgRenderer(props) {
     const { listItem } = props;
@@ -31,7 +32,7 @@ export default class BbOrgListStep extends React.Component {
 
     render() {
         const { flowManager } = this.props;
-        const title = 'Which organization does the repository belong to?';
+        const title = t('creation.core.repository.title');
         const disabled = flowManager.stepsDisabled;
 
         return (

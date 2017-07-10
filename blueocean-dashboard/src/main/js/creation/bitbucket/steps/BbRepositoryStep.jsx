@@ -3,6 +3,9 @@ import { observer } from 'mobx-react';
 import { FilterableList } from '@jenkins-cd/design-language';
 
 import FlowStep from '../../flow2/FlowStep';
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+
+const t = i18nTranslator('blueocean-dashboard');
 
 @observer
 export default class BbRepositoryStep extends React.Component {
@@ -20,10 +23,10 @@ export default class BbRepositoryStep extends React.Component {
         const count = this.props.flowManager.repositories.length;
 
         if (repositoriesLoading) {
-            return `Loading Repositories... ${count} so far.`;
+            return t('creation.core.repository.loading.count', { 0: count });
         }
 
-        return `Loaded ${count} repositories.`;
+        return t('creation.core.repository.loaded.count', { 0: count });
     }
 
     _exit() {
@@ -36,7 +39,7 @@ export default class BbRepositoryStep extends React.Component {
 
     render() {
         const { flowManager } = this.props;
-        const title = 'Choose a repository';
+        const title = t('creation.core.repository.choose.title');
         const disabled = flowManager.stepsDisabled;
         const buttonDisabled = !flowManager.selectedRepository;
         const orgName = flowManager.selectedOrganization.name;
@@ -64,7 +67,7 @@ export default class BbRepositoryStep extends React.Component {
                         onClick={() => this.beginCreation()}
                         disabled={buttonDisabled}
                     >
-                        Create Pipeline
+                        {t('creation.core.header.title')}
                     </button>
                 </div>
                 }
@@ -72,12 +75,12 @@ export default class BbRepositoryStep extends React.Component {
                 { flowManager.repositories.length === 0 &&
                 <div className="container">
                     <p className="instructions">
-                        The organization "{orgName}" has no repositories.
+                        {t('creation.core.repository.no_repository', { 0: orgName })}
 
-                        Please pick a different organization.
+                        {t('creation.core.organization.pick_different')}
                     </p>
 
-                    <button onClick={() => this._exit()}>Back to Pipelines</button>
+                    <button onClick={() => this._exit()}>{t('creation.core.intro.invalid_permission_button')}</button>
                 </div>
                 }
             </FlowStep>

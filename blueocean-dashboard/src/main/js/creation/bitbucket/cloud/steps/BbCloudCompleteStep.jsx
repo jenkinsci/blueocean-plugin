@@ -9,8 +9,13 @@ import STATE from '../BbCloudCreationState';
 
 import Extensions from '@jenkins-cd/js-extensions';
 
+let t = null;
+
 @observer
 export default class BbCloudCompleteStep extends React.Component {
+    componentWillMount() {
+        t = this.props.flowManager.translate;
+    }
 
     navigateDashboard() {
         this.props.flowManager.completeFlow({ url: '/pipelines' });
@@ -33,18 +38,18 @@ export default class BbCloudCompleteStep extends React.Component {
 
     _getTitle(state, repo) {
         if (state === STATE.STEP_COMPLETE_SAVING_ERROR) {
-            return 'Error Creating Pipeline';
+            return t('creation.error.creating_pipeline');
         } else if (state === STATE.STEP_COMPLETE_EVENT_ERROR) {
-            return 'Error Creating Pipeline';
+            return t('creation.core.error.creating.pipeline');
         } else if (state === STATE.STEP_COMPLETE_EVENT_TIMEOUT) {
-            return 'Pipeline Creation Pending...';
+            return t('creation.core.status.pending');
         } else if (state === STATE.STEP_COMPLETE_MISSING_JENKINSFILE) {
-            return <span>There are no Jenkinsfiles in <i>{repo.name}</i></span>;
+            return <span>{t('creation.core.error.missing.jenkinsfile')} <i>{repo.name}</i></span>;
         } else if (state === STATE.STEP_COMPLETE_SUCCESS) {
-            return 'Completed';
+            return t('creation.core.status.completed');
         }
 
-        return 'Something Unexpected Happened';
+        return t('creation.core.error.unexpected');
     }
 
     _getError(state) {
@@ -60,12 +65,12 @@ export default class BbCloudCompleteStep extends React.Component {
         let showCreateLink = false;
 
         if (state === STATE.STEP_COMPLETE_SAVING_ERROR) {
-            copy = 'An error occurrred while saving this pipeline.';
+            copy = t('creation.core.error.saving.pipeline');
         } else if (state === STATE.STEP_COMPLETE_EVENT_ERROR) {
-            copy = 'An error occurred while creating pipelines.';
+            copy = t('creation.core.error.creating.pipeline');
             showDashboardLink = true;
         } else if (state === STATE.STEP_COMPLETE_EVENT_TIMEOUT) {
-            copy = 'Pipelines are still waiting to be created.';
+            copy = t('creation.core.status.waiting');
             showDashboardLink = true;
         } else if (state === STATE.STEP_COMPLETE_MISSING_JENKINSFILE) {
             showCreateLink = true;
@@ -79,9 +84,9 @@ export default class BbCloudCompleteStep extends React.Component {
 
                 { showDashboardLink &&
                 <div>
-                    <p>You may now return to the Dashboard to check for new pipelines.</p>
+                    <p>{t('creation.core.status.return.new_pipelines')}.</p>
 
-                    <button onClick={() => this.navigateDashboard()}>Dashboard</button>
+                    <button onClick={() => this.navigateDashboard()}>{t('creation.core.button.dashboard')}</button>
                 </div>
                 }
 
