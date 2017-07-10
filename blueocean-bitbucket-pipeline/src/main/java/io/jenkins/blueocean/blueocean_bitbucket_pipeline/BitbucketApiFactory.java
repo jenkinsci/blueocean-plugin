@@ -28,7 +28,7 @@ public abstract class BitbucketApiFactory extends ExtensionPoint{
      * @param credentials {@link StandardUsernamePasswordCredentials}
      * @return {@link BitbucketApi} instance
      */
-    public abstract @Nonnull BitbucketApi newInstance(@Nonnull String apiUrl, @Nonnull StandardUsernamePasswordCredentials credentials);
+    public abstract @Nonnull BitbucketApi create(@Nonnull String apiUrl, @Nonnull StandardUsernamePasswordCredentials credentials);
 
     public static @CheckForNull BitbucketApiFactory resolve(@Nonnull String apiUrl){
         for(BitbucketApiFactory api: ExtensionList.lookup(BitbucketApiFactory.class)){

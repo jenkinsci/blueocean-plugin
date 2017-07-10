@@ -125,7 +125,7 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
             }
 
             Preconditions.checkNotNull(credential);
-            final BitbucketApi api = apiFactory.newInstance(apiUrl, credential);
+            final BitbucketApi api = apiFactory.create(apiUrl, credential);
             return new Container<ScmOrganization>() {
                 @Override
                 public ScmOrganization get(String name) {
@@ -253,7 +253,7 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
             throw new ServiceException.UnexpectedErrorException("BitbucketApiFactory to handle apiUrl "+apiUrl+" not found");
         }
 
-        return apiFactory.newInstance(apiUrl, credentials);
+        return apiFactory.create(apiUrl, credentials);
     }
 
     /**

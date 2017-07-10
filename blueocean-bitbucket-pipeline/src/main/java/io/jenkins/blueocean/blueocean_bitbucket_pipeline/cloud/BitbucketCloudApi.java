@@ -271,7 +271,7 @@ public class BitbucketCloudApi extends BitbucketApi {
 
         @Nonnull
         @Override
-        public BitbucketApi newInstance(@Nonnull String apiUrl, @Nonnull StandardUsernamePasswordCredentials credentials) {
+        public BitbucketApi create(@Nonnull String apiUrl, @Nonnull StandardUsernamePasswordCredentials credentials) {
             return new BitbucketCloudApi(apiUrl, credentials);
         }
     }

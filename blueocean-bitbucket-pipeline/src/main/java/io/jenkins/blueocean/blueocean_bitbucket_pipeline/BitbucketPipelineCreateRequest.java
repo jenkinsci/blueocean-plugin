@@ -4,9 +4,9 @@ import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSource;
 import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSourceBuilder;
 import com.cloudbees.jenkins.plugins.bitbucket.BranchDiscoveryTrait;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import io.jenkins.blueocean.commons.ErrorMessage;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
@@ -33,7 +33,9 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
     @Override
     protected SCMSource createSource(@Nonnull MultiBranchProject project, @Nonnull BlueScmConfig scmConfig) {
         /* scmConfig.uri presence is already validated in {@link #validate} but lets check just in case */
-        Preconditions.checkNotNull(scmConfig.getUri(), "scmConfig.uri must be present");
+        if(StringUtils.isBlank(scmConfig.getUri())){
+            throw new ServiceException.BadRequestException("scmConfig.uri must be present");
+        }
         BitbucketSCMSource bitbucketSCMSource = new BitbucketSCMSourceBuilder(null, scmConfig.getUri(), scmConfig.getCredentialId(),
                 (String)scmConfig.getConfig().get("repoOwner"),
                 (String)scmConfig.getConfig().get("repository"))
