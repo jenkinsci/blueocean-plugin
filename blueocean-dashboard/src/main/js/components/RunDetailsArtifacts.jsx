@@ -6,7 +6,7 @@ import mobxUtils from 'mobx-utils';
 import { logging, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.artifacts');
-const { func, object, string } = PropTypes;
+
 const ZipFileDownload = (props) => {
     const { zipFile, t } = props;
     if (!zipFile) {
@@ -61,7 +61,7 @@ export default class RunDetailsArtifacts extends Component {
     }
 
     componentWillUnmount() {
-        this.artifactsPromisePromise = null;
+        this.artifactsPromise = null;
     }
 
     _fetchArtifacts(props) {
@@ -153,10 +153,10 @@ export default class RunDetailsArtifacts extends Component {
 }
 
 RunDetailsArtifacts.contextTypes = {
-    activityService: object.isRequired,
+    activityService: PropTypes.object.isRequired,
 };
 
 RunDetailsArtifacts.propTypes = {
-    result: object,
-    t: func,
+    result: PropTypes.object,
+    t: PropTypes.func,
 };
