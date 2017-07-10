@@ -7,7 +7,7 @@ import {
 } from '@jenkins-cd/design-language';
 import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
-import { RunDetailsRow } from './RunDetailsRow';
+import { ActivityDetailsRow } from './ActivityDetailsRow';
 import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { buildPipelineUrl } from '../util/UrlUtils';
@@ -88,7 +88,7 @@ export class Activity extends Component {
     render() {
         const { pipeline, t, locale } = this.props;
         const { actionExtensionCount } = this.state;
-        const actionsInRowCount = RunDetailsRow.actionItemsCount; // Non-extension actions
+        const actionsInRowCount = ActivityDetailsRow.actionItemsCount; // Non-extension actions
 
         if (!pipeline) {
             return null;
@@ -193,7 +193,7 @@ export class Activity extends Component {
                     {
                         runs.map(extractLatestRecord).map(
                             ([run, changeset], index) => (
-                                <RunDetailsRow t={t}
+                                <ActivityDetailsRow t={t}
                                                locale={locale}
                                                run={run}
                                                pipeline={pipeline}
