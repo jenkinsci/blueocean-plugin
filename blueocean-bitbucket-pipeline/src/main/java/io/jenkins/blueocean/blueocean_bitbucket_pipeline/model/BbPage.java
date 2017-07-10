@@ -7,7 +7,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 import java.util.List;
 
 /**
- * BitBucket pagination.
+ * Bitbucket pagination.
  *
  * @author Vivek Pandey
  */

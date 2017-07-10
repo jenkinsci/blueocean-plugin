@@ -5,7 +5,7 @@ import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 /**
- * BitBucket Branch
+ * Bitbucket Branch
  *
  * @author Vivek Pandey
  */

@@ -12,7 +12,7 @@ export default class BbCloudScmProvider extends ScmProvider {
     manager = null;
 
     getDefaultOption() {
-        return <BbDefaultOption className="github-enterprise-creation" label="BitBucket Cloud" />;
+        return <BbDefaultOption className="github-enterprise-creation" label="Bitbucket Cloud" />;
     }
 
     getFlowManager() {

@@ -7,7 +7,7 @@ const MIN_DELAY = 500;
 
 
 /**
- * Manages retrieving, validating and saving BitBucket credential
+ * Manages retrieving, validating and saving Bitbucket credential
  * Also holds the state of the credential for use in BbCredentialStep.
  */
 export class BbCredentialManager {

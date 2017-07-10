@@ -405,7 +405,7 @@
             <version>1.27.0</version>
         </dependency>
 
-        <!-- BitBucket dependencies -->
+        <!-- Bitbucket dependencies -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-bitbucket-branch-source</artifactId>

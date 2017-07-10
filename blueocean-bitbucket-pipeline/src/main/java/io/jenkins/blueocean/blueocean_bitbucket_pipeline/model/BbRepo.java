@@ -14,7 +14,7 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * BitBucket repository.
+ * Bitbucket repository.
  *
  * @author Vivek Pandey
  */
@@ -39,7 +39,7 @@ public abstract class BbRepo {
     public abstract BbOrg getOrg();
 
     /**
-     * BitBucket supports Git and mercurial. This tells if this repo is a git repo.
+     * Bitbucket supports Git and mercurial. This tells if this repo is a git repo.
      *
      * @return true if it's git repo.
      */

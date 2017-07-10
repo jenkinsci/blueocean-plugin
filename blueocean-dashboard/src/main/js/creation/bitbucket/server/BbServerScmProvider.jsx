@@ -13,7 +13,7 @@ export default class BbServerScmProvider extends ScmProvider {
     manager = null;
 
     getDefaultOption() {
-        return <BbDefaultOption className="github-enterprise-creation" label="BitBucket Server" />;
+        return <BbDefaultOption className="github-enterprise-creation" label="Bitbucket Server" />;
     }
 
     getFlowManager() {

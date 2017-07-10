@@ -5,9 +5,9 @@ import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 /**
- * BitBucket Project or Team.
+ * Bitbucket Project or Team.
  *
- * In case of BitBucket server 'Project' is presented as scm org, in case of BitBucket cloud 'Team' is scm org.
+ * In case of Bitbucket server 'Project' is presented as scm org, in case of Bitbucket cloud 'Team' is scm org.
  *
  * @author Vivek Pandey
  */

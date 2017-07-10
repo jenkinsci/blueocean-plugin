@@ -8,11 +8,10 @@
     <version>1.2.0-beta-2-SNAPSHOT</version>
   </parent>
 
-  <name>BitBucket Pipeline for Blue Ocean</name>
+  <name>Bitbucket Pipeline for Blue Ocean</name>
   <artifactId>blueocean-bitbucket-pipeline</artifactId>
   <packaging>hpi</packaging>
 
-  <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
   <properties>
     <jacoco.haltOnFailure>true</jacoco.haltOnFailure>
   </properties>

@@ -22,7 +22,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.Map;
 
 /**
- * BitBucket APIs needed to perform BlueOcean pipeline creation flow.
+ * Bitbucket APIs needed to perform BlueOcean pipeline creation flow.
  *
  * @author Vivek Pandey
  */
@@ -143,7 +143,7 @@ public abstract class BitbucketApi {
                                                                @Nullable String commitId);
 
     /**
-     * Checks if a file exists in BitBucket repo.
+     * Checks if a file exists in Bitbucket repo.
      *
      * @param orgId Bitbucket project/team key {@link BbOrg#getKey()}
      * @param repoSlug repo slug {@link BbRepo#getSlug()}
@@ -157,7 +157,7 @@ public abstract class BitbucketApi {
                                        @Nonnull String branch);
 
     /**
-     * Gives BitBucket branch
+     * Gives Bitbucket branch
      *
      * @param orgId Bitbucket project/team key {@link BbOrg#getKey()}
      * @param repoSlug Repo slug {@link BbRepo#getSlug()}

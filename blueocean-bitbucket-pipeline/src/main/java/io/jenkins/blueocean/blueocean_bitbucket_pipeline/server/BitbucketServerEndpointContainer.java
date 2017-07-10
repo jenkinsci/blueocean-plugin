@@ -58,7 +58,7 @@ public class BitbucketServerEndpointContainer extends ScmServerEndpointContainer
                 }
             } catch (IOException e) {
                 errors.add(new ErrorMessage.Error(BitbucketServerEndpoint.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Could not connect to Bitbucket server"));
-                LOGGER.error("Could not connect to BitBucket", e);
+                LOGGER.error("Could not connect to Bitbucket", e);
             }
         }
 
@@ -66,7 +66,7 @@ public class BitbucketServerEndpointContainer extends ScmServerEndpointContainer
         final BitbucketEndpointConfiguration endpointConfiguration = BitbucketEndpointConfiguration.get();
 
         if(!errors.isEmpty()){
-            throw new ServiceException.BadRequestException(new ErrorMessage(400, "Failed to create BitBucket server endpoint").addAll(errors));
+            throw new ServiceException.BadRequestException(new ErrorMessage(400, "Failed to create Bitbucket server endpoint").addAll(errors));
         }
         final com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketServerEndpoint endpoint = new com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketServerEndpoint(null, url, false, null);
         SecurityContext old=null;
