@@ -22,8 +22,8 @@ class BbServerManager {
         return servers;
     }
 
-    createServer(url) {
-        return this.serverApi.createServer(url)
+    createServer(name, url) {
+        return this.serverApi.createServer(name, url)
             .then(
                 server => this._onCreateServerSuccess(server),
                 error => this._onCreateServerFailure(error),

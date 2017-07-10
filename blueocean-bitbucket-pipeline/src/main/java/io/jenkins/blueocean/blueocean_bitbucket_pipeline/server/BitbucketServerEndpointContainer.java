@@ -46,7 +46,14 @@ public class BitbucketServerEndpointContainer extends ScmServerEndpointContainer
     public ScmServerEndpoint create(JSONObject request) {
         List<ErrorMessage.Error> errors = Lists.newLinkedList();
 
-        final String url = (String) request.get(ScmServerEndpoint.API_URL);
+        // Validate name
+        final String name = (String) request.get(ScmServerEndpoint.NAME);
+        if(StringUtils.isBlank(name)){
+            errors.add(new ErrorMessage.Error(ScmServerEndpoint.NAME, ErrorMessage.Error.ErrorCodes.MISSING.toString(), ScmServerEndpoint.NAME + " is required"));
+        }
+
+        String url = (String) request.get(ScmServerEndpoint.API_URL);
+        final BitbucketEndpointConfiguration endpointConfiguration = BitbucketEndpointConfiguration.get();
         if(StringUtils.isBlank(url)){
             errors.add(new ErrorMessage.Error(ScmServerEndpoint.API_URL, ErrorMessage.Error.ErrorCodes.MISSING.toString(), ScmServerEndpoint.API_URL + " is required"));
         }else {
@@ -60,15 +67,20 @@ public class BitbucketServerEndpointContainer extends ScmServerEndpointContainer
                 errors.add(new ErrorMessage.Error(BitbucketServerEndpoint.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Could not connect to Bitbucket server"));
                 LOGGER.error("Could not connect to Bitbucket", e);
             }
-        }
 
-        //validate presence of endpoint with same name
-        final BitbucketEndpointConfiguration endpointConfiguration = BitbucketEndpointConfiguration.get();
+            //validate presence of endpoint with same name
+            url = BitbucketEndpointConfiguration.normalizeServerUrl(url);
+            for (AbstractBitbucketEndpoint endpoint : endpointConfiguration.getEndpoints()) {
+                if (url.equals(endpoint.getServerUrl())) {
+                    errors.add(new ErrorMessage.Error(ScmServerEndpoint.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), ScmServerEndpoint.API_URL + " already exists"));
+                }
+            }
+        }
 
         if(!errors.isEmpty()){
             throw new ServiceException.BadRequestException(new ErrorMessage(400, "Failed to create Bitbucket server endpoint").addAll(errors));
         }
-        final com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketServerEndpoint endpoint = new com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketServerEndpoint(null, url, false, null);
+        final com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketServerEndpoint endpoint = new com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketServerEndpoint(name, url, false, null);
         SecurityContext old=null;
         try {
             // We need to escalate privilege to add user defined endpoint to
@@ -89,7 +101,6 @@ public class BitbucketServerEndpointContainer extends ScmServerEndpointContainer
         throw new ServiceException.NotImplementedException("not implemented");
     }
 
-    @SuppressWarnings("unchecked")
     @Override
     public Iterator<ScmServerEndpoint> iterator() {
         BitbucketEndpointConfiguration endpointConfiguration = BitbucketEndpointConfiguration.get();
