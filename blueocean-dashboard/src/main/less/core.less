@@ -133,10 +133,13 @@ main {
 
     .result-item-label {
         display: flex;
+        min-width: 0;
 
         .result-item-label-desc {
             max-height: 16px;
             overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
 
         .result-item-label-name {
