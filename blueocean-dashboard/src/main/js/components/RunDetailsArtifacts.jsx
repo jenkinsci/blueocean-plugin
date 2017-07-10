@@ -24,8 +24,8 @@ const ZipFileDownload = (props) => {
 };
 
 ZipFileDownload.propTypes = {
-    zipFile: string,
-    t: func,
+    zipFile: PropTypes.string,
+    t: PropTypes.func,
 };
 
 
@@ -43,7 +43,7 @@ function ArtifactListingLimited(props) {
 }
 
 ArtifactListingLimited.propTypes = {
-    t: func,
+    t: PropTypes.func,
 };
 
 
