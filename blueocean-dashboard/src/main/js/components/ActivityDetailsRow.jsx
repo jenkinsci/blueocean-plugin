@@ -23,7 +23,7 @@ import RunMessageCell from './RunMessageCell';
  Rest source: http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/{PIPELINE_NAME}/runs
  */
 
-class RunDetailsRow extends Component {
+class ActivityDetailsRow extends Component {
 
     // The number of hardcoded actions not provided by extensions
     static actionItemsCount = 2;
@@ -124,7 +124,7 @@ class RunDetailsRow extends Component {
     }
 }
 
-RunDetailsRow.propTypes = {
+ActivityDetailsRow.propTypes = {
     run: PropTypes.object,
     pipeline: PropTypes.object,
     locale: PropTypes.string,
@@ -135,13 +135,13 @@ RunDetailsRow.propTypes = {
     isMultibranch: PropTypes.boolan,
 };
 
-RunDetailsRow.contextTypes = {
+ActivityDetailsRow.contextTypes = {
     router: PropTypes.object.isRequired, // From react-router
     location: PropTypes.object,
 };
 
-const harmonized = timeHarmonizer(RunDetailsRow);
-harmonized.actionItemsCount = RunDetailsRow.actionItemsCount;
+const harmonized = timeHarmonizer(ActivityDetailsRow);
+harmonized.actionItemsCount = ActivityDetailsRow.actionItemsCount;
 
-export { harmonized as RunDetailsRow };
+export { harmonized as ActivityDetailsRow };
 
