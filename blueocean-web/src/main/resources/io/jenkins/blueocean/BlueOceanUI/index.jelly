@@ -23,7 +23,7 @@
               data-servertime="${it.now}"
               data-adjuncturl="${rootURL}/${j.getAdjuncts('').rootURL}">
 
-            <title>Jenkins Blue Ocean</title>
+            <title>Jenkins</title>
 
             <j:if test="${isMSIE}">
                 <meta http-equiv="X-UA-Compatible" content="IE=edge"></meta>
