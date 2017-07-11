@@ -43,6 +43,6 @@ public class GithubServer extends Resource {
 
     @Override
     public Link getLink() {
-        return parent.rel(BaseEncoding.base32().encode(endpoint.getApiUri().getBytes()));
+        return parent.rel(BaseEncoding.base32().encode(endpoint.getApiUri().getBytes(Charsets.UTF_8)));
     }
 }
