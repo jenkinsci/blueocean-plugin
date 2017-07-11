@@ -89,23 +89,17 @@ public class GithubServerContainer extends Container<GithubServer> {
             errorMessage.addAll(errors);
             throw new ServiceException.BadRequestException(errorMessage);
         } else {
+            // TODO: this is a temp workaround to facilitate automated Selenium tests
+            // since duplicate URLs are not allowed, Selenium appends a random query string param to the API URL
+            // this bypasses the uniqueness check but a URL with a query string param will cause downstream errors
+            // therefore this method trims off the query string when actually saving the server so a clean URL is used
+            // once there is an easy way to delete existing GitHub servers this same logic should be added to
+            // validation above
+            String sanitizedUrl = discardQueryString(url);
+            Endpoint endpoint = new Endpoint(sanitizedUrl, name);
             GitHubConfiguration config = GitHubConfiguration.get();
-            GithubServer server;
-            synchronized (config) {
-                // TODO: this is a temp workaround to facilitate automated Selenium tests
-                // since duplicate URLs are not allowed, Selenium appends a random query string param to the API URL
-                // this bypasses the uniqueness check but a URL with a query string param will cause downstream errors
-                // therefore this method trims off the query string when actually saving the server so a clean URL is used
-                // once there is an easy way to delete existing GitHub servers this same logic should be added to validation above
-                String sanitizedUrl = discardQueryString(url);
-                Endpoint endpoint = new Endpoint(sanitizedUrl, name);
-                List<Endpoint> endpoints = Lists.newLinkedList(config.getEndpoints());
-                endpoints.add(endpoint);
-                config.setEndpoints(endpoints);
-                config.save();
-                server = new GithubServer(endpoint, getLink());
-            }
-            return server;
+            config.addEndpoint(endpoint);
+            return new GithubServer(endpoint, getLink());
         }
      }
 

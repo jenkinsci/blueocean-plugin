@@ -83,7 +83,16 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
         List<String> repos = new ArrayList<>();
 
         if (scmConfig != null) {
-            apiUrl = StringUtils.defaultIfBlank(scmConfig.getUri(), GitHubSCMSource.GITHUB_URL);
+            // Pre 2.2.x, GitHubSCMSource uses a null apiUrl as a special marker for http://github.com
+            // TODO: Post 2.2.x the special case of handling will be retained, but nicer to avoid null special case
+            apiUrl = StringUtils.defaultIfBlank(
+                GitHubConfiguration.normalizeApiUri(
+                    StringUtils.trimToNull(
+                        scmConfig.getUri()
+                    )
+                ),
+                GitHubSCMSource.GITHUB_URL
+            );
             updateEndpoints(apiUrl);
 
             if (scmConfig.getConfig().get("orgName") instanceof String) {
@@ -141,7 +150,16 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
                 GitHubSCMNavigator gitHubSCMNavigator = organizationFolder.getNavigators().get(GitHubSCMNavigator.class);
 
                 StringBuilder sb = new StringBuilder();
+                String includes = GitHubSCMNavigator.DescriptorImpl.defaultIncludes;
+                String excludes = GitHubSCMNavigator.DescriptorImpl.defaultExcludes;
+                boolean buildOriginBranch = GitHubSCMNavigator.DescriptorImpl.defaultBuildOriginBranch;
+                boolean buildOriginBranchWithPR = GitHubSCMNavigator.DescriptorImpl.defaultBuildOriginBranchWithPR;
+                boolean buildOriginPRHead = GitHubSCMNavigator.DescriptorImpl.defaultBuildOriginPRHead;
+                boolean buildOriginPRMerge = GitHubSCMNavigator.DescriptorImpl.defaultBuildOriginPRMerge;
+                boolean buildForkPRHead = GitHubSCMNavigator.DescriptorImpl.defaultBuildForkPRHead;
+                boolean buildForkPRMerge = GitHubSCMNavigator.DescriptorImpl.defaultBuildForkPRMerge;
                 if (gitHubSCMNavigator != null) {
+
                     // currently, we are setting a series of regular expressions to match the repositories
                     // so we need to extract the current set for incoming create requests to keep them
                     // see a few lines below for the pattern being used
@@ -164,9 +182,26 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
                     if (credentialId == null) {
                         credentialId = gitHubSCMNavigator.getScanCredentialsId();
                     }
+
+                    includes = gitHubSCMNavigator.getIncludes();
+                    excludes = gitHubSCMNavigator.getExcludes();
+                    buildOriginBranch = gitHubSCMNavigator.getBuildOriginBranch();
+                    buildOriginBranchWithPR = gitHubSCMNavigator.getBuildOriginBranchWithPR();
+                    buildOriginPRHead = gitHubSCMNavigator.getBuildOriginPRHead();
+                    buildOriginPRMerge = gitHubSCMNavigator.getBuildOriginPRMerge();
+                    buildForkPRHead = gitHubSCMNavigator.getBuildForkPRHead();
+                    buildForkPRMerge = gitHubSCMNavigator.getBuildForkPRMerge();
                 }
 
                 gitHubSCMNavigator = new GitHubSCMNavigator(apiUrl, orgName, credentialId, credentialId);
+                gitHubSCMNavigator.setIncludes(includes);
+                gitHubSCMNavigator.setExcludes(excludes);
+                gitHubSCMNavigator.setBuildOriginBranch(buildOriginBranch);
+                gitHubSCMNavigator.setBuildOriginBranchWithPR(buildOriginBranchWithPR);
+                gitHubSCMNavigator.setBuildOriginPRHead(buildOriginPRHead);
+                gitHubSCMNavigator.setBuildOriginPRMerge(buildOriginPRMerge);
+                gitHubSCMNavigator.setBuildForkPRHead(buildForkPRHead);
+                gitHubSCMNavigator.setBuildForkPRMerge(buildForkPRMerge);
                 organizationFolder.getNavigators().replace(gitHubSCMNavigator);
 
                 for (String r : repos) {
@@ -205,19 +240,13 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
     }
 
     private void updateEndpoints(String apiUrl) {
+        if (GitHubSCMSource.GITHUB_URL.equals(apiUrl)) {
+            // Currently GitHubConfiguration does not store an entry for http://github.com
+            return;
+        }
         GitHubConfiguration config = GitHubConfiguration.get();
-        synchronized (config) {
-            final String finalApiUrl = apiUrl;
-            Endpoint endpoint = Iterables.find(config.getEndpoints(), new Predicate<Endpoint>() {
-                @Override
-                public boolean apply(@Nullable Endpoint input) {
-                    return input != null && input.getApiUri().equals(finalApiUrl);
-                }
-            }, null);
-            if (endpoint == null) {
-                config.setEndpoints(ImmutableList.of(new Endpoint(apiUrl, apiUrl)));
-                config.save();
-            }
+        if (config.findEndpoint(apiUrl) == null) {
+            config.addEndpoint(new Endpoint(apiUrl, /*infer display name from the api uri*/null));
         }
     }
 
