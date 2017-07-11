@@ -90,23 +90,13 @@ public class GithubServerContainer extends Container<GithubServer> {
             throw new ServiceException.BadRequestException(message);
         } else {
             GitHubConfiguration config = GitHubConfiguration.get();
-            GithubServer server;
-            synchronized (config) {
-                // TODO: this is a temp workaround to facilitate automated Selenium tests
-                // since duplicate URLs are not allowed, Selenium appends a random query string param to the API URL
-                // this bypasses the uniqueness check but a URL with a query string param will cause downstream errors
-                // therefore this method trims off the query string when actually saving the server so a clean URL is used
-                // once there is an easy way to delete existing GitHub servers this same logic should be added to validation above
-                String sanitizedUrl = discardQueryString(url);
-                Endpoint endpoint = new Endpoint(sanitizedUrl, name);
-                if (!config.addEndpoint(endpoint)) {
-                    message.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), GithubServer.API_URL + " is already registered as '" + endpoint.getName() + "'"));
-                    throw new ServiceException.BadRequestException(message);
-                }
-                config.save();
-                server = new GithubServer(endpoint, getLink());
+            String sanitizedUrl = discardQueryString(url);
+            Endpoint endpoint = new Endpoint(sanitizedUrl, name);
+            if (!config.addEndpoint(endpoint)) {
+                message.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), GithubServer.API_URL + " is already registered as '" + endpoint.getName() + "'"));
+                throw new ServiceException.BadRequestException(message);
             }
-            return server;
+            return new GithubServer(endpoint, getLink());
         }
      }
 
@@ -127,15 +117,12 @@ public class GithubServerContainer extends Container<GithubServer> {
     @Override
     public Iterator<GithubServer> iterator() {
         GitHubConfiguration config = GitHubConfiguration.get();
-        List<Endpoint> endpoints;
-        synchronized (config) {
-            endpoints = Ordering.from(new Comparator<Endpoint>() {
-                @Override
-                public int compare(Endpoint o1, Endpoint o2) {
-                    return ComparatorUtils.NATURAL_COMPARATOR.compare(o1.getName(), o2.getName());
-                }
-            }).sortedCopy(config.getEndpoints());
-        }
+        List<Endpoint> endpoints = Ordering.from(new Comparator<Endpoint>() {
+            @Override
+            public int compare(Endpoint o1, Endpoint o2) {
+                return ComparatorUtils.NATURAL_COMPARATOR.compare(o1.getName(), o2.getName());
+            }
+        }).sortedCopy(config.getEndpoints());
         return Iterators.transform(endpoints.iterator(), new Function<Endpoint, GithubServer>() {
             @Override
             public GithubServer apply(Endpoint input) {
