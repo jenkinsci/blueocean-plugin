@@ -86,7 +86,7 @@ The Jenkins Classic UI exists side-by-side at its usual place at http://localhos
 
 ## Browser compatibility
 
-The obviously goal is for Blue Ocean to be runnable on all browsers on all platforms. We're not there yet, but getting
+The obvious goal is for Blue Ocean to be runnable on all browsers on all platforms. We're not there yet, but getting
 closer. The ultimate goal will be to have browser support in line with the [Jenkins Browser Compatibility Matrix](https://wiki.jenkins-ci.org/display/JENKINS/Browser+Compatibility+Matrix). 
 
 List of browsers where we know Blue Ocean is not yet runnable:

@@ -54,17 +54,7 @@
 }
 
 .artifacts-table {
-    th {
-        width: 100px;
-    }
-
-    .name {
-        width: 100%;
-    }
-
-    .download {
-        text-align: right;
-    }
+    margin: 24px auto 24px auto;
 }
 
 nav.page-title { // so a missing title doesn't destroy the layout
@@ -133,10 +123,13 @@ main {
 
     .result-item-label {
         display: flex;
+        min-width: 0;
 
         .result-item-label-desc {
             max-height: 16px;
             overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
 
         .result-item-label-name {

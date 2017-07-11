@@ -29,7 +29,7 @@ module.exports = {
         activityTable: '.activity-table',
         highlightedGraph: 'g.pipeline-selection-highlight',
         logConsole: 'div.logConsole',
-        artifactTable: 'table.artifacts-table tr',
+        artifactTable: '.artifacts-table .JTable-row',
         changes: 'table.changeset-table tr',
         tests: 'div.new-failure-block div.result-item',
         authors: 'a.authors',
@@ -126,7 +126,7 @@ module.exports.commands = [{
     assertTitle: function (expected) {
         const self = this;
         self.waitForElementVisible('@detailTitle');
-        self.getText('@detailTitle', function (response) {            
+        self.getText('@detailTitle', function (response) {
             sanityCheck(self, response);
             const urlProject = (response.value);
             self.assert.equal(urlProject.indexOf(expected) > -1, true);
@@ -268,7 +268,7 @@ module.exports.commands = [{
     validateNotEmptyArtifacts: function (expectedMinimum) {
         const self = this;
         self.waitForElementVisible('@artifactTable');
-        const selector = 'table.artifacts-table tr';
+        const selector = '.artifacts-table .JTable-row';
         return notEmptyHelper(selector, self, expectedMinimum ? expectedMinimum + 1 : 1);  // +1 because of the heading row
     },
      /**
@@ -383,9 +383,9 @@ module.exports.commands = [{
             // return the scrollHeight to determine whether we moved to the bottom on karaoke
             return cmElem.scrollHeight;
         }, ['//div[@class="FullScreen-contents"]'], function (result) {
-            // sanity checks            
+            // sanity checks
             sanityCheck(self, result);
-            
+
             // the scrollHeight has to be higher 0 to indicate that we have scrolled
             browser.assert.equal(result.value > 0, true);
             // to make component chain-able we will return self - part 2
@@ -428,13 +428,13 @@ module.exports.commands = [{
       browser.useCss();
       return self;
   },
-  
+
   /**
    * failed pipelines have a rerun/replace button button
    */
   clickReRunButton: function () {
     var self = this;
-    const browser = this.api;    
+    const browser = this.api;
     self.waitForElementVisible('.replay-button');
     self.click('.replay-button');
     return self;
