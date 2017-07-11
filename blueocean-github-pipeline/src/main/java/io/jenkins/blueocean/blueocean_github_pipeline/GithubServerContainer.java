@@ -84,20 +84,20 @@ public class GithubServerContainer extends Container<GithubServer> {
             }
         }
 
-        ErrorMessage message = new ErrorMessage(400, "Failed to create Github server");
-        if (!errors.isEmpty()) {
-            message.addAll(errors);
-            throw new ServiceException.BadRequestException(message);
-        } else {
+        if (errors.isEmpty()) {
             GitHubConfiguration config = GitHubConfiguration.get();
             String sanitizedUrl = discardQueryString(url);
             Endpoint endpoint = new Endpoint(sanitizedUrl, name);
             if (!config.addEndpoint(endpoint)) {
-                message.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), GithubServer.API_URL + " is already registered as '" + endpoint.getName() + "'"));
-                throw new ServiceException.BadRequestException(message);
+                errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), GithubServer.API_URL + " is already registered as '" + endpoint.getName() + "'"));
             }
-            return new GithubServer(endpoint, getLink());
+            else {
+                return new GithubServer(endpoint, getLink());
+            }
         }
+        ErrorMessage message = new ErrorMessage(400, "Failed to create Github server");
+        message.addAll(errors);
+        throw new ServiceException.BadRequestException(message);
      }
 
     @Override

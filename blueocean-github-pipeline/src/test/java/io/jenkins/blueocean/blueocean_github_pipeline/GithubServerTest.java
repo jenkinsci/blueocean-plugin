@@ -56,7 +56,7 @@ public class GithubServerTest extends PipelineBaseTest {
     }
 
     @Test
-    public void testServerBadServer() throws Exception {
+    public void badServer() throws Exception {
         // Create a server
         Map resp = request()
             .status(400)
