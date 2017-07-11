@@ -5,6 +5,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.hash.Hashing;
 import com.google.common.io.BaseEncoding;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.Util;
@@ -240,7 +241,7 @@ public class GithubServerTest extends PipelineBaseTest {
         // Load the server entry
         server = request()
             .status(200)
-            .get("/organizations/jenkins/scm/github-enterprise/servers/" + BaseEncoding.base64().encode(getApiUrl().getBytes(Charsets.UTF_8)) + "/")
+            .get("/organizations/jenkins/scm/github-enterprise/servers/" + Hashing.sha256().hashString(getApiUrl(), Charsets.UTF_8).toString() + "/")
             .build(Map.class);
         Assert.assertEquals("My Server", server.get("name"));
         Assert.assertEquals(getApiUrl(), server.get("apiUrl"));

@@ -1,10 +1,13 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
+import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import com.google.common.hash.Hashing;
 import com.google.common.io.BaseEncoding;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -21,6 +24,7 @@ import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.POST;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Comparator;
@@ -62,7 +66,7 @@ public class GithubServerContainer extends Container<GithubServer> {
         if (StringUtils.isEmpty(url)) {
             errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.MISSING.toString(), GithubServer.API_URL + " is required"));
         } else {
-            GithubServer byUrl = findByURL(url);
+            Endpoint byUrl = GitHubConfiguration.get().findEndpoint(url);
             if (byUrl != null) {
                 errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), GithubServer.API_URL + " is already registered as '" + byUrl.getName() + "'"));
             }
@@ -108,28 +112,26 @@ public class GithubServerContainer extends Container<GithubServer> {
 
     @Override
     public GithubServer get(final String encodedApiUrl) {
-        String apiUrl;
-        try {
-            apiUrl = new String(BaseEncoding.base64().decode(encodedApiUrl));
-        } catch (IllegalArgumentException e) {
+        Endpoint endpoint = Iterables.find(GitHubConfiguration.get().getEndpoints(), new Predicate<Endpoint>() {
+            @Override
+            public boolean apply(@Nullable Endpoint input) {
+                return input != null && encodedApiUrl.equals(Hashing.sha256().hashString(input.getApiUri(), Charsets.UTF_8).toString());
+            }
+        }, null);
+        if (endpoint == null) {
             throw new ServiceException.NotFoundException("not found");
         }
-        GithubServer githubServer = findByURL(apiUrl);
-        if (githubServer == null) {
-            throw new ServiceException.NotFoundException("not found");
-        }
-        return githubServer;
+        return new GithubServer(endpoint, getLink());
     }
 
     @Override
     public Iterator<GithubServer> iterator() {
-        GitHubConfiguration config = GitHubConfiguration.get();
         List<Endpoint> endpoints = Ordering.from(new Comparator<Endpoint>() {
             @Override
             public int compare(Endpoint o1, Endpoint o2) {
                 return ComparatorUtils.NATURAL_COMPARATOR.compare(o1.getName(), o2.getName());
             }
-        }).sortedCopy(config.getEndpoints());
+        }).sortedCopy(GitHubConfiguration.get().getEndpoints());
         return Iterators.transform(endpoints.iterator(), new Function<Endpoint, GithubServer>() {
             @Override
             public GithubServer apply(Endpoint input) {
@@ -152,11 +154,5 @@ public class GithubServerContainer extends Container<GithubServer> {
                 return input.getName().equals(name);
             }
         }, null);
-    }
-
-    private GithubServer findByURL(final String url) {
-        GitHubConfiguration config = GitHubConfiguration.get();
-        Endpoint endpoint = config.findEndpoint(url);
-        return endpoint == null ? null : new GithubServer(endpoint, getLink());
     }
 }
