@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
+import com.google.common.io.BaseEncoding;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.Resource;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
@@ -34,6 +35,6 @@ public class GithubServer extends Resource {
 
     @Override
     public Link getLink() {
-        return parent.rel(rawEncode(endpoint.getName()));
+        return parent.rel(BaseEncoding.base32().encode(endpoint.getApiUri().getBytes()));
     }
 }

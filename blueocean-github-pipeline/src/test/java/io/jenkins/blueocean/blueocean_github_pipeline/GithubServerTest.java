@@ -3,8 +3,11 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.io.BaseEncoding;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import hudson.Util;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import org.junit.Assert;
 import org.junit.Before;
@@ -12,6 +15,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
 
@@ -236,7 +240,7 @@ public class GithubServerTest extends PipelineBaseTest {
         // Load the server entry
         server = request()
             .status(200)
-            .get("/organizations/jenkins/scm/github-enterprise/servers/My%20Server")
+            .get("/organizations/jenkins/scm/github-enterprise/servers/" + BaseEncoding.base64().encode(getApiUrl().getBytes(Charsets.UTF_8)) + "/")
             .build(Map.class);
         Assert.assertEquals("My Server", server.get("name"));
         Assert.assertEquals(getApiUrl(), server.get("apiUrl"));

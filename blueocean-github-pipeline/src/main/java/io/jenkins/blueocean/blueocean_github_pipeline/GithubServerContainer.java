@@ -5,6 +5,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import com.google.common.io.BaseEncoding;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
@@ -106,8 +107,14 @@ public class GithubServerContainer extends Container<GithubServer> {
     }
 
     @Override
-    public GithubServer get(final String name) {
-        GithubServer githubServer = findByName(name);
+    public GithubServer get(final String encodedApiUrl) {
+        String apiUrl;
+        try {
+            apiUrl = new String(BaseEncoding.base64().decode(encodedApiUrl));
+        } catch (IllegalArgumentException e) {
+            throw new ServiceException.NotFoundException("not found");
+        }
+        GithubServer githubServer = findByURL(apiUrl);
         if (githubServer == null) {
             throw new ServiceException.NotFoundException("not found");
         }
@@ -135,7 +142,6 @@ public class GithubServerContainer extends Container<GithubServer> {
         if (apiUrl != null && apiUrl.contains("?")) {
             return apiUrl.substring(0, apiUrl.indexOf("?"));
         }
-
         return apiUrl;
     }
 
@@ -149,11 +155,8 @@ public class GithubServerContainer extends Container<GithubServer> {
     }
 
     private GithubServer findByURL(final String url) {
-        return Iterators.find(iterator(), new Predicate<GithubServer>() {
-            @Override
-            public boolean apply(GithubServer input) {
-                return input.getApiUrl().equals(url);
-            }
-        }, null);
+        GitHubConfiguration config = GitHubConfiguration.get();
+        Endpoint endpoint = config.findEndpoint(url);
+        return endpoint == null ? null : new GithubServer(endpoint, getLink());
     }
 }
