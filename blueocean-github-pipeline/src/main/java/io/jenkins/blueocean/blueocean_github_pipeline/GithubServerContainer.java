@@ -84,10 +84,10 @@ public class GithubServerContainer extends Container<GithubServer> {
             }
         }
 
+        ErrorMessage message = new ErrorMessage(400, "Failed to create Github server");
         if (!errors.isEmpty()) {
-            ErrorMessage errorMessage = new ErrorMessage(400, "Failed to create Github server");
-            errorMessage.addAll(errors);
-            throw new ServiceException.BadRequestException(errorMessage);
+            message.addAll(errors);
+            throw new ServiceException.BadRequestException(message);
         } else {
             GitHubConfiguration config = GitHubConfiguration.get();
             GithubServer server;
@@ -99,9 +99,10 @@ public class GithubServerContainer extends Container<GithubServer> {
                 // once there is an easy way to delete existing GitHub servers this same logic should be added to validation above
                 String sanitizedUrl = discardQueryString(url);
                 Endpoint endpoint = new Endpoint(sanitizedUrl, name);
-                List<Endpoint> endpoints = Lists.newLinkedList(config.getEndpoints());
-                endpoints.add(endpoint);
-                config.setEndpoints(endpoints);
+                if (!config.addEndpoint(endpoint)) {
+                    message.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), GithubServer.API_URL + " is already registered as '" + endpoint.getName() + "'"));
+                    throw new ServiceException.BadRequestException(message);
+                }
                 config.save();
                 server = new GithubServer(endpoint, getLink());
             }

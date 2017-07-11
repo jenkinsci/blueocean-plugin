@@ -251,7 +251,7 @@ public class GithubServerTest extends PipelineBaseTest {
     }
 
     private String getApiUrl() {
-        return "http://localhost:" + wireMockRule.port() + "/";
+        return "http://localhost:" + wireMockRule.port();
     }
 
     private void validGithubServer(boolean hasHeader) throws Exception {
