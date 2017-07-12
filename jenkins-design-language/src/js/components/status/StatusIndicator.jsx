@@ -6,6 +6,7 @@ import SvgStatus from './SvgStatus';
 
 const validResultValues = {
     // Mostly from io/jenkins/blueocean/rest/model/BlueRun.java
+    // NB: Please keep this in sync with blueocean-core-js/src/js/utils/RunResult.js
     success: 'success',
     failure: 'failure',
     running: 'running',
@@ -13,8 +14,9 @@ const validResultValues = {
     paused: 'paused',
     unstable: 'unstable',
     aborted: 'aborted',
-    not_built: 'not_built',
-    unknown: 'unknown'
+    not_built: 'not_built', // May be pending, or job was ended before this point
+    skipped: 'skipped', // excluded via pipeline "when" clause
+    unknown: 'unknown', // bad data or client code needs updating for new values
 };
 
 // Enum type from const validResultValues
