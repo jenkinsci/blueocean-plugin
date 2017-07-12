@@ -57,7 +57,7 @@ public class ActivityPage {
     }
 
     public ActivityPage checkUrl() {
-        wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity"), 30000);
+        wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity"), 60000);
         wait.until(By.cssSelector("article.activity"));
         return this;
     }
