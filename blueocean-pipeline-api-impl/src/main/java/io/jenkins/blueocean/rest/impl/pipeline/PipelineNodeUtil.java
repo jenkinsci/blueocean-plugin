@@ -2,34 +2,28 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Predicate;
 import hudson.model.Action;
-import hudson.model.Queue;
-import hudson.model.Run;
 import io.jenkins.blueocean.rest.model.BlueRun;
-import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.pipeline.StageStatus;
 import org.jenkinsci.plugins.pipeline.SyntheticStage;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
-import org.jenkinsci.plugins.workflow.actions.ExecutorTaskInfoAction;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.actions.StageAction;
 import org.jenkinsci.plugins.workflow.actions.TagsAction;
+import org.jenkinsci.plugins.workflow.actions.TaskInfoAction;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
-import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStep;
-import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.IOException;
 
 /**
  * @author Vivek Pandey
@@ -154,11 +148,7 @@ public class PipelineNodeUtil {
             //Check and see if this node block is inside this stage
             for(FlowNode p:nodeBlock.getParents()){
                 if(p.equals(stage)){
-                    ExecutorTaskInfoAction action = nodeBlock.getAction(ExecutorTaskInfoAction.class);
-                    if (action != null && action.isQueued()) {
-                        // TODO: Probably rewrite once we change whyBlocked to be CauseOfBlockage
-                        return action.getWhyBlocked();
-                    }
+                    return TaskInfoAction.getWhyBlockedForNode(nodeBlock);
                 }
             }
         }

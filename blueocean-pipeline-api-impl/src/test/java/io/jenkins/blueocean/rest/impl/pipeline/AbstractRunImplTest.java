@@ -347,7 +347,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
         Assert.assertEquals("QUEUED", latestRun.get("state"));
         Assert.assertEquals("1", latestRun.get("id"));
-        Assert.assertEquals("Waiting for next available executor", latestRun.get("causeOfBlockage"));
+        Assert.assertEquals("There are no nodes with the label ‘second’", latestRun.get("causeOfBlockage"));
 
         j.createOnlineSlave(Label.get("second"));
 
