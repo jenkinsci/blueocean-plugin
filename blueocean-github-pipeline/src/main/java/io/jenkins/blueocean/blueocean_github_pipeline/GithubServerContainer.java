@@ -9,12 +9,15 @@ import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.hash.Hashing;
 import com.google.common.io.BaseEncoding;
+import hudson.security.ACL;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.Container;
 import net.sf.json.JSONObject;
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
@@ -90,14 +93,24 @@ public class GithubServerContainer extends Container<GithubServer> {
         }
 
         if (errors.isEmpty()) {
-            GitHubConfiguration config = GitHubConfiguration.get();
-            String sanitizedUrl = discardQueryString(url);
-            Endpoint endpoint = new Endpoint(sanitizedUrl, name);
-            if (!config.addEndpoint(endpoint)) {
-                errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), GithubServer.API_URL + " is already registered as '" + endpoint.getName() + "'"));
-            }
-            else {
-                return new GithubServer(endpoint, getLink());
+            SecurityContext old = null;
+            try {
+                // We need to escalate privilege to add user defined endpoint to
+                old = ACL.impersonate(ACL.SYSTEM);
+                GitHubConfiguration config = GitHubConfiguration.get();
+                String sanitizedUrl = discardQueryString(url);
+                Endpoint endpoint = new Endpoint(sanitizedUrl, name);
+                if (!config.addEndpoint(endpoint)) {
+                    errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), GithubServer.API_URL + " is already registered as '" + endpoint.getName() + "'"));
+                }
+                else {
+                    return new GithubServer(endpoint, getLink());
+                }
+            }finally {
+                //reset back to original privilege level
+                if(old != null){
+                    SecurityContextHolder.setContext(old);
+                }
             }
         }
         ErrorMessage message = new ErrorMessage(400, "Failed to create Github server");
