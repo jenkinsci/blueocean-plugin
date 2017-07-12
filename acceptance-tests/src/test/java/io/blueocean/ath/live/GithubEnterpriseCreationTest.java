@@ -71,9 +71,19 @@ public class GithubEnterpriseCreationTest {
         dialog.clickSaveServerButton();
         dialog.findFormErrorMessage("Could not connect");
         // valid form data should submit
+
         dialog.enterServerUrl(serverUrl);
         dialog.clickSaveServerButton();
-        dialog.wasDismissed();
+
+        // As currently api.github.com may up in list thank to github branch source, this can mess up this test
+        if (dialog.hasFormErrorMessage("already exists")) {
+            // if we already have the "test" GHE (ie github cloud) - no worries, we wil cancel and use it
+            dialog.clickCancelButton();
+            creationPage.selectExistingServer();
+        } else {
+            dialog.wasDismissed();
+        }
+
 
         creationPage.clickChooseServerNextStep();
         creationPage.completeCreationFlow(
