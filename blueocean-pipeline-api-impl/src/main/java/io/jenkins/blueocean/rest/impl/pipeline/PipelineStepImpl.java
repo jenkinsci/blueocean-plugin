@@ -208,7 +208,7 @@ public class PipelineStepImpl extends BluePipelineStep {
             //XXX: execution.doProceed(request) expects submitted form, otherwise we could have simply used it
             execution.preSubmissionCheck();
 
-            Map<String,Object> o = parseValue(execution, JSONArray.fromObject(body.get(PARAMETERS_ELEMENT)), request);
+            Object o = parseValue(execution, JSONArray.fromObject(body.get(PARAMETERS_ELEMENT)), request);
 
             HttpResponse response =  execution.proceed(o);
             for(PipelineInputStepListener listener: ExtensionList.lookup(PipelineInputStepListener.class)){
@@ -220,7 +220,7 @@ public class PipelineStepImpl extends BluePipelineStep {
         }
     }
 
-    private Map<String,Object> parseValue(InputStepExecution execution, JSONArray parameters, StaplerRequest request) throws IOException, InterruptedException {
+    private Object parseValue(InputStepExecution execution, JSONArray parameters, StaplerRequest request) throws IOException, InterruptedException {
         Map<String, Object> mapResult = new HashMap<String, Object>();
 
         InputStep input = execution.getInput();
@@ -252,10 +252,13 @@ public class PipelineStepImpl extends BluePipelineStep {
             Authentication a = Jenkins.getAuthentication();
             mapResult.put(valueName, a.getName());
         }
-        if (mapResult.isEmpty()) {
-            return null;
-        } else {
-            return mapResult;
+        switch (mapResult.size()) {
+            case 0:
+                return null;    // no value if there's no parameter
+            case 1:
+                return mapResult.values().iterator().next();
+            default:
+                return mapResult;
         }
     }
 
