@@ -102,8 +102,7 @@ public class GithubServerContainer extends Container<GithubServer> {
                 Endpoint endpoint = new Endpoint(sanitizedUrl, name);
                 if (!config.addEndpoint(endpoint)) {
                     errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), GithubServer.API_URL + " is already registered as '" + endpoint.getName() + "'"));
-                }
-                else {
+                } else {
                     return new GithubServer(endpoint, getLink());
                 }
             }finally {
