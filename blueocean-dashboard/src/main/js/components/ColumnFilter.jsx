@@ -45,11 +45,12 @@ export class ColumnFilter extends Component {
 
     blur = e => {
         const targetElem = e.target;
+        const hoveredElemArray = document.querySelectorAll(':hover');
+        const hoveredElem = hoveredElemArray[hoveredElemArray.length - 1];
+
         this.setState({ focused: false });
-        if (targetElem.value === '') {
-            setTimeout(() => {
-                targetElem.value = this.state.originalValue;
-            }, 0);
+        if (targetElem.value === '' && hoveredElem && hoveredElem.className != 'item selected') {
+            this.setState({ value: this.state.originalValue });
         }
     }
 
