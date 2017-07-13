@@ -49,7 +49,7 @@ export class ColumnFilter extends Component {
         const hoveredElem = hoveredElemArray[hoveredElemArray.length - 1];
 
         this.setState({ focused: false });
-        if (targetElem.value === '' && hoveredElem && hoveredElem.className != 'item selected') {
+        if (targetElem.value === '' && hoveredElem && hoveredElem.className !== 'item selected') {
             this.setState({ value: this.state.originalValue });
         }
     }
