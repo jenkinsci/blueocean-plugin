@@ -130,7 +130,7 @@ public class GithubCreationPage {
         }
         selectOrganization(org);
 
-        wait.until(singlePipelineBtn,30000)
+        wait.until(singlePipelineBtn,120000)
             .click();
 
         logger.info("Select a single pipeline to create");

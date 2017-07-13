@@ -93,6 +93,6 @@ public class GithubAddServerDialogPage {
     }
 
     public void wasDismissed() {
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".github-enterprise-add-server-dialog")), 60000);
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".github-enterprise-add-server-dialog")), 120000);
     }
 }
