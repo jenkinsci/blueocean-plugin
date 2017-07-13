@@ -24,6 +24,7 @@ import org.jenkinsci.plugins.workflow.graph.FlowEndNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
+import org.jenkinsci.plugins.workflow.support.steps.ExecutorStep;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
 
@@ -35,6 +36,7 @@ import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 
 
 /**
@@ -176,10 +178,18 @@ public class PipelineEventListener implements GraphListener {
             StepDescriptor stepDescriptor = stepNode.getDescriptor();
             if(stepDescriptor != null) {
                 message.set(PipelineEventChannel.EventProps.pipeline_step_name, stepDescriptor.getFunctionName());
-            }
-            if (flowNode.getAction(TaskInfoAction.class) != null) {
-                // Needed because this is expected everywhere apparently.
-                message.set(PipelineEventChannel.EventProps.pipeline_step_is_paused, String.valueOf(false));
+
+                // TODO: Better event choice, more granularity - like only firing when this results in a status change
+                if (stepDescriptor instanceof ExecutorStep.DescriptorImpl) {
+                    Run<?, ?> run = runFor(flowNode.getExecution());
+                    if (run != null) {
+                        publishJobEvent(run, Events.JobChannel.job_run_started);
+                    }
+                    if (flowNode.getAction(TaskInfoAction.class) != null) {
+                        // Needed because this is expected everywhere apparently.
+                        message.set(PipelineEventChannel.EventProps.pipeline_step_is_paused, String.valueOf(false));
+                    }
+                }
             }
         }
 
@@ -191,13 +201,7 @@ public class PipelineEventListener implements GraphListener {
                 if (pausedForInputStep) {
                     // Fire job event to tell we are paused
                     // We will publish on the job channel
-                    try {
-                        PubsubBus.getBus().publish(new RunMessage(run)
-                            .setEventName(Events.JobChannel.job_run_paused)
-                        );
-                    } catch (MessageException e) {
-                        LOGGER.log(Level.WARNING, "Error publishing Run pause event.", e);
-                    }
+                    publishJobEvent(run, Events.JobChannel.job_run_paused);
                 }
                 message.set(PipelineEventChannel.EventProps.pipeline_step_is_paused, String.valueOf(pausedForInputStep));
             }
@@ -210,6 +214,17 @@ public class PipelineEventListener implements GraphListener {
             PubsubBus.getBus().publish(message);
         } catch (MessageException e) {
             LOGGER.log(Level.SEVERE, "Unexpected error publishing pipeline FlowNode event.", e);
+        }
+    }
+
+    private static void publishJobEvent(@Nonnull Run<?,?> run, @Nonnull Events.JobChannel event) {
+        try {
+            // TODO: What's the actual event we should send here?
+            PubsubBus.getBus().publish(new RunMessage(run)
+                .setEventName(event)
+            );
+        } catch (MessageException e) {
+            LOGGER.log(Level.WARNING, "Error publishing Job event.", e);
         }
     }
 
