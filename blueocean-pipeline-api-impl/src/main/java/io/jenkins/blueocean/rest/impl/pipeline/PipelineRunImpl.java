@@ -243,7 +243,6 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
                 ExecutorStepExecution.PlaceholderTask task = (ExecutorStepExecution.PlaceholderTask) i.task;
                 Run r = task.runForDisplay();
                 if (r != null && r.equals(run)) {
-                    System.err.println("cause of blockage: " + i.getCauseOfBlockage());
                     String cause = i.getCauseOfBlockage().getShortDescription();
                     if (task.getCauseOfBlockage() != null) {
                         cause = task.getCauseOfBlockage().getShortDescription();
