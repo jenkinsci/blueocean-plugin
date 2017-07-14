@@ -26,10 +26,8 @@ import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import io.jenkins.blueocean.service.embedded.rest.StoppableRun;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMRevisionAction;
-import org.jenkinsci.plugins.workflow.actions.TaskInfoAction;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayCause;
-import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
@@ -246,16 +244,6 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
                     String cause = i.getCauseOfBlockage().getShortDescription();
                     if (task.getCauseOfBlockage() != null) {
                         cause = task.getCauseOfBlockage().getShortDescription();
-                    } else {
-                        try {
-                            FlowNode n = task.getNode();
-
-                            if (n != null) {
-                                cause = TaskInfoAction.getWhyBlockedForNode(n);
-                            }
-                        } catch (IOException | InterruptedException e) {
-                            logger.warn(null, e);
-                        }
                     }
                     return cause;
                 }

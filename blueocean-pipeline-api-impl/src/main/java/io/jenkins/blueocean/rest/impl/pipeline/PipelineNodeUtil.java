@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Predicate;
 import hudson.model.Action;
+import hudson.model.Queue;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.pipeline.StageStatus;
 import org.jenkinsci.plugins.pipeline.SyntheticStage;
@@ -10,7 +11,7 @@ import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.actions.StageAction;
 import org.jenkinsci.plugins.workflow.actions.TagsAction;
-import org.jenkinsci.plugins.workflow.actions.TaskInfoAction;
+import org.jenkinsci.plugins.workflow.actions.QueueItemAction;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode;
@@ -148,7 +149,14 @@ public class PipelineNodeUtil {
             //Check and see if this node block is inside this stage
             for(FlowNode p:nodeBlock.getParents()){
                 if(p.equals(stage)){
-                    return TaskInfoAction.getWhyBlockedForNode(nodeBlock);
+                    Queue.Item item = QueueItemAction.getQueueItem(nodeBlock);
+                    if (item != null) {
+                        String cause = item.getCauseOfBlockage().getShortDescription();
+                        if (cause == null) {
+                            cause = item.task.getCauseOfBlockage().getShortDescription();
+                        }
+                        return cause;
+                    }
                 }
             }
         }

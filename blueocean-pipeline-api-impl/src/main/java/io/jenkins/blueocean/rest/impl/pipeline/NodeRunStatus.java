@@ -4,7 +4,7 @@ import hudson.model.Result;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
-import org.jenkinsci.plugins.workflow.actions.TaskInfoAction;
+import org.jenkinsci.plugins.workflow.actions.QueueItemAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.GenericStatus;
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
@@ -31,10 +31,10 @@ public class NodeRunStatus {
                 this.result = BlueRun.BlueRunResult.ABORTED;
             }
             this.state = endNode.isRunning() ? BlueRun.BlueRunState.RUNNING : BlueRun.BlueRunState.FINISHED;
-        } else if (TaskInfoAction.getNodeState(endNode) == TaskInfoAction.QueueState.QUEUED) {
+        } else if (QueueItemAction.getNodeState(endNode) == QueueItemAction.QueueState.QUEUED) {
             this.result = BlueRun.BlueRunResult.UNKNOWN;
             this.state = BlueRun.BlueRunState.QUEUED;
-        } else if (TaskInfoAction.getNodeState(endNode) == TaskInfoAction.QueueState.CANCELLED) {
+        } else if (QueueItemAction.getNodeState(endNode) == QueueItemAction.QueueState.CANCELLED) {
             this.result = BlueRun.BlueRunResult.ABORTED;
             this.state = BlueRun.BlueRunState.FINISHED;
         } else if (endNode.isRunning()) {
