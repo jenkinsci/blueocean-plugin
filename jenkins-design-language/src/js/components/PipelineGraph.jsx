@@ -215,12 +215,14 @@ export class PipelineGraph extends Component {
                 // Keep track of the nodes that have skipped status so we can route connections around them.
                 skippedNodes.push(...columnNodes);
             } else {
-                // Create a composite connection from source column to current, possibly skipping some
-                connections.push({
-                    sourceNodes: connectionSourceNodes,
-                    destinationNodes: columnNodes,
-                    skippedNodes,
-                });
+                if (connectionSourceNodes.length) {
+                    // Create a composite connection from source column to current, possibly skipping some
+                    connections.push({
+                        sourceNodes: connectionSourceNodes,
+                        destinationNodes: columnNodes,
+                        skippedNodes,
+                    });
+                }
 
                 skippedNodes = [];
 
@@ -336,7 +338,7 @@ export class PipelineGraph extends Component {
         const {
             sourceNodes,
             destinationNodes,
-            skippedNodes
+            skippedNodes,
         } = connection;
 
         if (skippedNodes.length === 0) {
@@ -348,33 +350,57 @@ export class PipelineGraph extends Component {
     // Connections between columns without any skipping
     renderBasicConnections(sourceNodes: Array<NodeInfo>, destinationNodes: Array<NodeInfo>, elements: SVGChildren) {
 
-        // TODO: special case here for straight-line connection rather than in renderDirectConnection()
+        this.renderHorizontalConnection(sourceNodes[0], destinationNodes[0], elements);
 
         // Collapse from previous node(s) to top column node
-        for (const previousNode of sourceNodes) {
-            this.renderDirectConnection(previousNode, destinationNodes[0], elements);
+        for (const previousNode of sourceNodes.slice(1)) {
+            this.renderBasicCurvedConnection(previousNode, destinationNodes[0], elements);
         }
 
-        // Expand from top previous node to column node(s) - first one done already above
+        // Expand from top previous node to column node(s)
         for (const destNode of destinationNodes.slice(1)) {
-            this.renderDirectConnection(sourceNodes[0], destNode, elements);
+            this.renderBasicCurvedConnection(sourceNodes[0], destNode, elements);
         }
     }
 
-    renderDirectConnection(leftNode: NodeInfo, rightNode: NodeInfo, elements: SVGChildren) {
-        // TODO: ^^ rename to "renderDirectCurvedConnection" or something.
+    renderHorizontalConnection(leftNode: NodeInfo, rightNode: NodeInfo, elements: SVGChildren) {
+
+        const { nodeRadius, connectorStrokeWidth } = this.state.layout;
+
+        const key = leftNode.name + leftNode.id + '_con_' + rightNode.name + rightNode.id;
+
+        const x1 = leftNode.x + nodeRadius - (nodeStrokeWidth / 2);
+        const x2 = rightNode.x - nodeRadius + (nodeStrokeWidth / 2);
+        const y = leftNode.y;
+
+        // Stroke props common to straight / curved connections
+        const connectorStroke = {
+            className: 'pipeline-connector',
+            strokeWidth: connectorStrokeWidth,
+        };
+
+        elements.push(
+            <line {...connectorStroke}
+                  key={key}
+                  x1={x1}
+                  y1={y}
+                  x2={x2}
+                  y2={y}
+            />,
+        );
+    }
+
+    renderBasicCurvedConnection(leftNode: NodeInfo, rightNode: NodeInfo, elements: SVGChildren) {
         const { nodeRadius, curveRadius, connectorStrokeWidth } = this.state.layout;
 
         const key = leftNode.name + leftNode.id + '_con_' + rightNode.name + rightNode.id;
 
-        let leftPos, rightPos;
-
-        leftPos = {
+        const leftPos = {
             x: leftNode.x + nodeRadius - (nodeStrokeWidth / 2),
             y: leftNode.y,
         };
 
-        rightPos = {
+        const rightPos = {
             x: rightNode.x - nodeRadius + (nodeStrokeWidth / 2),
             y: rightNode.y,
         };
@@ -385,39 +411,29 @@ export class PipelineGraph extends Component {
             strokeWidth: connectorStrokeWidth,
         };
 
-        // TODO: Move the straight-line special case into renderCompositeConnection
-        if (leftPos.y == rightPos.y) {
-            // Nice horizontal line
-            elements.push(
-                <line {...connectorStroke}
-                      key={key}
-                      x1={leftPos.x}
-                      y1={leftPos.y}
-                      x2={rightPos.x}
-                      y2={rightPos.y}
-                />);
-        } else {
-            // Otherwise, we'd like a curve
+        const verticalDirection = Math.sign(rightPos.y - leftPos.y); // 1 == curve down, -1 == curve up
+        // const midPointX = Math.round((leftPos.x + rightPos.x) / 2 + (curveRadius * verticalDirection));
+        const midPointX = Math.round((leftPos.x + rightPos.x) / 2);
+        const w1 = midPointX - curveRadius - leftPos.x + (curveRadius * verticalDirection);
+        const w2 = rightPos.x - curveRadius - midPointX - (curveRadius * verticalDirection);
+        // const w1 = midPointX - curveRadius - leftPos.x;
+        // const w2 = rightPos.x - curveRadius - midPointX;
+        const v = rightPos.y - leftPos.y - (2 * curveRadius * verticalDirection); // Will be -ive if curve up
+        const cv = verticalDirection * curveRadius;
 
-            const verticalDirection = Math.sign(rightPos.y - leftPos.y); // 1 == curve down, -1 == curve up
-            const midPointX = Math.round((leftPos.x + rightPos.x) / 2 + (curveRadius * verticalDirection));
-            const w1 = midPointX - curveRadius - leftPos.x;
-            const w2 = rightPos.x - curveRadius - midPointX;
-            const v = rightPos.y - leftPos.y - (2 * curveRadius * verticalDirection); // Will be -ive if curve up
-            const cv = verticalDirection * curveRadius;
+        const pathData = `M ${leftPos.x} ${leftPos.y}` // start position
+            + ` l ${w1} 0` // first horizontal line
+            + ` c ${curveRadius} 0 ${curveRadius} ${cv} ${curveRadius} ${cv}`  // turn
+            + ` l 0 ${v}` // vertical line
+            + ` c 0 ${cv} ${curveRadius} ${cv} ${curveRadius} ${cv}` // turn again
+            + ` l ${w2} 0` // second horizontal line
+        ;
 
-            const pathData = `M ${leftPos.x} ${leftPos.y}` // start position
-                + ` l ${w1} 0` // first horizontal line
-                + ` c ${curveRadius} 0 ${curveRadius} ${cv} ${curveRadius} ${cv}`  // turn
-                + ` l 0 ${v}` // vertical line
-                + ` c 0 ${cv} ${curveRadius} ${cv} ${curveRadius} ${cv}` // turn again
-                + ` l ${w2} 0` // second horizontal line
-            ;
+        elements.push(<circle cx={midPointX} cy={leftPos.y} r="5" fill="pink" key={key+'x'}/>); // TODO: RM
 
-            elements.push(
-                <path {...connectorStroke} key={key} d={pathData} fill="none" />,
-            );
-        }
+        elements.push(
+            <path {...connectorStroke} key={key} d={pathData} fill="none" />,
+        );
     }
 
     renderNode(node: NodeInfo, elements: SVGChildren) {
@@ -474,7 +490,7 @@ export class PipelineGraph extends Component {
             const transform = `translate(${selectedNode.x} ${selectedNode.y})`;
 
             elements.push(
-                <g className="pipeline-selection-highlight" transform={transform}>
+                <g className="pipeline-selection-highlight" transform={transform} key="selection-highlight">
                     <circle r={highlightRadius} strokeWidth={connectorStrokeWidth * 1.1} />
                 </g>,
             );
