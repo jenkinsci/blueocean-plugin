@@ -3,7 +3,7 @@ import { storiesOf } from '@kadira/storybook';
 import {PipelineGraph, defaultLayout} from '../components/PipelineGraph';
 
 import { StatusIndicator } from '../components';
-const validResultValues = StatusIndicator.validResultValues; 
+const validResultValues = StatusIndicator.validResultValues;
 
 storiesOf('PipelineGraph', module)
     .add('Mixed', renderMultiParallelPipeline)
@@ -184,6 +184,7 @@ function renderMultiParallelPipeline() {
             makeNode("Safari", [], validResultValues.running, 60),
             makeNode("Chrome", [], validResultValues.running, 120)
         ]),
+        makeNode("Skipped", [], validResultValues.skipped),
         makeNode("Dev"),
         makeNode("Staging"),
         makeNode("Production")

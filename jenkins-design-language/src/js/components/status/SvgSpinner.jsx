@@ -17,7 +17,7 @@ export default class SvgSpinner extends Component {
         if (result === 'queued') {
             percentage = 0;
         }
-        else if (result === 'not_built') {
+        else if (result === 'not_built' || result === 'skipped') {
             percentage = 0;
         }
         else if (typeof percentage !== 'number' || isNaN(percentage) || percentage < 0) {

@@ -33,7 +33,8 @@ export function decodeResultValue(resultMaybe: any):Result {
     return 'unknown';
 }
 
-// Returns the correct <g> element for the result / progress percent
+// Returns the correct <g> element for the result / progress percent.
+// NB: This is also used by the PipelineGraph
 export function getGroupForResult(result: Result, percentage: number, radius: number) {
     if (usesSvgSpinner(result)) {
         return <SvgSpinner radius={radius} result={result} percentage={percentage}/>;
@@ -48,6 +49,7 @@ function usesSvgSpinner(result: Result) {
         case 'running':
         case 'queued':
         case 'not_built':
+        case 'skipped':
             return true;
         default:
             return false;
@@ -56,7 +58,7 @@ function usesSvgSpinner(result: Result) {
 
 class StatusIndicator extends Component {
 
-    static validResultValues:typeof validResultValues;
+    static validResultValues:typeof validResultValues = validResultValues;
 
     render() {
         const {
@@ -106,7 +108,5 @@ StatusIndicator.propTypes = {
     height: PropTypes.string,
     noBackground: PropTypes.bool,
 };
-
-StatusIndicator.validResultValues = validResultValues;
 
 export {StatusIndicator, SvgSpinner, SvgStatus};
