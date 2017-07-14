@@ -12,7 +12,7 @@ import org.jenkinsci.plugins.pubsub.PubsubBus;
 import org.jenkinsci.plugins.pubsub.RunMessage;
 import org.jenkinsci.plugins.pubsub.SimpleMessage;
 import org.jenkinsci.plugins.workflow.actions.BodyInvocationAction;
-import org.jenkinsci.plugins.workflow.actions.TaskInfoAction;
+import org.jenkinsci.plugins.workflow.actions.QueueItemAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
 import org.jenkinsci.plugins.workflow.graph.StepNode;
@@ -67,7 +67,7 @@ public class PipelineEventListener implements GraphListener {
                 List<String> branch = getBranch(flowNode);
                 branch.add(flowNode.getId());
                 publishEvent(newMessage(PipelineEventChannel.Event.pipeline_block_start, flowNode, branch));
-            } else if (flowNode.getAction(TaskInfoAction.class) != null) {
+            } else if (flowNode.getPersistentAction(QueueItemAction.class) != null) {
                 // Make sure we fire an event for the start of node blocks.
                 List<String> branch = getBranch(flowNode);
                 publishEvent(newMessage(PipelineEventChannel.Event.pipeline_step, flowNode, branch));
@@ -185,7 +185,7 @@ public class PipelineEventListener implements GraphListener {
                     if (run != null) {
                         publishJobEvent(run, Events.JobChannel.job_run_started);
                     }
-                    if (flowNode.getAction(TaskInfoAction.class) != null) {
+                    if (flowNode.getPersistentAction(QueueItemAction.class) != null) {
                         // Needed because this is expected everywhere apparently.
                         message.set(PipelineEventChannel.EventProps.pipeline_step_is_paused, String.valueOf(false));
                     }
