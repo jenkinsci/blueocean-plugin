@@ -1,5 +1,6 @@
 package io.blueocean.ath;
 
+import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
@@ -19,6 +20,7 @@ import org.openqa.selenium.remote.ScreenshotException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.List;
 
 /**
  * ATHJUnitRunner is the JUnit runner for ATH
@@ -122,6 +124,8 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
         eachNotifier.fireTestStarted();
         try {
             int n = retry == null ? 1 : retry.value();
+            List<Throwable> failures = Lists.newArrayList();
+
             for (int i = 0; i < n; i++) {
                 try {
                     statement.evaluate();
@@ -130,11 +134,15 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
                     throw e;
                 } catch (Throwable e) {
                     if(n <= 1) {
-                        eachNotifier.addFailure(e);
+                        failures.add(e)
                     } else {
-                        eachNotifier.addFailure(new RetryThrowable(i, e));
+                        failures.add(new RetryThrowable(i, e));
                     }
                 }
+            }
+
+            for (Throwable failure : failures) {
+                eachNotifier.addFailure(failure);
             }
         } catch (AssumptionViolatedException e) {
             eachNotifier.addFailedAssumption(e);
