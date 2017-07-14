@@ -109,6 +109,7 @@ export {
     buildOrganizationUrl,
     buildPipelineUrl,
     rootPath,
+    rootPathCreate,
     buildClassicConfigUrl,
     buildClassicInputUrl,
     buildClassicBuildUrl,
