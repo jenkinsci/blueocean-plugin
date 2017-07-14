@@ -129,6 +129,7 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
             for (int i = 0; i < n; i++) {
                 try {
                     statement.evaluate();
+                    failures.clear();
                     break;
                 } catch (AssumptionViolatedException e) {
                     throw e;
