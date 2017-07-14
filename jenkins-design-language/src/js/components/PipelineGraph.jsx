@@ -41,8 +41,6 @@ type NodeInfo = {
     stage: StageInfo
 };
 
-type ConnectionInfo = [NodeInfo, NodeInfo];   // TODO: Maybe we can retire this?
-
 type CompositeConnection = {
     sourceNodes: Array<NodeInfo>,
     destinationNodes: Array<NodeInfo>,
@@ -58,6 +56,8 @@ type LabelInfo = {
 
 type LayoutInfo = typeof defaultLayout;
 
+type SVGChildren = Array<any>; // TODO: Maybe refine this
+
 // FIXME-FLOW: Currently need to duplicate react's propTypes obj in Flow.
 // See: https://github.com/facebook/flow/issues/1770
 type Props = {
@@ -72,8 +72,7 @@ export class PipelineGraph extends Component {
     // Flow typedefs
     state: {
         nodes: Array<NodeInfo>,
-        connections: Array<ConnectionInfo>,
-        connectionsXXX: Array<CompositeConnection>, // TODO: Rename this once the new process is sorted
+        connections: Array<CompositeConnection>, // TODO: Rename this once the new process is sorted
         bigLabels: Array<LabelInfo>,
         smallLabels: Array<LabelInfo>,
         measuredWidth: number,
@@ -87,7 +86,6 @@ export class PipelineGraph extends Component {
         this.state = {
             nodes: [],
             connections: [],
-            connectionsXXX: [],
             bigLabels: [],
             smallLabels: [],
             measuredWidth: 0,
@@ -140,8 +138,7 @@ export class PipelineGraph extends Component {
 
         // The structures we're populating in this method
         const nodes: Array<NodeInfo> = [];
-        const connections: Array<ConnectionInfo> = []; // TODO: might not need this once we're done with this change
-        const connectionsXXX: Array<CompositeConnection> = [];
+        const connections: Array<CompositeConnection> = [];
         const bigLabels: Array<LabelInfo> = [];
         const smallLabels: Array<LabelInfo> = [];
 
@@ -219,7 +216,7 @@ export class PipelineGraph extends Component {
                 skippedNodes.push(...columnNodes);
             } else {
                 // Create a composite connection from source column to current, possibly skipping some
-                connectionsXXX.push({
+                connections.push({
                     sourceNodes: connectionSourceNodes,
                     destinationNodes: columnNodes,
                     skippedNodes,
@@ -243,7 +240,6 @@ export class PipelineGraph extends Component {
         this.setState({
             nodes,
             connections,
-            connectionsXXX,
             bigLabels,
             smallLabels,
             measuredWidth,
@@ -336,7 +332,7 @@ export class PipelineGraph extends Component {
         return <TruncatingLabel className={classNames.join(' ')} style={style} key={key}>{details.text}</TruncatingLabel>;
     }
 
-    renderCompositeConnection(connection: CompositeConnection, elements) {
+    renderCompositeConnection(connection: CompositeConnection, elements: SVGChildren) {
         const {
             sourceNodes,
             destinationNodes,
@@ -350,7 +346,7 @@ export class PipelineGraph extends Component {
     }
 
     // Connections between columns without any skipping
-    renderBasicConnections(sourceNodes: Array<NodeInfo>, destinationNodes: Array<NodeInfo>, elements) {
+    renderBasicConnections(sourceNodes: Array<NodeInfo>, destinationNodes: Array<NodeInfo>, elements: SVGChildren) {
 
         // TODO: special case here for straight-line connection rather than in renderDirectConnection()
 
@@ -365,7 +361,7 @@ export class PipelineGraph extends Component {
         }
     }
 
-    renderDirectConnection(leftNode: NodeInfo, rightNode: NodeInfo, elements) {
+    renderDirectConnection(leftNode: NodeInfo, rightNode: NodeInfo, elements: SVGChildren) {
         // TODO: ^^ rename to "renderDirectCurvedConnection" or something.
         const { nodeRadius, curveRadius, connectorStrokeWidth } = this.state.layout;
 
@@ -424,7 +420,7 @@ export class PipelineGraph extends Component {
         }
     }
 
-    renderNode(node: NodeInfo, elements) {
+    renderNode(node: NodeInfo, elements: SVGChildren) {
 
         const nodeIsSelected = this.stageIsSelected(node.stage);
         const { nodeRadius, connectorStrokeWidth } = this.state.layout;
@@ -461,7 +457,7 @@ export class PipelineGraph extends Component {
         elements.push(React.createElement('g', groupProps, ...groupChildren));
     }
 
-    renderSelectionHighlight(elements) {
+    renderSelectionHighlight(elements: SVGChildren) {
 
         const { nodeRadius, connectorStrokeWidth } = this.state.layout;
         const highlightRadius = nodeRadius + (0.49 * connectorStrokeWidth);
@@ -522,7 +518,6 @@ export class PipelineGraph extends Component {
         const {
             nodes = [],
             connections = [],
-            connectionsXXX = [],
             bigLabels = [],
             smallLabels = [],
             measuredWidth,
@@ -539,11 +534,7 @@ export class PipelineGraph extends Component {
 
         this.renderSelectionHighlight(visualElements);
 
-        // connections.forEach(connection => {
-        //     this.renderConnection(connection, visualElements);
-        // });
-
-        connectionsXXX.forEach(connection => {
+        connections.forEach(connection => {
             this.renderCompositeConnection(connection, visualElements);
         });
 
