@@ -1,17 +1,31 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
-import io.jenkins.blueocean.commons.stapler.TreeResponse;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
+import com.google.common.base.Charsets;
+import com.google.common.hash.Hashing;
+import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.Resource;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
-import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.verb.GET;
+import org.kohsuke.stapler.export.ExportedBean;
 
-public class GithubServer extends ScmServerEndpoint {
+@ExportedBean
+public class GithubServer extends Resource {
+
+    public static final String ID = "ID";
+    public static final String NAME = "name";
+    public static final String API_URL = "apiUrl";
+
     private final Endpoint endpoint;
+    private final Link parent;
 
-    GithubServer(Endpoint endpoint) {
+    GithubServer(Endpoint endpoint, Link parent) {
         this.endpoint = endpoint;
+        this.parent = parent;
+    }
+
+    @Exported(name = ID)
+    public String getId() {
+        return Hashing.sha256().hashString(endpoint.getApiUri(), Charsets.UTF_8).toString();
     }
 
     @Exported(name = NAME)
@@ -24,9 +38,8 @@ public class GithubServer extends ScmServerEndpoint {
         return endpoint.getApiUri();
     }
 
-    @WebMethod(name="") @GET
-    @TreeResponse
-    public Object getState() {
-        return this;
+    @Override
+    public Link getLink() {
+        return parent.rel(getId());
     }
 }

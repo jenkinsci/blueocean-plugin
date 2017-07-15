@@ -6,6 +6,8 @@ import io.blueocean.ath.Login;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.Folder;
 import io.blueocean.ath.model.MultiBranchPipeline;
+import io.blueocean.ath.pages.blue.ActivityPage;
+import io.blueocean.ath.pages.blue.BranchPage;
 import io.blueocean.ath.pages.blue.EditorPage;
 import io.blueocean.ath.pages.blue.GithubCreationPage;
 import io.blueocean.ath.sse.SSEClientRule;
@@ -19,6 +21,7 @@ import org.junit.runner.RunWith;
 import org.kohsuke.github.GHContentUpdateResponse;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
+import org.openqa.selenium.WebDriver;
 
 import javax.inject.Inject;
 import java.io.FileInputStream;
@@ -55,6 +58,9 @@ public class GithubEditorTest {
 
     @Inject
     EditorPage editorPage;
+
+    @Inject
+    WebDriver driver;
 
     /**
      * Cleans up repostory after the test has completed.
@@ -121,7 +127,16 @@ public class GithubEditorTest {
         creationPage.createPipeline(token, organization, repo, true);
         MultiBranchPipeline pipeline = mbpFactory.pipeline(Folder.folders(organization), repo);
         editorPage.simplePipeline();
-        pipeline.getActivityPage().checkUrl();
+        ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
+        driver.navigate().refresh();
+        sseClient.untilEvents(pipeline.buildsFinished);
+        sseClient.clear();
+        BranchPage branchPage = activityPage.clickBranchTab();
+        branchPage.openEditor("master");
+        editorPage.saveBranch("new-branch");
+        activityPage.checkUrl();
+        activityPage.getRunRowForBranch("new-branch");
+
         sseClient.untilEvents(pipeline.buildsFinished);
     }
 }
