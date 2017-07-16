@@ -135,7 +135,7 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
                     throw e;
                 } catch (Throwable e) {
                     if(n <= 1) {
-                        failures.add(e)
+                        failures.add(e);
                     } else {
                         failures.add(new RetryThrowable(i, e));
                     }
