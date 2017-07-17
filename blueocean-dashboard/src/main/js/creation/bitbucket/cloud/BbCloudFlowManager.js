@@ -128,10 +128,14 @@ export default class BbCloudFlowManager extends FlowManager {
             this.renderStep({
                 stateId: STATE.STEP_CREDENTIAL,
                 stepElement: <BbCredentialsStep />,
+                afterStateId: this._getCredentialsStepAfterStateId(),
             });
         }
     }
 
+    _getCredentialsStepAfterStateId() {
+        return null;
+    }
     createCredential(userName, password) {
         return this.credentialManager.createCredential(this.getApiUrl(), userName, password)
             .then(success => this._createCredentialComplete(success));
@@ -232,7 +236,7 @@ export default class BbCloudFlowManager extends FlowManager {
         promise
             .then(waitAtLeast(MIN_DELAY))
             .then(repos => this._updateRepositories(organization.key, repos))
-            .catch(error => console.log(error));
+            .catch(error => new BbUnknownErrorStep(error));
     }
 
     _loadPagedRepository(organizationName, pageNumber, pageSize = PAGE_SIZE) {
@@ -311,10 +315,12 @@ export default class BbCloudFlowManager extends FlowManager {
             this.removeSteps({ afterStateId: STATE.STEP_CREDENTIAL });
             this._showPlaceholder();
         } else if (result.outcome === CreateMbpOutcome.ERROR) {
+            const afterStateId = this.isStateAdded(STATE.STEP_RENAME) ?
+                STATE.STEP_RENAME : STATE.STEP_CHOOSE_REPOSITORY;
             this.renderStep({
                 stateId: STATE.ERROR,
                 stepElement: <BbUnknownErrorStep error={result.error} />,
-                afterStateId: STATE.STEP_CONNECT,
+                afterStateId,
             });
         }
     }
@@ -323,19 +329,6 @@ export default class BbCloudFlowManager extends FlowManager {
         this.setPlaceholders([
             this.translate('creation.core.status.completed'),
         ]);
-    }
-
-
-    @action
-    _saveRepoSuccess(mbp) {
-        LOGGER.debug(`Multi-branch pipeline creation successfully: ${mbp.name}`);
-        this.changeState(STATE.STEP_COMPLETE_SUCCESS);
-        this.pipeline = mbp.name;
-    }
-
-    _saveRepoFailure() {
-        LOGGER.error('Multi-branch pipeline creation failed');
-        this.changeState(STATE.STEP_COMPLETE_SAVING_ERROR);
     }
 
     _initListeners() {
@@ -375,10 +368,6 @@ export default class BbCloudFlowManager extends FlowManager {
 
         if (event.job_multibranch_indexing_result) {
             this.queuedIndexAllocations--;
-        }
-
-        if (event.job_orgfolder_indexing_result === 'FAILURE') {
-            this._finishListening(STATE.STEP_COMPLETE_EVENT_ERROR);
         }
 
         const multiBranchIndexingComplete = event.job_multibranch_indexing_result === 'SUCCESS' &&
