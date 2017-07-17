@@ -55,19 +55,6 @@ public class BitbucketCloudApi extends BitbucketApi {
 
     @Nonnull
     @Override
-    public BbUser getUser() {
-        try {
-            InputStream inputStream = Request.Get(baseUrl+"user")
-                    .addHeader("Authorization", basicAuthHeaderValue)
-                    .execute().returnContent().asStream();
-            return om.readValue(inputStream, BbCloudUser.class);
-        } catch (IOException e) {
-            throw handleException(e);
-        }
-    }
-
-    @Nonnull
-    @Override
     public BbUser getUser(@Nonnull String userName) {
         try {
             InputStream inputStream = Request.Get(String.format("%s/%s",baseUrl+"users", userName))
