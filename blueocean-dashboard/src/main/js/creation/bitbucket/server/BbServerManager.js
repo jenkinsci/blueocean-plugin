@@ -22,6 +22,22 @@ class BbServerManager {
         return servers;
     }
 
+    validateVersion(id) {
+        return this.serverApi.validateVersion(id)
+            .then(
+                success => this._onValidateVersionSuccess(success),
+                error => this._onValidateVersionFailure(error),
+            );
+    }
+
+    _onValidateVersionSuccess(success) {
+        return success;
+    }
+
+    _onValidateVersionFailure(error) {
+        return new CreateServerError(error);
+    }
+
     createServer(name, url) {
         return this.serverApi.createServer(name, url)
             .then(

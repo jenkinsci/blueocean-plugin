@@ -126,8 +126,10 @@ class BBAddServerDialog extends React.Component {
 
         if (duplicateUrl) {
             newState.urlErrorMsg = t('creation.bbserver.add_server.text_url_error_duplicate');
-        } else if (invalidUrl) {
-            newState.urlErrorMsg = t('creation.bbserver.add_server.text_url_error_invalid');
+        } else if (invalidUrl && error.errors) {
+            error.errors.map(err => (
+                    newState.urlErrorMsg = err.message
+                ));
         }
 
         if (!duplicateName && !duplicateUrl && !invalidUrl) {

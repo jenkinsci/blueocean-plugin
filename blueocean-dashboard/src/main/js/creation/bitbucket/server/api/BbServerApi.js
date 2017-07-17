@@ -19,6 +19,12 @@ class BbServerApi {
         return this._fetch(serversUrl);
     }
 
+    validateVersion(id) {
+        const path = UrlConfig.getJenkinsRootURL();
+        const serverUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/servers/${id}/validate`);
+        return this._fetch(serverUrl);
+    }
+
     createServer(serverName, serverUrl) {
         const path = UrlConfig.getJenkinsRootURL();
         const createUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/servers`);

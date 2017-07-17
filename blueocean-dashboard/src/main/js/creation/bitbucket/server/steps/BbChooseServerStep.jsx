@@ -18,6 +18,7 @@ class BbChooseServerStep extends React.Component {
         this.state = {
             selectedServer: null,
             showAddServerDialog: false,
+            urlErrorMsg: null,
         };
 
         this.dropdown = null;
@@ -28,6 +29,12 @@ class BbChooseServerStep extends React.Component {
     }
 
     _onChangeServerDropdown(option) {
+        const { serverManager } = this.props.flowManager;
+        serverManager.validateVersion(option.id)
+            .then(
+                success => this._onValidateVersion(success),
+                error => this._onValidateVersion(error),
+            );
         this.setState({
             selectedServer: option,
         });
@@ -60,12 +67,27 @@ class BbChooseServerStep extends React.Component {
         this.props.flowManager.selectServer(this.state.selectedServer);
     }
 
+    _onValidateVersion(error) {
+        this.setState({
+            urlErrorMsg: null,
+        });
+        if (error.code) {
+            let message = error.message;
+            if (!message) {
+                message = t('creation.bbserver.version.error', { 0: error.code });
+            }
+            this.setState({
+                urlErrorMsg: message,
+            });
+        }
+    }
+
     render() {
         const { flowManager } = this.props;
         const { serverManager } = flowManager;
         const title = t('creation.bbserver.choose_server.title');
         const disabled = flowManager.stepsDisabled;
-        const disabledNext = !this.state.selectedServer;
+        const disabledNext = !this.state.selectedServer || this.state.urlErrorMsg;
         const url = this.state.selectedServer ? this.state.selectedServer.apiUrl : null;
         return (
             <FlowStep {...this.props} className="github-enterprise-choose-server-step" disabled={disabled} title={title}>
@@ -90,9 +112,16 @@ class BbChooseServerStep extends React.Component {
                 }
                 <div className="FormElement">
                     <div className="FormElement-heading">
-                    <label className="FormElement-title">{url}</label>
+                        <label className="FormElement-title">{url}</label>
+                    </div>
                 </div>
-                </div>
+                { this.state.urlErrorMsg &&
+                    <div className="FormElement u-error-state" >
+                        <div className="FormElement-heading">
+                            <label className="FormElement-title">{this.state.urlErrorMsg}</label>
+                        </div>
+                    </div>
+                }
                 <button className="button-next-step" disabled={disabledNext} onClick={() => this._onClickNextButton()}>
                     {t('creation.githubent.choose_server.button_next')}
                 </button>
