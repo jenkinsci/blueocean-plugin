@@ -57,13 +57,19 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
 
         String apiUrl = request.getParameter("apiUrl");
 
+        ErrorMessage message = new ErrorMessage(400, "Invalid request");
         if(StringUtils.isBlank(apiUrl)) {
-            throw new ServiceException.BadRequestException("apiUrl is required parameter.");
+            message.add(new ErrorMessage.Error("apiUrl", ErrorMessage.Error.ErrorCodes.MISSING.toString(),
+                    "apiUrl is required parameter"));
         }
         try {
             new URL(apiUrl);
         } catch (MalformedURLException e) {
-            throw new ServiceException.BadRequestException("apiUrl is not a valid URL: "+e.getMessage(), e);
+            message.add(new ErrorMessage.Error("apiUrl", ErrorMessage.Error.ErrorCodes.INVALID.toString(),
+                    "apiUrl parameter must be a valid URL"));
+        }
+        if(!message.getErrors().isEmpty()){
+            throw new ServiceException.BadRequestException(message);
         }
         return super.getState();
     }
@@ -114,11 +120,15 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
                         String.format("credentialId: %s not found in user %s's credential store", credentialId, authenticatedUser.getId())));
             }
         }
-
+        String apiUrl  =  request.getParameter("apiUrl");
+        if(StringUtils.isBlank(apiUrl)){
+            errors.add(new ErrorMessage.Error("apiUrl", ErrorMessage.Error.ErrorCodes.MISSING.toString(),
+                    "apiUrl is required parameter"));
+        }
         if(!errors.isEmpty()){
             throw new ServiceException.BadRequestException(new ErrorMessage(400, "Failed to return Bitbucket organizations").addAll(errors));
         }else {
-            String apiUrl = getApiUrlParameter(request);
+            apiUrl = normalizeApiUrl(apiUrl);
             BitbucketApiFactory apiFactory = BitbucketApiFactory.resolve(apiUrl);
             if (apiFactory == null) {
                 throw new ServiceException.UnexpectedErrorException("BitbucketApiFactory to handle apiUrl " + apiUrl + " not found");

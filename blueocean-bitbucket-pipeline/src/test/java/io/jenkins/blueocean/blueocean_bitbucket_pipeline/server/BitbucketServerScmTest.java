@@ -16,6 +16,7 @@ import static org.junit.Assert.*;
  */
 public class BitbucketServerScmTest extends BbServerWireMock {
 
+
     @Test
     public void getBitbucketScmWithoutApiUrlParam() throws IOException, UnirestException {
         new RequestBuilder(baseUrl)

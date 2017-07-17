@@ -33,6 +33,7 @@ import org.apache.http.client.fluent.Response;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -52,6 +53,7 @@ import static io.jenkins.blueocean.commons.JsonConverter.om;
  * @author Vivek Pandey
  */
 public class BitbucketServerApi extends BitbucketApi {
+    public static final DefaultArtifactVersion MINIMUM_SUPPORTED_VERSION=new DefaultArtifactVersion("5.2.0");
     private final String baseUrl;
 
     //package private for testing
@@ -59,7 +61,32 @@ public class BitbucketServerApi extends BitbucketApi {
         super(hostUrl, credentials);
         this.baseUrl=apiUrl+"rest/api/1.0/";
     }
-    
+
+    /**
+     * Gives Bitbucket server version
+     * @param apiUrl API url of Bitbucket server
+     * @return version of Bitbucket server
+     */
+    public @Nonnull static String getVersion(@Nonnull String apiUrl){
+        try {
+            apiUrl = ensureTrailingSlash(apiUrl);
+            InputStream inputStream = Request.Get(apiUrl+"rest/api/1.0/application-properties")
+                    .execute().returnContent().asStream();
+            Map<String,String> resp =  om.readValue(inputStream, new TypeReference<Map < String, String >>() {
+            });
+            String version = resp.get("version");
+            if(StringUtils.isBlank(version)){
+                throw new ServiceException.PreconditionRequired("Unsupported Bitbucket server, no version information could be determined");
+            }
+            return version;
+        } catch (IOException e) {
+            if(e instanceof HttpResponseException){
+                throw new ServiceException(((HttpResponseException) e).getStatusCode(), e.getMessage(), e);
+            }
+            throw new ServiceException.UnexpectedErrorException(e.getMessage(), e);
+        }
+    }
+
     @Override
     public @Nonnull BbUser getUser(@Nonnull String userName){
         try {
@@ -327,6 +354,17 @@ public class BitbucketServerApi extends BitbucketApi {
             start = 0;
         }
         return start;
+    }
+
+    /**
+     * Tells whether given version is supported version.
+     *
+     * @param version version of Bitbucket server to test
+     * @return true if supported false otherwise
+     * @see #getVersion(String)
+     */
+    public static boolean isSupportedVersion(@Nonnull String version){
+        return new DefaultArtifactVersion(version).compareTo(MINIMUM_SUPPORTED_VERSION) >= 0;
     }
 
     @Extension

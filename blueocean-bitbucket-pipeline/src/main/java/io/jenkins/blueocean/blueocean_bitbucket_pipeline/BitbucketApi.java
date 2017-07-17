@@ -3,8 +3,8 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import hudson.util.Secret;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbBranch;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbPage;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbOrg;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbPage;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbRepo;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbSaveContentResponse;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbUser;
@@ -208,7 +208,7 @@ public abstract class BitbucketApi {
         return new ServiceException.UnexpectedErrorException(e.getMessage(), e);
     }
 
-    private String ensureTrailingSlash(String url){
+    protected static String ensureTrailingSlash(String url){
         if(url.charAt(url.length() - 1) != '/'){
             return url+"/";
         }

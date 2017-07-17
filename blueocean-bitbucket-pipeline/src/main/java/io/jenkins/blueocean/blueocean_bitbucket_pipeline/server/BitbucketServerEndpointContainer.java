@@ -15,14 +15,11 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import net.sf.json.JSONObject;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.lang.StringUtils;
-import org.apache.http.Header;
-import org.apache.http.client.fluent.Request;
-import org.apache.http.client.fluent.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -58,22 +55,23 @@ public class BitbucketServerEndpointContainer extends ScmServerEndpointContainer
             errors.add(new ErrorMessage.Error(ScmServerEndpoint.API_URL, ErrorMessage.Error.ErrorCodes.MISSING.toString(), ScmServerEndpoint.API_URL + " is required"));
         }else {
             try {
-                Response response = Request.Get(url).execute();
-                Header header = response.returnResponse().getFirstHeader("X-AREQUESTID");
-                if (header == null || StringUtils.isBlank(header.getValue())) {
-                    errors.add(new ErrorMessage.Error(BitbucketServerEndpoint.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Specified URL is not a Bitbucket server"));
+                String version = BitbucketServerApi.getVersion(url);
+                if (!BitbucketServerApi.isSupportedVersion(version)) {
+                    errors.add(new ErrorMessage.Error(BitbucketServerEndpoint.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(),
+                            String.format("Bitbucket server: %s version: %s is not supported. Minimum supported version: %s",
+                                    url, version, BitbucketServerApi.MINIMUM_SUPPORTED_VERSION)));
+                } else {
+                    //validate presence of endpoint with same name
+                    url = BitbucketEndpointConfiguration.normalizeServerUrl(url);
+                    for (AbstractBitbucketEndpoint endpoint : endpointConfiguration.getEndpoints()) {
+                        if (url.equals(endpoint.getServerUrl())) {
+                            errors.add(new ErrorMessage.Error(ScmServerEndpoint.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), ScmServerEndpoint.API_URL + " already exists"));
+                            break;
+                        }
+                    }
                 }
-            } catch (IOException e) {
-                errors.add(new ErrorMessage.Error(BitbucketServerEndpoint.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Could not connect to Bitbucket server"));
-                LOGGER.error("Could not connect to Bitbucket", e);
-            }
-
-            //validate presence of endpoint with same name
-            url = BitbucketEndpointConfiguration.normalizeServerUrl(url);
-            for (AbstractBitbucketEndpoint endpoint : endpointConfiguration.getEndpoints()) {
-                if (url.equals(endpoint.getServerUrl())) {
-                    errors.add(new ErrorMessage.Error(ScmServerEndpoint.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), ScmServerEndpoint.API_URL + " already exists"));
-                }
+            } catch (ServiceException e) {
+                errors.add(new ErrorMessage.Error(BitbucketServerEndpoint.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), e.getMessage()));
             }
         }
 
@@ -92,13 +90,17 @@ public class BitbucketServerEndpointContainer extends ScmServerEndpointContainer
                 SecurityContextHolder.setContext(old);
             }
         }
-        return new BitbucketServerEndpoint(endpoint);
+        return new BitbucketServerEndpoint(endpoint, this);
     }
 
     @Override
-    public ScmServerEndpoint get(String name) {
-        //Bitbucket server endpoint name is not unique so we won't support /scm/{scmId}/servers/{id}
-        throw new ServiceException.NotImplementedException("not implemented");
+    public ScmServerEndpoint get(String id) {
+        for(AbstractBitbucketEndpoint endpoint: BitbucketEndpointConfiguration.get().getEndpoints()){
+            if(id.equals(DigestUtils.sha256Hex(endpoint.getServerUrl()))){
+                return new BitbucketServerEndpoint(endpoint, this);
+            }
+        }
+        return null;
     }
 
     @Override
@@ -110,7 +112,7 @@ public class BitbucketServerEndpointContainer extends ScmServerEndpointContainer
         return Iterators.transform(serverEndpoints, new Function<AbstractBitbucketEndpoint, ScmServerEndpoint>() {
             @Override
             public ScmServerEndpoint apply(AbstractBitbucketEndpoint input) {
-                return new BitbucketServerEndpoint(input);
+                return new BitbucketServerEndpoint(input, BitbucketServerEndpointContainer.this);
             }
         });
     }

@@ -1,55 +1,54 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
 
-import com.github.tomakehurst.wiremock.client.MappingBuilder;
-import com.github.tomakehurst.wiremock.client.WireMock;
-import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import hudson.model.User;
-import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
+import io.jenkins.blueocean.commons.ServiceException;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.powermock.api.mockito.PowerMockito;
+import org.powermock.core.classloader.annotations.PowerMockIgnore;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
-import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
 /**
  * @author Vivek Pandey
  */
-public class BitbucketServerEndpointTest extends PipelineBaseTest {
+@RunWith(PowerMockRunner.class)
+@PrepareForTest({BitbucketServerApi.class})
+@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*"})
+public class BitbucketServerEndpointTest extends BbServerWireMock {
     private static final String URL = "/organizations/jenkins/scm/bitbucket-server/servers/";
-
-    @Rule
-    public WireMockRule wireMockRule = new WireMockRule(wireMockConfig().
-            dynamicPort());
 
     String token;
 
     @Before
-    public void createUser() throws UnirestException, IOException {
-        User user = login();
-        token = getJwtToken(j.jenkins, user.getId(), user.getId());
+    public void setup() throws Exception {
+        super.setup();
+        token = getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId());
     }
 
     @Test
     public void testServerNotBitbucket() throws Exception {
-        validBitbucketServer(false);
-
+        PowerMockito.mockStatic(BitbucketServerApi.class);
+        PowerMockito.when(BitbucketServerApi.getVersion(apiUrl))
+                .thenThrow(new ServiceException.NotFoundException("Not found"));
         // Create a server
         Map resp = request()
                 .status(400)
                 .jwtToken(token)
                 .data(ImmutableMap.of(
                         "name", "My Server",
-                        "apiUrl", getApiUrl()
+                        "apiUrl", apiUrl
                 ))
                 .post(URL)
                 .build(Map.class);
@@ -87,7 +86,6 @@ public class BitbucketServerEndpointTest extends PipelineBaseTest {
 
     @Test
     public void testMissingParams() throws Exception {
-        validBitbucketServer(true);
         Map resp = request()
                 .status(400)
                 .jwtToken(token)
@@ -108,7 +106,6 @@ public class BitbucketServerEndpointTest extends PipelineBaseTest {
 
     @Test
     public void testMissingUrlParam() throws Exception {
-        validBitbucketServer(true);
         Map resp = request()
                 .status(400)
                 .jwtToken(token)
@@ -128,11 +125,10 @@ public class BitbucketServerEndpointTest extends PipelineBaseTest {
 
     @Test
     public void testMissingNameParam() throws Exception {
-        validBitbucketServer(true);
         Map resp = request()
                 .status(400)
                 .jwtToken(token)
-                .data(ImmutableMap.of("apiUrl", getApiUrl()))
+                .data(ImmutableMap.of("apiUrl", apiUrl))
                 .post(URL)
                 .build(Map.class);
         Assert.assertNotNull(resp);
@@ -148,18 +144,17 @@ public class BitbucketServerEndpointTest extends PipelineBaseTest {
 
     @Test
     public void avoidDuplicateByUrl() throws Exception {
-        validBitbucketServer(true);
         // Create a server
         Map server = request()
                 .status(200)
                 .jwtToken(token)
                 .data(ImmutableMap.of(
                         "name", "My Server",
-                        "apiUrl", getApiUrl()
+                        "apiUrl", apiUrl
                 ))
                 .post(URL)
                 .build(Map.class);
-        assertEquals(getApiUrl(), server.get("apiUrl"));
+        assertEquals(apiUrl, server.get("apiUrl"));
 
         // Create a server
         Map resp = server = request()
@@ -167,7 +162,7 @@ public class BitbucketServerEndpointTest extends PipelineBaseTest {
                 .jwtToken(token)
                 .data(ImmutableMap.of(
                         "name", "My Server 2",
-                        "apiUrl", getApiUrl()
+                        "apiUrl", apiUrl
                 ))
                 .post(URL)
                 .build(Map.class);
@@ -183,7 +178,6 @@ public class BitbucketServerEndpointTest extends PipelineBaseTest {
 
     @Test
     public void createAndList() throws Exception {
-        validBitbucketServer(true);
         assertEquals(0, getServers().size());
 
         // Create a server
@@ -192,34 +186,90 @@ public class BitbucketServerEndpointTest extends PipelineBaseTest {
                 .jwtToken(token)
                 .data(ImmutableMap.of(
                         "name", "My Server",
-                        "apiUrl", getApiUrl()
+                        "apiUrl", apiUrl
                 ))
                 .post(URL)
                 .build(Map.class);
 
+        String id = DigestUtils.sha256Hex(apiUrl);
+        assertEquals(id, server.get("id"));
         assertEquals("My Server", server.get("name"));
-        assertEquals(getApiUrl(), server.get("apiUrl"));
+        assertEquals(apiUrl, server.get("apiUrl"));
 
         // Get the list of servers and check that it persisted
         List servers = getServers();
         assertEquals(1, servers.size());
 
         server = (Map) servers.get(0);
+        assertEquals(id, server.get("id"));
         assertEquals("My Server", server.get("name"));
-        assertEquals(getApiUrl(), server.get("apiUrl"));
+        assertEquals(apiUrl, server.get("apiUrl"));
+
+        //get this paritular endpoint
+        server = request()
+                .status(200)
+                .jwtToken(token)
+                .get(URL+id)
+                .build(Map.class);
+
+        assertEquals(id, server.get("id"));
+        assertEquals("My Server", server.get("name"));
+        assertEquals(apiUrl, server.get("apiUrl"));
     }
 
-    private String getApiUrl() {
-        return "http://localhost:" + wireMockRule.port();
+    @Test
+    public void shouldFailOnIncompatibleVersionInAdd() throws UnirestException, IOException {
+        PowerMockito.mockStatic(BitbucketServerApi.class);
+        PowerMockito.when(BitbucketServerApi.getVersion(apiUrl))
+                .thenReturn("5.0.2");
+
+        Map server = request()
+                .status(400)
+                .jwtToken(token)
+                .data(ImmutableMap.of(
+                        "name", "My Server",
+                        "apiUrl", apiUrl
+                ))
+                .post(URL)
+                .build(Map.class);
+
+        List errors = (List) server.get("errors");
+        assertEquals(1, errors.size());
+
+        Map error1 = (Map) errors.get(0);
+        assertEquals("apiUrl", error1.get("field"));
+        assertEquals("INVALID", error1.get("code"));
+        assertNotNull(error1.get("message"));
     }
 
-    private void validBitbucketServer(boolean hasHeader) throws Exception {
-        MappingBuilder mappingBuilder = WireMock.get(urlEqualTo("/"));
-        if (hasHeader) {
-            stubFor(mappingBuilder.willReturn(ok().withHeader("X-AREQUESTID", "foobar")));
-        } else {
-            stubFor(mappingBuilder.willReturn(ok()));
-        }
+    @Test
+    public void shouldFailOnIncompatibleVersion() throws UnirestException, IOException {
+        // Create a server
+        Map server = request()
+                .status(200)
+                .jwtToken(token)
+                .data(ImmutableMap.of(
+                        "name", "My Server",
+                        "apiUrl", apiUrl
+                ))
+                .post(URL)
+                .build(Map.class);
+
+        String id = DigestUtils.sha256Hex(apiUrl);
+        assertEquals(id, server.get("id"));
+        assertEquals("My Server", server.get("name"));
+        assertEquals(apiUrl, server.get("apiUrl"));
+
+        PowerMockito.mockStatic(BitbucketServerApi.class);
+        PowerMockito.when(BitbucketServerApi.getVersion(apiUrl))
+                .thenReturn("5.0.2");
+
+        Map r = new RequestBuilder(baseUrl)
+                .status(428)
+                .jwtToken(token)
+                .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/servers/"+id+"/validate/")
+                .build(Map.class);
+
     }
 
     private List getServers() {
