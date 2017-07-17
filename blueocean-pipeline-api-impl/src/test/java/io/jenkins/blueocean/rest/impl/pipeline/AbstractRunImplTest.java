@@ -195,7 +195,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
         // Schedule another run so it goes in the queue
         WorkflowRun r2 = p.scheduleBuild2(0).waitForStart();
-        j.waitForMessage("[Pipeline] node", r2);
+        j.waitForMessage("Still waiting to schedule task", r2);
 
         // Get latest run for this pipeline
         pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
@@ -218,7 +218,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
         WorkflowRun r3 = p.getLastBuild();
 
-        j.waitForMessage("[Pipeline] node", r3);
+        j.waitForMessage("Still waiting to schedule task", r3);
 
         // Get latest run for this pipeline
         pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
@@ -246,7 +246,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
         // Run until completed
         WorkflowRun r = p.scheduleBuild2(0).waitForStart();
-        j.waitForMessage("[Pipeline] node", r);
+        j.waitForMessage("Still waiting to schedule task", r);
 
         // Get latest run for this pipeline
         pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
@@ -277,7 +277,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
         // Run until completed
         WorkflowRun r = p.scheduleBuild2(0).waitForStart();
-        j.waitForMessage("[Pipeline] node", r);
+        j.waitForMessage("Still waiting to schedule task", r);
 
         // Get latest run for this pipeline
         String url = "/organizations/jenkins/pipelines/project/runs/" + r.getId() + "/";
@@ -296,7 +296,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
         // Run until we hang.
         WorkflowRun r2 = p.scheduleBuild2(0).waitForStart();
-        j.waitForMessage("[Pipeline] node", r2);
+        j.waitForMessage("Still waiting to schedule task", r2);
 
         // Get latest run for this pipeline
         url = "/organizations/jenkins/pipelines/project/runs/" + r2.getId() + "/";
