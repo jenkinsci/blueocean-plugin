@@ -216,6 +216,8 @@ public class AbstractRunImplTest extends PipelineBaseTest {
             request().post("/organizations/jenkins/pipelines/project/runs/" + idOfSecondRun + "/replay/").build(String.class);
         }
 
+        // Sleep to make sure the build actually gets launched.
+        Thread.sleep(1000);
         WorkflowRun r3 = p.getLastBuild();
 
         j.waitForMessage("Still waiting to schedule task", r3);
