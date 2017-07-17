@@ -1,10 +1,15 @@
 package io.blueocean.ath;
 
+import com.google.common.collect.Lists;
 import com.google.common.io.Files;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.blueocean.ath.pages.classic.LoginPage;
 import org.apache.log4j.Logger;
+import org.junit.internal.AssumptionViolatedException;
+import org.junit.internal.runners.model.EachTestNotifier;
+import org.junit.runner.Description;
+import org.junit.runner.notification.RunNotifier;
 import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
@@ -15,6 +20,7 @@ import org.openqa.selenium.remote.ScreenshotException;
 import java.io.File;
 import java.io.IOException;
 import java.util.Base64;
+import java.util.List;
 
 /**
  * ATHJUnitRunner is the JUnit runner for ATH
@@ -69,9 +75,7 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
                 } catch (Exception e) {
                     writeScreenShotCause(e, test, method);
                     throw e;
-
                 }
-
 
                 WebDriver driver = injector.getInstance(WebDriver.class);
                 driver.close();
@@ -102,4 +106,62 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
 
         }
      }
+
+
+    @Override
+    protected void runChild(FrameworkMethod method, RunNotifier notifier) {
+        Description description = describeChild(method);
+        if (isIgnored(method)) {
+            notifier.fireTestIgnored(description);
+        } else {
+            runTest(methodBlock(method), description, notifier, method.getAnnotation(Retry.class));
+        }
+    }
+
+    private void runTest(Statement statement, Description description,
+                                 RunNotifier notifier, Retry retry) {
+        EachTestNotifier eachNotifier = new EachTestNotifier(notifier, description);
+        eachNotifier.fireTestStarted();
+        try {
+            int n = retry == null ? 1 : retry.value();
+            List<Throwable> failures = Lists.newArrayList();
+
+            for (int i = 0; i < n; i++) {
+                try {
+                    statement.evaluate();
+                    failures.clear();
+                    break;
+                } catch (AssumptionViolatedException e) {
+                    throw e;
+                } catch (Throwable e) {
+                    if(n <= 1) {
+                        failures.add(e);
+                    } else {
+                        failures.add(new RetryThrowable(i, e));
+                    }
+                }
+            }
+
+            for (Throwable failure : failures) {
+                eachNotifier.addFailure(failure);
+            }
+        } catch (AssumptionViolatedException e) {
+            eachNotifier.addFailedAssumption(e);
+        } catch (Throwable e) {
+            eachNotifier.addFailure(e);
+        } finally {
+            eachNotifier.fireTestFinished();
+        }
+    }
+
+    public class RetryThrowable extends Throwable {
+        public RetryThrowable(int n, Throwable cause) {
+            super("Retry " + n, cause);
+        }
+
+        @Override
+        public synchronized Throwable fillInStackTrace() {
+            return this;
+        }
+    }
 }

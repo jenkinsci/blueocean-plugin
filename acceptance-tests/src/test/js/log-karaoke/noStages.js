@@ -27,7 +27,7 @@ module.exports = {
         // Check the run itself
         blueActivityPage.waitForRunRunningVisible('noStages', '1');
         const blueRunDetailPage = browser.page.bluePipelineRunDetail().forRun(jobName, 'jenkins', 1);
-        
+
         // Wait for the table of pipeline steps to start rendering with
         // follow-on turned on.
         blueRunDetailPage.waitForElementVisible('@followAlongOn');
@@ -37,25 +37,25 @@ module.exports = {
         // not directly on the browser
         browser.waitForElementVisible('pre')
             .click('pre');
-        
+
         // Wait for the "step-7" to appear before we stop the karaoke.
         // See no-stages.groovy.
-        browser.waitForElementVisible('.logConsole.step-7');        
+        browser.waitForElementVisible('.logConsole.step-7');
 
         // Press the up-arrow key to tell karaoke mode to stop following the log i.e.
         // after this point in time, the content of the <pre> block should not change.
         browser.keys(browser.Keys.UP_ARROW);
-        
+
         // Wait for the table of pipeline steps to get marked with
         // follow-on turned off. Then we know for sure that karaoke
         // mode should not be running and step rendering should be "static".
         blueRunDetailPage.waitForElementVisible('@followAlongOff');
-        
+
         // So, because we have pressed the up-arrow (see above), the karaoke
         // should stop. So if we now wait a bit, we should NOT see
         // more elements than before. If we do, that means that karaoke did not stop and
         // something is wrong with the up-arrow listener.
-        // 
+        //
         // Note that there must be enough time in the test script for the following code to execute before
         // the run ends. If not, the following test will fail because the end event for the run
         // will arrive during the pause, causing the list of steps to get re-rendered and for
@@ -80,7 +80,7 @@ module.exports = {
     },
     /** Check Job Blue Ocean Pipeline run detail page - follow*/
     'Step 04': function (browser) {
-        // Reload the page so as to restart karaoke mode        
+        // Reload the page so as to restart karaoke mode
         const blueRunDetailPage = browser.page.bluePipelineRunDetail().forRun(jobName, 'jenkins', 1);
         browser.elements('css selector', 'div.result-item.success', function (collection) {
             const count = collection.value.length;
@@ -103,7 +103,7 @@ module.exports = {
     /** Check whether a log which exceed 150kb contains a link to full log and if clicked it disappear*/
     'Step 05': function (browser) {
         const blueRunDetailPage = browser.page.bluePipelineRunDetail().forRun(jobName, 'jenkins', 1);
-        
+
         browser.waitForJobRunEnded(jobName, function() {
             // Note, tried using "last" selectors for both CSS and XPath
             // and neither worked in nightwatch e.g. //div[starts-with(@class, 'logConsole')][last()]
@@ -111,7 +111,7 @@ module.exports = {
             // NOTE: if the pipeline script (no-stages.groovy) changes then the following
             // selector will need to be changed too.
             var lastLogConsoleSelector = '.logConsole.step-11';
-            
+
             blueRunDetailPage.waitForElementVisible(lastLogConsoleSelector);
             blueRunDetailPage.click(lastLogConsoleSelector);
             // request full log
@@ -142,7 +142,7 @@ module.exports = {
     'Step 09': function (browser) {
         const blueRunDetailPage = browser.page.bluePipelineRunDetail().forRun(jobName, 'jenkins', 1);
         blueRunDetailPage.clickTab('artifacts');
-        browser.elements('css selector', 'td.download', function (resutlItems) {
+        browser.elements('css selector', '.TableCell--actions', function (resutlItems) {
             this.assert.equal(resutlItems.value.length, 1);
         });
     }

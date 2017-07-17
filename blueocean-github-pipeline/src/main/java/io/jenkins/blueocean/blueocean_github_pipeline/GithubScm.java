@@ -188,6 +188,10 @@ public class GithubScm extends Scm {
         }
     }
 
+    public boolean isOrganizationAvatarSupported() {
+        return true;
+    }
+
     protected @Nonnull String createCredentialId(@Nonnull String apiUrl) {
         return ID;
     }
@@ -300,7 +304,7 @@ public class GithubScm extends Scm {
             throw new ServiceException.PreconditionRequired("Github accessToken does not have required scopes. Expected scopes 'user:email, repo'");
         }
         if(status == 404){
-            throw new ServiceException.NotFoundException("Not Found");
+            throw new ServiceException.NotFoundException(String.format("Remote server at %s responded with code 404.", apiUrl));
         }
         if(status != 200) {
             throw new ServiceException.BadRequestException(String.format("Github Api returned error: %s. Error message: %s.", connection.getResponseCode(), connection.getResponseMessage()));
