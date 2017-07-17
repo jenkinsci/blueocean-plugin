@@ -34,7 +34,7 @@ public class NodeRunStatus {
             this.result = BlueRun.BlueRunResult.UNKNOWN;
             this.state = BlueRun.BlueRunState.RUNNING;
         } else if (NotExecutedNodeAction.isExecuted(endNode)) {
-            this.result = PipelineNodeUtil.getStatus(endNode.getError());
+            this.result = BlueRun.BlueRunResult.SUCCESS;
             this.state = BlueRun.BlueRunState.FINISHED;
         } else {
             this.result = BlueRun.BlueRunResult.NOT_BUILT;

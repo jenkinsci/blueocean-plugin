@@ -10,7 +10,7 @@ export class FavoritePipelineHeader extends Component {
 
     render() {
         return (
-            <FavoritePipeline { ...this.props } className="dark-yellow" />
+            <FavoritePipeline { ...this.props } className="dark" />
         );
     }
 }

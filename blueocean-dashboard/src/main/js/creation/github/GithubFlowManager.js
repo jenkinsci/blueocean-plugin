@@ -39,6 +39,8 @@ export default class GithubFlowManager extends FlowManager {
         return this.accessTokenManager && this.accessTokenManager.credentialId;
     }
 
+    apiUrl = null;
+
     @observable
     organizations = [];
 
@@ -135,8 +137,13 @@ export default class GithubFlowManager extends FlowManager {
         this._cleanupListeners();
     }
 
+    getApiUrl() {
+        // backend will default to api.github.com
+        return null;
+    }
+
     findExistingCredential() {
-        return this.accessTokenManager.findExistingCredential()
+        return this.accessTokenManager.findExistingCredential(this.getApiUrl())
             .then(waitAtLeast(MIN_DELAY))
             .then(success => this._findExistingCredentialComplete(success));
     }
@@ -146,44 +153,68 @@ export default class GithubFlowManager extends FlowManager {
             this.changeState(STATE.PENDING_LOADING_ORGANIZATIONS);
             this.listOrganizations();
         } else {
+            const afterStateId = this._getCredentialsStepAfterStateId();
             this.renderStep({
                 stateId: STATE.STEP_ACCESS_TOKEN,
                 stepElement: <GithubCredentialsStep />,
+                afterStateId,
             });
         }
     }
 
+    /**
+     * stateId of the step after which the 'GithubCredentialsStep' should be added
+     * @returns {string}
+     * @private
+     */
+    _getCredentialsStepAfterStateId() {
+        // if needed, the credentials step is always added at the beginning
+        return null;
+    }
+
     createAccessToken(token) {
-        return this.accessTokenManager.createAccessToken(token)
+        return this.accessTokenManager.createAccessToken(token, this.getApiUrl())
             .then(success => this._createTokenComplete(success));
     }
 
     _createTokenComplete(response) {
         if (response.success) {
-            this.renderStep({
-                stateId: STATE.PENDING_LOADING_ORGANIZATIONS,
-                stepElement: <GithubLoadingStep />,
-                afterStateId: STATE.STEP_ACCESS_TOKEN,
-            });
-
-            this.listOrganizations();
+            this._renderLoadingOrganizations();
         }
+    }
+
+    _renderLoadingOrganizations() {
+        this.renderStep({
+            stateId: STATE.PENDING_LOADING_ORGANIZATIONS,
+            stepElement: <GithubLoadingStep />,
+            afterStateId: STATE.STEP_ACCESS_TOKEN,
+        });
+
+        this.listOrganizations();
     }
 
     @action
     listOrganizations() {
-        this._creationApi.listOrganizations(this.credentialId)
+        this._creationApi.listOrganizations(this.credentialId, this.getApiUrl())
             .then(waitAtLeast(MIN_DELAY))
             .then(orgs => this._listOrganizationsSuccess(orgs));
     }
 
+    /**
+     * stateId of the step after which the 'GithubOrgListStep' should be added
+     * @returns {string}
+     * @private
+     */
+    _getOrganizationsStepAfterStateId() {
+        return this.isStateAdded(STATE.STEP_ACCESS_TOKEN) ?
+            STATE.STEP_ACCESS_TOKEN : null;
+    }
+
     @action
     _listOrganizationsSuccess(response) {
-        const afterStateId = this.isStateAdded(STATE.STEP_ACCESS_TOKEN) ?
-            STATE.STEP_ACCESS_TOKEN : null;
-
         if (response.outcome === ListOrganizationsOutcome.SUCCESS) {
             this.organizations = response.organizations;
+            const afterStateId = this._getOrganizationsStepAfterStateId();
 
             this.renderStep({
                 stateId: STATE.STEP_CHOOSE_ORGANIZATION,
@@ -309,7 +340,7 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     _loadPagedRepository(organizationName, pageNumber, pageSize = PAGE_SIZE) {
-        return this._creationApi.listRepositories(this.credentialId, organizationName, pageNumber, pageSize);
+        return this._creationApi.listRepositories(this.credentialId, this.getApiUrl(), organizationName, pageNumber, pageSize);
     }
 
     @action
@@ -374,7 +405,7 @@ export default class GithubFlowManager extends FlowManager {
 
         this._initListeners();
 
-        this._creationApi.createOrgFolder(this.credentialId, this.selectedOrganization, repoNames)
+        this._creationApi.createOrgFolder(this.credentialId, this.getApiUrl(), this.selectedOrganization, repoNames)
             .then(waitAtLeast(MIN_DELAY * 2))
             .then(r => this._saveOrgFolderSuccess(r), e => this._saveOrgFolderFailure(e));
     }

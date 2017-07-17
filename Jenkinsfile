@@ -14,6 +14,9 @@ node() {
     configFileProvider([configFile(fileId: 'blueocean-maven-settings', variable: 'MAVEN_SETTINGS')]) {
       sh 'mv $MAVEN_SETTINGS settings.xml'
     }
+    withCredentials([file(credentialsId: 'blueocean-ath-private-repo-key', variable: 'FILE')]) {
+      sh 'mv $FILE acceptance-tests/bo-ath.key'
+    }
     sh "./acceptance-tests/runner/scripts/start-selenium.sh"
   }
 
@@ -25,7 +28,7 @@ node() {
           sh 'npm --prefix ./blueocean-core-js run gulp'
           sh "mvn clean install -B -DcleanNode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
           junit '**/target/surefire-reports/TEST-*.xml'
-          junit '**/reports/junit.xml'
+          junit '**/target/jest-reports/*.xml'
           archive '*/target/*.hpi'
         }
 
@@ -40,6 +43,11 @@ node() {
           archive 'acceptance-tests/target/screenshots/*'
         }
         if (env.JOB_NAME =~ 'blueocean-weekly-ath') {
+          stage('ATH - Jenkins 2.60.1') {
+            sh "cd acceptance-tests && ./run.sh -v=2.69.1 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+            junit 'acceptance-tests/target/surefire-reports/*.xml'
+          }
+
           stage('ATH - Jenkins 2.46.3') {
             sh "cd acceptance-tests && ./run.sh -v=2.46.3 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
             junit 'acceptance-tests/target/surefire-reports/*.xml'

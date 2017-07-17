@@ -1,0 +1,290 @@
+/*
+    Styles for the pipeline result status displays used in both build/branch lists, and
+    within the PipelineGraph component.
+*/
+
+.result-status-glyph {
+    stroke: none;
+    fill: #fff;
+}
+
+.svgResultStatus.no-background .circle-bg {
+    opacity: 0;
+}
+
+.svgResultStatus circle.success {
+    stroke: none;
+    fill: @brand-success-lite;
+}
+
+.svgResultStatus circle.failure {
+    stroke: none;
+    fill: @brand-danger-lite;
+}
+
+.svgResultStatus circle.unstable {
+    stroke: none;
+    fill: @brand-warning-lite;
+}
+
+.svgResultStatus circle.aborted,
+.svgResultStatus circle.not_built {
+    stroke: none;
+    fill: @brand-grey-lite;
+}
+
+.svgResultStatus circle.paused {
+    stroke: none;
+    fill: @brand-paused-lite;
+}
+
+.svgResultStatus circle.unknown {
+    stroke: none;
+    fill: @brand-unknown-lite;
+}
+
+.jdl-table td .svgResultStatus {
+    vertical-align: middle;
+}
+
+.progress-spinner.running circle {
+    fill: none;
+    stroke: @progress-bg;
+}
+
+.progress-spinner.running path {
+    fill: none;
+    stroke: @progress-bar-color;
+}
+
+.progress-spinner.pc-over-100 circle {
+    fill: none;
+    stroke: @progress-bar-color;
+}
+
+.progress-spinner.pc-over-100 path {
+    fill: none;
+    stroke: @brand-warning-lite;
+}
+
+.inverse .progress-spinner.running {
+    circle {
+        fill: none;
+        stroke: @brand-info-lite;
+    }
+
+    path {
+        fill: none;
+        stroke: white;
+    }
+
+    circle.inner {
+        fill: @brand-info-lite;
+        stroke: @brand-info-lite;
+    }
+}
+
+.progress-spinner circle.inner,
+.progress-spinner.running.spin circle.inner {
+  display: none;
+  animation: progress-spinner-pulsate 1.2s ease-out;
+  animation-iteration-count: infinite;
+  opacity: 0;
+}
+
+.progress-spinner.running circle.inner {
+    display: block;
+    fill: @progress-pulse-color;
+    stroke: @progress-pulse-color;
+}
+
+@keyframes progress-spinner-pulsate {
+    0% { transform: scale(0.1, 0.1); opacity: 0.0; }
+    50% { opacity: 1; }
+    100% { transform: scale(1.2, 1.2); opacity: 0.0; }
+}
+
+.progress-spinner.queued circle {
+    fill: none;
+    stroke: @brand-grey-lite;
+}
+
+.progress-spinner.queued circle.inner {
+    display: block;
+    fill: @brand-grey-lite;
+    stroke: @brand-grey-lite;
+}
+
+.empty-state-content svg {
+    vertical-align: middle;
+}
+
+.empty-state-content > span {
+    padding-left: 15px;
+}
+.progress-spinner.queued path {
+    fill: none;
+    stroke: none;
+}
+
+.progress-spinner.not_built circle {
+    fill: none;
+    stroke: @brand-grey-lite;
+}
+
+.progress-spinner.not_built path {
+    fill: none;
+    stroke: none;
+}
+
+.result-bg.success {
+    background:@brand-success-lite;
+    border-bottom: 1px solid fade(darken(@brand-success-lite, 10%), 50%);
+}
+
+.result-bg.failure {
+    background:@brand-danger-lite;
+    border-bottom: 1px solid fade(darken(@brand-danger-lite, 10%), 50%);
+}
+
+.result-bg.not_built,
+.result-bg.aborted,
+.result-bg.queued {
+    background:@brand-grey-lite;
+    border-bottom: 1px solid fade(darken(@brand-grey-lite, 10%), 50%);
+}
+
+.result-bg.running {
+    background:@progress-bar-color;
+    border-bottom: 1px solid fade(darken(@progress-bar-color, 10%), 50%);
+}
+
+.result-bg.unstable {
+    background:@brand-warning-lite;
+    border-bottom: 1px solid fade(darken(@brand-warning-lite, 10%), 50%);
+}
+
+.result-bg.paused {
+    background:@brand-paused-lite;
+    border-bottom: 1px solid fade(darken(@brand-paused-lite, 10%), 50%);
+}
+
+.result-bg.unknown {
+    background:@brand-unknown-lite;
+    border-bottom: 1px solid fade(darken(@brand-unknown-lite, 10%), 50%);
+}
+//--[ ResultItem ]---------------------------------------------------------------
+
+.result-item + .result-item {
+    .result-item-head {
+        border-top: 0;
+    }
+}
+
+.result-item-head {
+    display:flex;
+    align-items:stretch;
+    cursor:pointer;
+    border: solid 1px @gray-lighter;
+}
+
+.result-item-icon {
+    display:flex;
+    align-items:flex-start;
+    margin: -1px 0 -1px -1px
+}
+
+.result-item-title {
+    flex: 1 1 auto;
+    display:flex;
+    align-items:center;
+    min-width: 0;
+}
+
+.result-item-extra-info {
+    padding-right: 0.6em;
+}
+
+.result-item-label {
+    flex: 1 1 auto;
+    font-family: @font-family-ss-regular;
+}
+
+.result-item-head:hover {
+    background: #f8f8f8;
+}
+
+.result-item-expando {
+    cursor: pointer;
+}
+
+.expando-glyph {
+    transform:rotate(0deg);
+    transition: transform 150ms ease-in;
+    fill: @text-color;
+}
+
+.result-item-expando.expanded .expando-glyph {
+    transform: rotate(90deg);
+    transition: transform 150ms ease-in;
+}
+
+.result-item-expando.disabled .expando-glyph {
+    opacity:0.3;
+}
+
+.result-item-children {
+    background-color: @pre-bg;
+    color: @pre-color;
+    padding: 0.5em;
+    margin-bottom: 1px;
+    border-left: solid 28px darken(@pre-bg, 5%);
+}
+
+// Expand animation
+.slide-down-enter, .slide-down-appear {
+    max-height:0;
+    overflow:hidden;
+}
+
+.slide-down-enter.slide-down-enter-active, .slide-down-appear.slide-down-appear-active {
+    max-height:600px;
+    transition: all 300ms ease-in;
+}
+
+.slide-down-leave {
+    max-height:600px;
+    overflow:hidden
+}
+
+.slide-down-leave.slide-down-leave-active {
+    max-height:0;
+    transition: all 300ms ease-out;
+}
+
+//--[ /ResultItem ]--------------------------------------------------------------
+//--[ PipelineGraph ]------------------------------------------------------------
+
+.pipeline-connector {
+    stroke: @brand-grey-lite;
+}
+
+.pipeline-big-label {
+}
+
+.pipeline-small-label {
+    font-size: 80%;
+}
+
+.pipeline-big-label.selected,
+.pipeline-small-label.selected {
+    font-weight:bold;
+}
+
+.pipeline-selection-highlight circle {
+    fill: none; //@brand-selection;
+    //stroke: @brand-selection;
+    stroke: @brand-grey-lite;
+}
+
+//--[ /PipelineGraph ]-----------------------------------------------------------

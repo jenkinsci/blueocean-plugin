@@ -2,7 +2,6 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepositoryContainer;
 import org.kohsuke.github.GHOrganization;
 
@@ -14,9 +13,9 @@ public class GithubOrganization extends AbstractGithubOrganization {
     private final GHOrganization ghOrganization;
     private final Link self;
     private final StandardUsernamePasswordCredentials credential;
-    private final Scm scm;
+    private final GithubScm scm;
 
-    public GithubOrganization(Scm scm, GHOrganization ghOrganization, StandardUsernamePasswordCredentials credential, Link parent) {
+    public GithubOrganization(GithubScm scm, GHOrganization ghOrganization, StandardUsernamePasswordCredentials credential, Link parent) {
         this.scm = scm;
         this.ghOrganization = ghOrganization;
         this.credential = credential;
@@ -30,7 +29,11 @@ public class GithubOrganization extends AbstractGithubOrganization {
 
     @Override
     public String getAvatar() {
-        return getAvatarWithSize(ghOrganization.getAvatarUrl());
+        if (scm.isOrganizationAvatarSupported()) {
+            return getAvatarWithSize(ghOrganization.getAvatarUrl());
+        }
+
+        return null;
     }
 
     @Override

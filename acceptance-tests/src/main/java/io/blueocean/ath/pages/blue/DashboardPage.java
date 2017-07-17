@@ -2,6 +2,7 @@ package io.blueocean.ath.pages.blue;
 
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
+import io.blueocean.ath.WebElementUtils;
 import io.blueocean.ath.model.Pipeline;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
@@ -99,22 +100,27 @@ public class DashboardPage {
 
     public void enterSearchText(String searchText) {
         WebElement element = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".search-pipelines-input input"))
+            ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".search-pipelines-input input"))
         );
         element.sendKeys(searchText);
         logger.info("entered search text =" + searchText);
     }
 
     public void clearSearchText() {
-        WebElement element = wait.until(
-                ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".search-pipelines-input input"))
+        WebElementUtils.clearText(
+            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".search-pipelines-input input")))
         );
-        element.sendKeys(Keys.chord(Keys.CONTROL, "a"));
-        element.sendKeys(Keys.BACK_SPACE);
         logger.info("cleared search text");
     }
 
     public void clickPipeline(String pipelineName){
         wait.until(By.xpath("//*/div[@data-pipeline='" + pipelineName + "']/a[1]")).click();
+    }
+
+    public void clickNewPipelineBtn() {
+        open();
+        wait.until(newPipelineButton).click();
+        wait.until(ExpectedConditions.urlContains("create-pipeline"));
+        logger.info("Clicked new pipeline");
     }
 }

@@ -32,6 +32,9 @@ public class BranchPage {
     WaitUtil wait;
 
     @Inject
+    EditorPage editorPage;
+
+    @Inject
     public BranchPage(WebDriver driver) {
         this.driver = driver;
         PageFactory.initElements(driver, this);
@@ -54,5 +57,11 @@ public class BranchPage {
         wait.until(By.cssSelector("div[data-branch='" + branch + "'] a.history-button")).click();
         logger.info("Clicked history button of branch " + branch);
         return activityPageFactory.withPipeline(pipeline).checkUrl(branch);
+    }
+
+    public EditorPage openEditor(String branch) {
+        wait.until(By.cssSelector("div[data-branch='" + branch + "'] a.pipeline-editor-link")).click();
+        logger.info("Clicked Editor button of branch " + branch);
+        return editorPage;
     }
 }

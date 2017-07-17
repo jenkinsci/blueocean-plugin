@@ -392,7 +392,9 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
 
     private static void validateGithubAccessToken(String accessToken, String apiUrl) throws IOException {
         try {
-            HttpURLConnection connection =  GithubScm.connect(apiUrl+"/user", accessToken);
+            String cleanApiUrl = apiUrl.endsWith("/") ?
+                apiUrl.substring(0, apiUrl.length() - 1) : apiUrl;
+            HttpURLConnection connection =  GithubScm.connect(cleanApiUrl + "/user", accessToken);
             GithubScm.validateAccessTokenScopes(connection);
         } catch (Exception e) {
             if(e instanceof ServiceException){

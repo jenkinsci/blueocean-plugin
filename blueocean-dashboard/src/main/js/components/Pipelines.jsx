@@ -124,7 +124,7 @@ export class Pipelines extends Component {
             );
         });
 
-        this.props.setTitle('Jenkins Blue Ocean');
+        this.props.setTitle('Jenkins');
 
         return (
             <Page>
