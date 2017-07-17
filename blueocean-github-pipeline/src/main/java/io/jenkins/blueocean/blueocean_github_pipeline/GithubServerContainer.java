@@ -11,9 +11,9 @@ import com.google.common.hash.Hashing;
 import hudson.security.ACL;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import net.sf.json.JSONObject;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
@@ -21,9 +21,7 @@ import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
 import org.jenkinsci.plugins.github_branch_source.GitHubConfiguration;
-import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
-import org.kohsuke.stapler.verb.POST;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
@@ -35,7 +33,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GithubServerContainer extends Container<GithubServer> {
+public class GithubServerContainer extends ScmServerEndpointContainer {
 
     private static final Logger LOGGER = Logger.getLogger(GithubServerContainer.class.getName());
 
@@ -45,10 +43,7 @@ public class GithubServerContainer extends Container<GithubServer> {
         this.parent = parent;
     }
 
-    @POST
-    @WebMethod(name="")
-    @TreeResponse
-    public @CheckForNull GithubServer create(@JsonBody JSONObject request) {
+    public @CheckForNull ScmServerEndpoint create(@JsonBody JSONObject request) {
 
         List<ErrorMessage.Error> errors = Lists.newLinkedList();
 
@@ -136,16 +131,16 @@ public class GithubServerContainer extends Container<GithubServer> {
     }
 
     @Override
-    public Iterator<GithubServer> iterator() {
+    public Iterator<ScmServerEndpoint> iterator() {
         List<Endpoint> endpoints = Ordering.from(new Comparator<Endpoint>() {
             @Override
             public int compare(Endpoint o1, Endpoint o2) {
                 return ComparatorUtils.NATURAL_COMPARATOR.compare(o1.getName(), o2.getName());
             }
         }).sortedCopy(GitHubConfiguration.get().getEndpoints());
-        return Iterators.transform(endpoints.iterator(), new Function<Endpoint, GithubServer>() {
+        return Iterators.transform(endpoints.iterator(), new Function<Endpoint, ScmServerEndpoint>() {
             @Override
-            public GithubServer apply(Endpoint input) {
+            public ScmServerEndpoint apply(Endpoint input) {
                 return new GithubServer(input, getLink());
             }
         });
@@ -159,9 +154,9 @@ public class GithubServerContainer extends Container<GithubServer> {
     }
 
     private GithubServer findByName(final String name) {
-        return Iterators.find(iterator(), new Predicate<GithubServer>() {
+        return (GithubServer) Iterators.find(iterator(), new Predicate<ScmServerEndpoint>() {
             @Override
-            public boolean apply(GithubServer input) {
+            public boolean apply(ScmServerEndpoint input) {
                 return input.getName().equals(name);
             }
         }, null);

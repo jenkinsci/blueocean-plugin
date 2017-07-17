@@ -1,20 +1,24 @@
 package io.jenkins.blueocean.rest.impl.pipeline.scm;
 
+import io.jenkins.blueocean.rest.model.Resource;
 import org.kohsuke.stapler.export.Exported;
-import org.kohsuke.stapler.export.ExportedBean;
 
 /**
  *
- * SCM endpoint.
- *
- * To be used for SCM severs which can be installed as separate HTTP endpoints
+ * SCM server endpoint.
  *
  * @author Vivek Pandey
  */
-@ExportedBean
-public abstract class ScmServerEndpoint{
+public abstract class ScmServerEndpoint extends Resource{
+    public static final String ID = "id";
     public static final String NAME = "name";
     public static final String API_URL = "apiUrl";
+
+    /**
+     * @return unique identifier of server end point
+     */
+    @Exported(name = ID)
+    public abstract String getId();
 
     /**
      * @return name of the SCM server endpoint
