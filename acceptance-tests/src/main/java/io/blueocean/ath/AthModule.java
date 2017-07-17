@@ -15,6 +15,7 @@ import io.blueocean.ath.pages.blue.ActivityPage;
 import io.blueocean.ath.pages.blue.BranchPage;
 import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -35,6 +36,7 @@ public class AthModule extends AbstractModule {
 
         try {
             WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capability);
+            driver = new Augmenter().augment(driver);
             driver.manage().window().maximize();
             driver.manage().deleteAllCookies();
             bind(WebDriver.class).toInstance(driver);
