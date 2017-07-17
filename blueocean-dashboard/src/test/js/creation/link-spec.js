@@ -8,7 +8,7 @@ import { AppConfig } from '@jenkins-cd/blueocean-core-js';
 
 const context = { params: {}};
 describe('ClassicCreationLink', () => {
-    before(() => {
+    beforeAll(() => {
         mockExtensionsForI18n();
         prepareMount();
     });
