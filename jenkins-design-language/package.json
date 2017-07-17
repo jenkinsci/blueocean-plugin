@@ -1,15 +1,19 @@
 {
   "name": "@jenkins-cd/design-language",
   "jdlName": "jenkins-design-language",
-  "version": "0.0.139-SNAPSHOT",
+  "version": "0.0.140-kz-4",
   "description": "Styles, assets, and React classes for Jenkins Design Language",
   "main": "dist/js/components/index.js",
   "scripts": {
     "storybook": "npm run gulp build && start-storybook -p 9001 --static-dir dist/assets/",
     "build-storybook": "build-storybook --static-dir dist/assets/ --output-dir website/storybook",
     "flow": "flow",
-    "gulp": "gulp",
+    "gulp": "gulp build",
     "test": "gulp test",
+    "prepublish": "gulp test",
+    "mvnbuild": "gulp build bundle",
+    "mvntest": "gulp test",
+    "bundle:watch": "gulp watch",
     "site-build": "harp compile website/ website-build/",
     "site-server": "harp server website --port 3000",
     "site-publish": "./site-publish.sh"
@@ -47,6 +51,8 @@
     "react-dom": "15.3.2"
   },
   "devDependencies": {
+    "@jenkins-cd/js-builder": "0.0.60-kz-1",
+    "@jenkins-cd/js-modules": "0.0.9",
     "@kadira/storybook": "2.35.3",
     "babel-eslint": "7.0.0",
     "babel-polyfill": "6.16.0",
@@ -57,7 +63,8 @@
     "browserify": "13.1.0",
     "chai": "3.5.0",
     "enzyme": "2.5.1",
-    "eslint-plugin-react": "6.4.1",
+    "eslint": "2.13.1",
+    "eslint-plugin-react": "4.3.0",
     "flow-bin": "0.33.0",
     "gulp": "3.9.1",
     "gulp-babel": "6.1.2",

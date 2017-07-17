@@ -13,7 +13,10 @@
     "mvntest": "gulp test lint"
   },
   "devDependencies": {
-    "@jenkins-cd/js-builder": "0.0.59",
+    "@jenkins-cd/blueocean-core-js": "0.0.140-kz-2",
+    "@jenkins-cd/design-language": "0.0.140-kz-4",
+    "@jenkins-cd/js-builder": "0.0.60-kz-1",
+    "@jenkins-cd/js-extensions": "0.0.37-kz-2",
     "babel-eslint": "7.0.0",
     "babel-plugin-transform-decorators-legacy": "1.3.4",
     "babel-polyfill": "6.16.0",
@@ -27,12 +30,11 @@
     "gulp": "3.9.1",
     "jquery-detached": "2.1.4-v4",
     "ncp": "2.0.0",
+    "react-router": "2.8.1",
+    "reactify": "1.1.1",
     "zombie": "4.2.1"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.139",
-    "@jenkins-cd/design-language": "0.0.139",
-    "@jenkins-cd/js-extensions": "0.0.36",
     "@jenkins-cd/js-modules": "0.0.10",
     "history": "2.0.2",
     "immutable": "3.8.1",
@@ -46,7 +48,6 @@
     "react-dom": "15.3.2",
     "react-i18next": "1.10.1",
     "react-redux": "4.4.5",
-    "react-router": "2.3.0",
     "redux": "3.6.0",
     "redux-thunk": "2.1.0"
   }

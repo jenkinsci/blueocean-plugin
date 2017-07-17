@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>blueocean-parent</artifactId>
+        <groupId>io.jenkins.blueocean</groupId>
+        <version>1.2.0-beta-2-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>blueocean-core-js</artifactId>
+    <packaging>hpi</packaging>
+
+    <name>Blue Ocean Core JS</name>
+
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Core+JS</url>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>.</directory>
+                <includes>
+                    <include>package.json</include>
+                    <include>dist/**/*</include>
+                </includes>
+            </resource>
+        </resources>
+        <plugins>
+            <plugin>
+                <groupId>io.jenkins.blueocean</groupId>
+                <artifactId>blueocean-maven-plugin</artifactId>
+                <version>0.0.1</version>
+                <executions>
+                    <execution>
+                        <phase>validate</phase>
+                        <goals>
+                            <goal>process-node-dependencies</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <excludes>
+                        <exclude>InjectedTest.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <!-- Disable InjectedTest -->
+            <plugin>
+                <groupId>org.jenkins-ci.tools</groupId>
+                <artifactId>maven-hpi-plugin</artifactId>
+                <configuration>
+                    <disabledTestInjection>true</disabledTestInjection>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.jenkins.blueocean</groupId>
+            <artifactId>jenkins-design-language</artifactId>
+        </dependency>
+    </dependencies>
+</project>

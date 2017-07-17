@@ -24,7 +24,7 @@ export const defaultLngDetector = new LngDetector(null, {
 const prefix = urlConfig.getJenkinsRootURL() || '';
 const FALLBACK_LANG = '';
 
-function newPluginXHR(pluginName, onLoad) {
+function newPluginXHR(pluginName) {
     let pluginVersion = store.getPluginVersion(pluginName);
 
     if (!pluginVersion) {
@@ -42,6 +42,10 @@ function newPluginXHR(pluginName, onLoad) {
             if (logger.isDebugEnabled()) {
                 logger.debug('loading data for', url);
             }
+            Fetch.fetchJSON(url, { disableCapabilites: true, disableLoadingIndicator: true, ignoreRefreshHeader: true }).then(data => {
+                callback(data, { status: 200 });
+            });
+            /* FIXME:: there was a change to this!
             let status;
             // eslint-disable-next-line
             return Fetch.fetch(url, { disableLoadingIndicator: true, ignoreRefreshHeader: true })
@@ -60,15 +64,13 @@ function newPluginXHR(pluginName, onLoad) {
                         callback(data, xhr);
                     }
                 });
+            */
         },
         parse: (data) => {
             // we need to parse the response and then extract the data since the rest is garbage for us
-            const response = JSON.parse(data);
+            const response = data;
             if (logger.isDebugEnabled()) {
                 logger.debug('Received i18n resource bundle for plugin "%s".', pluginName, response.data);
-            }
-            if (typeof onLoad === 'function') {
-                onLoad();
             }
             return response.data;
         },
@@ -121,7 +123,7 @@ const toDefaultNamespace = (pluginName) => {
  * for the "blueocean-dashboard" plugin.
  * @return An i18n instance.
  */
-const pluginI18next = (pluginName, namespace = toDefaultNamespace(pluginName), onLoad = undefined) => {
+const pluginI18next = (pluginName, namespace = toDefaultNamespace(pluginName)) => {
     assertPluginNameDefined(pluginName);
 
     const initOptions = {
@@ -138,7 +140,7 @@ const pluginI18next = (pluginName, namespace = toDefaultNamespace(pluginName), o
         },
     };
 
-    return i18nextInstance(newPluginXHR(pluginName, onLoad), defaultLngDetector, initOptions);
+    return i18nextInstance(newPluginXHR(pluginName), defaultLngDetector, initOptions);
 };
 
 function buildCacheKey(pluginName, namespace = toDefaultNamespace(pluginName)) {
@@ -175,7 +177,10 @@ export default function i18nTranslator(pluginName, namespace, onLoad) {
         }
 
         if (!translator) {
-            const I18n = pluginI18next(pluginName, namespace, onLoad);
+            const I18n = pluginI18next(pluginName, namespace);
+            if (typeof onLoad === 'function') {
+                I18n.on('loaded', onLoad);
+            }
 
             // Create and cache the translator instance.
             let detectedLang;
@@ -190,7 +195,7 @@ export default function i18nTranslator(pluginName, namespace, onLoad) {
             }
 
             const fixedT = I18n.getFixedT(detectedLang, namespace);
-            translator = function (i18nKey, i18nParams) {
+            translator = function _translate(i18nKey, i18nParams) {
                 const normalizedKey = i18nKey.replace(/[\W]/g, '.');
                 let passedParams = i18nParams;
                 if (normalizedKey !== i18nKey) {

@@ -1,5 +1,7 @@
 "use strict";
 
+process.env.SKIP_BLUE_IMPORTS = 'YES';
+
 /*
  Build file for Jenkins Design Language theme.
  */
@@ -210,3 +212,20 @@ gulp.task("validate", () => {
         }
     }
 });
+
+var builder = require('@jenkins-cd/js-builder');
+
+builder.src([
+    'src/js',
+    'less']);
+
+//
+// Create the main bundle.
+//
+builder.bundle('src/js/components/index.js', 'jenkins-design-language.js')
+    .inDir('target/classes/io/jenkins/blueocean')
+    .less('less/theme.less')
+    .export('react')
+    .export('react-dom')
+    .export("react-router")
+    .export('react-addons-css-transition-group');

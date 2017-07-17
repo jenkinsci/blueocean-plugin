@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.140-SNAPSHOT",
+  "version": "0.0.140-kz-2",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
@@ -14,7 +14,9 @@
     "test": "gulp test",
     "test:debug": "node --debug-brk ./node_modules/.bin/gulp test-debug",
     "test:fast": "gulp test-fast",
-    "prepublish": "gulp"
+    "prepublish": "gulp",
+    "mvnbuild": "gulp bundle",
+    "mvntest": "echo 0"
   },
   "author": "Cliff Meyers <cmeyers@cloudbees.com> (https://www.cloudbees.com/)",
   "contributors": [
@@ -32,8 +34,6 @@
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
-    "@jenkins-cd/design-language": "0.0.139",
-    "@jenkins-cd/js-extensions": "0.0.36",
     "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/logging": "0.0.6",
     "@jenkins-cd/react-material-icons": "1.0.0",
@@ -49,15 +49,13 @@
     "mobx-utils": "1.1.2",
     "moment": "2.15.1",
     "pem-jwk": "1.5.1",
-    "react-remarkable": "1.1.1",
-    "react-router": "2.3.0"
-  },
-  "peerDependencies": {
-    "react": "^15.1.0",
-    "react-dom": "^15.1.0"
+    "react-remarkable": "1.1.1"
   },
   "devDependencies": {
+    "@jenkins-cd/design-language": "0.0.140-kz-4",
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
+    "@jenkins-cd/js-builder": "0.0.60-kz-1",
+    "@jenkins-cd/js-extensions": "0.0.37-kz-2",
     "@kadira/storybook": "2.20.1",
     "babel-eslint": "7.0.0",
     "babel-plugin-transform-decorators-legacy": "1.3.4",
@@ -97,6 +95,8 @@
     "react": "15.3.2",
     "react-addons-test-utils": "15.3.2",
     "react-dom": "15.3.2",
+    "react-router": "2.8.1",
+    "reactify": "1.1.1",
     "run-sequence": "1.2.2",
     "sinon": "1.17.6",
     "watchify": "3.7.0"

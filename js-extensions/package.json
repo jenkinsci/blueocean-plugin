@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/js-extensions",
-  "version": "0.0.36",
+  "version": "0.0.37-kz-2",
   "description": "Jenkins Extension Store",
   "main": "index.js",
   "files": [
@@ -14,7 +14,8 @@
     "compile": "babel --presets es2015,react src -d dist",
     "test": "gulp test",
     "compile-test": "npm run compile && npm run test",
-    "lint": "gulp lint"
+    "lint": "gulp lint",
+    "prepublish": "npm run compile"
   },
   "author": "Tom Fennelly <tom.fennelly@gmail.com> (https://github.com/tfennelly)",
   "license": "MIT",
@@ -45,8 +46,8 @@
     "envify": "3.4.1",
     "js-yaml": "^3.6.0"
   },
-  "peerDependencies": {
-    "@jenkins-cd/logging": "0.0.6",
+  "_peerDependencies": {
+    "@jenkins-cd/logging": "^0.0.6",
     "react": "^0.14.7 || ^15.0.0",
     "react-dom": "^0.14.7 || ^15.0.0"
   }
