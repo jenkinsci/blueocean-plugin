@@ -16,7 +16,7 @@ import BbLoadingStep from '../steps/BbLoadingStep';
 import BbCredentialsStep from '../steps/BbCredentialStep';
 import BbOrgListStep from '../steps/BbOrgListStep';
 import BbRepositoryStep from '../steps/BbRepositoryStep';
-import BbCloudCompleteStep from './steps/BbCloudCompleteStep';
+import BbCompleteStep from '../steps/BbCompleteStep';
 import BbUnknownErrorStep from '../steps/BbUnknownErrorStep';
 import BbRenameStep from '../steps/BbRenameStep';
 
@@ -279,8 +279,8 @@ export default class BbCloudFlowManager extends FlowManager {
             STATE.STEP_RENAME : STATE.STEP_CHOOSE_REPOSITORY;
 
         this.renderStep({
-            stateId: STATE.STEP_COMPLETE_SUCCESS,
-            stepElement: <BbCloudCompleteStep />,
+            stateId: STATE.PENDING_CREATION_SAVING,
+            stepElement: <BbCompleteStep />,
             afterStateId,
         });
 

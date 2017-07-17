@@ -1,18 +1,18 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 
-import { buildPipelineUrl } from '../../../../util/UrlUtils';
+import { buildPipelineUrl } from '../../../util/UrlUtils';
 
-import FlowStep from '../../../flow2/FlowStep';
-import FlowStepStatus from '../../../flow2/FlowStepStatus';
-import STATE from '../BbCloudCreationState';
+import FlowStep from '../../flow2/FlowStep';
+import FlowStepStatus from '../../flow2/FlowStepStatus';
+import STATE from '../cloud/BbCloudCreationState';
 
 import Extensions from '@jenkins-cd/js-extensions';
 
 let t = null;
 
 @observer
-export default class BbCloudCompleteStep extends React.Component {
+export default class BbCompleteStep extends React.Component {
     componentWillMount() {
         t = this.props.flowManager.translate;
     }
@@ -37,7 +37,9 @@ export default class BbCloudCompleteStep extends React.Component {
     }
 
     _getTitle(state, repo) {
-        if (state === STATE.STEP_COMPLETE_SAVING_ERROR) {
+        if (state === STATE.PENDING_CREATION_SAVING) {
+            return t('creation.bitbucket.pending.title');
+        } else if (state === STATE.STEP_COMPLETE_SAVING_ERROR) {
             return t('creation.error.creating_pipeline');
         } else if (state === STATE.STEP_COMPLETE_EVENT_ERROR) {
             return t('creation.core.error.creating.pipeline');
@@ -107,16 +109,17 @@ export default class BbCloudCompleteStep extends React.Component {
         const error = this._getError(flowManager.stateId);
         const title = this._getTitle(flowManager.stateId, flowManager.selectedRepository);
         const content = this._getContent(flowManager.stateId);
+        const loading = flowManager.stateId === STATE.PENDING_CREATION_SAVING;
 
         return (
-            <FlowStep {...this.props} className="github-complete-step" title={title} status={status} error={error}>
+            <FlowStep {...this.props} className="github-complete-step" title={title} status={status} loading={loading} error={error}>
                 {content}
             </FlowStep>
         );
     }
 }
 
-BbCloudCompleteStep.propTypes = {
+BbCompleteStep.propTypes = {
     flowManager: PropTypes.object,
     status: PropTypes.string,
 };

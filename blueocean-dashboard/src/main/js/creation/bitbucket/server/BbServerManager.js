@@ -35,7 +35,7 @@ class BbServerManager {
     }
 
     _onValidateVersionFailure(error) {
-        return new CreateServerError(error);
+        throw new CreateServerError(error);
     }
 
     createServer(name, url) {
