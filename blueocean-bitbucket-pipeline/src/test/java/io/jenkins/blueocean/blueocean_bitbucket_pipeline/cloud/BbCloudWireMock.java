@@ -29,7 +29,7 @@ public class BbCloudWireMock extends BitbucketWireMockBase {
 
     @Override
     protected String wireMockProxyUrl() {
-        return "https://api.bitbucket.org";
+        return "https://bitbucket.org";
     }
 
     @Override

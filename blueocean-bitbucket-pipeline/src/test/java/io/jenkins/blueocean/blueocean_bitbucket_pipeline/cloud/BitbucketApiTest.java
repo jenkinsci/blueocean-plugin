@@ -72,6 +72,15 @@ public class BitbucketApiTest  extends BbCloudWireMock{
         assertEquals("https://bitbucket.org/account/vivekp7/avatar/50/", team.getAvatar());
     }
 
+    @Test
+    public void getUserTeamUsingEmail() throws JsonProcessingException {
+        api = new BitbucketCloudApi(apiUrl, getMockedCredentials("x.y@gmail.com"));
+        BbOrg team = api.getOrg("vivekp7");
+        assertEquals("vivekp7", team.getKey());
+        assertEquals("Vivek Pandey", team.getName());
+        assertEquals("https://bitbucket.org/account/vivekp7/avatar/50/", team.getAvatar());
+    }
+
 
     @Test
     public void getTeam() throws JsonProcessingException {
@@ -120,6 +129,10 @@ public class BitbucketApiTest  extends BbCloudWireMock{
     //This is duplicated code from server, we can't move to base class as inheritance won't work with @RunWith annotation
     //from subclasses
     private StandardUsernamePasswordCredentials getMockedCredentials(){
+        return getMockedCredentials(getUserName());
+    }
+
+    private StandardUsernamePasswordCredentials getMockedCredentials(final String username){
         final Secret secret = Mockito.mock(Secret.class);
         when(secret.getPlainText()).thenReturn(getPassword());
 
@@ -141,7 +154,7 @@ public class BitbucketApiTest  extends BbCloudWireMock{
             @NonNull
             @Override
             public String getUsername() {
-                return getUserName();
+                return username;
             }
 
             @NonNull

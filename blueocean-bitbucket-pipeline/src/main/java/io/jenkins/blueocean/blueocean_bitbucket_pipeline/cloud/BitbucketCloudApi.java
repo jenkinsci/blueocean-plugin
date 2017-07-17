@@ -55,6 +55,19 @@ public class BitbucketCloudApi extends BitbucketApi {
 
     @Nonnull
     @Override
+    public BbUser getUser() {
+        try {
+            InputStream inputStream = Request.Get(baseUrl+"user")
+                    .addHeader("Authorization", basicAuthHeaderValue)
+                    .execute().returnContent().asStream();
+            return om.readValue(inputStream, BbCloudUser.class);
+        } catch (IOException e) {
+            throw handleException(e);
+        }
+    }
+
+    @Nonnull
+    @Override
     public BbUser getUser(@Nonnull String userName) {
         try {
             InputStream inputStream = Request.Get(String.format("%s/%s",baseUrl+"users", userName))
@@ -113,9 +126,9 @@ public class BitbucketCloudApi extends BitbucketApi {
     @Override
     public BbOrg getOrg(@Nonnull String orgName) {
         try {
+            BbUser user = getUser();
             // If user org, get user and return BbCloudTeam model
-            if(orgName.equalsIgnoreCase(userName)){
-                BbUser user = getUser();
+            if(orgName.equalsIgnoreCase(user.getSlug())){
                 return new BbCloudTeam(user.getSlug(), user.getDisplayName(), user.getAvatar());
             }
             InputStream inputStream = Request.Get(String.format("%s/%s",baseUrl+"teams", orgName))
