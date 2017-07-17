@@ -5,6 +5,7 @@ import com.google.common.io.Files;
 import com.google.inject.Guice;
 import com.google.inject.Injector;
 import io.blueocean.ath.pages.classic.LoginPage;
+import org.apache.commons.io.FileUtils;
 import org.apache.log4j.Logger;
 import org.junit.internal.AssumptionViolatedException;
 import org.junit.internal.runners.model.EachTestNotifier;
@@ -14,6 +15,8 @@ import org.junit.runners.BlockJUnit4ClassRunner;
 import org.junit.runners.model.FrameworkMethod;
 import org.junit.runners.model.InitializationError;
 import org.junit.runners.model.Statement;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.ScreenshotException;
 
@@ -85,25 +88,31 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
     }
 
     private void writeScreenShotCause(Throwable t, Object test, FrameworkMethod method) throws IOException {
+        WebDriver driver = injector.getInstance(WebDriver.class);
+        File file = new File("target/screenshots/"+ test.getClass().getName() + "_" + method.getName() + ".png");
+
         Throwable cause = t.getCause();
+        boolean fromException = false;
         while(cause != null) {
             if(cause instanceof ScreenshotException) {
                 ScreenshotException se = ((ScreenshotException) cause);
 
                 byte[] screenshot =  Base64.getMimeDecoder().decode(se.getBase64EncodedScreenshot());
 
-
-                File file = new File("target/screenshots/"+ test.getClass().getName() + "_" + method.getName() + ".png");
                 Files.createParentDirs(file);
                 Files.write(screenshot, file);
                 logger.info("Wrote screenshot to " + file.getAbsolutePath());
-
+                fromException = true;
                 break;
             } else {
-
                 cause = cause.getCause();
             }
+        }
 
+        if(!fromException) {
+            File scrFile = ((TakesScreenshot)driver).getScreenshotAs(OutputType.FILE);
+            FileUtils.copyFile(scrFile, file);
+            logger.info("Wrote screenshot to " + file.getAbsolutePath());
         }
      }
 
