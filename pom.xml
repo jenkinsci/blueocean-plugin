@@ -32,8 +32,8 @@
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
     <jenkins-test-harness.version>2.15</jenkins-test-harness.version>
-    <scm-api.version>2.2.0-beta-1</scm-api.version>
-    <git.version>3.4.0-beta-1</git.version>
+    <scm-api.version>2.2.0</scm-api.version>
+    <git.version>3.4.0</git.version>
   </properties>
 
   <scm>
@@ -300,7 +300,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>branch-api</artifactId>
-            <version>2.0.11-beta-1</version>
+            <version>2.0.11</version>
         </dependency>
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
@@ -409,7 +409,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-bitbucket-branch-source</artifactId>
-            <version>2.2.0-beta-1</version>
+            <version>2.2.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
