@@ -64,6 +64,7 @@ public class GitCreationTest extends BaseTest{
         pipeline.getActivityPage().testNumberRunsComplete(1);
     }
 
+    @Ignore
     @Test
     public void testSSHPrivateRepostory() throws IOException, GitAPIException, URISyntaxException {
         String gitUrl = liveProperties.getProperty("git.ssh.repository");
