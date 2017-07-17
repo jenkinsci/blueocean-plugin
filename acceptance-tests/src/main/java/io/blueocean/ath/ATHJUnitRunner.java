@@ -82,7 +82,7 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
 
                 WebDriver driver = injector.getInstance(WebDriver.class);
                 driver.close();
-                driver.quit();
+               // driver.quit();
             }
         };
     }
