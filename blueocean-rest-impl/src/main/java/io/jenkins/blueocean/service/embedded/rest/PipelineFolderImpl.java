@@ -20,6 +20,7 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineFolder;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
+import io.jenkins.blueocean.rest.model.BlueTrendContainer;
 import io.jenkins.blueocean.rest.model.Resource;
 import org.kohsuke.stapler.json.JsonBody;
 
@@ -188,5 +189,10 @@ public class PipelineFolderImpl extends BluePipelineFolder {
                 return null;
             }
         });
+    }
+
+    @Override
+    public BlueTrendContainer getTrends() {
+        return null;
     }
 }

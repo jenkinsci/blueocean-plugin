@@ -33,9 +33,11 @@ import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
+import io.jenkins.blueocean.rest.model.BlueTrendContainer;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
+import io.jenkins.blueocean.service.embedded.rest.BlueTrendContainerImpl;
 import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
 import jenkins.branch.MultiBranchProject;
@@ -428,6 +430,11 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     @Override
     public BlueIcon getIcon() {
+        return null;
+    }
+
+    @Override
+    public BlueTrendContainer getTrends() {
         return null;
     }
 }

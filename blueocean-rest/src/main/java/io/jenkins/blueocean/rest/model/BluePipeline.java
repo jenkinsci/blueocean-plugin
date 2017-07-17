@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
+import com.google.common.annotations.Beta;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.Navigable;
@@ -175,4 +176,8 @@ public abstract class BluePipeline extends Resource {
      * @return Gives scm resource attached to this pipeline
      */
     public abstract BluePipelineScm getScm();
+
+    @Beta
+    @Navigable
+    public abstract BlueTrendContainer getTrends();
 }

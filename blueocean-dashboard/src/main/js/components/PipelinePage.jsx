@@ -54,10 +54,10 @@ export class PipelinePage extends Component {
         const { location = {} } = this.context;
 
         const { organization, name, fullName, fullDisplayName } = pipeline || {};
-        
+
         const organizationName = organization || AppConfig.getOrganizationName();
         const organizationDisplayName = organization === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : organization;
-        
+
         const orgUrl = buildOrganizationUrl(organizationName);
         const activityUrl = buildPipelineUrl(organizationName, fullName, 'activity');
         const isReady = !!pipeline;
@@ -79,6 +79,7 @@ export class PipelinePage extends Component {
             <TabLink to="/activity">{ translate('pipelinedetail.common.tab.activity', { defaultValue: 'Activity' }) }</TabLink>,
             <TabLink to="/branches">{ translate('pipelinedetail.common.tab.branches', { defaultValue: 'Branches' }) }</TabLink>,
             <TabLink to="/pr">{ translate('pipelinedetail.common.tab.pullrequests', { defaultValue: 'Pull Requests' }) }</TabLink>,
+            <TabLink to="/trends">{ translate('pipelinedetail.common.tab.trends', { defaultValue: 'Trends' }) }</TabLink>,
         ];
 
         const pageHeader = isReady ? (

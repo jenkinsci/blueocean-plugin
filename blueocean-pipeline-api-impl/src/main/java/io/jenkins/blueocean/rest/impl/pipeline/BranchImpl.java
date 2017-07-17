@@ -14,7 +14,9 @@ import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
+import io.jenkins.blueocean.rest.model.BlueTrendContainer;
 import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.service.embedded.rest.BlueTrendContainerImpl;
 import jenkins.branch.MultiBranchProject;
 import jenkins.scm.api.metadata.ObjectMetadataAction;
 import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
@@ -69,6 +71,11 @@ public class BranchImpl extends PipelineImpl {
         }else{
             return null;
         }
+    }
+
+    @Override
+    public BlueTrendContainer getTrends() {
+        return new BlueTrendContainerImpl(this);
     }
 
     @Extension(ordinal = 4)

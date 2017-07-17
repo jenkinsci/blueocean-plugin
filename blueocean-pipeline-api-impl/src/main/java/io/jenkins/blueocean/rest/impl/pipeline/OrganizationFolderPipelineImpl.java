@@ -21,6 +21,7 @@ import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
+import io.jenkins.blueocean.rest.model.BlueTrendContainer;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
@@ -240,6 +241,11 @@ public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFol
     @Override
     public BluePipelineScm getScm() {
         return new ScmResourceImpl(folder, this);
+    }
+
+    @Override
+    public BlueTrendContainer getTrends() {
+        return null;
     }
 
     protected OrganizationFolder getFolder() {

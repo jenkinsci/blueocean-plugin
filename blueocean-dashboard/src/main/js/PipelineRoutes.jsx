@@ -7,6 +7,7 @@ import {
     Activity,
     PullRequests,
     PipelinePage,
+    PipelineTrends,
     RunDetails,
     RunDetailsPipeline,
     RunDetailsChanges,
@@ -122,6 +123,7 @@ export default (
             <Route path=":pipeline/branches" component={MultiBranch} />
             <Route path=":pipeline/activity" component={Activity} />
             <Route path=":pipeline/pr" component={PullRequests} />
+            <Route path=":pipeline/trends" component={PipelineTrends} />
 
             <Route path=":pipeline/detail/:branch/:runId" component={RunDetails} onLeave={onLeaveCheckBackground}>
                 <IndexRedirect to="pipeline" />

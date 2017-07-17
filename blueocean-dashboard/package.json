@@ -68,6 +68,7 @@
     "react-redux": "4.4.5",
     "react-remarkable": "1.1.1",
     "react-router": "2.3.0",
+    "recharts": "^1.0.0-alpha.2",
     "redux": "3.6.0",
     "redux-thunk": "2.1.0",
     "reselect": "2.5.4"
