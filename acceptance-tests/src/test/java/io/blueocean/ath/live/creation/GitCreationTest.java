@@ -78,6 +78,7 @@ public class GitCreationTest extends BaseTest{
 
         MultiBranchPipeline pipeline = gitCreationPage.createPipeline(sseClient, pipelineName, gitUrl, key, null, null);
         pipeline.getActivityPage().testNumberRunsComplete(1);
+
     }
 
 
