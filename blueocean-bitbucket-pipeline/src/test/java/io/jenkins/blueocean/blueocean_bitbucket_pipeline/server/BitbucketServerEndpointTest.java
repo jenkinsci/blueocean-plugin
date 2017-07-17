@@ -215,6 +215,13 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         assertEquals(id, server.get("id"));
         assertEquals("My Server", server.get("name"));
         assertEquals(apiUrl, server.get("apiUrl"));
+
+        //check if valid version
+        request()
+                .status(200)
+                .jwtToken(token)
+                .get(URL+id+"/validate/")
+                .build(Map.class);
     }
 
     @Test

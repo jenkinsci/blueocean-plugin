@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
 
 import com.cloudbees.jenkins.plugins.bitbucket.endpoints.AbstractBitbucketEndpoint;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.Messages;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -62,8 +63,8 @@ public class BitbucketServerEndpoint extends ScmServerEndpoint {
         String version = BitbucketServerApi.getVersion(apiUrl);
         if(!BitbucketServerApi.isSupportedVersion(version)){
             throw new ServiceException.PreconditionRequired(
-                    String.format("Bitbucket server: %s, version: %s is not supported. Minimum supported version: %s",
-                    apiUrl, version, BitbucketServerApi.MINIMUM_SUPPORTED_VERSION));
+                    Messages.bbserver_version_validation_error(
+                            apiUrl, version, BitbucketServerApi.MINIMUM_SUPPORTED_VERSION));
         }
         return new HttpResponse(){
             @Override

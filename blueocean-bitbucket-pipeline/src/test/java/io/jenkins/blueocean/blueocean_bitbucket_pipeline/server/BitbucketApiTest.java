@@ -136,6 +136,13 @@ public class BitbucketApiTest extends BbServerWireMock {
     public void testEmptyRepo(){
         boolean empty = api.isEmptyRepo("TESTP", "empty-repo-test");
         assertTrue(empty);
+        //create new file
+        BbSaveContentResponse saveResponse = api.saveContent("TESTP","empty-repo-test","README.md",
+                "This is test content in new file",
+                "another commit", "master",null);
+        assertNotNull(saveResponse.getCommitId());
+        String content = api.getContent("TESTP", "empty-repo-test", "README.md", (String) saveResponse.getCommitId());
+        assertEquals("This is test content in new file", content);
     }
 
     @Test

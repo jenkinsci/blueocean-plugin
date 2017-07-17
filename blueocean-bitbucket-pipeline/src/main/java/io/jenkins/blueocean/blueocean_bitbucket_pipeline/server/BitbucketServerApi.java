@@ -6,11 +6,11 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import hudson.Extension;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApiFactory;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.Messages;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbBranch;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbOrg;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbPage;
@@ -27,6 +27,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
@@ -170,36 +171,19 @@ public class BitbucketServerApi extends BitbucketApi {
                                       @Nullable String branch,
                                       @Nullable String commitId){
         try {
-            BbBranch defaultBranch = getDefaultBranch(projectKey, repoSlug);
-
-            BbBranch commitBranch;
-            if(branch == null){ //get default branch
-                assertDefaultBranch(defaultBranch, projectKey, repoSlug);
-                commitBranch = defaultBranch;
-            }else{ //check if this branch doesn't exist, if it doesn't then create this branch
-                commitBranch = getBranch(projectKey,repoSlug, branch);
-                if(commitBranch == null){
-                    if(commitId == null){
-                        assertDefaultBranch(defaultBranch, projectKey, repoSlug);
-                        commitId = defaultBranch.getLatestCommit();
-                    }
-                    commitBranch =  createBranch(projectKey,repoSlug, ImmutableMap.of("name", branch, "startPoint", commitId, "message", "Creating new branch "+branch));
-                }
+            String version = getVersion(apiUrl);
+            if(!isSupportedVersion(version)){
+                throw new ServiceException.PreconditionRequired(
+                        Messages.bbserver_version_validation_error(
+                                apiUrl, version, BitbucketServerApi.MINIMUM_SUPPORTED_VERSION));
             }
-            branch = commitBranch.getDisplayId();
-            boolean fileExists = fileExists(projectKey,repoSlug,path,branch);
-            if(!fileExists){
-                commitId = null; //if file doesn't exist we need to send null commitId
-            } else if(commitId == null){ // else patch commitId with whats available on default branch
-                commitId = commitBranch.getLatestCommit();
-            }
-
-
             MultipartEntityBuilder builder = MultipartEntityBuilder.create()
                     .addTextBody("content", content)
-                    .addTextBody("message", commitMessage)
-                    .addTextBody("branch", branch);
+                    .addTextBody("message", commitMessage);
 
+            if(!StringUtils.isBlank(branch)){
+                builder.addTextBody("branch", branch);
+            }
             if(org.apache.commons.lang.StringUtils.isNotBlank(commitId)){
                    builder.addTextBody("sourceCommitId", commitId);
             }
@@ -210,6 +194,11 @@ public class BitbucketServerApi extends BitbucketApi {
                     .execute().returnContent().asStream();
             return om.readValue(inputStream, BbServerSaveContentResponse.class);
         } catch (IOException e) {
+            //there might be 409 error if same content is submitted for save with a given commitId
+            // we ignore error and return the response as if it was saved successfully
+            if(commitId != null && e instanceof HttpResponse && ((HttpResponse) e).getStatusLine().getStatusCode() == 409){
+                return new BbServerSaveContentResponse(commitId);
+            }
             throw handleException(e);
         }
     }
