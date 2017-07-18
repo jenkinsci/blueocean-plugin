@@ -184,9 +184,14 @@ function renderMultiParallelPipeline() {
             makeNode("Safari", [], validResultValues.running, 60),
             makeNode("Chrome", [], validResultValues.running, 120)
         ]),
-        makeNode("Skipped", [], validResultValues.skipped),
-        makeNode("Dev"),
-        makeNode("Staging"),
+        makeNode("Skizzled", [], validResultValues.skipped),
+        makeNode("Foshizzle", [], validResultValues.skipped),
+        makeNode("Dev", [
+            makeNode("US-East", [], validResultValues.success),
+            makeNode("US-West", [], validResultValues.success),
+            makeNode("APAC", [], validResultValues.success),
+        ], validResultValues.success),
+        makeNode("Staging", [], validResultValues.skipped),
         makeNode("Production")
     ];
 

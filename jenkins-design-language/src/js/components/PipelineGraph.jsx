@@ -67,6 +67,28 @@ type Props = {
     selectedStage: StageInfo
 };
 
+// Generate a react key for a connection
+function connectorKey(leftNode, rightNode) {
+    return leftNode.name + leftNode.id + '_con_' + rightNode.name + rightNode.id;
+}
+
+// For Debugging
+let _debugKey = 111;
+function debugPoint(cx, cy, message = 'debug') {
+    const key = 'debug_' + (++_debugKey);
+
+    return (
+        <g key={key} title={message} stroke="pink" strokeWidth={3}>
+            <line x1={cx - 5} y1={cy - 5} x2={cx + 5} y2={cy + 5} />
+            <line x1={cx - 5} y1={cy + 5} x2={cx + 5} y2={cy - 5} />
+        </g>
+    );
+
+    // return (
+    //     <circle cx={cx} cy={cy} r="5" fill="pink" key={key} title={message}/>
+    // );
+}
+
 export class PipelineGraph extends Component {
 
     // Flow typedefs
@@ -344,13 +366,23 @@ export class PipelineGraph extends Component {
         if (skippedNodes.length === 0) {
             // Nothing too complicated, use the old connection drawing code
             this.renderBasicConnections(sourceNodes, destinationNodes, elements);
+        } else {
+            this.renderSkippingConnections(sourceNodes, destinationNodes, skippedNodes, elements)
         }
     }
 
     // Connections between columns without any skipping
     renderBasicConnections(sourceNodes: Array<NodeInfo>, destinationNodes: Array<NodeInfo>, elements: SVGChildren) {
 
-        this.renderHorizontalConnection(sourceNodes[0], destinationNodes[0], elements);
+        const { connectorStrokeWidth } = this.state.layout;
+
+        // Stroke props common to straight / curved connections
+        const connectorStroke = {
+            className: 'pipeline-connector',
+            strokeWidth: connectorStrokeWidth,
+        };
+
+        this.renderHorizontalConnection(sourceNodes[0], destinationNodes[0], connectorStroke, elements);
 
         // Collapse from previous node(s) to top column node
         for (const previousNode of sourceNodes.slice(1)) {
@@ -363,21 +395,161 @@ export class PipelineGraph extends Component {
         }
     }
 
-    renderHorizontalConnection(leftNode: NodeInfo, rightNode: NodeInfo, elements: SVGChildren) {
+    // Renders a more complex connection, that "skips" one or more nodes
+    renderSkippingConnections(sourceNodes: Array<NodeInfo>,
+                              destinationNodes: Array<NodeInfo>,
+                              skippedNodes: Array<NodeInfo>,
+                              elements: SVGChildren) {
 
-        const { nodeRadius, connectorStrokeWidth } = this.state.layout;
-
-        const key = leftNode.name + leftNode.id + '_con_' + rightNode.name + rightNode.id;
-
-        const x1 = leftNode.x + nodeRadius - (nodeStrokeWidth / 2);
-        const x2 = rightNode.x - nodeRadius + (nodeStrokeWidth / 2);
-        const y = leftNode.y;
+        const { connectorStrokeWidth, nodeRadius, curveRadius, nodeSpacingH, nodeSpacingV } = this.state.layout;
 
         // Stroke props common to straight / curved connections
         const connectorStroke = {
             className: 'pipeline-connector',
             strokeWidth: connectorStrokeWidth,
         };
+
+        // TODO: this should be a style
+        const skipConnectorStroke = {
+            className: 'pipeline-connector',
+            strokeOpacity: 0.25,
+            strokeWidth: connectorStrokeWidth,
+        };
+
+        const lastSkippedNode = skippedNodes[skippedNodes.length - 1];
+        let leftNode, rightNode;
+
+        //--------------------------------------------------------------------------
+        //  Draw the "ghost" connections to/from/between skipped nodes
+
+        leftNode = sourceNodes[0];
+        for (rightNode of skippedNodes) {
+            this.renderHorizontalConnection(leftNode, rightNode, skipConnectorStroke, elements);
+            leftNode = rightNode;
+        }
+        this.renderHorizontalConnection(leftNode, destinationNodes[0], skipConnectorStroke, elements);
+
+        //--------------------------------------------------------------------------
+        //  "Collapse" from the source node(s) down toward the first skipped
+
+        leftNode = sourceNodes[0];
+        rightNode = skippedNodes[0];
+
+        let midPointX = Math.round((leftNode.x + rightNode.x) / 2);
+
+        for (leftNode of sourceNodes.slice(1)) {
+            const key = connectorKey(leftNode, rightNode);
+
+            let x1 = leftNode.x + nodeRadius - (nodeStrokeWidth / 2);
+            let y1 = leftNode.y;
+            let x2 = midPointX;
+            let y2 = rightNode.y;
+
+            const pathData = `M ${x1} ${y1}` + this.svgCurve(x1, y1, x2, y2, midPointX, curveRadius);
+
+            elements.push(
+                <path {...connectorStroke} key={key} d={pathData} fill="none" />,
+            );
+        }
+
+        //--------------------------------------------------------------------------
+        //  "Expand" from the last skipped node toward the destination nodes
+
+        leftNode = lastSkippedNode;
+        rightNode = destinationNodes[0];
+
+        midPointX = Math.round((leftNode.x + rightNode.x) / 2);
+
+        for (rightNode of destinationNodes.slice(1)) {
+            const key = connectorKey(leftNode, rightNode);
+
+            let x1 = midPointX;
+            let y1 = leftNode.y;
+            let x2 = rightNode.x - nodeRadius + (nodeStrokeWidth / 2);
+            let y2 = rightNode.y;
+
+            const pathData = `M ${x1} ${y1}` + this.svgCurve(x1, y1, x2, y2, midPointX, curveRadius);
+
+            elements.push(
+                <path {...connectorStroke} key={key} d={pathData} fill="none" />,
+            );
+        }
+
+        //--------------------------------------------------------------------------
+        //  "Main" curve from top of source nodes, around skipped nodes, to top of dest nodes
+
+        leftNode = sourceNodes[0];
+        rightNode = destinationNodes[0];
+        const key = connectorKey(leftNode, rightNode);
+
+        const skipHeight = nodeSpacingV * 0.5;
+        const controlOffsetUpper = curveRadius * 1.6;
+        const controlOffsetLower = skipHeight * 1.5;
+
+        // Start point
+        let x1 = leftNode.x + nodeRadius - (nodeStrokeWidth / 2);
+        let y1 = leftNode.y;
+
+        // Begin curve down point
+        let x2 = Math.round((leftNode.x + skippedNodes[0].x) / 2);
+        let y2 = y1;
+        let cx1 = x2 + controlOffsetUpper;
+        let cy1 = y2 + skipHeight * 0.1;
+
+        // End curve down point
+        let x3 = skippedNodes[0].x;
+        let y3 = y1 + skipHeight;
+        let cx2 = x3 - controlOffsetLower;
+        let cy2 = y3;
+
+        // Begin curve up point
+        let x4 = lastSkippedNode.x;
+        let y4 = y3;
+        let cx3 = x4 + controlOffsetLower;
+        let cy3 = y4;
+
+        // End curve up point
+        let x5 = Math.round((lastSkippedNode.x + rightNode.x) / 2);
+        let y5 = rightNode.y;
+        let cx4 = x5 - controlOffsetUpper;
+        let cy4 = y5 + skipHeight * 0.1;
+
+        // End point
+        let x6 = rightNode.x - nodeRadius + (nodeStrokeWidth / 2);
+        let y6 = rightNode.y;
+
+        // if (x4 - x3 > controlOffsetLower) {
+        //     // We've got a pretty wide skip, so let's maybe make it gentler
+        //     x3 += 20;
+        //     x4 -= 20;
+        // }
+
+        // elements.push(debugPoint(x1, y1, 'p1')); // TODO: RM
+        // elements.push(debugPoint(x2, y2, 'p2')); // TODO: RM
+        // elements.push(debugPoint(x3, y3, 'p3')); // TODO: RM
+        // elements.push(debugPoint(x4, y4, 'p4')); // TODO: RM
+
+        const pathData =
+            `M ${x1} ${y1}` +
+            `L ${x2} ${y2}` + // 1st horizontal
+            `C ${cx1} ${cy1} ${cx2} ${cy2} ${x3} ${y3}` + // Curve down
+            `L ${x4} ${y4}` + // 2nd horizontal
+            `C ${cx3} ${cy3} ${cx4} ${cy4}  ${x5} ${y5}` + // TODO: Curve up
+            `L ${x6} ${y6}` + // Last horizontal
+            '';
+
+        elements.push(<path {...connectorStroke} key={key} d={pathData} fill="none" />);
+    }
+
+    renderHorizontalConnection(leftNode: NodeInfo, rightNode: NodeInfo, connectorStroke, elements: SVGChildren) {
+
+        const { nodeRadius } = this.state.layout;
+
+        const key = connectorKey(leftNode, rightNode);
+
+        const x1 = leftNode.x + nodeRadius - (nodeStrokeWidth / 2);
+        const x2 = rightNode.x - nodeRadius + (nodeStrokeWidth / 2);
+        const y = leftNode.y;
 
         elements.push(
             <line {...connectorStroke}
@@ -393,7 +565,7 @@ export class PipelineGraph extends Component {
     renderBasicCurvedConnection(leftNode: NodeInfo, rightNode: NodeInfo, elements: SVGChildren) {
         const { nodeRadius, curveRadius, connectorStrokeWidth } = this.state.layout;
 
-        const key = leftNode.name + leftNode.id + '_con_' + rightNode.name + rightNode.id;
+        const key = connectorKey(leftNode, rightNode);
 
         const leftPos = {
             x: leftNode.x + nodeRadius - (nodeStrokeWidth / 2),
@@ -411,28 +583,31 @@ export class PipelineGraph extends Component {
             strokeWidth: connectorStrokeWidth,
         };
 
-        const verticalDirection = Math.sign(rightPos.y - leftPos.y); // 1 == curve down, -1 == curve up
-        // const midPointX = Math.round((leftPos.x + rightPos.x) / 2 + (curveRadius * verticalDirection));
         const midPointX = Math.round((leftPos.x + rightPos.x) / 2);
-        const w1 = midPointX - curveRadius - leftPos.x + (curveRadius * verticalDirection);
-        const w2 = rightPos.x - curveRadius - midPointX - (curveRadius * verticalDirection);
-        // const w1 = midPointX - curveRadius - leftPos.x;
-        // const w2 = rightPos.x - curveRadius - midPointX;
-        const v = rightPos.y - leftPos.y - (2 * curveRadius * verticalDirection); // Will be -ive if curve up
+
+        const pathData = `M ${leftPos.x} ${leftPos.y}` +
+            this.svgCurve(leftPos.x, leftPos.y, rightPos.x, rightPos.y, midPointX, curveRadius);
+
+        // elements.push(debugPoint(midPointX, leftPos.y)); // TODO: RM
+
+        elements.push(
+            <path {...connectorStroke} key={key} d={pathData} fill="none" />,
+        );
+    }
+
+    svgCurve(x1, y1, x2, y2, midPointX, curveRadius) {
+        const verticalDirection = Math.sign(y2 - y1); // 1 == curve down, -1 == curve up
+        const w1 = midPointX - curveRadius - x1 + (curveRadius * verticalDirection);
+        const w2 = x2 - curveRadius - midPointX - (curveRadius * verticalDirection);
+        const v = y2 - y1 - (2 * curveRadius * verticalDirection); // Will be -ive if curve up
         const cv = verticalDirection * curveRadius;
 
-        const pathData = `M ${leftPos.x} ${leftPos.y}` // start position
-            + ` l ${w1} 0` // first horizontal line
+        return (
+            ` l ${w1} 0` // first horizontal line
             + ` c ${curveRadius} 0 ${curveRadius} ${cv} ${curveRadius} ${cv}`  // turn
             + ` l 0 ${v}` // vertical line
             + ` c 0 ${cv} ${curveRadius} ${cv} ${curveRadius} ${cv}` // turn again
             + ` l ${w2} 0` // second horizontal line
-        ;
-
-        elements.push(<circle cx={midPointX} cy={leftPos.y} r="5" fill="pink" key={key+'x'}/>); // TODO: RM
-
-        elements.push(
-            <path {...connectorStroke} key={key} d={pathData} fill="none" />,
         );
     }
 
