@@ -28,8 +28,10 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StageChunkFinder;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.slf4j.Logger;
@@ -54,12 +56,18 @@ import static org.junit.Assert.fail;
 public abstract class PipelineBaseTest{
     private static  final Logger LOGGER = LoggerFactory.getLogger(PipelineBaseTest.class);
 
-    public PipelineBaseTest() {
+    @BeforeClass
+    public static void enableJWT() {
         System.setProperty("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION", "true");
-        j = new JenkinsRule();
     }
+
+    @AfterClass
+    public static void resetJWT() {
+        System.clearProperty("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION");
+    }
+
     @Rule
-    public JenkinsRule j;
+    public JenkinsRule j = new JenkinsRule();
 
     protected  String baseUrl;
 
@@ -601,7 +609,7 @@ public abstract class PipelineBaseTest{
 
         UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
 
-        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), new PrincipalSid(bob.getId())));
+        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
         return bob;
     }
     protected User login() throws IOException {
