@@ -25,8 +25,11 @@ public class SSEEvents {
                         json.getString("jenkins_object_type").equals("org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject")) {
                         continue;
                     }
-                    if(json.has("blueocean_job_pipeline_name") && json.getString("blueocean_job_pipeline_name").equals(jobName)) {
-                        jobsQueued.add(json);
+                    if(json.has("blueocean_job_pipeline_name")) {
+                        String pipelineName = json.getString("blueocean_job_pipeline_name");
+                        if (pipelineName.equals(jobName)) {
+                            jobsQueued.add(json);
+                        }
                     }
                 }
                 if(json.has("jenkins_event") && json.getString("jenkins_event").equals("job_run_ended")) {

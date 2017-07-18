@@ -17,6 +17,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import javax.inject.Inject;
 import java.net.URLEncoder;
+import java.util.List;
 
 public class ActivityPage {
     private Logger logger = Logger.getLogger(ActivityPage.class);
@@ -57,14 +58,14 @@ public class ActivityPage {
     }
 
     public ActivityPage checkUrl() {
-        wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity"), 30000);
-        wait.until(By.cssSelector("article.activity"));
+        wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity"), 120000);
+        wait.until(By.cssSelector("article.activity"), 60000);
         return this;
     }
 
     public ActivityPage checkUrl(String filter) {
         wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity?branch=" + URLEncoder.encode(URLEncoder.encode(filter))), 30000);
-        wait.until(By.cssSelector("article.activity"));
+        wait.until(By.cssSelector("article.activity"), 60000);
         return this;
     }
 
@@ -102,5 +103,11 @@ public class ActivityPage {
     public void assertIsDuration(String text) {
         final String durationRegex = "<1s|\\d+\\w";
         Assert.assertTrue("String (\"" + text + "\") contains a valid duration", text.matches(durationRegex));
+    }
+
+    public void testNumberRunsComplete(int atLeast) {
+        By selector = By.cssSelector("div[data-pipeline='" + pipeline.getName() + "'].JTable-row circle.success");
+        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(selector, atLeast - 1));
+        logger.info("At least " + atLeast + " runs are complete");
     }
 }
