@@ -78,6 +78,10 @@
             <artifactId>blueocean-git-pipeline</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-bitbucket-pipeline</artifactId>
+        </dependency>
 
         <!-- Bundled plugins for improved out of the box experience -->
         <dependency>
