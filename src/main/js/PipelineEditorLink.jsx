@@ -3,7 +3,7 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Icon } from '@jenkins-cd/react-material-icons';
-import { Fetch, Paths, pipelineService } from '@jenkins-cd/blueocean-core-js';
+import { Paths, pipelineService } from '@jenkins-cd/blueocean-core-js';
 import Security from './services/Security';
 
 class PipelineEditorLink extends React.Component {
@@ -42,7 +42,7 @@ class PipelineEditorLink extends React.Component {
 
         return (
             <Link className="pipeline-editor-link" to={baseUrl}>
-                <Icon icon="mode_edit" style={{ fill: run ? '#fff' : '#4A90E2' }} />
+                <Icon icon="mode_edit" size={24} />
             </Link>
         );
     }

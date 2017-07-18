@@ -9,6 +9,7 @@
 @brand-grey-lite: #949393;
 @top-bg: #fff;
 @brand-color: #4a90e2;
+@action-button-color: rgba(53,64,82, 0.25);
 @warning-color: #D24146;
 @error-highlight: @warning-color;//#d82b3f;
 @light-blue-bg: #edf4fc; //#f5f9fd;
@@ -769,13 +770,18 @@
     }
 }
 
-td .pipeline-editor-link .svg-icon:hover path {
-    fill: #1c436a;
+.jenkins-blueocean-rundetails-top-widgets .pipeline-editor-link .svg-icon {
+    fill: #fff;
 }
 
-.Header-topNav .pipeline-editor-link .svg-icon:hover path {
-    fill: #ccc;
+.jenkins-pipeline-branches-list-action .pipeline-editor-link .svg-icon {
+    fill: @action-button-color;
+
+    &:hover {
+        fill: @brand-color;
+    }
 }
+
 
 .pipeline-page {
     .editor-pipeline-dialog {
