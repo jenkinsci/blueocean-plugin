@@ -71,7 +71,7 @@ public class BitbucketServerEndpointContainer extends ScmServerEndpointContainer
                     }
                 }
             } catch (ServiceException e) {
-                errors.add(new ErrorMessage.Error(BitbucketServerEndpoint.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), e.getMessage()));
+                errors.add(new ErrorMessage.Error(BitbucketServerEndpoint.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), StringUtils.isBlank(e.getMessage()) ? "Invalid URL" : e.getMessage()));
             }
         }
 
