@@ -10,11 +10,11 @@
   "author": "Vivek Pandey <vivek.pandey@gmail.com> (https://github.com/vivek)",
   "license": "MIT",
   "dependencies": {
-    "@jenkins-cd/js-modules": "0.0.10",
     "rollbar-browser": "1.9.2"
   },
   "devDependencies": {
-    "@jenkins-cd/js-builder": "0.0.59",
+    "@jenkins-cd/js-builder": "0.0.60-kz-1",
+    "@jenkins-cd/js-modules": "0.0.10",
     "babel-eslint": "6.1.2",
     "eslint-plugin-react": "4.3.0",
     "gulp": "3.9.1"

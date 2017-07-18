@@ -22,6 +22,7 @@
     "@jenkins-cd/js-builder": "0.0.60-kz-1",
     "@jenkins-cd/js-builder-jest": "0.0.3",
     "@jenkins-cd/js-extensions": "0.0.37-kz-2",
+    "@jenkins-cd/js-modules": "0.0.10",
     "@kadira/storybook": "2.20.1",
     "babel": "6.5.2",
     "babel-core": "6.17.0",
@@ -44,7 +45,6 @@
     "reactify": "1.1.1"
   },
   "dependencies": {
-    "@jenkins-cd/js-modules": "0.0.10",
     "immutable": "3.8.1",
     "keymirror": "0.1.1",
     "moment": "2.15.1",

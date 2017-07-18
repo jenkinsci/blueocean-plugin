@@ -337,7 +337,8 @@
     "@jenkins-cd/js-modules": {
       "version": "0.0.10",
       "from": "@jenkins-cd/js-modules@0.0.10",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.10.tgz"
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-modules/-/js-modules-0.0.10.tgz",
+      "dev": true
     },
     "@jenkins-cd/logging": {
       "version": "0.0.6",

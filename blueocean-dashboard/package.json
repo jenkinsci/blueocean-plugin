@@ -24,6 +24,7 @@
     "@jenkins-cd/js-builder": "0.0.60-kz-1",
     "@jenkins-cd/js-builder-jest": "0.0.3",
     "@jenkins-cd/js-extensions": "0.0.37-kz-2",
+    "@jenkins-cd/js-modules": "0.0.10",
     "@kadira/storybook": "2.20.1",
     "babel": "6.5.2",
     "babel-core": "6.17.0",
@@ -48,7 +49,6 @@
     "skin-deep": "0.16.0"
   },
   "dependencies": {
-    "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/preferences": "0.0.4",
     "@jenkins-cd/react-material-icons": "1.0.0",
     "babel-plugin-transform-decorators-legacy": "1.3.4",
