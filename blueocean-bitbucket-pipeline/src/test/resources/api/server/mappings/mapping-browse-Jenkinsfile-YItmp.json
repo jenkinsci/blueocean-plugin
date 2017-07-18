@@ -1,0 +1,24 @@
+{
+  "id" : "68d3792a-82a1-3587-a2fc-df8b58f873d3",
+  "request" : {
+    "url" : "/rest/api/1.0/projects/TESTP/repos/pipeline-demo-test/browse/Jenkinsfile?at=0bae0ddbed2e897d3b44abc3aca9ba26e2f61710&start=0&limit=500",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-browse-Jenkinsfile-YItmp.json",
+    "headers" : {
+      "X-AREQUESTID" : "@190KU8Bx712x423x0",
+      "X-ASEN" : "SEN-L9817337",
+      "X-AUSERID" : "1",
+      "X-AUSERNAME" : "vivek",
+      "Cache-Control" : "private, no-transform, max-age=2419200",
+      "Vary" : "X-AUSERNAME,Accept-Encoding",
+      "Transfer-Encoding" : "chunked",
+      "X-Content-Type-Options" : "nosniff",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Date" : "Tue, 20 Jun 2017 11:52:55 GMT"
+    }
+  },
+  "uuid" : "68d3792a-82a1-3587-a2fc-df8b58f873d3"
+}

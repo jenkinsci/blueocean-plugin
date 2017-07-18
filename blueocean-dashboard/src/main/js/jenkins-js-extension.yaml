@@ -19,6 +19,12 @@ extensions:
 # creation for GitHub Enterprise
   - component: creation/github-enterprise/GithubEnterpriseScmProvider
     extensionPoint: jenkins.pipeline.create.scm.provider
+# creation for Bitbucket Cloud
+  - component: creation/bitbucket/cloud/BbCloudScmProvider
+    extensionPoint: jenkins.pipeline.create.scm.provider
+# creation for Bitbucket Server
+  - component: creation/bitbucket/server/BbServerScmProvider
+    extensionPoint: jenkins.pipeline.create.scm.provider
 # Karaoke
   - component: components/karaoke/components/FreeStyle
     extensionPoint: jenkins.pipeline.karaoke.freestyle.provider

@@ -26,6 +26,7 @@ package io.jenkins.blueocean.i18n;
 import hudson.PluginWrapper;
 import io.jenkins.blueocean.service.embedded.BaseTest;
 import org.junit.Assert;
+import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -130,6 +131,7 @@ public class BlueI18nTest extends BaseTest {
             return;
         }
         String version = plugin.getVersion();
+        Assume.assumeTrue("Test is only valid if git plugin is a suitable probe", version.matches("\"[\\\\d/.]{3,}\""));
         BlueI18n.BundleParams bundleParams = BlueI18n.getBundleParameters(String.format("git/%s/pluginx.bundle", version));
 
         // Should be cacheable because the installed version matches the requested version + the

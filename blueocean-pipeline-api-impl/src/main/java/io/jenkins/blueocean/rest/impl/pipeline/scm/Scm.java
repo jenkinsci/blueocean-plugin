@@ -53,17 +53,34 @@ public abstract class Scm extends Resource {
     public abstract Container<ScmOrganization> getOrganizations();
 
     /**
-     * Validate given accessToken for authentication and authorization.
+     * List of {@link ScmServerEndpoint}s.
      *
-     * Validation of scopes attached to accessToken is scm dependent but as a general guideline
-     * it should check for basic user info (username, email), org access (if applicable) and repo
-     * access (read/write)
+     * SCMs that do not support multiple instances can return empty list or null.
      *
-     * If accessToken is found valid then it should search for existence of credential in user context
-     * with id Scm.getId(). If found, it should update the accessToken, if not found then it should create a new
-     * credential. In either case it should return the credential Id.
+     * @return list of {@link ScmServerEndpoint}s
+     */
+    @Navigable
+    public abstract ScmServerEndpointContainer getServers();
+
+    /**
+     * Validate given credential parameters for authentication and authorization.
      *
-     * @param request access token of an SCM
+     * Response is
+     *
+     * {
+     *     "credentialId": "....."
+     * }
+     *
+     * Validation of provided credential is scm dependent.
+     *
+     * If provided credential parameters (username, password or accessToken etc.) are not valid or do not carry
+     * expected scope (such as permission to update repo, basic user info, email etc.) then an error is returned.
+     *
+     * If there is already a Credentials object present then it's updated with provided credential parameters,
+     * otherwise new Credentials object is created and it's credential id is returned in the response.
+     *
+     *
+     * @param request request object carrying credential parameters for this SCM
      *
      * @return credential id. If accessToken is not applicable to this SCM, null is returned.
      */
