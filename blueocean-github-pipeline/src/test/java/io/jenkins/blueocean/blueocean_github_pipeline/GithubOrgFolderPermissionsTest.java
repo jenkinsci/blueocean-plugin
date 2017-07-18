@@ -2,7 +2,6 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 
 import java.io.IOException;
 import java.util.Collection;
@@ -12,7 +11,6 @@ import java.util.Map;
 import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
-import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestExtension;
 
 import com.cloudbees.hudson.plugins.folder.Folder;
@@ -38,26 +36,32 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
     @Test
     public void canCreateWhenHavePermissionsOnDefaultOrg() throws Exception {
         MockAuthorizationStrategy authz = new MockAuthorizationStrategy();
-        authz.grant(Jenkins.ADMINISTER).everywhere().to(user.getId());
+        authz.grant(Jenkins.ADMINISTER).everywhere().to(user);
         j.jenkins.setAuthorizationStrategy(authz);
-        createGithubOrgFolder();
+        // refresh the JWT token otherwise all hell breaks loose.
+        jwtToken = getJwtToken(j.jenkins, "vivek", "vivek");
+        createGithubOrgFolder(true);
     }
 
     @Test
-    public void canNotCreateWhenHaveNoPermissionOnDefaultOrg() throws Exception {
+    public void canNotCreateWhenHaveNoPermissionOnDefaultOrg() throws Exception {        
         MockAuthorizationStrategy authz = new MockAuthorizationStrategy();
         authz.grant(Item.READ).everywhere().to(user);
         j.jenkins.setAuthorizationStrategy(authz);
-        createGithubOrgFolder();
+        // refresh the JWT token otherwise all hell breaks loose.
+        jwtToken = getJwtToken(j.jenkins, "vivek", "vivek");
+        createGithubOrgFolder(false);
     }
 
     @Test
     public void canCreateWhenHavePermissionsOnCustomOrg() throws Exception {
         MockAuthorizationStrategy authz = new MockAuthorizationStrategy();
         authz.grant(Item.READ).everywhere().to(user);
-        authz.grant(Item.CREATE, Item.CONFIGURE).onFolders(getOrgRoot());
+        authz.grant(Item.CREATE, Item.CONFIGURE).onFolders(getOrgRoot()).to(user);
         j.jenkins.setAuthorizationStrategy(authz);
-        createGithubOrgFolder();
+        // refresh the JWT token otherwise all hell breaks loose.
+        jwtToken = getJwtToken(j.jenkins, "vivek", "vivek");
+        createGithubOrgFolder(true);
     }
 
     @Test
@@ -65,14 +69,16 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         MockAuthorizationStrategy authz = new MockAuthorizationStrategy();
         authz.grant(Item.READ).everywhere().to(user);
         j.jenkins.setAuthorizationStrategy(authz);
-        createGithubOrgFolder();
+        // refresh the JWT token otherwise all hell breaks loose.
+        jwtToken = getJwtToken(j.jenkins, "vivek", "vivek");
+        createGithubOrgFolder(false);
     }
 
-    private void createGithubOrgFolder() throws Exception {
+    private void createGithubOrgFolder(boolean shouldSuceed) throws Exception {
         String credentialId = createGithubCredential(user);
         String orgFolderName = "cloudbeers1";
         Map resp = new RequestBuilder(baseUrl)
-                .status(201)
+                .status(shouldSuceed ? 201 : 403)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", orgFolderName,
@@ -84,18 +90,22 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
                 ))
                 .build(Map.class);
 
-        assertEquals(orgFolderName, resp.get("name"));
-        assertEquals("io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganizationFolder", resp.get("_class"));
-
         TopLevelItem item = getOrgRoot().getItem(orgFolderName);
-        assertNotNull(item);
+        if (shouldSuceed) {
+            assertEquals(orgFolderName, resp.get("name"));
+            assertEquals("io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganizationFolder", resp.get("_class"));
 
-        Assert.assertTrue(item instanceof OrganizationFolder);
-
-
-        Map r = get("/organizations/"+ getOrgName() + "/pipelines/"+orgFolderName+"/");
-        assertEquals(orgFolderName, r.get("name"));
-        assertFalse((Boolean) r.get("scanAllRepos"));
+            Assert.assertTrue(item instanceof OrganizationFolder);
+            Map r = get("/organizations/"+ getOrgName() + "/pipelines/"+orgFolderName+"/");
+            assertEquals(orgFolderName, r.get("name"));
+            assertFalse((Boolean) r.get("scanAllRepos"));
+        }
+        else {
+            assertEquals(403, resp.get("code"));
+            assertEquals("Failed to create pipeline: cloudbeers1. User vivek doesn't have Job create permission", resp.get("message"));
+            Assert.assertNull(item);
+            String r = get("/organizations/"+ getOrgName() + "/pipelines/"+orgFolderName+"/", 404, String.class);
+        }
     }
 
     private String createGithubCredential(User user) throws UnirestException {
@@ -154,69 +164,4 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
             return null;
         }
     }
-
-//    private static class DummyOrganisationAutorizationStrategy extends AuthorizationStrategy {
-//
-//        @Override
-//        public ACL getACL(AbstractItem item) {
-//            if (isWithinOrg(item)) {
-//                return new SidACL() {
-//                    
-//                    @Override
-//                    protected Boolean hasPermission(Sid p, Permission permission) {
-//                        if (toString(p).equals(ACL.SYSTEM_USERNAME)) {
-//                            return Boolean.TRUE;
-//                        }
-//                        // full control here!
-//                        if (toString(p).equals("vivek")) {
-//                            return Boolean.TRUE;
-//                        }
-//                        return Boolean.FALSE;
-//                    }
-//                };
-//            }
-//            return super.getACL(item);
-//        }
-//        
-//        @Override
-//        public ACL getRootACL() {
-//            return new SidACL() {
-//                
-//                @Override
-//                protected Boolean hasPermission(Sid p, Permission permission) {
-//                    if (toString(p).equals(ACL.SYSTEM_USERNAME)) {
-//                        return Boolean.TRUE;
-//                    }
-//                    if (toString(p).equals("vivek")) {
-//                        if (permission.equals(Item.READ)) {
-//                            return Boolean.TRUE;
-//                        }
-//                    }
-//                    return Boolean.FALSE;
-//                }
-//            };
-//        }
-//
-//        @Override
-//        public Collection<String> getGroups() {
-//            return Collections.emptySet();
-//        }
-//
-//        boolean isWithinOrg(Item item) {
-//            Object orgRoot = getOrgRoot();
-//            while (item != null && ! (item instanceof AbstractCIBase)) {
-//                if (orgRoot.equals(item)) {
-//                    return true;
-//                }
-//                ItemGroup<? extends Item> parent = item.getParent();
-//                if (parent instanceof Item) {
-//                    item = (Item)parent;
-//                }
-//                else {
-//                    item = null;
-//                }
-//            }
-//            return false;
-//        }
-//    }
 }
