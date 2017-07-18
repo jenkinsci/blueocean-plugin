@@ -282,7 +282,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
     }
 
     private String getOrgName() {
-        return j.jenkins.getExtensionList(OrganizationFactoryImpl.class).get(0).list().iterator().next().getName();
+        return OrganizationFactory.getInstance().list().iterator().next().getName();
     }
 
     private ModifiableTopLevelItemGroup getOrgRoot() {

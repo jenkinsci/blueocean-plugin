@@ -15,6 +15,8 @@ import hudson.model.User;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.JsonConverter;
 import jenkins.model.Jenkins;
+
+import org.acegisecurity.acls.sid.PrincipalSid;
 import org.acegisecurity.adapters.PrincipalAcegiUserToken;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UserDetails;
@@ -599,7 +601,7 @@ public abstract class PipelineBaseTest{
 
         UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
 
-        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
+        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), new PrincipalSid(bob.getId())));
         return bob;
     }
     protected User login() throws IOException {
