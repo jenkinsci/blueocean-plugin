@@ -3,6 +3,7 @@ package io.blueocean.ath.live;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.CustomJenkinsServer;
 import io.blueocean.ath.Login;
+import io.blueocean.ath.Retry;
 import io.blueocean.ath.pages.blue.GithubAddServerDialogPage;
 import io.blueocean.ath.pages.blue.GithubEnterpriseCreationPage;
 import io.blueocean.ath.util.GithubHelper;
@@ -52,6 +53,7 @@ public class GithubEnterpriseCreationTest {
     }
 
 
+    @Retry(3)
     @Test
     public void testGitHubEnterpriseCreation_addNewGitHubServer() throws IOException {
         String serverName = getServerNameUnique("My Server");
