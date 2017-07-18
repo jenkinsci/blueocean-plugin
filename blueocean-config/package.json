@@ -16,6 +16,7 @@
     "@jenkins-cd/js-builder": "0.0.60-kz-1",
     "@jenkins-cd/js-modules": "0.0.10",
     "babel-eslint": "6.1.2",
+    "create-hmac": "1.1.4",
     "eslint-plugin-react": "4.3.0",
     "gulp": "3.9.1"
   },
