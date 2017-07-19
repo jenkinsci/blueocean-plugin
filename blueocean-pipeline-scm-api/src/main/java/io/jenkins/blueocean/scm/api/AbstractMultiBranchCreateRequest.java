@@ -139,7 +139,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
             errors.add(new Error(ERROR_FIELD_SCM_CONFIG_NAME, Error.ErrorCodes.INVALID.toString(),  getName() + " in not a valid name"));
         }
 
-        if(Jenkins.getInstance().getItem(name)!=null) {
+        if(getParent().getItem(name)!=null) {
             errors.add(new Error(ERROR_NAME, Error.ErrorCodes.ALREADY_EXISTS.toString(), getName() + " already exists"));
         }
 
