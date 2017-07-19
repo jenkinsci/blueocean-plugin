@@ -73,7 +73,7 @@ public class GithubScmSaveFileRequest{
             // Otherwise the call to post content will fail with a 404
             GitHub gitHub = GitHub.connectToEnterprise(apiUrl, accessToken);
             GHRepository repository = gitHub.getRepository(String.format("%s/%s", owner, repoName));
-            if (!(repository.hasAdminAccess() || repository.hasPushAccess())) {
+            if (!repository.hasPushAccess()) {
                 throw new ServiceException.ForbiddenException(String.format("You do not have permission to push changes to %s/%s", owner, repoName));
             }
 

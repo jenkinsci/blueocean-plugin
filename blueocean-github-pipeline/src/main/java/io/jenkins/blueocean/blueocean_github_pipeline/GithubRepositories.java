@@ -23,6 +23,8 @@ import java.util.List;
  */
 public class GithubRepositories extends ScmRepositories {
 
+    private static final CollectionType GH_REPO_EX_LIST_TYPE = GithubScm.om.getTypeFactory().constructCollectionType(List.class, GHRepoEx.class);
+
     private final Link self;
     private final List<GHRepoEx> repositories;
     private final String accessToken;
@@ -62,8 +64,7 @@ public class GithubRepositories extends ScmRepositories {
                     parent.getRepoType(),
                     pageSize, pageNumber), accessToken);
 
-            CollectionType collectionType = GithubScm.om.getTypeFactory().constructCollectionType(List.class, GHRepoEx.class);
-            this.repositories = GithubScm.om.readValue(connection.getInputStream(), collectionType);
+            this.repositories = GithubScm.om.readValue(connection.getInputStream(), GH_REPO_EX_LIST_TYPE);
 
             String link = connection.getHeaderField("Link");
 
