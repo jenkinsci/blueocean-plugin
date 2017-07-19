@@ -15,6 +15,8 @@ import hudson.model.User;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.JsonConverter;
 import jenkins.model.Jenkins;
+
+import org.acegisecurity.acls.sid.PrincipalSid;
 import org.acegisecurity.adapters.PrincipalAcegiUserToken;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UserDetails;
@@ -26,8 +28,10 @@ import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StageChunkFinder;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
+import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.slf4j.Logger;
@@ -52,12 +56,18 @@ import static org.junit.Assert.fail;
 public abstract class PipelineBaseTest{
     private static  final Logger LOGGER = LoggerFactory.getLogger(PipelineBaseTest.class);
 
-    public PipelineBaseTest() {
+    @BeforeClass
+    public static void enableJWT() {
         System.setProperty("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION", "true");
-        j = new JenkinsRule();
     }
+
+    @AfterClass
+    public static void resetJWT() {
+        System.clearProperty("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION");
+    }
+
     @Rule
-    public JenkinsRule j;
+    public JenkinsRule j = new JenkinsRule();
 
     protected  String baseUrl;
 
