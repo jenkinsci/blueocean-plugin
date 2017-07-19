@@ -9,7 +9,7 @@ describe("CommitId", () => {
     it("renders dash with no data", () => {
         const wrapper = shallow(<CommitId />);
         assert.isTrue(wrapper.is('code'));
-        assert.equal(wrapper.text(), '–');
+        assert.equal(wrapper.text(), '—');
     });
 
     it("renders if does not match git sha-1 regexp", () => {
