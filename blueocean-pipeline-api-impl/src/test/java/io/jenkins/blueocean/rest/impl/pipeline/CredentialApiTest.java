@@ -252,5 +252,18 @@ public class CredentialApiTest extends PipelineBaseTest {
         Assert.assertEquals("SSH Username with private key", resp.get("typeName"));
         Assert.assertEquals("blueocean-domain", resp.get("domain"));
     }
+    
+    @Test
+    public void createPersonalSSHKey() throws IOException, UnirestException {
+        User user = login();
+
+        Map resp = new RequestBuilder(baseUrl)
+                .status(200)
+                .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .get("/organizations/jenkins/credentials/user/personalSSHKey").build(Map.class);
+
+        Object pubKey = resp.get("publicKey");
+        Assert.assertTrue(pubKey != null);
+    }
 
 }
