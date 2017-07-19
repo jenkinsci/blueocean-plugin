@@ -106,6 +106,7 @@ function renderConstructomatic() {
             makeNode("Job 2", [], validResultValues.running),
             makeNode("Job 3", [], validResultValues.running)
         ]),
+        makeNode("Skipped", [], validResultValues.skipped),
         makeNode("Queued", [
             makeNode("Job 4", [], validResultValues.queued),
             makeNode("This is Job number 5", [], validResultValues.queued),

@@ -72,21 +72,24 @@ function connectorKey(leftNode, rightNode) {
     return leftNode.name + leftNode.id + '_con_' + rightNode.name + rightNode.id;
 }
 
-// For Debugging
+// For Debugging  TODO: REMOVE THIS
 let _debugKey = 111;
-function debugPoint(cx, cy, message = 'debug') {
+function debugPoint(cx, cy, message = 'debug', fill='rgba(255,0,200,0.5)') {
     const key = 'debug_' + (++_debugKey);
 
     return (
-        <g key={key} title={message} stroke="pink" strokeWidth={3}>
+        <circle cx={cx} cy={cy} r="3" fill={fill} key={key} title={message}/>
+    );
+}
+function debugPointX(cx, cy, message = 'debug', stroke='rgba(0,255,128,0.5)') {
+    const key = 'debug_' + (++_debugKey);
+
+    return (
+        <g key={key} title={message} stroke={stroke} strokeWidth={1}>
             <line x1={cx - 5} y1={cy - 5} x2={cx + 5} y2={cy + 5} />
             <line x1={cx - 5} y1={cy + 5} x2={cx + 5} y2={cy - 5} />
         </g>
     );
-
-    // return (
-    //     <circle cx={cx} cy={cy} r="5" fill="pink" key={key} title={message}/>
-    // );
 }
 
 export class PipelineGraph extends Component {
@@ -94,7 +97,7 @@ export class PipelineGraph extends Component {
     // Flow typedefs
     state: {
         nodes: Array<NodeInfo>,
-        connections: Array<CompositeConnection>, // TODO: Rename this once the new process is sorted
+        connections: Array<CompositeConnection>,
         bigLabels: Array<LabelInfo>,
         smallLabels: Array<LabelInfo>,
         measuredWidth: number,
@@ -401,7 +404,7 @@ export class PipelineGraph extends Component {
                               skippedNodes: Array<NodeInfo>,
                               elements: SVGChildren) {
 
-        const { connectorStrokeWidth, nodeRadius, curveRadius, nodeSpacingH, nodeSpacingV } = this.state.layout;
+        const { connectorStrokeWidth, nodeRadius, curveRadius, nodeSpacingV } = this.state.layout;
 
         // Stroke props common to straight / curved connections
         const connectorStroke = {
@@ -409,10 +412,8 @@ export class PipelineGraph extends Component {
             strokeWidth: connectorStrokeWidth,
         };
 
-        // TODO: this should be a style
         const skipConnectorStroke = {
-            className: 'pipeline-connector',
-            strokeOpacity: 0.25,
+            className: 'pipeline-connector-skipped',
             strokeWidth: connectorStrokeWidth,
         };
 
@@ -483,62 +484,83 @@ export class PipelineGraph extends Component {
         const key = connectorKey(leftNode, rightNode);
 
         const skipHeight = nodeSpacingV * 0.5;
-        const controlOffsetUpper = curveRadius * 1.6;
-        const controlOffsetLower = skipHeight * 1.5;
+        const controlOffsetUpper = curveRadius * 1.54;
+        const controlOffsetLower = skipHeight * 0.257;
+        const controlOffsetMid = skipHeight * 0.2;
+        const inflectiontOffset = Math.round(skipHeight * 0.7071); // cos(45º)-ish
 
         // Start point
-        let x1 = leftNode.x + nodeRadius - (nodeStrokeWidth / 2);
-        let y1 = leftNode.y;
+        let p1x = leftNode.x + nodeRadius - (nodeStrokeWidth / 2);
+        let p1y = leftNode.y;
 
         // Begin curve down point
-        let x2 = Math.round((leftNode.x + skippedNodes[0].x) / 2);
-        let y2 = y1;
-        let cx1 = x2 + controlOffsetUpper;
-        let cy1 = y2 + skipHeight * 0.1;
+        let p2x = Math.round((leftNode.x + skippedNodes[0].x) / 2);
+        let p2y = p1y;
+        let c1x = p2x + controlOffsetUpper;
+        let c1y = p2y;
 
         // End curve down point
-        let x3 = skippedNodes[0].x;
-        let y3 = y1 + skipHeight;
-        let cx2 = x3 - controlOffsetLower;
-        let cy2 = y3;
+        let p4x = skippedNodes[0].x;
+        let p4y = p1y + skipHeight;
+        let c4x = p4x - controlOffsetLower;
+        let c4y = p4y;
+
+        // Curve down midpoint / inflection
+        let p3x = skippedNodes[0].x - inflectiontOffset;
+        let p3y = skippedNodes[0].y + inflectiontOffset;
+        let c2x = p3x - controlOffsetMid;
+        let c2y = p3y - controlOffsetMid;
+        let c3x = p3x + controlOffsetMid;
+        let c3y = p3y + controlOffsetMid;
 
         // Begin curve up point
-        let x4 = lastSkippedNode.x;
-        let y4 = y3;
-        let cx3 = x4 + controlOffsetLower;
-        let cy3 = y4;
+        let p5x = lastSkippedNode.x;
+        let p5y = p4y;
+        let c5x = p5x + controlOffsetLower;
+        let c5y = p5y;
 
         // End curve up point
-        let x5 = Math.round((lastSkippedNode.x + rightNode.x) / 2);
-        let y5 = rightNode.y;
-        let cx4 = x5 - controlOffsetUpper;
-        let cy4 = y5 + skipHeight * 0.1;
+        let p7x = Math.round((lastSkippedNode.x + rightNode.x) / 2);
+        let p7y = rightNode.y;
+        let c8x = p7x - controlOffsetUpper;
+        let c8y = p7y;
+
+        // Curve up midpoint / inflection
+        let p6x = lastSkippedNode.x + inflectiontOffset;
+        let p6y = lastSkippedNode.y + inflectiontOffset;
+        let c6x = p6x - controlOffsetMid;
+        let c6y = p6y + controlOffsetMid;
+        let c7x = p6x + controlOffsetMid;
+        let c7y = p6y - controlOffsetMid;
 
         // End point
-        let x6 = rightNode.x - nodeRadius + (nodeStrokeWidth / 2);
-        let y6 = rightNode.y;
+        let p8x = rightNode.x - nodeRadius + (nodeStrokeWidth / 2);
+        let p8y = rightNode.y;
 
-        // if (x4 - x3 > controlOffsetLower) {
-        //     // We've got a pretty wide skip, so let's maybe make it gentler
-        //     x3 += 20;
-        //     x4 -= 20;
-        // }
 
-        // elements.push(debugPoint(x1, y1, 'p1')); // TODO: RM
-        // elements.push(debugPoint(x2, y2, 'p2')); // TODO: RM
-        // elements.push(debugPoint(x3, y3, 'p3')); // TODO: RM
-        // elements.push(debugPoint(x4, y4, 'p4')); // TODO: RM
+
 
         const pathData =
-            `M ${x1} ${y1}` +
-            `L ${x2} ${y2}` + // 1st horizontal
-            `C ${cx1} ${cy1} ${cx2} ${cy2} ${x3} ${y3}` + // Curve down
-            `L ${x4} ${y4}` + // 2nd horizontal
-            `C ${cx3} ${cy3} ${cx4} ${cy4}  ${x5} ${y5}` + // TODO: Curve up
-            `L ${x6} ${y6}` + // Last horizontal
+            `M ${p1x} ${p1y}` +
+            `L ${p2x} ${p2y}` + // 1st horizontal
+            `C ${c1x} ${c1y} ${c2x} ${c2y} ${p3x} ${p3y}` + // Curve down (upper)
+            `C ${c3x} ${c3y} ${c4x} ${c4y} ${p4x} ${p4y}` + // Curve down (lower)
+            `L ${p5x} ${p5y}` + // 2nd horizontal
+            `C ${c5x} ${c5y} ${c6x} ${c6y} ${p6x} ${p6y}` + // Curve up (lower)
+            `C ${c7x} ${c7y} ${c8x} ${c8y} ${p7x} ${p7y}` + // Curve up (upper)
+            `L ${p8x} ${p8y}` + // Last horizontal
             '';
 
         elements.push(<path {...connectorStroke} key={key} d={pathData} fill="none" />);
+
+        // elements.push(debugPoint(c1x, c1y, 'c1')); // TODO: RM
+        // elements.push(debugPoint(c2x, c2y, 'c2')); // TODO: RM
+        // elements.push(debugPoint(c3x, c3y, 'c3')); // TODO: RM
+        // elements.push(debugPoint(c4x, c4y, 'c4')); // TODO: RM
+
+        // elements.push(debugPointX(p2x, p2y, 'p2', 'rgba(0,128,40,0.5')); // TODO: RM
+        // elements.push(debugPointX(p3x, p3y, 'p3', 'rgba(0,128,40,0.5')); // TODO: RM
+        // elements.push(debugPointX(p4x, p4y, 'p4', 'rgba(0,128,40,0.65')); // TODO: RM
     }
 
     renderHorizontalConnection(leftNode: NodeInfo, rightNode: NodeInfo, connectorStroke, elements: SVGChildren) {
