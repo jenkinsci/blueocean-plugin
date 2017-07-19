@@ -28,6 +28,13 @@ export class CreatePipelineScmListRenderer extends React.Component {
         Extensions.store.getExtensions(this.props.extensionPoint, (extensions) => {
             let providers = extensions.map(Provider => {
                 try {
+                    // TODO: remove this feature flag once all of bitbucket lands
+                    // Show Bitbucket creation with query param '?bitbucket'
+                    if ((Provider.name === 'BbCloudScmProvider' || Provider.name === 'BbServerScmProvider')
+                        && (!this.context.location || !this.context.location.query
+                        || !('bitbucket' in this.context.location.query))) {
+                        return null;
+                    }
                     return new Provider();
                 } catch (error) {
                     console.warn('error initializing ScmProvider', Provider, error);
@@ -82,4 +89,8 @@ CreatePipelineScmListRenderer.propTypes = {
     extensionPoint: PropTypes.string,
     onSelection: PropTypes.func,
     selectedProvider: PropTypes.object,
+};
+
+CreatePipelineScmListRenderer.contextTypes = {
+    location: PropTypes.object,
 };

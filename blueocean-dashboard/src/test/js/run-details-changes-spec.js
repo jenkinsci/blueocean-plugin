@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 import React from 'react';
-import sd from 'skin-deep';
+import { shallow, render } from 'enzyme';
 import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 import { latestRuns } from './data/runs/latestRuns';
@@ -14,63 +14,36 @@ mockExtensionsForI18n();
 describe('RunDetailsChanges', () => {
     beforeAll(() => mockExtensionsForI18n());
 
-    let component;
-    let tree;
-    let output;
+    it('renders nothing with no data', () => {
+        let wrapper = render(<RunDetailsChanges t={t} />);
 
-    describe('empty runs / bad data', () => {
-        beforeAll(() => {
-            component = (
-                <RunDetailsChanges t={t} />
-            );
-            tree = sd.shallowRender(component);
-            output = tree.getRenderOutput();
-        });
-
-        it('renders nothing', () => {
-            assert.isNull(output);
-        });
+        assert.equal(wrapper.html(), '', 'output should be empty');
     });
 
-    describe('empty changeSet', () => {
-        beforeAll(() => {
-            component = (
-                <RunDetailsChanges
-                  t={t}
-                  result={{ changeSet: [] }}
-                />
-            );
-            tree = sd.shallowRender(component);
-            output = tree.getRenderOutput();
-        });
+    it('renders empty changeset', () => {
+        let wrapper = render(<RunDetailsChanges t={t} result={{ changeSet: [] }} />);
 
-        it('renders NoChangesPlaceholder', () => {
-            assert.equal(output.type.name, 'NoChangesPlaceholder');
-        });
+        let output = wrapper.html();
+
+        // Class names we expect to see
+        assert(output.match('RunDetailsEmpty'), 'output should contain "RunDetailsEmpty"');
+        assert(output.match('NoChanges'), 'output should contain "NoChanges"');
+        assert(output.match('PlaceholderTable'), 'output should contain "PlaceholderTable"');
     });
 
-    describe('valid changeSet', () => {
-        beforeAll(() => {
-            const runs = latestRuns.map(run => (run.latestRun));
-            component = (
-                <RunDetailsChanges
-                  t={t}
-                  result={runs[0]}
-                />
-            );
-            tree = sd.shallowRender(component);
-            output = tree.getRenderOutput();
-        });
+    it('renders a valid changeset', () => {
+        let runs = latestRuns.map(run => (run.latestRun));
+        let wrapper = render(<RunDetailsChanges t={t} result={runs[0]}/>);
+        let output = wrapper.html();
 
-        it('renders a Table with expected data', () => {
-            assert.equal(output.type.name, 'Table');
-            assert.equal(tree.everySubTree('tr').length, 2);
+        // Class names we expect to see
+        assert(output.match('JTable'), 'output should contain "JTable"');
+        assert(output.match('JTable-row'), 'output should contain "JTable-row"');
+        assert(output.match('JTable-cell'), 'output should contain "JTable-cell"');
 
-            const cols = tree.subTree('tr').everySubTree('td');
-            assert.equal(cols[0].text(), '<CommitId />');
-            assert.equal(cols[1].text(), 'tscherler');
-            assert.equal(cols[2].text(), 'Update Jenkinsfile');
-            assert.equal(cols[3].text(), '<ReadableDate />');
-        });
+        // Data values we expect to see
+        assert(output.match('21552ff'), 'output should contain "21552ff"'); // Commit hash
+        assert(output.match('tscherler'), 'output should contain "tscherler"');
+        assert(output.match('Update Jenkinsfile'), 'output should contain "Update Jenkinsfile"');
     });
 });

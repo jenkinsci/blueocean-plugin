@@ -3,6 +3,7 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 import com.google.common.collect.ImmutableMap;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.github.GHBranch;
 import org.kohsuke.github.GHContent;
@@ -22,10 +23,10 @@ import java.util.Map;
  * @author Vivek Pandey
  */
 public class GithubScmSaveFileRequest{
-    private final GithubContent content;
+    private final GitContent content;
 
     @DataBoundConstructor
-    public GithubScmSaveFileRequest(GithubContent content) {
+    public GithubScmSaveFileRequest(GitContent content) {
         this.content = content;
     }
 
@@ -101,7 +102,7 @@ public class GithubScmSaveFileRequest{
                 throw new ServiceException.UnexpectedErrorException("Failed to save file: "+content.getPath());
             }
 
-            return new GithubFile(new GithubContent.Builder()
+            return new GithubFile(new GitContent.Builder()
                     .sha((String)ghContent.get("sha"))
                     .name((String) ghContent.get("name"))
                     .repo(repoName)
