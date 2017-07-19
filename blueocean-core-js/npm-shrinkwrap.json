@@ -3,9 +3,9 @@
   "version": "0.0.141-SNAPSHOT",
   "dependencies": {
     "@jenkins-cd/design-language": {
-      "version": "0.0.140",
-      "from": "@jenkins-cd/design-language@0.0.140",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.140.tgz"
+      "version": "0.0.141-SNAPSHOT-nicu",
+      "from": "@jenkins-cd/design-language@0.0.141-SNAPSHOT-nicu",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.141-SNAPSHOT-nicu.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
