@@ -200,7 +200,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
                 changeSets = AbstractRunImpl.getBlueRun(run, parent).getChangeSet();
             }
         }
-        return "aaa";
+        return null;
     }
 
     @Override
