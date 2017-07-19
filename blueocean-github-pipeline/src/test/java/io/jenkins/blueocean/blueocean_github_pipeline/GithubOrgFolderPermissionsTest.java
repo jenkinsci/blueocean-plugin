@@ -134,7 +134,6 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         private OrganizationImpl instance;
 
         public TestOrganizationFactoryImpl() throws IOException {
-            System.out.println("HELLO THERE");
             Folder f = Jenkins.getInstance().createProject(Folder.class, "CustomOrg");
             instance = new OrganizationImpl("custom", f);
         }
