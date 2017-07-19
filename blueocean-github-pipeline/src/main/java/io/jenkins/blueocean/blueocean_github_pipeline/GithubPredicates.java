@@ -22,7 +22,7 @@ class GithubPredicates {
         return new Predicate<GHRepository>() {
             @Override
             public boolean apply(@Nullable GHRepository input) {
-                return input != null && input.hasAdminAccess();
+                return input != null && input.hasPushAccess();
             }
         };
     }
