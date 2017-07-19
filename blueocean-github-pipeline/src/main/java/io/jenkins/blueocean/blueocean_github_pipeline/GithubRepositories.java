@@ -1,12 +1,18 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.google.common.base.Function;
+import com.google.common.base.Predicate;
+import com.google.common.base.Predicates;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepositories;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepository;
+import org.eclipse.jgit.api.Git;
+import org.kohsuke.github.GHRepository;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
@@ -16,6 +22,7 @@ import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Vivek Pandey
@@ -23,7 +30,7 @@ import java.util.Arrays;
 public class GithubRepositories extends ScmRepositories {
 
     private final Link self;
-    private final GHRepoEx[] repositories;
+    private final List<GHRepoEx> repositories;
     private final String accessToken;
     private final Integer nextPage;
     private final Integer lastPage;
@@ -61,7 +68,8 @@ public class GithubRepositories extends ScmRepositories {
                     parent.getRepoType(),
                     pageSize, pageNumber), accessToken);
 
-            this.repositories = GithubScm.om.readValue(connection.getInputStream(), GHRepoEx[].class);
+            CollectionType collectionType = GithubScm.om.getTypeFactory().constructCollectionType(List.class, GHRepoEx.class);
+            this.repositories = GithubScm.om.readValue(connection.getInputStream(), collectionType);
 
             String link = connection.getHeaderField("Link");
 
@@ -108,7 +116,9 @@ public class GithubRepositories extends ScmRepositories {
 
     @Override
     public Iterable<ScmRepository> getItems() {
-        return Lists.transform(Arrays.asList(repositories), new Function<GHRepoEx, ScmRepository>() {
+        // Do not serve up repositories that this user does not have admin access to or
+        Iterable<GHRepoEx> editableRepositories = Iterables.filter(repositories, Predicates.or(GithubPredicates.hasAdminAccess(), GithubPredicates.hasPushAccess()));
+        return Iterables.transform(editableRepositories, new Function<GHRepoEx, ScmRepository>() {
             @Override
             public ScmRepository apply(@Nullable GHRepoEx input) {
                 if(input == null){

@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
+import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableMap;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -7,6 +8,8 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.github.GHBranch;
 import org.kohsuke.github.GHContent;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GitHub;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import javax.annotation.Nonnull;
@@ -66,6 +69,14 @@ public class GithubScmSaveFileRequest{
         }
 
         try {
+            // First validate that you have access to push to the repository
+            // Otherwise the call to post content will fail with a 404
+            GitHub gitHub = GitHub.connectToEnterprise(apiUrl, accessToken);
+            GHRepository repository = gitHub.getRepository(String.format("%s/%s", owner, repoName));
+            if (!(repository.hasAdminAccess() || repository.hasPushAccess())) {
+                throw new ServiceException.ForbiddenException(String.format("You do not have permission to push changes to %s/%s", owner, repoName));
+            }
+
             String sha = createBranchIfNotPresent(apiUrl,owner,repoName,accessToken);
 
             //sha in request overrides the one we computed
