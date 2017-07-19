@@ -3,16 +3,11 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.fasterxml.jackson.databind.type.CollectionType;
 import com.google.common.base.Function;
-import com.google.common.base.Predicate;
-import com.google.common.base.Predicates;
 import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepositories;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepository;
-import org.eclipse.jgit.api.Git;
-import org.kohsuke.github.GHRepository;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
@@ -21,7 +16,6 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -116,9 +110,7 @@ public class GithubRepositories extends ScmRepositories {
 
     @Override
     public Iterable<ScmRepository> getItems() {
-        // Do not serve up repositories that this user does not have admin access to or
-        Iterable<GHRepoEx> editableRepositories = Iterables.filter(repositories, Predicates.or(GithubPredicates.hasAdminAccess(), GithubPredicates.hasPushAccess()));
-        return Iterables.transform(editableRepositories, new Function<GHRepoEx, ScmRepository>() {
+        return Iterables.transform(repositories, new Function<GHRepoEx, ScmRepository>() {
             @Override
             public ScmRepository apply(@Nullable GHRepoEx input) {
                 if(input == null){
