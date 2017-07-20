@@ -69,13 +69,7 @@ public class GithubScmSaveFileRequest{
         }
 
         try {
-            // First validate that you have access to push to the repository
-            // Otherwise the call to post content will fail with a 404
-            GitHub gitHub = GitHub.connectToEnterprise(apiUrl, accessToken);
-            GHRepository repository = gitHub.getRepository(String.format("%s/%s", owner, repoName));
-            if (!repository.hasPushAccess()) {
-                throw new ServiceException.ForbiddenException(String.format("You do not have permission to push changes to %s/%s", owner, repoName));
-            }
+            GithubScm.validateUserHasPushPermission(apiUrl, accessToken, owner, repoName);
 
             String sha = createBranchIfNotPresent(apiUrl,owner,repoName,accessToken);
 
@@ -99,7 +93,7 @@ public class GithubScmSaveFileRequest{
                     owner,
                     repoName,
                     content.getPath()))
-                    .withAuthorization("token "+accessToken)
+                    .withAuthorizationToken(accessToken)
                     .withBody(body)
                     .to(Map.class);
 
@@ -124,7 +118,6 @@ public class GithubScmSaveFileRequest{
             throw new ServiceException.UnexpectedErrorException("Failed to save file: "+e.getMessage(), e);
         }
     }
-
 
     /**
      * Auto creates branch if:
@@ -153,7 +146,7 @@ public class GithubScmSaveFileRequest{
                     apiUrl,
                     owner,
                     repoName,
-                    content.getBranch())).withAuthorization("token " + accessToken).to(String.class);
+                    content.getBranch())).withAuthorizationToken(accessToken).to(String.class);
         } catch (ServiceException.NotFoundException e) {
 
             String sha = content.getSha();
@@ -161,7 +154,7 @@ public class GithubScmSaveFileRequest{
             //1. Find commit sha off which this branch will be created
             GHRepoEx repo = HttpRequest.get(String.format("%s/repos/%s/%s", apiUrl,
                     owner, repoName))
-                    .withAuthorization("token " + accessToken).to(GHRepoEx.class);
+                    .withAuthorizationToken(accessToken).to(GHRepoEx.class);
 
             //2. Check the source branch or use default if not provided
             String sourceBranch = content.getSourceBranch();
@@ -174,14 +167,14 @@ public class GithubScmSaveFileRequest{
                     apiUrl,
                     owner,
                     repoName,
-                    sourceBranch)).withAuthorization("token " + accessToken).to(GHBranch.class);
+                    sourceBranch)).withAuthorizationToken(accessToken).to(GHBranch.class);
 
             //4. create this missing branch. We ignore the response, if no error branch was created
             HttpRequest.post(String.format("%s/repos/%s/%s/git/refs",
                     apiUrl,
                     owner,
                     repoName))
-                    .withAuthorization("token " + accessToken)
+                    .withAuthorizationToken(accessToken)
                     .withBody(ImmutableMap.of("ref", "refs/heads/" + content.getBranch(),
                             "sha", branch.getSHA1()))
                     .to(Map.class);
@@ -196,7 +189,7 @@ public class GithubScmSaveFileRequest{
                             owner,
                             repoName,
                             content.getPath()))
-                            .withAuthorization("token " + accessToken)
+                            .withAuthorizationToken(accessToken)
                             .to(GHContent.class);
                     if (!StringUtils.isBlank(sha) && !sha.equals(ghContent.getSha())) {
                         throw new ServiceException.BadRequestException(String.format("sha in request: %s is different from sha of file %s in branch %s",
@@ -216,7 +209,7 @@ public class GithubScmSaveFileRequest{
             HttpRequest.head(String.format("%s/repos/%s/%s/contents",
                     apiUrl,
                     owner,
-                    repoName)).withAuthorization("token " + accessToken).to(String.class);
+                    repoName)).withAuthorizationToken(accessToken).to(String.class);
         }catch (ServiceException.NotFoundException e){
             //its empty, return true
             return true;
