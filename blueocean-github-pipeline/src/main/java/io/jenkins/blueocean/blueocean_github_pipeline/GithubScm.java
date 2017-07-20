@@ -42,6 +42,7 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.json.JsonBody;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -338,6 +339,19 @@ public class GithubScm extends Scm {
         }
         if(!missingScopes.isEmpty()){
             throw new ServiceException.PreconditionRequired("Invalid token, its missing scopes: "+ StringUtils.join(missingScopes, ","));
+        }
+    }
+
+    static void validateUserHasPushPermission(@Nonnull String apiUrl, @Nullable String accessToken, @Nullable String owner, @Nullable String repoName) {
+        GHRepoEx repo;
+        try {
+            repo = HttpRequest.get(String.format("%s/repos/%s/%s", apiUrl, owner, repoName))
+                .withAuthorizationToken(accessToken).to(GHRepoEx.class);
+        } catch (IOException e) {
+            throw new ServiceException.UnexpectedErrorException(String.format("Could not load repository metadata for %s/%s", owner, repoName), e);
+        }
+        if (!repo.hasPushAccess()) {
+            throw new ServiceException.PreconditionRequired(String.format("You do not have permission to push changes to %s/%s", owner, repoName));
         }
     }
 
