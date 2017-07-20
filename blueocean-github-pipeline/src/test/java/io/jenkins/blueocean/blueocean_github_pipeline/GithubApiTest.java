@@ -10,7 +10,6 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +17,6 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 /**
@@ -52,27 +50,6 @@ public class GithubApiTest extends GithubMockBase {
                 .build(Map.class);
 
         assertEquals("github", r.get("credentialId"));
-    }
-
-    @Test
-    public void validateGithubEnterpriseToken() throws IOException, UnirestException {
-        String credentialId = createGithubEnterpriseCredential();
-        assertEquals("github-enterprise:" + getGithubApiUrlEncoded(), credentialId);
-
-        //check if this credentialId is created in correct user domain
-        Domain domain = CredentialsUtils.findDomain(credentialId, user);
-        assertEquals("blueocean-github-enterprise-domain", domain.getName());
-    }
-
-    @Test
-    public void validateGithubEnterpriseToken_apiUrlRequired() throws UnirestException {
-        Map r = new RequestBuilder(baseUrl)
-            .data(ImmutableMap.of("accessToken", accessToken))
-            .status(400)
-            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-            .put("/organizations/jenkins/scm/github-enterprise/validate")
-            .build(Map.class);
-        assertEquals(400, r.get("code"));
     }
 
     @Test
@@ -112,50 +89,6 @@ public class GithubApiTest extends GithubMockBase {
     }
 
     @Test
-    public void fetchExistingGithubEnterpriseToken_withCredential() throws IOException, UnirestException {
-        createGithubEnterpriseCredential();
-
-        //now that there is github credentials setup, calling scm api to get credential should simply return that.
-        Map r = new RequestBuilder(baseUrl)
-            .status(200)
-            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-            .get("/organizations/jenkins/scm/github-enterprise/?apiUrl=" + githubApiUrl)
-            .build(Map.class);
-
-        assertEquals("github-enterprise:" + getGithubApiUrlEncoded(), r.get("credentialId"));
-        assertEquals(githubApiUrl, r.get("uri"));
-    }
-
-    @Test
-    public void fetchExistingGithubEnterpriseToken_apiUrlRequired() throws IOException, UnirestException {
-        // fetch the github-enterprise endpoint without specifiying apirUrl
-        Map r = new RequestBuilder(baseUrl)
-            .status(400)
-            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-            .get("/organizations/jenkins/scm/github-enterprise/")
-            .build(Map.class);
-        assertEquals(400, r.get("code"));
-    }
-
-    @Test
-    public void fetchExistingGithubEnterpriseToken_withoutCredential() throws IOException, UnirestException {
-        // create a credential using default apiUrl
-        createGithubEnterpriseCredential();
-
-        String bogusUrl = "https://foo.com";
-
-        // look up credential for apiUrl that's invalid
-        Map r = new RequestBuilder(baseUrl)
-            .status(200)
-            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-            .get("/organizations/jenkins/scm/github-enterprise/?apiUrl="+bogusUrl)
-            .build(Map.class);
-
-        assertNull(r.get("credentialId"));
-        assertEquals(bogusUrl, r.get("uri"));
-    }
-
-    @Test
     public void getOrganizationsAndRepositories() throws Exception {
         String credentialId = createGithubCredential();
 
@@ -189,24 +122,5 @@ public class GithubApiTest extends GithubMockBase {
                 .build(Map.class);
 
         assertEquals("RunMyProcess-task", resp.get("name"));
-    }
-
-    @Test
-    public void getOrganizationsGithubEnterprise() throws Exception {
-        String credentialId = createGithubEnterpriseCredential();
-
-        List l = new RequestBuilder(baseUrl)
-            .status(200)
-            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-            .get("/organizations/jenkins/scm/github-enterprise/organizations/?credentialId=" + credentialId+"&apiUrl="+githubApiUrl)
-            .build(List.class);
-
-        Assert.assertTrue(l.size() > 0);
-
-        Iterator<Map<String,String>> it = l.iterator();
-        while(it.hasNext()) {
-            Map<String, String> org = it.next();
-            assertNull(org.get("avatar"));
-        }
     }
 }
