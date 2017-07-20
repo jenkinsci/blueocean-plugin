@@ -33,6 +33,13 @@
                 </includes>
             </resource>
             <resource>
+                <directory>src/main/resources/io/jenkins/blueocean</directory>
+                <targetPath>io/jenkins/blueocean</targetPath>
+                <includes>
+                    <include>.adjunct</include>
+                </includes>
+            </resource>
+            <resource>
                 <directory>icons</directory>
                 <targetPath>io/jenkins/icons</targetPath>
             </resource>
