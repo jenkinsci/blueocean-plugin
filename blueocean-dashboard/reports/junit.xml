@@ -1,0 +1,260 @@
+<testsuites name="jest tests">
+  <testsuite name="UrlUtils" tests="17" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:36:46" time="7.166">
+    <testcase classname="UrlUtils buildOrganizationUrl should build the proper url" name="UrlUtils buildOrganizationUrl should build the proper url" time="0.042">
+    </testcase>
+    <testcase classname="UrlUtils buildPipelineUrl should build the baseUrl for top level pipeline" name="UrlUtils buildPipelineUrl should build the baseUrl for top level pipeline" time="0.003">
+    </testcase>
+    <testcase classname="UrlUtils buildPipelineUrl should build the baseUrl for 1-level nested pipeline" name="UrlUtils buildPipelineUrl should build the baseUrl for 1-level nested pipeline" time="0.001">
+    </testcase>
+    <testcase classname="UrlUtils buildPipelineUrl should build the baseUrl for 3-level nested pipeline" name="UrlUtils buildPipelineUrl should build the baseUrl for 3-level nested pipeline" time="0">
+    </testcase>
+    <testcase classname="UrlUtils buildRunDetailsUrl should build the baseUrl if tabName ommitted" name="UrlUtils buildRunDetailsUrl should build the baseUrl if tabName ommitted" time="0.001">
+    </testcase>
+    <testcase classname="UrlUtils buildRunDetailsUrl should build the full url with tab name" name="UrlUtils buildRunDetailsUrl should build the full url with tab name" time="0">
+    </testcase>
+    <testcase classname="UrlUtils buildRunDetailsUrl should escape characters correctly" name="UrlUtils buildRunDetailsUrl should escape characters correctly" time="0">
+    </testcase>
+    <testcase classname="UrlUtils calculate log url should build the logUrl with only url set" name="UrlUtils calculate log url should build the logUrl with only url set" time="0.001">
+    </testcase>
+    <testcase classname="UrlUtils calculate log url should build the logUrl with node set" name="UrlUtils calculate log url should build the logUrl with node set" time="0">
+    </testcase>
+    <testcase classname="UrlUtils calculate calculateNodeBaseUrl should build the url no multibranch" name="UrlUtils calculate calculateNodeBaseUrl should build the url no multibranch" time="0.001">
+    </testcase>
+    <testcase classname="UrlUtils calculate calculateNodeBaseUrl should build the url with mutibranch" name="UrlUtils calculate calculateNodeBaseUrl should build the url with mutibranch" time="0">
+    </testcase>
+    <testcase classname="UrlUtils double encode branch name in nodeBaseUrl should build the url multibranch" name="UrlUtils double encode branch name in nodeBaseUrl should build the url multibranch" time="0.001">
+    </testcase>
+    <testcase classname="UrlUtils build classicConfigUrl should build the url for classic config" name="UrlUtils build classicConfigUrl should build the url for classic config" time="0.001">
+    </testcase>
+    <testcase classname="UrlUtils calculate calculateStepsBaseUrl should build the url with node" name="UrlUtils calculate calculateStepsBaseUrl should build the url with node" time="0.001">
+    </testcase>
+    <testcase classname="UrlUtils calculate calculateStepsBaseUrl should build the url with mutibranch and no node" name="UrlUtils calculate calculateStepsBaseUrl should build the url with mutibranch and no node" time="0">
+    </testcase>
+    <testcase classname="UrlUtils calculate calculateRunLogURLObject should build the urlObject no multibranch" name="UrlUtils calculate calculateRunLogURLObject should build the urlObject no multibranch" time="0.001">
+    </testcase>
+    <testcase classname="UrlUtils calculate calculateRunLogURLObject should build the urlObject with mutibranch" name="UrlUtils calculate calculateRunLogURLObject should build the urlObject with mutibranch" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="pipeline graph data converter /" tests="12" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:36:46" time="13.35">
+    <testcase classname="pipeline graph data converter / for empty input of / null / returns an empty array when not finished" name="pipeline graph data converter / for empty input of / null / returns an empty array when not finished" time="0.005">
+    </testcase>
+    <testcase classname="pipeline graph data converter / for empty input of / null / returns an empty array when finished" name="pipeline graph data converter / for empty input of / null / returns an empty array when finished" time="0.001">
+    </testcase>
+    <testcase classname="pipeline graph data converter / for empty input of / undefined / returns an empty array when not finished" name="pipeline graph data converter / for empty input of / undefined / returns an empty array when not finished" time="0">
+    </testcase>
+    <testcase classname="pipeline graph data converter / for empty input of / undefined / returns an empty array when finished" name="pipeline graph data converter / for empty input of / undefined / returns an empty array when finished" time="0">
+    </testcase>
+    <testcase classname="pipeline graph data converter / for empty input of / [] / returns an empty array when not finished" name="pipeline graph data converter / for empty input of / [] / returns an empty array when not finished" time="0.001">
+    </testcase>
+    <testcase classname="pipeline graph data converter / for empty input of / [] / returns an empty array when finished" name="pipeline graph data converter / for empty input of / [] / returns an empty array when finished" time="0">
+    </testcase>
+    <testcase classname="pipeline graph data converter / for single-node.json / produces the correct result" name="pipeline graph data converter / for single-node.json / produces the correct result" time="0.074">
+    </testcase>
+    <testcase classname="pipeline graph data converter / for three-nodes.json / produces the correct result" name="pipeline graph data converter / for three-nodes.json / produces the correct result" time="0.009">
+    </testcase>
+    <testcase classname="pipeline graph data converter / for pipeline-nodes-example.json / produces the correct result" name="pipeline graph data converter / for pipeline-nodes-example.json / produces the correct result" time="0.073">
+    </testcase>
+    <testcase classname="pipeline graph data converter / for ends-with-parallel.json / produces the correct result" name="pipeline graph data converter / for ends-with-parallel.json / produces the correct result" time="0.008">
+    </testcase>
+    <testcase classname="pipeline graph data converter / for every-result.json / when completed / produces the correct result" name="pipeline graph data converter / for every-result.json / when completed / produces the correct result" time="0.092">
+    </testcase>
+    <testcase classname="pipeline graph data converter / for every-result.json / when not completed / produces the correct result" name="pipeline graph data converter / for every-result.json / when not completed / produces the correct result" time="0.058">
+    </testcase>
+  </testsuite>
+  <testsuite name="PipelineRecord" tests="4" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:36:53" time="10.061">
+    <testcase classname="PipelineRecord /create without error" name="PipelineRecord /create without error" time="0.017">
+    </testcase>
+    <testcase classname="PipelineRowItem /simple pipeline" name="PipelineRowItem /simple pipeline" time="0.089">
+    </testcase>
+    <testcase classname="PipelineRowItem /multiBranch /with failing items" name="PipelineRowItem /multiBranch /with failing items" time="0.023">
+    </testcase>
+    <testcase classname="PipelineRowItem /multiBranch /with success" name="PipelineRowItem /multiBranch /with success" time="0.007">
+    </testcase>
+  </testsuite>
+  <testsuite name="smart-fetch" tests="5" errors="0" failures="0" skipped="5" timestamp="2017-07-02T05:36:59" time="5.646">
+    <testcase classname="smart-fetch Callbacks work" name="smart-fetch Callbacks work" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="smart-fetch Promises work" name="smart-fetch Promises work" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="smart-fetch Sends fetch status notifications" name="smart-fetch Sends fetch status notifications" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="smart-fetch Fetch multiple works" name="smart-fetch Fetch multiple works" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="smart-fetch Pagination works" name="smart-fetch Pagination works" time="0">
+      <skipped/>
+    </testcase>
+  </testsuite>
+  <testsuite name="TestResults" tests="5" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:36:46" time="26.072">
+    <testcase classname="TestResults Test fixed included" name="TestResults Test fixed included" time="0.81">
+    </testcase>
+    <testcase classname="TestResults Handles REGRESSION case" name="TestResults Handles REGRESSION case" time="0.136">
+    </testcase>
+    <testcase classname="TestResults All passing shown" name="TestResults All passing shown" time="0.045">
+    </testcase>
+    <testcase classname="TestResults All passing and fixed shown" name="TestResults All passing and fixed shown" time="0.052">
+    </testcase>
+    <testcase classname="TestResults unstable renders with no error message" name="TestResults unstable renders with no error message" time="0.204">
+    </testcase>
+  </testsuite>
+  <testsuite name="push events - queued run tests" tests="5" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:36:46" time="27.618">
+    <testcase classname="push events - queued run tests currently displayed pipeline" name="push events - queued run tests currently displayed pipeline" time="0.007">
+    </testcase>
+    <testcase classname="push events - queued run tests not currently displayed pipeline" name="push events - queued run tests not currently displayed pipeline" time="0.017">
+    </testcase>
+    <testcase classname="push events - queued run tests ignore multiple events with same queueId" name="push events - queued run tests ignore multiple events with same queueId" time="0.001">
+    </testcase>
+    <testcase classname="push events - started run tests run fetch ok" name="push events - started run tests run fetch ok" time="0.009">
+    </testcase>
+    <testcase classname="push events - started run tests run fetch failed" name="push events - started run tests run fetch failed" time="0.019">
+    </testcase>
+  </testsuite>
+  <testsuite name="Activity" tests="4" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:36:46" time="28.277">
+    <testcase classname="Activity render the Activity with data" name="Activity render the Activity with data" time="0.086">
+    </testcase>
+    <testcase classname="Activity does not render without data" name="Activity does not render without data" time="0.004">
+    </testcase>
+    <testcase classname="Pipeline -&gt; Activity List should contain cause" name="Pipeline -&gt; Activity List should contain cause" time="0.532">
+    </testcase>
+    <testcase classname="Pipeline -&gt; Activity List should not duplicate changeset messages" name="Pipeline -&gt; Activity List should not duplicate changeset messages" time="0.003">
+    </testcase>
+  </testsuite>
+  <testsuite name="Redux Store - " tests="3" errors="0" failures="0" skipped="3" timestamp="2017-07-02T05:36:46" time="28.591">
+    <testcase classname="Redux Store -  create store with branch data" name="Redux Store -  create store with branch data" time="0.001">
+      <skipped/>
+    </testcase>
+    <testcase classname="Redux Store -  multi-branch job_crud_job_created blueocean_is_for_current_job=true" name="Redux Store -  multi-branch job_crud_job_created blueocean_is_for_current_job=true" time="0">
+      <skipped/>
+    </testcase>
+    <testcase classname="Redux Store -  multi-branch job_crud_job_created blueocean_is_for_current_job=false" name="Redux Store -  multi-branch job_crud_job_created blueocean_is_for_current_job=false" time="0">
+      <skipped/>
+    </testcase>
+  </testsuite>
+  <testsuite name="RunDetailsChanges" tests="3" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:37:12" time="4.189">
+    <testcase classname="RunDetailsChanges empty runs / bad data renders nothing" name="RunDetailsChanges empty runs / bad data renders nothing" time="0.001">
+    </testcase>
+    <testcase classname="RunDetailsChanges empty changeSet renders NoChangesPlaceholder" name="RunDetailsChanges empty changeSet renders NoChangesPlaceholder" time="0">
+    </testcase>
+    <testcase classname="RunDetailsChanges valid changeSet renders a Table with expected data" name="RunDetailsChanges valid changeSet renders a Table with expected data" time="0.03">
+    </testcase>
+  </testsuite>
+  <testsuite name="StatusIndicator should render" tests="3" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:37:15" time="1.676">
+    <testcase classname="StatusIndicator should render does render success" name="StatusIndicator should render does render success" time="0.059">
+    </testcase>
+    <testcase classname="SvgStatus should render does render FAILURE" name="SvgStatus should render does render FAILURE" time="0.002">
+    </testcase>
+    <testcase classname="SvgSpinner should render does render RUNNING" name="SvgSpinner should render does render RUNNING" time="0.006">
+    </testcase>
+  </testsuite>
+  <testsuite name="RunMessageCell" tests="6" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:37:14" time="2.857">
+    <testcase classname="RunMessageCell displays description" name="RunMessageCell displays description" time="0.078">
+    </testcase>
+    <testcase classname="RunMessageCell displays with multiple commits" name="RunMessageCell displays with multiple commits" time="0.023">
+    </testcase>
+    <testcase classname="RunMessageCell displays with single commit" name="RunMessageCell displays with single commit" time="0.004">
+    </testcase>
+    <testcase classname="RunMessageCell displays cause because more than 1 cause is more important" name="RunMessageCell displays cause because more than 1 cause is more important" time="0.001">
+    </testcase>
+    <testcase classname="RunMessageCell displays cause" name="RunMessageCell displays cause" time="0.003">
+    </testcase>
+    <testcase classname="RunMessageCell displays nothing" name="RunMessageCell displays nothing" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="PullRequest should render" tests="3" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:37:14" time="3.768">
+    <testcase classname="PullRequest should render does renders the PullRequest with data" name="PullRequest should render does renders the PullRequest with data" time="0.03">
+    </testcase>
+    <testcase classname="PullRequest should not render does renders the PullRequest without data" name="PullRequest should not render does renders the PullRequest without data" time="0.001">
+    </testcase>
+    <testcase classname="PullRequest opens correctly" name="PullRequest opens correctly" time="0.019">
+    </testcase>
+  </testsuite>
+  <testsuite name="Pipelines" tests="4" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:37:05" time="13.553">
+    <testcase classname="Pipelines basic table rendering check header to be as expected" name="Pipelines basic table rendering check header to be as expected" time="0.116">
+    </testcase>
+    <testcase classname="Pipelines basic table rendering check rows number to be as expected" name="Pipelines basic table rendering check rows number to be as expected" time="0.006">
+    </testcase>
+    <testcase classname="Pipelines pending state should continue to render existing data while a fetch is pending" name="Pipelines pending state should continue to render existing data while a fetch is pending" time="0.002">
+    </testcase>
+    <testcase classname="Pipelines duplicate job names should render two rows when job names are duplicated across folders" name="Pipelines duplicate job names should render two rows when job names are duplicated across folders" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="Enum" tests="2" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:37:18" time="0.573">
+    <testcase classname="Enum construction should populate the keys and values" name="Enum construction should populate the keys and values" time="0.002">
+    </testcase>
+    <testcase classname="Enum values should return an erray with all values" name="Enum values should return an erray with all values" time="0">
+    </testcase>
+  </testsuite>
+  <testsuite name="RunDetailsArtifacts" tests="2" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:37:16" time="3.041">
+    <testcase classname="RunDetailsArtifacts bad data renders nothing" name="RunDetailsArtifacts bad data renders nothing" time="0.008">
+    </testcase>
+    <testcase classname="RunDetailsArtifacts valid artifacts renders a Table with expected data" name="RunDetailsArtifacts valid artifacts renders a Table with expected data" time="0.019">
+    </testcase>
+  </testsuite>
+  <testsuite name="Logic test of different runs" tests="10" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:36:46" time="33.625">
+    <testcase classname="Logic test of different runs running and failing" name="Logic test of different runs running and failing" time="0.058">
+    </testcase>
+    <testcase classname="Logic test of different runs post error stage" name="Logic test of different runs post error stage" time="0.001">
+    </testcase>
+    <testcase classname="Logic test of different runs handles aborted job that only had been in queue but never build" name="Logic test of different runs handles aborted job that only had been in queue but never build" time="0.022">
+    </testcase>
+    <testcase classname="Logic test of different runs handles success" name="Logic test of different runs handles success" time="0.001">
+    </testcase>
+    <testcase classname="Logic test of different runs handles error" name="Logic test of different runs handles error" time="0">
+    </testcase>
+    <testcase classname="Logic test of different runs handles running" name="Logic test of different runs handles running" time="0.001">
+    </testcase>
+    <testcase classname="Logic test of different runs handles all null" name="Logic test of different runs handles all null" time="0.003">
+    </testcase>
+    <testcase classname="Logic test of different runs includes name and description" name="Logic test of different runs includes name and description" time="0.001">
+    </testcase>
+    <testcase classname="React component test of different runs handles success" name="React component test of different runs handles success" time="0.035">
+    </testcase>
+    <testcase classname="React component test of different runs handles error" name="React component test of different runs handles error" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="KaraokeHelper" tests="1" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:37:19" time="0.488">
+    <testcase classname="KaraokeHelper KaraokeHelper calculateNode should return an answer if our node param is different (case if some one clicks a flownode)" name="KaraokeHelper KaraokeHelper calculateNode should return an answer if our node param is different (case if some one clicks a flownode)" time="0.001">
+    </testcase>
+  </testsuite>
+  <testsuite name="RunDescription" tests="3" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:37:19" time="1.858">
+    <testcase classname="RunDescription displays description" name="RunDescription displays description" time="0.118">
+    </testcase>
+    <testcase classname="RunDescription displays nothing when description unavailable" name="RunDescription displays nothing when description unavailable" time="0.001">
+    </testcase>
+    <testcase classname="RunDescription displays nothing when run unavailable" name="RunDescription displays nothing when run unavailable" time="0.004">
+    </testcase>
+  </testsuite>
+  <testsuite name="PipelinePage" tests="1" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:37:16" time="4.478">
+    <testcase classname="PipelinePage shows 404 for failure" name="PipelinePage shows 404 for failure" time="0.043">
+    </testcase>
+  </testsuite>
+  <testsuite name="Store should work" tests="3" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:37:03" time="17.501">
+    <testcase classname="Store should work Log Store should work create store with run data" name="Store should work Log Store should work create store with run data" time="0.201">
+    </testcase>
+    <testcase classname="Store should work Store should work with steps create store with step data" name="Store should work Store should work with steps create store with step data" time="0.018">
+    </testcase>
+    <testcase classname="Store should work Store should work with nodes create store with node data" name="Store should work Store should work with nodes create store with node data" time="0.003">
+    </testcase>
+  </testsuite>
+  <testsuite name="RunIdCell" tests="2" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:37:20" time="1.434">
+    <testcase classname="RunIdCell displays name" name="RunIdCell displays name" time="0.062">
+    </testcase>
+    <testcase classname="RunIdCell displays id" name="RunIdCell displays id" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="PullRequests should render" tests="2" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:37:17" time="6.159">
+    <testcase classname="PullRequests should render does renders the PullRequests with data" name="PullRequests should render does renders the PullRequests with data" time="0.061">
+    </testcase>
+    <testcase classname="PullRequests should not render does render NotSupported the PullRequests without data" name="PullRequests should not render does render NotSupported the PullRequests without data" time="0.002">
+    </testcase>
+  </testsuite>
+  <testsuite name="GitFlowManager" tests="2" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:37:19" time="13.326">
+    <testcase classname="GitFlowManager _createNameFromRepoUrl should use last part of repository URL" name="GitFlowManager _createNameFromRepoUrl should use last part of repository URL" time="0.034">
+    </testcase>
+    <testcase classname="GitFlowManager _createNameFromRepoUrl should discard the extension" name="GitFlowManager _createNameFromRepoUrl should discard the extension" time="0.002">
+    </testcase>
+  </testsuite>
+</testsuites>

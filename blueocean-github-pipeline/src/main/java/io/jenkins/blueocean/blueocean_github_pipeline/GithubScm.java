@@ -24,6 +24,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainSpecifi
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmOrganization;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import io.jenkins.blueocean.rest.model.Container;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
@@ -186,6 +187,11 @@ public class GithubScm extends Scm {
             }
             throw new ServiceException.UnexpectedErrorException(e.getMessage(), e);
         }
+    }
+
+    @Override
+    public ScmServerEndpointContainer getServers() {
+        return null;
     }
 
     public boolean isOrganizationAvatarSupported() {
