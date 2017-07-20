@@ -15,6 +15,8 @@ import { BackendConnectFailure } from './components/BackendConnectFailure';
 import { DevelopmentFooter } from './DevelopmentFooter';
 import { useStrict } from 'mobx';
 import { Icon } from '@jenkins-cd/react-material-icons';
+import BundleWatchInfo from './BundleWatchInfo';
+
 useStrict(true);
 
 const LOGGER = logging.logger('io.jenkins.blueocean.web.routing');
@@ -154,6 +156,7 @@ function makeRoutes(routes) {
         ...routes,
         // FIXME: Not sure best how to set this up without the hardcoded IndexRedirect :-/
         <IndexRedirect to="/pipelines" />,
+        <Route path="/bundle:watch" component={BundleWatchInfo} />,
         <Route path="*" component={NotFound}/>
     ];
 

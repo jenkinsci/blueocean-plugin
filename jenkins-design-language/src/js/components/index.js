@@ -1,6 +1,7 @@
 // @flow
 
 export { WeatherIcon } from './weather-icon';
+export { Icon } from '@jenkins-cd/react-material-icons';
 export { Page } from './page';
 export { TabLink } from './TabLink';
 export { Table, TableDivider } from './Table';

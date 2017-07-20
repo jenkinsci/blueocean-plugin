@@ -1,11 +1,24 @@
 package io.jenkins.blueocean.dev;
 
+import hudson.Extension;
 import hudson.PluginWrapper;
 import hudson.init.InitMilestone;
 import hudson.init.Initializer;
 import io.jenkins.blueocean.BlueOceanUI;
+import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.commons.stapler.TreeResponse;
+import io.jenkins.blueocean.rest.ApiRoutable;
 import jenkins.model.Jenkins;
+import net.sf.json.JSONObject;
 import org.apache.commons.lang.SystemUtils;
+import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
+import org.kohsuke.stapler.json.JsonBody;
+import org.kohsuke.stapler.verb.DELETE;
+import org.kohsuke.stapler.verb.GET;
+import org.kohsuke.stapler.verb.POST;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -22,6 +35,105 @@ public class RunBundleWatches {
     final static List<BundleBuild> builds = new CopyOnWriteArrayList<>();
     final static long DEFAULT_BACK_OFF = 10000;
 
+    @Extension
+    public static class BundleWatchEndpoint implements ApiRoutable {
+        @Override
+        public String getUrlName() {
+            return "bundle:watch";
+        }
+
+        @GET
+        @WebMethod(name = "")
+        @TreeResponse
+        public BundleLog[] get(@QueryParameter long since) {
+            BundleLog[] logs = new BundleLog[builds.size()];
+            int i = 0;
+            for (BundleBuild build : builds) {
+                long max = since;
+                StringBuilder out = new StringBuilder();
+                for (LogLine line : build.logLines) {
+                    if (line.time > since) {
+                        if (line.time > max) {
+                            max = line.time;
+                        }
+                        out.append(line.text).append("\n");
+                    }
+                }
+                logs[i] = new BundleLog(build.name, out.toString(), max, build.isBuilding, build.lastBuildTimeMillis);
+                i++;
+            }
+            return logs;
+        }
+
+        @POST
+        @WebMethod(name = "")
+        public void reRun(@JsonBody JSONObject request) {
+            if (!request.has("name")) throw new ServiceException.BadRequestException("Must specify name");
+            for (BundleBuild build : builds) {
+                if (build.name.equals(request.getString("name"))) {
+                    build.isBuilding = true;
+                    build.reRun();
+                    return;
+                }
+            }
+        }
+
+        @DELETE
+        @WebMethod(name = "")
+        public void clearLogs(@JsonBody JSONObject request) {
+            if (!request.has("name")) throw new ServiceException.BadRequestException("Must specify name");
+            for (BundleBuild build : builds) {
+                if (build.name.equals(request.getString("name"))) {
+                    build.logLines.clear();
+                    build.logLines.add(new LogLine("Log cleared...\n"));
+                    return;
+                }
+            }
+        }
+    }
+
+    @ExportedBean
+    public static class BundleLog {
+        private final String name;
+        private final String lines;
+        private final long since;
+        private final boolean isBuilding;
+        private final long lastBuildTime;
+
+        public BundleLog(String name, String lines, long since, boolean isBuilding, long lastBuildTime) {
+            this.name = name;
+            this.lines = lines;
+            this.since = since;
+            this.isBuilding = isBuilding;
+            this.lastBuildTime = lastBuildTime;
+        }
+
+        @Exported
+        public String getName() {
+            return name;
+        }
+
+        @Exported
+        public String getLog() {
+            return lines;
+        }
+
+        @Exported
+        public long getSince() {
+            return since;
+        }
+
+        @Exported
+        public boolean isBuilding() {
+            return isBuilding;
+        }
+
+        @Exported
+        public long getLastBuildTime() {
+            return lastBuildTime;
+        }
+    }
+
     static class BundleBuild {
         final List<LogLine> logLines = new CopyOnWriteArrayList<>();
         String name;
@@ -31,6 +143,22 @@ public class RunBundleWatches {
         volatile long lastBuildTimeMillis;
         int lastBuildIdx = 0;
         boolean hasError = false;
+
+        void reRun() {
+            synchronized(this) {
+                logLines.add(new LogLine("\nRestarting bundle process...\n"));
+                if (process != null) {
+                    process.destroy();
+                    try {
+                        process.destroyForcibly();
+                    } catch(Exception e) {
+                        // ignore
+                    }
+                } else {
+                    thread.interrupt();
+                }
+            }
+        }
     }
 
     static class LogLine {
