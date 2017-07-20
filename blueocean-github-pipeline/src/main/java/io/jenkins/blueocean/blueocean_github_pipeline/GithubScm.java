@@ -122,6 +122,12 @@ public class GithubScm extends Scm {
     }
 
     @Override
+    public Object getState() {
+        this.validateExistingAccessToken();
+        return super.getState();
+    }
+
+    @Override
     public Container<ScmOrganization> getOrganizations() {
         StaplerRequest request = Stapler.getCurrentRequest();
 
@@ -317,6 +323,24 @@ public class GithubScm extends Scm {
         }
 
         return connection;
+    }
+
+    /**
+     * Ensure any existing access token is valid and has the proper scopes.
+     */
+    protected void validateExistingAccessToken() {
+        String credentialId = createCredentialId(getUri());
+        StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+
+        if (githubCredential != null) {
+            HttpURLConnection connection;
+            try {
+                connection = connect(String.format("%s/%s", getUri(), "user"), githubCredential.getPassword().getPlainText());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            validateAccessTokenScopes(connection);
+        }
     }
 
     static void validateAccessTokenScopes(HttpURLConnection connection) {
