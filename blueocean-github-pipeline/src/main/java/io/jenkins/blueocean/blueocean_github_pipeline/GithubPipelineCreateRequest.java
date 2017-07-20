@@ -24,6 +24,7 @@ import jenkins.branch.CustomOrganizationFolderDescriptor;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
+import jenkins.model.ModifiableTopLevelItemGroup;
 import jenkins.scm.api.SCMFile;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.SCMHeadObserver;
@@ -100,8 +101,10 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
         String singleRepo = repos.size() == 1 ? repos.get(0) : null;
 
         User authenticatedUser =  User.current();
-
-        Item item = Jenkins.getInstance().getItemByFullName(orgName);
+        
+        ModifiableTopLevelItemGroup orgRoot = getParent();
+        
+        Item item = Jenkins.getInstance().getItemByFullName(orgRoot.getFullName() + '/' + orgName);
         boolean creatingNewItem = item == null;
         try {
 
