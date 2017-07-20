@@ -13,7 +13,7 @@
     "prepublish": "gulp test",
     "mvnbuild": "gulp build bundle",
     "mvntest": "gulp test",
-    "bundle:watch": "gulp watch",
+    "bundle:watch": "gulp bundle:watch",
     "site-build": "harp compile website/ website-build/",
     "site-server": "harp server website --port 3000",
     "site-publish": "./site-publish.sh"
