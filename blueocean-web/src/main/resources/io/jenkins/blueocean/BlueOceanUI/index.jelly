@@ -35,14 +35,15 @@
             </j:if>
             <j:set var="assetsPath" value="${resURL}/plugin/blueocean-web/assets" />
 
-            <!-- Core Styles -->
-            <link rel="stylesheet" type="text/css" href="${assetsPath}/jdl/css/jenkins-design-language.css" />
-            <link rel="stylesheet" type="text/css" href="${assetsPath}/corejs/css/blueocean-core-js.css" />
-
             <!-- Inject headers from other extensions. See BluePageDecorator.java -->
             <j:forEach var="pd" items="${it.pageDecorators}">
                 <st:include it="${pd}" page="header.jelly" optional="true" />
             </j:forEach>
+
+            <!-- Core bundles necessary to manually include for now -->
+            <st:adjunct includes="io.jenkins.blueocean.jenkins-design-language"/>
+            <st:adjunct includes="io.jenkins.blueocean.blueocean-core-js"/>
+
             <style type="text/css">
                 html {overflow-y: scroll;}
                 #loadbar{background:#4A90E2;height:5px;width:0;position:fixed;top:0;left:0;opacity:1;z-index:10000}
@@ -82,8 +83,6 @@
             The following Stapler adjunct adds the blueocean JavaScript bundle, as well
             as the blueocean CSS. See gulpfile.js.
             -->
-            <st:adjunct includes="io.jenkins.blueocean.jenkins-design-language"/>
-            <st:adjunct includes="io.jenkins.blueocean.blueocean-core-js"/>
             <st:adjunct includes="io.jenkins.blueocean.blueocean"/>
         </body>
 

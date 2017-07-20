@@ -203,7 +203,7 @@ builder.src([
 //
 builder.bundle('src/js/index.js', 'blueocean-core-js.js')
     .inDir('target/classes/io/jenkins/blueocean')
-    .less('src/less/core.less')
+    .less('src/less/blueocean-core-js.less')
     .import('react@any', {
         aliases: ['react/lib/React'] // in case a module requires react through the back door
     })
