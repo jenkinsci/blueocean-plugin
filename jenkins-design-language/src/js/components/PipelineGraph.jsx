@@ -563,7 +563,7 @@ export class PipelineGraph extends Component {
         // elements.push(debugPointX(p4x, p4y, 'p4', 'rgba(0,128,40,0.65')); // TODO: RM
     }
 
-    renderHorizontalConnection(leftNode: NodeInfo, rightNode: NodeInfo, connectorStroke, elements: SVGChildren) {
+    renderHorizontalConnection(leftNode: NodeInfo, rightNode: NodeInfo, connectorStroke: Object, elements: SVGChildren) {
 
         const { nodeRadius } = this.state.layout;
 
@@ -617,7 +617,7 @@ export class PipelineGraph extends Component {
         );
     }
 
-    svgCurve(x1, y1, x2, y2, midPointX, curveRadius) {
+    svgCurve(x1: number, y1: number, x2: number, y2: number, midPointX: number, curveRadius: number) {
         const verticalDirection = Math.sign(y2 - y1); // 1 == curve down, -1 == curve up
         const w1 = midPointX - curveRadius - x1 + (curveRadius * verticalDirection);
         const w2 = x2 - curveRadius - midPointX - (curveRadius * verticalDirection);
