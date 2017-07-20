@@ -3,11 +3,9 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 import com.cloudbees.hudson.plugins.folder.Folder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.TopLevelItem;
-import hudson.model.User;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.service.embedded.OrganizationFactoryImpl;
@@ -104,18 +102,6 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
             Assert.assertNull(item);
             String r = get("/organizations/"+ getOrgName() + "/pipelines/"+orgFolderName+"/", 404, String.class);
         }
-    }
-
-    private String createGithubCredential(User user) throws UnirestException {
-        Map r = new RequestBuilder(baseUrl)
-                .data(ImmutableMap.of("accessToken", "12345"))
-                .status(200)
-                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .put("/organizations/" + getOrgName() + "/scm/github/validate/?apiUrl="+githubApiUrl)
-                .build(Map.class);
-
-        assertEquals("github", r.get("credentialId"));
-        return "github";
     }
 
     private static String getOrgName() {
