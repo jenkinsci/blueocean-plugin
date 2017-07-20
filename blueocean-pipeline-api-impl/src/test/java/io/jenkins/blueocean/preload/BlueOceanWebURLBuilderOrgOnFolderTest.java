@@ -94,7 +94,6 @@ public class BlueOceanWebURLBuilderOrgOnFolderTest {
         when(Stapler.getCurrentRequest()).thenReturn(request);
     }
 
-    //private static final String MATCHER_ORG = "/setState.*'organization'.*\"name\".*\"%s\"/g"; //Matches setState('organization', {"name":"ORG_NAME"
     private static final String MATCHER_ORG = ".*\"name\".*\"%s\".*"; //Matches "name":"ORG_NAME"
 
     @Test
@@ -184,7 +183,6 @@ public class BlueOceanWebURLBuilderOrgOnFolderTest {
 
         @Override
         public TopLevelItem doCreateItem(StaplerRequest req, StaplerResponse rsp) throws IOException, ServletException {
-            // TODO Auto-generated method stub
             return null;
         }
 
