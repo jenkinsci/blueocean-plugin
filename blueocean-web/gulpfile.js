@@ -36,9 +36,7 @@ gi(function (err, result) {
 // See https://github.com/jenkinsci/js-builder#setting-src-and-test-spec-paths
 builder.src([
     'src/main/js',
-    'src/main/less',
-    'node_modules/@jenkins-cd/design-language/dist',
-    'node_modules/@jenkins-cd/blueocean-core-js/dist']);
+    'src/main/less']);
 
 //
 // Create the main "App" bundle.

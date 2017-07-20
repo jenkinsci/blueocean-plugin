@@ -32,6 +32,14 @@
                     <include>dist/**/*</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>icons</directory>
+                <targetPath>io/jenkins/icons</targetPath>
+            </resource>
+            <resource>
+                <directory>fonts</directory>
+                <targetPath>io/jenkins/fonts</targetPath>
+            </resource>
         </resources>
     </build>
     

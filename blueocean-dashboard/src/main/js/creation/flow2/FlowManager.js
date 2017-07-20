@@ -1,6 +1,6 @@
+import React from 'react';
 import { action, asFlat, computed, observable } from 'mobx';
 import { logging, Utils } from '@jenkins-cd/blueocean-core-js';
-
 
 const LOGGER = logging.logger('io.jenkins.blueocean.create-pipeline');
 
@@ -127,7 +127,8 @@ export default class FlowManager {
 
         // each time a new step instance is created we want fresh React state
         // assign a unique ID to the React element's key to force a remount
-        newStep.stepElement.key = Utils.randomId();
+        //newStep.stepElement.key = Utils.randomId();
+        newStep.stepElement = React.cloneElement(stepElement, {key: Utils.randomId()});
         return newStep;
     }
 

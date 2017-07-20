@@ -1,6 +1,7 @@
 "use strict";
 
 process.env.SKIP_BLUE_IMPORTS = 'YES';
+process.env.NODE_ENV = 'production';
 
 /*
  Build file for Jenkins Design Language theme.
@@ -46,7 +47,7 @@ const config = {
         },
         octicons: {
             sources: "node_modules/octicons/build/font/octicons.{eot,woff,woff2,ttf,svg}",
-            dest: "dist/assets/css/"
+            dest: "target/classes/io/jenkins/blueocean/"
         },
         fonts: {
             sources: "fonts/*.woff",
@@ -217,7 +218,9 @@ var builder = require('@jenkins-cd/js-builder');
 
 builder.src([
     'src/js',
-    'less']);
+    'less',
+    'dist' // for icons & fonts
+]);
 
 //
 // Create the main bundle.
