@@ -47,12 +47,12 @@ type StageNodeInfo = {
     x: number,
     y: number,
     id: number,
+    name: string,
 
     // -- Marker
     isPlaceholder: false,
 
     // -- Unique
-    name: string,
     stage: StageInfo
 };
 
@@ -62,6 +62,7 @@ type PlaceholderNodeInfo = {
     x: number,
     y: number,
     id: number,
+    name: string,
 
     // -- Marker
     isPlaceholder: true,
@@ -79,8 +80,6 @@ type NodeColumn = {
     nodes: Array<NodeInfo>,
 }
 
-type NodeColumns = Array<NodeColumn>;  // TODO: Remove this, just use Array<NodeColumn>
-
 type CompositeConnection = {
     sourceNodes: Array<NodeInfo>,
     destinationNodes: Array<NodeInfo>,
@@ -91,7 +90,8 @@ type LabelInfo = {
     x: number,
     y: number,
     text: string,
-    stage: StageInfo
+    key: string,
+    stage?: StageInfo
 };
 
 type LayoutInfo = typeof defaultLayout;
@@ -111,6 +111,26 @@ type Props = {
 function connectorKey(leftNode, rightNode) {
     return 'c_' + leftNode.key + '_to_' + rightNode.key;
 }
+
+const startNode = {
+    x: 0,
+    y: 0,
+    name: 'Start',
+    id: -1,
+    isPlaceholder: true,
+    key: 'start-node',
+    type: 'start',
+};
+
+const endNode = {
+    x: 0,
+    y: 0,
+    name: 'End',
+    id: -2,
+    isPlaceholder: true,
+    key: 'end-node',
+    type: 'end',
+};
 
 // For Debugging  TODO: REMOVE THIS
 let _debugKey = 111;
@@ -201,30 +221,15 @@ export class PipelineGraph extends Component {
 
         const stageNodeColumns = this.createNodeColumns(newStages);
 
-        const startNode = { // TODO: Can we get away with fewer properties for these?
-            x: 0,
-            y: 0,
-            name: 'Start',
-            id: -1,
-            isPlaceholder: true,
-            key: 'start-node',
-            type: 'start',
-        };
+        const allNodeColumns = [
+            { nodes: [startNode] },
+            ...stageNodeColumns,
+            { nodes: [endNode] },
+        ];
 
-        const endNode = {  // TODO: Can we get away with fewer properties for these?
-            x: 0,
-            y: 0,
-            name: 'End',
-            id: -2,
-            isPlaceholder: true,
-            key: 'end-node',
-            type: 'end',
-        };
+        this.positionNodes(allNodeColumns);
 
-        const nodeColumns = [{ nodes: [startNode] }, ...stageNodeColumns, { nodes: [endNode] }];
-
-        this.positionNodes(nodeColumns);
-
+        const bigLabels = this.createBigLabels(allNodeColumns);
 
         // TODO: Big Labels
         // TODO: Small Labels
@@ -254,8 +259,8 @@ export class PipelineGraph extends Component {
                     id: nodeStage.id,
                     stage: nodeStage,
                     isPlaceholder: false,
-                    key: 'n_' + nodeStage.id
-                }))
+                    key: 'n_' + nodeStage.id,
+                })),
             });
         }
 
@@ -265,7 +270,7 @@ export class PipelineGraph extends Component {
     /**
      * Walks the columns of nodes giving them x and y positions
      */
-    positionNodes(nodeColumns: NodeColumns) {
+    positionNodes(nodeColumns: Array<NodeColumn>) {
 
         const { nodeSpacingH, nodeSpacingV } = this.state.layout;
 
@@ -283,6 +288,33 @@ export class PipelineGraph extends Component {
 
             xp += nodeSpacingV;
         }
+    }
+
+    /**
+     * Generate label descriptions for big labels at the top of each column
+     */
+    createBigLabels(columns: Array<NodeColumn>) {
+
+        let labels = [];
+
+        for (const column of columns) {
+            if (column.topStage) {
+                labels.push({
+                    x: column.nodes[0].x,
+                    y: column.nodes[0].y,
+                    text: column.topStage.name,
+                    stage: column.topStage,
+                });
+            } else {
+                labels.push({
+                    x: column.nodes[0].x,
+                    y: column.nodes[0].y,
+                    text: column.nodes[0].name,
+                });
+            }
+        }
+
+        return labels;
     }
 
     stagesUpdatedOLD(newStages: Array<StageInfo> = []) {    // TODO: Remove this once it's replicated nicely
@@ -327,6 +359,7 @@ export class PipelineGraph extends Component {
                 y: yp,
                 text: topStage.name,
                 stage: topStage,
+                key: 'lb_n_' + topStage.id,
             });
 
             // If stage has children, we don't draw a node for it, just its children
@@ -341,7 +374,7 @@ export class PipelineGraph extends Component {
                     continue;
                 }
 
-                const node:StageNodeInfo = {
+                const node: StageNodeInfo = {
                     x: xp,
                     y: yp,
                     name: nodeStage.name,
@@ -350,7 +383,7 @@ export class PipelineGraph extends Component {
                     id: nodeStage.id,
                     key: 'n_' + nodeStage.id,
                     stage: nodeStage,
-                    isPlaceholder: false
+                    isPlaceholder: false,
                 };
 
                 columnNodes.push(node);
@@ -362,6 +395,7 @@ export class PipelineGraph extends Component {
                         y: yp,
                         text: nodeStage.name,
                         stage: nodeStage,
+                        key: 'ls_' + node.key,
                     });
                 }
 
@@ -435,15 +469,12 @@ export class PipelineGraph extends Component {
             left: x + 'px',
         });
 
-        const key = details.stage.id + '-big';
-
         const classNames = ['pipeline-big-label'];
-        if (this.stageIsSelected(details.stage)
-            || this.stageChildIsSelected(details.stage)) {
+        if (this.stageIsSelected(details.stage) || this.stageChildIsSelected(details.stage)) {
             classNames.push('selected');
         }
 
-        return <TruncatingLabel className={classNames.join(' ')} style={style} key={key}>{details.text}</TruncatingLabel>;
+        return <TruncatingLabel className={classNames.join(' ')} style={style} key={details.key}>{details.text}</TruncatingLabel>;
     }
 
     renderSmallLabel(details: LabelInfo) {
@@ -477,14 +508,12 @@ export class PipelineGraph extends Component {
             left: x,
         });
 
-        const key = details.stage.id + '-small';
-
         const classNames = ['pipeline-small-label'];
-        if (this.stageIsSelected(details.stage)) {
+        if (details.stage && this.stageIsSelected(details.stage)) {
             classNames.push('selected');
         }
 
-        return <TruncatingLabel className={classNames.join(' ')} style={style} key={key}>{details.text}</TruncatingLabel>;
+        return <TruncatingLabel className={classNames.join(' ')} style={style} key={details.key}>{details.text}</TruncatingLabel>;
     }
 
     renderCompositeConnection(connection: CompositeConnection, elements: SVGChildren) {
@@ -834,20 +863,21 @@ export class PipelineGraph extends Component {
     }
 
     // Put in a function so we can make improvements / multi-select
-    stageIsSelected(stage: StageInfo) {
+    stageIsSelected(stage?: StageInfo) {
         const { selectedStage } = this.state;
-
         return selectedStage && selectedStage === stage;
     }
 
-    stageChildIsSelected(stage: StageInfo) {
-        const { children } = stage;
-        const { selectedStage } = this.state;
+    stageChildIsSelected(stage?: StageInfo) {
+        if (stage) {
+            const { children } = stage;
+            const { selectedStage } = this.state;
 
-        if (children && selectedStage) {
-            for (const child of children) {
-                if (child === selectedStage) {
-                    return true;
+            if (children && selectedStage) {
+                for (const child of children) {
+                    if (child === selectedStage) {
+                        return true;
+                    }
                 }
             }
         }
