@@ -27,6 +27,7 @@ import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMRevisionAction;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayCause;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
@@ -175,6 +176,29 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         SCMRevisionAction data = run.getAction(SCMRevisionAction.class);
         if (data != null){
             return data.getRevision().toString();
+        }
+        return null;
+    }
+
+    @Exported(name = "commitUrl")
+    public String getCommitUrl() {
+        String commitId = getCommitId();
+        if (commitId != null) {
+            Container<BlueChangeSetEntry> changeSets = getChangeSet();
+            int buildNumber = this.run.number;
+            WorkflowJob job = this.run.getParent();
+            while (buildNumber > 0) {
+                BlueChangeSetEntry entry = changeSets.get(commitId);
+                if (entry != null) {
+                    return entry.getUrl();
+                }
+                buildNumber--;
+                Run<?,?> run = job.getBuildByNumber(buildNumber);
+                if (run == null) {
+                    continue;
+                }
+                changeSets = AbstractRunImpl.getBlueRun(run, parent).getChangeSet();
+            }
         }
         return null;
     }
