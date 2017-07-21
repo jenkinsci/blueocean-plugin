@@ -31,15 +31,55 @@ type StageInfo = {
     children: Array<StageInfo>
 };
 
-type NodeInfo = {
+// type NodeInfo = {
+//     x: number,
+//     y: number,
+//     name: string,
+//     state: Result,
+//     completePercent: number,
+//     id: number,
+//     stage?: StageInfo
+// }; // TODO: RM
+
+type StageNodeInfo = {
+    // -- Shared with PlaceholderNodeInfo
+    key: string,
     x: number,
     y: number,
-    name: string,
-    state: Result,
-    completePercent: number,
     id: number,
+
+    // -- Marker
+    isPlaceholder: false,
+
+    // -- Unique
+    name: string,
     stage: StageInfo
 };
+
+type PlaceholderNodeInfo = {
+    // -- Shared with StageNodeInfo
+    key: string,
+    x: number,
+    y: number,
+    id: number,
+
+    // -- Marker
+    isPlaceholder: true,
+
+    // -- Unique
+    type: 'start' | 'end'
+}
+
+// TODO: Attempt to extract a "common" node type with intersection operator to remove duplication
+
+type NodeInfo = StageNodeInfo | PlaceholderNodeInfo;
+
+type NodeColumn = {
+    topStage?: StageInfo,
+    nodes: Array<NodeInfo>,
+}
+
+type NodeColumns = Array<NodeColumn>;  // TODO: Remove this, just use Array<NodeColumn>
 
 type CompositeConnection = {
     sourceNodes: Array<NodeInfo>,
@@ -69,19 +109,19 @@ type Props = {
 
 // Generate a react key for a connection
 function connectorKey(leftNode, rightNode) {
-    return leftNode.name + leftNode.id + '_con_' + rightNode.name + rightNode.id;
+    return 'c_' + leftNode.key + '_to_' + rightNode.key;
 }
 
 // For Debugging  TODO: REMOVE THIS
 let _debugKey = 111;
-function debugPoint(cx, cy, message = 'debug', fill='rgba(255,0,200,0.5)') {
+function debugPoint(cx, cy, message = 'debug', fill = 'rgba(255,0,200,0.5)') {
     const key = 'debug_' + (++_debugKey);
 
     return (
-        <circle cx={cx} cy={cy} r="3" fill={fill} key={key} title={message}/>
+        <circle cx={cx} cy={cy} r="3" fill={fill} key={key} title={message} />
     );
 }
-function debugPointX(cx, cy, message = 'debug', stroke='rgba(0,255,128,0.5)') {
+function debugPointX(cx, cy, message = 'debug', stroke = 'rgba(0,255,128,0.5)') {
     const key = 'debug_' + (++_debugKey);
 
     return (
@@ -159,6 +199,94 @@ export class PipelineGraph extends Component {
 
     stagesUpdated(newStages: Array<StageInfo> = []) {
 
+        const stageNodeColumns = this.createNodeColumns(newStages);
+
+        const startNode = { // TODO: Can we get away with fewer properties for these?
+            x: 0,
+            y: 0,
+            name: 'Start',
+            id: -1,
+            isPlaceholder: true,
+            key: 'start-node',
+            type: 'start',
+        };
+
+        const endNode = {  // TODO: Can we get away with fewer properties for these?
+            x: 0,
+            y: 0,
+            name: 'End',
+            id: -2,
+            isPlaceholder: true,
+            key: 'end-node',
+            type: 'end',
+        };
+
+        const nodeColumns = [{ nodes: [startNode] }, ...stageNodeColumns, { nodes: [endNode] }];
+
+        this.positionNodes(nodeColumns);
+
+
+        // TODO: Big Labels
+        // TODO: Small Labels
+        // TODO: Create connections
+
+        return this.stagesUpdatedOLD(newStages);
+    }
+
+    /**
+     * Generate an array of columns, each being an array of NodeInfo, based on the top-level stages
+     */
+    createNodeColumns(topLevelStages: Array<StageInfo> = []): Array<NodeColumn> {
+
+        const nodeColumns = [];
+
+        for (const topStage of topLevelStages) {
+            // If stage has children, we don't draw a node for it, just its children
+            const stagesForColumn =
+                topStage.children && topStage.children.length ? topStage.children : [topStage];
+
+            nodeColumns.push({
+                topStage,
+                nodes: stagesForColumn.map(nodeStage => ({
+                    x: 0,
+                    y: 0,
+                    name: nodeStage.name,
+                    id: nodeStage.id,
+                    stage: nodeStage,
+                    isPlaceholder: false,
+                    key: 'n_' + nodeStage.id
+                }))
+            });
+        }
+
+        return nodeColumns;
+    }
+
+    /**
+     * Walks the columns of nodes giving them x and y positions
+     */
+    positionNodes(nodeColumns: NodeColumns) {
+
+        const { nodeSpacingH, nodeSpacingV } = this.state.layout;
+
+        let xp = nodeSpacingH / 2;
+
+        for (let column of nodeColumns) {
+            let yp = ypStart;
+
+            for (let node of column.nodes) {
+                node.x = xp;
+                node.y = yp;
+
+                yp += nodeSpacingV;
+            }
+
+            xp += nodeSpacingV;
+        }
+    }
+
+    stagesUpdatedOLD(newStages: Array<StageInfo> = []) {    // TODO: Remove this once it's replicated nicely
+
         const { nodeSpacingH, nodeSpacingV } = this.state.layout;
 
         // The structures we're populating in this method
@@ -169,12 +297,22 @@ export class PipelineGraph extends Component {
 
         // Location of next node to create
         let xp = nodeSpacingH / 2;
-        let yp = 0;
+        let yp = ypStart;
 
         // Other state we need to maintain across columns
         let connectionSourceNodes: Array<NodeInfo> = []; // Column for last non-skipped stage, for connection generation
         let mostColumnNodes = 0; // "Tallest" column, for size calculation
         let skippedNodes = []; // Rendered nodes that need to be skipped by the next set of connections
+
+        let placeholderId = -1;
+        const placeholderStage = (name) => ({
+            children: [],
+            completePercent: 100,
+            id: (--placeholderId),
+            name: name,
+            state: 'unknown',
+            title: name,
+        });
 
         // For reach top-level stage we have a column of node(s)
         for (const topStage of newStages) {
@@ -200,25 +338,19 @@ export class PipelineGraph extends Component {
             for (let nodeStage of nodeStages) {
 
                 if (!nodeStage) {
-                    // Dummmy data to prevent render failing when not all stages' info are available(loading, etc)
-                    nodeStage = {
-                        children: [],
-                        completePercent: 100,
-                        id: -1,
-                        name: 'Unable to display more',
-                        state: 'unknown',
-                        title: 'dummyTitle',
-                    };
+                    continue;
                 }
 
-                const node = {
+                const node:StageNodeInfo = {
                     x: xp,
                     y: yp,
                     name: nodeStage.name,
-                    state: nodeStage.state,
-                    completePercent: nodeStage.completePercent,
+                    // state: nodeStage.state,
+                    // completePercent: nodeStage.completePercent,
                     id: nodeStage.id,
+                    key: 'n_' + nodeStage.id,
                     stage: nodeStage,
+                    isPlaceholder: false
                 };
 
                 columnNodes.push(node);
@@ -344,10 +476,6 @@ export class PipelineGraph extends Component {
             top: top,
             left: x,
         });
-
-        if (details.text.indexOf('komp') !== -1) {
-            console.log(JSON.stringify(style, null, 4));
-        }
 
         const key = details.stage.id + '-small';
 
@@ -538,8 +666,6 @@ export class PipelineGraph extends Component {
         let p8y = rightNode.y;
 
 
-
-
         const pathData =
             `M ${p1x} ${p1y}` +
             `L ${p2x} ${p2y}` + // 1st horizontal
@@ -635,20 +761,33 @@ export class PipelineGraph extends Component {
 
     renderNode(node: NodeInfo, elements: SVGChildren) {
 
-        const nodeIsSelected = this.stageIsSelected(node.stage);
+        let nodeIsSelected = false;
         const { nodeRadius, connectorStrokeWidth } = this.state.layout;
         // Use a bigger radius for invisible click/touch target
         const mouseTargetRadius = nodeRadius + (2 * connectorStrokeWidth);
 
-        const resultClean = decodeResultValue(node.state);
-        const key = 'n_' + node.name + node.id;
+        const key = node.key;
 
-        const completePercent = node.completePercent || 0;
-        const groupChildren = [getGroupForResult(resultClean, completePercent, nodeRadius)];
-        const { title } = node.stage;
-        if (title) {
-            groupChildren.push(<title>{ title }</title>);
+        let groupChildren = [];
+
+        if (node.isPlaceholder === true) {
+            // TODO: render placeholder dot
+            groupChildren.push(getGroupForResult('unknown', 0, nodeRadius));
+        } else {
+            const completePercent = node.stage.completePercent || 0;
+            const title = node.stage.title;
+            const resultClean = decodeResultValue(node.stage.state);
+            // TODO: Clean these lines up into destructure ^^^
+
+            groupChildren.push(getGroupForResult(resultClean, completePercent, nodeRadius));
+
+            if (title) {
+                groupChildren.push(<title>{ title }</title>);
+            }
+
+            nodeIsSelected = this.stageIsSelected(node.stage);
         }
+
         // Add an invisible click/touch target, coz the nodes are small and (more importantly)
         // many are hollow.
         groupChildren.push(
@@ -677,7 +816,7 @@ export class PipelineGraph extends Component {
         let selectedNode = null;
 
         for (const node of this.state.nodes) {
-            if (this.stageIsSelected(node.stage)) {
+            if (node.isPlaceholder === false && this.stageIsSelected(node.stage)) {
                 selectedNode = node;
                 break;
             }
@@ -716,15 +855,17 @@ export class PipelineGraph extends Component {
     }
 
     nodeClicked(node: NodeInfo) {
-        const stage = node.stage;
-        const listener = this.props.onNodeClick;
+        if (node.isPlaceholder === false) {
+            const stage = node.stage;
+            const listener = this.props.onNodeClick;
 
-        if (listener) {
-            listener(stage.name, stage.id);
+            if (listener) {
+                listener(stage.name, stage.id);
+            }
+
+            // Update selection
+            this.setState({ selectedStage: stage });
         }
-
-        // Update selection
-        this.setState({ selectedStage: stage });
     }
 
     render() {
