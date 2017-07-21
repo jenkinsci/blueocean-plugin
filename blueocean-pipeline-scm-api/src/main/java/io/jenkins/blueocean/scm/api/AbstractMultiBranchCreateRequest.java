@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.scm.api;
 
 import com.cloudbees.plugins.credentials.domains.Domain;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import hudson.model.Cause;
 import hudson.model.Failure;
@@ -54,7 +55,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
         MultiBranchProject project = createMultiBranchProject();
         assignCredentialToProject(scmConfig, project);
         SCMSource source = createSource(project, scmConfig);
-        project.getSourcesList().add(new BranchSource(source));
+        project.setSourcesList(ImmutableList.of(new BranchSource(source)));
         project.save();
         project.scheduleBuild(new Cause.UserIdCause());
         return BluePipelineFactory.getPipelineInstance(project, OrganizationFactory.getInstance().getContainingOrg(project.getItemGroup()));
@@ -123,7 +124,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
         }
 
         if (scmConfig.getUri() == null) {
-            throw fail(new Error(ERROR_FIELD_SCM_CONFIG_URI, ErrorCodes.MISSING.toString(), ERROR_FIELD_SCM_CONFIG_URI + "is required"));
+            throw fail(new Error(ERROR_FIELD_SCM_CONFIG_URI, ErrorCodes.MISSING.toString(), ERROR_FIELD_SCM_CONFIG_URI + " is required"));
         }
 
         if (getName() == null) {

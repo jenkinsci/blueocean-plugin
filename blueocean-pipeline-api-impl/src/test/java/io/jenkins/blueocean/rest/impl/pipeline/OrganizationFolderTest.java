@@ -121,7 +121,7 @@ public class OrganizationFolderTest{
     }
 
     @TestExtension("testOrganizationFolderFactory")
-    public static class ScmContentProviderTest extends ScmContentProvider{
+    public static class ScmContentProviderTest extends ScmContentProvider {
 
         @Override
         public Object getContent(@Nonnull StaplerRequest staplerRequest, @Nonnull Item item) {

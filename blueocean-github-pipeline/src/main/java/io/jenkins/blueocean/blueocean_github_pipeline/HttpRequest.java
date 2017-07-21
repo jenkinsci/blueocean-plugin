@@ -51,8 +51,8 @@ class HttpRequest {
         return this;
     }
 
-    public HttpRequest withAuthorization(String authorization){
-        this.authorization = authorization;
+    public HttpRequest withAuthorizationToken(String accessToken){
+        this.authorization = "token " + accessToken;
         return this;
     }
 

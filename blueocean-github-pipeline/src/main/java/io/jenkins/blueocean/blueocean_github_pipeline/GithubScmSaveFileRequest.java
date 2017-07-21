@@ -1,11 +1,15 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
+import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableMap;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import org.apache.commons.lang3.StringUtils;
 import org.kohsuke.github.GHBranch;
 import org.kohsuke.github.GHContent;
+import org.kohsuke.github.GHRepository;
+import org.kohsuke.github.GitHub;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import javax.annotation.Nonnull;
@@ -22,10 +26,10 @@ import java.util.Map;
  * @author Vivek Pandey
  */
 public class GithubScmSaveFileRequest{
-    private final GithubContent content;
+    private final GitContent content;
 
     @DataBoundConstructor
-    public GithubScmSaveFileRequest(GithubContent content) {
+    public GithubScmSaveFileRequest(GitContent content) {
         this.content = content;
     }
 
@@ -65,6 +69,8 @@ public class GithubScmSaveFileRequest{
         }
 
         try {
+            GithubScm.validateUserHasPushPermission(apiUrl, accessToken, owner, repoName);
+
             String sha = createBranchIfNotPresent(apiUrl,owner,repoName,accessToken);
 
             //sha in request overrides the one we computed
@@ -87,7 +93,7 @@ public class GithubScmSaveFileRequest{
                     owner,
                     repoName,
                     content.getPath()))
-                    .withAuthorization("token "+accessToken)
+                    .withAuthorizationToken(accessToken)
                     .withBody(body)
                     .to(Map.class);
 
@@ -101,7 +107,7 @@ public class GithubScmSaveFileRequest{
                 throw new ServiceException.UnexpectedErrorException("Failed to save file: "+content.getPath());
             }
 
-            return new GithubFile(new GithubContent.Builder()
+            return new GithubFile(new GitContent.Builder()
                     .sha((String)ghContent.get("sha"))
                     .name((String) ghContent.get("name"))
                     .repo(repoName)
@@ -112,7 +118,6 @@ public class GithubScmSaveFileRequest{
             throw new ServiceException.UnexpectedErrorException("Failed to save file: "+e.getMessage(), e);
         }
     }
-
 
     /**
      * Auto creates branch if:
@@ -141,7 +146,7 @@ public class GithubScmSaveFileRequest{
                     apiUrl,
                     owner,
                     repoName,
-                    content.getBranch())).withAuthorization("token " + accessToken).to(String.class);
+                    content.getBranch())).withAuthorizationToken(accessToken).to(String.class);
         } catch (ServiceException.NotFoundException e) {
 
             String sha = content.getSha();
@@ -149,7 +154,7 @@ public class GithubScmSaveFileRequest{
             //1. Find commit sha off which this branch will be created
             GHRepoEx repo = HttpRequest.get(String.format("%s/repos/%s/%s", apiUrl,
                     owner, repoName))
-                    .withAuthorization("token " + accessToken).to(GHRepoEx.class);
+                    .withAuthorizationToken(accessToken).to(GHRepoEx.class);
 
             //2. Check the source branch or use default if not provided
             String sourceBranch = content.getSourceBranch();
@@ -162,14 +167,14 @@ public class GithubScmSaveFileRequest{
                     apiUrl,
                     owner,
                     repoName,
-                    sourceBranch)).withAuthorization("token " + accessToken).to(GHBranch.class);
+                    sourceBranch)).withAuthorizationToken(accessToken).to(GHBranch.class);
 
             //4. create this missing branch. We ignore the response, if no error branch was created
             HttpRequest.post(String.format("%s/repos/%s/%s/git/refs",
                     apiUrl,
                     owner,
                     repoName))
-                    .withAuthorization("token " + accessToken)
+                    .withAuthorizationToken(accessToken)
                     .withBody(ImmutableMap.of("ref", "refs/heads/" + content.getBranch(),
                             "sha", branch.getSHA1()))
                     .to(Map.class);
@@ -184,7 +189,7 @@ public class GithubScmSaveFileRequest{
                             owner,
                             repoName,
                             content.getPath()))
-                            .withAuthorization("token " + accessToken)
+                            .withAuthorizationToken(accessToken)
                             .to(GHContent.class);
                     if (!StringUtils.isBlank(sha) && !sha.equals(ghContent.getSha())) {
                         throw new ServiceException.BadRequestException(String.format("sha in request: %s is different from sha of file %s in branch %s",
@@ -204,7 +209,7 @@ public class GithubScmSaveFileRequest{
             HttpRequest.head(String.format("%s/repos/%s/%s/contents",
                     apiUrl,
                     owner,
-                    repoName)).withAuthorization("token " + accessToken).to(String.class);
+                    repoName)).withAuthorizationToken(accessToken).to(String.class);
         }catch (ServiceException.NotFoundException e){
             //its empty, return true
             return true;

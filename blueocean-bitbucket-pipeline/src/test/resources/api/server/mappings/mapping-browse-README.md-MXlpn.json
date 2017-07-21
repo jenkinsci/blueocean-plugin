@@ -1,0 +1,15 @@
+{
+  "id" : "1a610825-a680-390f-9751-5f4075942e39",
+  "request" : {
+    "url" : "/rest/api/1.0/projects/TESTP/repos/empty-repo-test/browse/README.md?at=a340bbce1f1d6c02abdcd4c0d7d88d775bfa3e28&start=0&limit=500",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-browse-README.md-MXlpn.md",
+    "headers" : {
+      "Date" : "Mon, 17 Jul 2017 10:26:47 GMT"
+    }
+  },
+  "uuid" : "1a610825-a680-390f-9751-5f4075942e39"
+}

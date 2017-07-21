@@ -1,7 +1,6 @@
-package io.jenkins.blueocean.blueocean_github_pipeline;
+package io.jenkins.blueocean.rest.impl.pipeline.scm;
 
 import io.jenkins.blueocean.commons.ErrorMessage;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmContent;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.export.Exported;
 
@@ -11,7 +10,7 @@ import java.util.List;
 /**
  * @author Vivek Pandey
  */
-public class GithubContent extends ScmContent {
+public class GitContent extends ScmContent {
     private final String name;
     private final String owner;
     private final String repo;
@@ -23,14 +22,15 @@ public class GithubContent extends ScmContent {
     private final String sourceBranch;
     private final Boolean autoCreateBranch;
     private final Number size;
+    private final String commitId;
 
 
     @DataBoundConstructor
-    public GithubContent(String owner, String repo, String path, String message, String base64Data, String sha, String branch, String sourceBranch, Boolean autoCreateBranch) {
-        this(null, owner, repo, path, 0, message, base64Data, sha, branch, sourceBranch, autoCreateBranch);
+    public GitContent(String owner, String repo, String path, String message, String base64Data, String sha, String branch, String sourceBranch, Boolean autoCreateBranch, String commitId) {
+        this(null, owner, repo, path, 0, message, base64Data, sha, branch, sourceBranch, autoCreateBranch, commitId);
     }
 
-    public GithubContent(String name, String owner, String repo, String path, Number size, String message, String base64Data, String sha, String branch, String sourceBranch, Boolean autoCreateBranch) {
+    public GitContent(String name, String owner, String repo, String path, Number size, String message, String base64Data, String sha, String branch, String sourceBranch, Boolean autoCreateBranch, String commitId) {
         this.name = name;
         this.owner = owner;
         this.repo = repo;
@@ -42,6 +42,7 @@ public class GithubContent extends ScmContent {
         this.sourceBranch = sourceBranch;
         this.autoCreateBranch = autoCreateBranch;
         this.size = size;
+        this.commitId = commitId;
     }
 
     @Exported(name = "name")
@@ -99,7 +100,12 @@ public class GithubContent extends ScmContent {
         return autoCreateBranch;
     }
 
-    List<ErrorMessage.Error> validate() {
+    @Exported(name = "commitId", skipNull = true)
+    public String getCommitId() {
+        return commitId;
+    }
+
+    public List<ErrorMessage.Error> validate() {
         List<ErrorMessage.Error> errors = new ArrayList<>();
 
         if (path == null) {
@@ -130,6 +136,7 @@ public class GithubContent extends ScmContent {
         private String sourceBranch;
         private Boolean autoCreateBranch;
         private Number size;
+        private String commitId;
 
         public Builder name(String name) {
             this.name = name;
@@ -186,8 +193,13 @@ public class GithubContent extends ScmContent {
             return this;
         }
 
-        public GithubContent build() {
-            return new GithubContent(name, owner, repo, path, size, message, base64Data, sha, branch, sourceBranch, autoCreateBranch);
+        public Builder commitId(String commitId) {
+            this.commitId = commitId;
+            return this;
+        }
+
+        public GitContent build() {
+            return new GitContent(name, owner, repo, path, size, message, base64Data, sha, branch, sourceBranch, autoCreateBranch, commitId);
         }
     }
 }
