@@ -6,18 +6,25 @@ This repository houses the [Jenkins](https://jenkins.io/) plugin for creating an
 
 :exclamation: **Important!** This software is a work-in-progress and is not complete.
 
-## Project Layout
+## Running Locally
 
-(here be dragons, this may not be up-to-date, etc)
+To start a new jenkins and run this pluging for development purposes:
 
-* /.storybook - Configuration files for [React Storybook](https://getstorybook.io/).
-* /doc - Documentation resources
-* /src
-    * /main
-        * /js - Some top-level things like ExtensionPoint implementations, and jenkins-js-extension.yaml metadata, etc
-            * /components - Contains EditorDemo.jsx, showing an example usage of the visual editor component
-                * /editor - Contains components and shared utils / types for the visual editor
-            * /declarations - Flowtype declarations for externals
-            * /stories - Test case stories for React Storybook
-        * /less - CSS Styles, in .less format
-        * /resources - Misc plugin resources. Contains index.jelly required for Jenkins HPI
+```
+# Start a local Jenkins
+mvn hpi:run
+```
+
+And in another term,
+```
+# Watch and build the JS
+npm run bundle:watch
+```
+
+
+## Running in another development Jenkins Instance
+
+```
+# Link this as a plugin into your Blue Ocean Jenkins' hpi:run server
+mvn hpi:hpl -DjenkinsHome=<path-to-blueocean-home/blueocean/work>
+```
