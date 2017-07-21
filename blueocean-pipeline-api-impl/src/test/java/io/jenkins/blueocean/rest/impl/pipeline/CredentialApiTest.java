@@ -12,10 +12,12 @@ import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.ExtensionList;
 import hudson.model.User;
+import io.jenkins.blueocean.credential.SSHKeyUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.security.KeyPair;
 import java.util.List;
 import java.util.Map;
 
@@ -254,16 +256,51 @@ public class CredentialApiTest extends PipelineBaseTest {
     }
     
     @Test
+    public void sshKeyUtils() {
+        // not really the right place to test this, but there weren't any
+        // tests in the "API" project
+        KeyPair kp = SSHKeyUtils.generateRSAKey(1024);
+        Assert.assertTrue(kp != null && kp.getPrivate().getEncoded().length == 1024);
+        
+        kp = SSHKeyUtils.generateRSAKey(2048);
+        Assert.assertTrue(kp != null && kp.getPrivate().getEncoded().length == 2048);
+    }
+    
+    @Test
     public void createPersonalSSHKey() throws IOException, UnirestException {
         User user = login();
 
         Map resp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .get("/organizations/jenkins/credentials/user/personalSSHKey").build(Map.class);
+                .get("/organizations/jenkins/credentials/user/userkey").build(Map.class);
 
-        Object pubKey = resp.get("publicKey");
+        Object pubKey = resp.get("key");
         Assert.assertTrue(pubKey != null);
+        
+        // make sure the key remains the same
+        resp = new RequestBuilder(baseUrl)
+                .status(200)
+                .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .get("/organizations/jenkins/credentials/user/userkey").build(Map.class);
+        
+        Object pubKey2 = resp.get("key");
+        System.out.println(" ---- " + pubKey + " ---- " + pubKey2);
+        Assert.assertEquals(pubKey, pubKey2);
+        
+        // test deleting it gives a new key
+        new RequestBuilder(baseUrl)
+                .status(200)
+                .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .delete("/organizations/jenkins/credentials/user/userkey").build(String.class);
+        
+        resp = new RequestBuilder(baseUrl)
+                .status(200)
+                .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+                .get("/organizations/jenkins/credentials/user/userkey").build(Map.class);
+        
+        Object pubKey3 = resp.get("key");
+        Assert.assertNotEquals(pubKey2, pubKey3);
     }
 
 }

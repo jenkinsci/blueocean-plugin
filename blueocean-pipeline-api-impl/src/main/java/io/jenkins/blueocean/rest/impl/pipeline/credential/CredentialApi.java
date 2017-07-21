@@ -10,7 +10,7 @@ import hudson.model.User;
 import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
-import io.jenkins.blueocean.credential.SSHCredentialManager;
+import io.jenkins.blueocean.credential.UserSSHKeyManager;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.Map;
 import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.verb.DELETE;
 import org.kohsuke.stapler.verb.GET;
 
 /**
@@ -53,20 +54,6 @@ public class CredentialApi extends Resource {
     @Exported
     public String getStore(){
         return credentialStoreAction.getUrlName();
-    }
-
-    @GET
-    public void doPersonalSSHKey(StaplerResponse rsp) throws IOException {
-        User authenticatedUser =  User.current();
-        if(authenticatedUser == null){
-            throw new ServiceException.UnauthorizedException("No authenticated user found");
-        }
-        
-        SSHCredentialManager manager = new SSHCredentialManager();
-        String publicKey = manager.getReadablePublicKey(authenticatedUser, 
-                manager.getOrCreatePersonalCredential(authenticatedUser));
-        rsp.setStatus(200);
-        rsp.getWriter().print(JsonConverter.toJson(ImmutableMap.of("publicKey", publicKey)));
     }
 
     @POST
@@ -107,6 +94,32 @@ public class CredentialApi extends Resource {
         throw new ServiceException.UnexpectedErrorException("Unexpected error, failed to create credential");
     }
 
+    @GET
+    @WebMethod(name="publickey")
+    public void getPersonalKey(StaplerResponse rsp) throws IOException {
+        User authenticatedUser =  User.current();
+        if(authenticatedUser == null) {
+            throw new ServiceException.UnauthorizedException("No authenticated user found");
+        }
+        
+        String publicKey = UserSSHKeyManager.getReadablePublicKey(authenticatedUser, 
+            UserSSHKeyManager.getOrCreate(authenticatedUser));
+        
+        rsp.setStatus(200);
+        rsp.getWriter().print(JsonConverter.toJson(ImmutableMap.of("key", publicKey)));
+    }
+
+    @DELETE
+    @WebMethod(name="publickey")
+    public void resetPersonalKey(StaplerResponse rsp) throws IOException {
+        User authenticatedUser =  User.current();
+        if(authenticatedUser == null){
+            throw new ServiceException.UnauthorizedException("No authenticated user found");
+        }
+        
+        UserSSHKeyManager.reset(authenticatedUser);
+        rsp.setStatus(200);
+    }
 
     @Navigable
     public Container<CredentialDomain> getDomains(){
