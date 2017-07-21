@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.plugins.credentials.domains.Domain;
+import com.github.tomakehurst.wiremock.client.WireMock;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
@@ -12,8 +13,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author cliffmeyers
@@ -83,6 +87,42 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
 
         assertNull(r.get("credentialId"));
         assertEquals(bogusUrl, r.get("uri"));
+    }
+
+    @Test
+    public void fetchExistingCredentialTokenInvalid() throws UnirestException {
+        createGithubEnterpriseCredential();
+
+        addPerTestStub(
+            WireMock.get(urlEqualTo("/user"))
+                .willReturn(aResponse().withStatus(401))
+        );
+
+        Map r = new RequestBuilder(baseUrl)
+            .status(428)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .get("/organizations/jenkins/scm/github-enterprise/?apiUrl="+githubApiUrl)
+            .build(Map.class);
+
+        assertTrue(r.get("message").toString().equals("Invalid accessToken"));
+    }
+
+    @Test
+    public void fetchExistingCredentialScopesInvalid() throws UnirestException {
+        createGithubEnterpriseCredential();
+
+        addPerTestStub(
+            WireMock.get(urlEqualTo("/user"))
+                .willReturn(aResponse().withHeader("X-OAuth-Scopes", ""))
+        );
+
+        Map r = new RequestBuilder(baseUrl)
+            .status(428)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .get("/organizations/jenkins/scm/github-enterprise/?apiUrl="+githubApiUrl)
+            .build(Map.class);
+
+        assertTrue(r.get("message").toString().contains("missing scopes"));
     }
 
     @Test
