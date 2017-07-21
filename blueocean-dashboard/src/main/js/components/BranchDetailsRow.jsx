@@ -175,7 +175,7 @@ export class BranchDetailsRow extends Component {
                 latestRun={branch.latestRun}
                 onNavigation={openRunDetails}
             />,
-            <RunHistoryButton pipeline={pipeline} branchName={branch.name} />,
+            <RunHistoryButton pipeline={pipeline} branchName={branch.name} t={t} />,
             <Extensions.Renderer
                 extensionPoint="jenkins.pipeline.branches.list.action"
                 filter={sortByOrdinal}
