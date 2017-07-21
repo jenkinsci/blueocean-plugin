@@ -67,7 +67,7 @@ public class OrganizationStatePreloader extends PageStatePreloader {
         }
     }
 
-    private static final Pattern pattern = Pattern.compile("\\/organizations\\/([^\\/]*)\\/");
+    private static final Pattern pattern = Pattern.compile("/blue/organizations/([^/]*)/");
 
     private String getOrganizationFromURL() {
         StaplerRequest currentRequest = Stapler.getCurrentRequest();
