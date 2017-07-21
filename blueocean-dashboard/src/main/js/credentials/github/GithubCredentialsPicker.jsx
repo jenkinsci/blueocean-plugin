@@ -5,9 +5,8 @@ import { FormElement, PasswordInput } from '@jenkins-cd/design-language';
 import { Button } from '../../creation/github/Button';
 import GithubApiUtils from '../../creation/github/api/GithubApiUtils';
 
-import GithubCredentialsApi from './GithubCredentialsApi';
-import GithubAccessTokenManager from './GithubAccessTokenManager';
-import GithubAccessTokenState from './GithubAccessTokenState';
+import GithubCredentialsManager from './GithubCredentialsManager';
+import GithubCredentialsState from './GithubCredentialsState';
 
 
 function getCreateTokenUrl(apiUrl) {
@@ -28,7 +27,7 @@ class GithubCredentialInput extends React.Component {
     constructor(props) {
         super(props);
 
-        this.tokenManager = new GithubAccessTokenManager();
+        this.tokenManager = new GithubCredentialsManager();
 
         this.state = {
             loading: false,
@@ -86,13 +85,13 @@ class GithubCredentialInput extends React.Component {
     }
 
     _getErrorMessage(stateId) {
-        if (stateId === GithubAccessTokenState.EXISTING_REVOKED) {
+        if (stateId === GithubCredentialsState.EXISTING_REVOKED) {
             return 'The existing access token appears to have been deleted. Please create a new token.';
-        } else if (stateId === GithubAccessTokenState.EXISTING_MISSING_SCOPES) {
+        } else if (stateId === GithubCredentialsState.EXISTING_MISSING_SCOPES) {
             return 'The existing access token is missing the required scopes. Please create a new token.';
-        } else if (stateId === GithubAccessTokenState.VALIDATION_FAILED_TOKEN) {
+        } else if (stateId === GithubCredentialsState.VALIDATION_FAILED_TOKEN) {
             return 'Invalid access token.';
-        } else if (stateId === GithubAccessTokenState.VALIDATION_FAILED_SCOPES) {
+        } else if (stateId === GithubCredentialsState.VALIDATION_FAILED_SCOPES) {
             return 'Access token must have the following scopes: "repos" and "user:email"';
         }
 
@@ -107,7 +106,7 @@ class GithubCredentialInput extends React.Component {
 
         if (this.tokenManager.pendingValidation) {
             result = 'running';
-        } else if (this.tokenManager.stateId === GithubAccessTokenState.SAVE_SUCCESS) {
+        } else if (this.tokenManager.stateId === GithubCredentialsState.SAVE_SUCCESS) {
             result = 'success';
         }
 

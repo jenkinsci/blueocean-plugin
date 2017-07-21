@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 
-import GithubCredentialInput from './github/GithubCredentialInput';
+import GithubCredentialsPicker from './github/GithubCredentialsPicker';
 
 
 /**
@@ -9,7 +9,7 @@ import GithubCredentialInput from './github/GithubCredentialInput';
  * onStatus: function invoked with 'promptLoading', 'promptReady'
  * onComplete: function invoked with credential and 'autoSelected', 'userSelected'
  */
-class CredentialPicker extends React.Component {
+class CredentialsPicker extends React.Component {
 
     render() {
         const { type, onStatus, onComplete } = this.props;
@@ -19,7 +19,7 @@ class CredentialPicker extends React.Component {
             const { scmId, apiUrl } = this.props.githubConfig;
 
             typedPicker = (
-                <GithubCredentialInput
+                <GithubCredentialsPicker
                     scmId={scmId}
                     apiUrl={apiUrl}
                 />
@@ -30,7 +30,7 @@ class CredentialPicker extends React.Component {
     }
 }
 
-CredentialPicker.propTypes = {
+CredentialsPicker.propTypes = {
     type: PropTypes.string,
     onStatus: PropTypes.func,
     onComplete: PropTypes.func,
@@ -40,4 +40,4 @@ CredentialPicker.propTypes = {
     }),
 };
 
-export default CredentialPicker;
+export default CredentialsPicker;
