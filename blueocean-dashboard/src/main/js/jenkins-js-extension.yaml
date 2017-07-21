@@ -32,3 +32,6 @@ extensions:
   - component: components/karaoke/components/Pipeline
     extensionPoint: jenkins.pipeline.karaoke.pipeline.provider
     dataType: org.jenkinsci.plugins.workflow.job.WorkflowRun
+# Credentials Picker
+  - component: credentials/CredentialPicker
+    extensionPoint: jenkins.credentials.selection

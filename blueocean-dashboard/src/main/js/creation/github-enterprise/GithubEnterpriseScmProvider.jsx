@@ -2,7 +2,6 @@ import React from 'react';
 import GithubScmProvider from '../github/GithubScmProvider';
 
 import { GithubCreationApi } from '../github/api/GithubCreationApi';
-import { GithubCredentialsApi } from '../github/api/GithubCredentialsApi';
 import GHEServerApi from './api/GHEServerApi';
 // import GHEServerApi from './api/mock/GHEServerApiMock';
 
@@ -20,10 +19,9 @@ export default class GithubEnterpriseScmProvider extends GithubScmProvider {
 
     getFlowManager() {
         const creationApi = new GithubCreationApi('github-enterprise');
-        const credentialsApi = new GithubCredentialsApi('github-enterprise');
         const serverApi = new GHEServerApi();
 
-        this.manager = new GithubEnterpriseFlowManager(creationApi, credentialsApi, serverApi);
+        this.manager = new GithubEnterpriseFlowManager(creationApi, serverApi);
         return this.manager;
     }
 

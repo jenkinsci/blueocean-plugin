@@ -1,91 +1,58 @@
 import React, { PropTypes } from 'react';
-import { observer } from 'mobx-react';
-import { FormElement, PasswordInput } from '@jenkins-cd/design-language';
+import Extensions from '@jenkins-cd/js-extensions';
 
-import GithubApiUtils from '../api/GithubApiUtils';
 import FlowStep from '../../flow2/FlowStep';
-import { GithubAccessTokenState } from '../GithubAccessTokenState';
-import { Button } from '../Button';
 
 
-function getCreateTokenUrl(apiUrl) {
-    let baseUrl = 'https://github.com';
-
-    // will default to above for blank value or api.github.com usages
-    if (apiUrl && apiUrl.indexOf('https://api.github.com') !== 0) {
-        baseUrl = GithubApiUtils.extractProtocolHost(apiUrl);
-    }
-
-    return `${baseUrl}/settings/tokens/new?scopes=repo,read:user,user:email`;
-}
-
-
-@observer
 export default class GithubCredentialsStep extends React.Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
-            accessToken: '',
+            loading: false,
+            complete: false,
         };
     }
 
-    _tokenChange(accessToken) {
+    _onStatus(status) {
+        const loading = status === 'promptLoading';
+
         this.setState({
-            accessToken,
+            loading,
         });
     }
 
-    _createToken() {
-        this.props.flowManager.createAccessToken(this.state.accessToken);
-    }
+    _onComplete(credential, selectionType) {
+        this.setState({
+            complete: true,
+        });
 
-    _getErrorMessage(stateId) {
-        if (stateId === GithubAccessTokenState.EXISTING_REVOKED) {
-            return 'The existing access token appears to have been deleted. Please create a new token.';
-        } else if (stateId === GithubAccessTokenState.EXISTING_MISSING_SCOPES) {
-            return 'The existing access token is missing the required scopes. Please create a new token.';
-        } else if (stateId === GithubAccessTokenState.VALIDATION_FAILED_TOKEN) {
-            return 'Invalid access token.';
-        } else if (stateId === GithubAccessTokenState.VALIDATION_FAILED_SCOPES) {
-            return 'Access token must have the following scopes: "repos" and "user:email"';
+        if (this.props.onCredentialSelected) {
+            this.props.onCredentialSelected(credential, selectionType);
         }
-
-        return null;
     }
 
     render() {
-        const manager = this.props.flowManager.accessTokenManager;
-        const title = 'Connect to Github';
-        const errorMessage = this._getErrorMessage(manager.stateId);
-        const tokenUrl = getCreateTokenUrl(this.props.flowManager.getApiUrl());
-        const disabled = manager.stateId === GithubAccessTokenState.SAVE_SUCCESS;
+        const scmId = this.props.flowManager.getScmId();
+        const loading = this.state.loading;
+        const disabled = this.state.complete;
+        const title = loading ? 'Loading...' : 'Connect to Github';
 
-        let result = null;
-
-        if (manager.pendingValidation) {
-            result = 'running';
-        } else if (manager.stateId === GithubAccessTokenState.SAVE_SUCCESS) {
-            result = 'success';
-        }
-
-        const status = {
-            result,
+        const githubConfig = {
+            scmId,
+            apiUrl: this.props.flowManager.getApiUrl(),
         };
 
         return (
-            <FlowStep {...this.props} className="github-credentials-step" disabled={disabled} title={title}>
-                <p className="instructions">
-                    Jenkins needs an access key to authorize itself with Github. &nbsp;
-                    <a href={tokenUrl} target="_blank">Create an access key here.</a>
-                </p>
-
-                <FormElement errorMessage={errorMessage}>
-                    <PasswordInput className="text-token" placeholder="Your Github access token" onChange={val => this._tokenChange(val)} />
-
-                    <Button className="button-connect" status={status} onClick={() => this._createToken()}>Connect</Button>
-                </FormElement>
+            <FlowStep {...this.props} className="github-credentials-step" disabled={disabled} loading={loading} title={title}>
+                <Extensions.Renderer
+                    extensionPoint="jenkins.credentials.selection"
+                    onStatus={status => this._onStatus(status)}
+                    onComplete={(credentialId, selectionType) => this._onComplete(credentialId, selectionType)}
+                    type={scmId}
+                    githubConfig={githubConfig}
+                />
             </FlowStep>
         );
     }
@@ -93,4 +60,5 @@ export default class GithubCredentialsStep extends React.Component {
 
 GithubCredentialsStep.propTypes = {
     flowManager: PropTypes.object,
+    onCredentialSelected: PropTypes.func,
 };
