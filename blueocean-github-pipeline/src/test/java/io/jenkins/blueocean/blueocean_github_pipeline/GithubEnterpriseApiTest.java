@@ -31,7 +31,7 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
     }
 
     @Test
-    public void validateGithubToken_apiUrlRequired() throws UnirestException {
+    public void validateGithubTokenApiUrlRequired() throws UnirestException {
         Map r = new RequestBuilder(baseUrl)
             .data(ImmutableMap.of("accessToken", accessToken))
             .status(400)
@@ -42,7 +42,7 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
     }
 
     @Test
-    public void fetchExistingCredential_exists() throws IOException, UnirestException {
+    public void fetchExistingCredentialExists() throws IOException, UnirestException {
         createGithubEnterpriseCredential();
 
         //now that there is github credentials setup, calling scm api to get credential should simply return that.
@@ -57,7 +57,7 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
     }
 
     @Test
-    public void fetchExistingCredential_apiUrlRequired() throws IOException, UnirestException {
+    public void fetchExistingCredentialApiUrlRequired() throws IOException, UnirestException {
         // fetch the github-enterprise endpoint without specifiying apirUrl
         Map r = new RequestBuilder(baseUrl)
             .status(400)
@@ -68,7 +68,7 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
     }
 
     @Test
-    public void fetchExistingCredential_notExists() throws IOException, UnirestException {
+    public void fetchExistingCredentialNotExists() throws IOException, UnirestException {
         // create a credential using default apiUrl
         createGithubEnterpriseCredential();
 

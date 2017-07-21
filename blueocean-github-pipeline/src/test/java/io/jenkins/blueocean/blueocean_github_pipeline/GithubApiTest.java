@@ -53,7 +53,7 @@ public class GithubApiTest extends GithubMockBase {
     }
 
     @Test
-    public void fetchExistingCredential_tokenInvalid() throws UnirestException {
+    public void fetchExistingCredentialTokenInvalid() throws UnirestException {
         createGithubCredential();
 
         addPerTestStub(
@@ -71,7 +71,7 @@ public class GithubApiTest extends GithubMockBase {
     }
 
     @Test
-    public void fetchExistingCredential_scopesInvalid() throws UnirestException {
+    public void fetchExistingCredentialScopesInvalid() throws UnirestException {
         createGithubCredential();
 
         addPerTestStub(
