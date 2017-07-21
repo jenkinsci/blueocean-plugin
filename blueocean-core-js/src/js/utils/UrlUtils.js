@@ -61,8 +61,14 @@ export const buildClassicBuildUrl = (pipeline) => {
     }
     return null;
 };
-
-
+/**
+ * Create the create url for classic with taken organisations into account
+ * @returns {string} classic jenkins create url
+ */
+export const buildClassicCreateJobUrl = () => {
+    const jenkinsUrl = AppConfig.getJenkinsRootURL();
+    return `${jenkinsUrl}${jobPrefixPath(AppConfig.getOrganizationGroup())}/newJob`;
+};
 /**
  * Build a root-relative URL to the run details screen.
  * @param organization

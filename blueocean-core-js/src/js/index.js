@@ -110,6 +110,7 @@ export {
     buildClassicConfigUrl,
     buildClassicInputUrl,
     buildClassicBuildUrl,
+    buildClassicCreateJobUrl,
     buildRunDetailsUrl,
     doubleUriEncode,
     fetchAllSuffix,
