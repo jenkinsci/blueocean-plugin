@@ -10,6 +10,8 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.Container;
 import jenkins.model.Jenkins;
+import jenkins.model.ModifiableTopLevelItemGroup;
+
 import org.kohsuke.stapler.export.ExportedBean;
 
 import javax.annotation.Nonnull;
@@ -30,7 +32,9 @@ public class CredentialContainer extends Container<CredentialApi> implements Org
     private final Link self;
 
     public CredentialContainer() {
-        BlueOrganization organization= OrganizationFactory.getInstance().getContainingOrg(Jenkins.getInstance());
+        // seems like this is now getting common and should have a helper function
+        Iterator<BlueOrganization> iterator = OrganizationFactory.getInstance().list().iterator();
+        BlueOrganization organization = iterator.hasNext() ? iterator.next() : null; 
         this.self = (organization != null) ? organization.getLink().rel("credentials")
                 : null;
     }
@@ -71,9 +75,14 @@ public class CredentialContainer extends Container<CredentialApi> implements Org
                 }
             }
         }else{
-            for(CredentialsStore store: CredentialsProvider.lookupStores(Jenkins.getInstance())){
-                if(store.getStoreAction() != null) {
-                    apis.add(new CredentialApi(store.getStoreAction(), this));
+            Iterator<BlueOrganization> iterator = OrganizationFactory.getInstance().list().iterator();
+            BlueOrganization organization = iterator.hasNext() ? iterator.next() : null; 
+            if (organization != null) {
+                ModifiableTopLevelItemGroup itemGroup = OrganizationFactory.getItemGroup(organization.getName());
+                for(CredentialsStore store: CredentialsProvider.lookupStores(itemGroup)){
+                    if(store.getStoreAction() != null) {
+                        apis.add(new CredentialApi(store.getStoreAction(), this));
+                    }
                 }
             }
         }
