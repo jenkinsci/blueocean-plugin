@@ -18,6 +18,7 @@ import org.junit.Test;
 
 import java.io.IOException;
 import java.security.KeyPair;
+import java.security.interfaces.RSAPrivateKey;
 import java.util.List;
 import java.util.Map;
 
@@ -260,10 +261,14 @@ public class CredentialApiTest extends PipelineBaseTest {
         // not really the right place to test this, but there weren't any
         // tests in the "API" project
         KeyPair kp = SSHKeyUtils.generateRSAKey(1024);
-        Assert.assertTrue(kp != null && kp.getPrivate().getEncoded().length == 1024);
+        Assert.assertNotNull(kp);
+        
+        RSAPrivateKey pk = (RSAPrivateKey)kp.getPrivate();
+        Assert.assertTrue(pk.getModulus().bitLength() == 1024);
         
         kp = SSHKeyUtils.generateRSAKey(2048);
-        Assert.assertTrue(kp != null && kp.getPrivate().getEncoded().length == 2048);
+        pk = (RSAPrivateKey)kp.getPrivate();
+        Assert.assertTrue(pk.getModulus().bitLength() == 2048);
     }
     
     @Test
