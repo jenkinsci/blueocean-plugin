@@ -13,6 +13,7 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.After;
@@ -100,6 +101,7 @@ public abstract class GithubMockBase extends PipelineBaseTest {
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .put("/organizations/jenkins/scm/github/validate/?apiUrl="+githubApiUrl)
+                .put("/organizations/" + OrganizationFactory.getInstance().list().iterator().next().getName() + "/scm/github/validate/")
                 .build(Map.class);
         String credentialId = (String) r.get("credentialId");
         assertEquals("github", credentialId);
