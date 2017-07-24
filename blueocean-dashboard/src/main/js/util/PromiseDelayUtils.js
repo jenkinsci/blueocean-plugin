@@ -3,7 +3,7 @@ function time() {
 }
 
 /**
- * Utility functions that can be changed w/ a Promise to delay resolution for a *minimum* amount of time.
+ * Utility functions that can be chained w/ a Promise to delay resolution for a *minimum* amount of time.
  * In most cases, use "...delayBoth()" to ensure that resolved and rejected Promises have consistent timing.
  * This is used to perform certain async actions from resolving "too fast" and making the UI jerky.
  *
