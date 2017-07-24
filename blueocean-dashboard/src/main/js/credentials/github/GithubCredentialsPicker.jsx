@@ -22,7 +22,7 @@ function getCreateTokenUrl(apiUrl) {
 
 
 @observer
-class GithubCredentialInput extends React.Component {
+class GithubCredentialsPicker extends React.Component {
 
     constructor(props) {
         super(props);
@@ -132,7 +132,7 @@ class GithubCredentialInput extends React.Component {
     }
 }
 
-GithubCredentialInput.propTypes = {
+GithubCredentialsPicker.propTypes = {
     onStatus: PropTypes.func,
     onComplete: PropTypes.func,
     scmId: PropTypes.string,
@@ -140,4 +140,4 @@ GithubCredentialInput.propTypes = {
 };
 
 
-export default GithubCredentialInput;
+export default GithubCredentialsPicker;

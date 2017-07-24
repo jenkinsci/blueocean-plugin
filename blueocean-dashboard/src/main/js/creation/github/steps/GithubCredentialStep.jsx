@@ -49,7 +49,7 @@ export default class GithubCredentialsStep extends React.Component {
                 <Extensions.Renderer
                     extensionPoint="jenkins.credentials.selection"
                     onStatus={status => this._onStatus(status)}
-                    onComplete={(credentialId, selectionType) => this._onComplete(credentialId, selectionType)}
+                    onComplete={(credential, selectionType) => this._onComplete(credential, selectionType)}
                     type={scmId}
                     githubConfig={githubConfig}
                 />
