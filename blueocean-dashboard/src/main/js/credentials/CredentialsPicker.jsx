@@ -26,7 +26,11 @@ class CredentialsPicker extends React.Component {
             );
         }
 
-        return React.cloneElement(typedPicker, { onStatus, onComplete });
+        return (
+            <div className="credentials-picker">
+                { React.cloneElement(typedPicker, { onStatus, onComplete }) }
+            </div>
+        );
     }
 }
 
