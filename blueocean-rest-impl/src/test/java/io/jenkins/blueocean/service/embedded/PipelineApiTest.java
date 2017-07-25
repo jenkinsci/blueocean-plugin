@@ -611,7 +611,7 @@ public class PipelineApiTest extends BaseTest {
     public static class TestPipelineImpl extends AbstractPipelineImpl {
 
         public TestPipelineImpl(Job job) {
-            super(job);
+            super(null, job);
         }
 
         @Exported(name = "hello")

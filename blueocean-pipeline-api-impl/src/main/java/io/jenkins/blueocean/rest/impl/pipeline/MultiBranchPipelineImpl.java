@@ -93,7 +93,11 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
             throw new ServiceException.BadRequestException("no default branch to favorite");
         }
         FavoriteUtil.toggle(favoriteAction, job);
-        return new FavoriteImpl(new BranchImpl(job, getLink().rel("branches")), getLink().rel("favorite"));
+        BlueOrganization org = OrganizationFactory.getInstance().getContainingOrg(job);
+        if (org == null) {
+            throw new ServiceException.UnexpectedErrorException("Could not find org for " + job.getFullName());
+        }
+        return new FavoriteImpl(new BranchImpl(org, job, getLink().rel("branches")), getLink().rel("favorite"));
     }
 
     @Override

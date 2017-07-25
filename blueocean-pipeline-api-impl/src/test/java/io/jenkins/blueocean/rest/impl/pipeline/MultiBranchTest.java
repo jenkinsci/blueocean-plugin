@@ -14,6 +14,7 @@ import hudson.security.LegacyAuthorizationStrategy;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.Resource;
 import jenkins.branch.BranchProperty;
@@ -96,8 +97,9 @@ public class MultiBranchTest extends PipelineBaseTest {
 
     @Test
     public void testGetURL() {
+        BlueOrganization org = mock(BlueOrganization.class);
         Job job = mock(Job.class);
-        BranchImpl branch = new BranchImpl(job, new Link("foo"));
+        BranchImpl branch = new BranchImpl(org, job, new Link("foo"));
         assertNotNull(branch.getBranch());
         assertNull(branch.getBranch().getUrl());
         assertFalse(branch.getBranch().isPrimary());
@@ -108,8 +110,9 @@ public class MultiBranchTest extends PipelineBaseTest {
 
     @Test
     public void testBranchInfo() {
+        BlueOrganization org = mock(BlueOrganization.class);
         Job job = mock(Job.class);
-        BranchImpl branch = new BranchImpl(job, new Link("foo"));
+        BranchImpl branch = new BranchImpl(org, job, new Link("foo"));
         assertNotNull(branch.getBranch());
         assertNull(branch.getBranch().getUrl());
         assertFalse(branch.getBranch().isPrimary());
