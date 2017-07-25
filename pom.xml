@@ -310,7 +310,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-cps</artifactId>
-            <version>2.37-20170628.162114-1</version> <!-- TODO: update to 2.37 when released for https://github.com/jenkinsci/workflow-cps-plugin/commit/cabca496e481f0800f45a708533ffccc88a62ec4 -->
+            <version>2.37</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -351,7 +351,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-durable-task-step</artifactId>
-            <version>2.13-20170714.223923-8</version> <!-- TODO: Switch to release once https://github.com/jenkinsci/workflow-durable-task-step-plugin/pull/42 is merged and released -->
+            <version>2.13</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
