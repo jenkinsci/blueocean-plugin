@@ -14,7 +14,7 @@ public class GithubEnterpriseScmContentProvider extends GithubScmContentProvider
     @Nonnull
     @Override
     public String getScmId() {
-        return super.getScmId();
+        return GithubEnterpriseScm.ID;
     }
 
     @Override
