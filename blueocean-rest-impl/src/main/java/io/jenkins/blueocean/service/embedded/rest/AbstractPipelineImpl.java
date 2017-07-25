@@ -61,6 +61,9 @@ public class AbstractPipelineImpl extends BluePipeline {
     protected AbstractPipelineImpl(Job job) {
         this.job = job;
         this.org = OrganizationFactory.getInstance().getContainingOrg(job);
+        if (this.org == null) {
+            throw new ServiceException.UnexpectedErrorException(String.format("could not find organization for job %s", job.getFullName()));
+        }
     }
 
     @Override

@@ -71,13 +71,16 @@ public class BlueMessageEnricher extends MessageEnricher {
             if(jobChannelItem == null){
                 return;
             }
+
             Link jobUrl = LinkResolver.resolveLink(jobChannelItem);
+            if (jobUrl == null) {
+                return;
+            }
 
             BlueOrganization org = OrganizationFactory.getInstance().getContainingOrg(jobChannelItem);
             if (org!=null) {
                 message.set(EventProps.Jenkins.jenkins_org, org.getName());
             }
-
             jobChannelMessage.set(BlueEventProps.blueocean_job_rest_url, jobUrl.getHref());
             jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, AbstractPipelineImpl.getFullName(org, jobChannelItem));
             if (jobChannelItem instanceof WorkflowJob) {

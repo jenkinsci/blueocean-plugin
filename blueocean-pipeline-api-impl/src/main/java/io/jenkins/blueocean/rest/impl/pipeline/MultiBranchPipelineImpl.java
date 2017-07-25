@@ -71,6 +71,9 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     public MultiBranchPipelineImpl(MultiBranchProject mbp) {
         this.mbp = mbp;
         this.org = OrganizationFactory.getInstance().getContainingOrg((ItemGroup) mbp);
+        if (this.org == null) {
+            throw new ServiceException.UnexpectedErrorException(String.format("could not find organization for %s", mbp.getFullName()));
+        }
         this.self = org.getLink().rel("pipelines").rel(PipelineImpl.getRecursivePathFromFullName(this));
     }
 
