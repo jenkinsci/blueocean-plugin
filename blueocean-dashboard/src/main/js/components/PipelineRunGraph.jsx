@@ -39,10 +39,6 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
     let completePercent = 0;
     let state = 'unknown';
 
-    console.log('NODE displayName', jenkinsNode.displayName); // TODO: RM
-    console.log('          result', jenkinsNode.result); // TODO: RM
-    console.log('           state', jenkinsNode.state); // TODO: RM
-
     if (jenkinsNode.result === 'SUCCESS') {
         state = 'success';
         completePercent = 100;
