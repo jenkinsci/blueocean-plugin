@@ -10,7 +10,6 @@ import jenkins.model.ModifiableTopLevelItemGroup;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 
 /**
