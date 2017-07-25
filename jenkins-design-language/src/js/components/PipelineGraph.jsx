@@ -267,10 +267,10 @@ export class PipelineGraph extends Component {
 
         let xp = nodeSpacingH / 2;
 
-        for (let column of nodeColumns) {
+        for (const column of nodeColumns) {
             let yp = ypStart;
 
-            for (let node of column.nodes) {
+            for (const node of column.nodes) {
                 node.x = xp;
                 node.y = yp;
 
@@ -286,7 +286,7 @@ export class PipelineGraph extends Component {
      */
     createBigLabels(columns: Array<NodeColumn>) {
 
-        let labels = [];
+        const labels = [];
 
         for (const column of columns) {
 
@@ -302,7 +302,7 @@ export class PipelineGraph extends Component {
                 stage,
                 text,
                 key
-            })
+            });
         }
 
         return labels;
@@ -313,20 +313,25 @@ export class PipelineGraph extends Component {
      */
     createSmallLabels(columns: Array<NodeColumn>) {
 
-        let labels = [];
+        const labels = [];
 
         for (const column of columns) {
             if (column.nodes.length === 1) {
                 continue; // No small labels for single-node columns
             }
             for (const node of column.nodes) {
-                labels.push({
+                const label:LabelInfo = {
                     x: node.x,
                     y: node.y,
                     text: node.name,
-                    stage: node.stage,
                     key: 'l_s_' + node.key,
-                });
+                };
+
+                if (node.isPlaceholder === false) {
+                    label.stage = node.stage;
+                }
+
+                labels.push(label);
             }
         }
 
@@ -338,7 +343,7 @@ export class PipelineGraph extends Component {
      */
     createConnections(columns: Array<NodeColumn>) {
 
-        let connections = [];
+        const connections = [];
 
         let sourceNodes = [];
         let skippedNodes = [];
@@ -354,7 +359,7 @@ export class PipelineGraph extends Component {
                     sourceNodes,
                     destinationNodes: column.nodes,
                     skippedNodes: skippedNodes
-                })
+                });
             }
 
             sourceNodes = column.nodes;
@@ -465,7 +470,7 @@ export class PipelineGraph extends Component {
             // Nothing too complicated, use the original connection drawing code
             this.renderBasicConnections(sourceNodes, destinationNodes, elements);
         } else {
-            this.renderSkippingConnections(sourceNodes, destinationNodes, skippedNodes, elements)
+            this.renderSkippingConnections(sourceNodes, destinationNodes, skippedNodes, elements);
         }
     }
 
@@ -550,10 +555,10 @@ export class PipelineGraph extends Component {
             const leftNodeRadius = leftNode.isPlaceholder ? terminalRadius : nodeRadius;
             const key = connectorKey(leftNode, rightNode);
 
-            let x1 = leftNode.x + leftNodeRadius - (nodeStrokeWidth / 2);
-            let y1 = leftNode.y;
-            let x2 = midPointX;
-            let y2 = rightNode.y;
+            const x1 = leftNode.x + leftNodeRadius - (nodeStrokeWidth / 2);
+            const y1 = leftNode.y;
+            const x2 = midPointX;
+            const y2 = rightNode.y;
 
             const pathData = `M ${x1} ${y1}` + this.svgCurve(x1, y1, x2, y2, midPointX, curveRadius);
 
@@ -574,10 +579,10 @@ export class PipelineGraph extends Component {
             const rightNodeRadius = rightNode.isPlaceholder ? terminalRadius : nodeRadius;
             const key = connectorKey(leftNode, rightNode);
 
-            let x1 = midPointX;
-            let y1 = leftNode.y;
-            let x2 = rightNode.x - rightNodeRadius + (nodeStrokeWidth / 2);
-            let y2 = rightNode.y;
+            const x1 = midPointX;
+            const y1 = leftNode.y;
+            const x2 = rightNode.x - rightNodeRadius + (nodeStrokeWidth / 2);
+            const y2 = rightNode.y;
 
             const pathData = `M ${x1} ${y1}` + this.svgCurve(x1, y1, x2, y2, midPointX, curveRadius);
 
@@ -603,52 +608,52 @@ export class PipelineGraph extends Component {
         const inflectiontOffset = Math.round(skipHeight * 0.7071); // cos(45º)-ish
 
         // Start point
-        let p1x = leftNode.x + leftNodeRadius - (nodeStrokeWidth / 2);
-        let p1y = leftNode.y;
+        const p1x = leftNode.x + leftNodeRadius - (nodeStrokeWidth / 2);
+        const p1y = leftNode.y;
 
         // Begin curve down point
-        let p2x = Math.round((leftNode.x + skippedNodes[0].x) / 2);
-        let p2y = p1y;
-        let c1x = p2x + controlOffsetUpper;
-        let c1y = p2y;
+        const p2x = Math.round((leftNode.x + skippedNodes[0].x) / 2);
+        const p2y = p1y;
+        const c1x = p2x + controlOffsetUpper;
+        const c1y = p2y;
 
         // End curve down point
-        let p4x = skippedNodes[0].x;
-        let p4y = p1y + skipHeight;
-        let c4x = p4x - controlOffsetLower;
-        let c4y = p4y;
+        const p4x = skippedNodes[0].x;
+        const p4y = p1y + skipHeight;
+        const c4x = p4x - controlOffsetLower;
+        const c4y = p4y;
 
         // Curve down midpoint / inflection
-        let p3x = skippedNodes[0].x - inflectiontOffset;
-        let p3y = skippedNodes[0].y + inflectiontOffset;
-        let c2x = p3x - controlOffsetMid;
-        let c2y = p3y - controlOffsetMid;
-        let c3x = p3x + controlOffsetMid;
-        let c3y = p3y + controlOffsetMid;
+        const p3x = skippedNodes[0].x - inflectiontOffset;
+        const p3y = skippedNodes[0].y + inflectiontOffset;
+        const c2x = p3x - controlOffsetMid;
+        const c2y = p3y - controlOffsetMid;
+        const c3x = p3x + controlOffsetMid;
+        const c3y = p3y + controlOffsetMid;
 
         // Begin curve up point
-        let p5x = lastSkippedNode.x;
-        let p5y = p4y;
-        let c5x = p5x + controlOffsetLower;
-        let c5y = p5y;
+        const p5x = lastSkippedNode.x;
+        const p5y = p4y;
+        const c5x = p5x + controlOffsetLower;
+        const c5y = p5y;
 
         // End curve up point
-        let p7x = Math.round((lastSkippedNode.x + rightNode.x) / 2);
-        let p7y = rightNode.y;
-        let c8x = p7x - controlOffsetUpper;
-        let c8y = p7y;
+        const p7x = Math.round((lastSkippedNode.x + rightNode.x) / 2);
+        const p7y = rightNode.y;
+        const c8x = p7x - controlOffsetUpper;
+        const c8y = p7y;
 
         // Curve up midpoint / inflection
-        let p6x = lastSkippedNode.x + inflectiontOffset;
-        let p6y = lastSkippedNode.y + inflectiontOffset;
-        let c6x = p6x - controlOffsetMid;
-        let c6y = p6y + controlOffsetMid;
-        let c7x = p6x + controlOffsetMid;
-        let c7y = p6y - controlOffsetMid;
+        const p6x = lastSkippedNode.x + inflectiontOffset;
+        const p6y = lastSkippedNode.y + inflectiontOffset;
+        const c6x = p6x - controlOffsetMid;
+        const c6y = p6y + controlOffsetMid;
+        const c7x = p6x + controlOffsetMid;
+        const c7y = p6y - controlOffsetMid;
 
         // End point
-        let p8x = rightNode.x - rightNodeRadius + (nodeStrokeWidth / 2);
-        let p8y = rightNode.y;
+        const p8x = rightNode.x - rightNodeRadius + (nodeStrokeWidth / 2);
+        const p8y = rightNode.y;
 
         const pathData =
             `M ${p1x} ${p1y}` +
@@ -758,12 +763,9 @@ export class PipelineGraph extends Component {
 
         let nodeIsSelected = false;
         const { nodeRadius, connectorStrokeWidth, terminalRadius } = this.state.layout;
-        // Use a bigger radius for invisible click/touch target
-        const mouseTargetRadius = nodeRadius + (2 * connectorStrokeWidth);
-
         const key = node.key;
 
-        let groupChildren = [];
+        const groupChildren = [];
 
         if (node.isPlaceholder === true) {
             groupChildren.push(
@@ -783,7 +785,7 @@ export class PipelineGraph extends Component {
         }
 
         // Set click listener and link cursor only for nodes we want to be clickable
-        let clickableProps = {};
+        const clickableProps = {};
 
         if (node.isPlaceholder === false && node.stage.state !== 'skipped') {
             clickableProps.cursor = "pointer";
@@ -793,7 +795,7 @@ export class PipelineGraph extends Component {
         // Add an invisible click/touch/mouseover target, coz the nodes are small and (more importantly)
         // many are hollow.
         groupChildren.push(
-            <circle r={mouseTargetRadius}
+            <circle r={nodeRadius + (2 * connectorStrokeWidth)}
                     className="pipeline-node-hittarget"
                     fillOpacity="0"
                     stroke="none"
