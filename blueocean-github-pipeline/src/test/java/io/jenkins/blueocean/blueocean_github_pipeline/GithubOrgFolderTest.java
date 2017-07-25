@@ -269,18 +269,6 @@ public class GithubOrgFolderTest extends GithubMockBase {
         assertEquals("System Github Access Token", c.getDescription());
     }
 
-    private String createGithubCredential(User user) throws UnirestException {
-        Map r = new RequestBuilder(baseUrl)
-                .data(ImmutableMap.of("accessToken", "12345"))
-                .status(200)
-                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .put("/organizations/" + getOrgName() + "/scm/github/validate/")
-                .build(Map.class);
-
-        assertEquals("github", r.get("credentialId"));
-        return "github";
-    }
-
     private String getOrgName() {
         return OrganizationFactory.getInstance().list().iterator().next().getName();
     }
@@ -289,12 +277,12 @@ public class GithubOrgFolderTest extends GithubMockBase {
         return OrganizationFactory.getItemGroup(getOrgName());
     }
 
-    
+
     @TestExtension
     public static class TestOrganizationFactoryImpl extends OrganizationFactoryImpl {
-        
+
         public static String orgRoot;
-        
+
         private OrganizationImpl instance;
 
         public TestOrganizationFactoryImpl() {
@@ -310,7 +298,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
                 } catch (IOException e) {
                     throw new RuntimeException("Test setup failed!", e);
                 }
-                
+
             }
             else {
                 instance = new OrganizationImpl("jenkins", Jenkins.getInstance());

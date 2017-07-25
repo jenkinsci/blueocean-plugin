@@ -44,7 +44,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
     }
 
     @Test
-    public void canNotCreateWhenHaveNoPermissionOnDefaultOrg() throws Exception {        
+    public void canNotCreateWhenHaveNoPermissionOnDefaultOrg() throws Exception {
         MockAuthorizationStrategy authz = new MockAuthorizationStrategy();
         authz.grant(Item.READ).everywhere().to(user);
         j.jenkins.setAuthorizationStrategy(authz);
@@ -108,17 +108,6 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         }
     }
 
-    private String createGithubCredential(User user) throws UnirestException {
-        Map r = new RequestBuilder(baseUrl)
-                .data(ImmutableMap.of("accessToken", "12345"))
-                .status(200)
-                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .put("/organizations/" + getOrgName() + "/scm/github/validate/")
-                .build(Map.class);
-
-        assertEquals("github", r.get("credentialId"));
-        return "github";
-    }
 
     private static String getOrgName() {
         return OrganizationFactory.getInstance().list().iterator().next().getName();
