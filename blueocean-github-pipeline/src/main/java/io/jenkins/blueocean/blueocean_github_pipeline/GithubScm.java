@@ -66,7 +66,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
  */
 public class GithubScm extends Scm {
     //Used by tests to mock github
-    private static final String ID = "github";
+    static final String ID = "github";
 
     //desired scopes
     private static final String USER_EMAIL_SCOPE = "user:email";
