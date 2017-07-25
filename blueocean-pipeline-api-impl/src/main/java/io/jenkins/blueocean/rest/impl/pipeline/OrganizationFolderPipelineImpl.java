@@ -10,6 +10,8 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmContentProviderParams;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmSourceImpl;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
@@ -21,11 +23,13 @@ import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
+import io.jenkins.blueocean.rest.model.BlueScmSource;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
+import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.metadata.AvatarMetadataAction;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.kohsuke.stapler.Stapler;
@@ -148,6 +152,11 @@ public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFol
     @Override
     public boolean isScanAllRepos() {
         return true;
+    }
+
+    @Override
+    public BlueScmSource getScmSource() {
+        return new ScmSourceImpl(folder);
     }
 
     //lower than PipelineFolderImpl.PipelineFactoryImpl so that it gets looked up first
