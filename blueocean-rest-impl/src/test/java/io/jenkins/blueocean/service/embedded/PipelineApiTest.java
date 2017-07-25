@@ -34,6 +34,7 @@ import hudson.tasks.junit.TestResultAction;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueArtifact;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
@@ -596,7 +597,8 @@ public class PipelineApiTest extends BaseTest {
         @Override
         public BluePipeline getPipeline(Item item, Reachable parent) {
             if(item instanceof TestProject){
-                return new TestPipelineImpl((Job)item);
+                BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(item);
+                return new TestPipelineImpl(organization, (Job)item);
             }
             return null;
         }
@@ -610,8 +612,8 @@ public class PipelineApiTest extends BaseTest {
     @Capability({"io.jenkins.blueocean.rest.annotation.test.TestPipeline", "io.jenkins.blueocean.rest.annotation.test.TestPipelineExample"})
     public static class TestPipelineImpl extends AbstractPipelineImpl {
 
-        public TestPipelineImpl(Job job) {
-            super(null, job);
+        public TestPipelineImpl(BlueOrganization organization, Job job) {
+            super(organization, job);
         }
 
         @Exported(name = "hello")
