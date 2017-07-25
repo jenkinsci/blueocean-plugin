@@ -14,6 +14,7 @@ export const defaultLayout = {
     nodeSpacingH: 120,
     nodeSpacingV: 70,
     nodeRadius: 12,
+    terminalRadius: 7,
     curveRadius: 12,
     connectorStrokeWidth: 3.5,
     labelOffsetV: 20,
@@ -30,16 +31,6 @@ type StageInfo = {
     id: number,
     children: Array<StageInfo>
 };
-
-// type NodeInfo = {
-//     x: number,
-//     y: number,
-//     name: string,
-//     state: Result,
-//     completePercent: number,
-//     id: number,
-//     stage?: StageInfo
-// }; // TODO: RM
 
 type StageNodeInfo = {
     // -- Shared with PlaceholderNodeInfo
@@ -96,7 +87,7 @@ type LabelInfo = {
 
 type LayoutInfo = typeof defaultLayout;
 
-type SVGChildren = Array<any>; // TODO: Maybe refine this
+type SVGChildren = Array<any>; // Fixme: Maybe refine this?
 
 // FIXME-FLOW: Currently need to duplicate react's propTypes obj in Flow.
 // See: https://github.com/facebook/flow/issues/1770
@@ -110,46 +101,6 @@ type Props = {
 // Generate a react key for a connection
 function connectorKey(leftNode, rightNode) {
     return 'c_' + leftNode.key + '_to_' + rightNode.key;
-}
-
-const startNode = {
-    x: 0,
-    y: 0,
-    name: 'Start',
-    id: -1,
-    isPlaceholder: true,
-    key: 'start-node',
-    type: 'start',
-};
-
-const endNode = {
-    x: 0,
-    y: 0,
-    name: 'End',
-    id: -2,
-    isPlaceholder: true,
-    key: 'end-node',
-    type: 'end',
-};
-
-// For Debugging  TODO: REMOVE THIS
-let _debugKey = 111;
-function debugPoint(cx, cy, message = 'debug', fill = 'rgba(255,0,200,0.5)') {
-    const key = 'debug_' + (++_debugKey);
-
-    return (
-        <circle cx={cx} cy={cy} r="3" fill={fill} key={key} title={message} />
-    );
-}
-function debugPointX(cx, cy, message = 'debug', stroke = 'rgba(0,255,128,0.5)') {
-    const key = 'debug_' + (++_debugKey);
-
-    return (
-        <g key={key} title={message} stroke={stroke} strokeWidth={1}>
-            <line x1={cx - 5} y1={cy - 5} x2={cx + 5} y2={cy + 5} />
-            <line x1={cx - 5} y1={cy + 5} x2={cx + 5} y2={cy - 5} />
-        </g>
-    );
 }
 
 export class PipelineGraph extends Component {
@@ -217,9 +168,33 @@ export class PipelineGraph extends Component {
         }
     }
 
+    /**
+     * Main process for laying out the graph. Calls a bunch of individual methods on self that do each task.
+     */
     stagesUpdated(newStages: Array<StageInfo> = []) {
 
         const stageNodeColumns = this.createNodeColumns(newStages);
+        const { nodeSpacingH } = this.state.layout;
+
+        const startNode = {
+            x: 0,
+            y: 0,
+            name: 'Start',
+            id: -1,
+            isPlaceholder: true,
+            key: 'start-node',
+            type: 'start',
+        };
+
+        const endNode = {
+            x: 0,
+            y: 0,
+            name: 'End',
+            id: -2,
+            isPlaceholder: true,
+            key: 'end-node',
+            type: 'end',
+        };
 
         const allNodeColumns = [
             { nodes: [startNode] },
@@ -230,16 +205,32 @@ export class PipelineGraph extends Component {
         this.positionNodes(allNodeColumns);
 
         const bigLabels = this.createBigLabels(allNodeColumns);
+        const smallLabels = this.createSmallLabels(allNodeColumns);
+        const connections = this.createConnections(allNodeColumns);
 
-        // TODO: Big Labels
-        // TODO: Small Labels
-        // TODO: Create connections
+        const nodes = [].concat(...allNodeColumns.map(column => column.nodes)); // TODO: Can we get away without this?
 
-        return this.stagesUpdatedOLD(newStages);
+        // Calculate the size of the graph
+        let measuredWidth = 0;
+        let measuredHeight = 200;
+
+        for (const node of nodes) {
+            measuredWidth = Math.max(measuredWidth, node.x + nodeSpacingH / 2);
+            measuredHeight = Math.max(measuredHeight, node.y + ypStart);
+        }
+
+        this.setState({
+            nodes,
+            connections,
+            bigLabels,
+            smallLabels,
+            measuredWidth,
+            measuredHeight,
+        });
     }
 
     /**
-     * Generate an array of columns, each being an array of NodeInfo, based on the top-level stages
+     * Generate an array of columns, based on the top-level stages
      */
     createNodeColumns(topLevelStages: Array<StageInfo> = []): Array<NodeColumn> {
 
@@ -253,7 +244,7 @@ export class PipelineGraph extends Component {
             nodeColumns.push({
                 topStage,
                 nodes: stagesForColumn.map(nodeStage => ({
-                    x: 0,
+                    x: 0, // Layout is done later
                     y: 0,
                     name: nodeStage.name,
                     id: nodeStage.id,
@@ -268,7 +259,7 @@ export class PipelineGraph extends Component {
     }
 
     /**
-     * Walks the columns of nodes giving them x and y positions
+     * Walks the columns of nodes giving them x and y positions. Mutates the node objects in place for now.
      */
     positionNodes(nodeColumns: Array<NodeColumn>) {
 
@@ -286,7 +277,7 @@ export class PipelineGraph extends Component {
                 yp += nodeSpacingV;
             }
 
-            xp += nodeSpacingV;
+            xp += nodeSpacingH;
         }
     }
 
@@ -298,18 +289,43 @@ export class PipelineGraph extends Component {
         let labels = [];
 
         for (const column of columns) {
-            if (column.topStage) {
+
+            const node = column.nodes[0];
+            const stage = column.topStage;
+            const text = stage ? stage.name : node.name;
+            const key = 'l_b_' + node.key;
+
+            labels.push({
+                x: node.x,
+                y: node.y,
+                node,
+                stage,
+                text,
+                key
+            })
+        }
+
+        return labels;
+    }
+
+    /**
+     * Generate label descriptions for small labels under the nodes
+     */
+    createSmallLabels(columns: Array<NodeColumn>) {
+
+        let labels = [];
+
+        for (const column of columns) {
+            if (column.nodes.length === 1) {
+                continue; // No small labels for single-node columns
+            }
+            for (const node of column.nodes) {
                 labels.push({
-                    x: column.nodes[0].x,
-                    y: column.nodes[0].y,
-                    text: column.topStage.name,
-                    stage: column.topStage,
-                });
-            } else {
-                labels.push({
-                    x: column.nodes[0].x,
-                    y: column.nodes[0].y,
-                    text: column.nodes[0].name,
+                    x: node.x,
+                    y: node.y,
+                    text: node.name,
+                    stage: node.stage,
+                    key: 'l_s_' + node.key,
                 });
             }
         }
@@ -317,129 +333,40 @@ export class PipelineGraph extends Component {
         return labels;
     }
 
-    stagesUpdatedOLD(newStages: Array<StageInfo> = []) {    // TODO: Remove this once it's replicated nicely
+    /**
+     * Generate connection information from column to column
+     */
+    createConnections(columns: Array<NodeColumn>) {
 
-        const { nodeSpacingH, nodeSpacingV } = this.state.layout;
+        let connections = [];
 
-        // The structures we're populating in this method
-        const nodes: Array<NodeInfo> = [];
-        const connections: Array<CompositeConnection> = [];
-        const bigLabels: Array<LabelInfo> = [];
-        const smallLabels: Array<LabelInfo> = [];
+        let sourceNodes = [];
+        let skippedNodes = [];
 
-        // Location of next node to create
-        let xp = nodeSpacingH / 2;
-        let yp = ypStart;
-
-        // Other state we need to maintain across columns
-        let connectionSourceNodes: Array<NodeInfo> = []; // Column for last non-skipped stage, for connection generation
-        let mostColumnNodes = 0; // "Tallest" column, for size calculation
-        let skippedNodes = []; // Rendered nodes that need to be skipped by the next set of connections
-
-        let placeholderId = -1;
-        const placeholderStage = (name) => ({
-            children: [],
-            completePercent: 100,
-            id: (--placeholderId),
-            name: name,
-            state: 'unknown',
-            title: name,
-        });
-
-        // For reach top-level stage we have a column of node(s)
-        for (const topStage of newStages) {
-
-            yp = ypStart;
-
-            const isSkippedStage = topStage.state === 'skipped';
-
-            // Always have a single bigLabel per top-level stage
-            bigLabels.push({
-                x: xp,
-                y: yp,
-                text: topStage.name,
-                stage: topStage,
-                key: 'lb_n_' + topStage.id,
-            });
-
-            // If stage has children, we don't draw a node for it, just its children
-            const nodeStages = topStage.children && topStage.children.length ?
-                topStage.children : [topStage];
-
-            const columnNodes: Array<NodeInfo> = [];
-
-            for (let nodeStage of nodeStages) {
-
-                if (!nodeStage) {
-                    continue;
-                }
-
-                const node: StageNodeInfo = {
-                    x: xp,
-                    y: yp,
-                    name: nodeStage.name,
-                    // state: nodeStage.state,
-                    // completePercent: nodeStage.completePercent,
-                    id: nodeStage.id,
-                    key: 'n_' + nodeStage.id,
-                    stage: nodeStage,
-                    isPlaceholder: false,
-                };
-
-                columnNodes.push(node);
-
-                // Only separate child nodes need a smallLabel, as topStage already has a bigLabel
-                if (nodeStage != topStage) {
-                    smallLabels.push({
-                        x: xp,
-                        y: yp,
-                        text: nodeStage.name,
-                        stage: nodeStage,
-                        key: 'ls_' + node.key,
-                    });
-                }
-
-                yp += nodeSpacingV;
+        for (const column of columns) {
+            if (column.topStage && column.topStage.state === 'skipped') {
+                skippedNodes.push(column.nodes[0]);
+                continue;
             }
 
-            if (isSkippedStage) {
-                // Keep track of the nodes that have skipped status so we can route connections around them.
-                skippedNodes.push(...columnNodes);
-            } else {
-                if (connectionSourceNodes.length) {
-                    // Create a composite connection from source column to current, possibly skipping some
-                    connections.push({
-                        sourceNodes: connectionSourceNodes,
-                        destinationNodes: columnNodes,
-                        skippedNodes,
-                    });
-                }
-
-                skippedNodes = [];
-
-                // Any future connections should come from this column
-                connectionSourceNodes = columnNodes;
+            if (sourceNodes.length) {
+                connections.push({
+                    sourceNodes,
+                    destinationNodes: column.nodes,
+                    skippedNodes: skippedNodes
+                })
             }
 
-            xp += nodeSpacingH;
-            mostColumnNodes = Math.max(mostColumnNodes, nodeStages.length);
-            nodes.push(...columnNodes);
+            sourceNodes = column.nodes;
+            skippedNodes = [];
         }
 
-        // Calc dimensions
-        var measuredWidth = xp - Math.floor(nodeSpacingH / 2);
-        const measuredHeight = ypStart + (mostColumnNodes * nodeSpacingV);
-
-        this.setState({
-            nodes,
-            connections,
-            bigLabels,
-            smallLabels,
-            measuredWidth,
-            measuredHeight,
-        });
+        return connections;
     }
 
+    /**
+     * Generate the Component for a big label
+     */
     renderBigLabel(details: LabelInfo) {
 
         const {
@@ -464,6 +391,7 @@ export class PipelineGraph extends Component {
         const x = details.x;
         const bottom = this.state.measuredHeight - details.y + labelOffsetV;
 
+        // These are about layout more than appearance, so they're inline
         const style = Object.assign({}, bigLabelStyle, {
             bottom: bottom + 'px',
             left: x + 'px',
@@ -477,6 +405,9 @@ export class PipelineGraph extends Component {
         return <TruncatingLabel className={classNames.join(' ')} style={style} key={details.key}>{details.text}</TruncatingLabel>;
     }
 
+    /**
+     * Generate the Component for a small label
+     */
     renderSmallLabel(details: LabelInfo) {
 
         const {
@@ -492,30 +423,37 @@ export class PipelineGraph extends Component {
         const smallLabelHeight = Math.floor(nodeSpacingV - smallLabelOffsetV - nodeRadius - nodeStrokeWidth);
         const smallLabelOffsetH = Math.floor(smallLabelWidth * -0.5);
 
-        // These are about layout more than appearance, so they should probably remain inline
-        const smallLabelStyle = {
+        const x = details.x + smallLabelOffsetH;
+        const top = details.y + smallLabelOffsetV;
+
+        // These are about layout more than appearance, so they're inline
+        const style = {
+            top: top,
+            left: x,
             position: 'absolute',
             width: smallLabelWidth,
             maxHeight: smallLabelHeight,
             textAlign: 'center',
         };
 
-        const x = details.x + smallLabelOffsetH;
-        const top = details.y + smallLabelOffsetV;
-
-        const style = Object.assign({}, smallLabelStyle, {
-            top: top,
-            left: x,
-        });
-
         const classNames = ['pipeline-small-label'];
         if (details.stage && this.stageIsSelected(details.stage)) {
             classNames.push('selected');
         }
 
-        return <TruncatingLabel className={classNames.join(' ')} style={style} key={details.key}>{details.text}</TruncatingLabel>;
+        return (
+            <TruncatingLabel className={classNames.join(' ')} style={style} key={details.key}>
+                {details.text}
+            </TruncatingLabel>
+        );
     }
 
+    /**
+     * Generate SVG for a composite connection, which may be to/from many nodes.
+     *
+     * Farms work out to other methods on self depending on the complexity of the line required. Adds all the SVG
+     * components to the elements list.
+     */
     renderCompositeConnection(connection: CompositeConnection, elements: SVGChildren) {
         const {
             sourceNodes,
@@ -524,14 +462,18 @@ export class PipelineGraph extends Component {
         } = connection;
 
         if (skippedNodes.length === 0) {
-            // Nothing too complicated, use the old connection drawing code
+            // Nothing too complicated, use the original connection drawing code
             this.renderBasicConnections(sourceNodes, destinationNodes, elements);
         } else {
             this.renderSkippingConnections(sourceNodes, destinationNodes, skippedNodes, elements)
         }
     }
 
-    // Connections between columns without any skipping
+    /**
+     * Connections between adjacent columns without any skipping.
+     *
+     * Adds all the SVG components to the elements list.
+     */
     renderBasicConnections(sourceNodes: Array<NodeInfo>, destinationNodes: Array<NodeInfo>, elements: SVGChildren) {
 
         const { connectorStrokeWidth } = this.state.layout;
@@ -555,13 +497,22 @@ export class PipelineGraph extends Component {
         }
     }
 
-    // Renders a more complex connection, that "skips" one or more nodes
+    /**
+     * Renders a more complex connection, that "skips" one or more nodes
+     *
+     * Adds all the SVG components to the elements list.
+     */
     renderSkippingConnections(sourceNodes: Array<NodeInfo>,
                               destinationNodes: Array<NodeInfo>,
                               skippedNodes: Array<NodeInfo>,
                               elements: SVGChildren) {
 
-        const { connectorStrokeWidth, nodeRadius, curveRadius, nodeSpacingV } = this.state.layout;
+        const {
+            connectorStrokeWidth,
+            nodeRadius,
+            terminalRadius,
+            curveRadius,
+            nodeSpacingV } = this.state.layout;
 
         // Stroke props common to straight / curved connections
         const connectorStroke = {
@@ -596,9 +547,10 @@ export class PipelineGraph extends Component {
         let midPointX = Math.round((leftNode.x + rightNode.x) / 2);
 
         for (leftNode of sourceNodes.slice(1)) {
+            const leftNodeRadius = leftNode.isPlaceholder ? terminalRadius : nodeRadius;
             const key = connectorKey(leftNode, rightNode);
 
-            let x1 = leftNode.x + nodeRadius - (nodeStrokeWidth / 2);
+            let x1 = leftNode.x + leftNodeRadius - (nodeStrokeWidth / 2);
             let y1 = leftNode.y;
             let x2 = midPointX;
             let y2 = rightNode.y;
@@ -619,11 +571,12 @@ export class PipelineGraph extends Component {
         midPointX = Math.round((leftNode.x + rightNode.x) / 2);
 
         for (rightNode of destinationNodes.slice(1)) {
+            const rightNodeRadius = rightNode.isPlaceholder ? terminalRadius : nodeRadius;
             const key = connectorKey(leftNode, rightNode);
 
             let x1 = midPointX;
             let y1 = leftNode.y;
-            let x2 = rightNode.x - nodeRadius + (nodeStrokeWidth / 2);
+            let x2 = rightNode.x - rightNodeRadius + (nodeStrokeWidth / 2);
             let y2 = rightNode.y;
 
             const pathData = `M ${x1} ${y1}` + this.svgCurve(x1, y1, x2, y2, midPointX, curveRadius);
@@ -638,6 +591,9 @@ export class PipelineGraph extends Component {
 
         leftNode = sourceNodes[0];
         rightNode = destinationNodes[0];
+
+        const leftNodeRadius = leftNode.isPlaceholder ? terminalRadius : nodeRadius;
+        const rightNodeRadius = rightNode.isPlaceholder ? terminalRadius : nodeRadius;
         const key = connectorKey(leftNode, rightNode);
 
         const skipHeight = nodeSpacingV * 0.5;
@@ -647,7 +603,7 @@ export class PipelineGraph extends Component {
         const inflectiontOffset = Math.round(skipHeight * 0.7071); // cos(45º)-ish
 
         // Start point
-        let p1x = leftNode.x + nodeRadius - (nodeStrokeWidth / 2);
+        let p1x = leftNode.x + leftNodeRadius - (nodeStrokeWidth / 2);
         let p1y = leftNode.y;
 
         // Begin curve down point
@@ -691,9 +647,8 @@ export class PipelineGraph extends Component {
         let c7y = p6y - controlOffsetMid;
 
         // End point
-        let p8x = rightNode.x - nodeRadius + (nodeStrokeWidth / 2);
+        let p8x = rightNode.x - rightNodeRadius + (nodeStrokeWidth / 2);
         let p8y = rightNode.y;
-
 
         const pathData =
             `M ${p1x} ${p1y}` +
@@ -707,25 +662,23 @@ export class PipelineGraph extends Component {
             '';
 
         elements.push(<path {...connectorStroke} key={key} d={pathData} fill="none" />);
-
-        // elements.push(debugPoint(c1x, c1y, 'c1')); // TODO: RM
-        // elements.push(debugPoint(c2x, c2y, 'c2')); // TODO: RM
-        // elements.push(debugPoint(c3x, c3y, 'c3')); // TODO: RM
-        // elements.push(debugPoint(c4x, c4y, 'c4')); // TODO: RM
-
-        // elements.push(debugPointX(p2x, p2y, 'p2', 'rgba(0,128,40,0.5')); // TODO: RM
-        // elements.push(debugPointX(p3x, p3y, 'p3', 'rgba(0,128,40,0.5')); // TODO: RM
-        // elements.push(debugPointX(p4x, p4y, 'p4', 'rgba(0,128,40,0.65')); // TODO: RM
     }
 
+    /**
+     * Simple straight connection.
+     *
+     * Adds all the SVG components to the elements list.
+     */
     renderHorizontalConnection(leftNode: NodeInfo, rightNode: NodeInfo, connectorStroke: Object, elements: SVGChildren) {
 
-        const { nodeRadius } = this.state.layout;
+        const { nodeRadius, terminalRadius } = this.state.layout;
+        const leftNodeRadius = leftNode.isPlaceholder ? terminalRadius : nodeRadius;
+        const rightNodeRadius = rightNode.isPlaceholder ? terminalRadius : nodeRadius;
 
         const key = connectorKey(leftNode, rightNode);
 
-        const x1 = leftNode.x + nodeRadius - (nodeStrokeWidth / 2);
-        const x2 = rightNode.x - nodeRadius + (nodeStrokeWidth / 2);
+        const x1 = leftNode.x + leftNodeRadius - (nodeStrokeWidth / 2);
+        const x2 = rightNode.x - rightNodeRadius + (nodeStrokeWidth / 2);
         const y = leftNode.y;
 
         elements.push(
@@ -739,18 +692,25 @@ export class PipelineGraph extends Component {
         );
     }
 
+    /**
+     * A direct curve between two nodes in adjactent columns.
+     *
+     * Adds all the SVG components to the elements list.
+     */
     renderBasicCurvedConnection(leftNode: NodeInfo, rightNode: NodeInfo, elements: SVGChildren) {
-        const { nodeRadius, curveRadius, connectorStrokeWidth } = this.state.layout;
+        const { nodeRadius, terminalRadius, curveRadius, connectorStrokeWidth } = this.state.layout;
+        const leftNodeRadius = leftNode.isPlaceholder ? terminalRadius : nodeRadius;
+        const rightNodeRadius = rightNode.isPlaceholder ? terminalRadius : nodeRadius;
 
         const key = connectorKey(leftNode, rightNode);
 
         const leftPos = {
-            x: leftNode.x + nodeRadius - (nodeStrokeWidth / 2),
+            x: leftNode.x + leftNodeRadius - (nodeStrokeWidth / 2),
             y: leftNode.y,
         };
 
         const rightPos = {
-            x: rightNode.x - nodeRadius + (nodeStrokeWidth / 2),
+            x: rightNode.x - rightNodeRadius + (nodeStrokeWidth / 2),
             y: rightNode.y,
         };
 
@@ -765,13 +725,14 @@ export class PipelineGraph extends Component {
         const pathData = `M ${leftPos.x} ${leftPos.y}` +
             this.svgCurve(leftPos.x, leftPos.y, rightPos.x, rightPos.y, midPointX, curveRadius);
 
-        // elements.push(debugPoint(midPointX, leftPos.y)); // TODO: RM
-
         elements.push(
             <path {...connectorStroke} key={key} d={pathData} fill="none" />,
         );
     }
 
+    /**
+     * Generates an SVG path string for the "verical" S curve used to connect nodes in adjacent columns.
+     */
     svgCurve(x1: number, y1: number, x2: number, y2: number, midPointX: number, curveRadius: number) {
         const verticalDirection = Math.sign(y2 - y1); // 1 == curve down, -1 == curve up
         const w1 = midPointX - curveRadius - x1 + (curveRadius * verticalDirection);
@@ -788,10 +749,15 @@ export class PipelineGraph extends Component {
         );
     }
 
+    /**
+     * Generate the SVG elements to represent a node.
+     *
+     * Adds all the SVG components to the elements list.
+     */
     renderNode(node: NodeInfo, elements: SVGChildren) {
 
         let nodeIsSelected = false;
-        const { nodeRadius, connectorStrokeWidth } = this.state.layout;
+        const { nodeRadius, connectorStrokeWidth, terminalRadius } = this.state.layout;
         // Use a bigger radius for invisible click/touch target
         const mouseTargetRadius = nodeRadius + (2 * connectorStrokeWidth);
 
@@ -800,13 +766,12 @@ export class PipelineGraph extends Component {
         let groupChildren = [];
 
         if (node.isPlaceholder === true) {
-            // TODO: render placeholder dot
-            groupChildren.push(getGroupForResult('unknown', 0, nodeRadius));
+            groupChildren.push(
+                <circle r={terminalRadius} className="pipeline-node-terminal"/>
+            );
         } else {
-            const completePercent = node.stage.completePercent || 0;
-            const title = node.stage.title;
-            const resultClean = decodeResultValue(node.stage.state);
-            // TODO: Clean these lines up into destructure ^^^
+            const { completePercent = 0, title, state } = node.stage;
+            const resultClean = decodeResultValue(state);
 
             groupChildren.push(getGroupForResult(resultClean, completePercent, nodeRadius));
 
@@ -817,18 +782,25 @@ export class PipelineGraph extends Component {
             nodeIsSelected = this.stageIsSelected(node.stage);
         }
 
-        // Add an invisible click/touch target, coz the nodes are small and (more importantly)
+        // Set click listener and link cursor only for nodes we want to be clickable
+        let clickableProps = {};
+
+        if (node.isPlaceholder === false && node.stage.state !== 'skipped') {
+            clickableProps.cursor = "pointer";
+            clickableProps.onClick = () => this.nodeClicked(node);
+        }
+
+        // Add an invisible click/touch/mouseover target, coz the nodes are small and (more importantly)
         // many are hollow.
         groupChildren.push(
             <circle r={mouseTargetRadius}
-                    cursor="pointer"
                     className="pipeline-node-hittarget"
                     fillOpacity="0"
                     stroke="none"
-                    onClick={() => this.nodeClicked(node)} />,
+                    {...clickableProps} />,
         );
 
-        // All the nodes are in shared code, so they're rendered at 0,0 so we transform within a <g>
+        // Most of the nodes are in shared code, so they're rendered at 0,0. We transform with a <g> to position them
         const groupProps = {
             key,
             transform: `translate(${node.x},${node.y})`,
@@ -838,6 +810,11 @@ export class PipelineGraph extends Component {
         elements.push(React.createElement('g', groupProps, ...groupChildren));
     }
 
+    /**
+     * Generates SVG for visual highlight to show which node is selected.
+     *
+     * Adds all the SVG components to the elements list.
+     */
     renderSelectionHighlight(elements: SVGChildren) {
 
         const { nodeRadius, connectorStrokeWidth } = this.state.layout;
@@ -862,12 +839,18 @@ export class PipelineGraph extends Component {
         }
     }
 
-    // Put in a function so we can make improvements / multi-select
+
+    /**
+     * Is this stage currently selected?
+     */
     stageIsSelected(stage?: StageInfo) {
         const { selectedStage } = this.state;
         return selectedStage && selectedStage === stage;
     }
 
+    /**
+     * Is this any child of this stage currently selected?
+     */
     stageChildIsSelected(stage?: StageInfo) {
         if (stage) {
             const { children } = stage;
@@ -885,7 +868,7 @@ export class PipelineGraph extends Component {
     }
 
     nodeClicked(node: NodeInfo) {
-        if (node.isPlaceholder === false) {
+        if (node.isPlaceholder === false && node.stage.state !== 'skipped') {
             const stage = node.stage;
             const listener = this.props.onNodeClick;
 
@@ -908,7 +891,7 @@ export class PipelineGraph extends Component {
             measuredHeight,
         } = this.state;
 
-        // These are about layout more than appearance, so they should probably remain inline
+        // Without these we get fire, so they're hardcoded
         const outerDivStyle = {
             position: 'relative', // So we can put the labels where we need them
             overflow: 'visible' // So long labels can escape this component in layout
