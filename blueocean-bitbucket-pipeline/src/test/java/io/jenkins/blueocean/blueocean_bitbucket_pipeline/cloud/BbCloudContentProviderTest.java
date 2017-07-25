@@ -8,7 +8,7 @@ import com.google.common.collect.Lists;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.util.DescribableList;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketScmContentProvider;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.AbstractBitbucketScmContentProvider;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketScmSaveFileRequest;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
@@ -45,7 +45,7 @@ public class BbCloudContentProviderTest extends BbCloudWireMock{
         StaplerRequest staplerRequest = mockStapler();
         MultiBranchProject mbp = mockMbp(credentialId);
 
-        ScmFile<GitContent> content = (ScmFile<GitContent>) new BitbucketScmContentProvider().getContent(staplerRequest, mbp);
+        ScmFile<GitContent> content = (ScmFile<GitContent>) new BitbucketCloudScmContentProvider().getContent(staplerRequest, mbp);
         assertEquals("Jenkinsfile", content.getContent().getName());
         assertEquals("04553981a05754d4bffef56a59d9d996d500301c", content.getContent().getCommitId());
         assertEquals("demo1", content.getContent().getRepo());
@@ -75,7 +75,7 @@ public class BbCloudContentProviderTest extends BbCloudWireMock{
 
         when(staplerRequest.getReader()).thenReturn(new BufferedReader(new StringReader(request), request.length()));
 
-        ScmFile<GitContent> respContent = (ScmFile<GitContent>) new BitbucketScmContentProvider().saveContent(staplerRequest, mbp);
+        ScmFile<GitContent> respContent = (ScmFile<GitContent>) new BitbucketCloudScmContentProvider().saveContent(staplerRequest, mbp);
         assertEquals("foo", respContent.getContent().getName());
         assertEquals(respContent.getContent().getCommitId(), respContent.getContent().getCommitId());
         assertEquals("demo1", respContent.getContent().getRepo());

@@ -7,7 +7,7 @@ import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.collect.Lists;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.util.DescribableList;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketScmContentProvider;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.AbstractBitbucketScmContentProvider;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketScmSaveFileRequest;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
@@ -45,7 +45,7 @@ public class BitbucketContentProviderTest extends BbServerWireMock {
         StaplerRequest staplerRequest = mockStapler();
         MultiBranchProject mbp = mockMbp(credentialId);
 
-        ScmFile<GitContent> content = (ScmFile<GitContent>) new BitbucketScmContentProvider().getContent(staplerRequest, mbp);
+        ScmFile<GitContent> content = (ScmFile<GitContent>) new BitbucketServerScmContentProvider().getContent(staplerRequest, mbp);
         assertEquals("Jenkinsfile", content.getContent().getName());
         assertEquals("0bae0ddbed2e897d3b44abc3aca9ba26e2f61710", content.getContent().getCommitId());
         assertEquals("pipeline-demo-test", content.getContent().getRepo());
@@ -75,7 +75,7 @@ public class BitbucketContentProviderTest extends BbServerWireMock {
 
         when(staplerRequest.getReader()).thenReturn(new BufferedReader(new StringReader(request), request.length()));
 
-        ScmFile<GitContent> respContent = (ScmFile<GitContent>) new BitbucketScmContentProvider().saveContent(staplerRequest, mbp);
+        ScmFile<GitContent> respContent = (ScmFile<GitContent>) new BitbucketServerScmContentProvider().saveContent(staplerRequest, mbp);
         assertEquals("README.md", respContent.getContent().getName());
         assertEquals("a77840d4108db2befe6c616723eb3f4485af5d24", respContent.getContent().getCommitId());
         assertEquals("pipeline-demo-test", respContent.getContent().getRepo());
@@ -107,7 +107,7 @@ public class BitbucketContentProviderTest extends BbServerWireMock {
 
         when(staplerRequest.getReader()).thenReturn(new BufferedReader(new StringReader(request), request.length()));
 
-        ScmFile<GitContent> respContent = (ScmFile<GitContent>) new BitbucketScmContentProvider().saveContent(staplerRequest, mbp);
+        ScmFile<GitContent> respContent = (ScmFile<GitContent>) new BitbucketServerScmContentProvider().saveContent(staplerRequest, mbp);
         assertEquals("Jenkinsfile", respContent.getContent().getName());
         assertEquals("e587b620844b1b230783976f00cfb8383488aeca", respContent.getContent().getCommitId());
         assertEquals("pipeline-demo-test", respContent.getContent().getRepo());
