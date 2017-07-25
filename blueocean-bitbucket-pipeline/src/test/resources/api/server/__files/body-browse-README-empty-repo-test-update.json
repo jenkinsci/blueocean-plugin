@@ -1,0 +1,40 @@
+{
+  "id" : "a340bbce1f1d6c02abdcd4c0d7d88d775bfa3e28",
+  "displayId" : "a340bbce1f1",
+  "committerTimestamp" : 1500285680000,
+  "message" : "Initialize Jenkinsfile",
+  "author" : {
+    "name" : "admin",
+    "type" : "NORMAL",
+    "emailAddress" : "admin@example.com",
+    "slug" : "admin",
+    "id" : 1,
+    "active" : true,
+    "displayName" : "Administrator",
+    "links" : {
+      "self" : [
+        {
+          "href" : "http://localhost:7990/bitbucket/users/admin"
+        }
+      ]
+    }
+  },
+  "authorTimestamp" : 1500285680000,
+  "parents" : [],
+  "committer" : {
+    "active" : true,
+    "displayName" : "Administrator",
+    "links" : {
+      "self" : [
+        {
+          "href" : "http://localhost:7990/bitbucket/users/admin"
+        }
+      ]
+    },
+    "name" : "admin",
+    "type" : "NORMAL",
+    "emailAddress" : "admin@example.com",
+    "slug" : "admin",
+    "id" : 1
+  }
+}

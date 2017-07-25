@@ -74,7 +74,16 @@ public class SSEClientRule extends ExternalResource {
 
     private EventListener listener = inboundEvent -> {
         JSONObject jenkinsEvent = new JSONObject(inboundEvent.readData());
-        events.add(jenkinsEvent);
+        if(jenkinsEvent.has("jenkins_event") && jenkinsEvent.getString("jenkins_event").equals("job_run_queue_enter")) {
+            if(jenkinsEvent.has("jenkins_object_type") &&
+                jenkinsEvent.getString("jenkins_object_type").equals("org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject")) {
+            } else
+                if(jenkinsEvent.has("blueocean_job_pipeline_name")) {
+                String pipelineName = jenkinsEvent.getString("blueocean_job_pipeline_name");
+                logger.info("Build for " + pipelineName + " entered queue");
+            }
+        }
+            events.add(jenkinsEvent);
         if(logEvents) {
             logger.info("SSE - " + jenkinsEvent.toString());
         }

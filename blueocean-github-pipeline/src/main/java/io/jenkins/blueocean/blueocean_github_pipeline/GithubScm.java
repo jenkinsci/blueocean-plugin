@@ -24,6 +24,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainSpecifi
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmOrganization;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import io.jenkins.blueocean.rest.model.Container;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
@@ -41,6 +42,7 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.json.JsonBody;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import javax.servlet.ServletException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -188,6 +190,11 @@ public class GithubScm extends Scm {
         }
     }
 
+    @Override
+    public ScmServerEndpointContainer getServers() {
+        return null;
+    }
+
     public boolean isOrganizationAvatarSupported() {
         return true;
     }
@@ -304,7 +311,7 @@ public class GithubScm extends Scm {
             throw new ServiceException.PreconditionRequired("Github accessToken does not have required scopes. Expected scopes 'user:email, repo'");
         }
         if(status == 404){
-            throw new ServiceException.NotFoundException("Not Found");
+            throw new ServiceException.NotFoundException(String.format("Remote server at %s responded with code 404.", apiUrl));
         }
         if(status != 200) {
             throw new ServiceException.BadRequestException(String.format("Github Api returned error: %s. Error message: %s.", connection.getResponseCode(), connection.getResponseMessage()));
@@ -332,6 +339,19 @@ public class GithubScm extends Scm {
         }
         if(!missingScopes.isEmpty()){
             throw new ServiceException.PreconditionRequired("Invalid token, its missing scopes: "+ StringUtils.join(missingScopes, ","));
+        }
+    }
+
+    static void validateUserHasPushPermission(@Nonnull String apiUrl, @Nullable String accessToken, @Nullable String owner, @Nullable String repoName) {
+        GHRepoEx repo;
+        try {
+            repo = HttpRequest.get(String.format("%s/repos/%s/%s", apiUrl, owner, repoName))
+                .withAuthorizationToken(accessToken).to(GHRepoEx.class);
+        } catch (IOException e) {
+            throw new ServiceException.UnexpectedErrorException(String.format("Could not load repository metadata for %s/%s", owner, repoName), e);
+        }
+        if (!repo.hasPushAccess()) {
+            throw new ServiceException.PreconditionRequired(String.format("You do not have permission to push changes to %s/%s", owner, repoName));
         }
     }
 
