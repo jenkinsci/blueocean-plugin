@@ -9,6 +9,9 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.util.DescribableList;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.AbstractBitbucketScmContentProvider;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketScmSaveFileRequest;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.BitbucketCloudScm;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.BitbucketCloudScmContentProvider;
+import io.jenkins.blueocean.rest.impl.pipeline.ScmContentProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFile;
@@ -29,6 +32,8 @@ import java.io.IOException;
 import java.io.StringReader;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.powermock.api.mockito.PowerMockito.*;
 
 /**
@@ -37,7 +42,7 @@ import static org.powermock.api.mockito.PowerMockito.*;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Stapler.class})
 @PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*"})
-public class BitbucketContentProviderTest extends BbServerWireMock {
+public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
 
     @Test
     public void getContent() throws UnirestException, IOException {
@@ -113,6 +118,20 @@ public class BitbucketContentProviderTest extends BbServerWireMock {
         assertEquals("pipeline-demo-test", respContent.getContent().getRepo());
         assertEquals("TESTP", respContent.getContent().getOwner());
         assertEquals("master", respContent.getContent().getBranch());
+    }
+
+    @Test
+    public void checkScmProperties() throws Exception {
+        // ensure server provider works with server multibranch pipeline
+        String credentialId = createCredential(BitbucketServerScm.ID, "server");
+        MultiBranchProject mbp = mockMbp(credentialId);
+        ScmContentProvider provider = new BitbucketServerScmContentProvider();
+        assertTrue(provider.support(mbp));
+        assertEquals(provider.getScmId(), BitbucketServerScm.ID);
+        assertEquals(provider.getApiUrl(mbp), apiUrl);
+        // ensure cloud provider doesn't work with server multibranch pipeline
+        provider = new BitbucketCloudScmContentProvider();
+        assertFalse(provider.support(mbp));
     }
 
     private StaplerRequest mockStapler(){
