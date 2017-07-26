@@ -37,7 +37,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void getContentForOrgFolder() throws UnirestException {
-        String credentialId = createGithubCredential();
+        String credentialId = createGithubCredential(user);
 
         StaplerRequest staplerRequest = mockStapler();
 
@@ -68,7 +68,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void getContentForMbp() throws UnirestException {
-        String credentialId = createGithubCredential();
+        String credentialId = createGithubCredential(user);
 
         StaplerRequest staplerRequest = mockStapler();
 
@@ -195,7 +195,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void saveContentToOrgFolder() throws UnirestException, IOException {
-        String credentialId = createGithubCredential();
+        String credentialId = createGithubCredential(user);
 
         StaplerRequest staplerRequest = mockStapler();
 
@@ -343,7 +343,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void saveContentToMbp() throws UnirestException, IOException {
-        String credentialId = createGithubCredential();
+        String credentialId = createGithubCredential(user);
 
         StaplerRequest staplerRequest = mockStapler();
 
@@ -497,7 +497,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void saveContentToMbpMissingBranch() throws UnirestException, IOException {
-        String credentialId = createGithubCredential();
+        String credentialId = createGithubCredential(user);
 
         StaplerRequest staplerRequest = mockStapler();
 
@@ -533,7 +533,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
     @Test
     public void testScmProperties() throws Exception {
         // ensure the cloud provider works with cloud org folder
-        String credentialId = createGithubCredential();
+        String credentialId = createGithubCredential(user);
         OrganizationFolder orgFolder = mockOrgFolder(credentialId);
         // unfortunately overriding the GitHub apiUrl for WireMock returns a "localhost" URL here, so we mock the call
         when(((GitHubSCMNavigator) orgFolder.getSCMNavigators().get(0)).getApiUri()).thenReturn(GitHubSCMSource.GITHUB_URL);

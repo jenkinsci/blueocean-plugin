@@ -56,7 +56,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         authz.grant(Item.CREATE, Item.CONFIGURE).onFolders(getOrgRoot()).to(user);
         j.jenkins.setAuthorizationStrategy(authz);
         // refresh the JWT token otherwise all hell breaks loose.
-        jwtToken = getJwtToken(j.jenkins, "vivek", "vivek");
+        jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
         createGithubOrgFolder(true);
     }
 
@@ -98,7 +98,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         }
         else {
             assertEquals(403, resp.get("code"));
-            assertEquals("Failed to create pipeline: cloudbeers1. User vivek doesn't have Job create permission", resp.get("message"));
+            assertEquals("User vivek doesn't have Job create permission", resp.get("message"));
             Assert.assertNull(item);
             String r = get("/organizations/"+ getOrgName() + "/pipelines/"+orgFolderName+"/", 404, String.class);
         }
