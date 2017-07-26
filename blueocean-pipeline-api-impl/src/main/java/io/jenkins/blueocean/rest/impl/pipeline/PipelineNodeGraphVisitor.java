@@ -194,7 +194,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             status = new NodeRunStatus(GenericStatus.NOT_EXECUTED);
         }else if(chunk.getLastNode() != null){
             status = new NodeRunStatus(StatusAndTiming
-                    .computeChunkStatus(run, chunk.getNodeBefore(),
+                    .computeChunkStatus2(run, chunk.getNodeBefore(),
                             firstExecuted, chunk.getLastNode(), chunk.getNodeAfter()));
         }else{
             status = new NodeRunStatus(firstExecuted);
@@ -267,7 +267,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                         status = new NodeRunStatus(endNode);
                     }
                 }else {
-                    GenericStatus genericStatus = StatusAndTiming.computeChunkStatus(run,
+                    GenericStatus genericStatus = StatusAndTiming.computeChunkStatus2(run,
                             parallelStartNode, branchStartNode, endNode, parallelEnd);
                     status = new NodeRunStatus(genericStatus);
                 }
