@@ -107,7 +107,7 @@ export class PipelineGraph extends Component {
 
     // Flow typedefs
     state: {
-        nodes: Array<NodeInfo>,
+        nodeColumns: Array<NodeColumn>,
         connections: Array<CompositeConnection>,
         bigLabels: Array<LabelInfo>,
         smallLabels: Array<LabelInfo>,
@@ -120,7 +120,7 @@ export class PipelineGraph extends Component {
     constructor(props: Props) {
         super(props);
         this.state = {
-            nodes: [],
+            nodeColumns: [],
             connections: [],
             bigLabels: [],
             smallLabels: [],
@@ -208,19 +208,19 @@ export class PipelineGraph extends Component {
         const smallLabels = this.createSmallLabels(allNodeColumns);
         const connections = this.createConnections(allNodeColumns);
 
-        const nodes = [].concat(...allNodeColumns.map(column => column.nodes)); // TODO: Can we get away without this?
-
         // Calculate the size of the graph
         let measuredWidth = 0;
         let measuredHeight = 200;
 
-        for (const node of nodes) {
-            measuredWidth = Math.max(measuredWidth, node.x + nodeSpacingH / 2);
-            measuredHeight = Math.max(measuredHeight, node.y + ypStart);
+        for (const column of allNodeColumns) {
+            for (const node of column.nodes) {
+                measuredWidth = Math.max(measuredWidth, node.x + nodeSpacingH / 2);
+                measuredHeight = Math.max(measuredHeight, node.y + ypStart);
+            }
         }
 
         this.setState({
-            nodes,
+            nodeColumns: allNodeColumns,
             connections,
             bigLabels,
             smallLabels,
@@ -823,10 +823,12 @@ export class PipelineGraph extends Component {
         const highlightRadius = nodeRadius + (0.49 * connectorStrokeWidth);
         let selectedNode = null;
 
-        for (const node of this.state.nodes) {
-            if (node.isPlaceholder === false && this.stageIsSelected(node.stage)) {
-                selectedNode = node;
-                break;
+        for (const column of this.state.nodeColumns) {
+            for (const node of column.nodes) {
+                if (node.isPlaceholder === false && this.stageIsSelected(node.stage)) {
+                    selectedNode = node;
+                    break;
+                }
             }
         }
 
@@ -885,7 +887,7 @@ export class PipelineGraph extends Component {
 
     render() {
         const {
-            nodes = [],
+            nodeColumns = [],
             connections = [],
             bigLabels = [],
             smallLabels = [],
@@ -907,8 +909,10 @@ export class PipelineGraph extends Component {
             this.renderCompositeConnection(connection, visualElements);
         });
 
-        nodes.forEach(node => {
-            this.renderNode(node, visualElements);
+        nodeColumns.forEach(column => {
+            column.nodes.forEach(node => {
+                this.renderNode(node, visualElements);
+            });
         });
 
         return (
