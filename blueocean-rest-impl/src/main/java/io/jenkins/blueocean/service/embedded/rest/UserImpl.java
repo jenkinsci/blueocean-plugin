@@ -4,22 +4,33 @@ import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.google.common.collect.ImmutableMap;
 import hudson.model.Item;
 import hudson.model.User;
+import hudson.security.AccessControlled;
 import hudson.tasks.Mailer;
 import hudson.tasks.UserAvatarResolver;
 import io.jenkins.blueocean.commons.ServiceException.ForbiddenException;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueFavoriteContainer;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserPermission;
 import jenkins.model.Jenkins;
+import jenkins.model.ModifiableTopLevelItemGroup;
+
 import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
 
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * {@link BlueUser} implementation backed by in-memory {@link User}
@@ -36,15 +47,17 @@ public class UserImpl extends BlueUser {
 
     protected final User user;
 
+    private AccessControlled orgBase;
+
     private final Reachable parent;
     public UserImpl(User user, Reachable parent) {
         this.parent = parent;
         this.user = user;
+        initOrganizationBase();
     }
 
     public UserImpl(User user) {
-        this.user = user;
-        this.parent = null;
+        this(user, null);
     }
 
     @Override
@@ -149,25 +162,73 @@ public class UserImpl extends BlueUser {
 
     private Map<String, Boolean> getPipelinePermissions(){
         return ImmutableMap.of(
-                BluePipeline.CREATE_PERMISSION, Jenkins.getInstance().hasPermission(Item.CREATE),
-                BluePipeline.READ_PERMISSION, Jenkins.getInstance().hasPermission(Item.READ),
-                BluePipeline.START_PERMISSION, Jenkins.getInstance().hasPermission(Item.BUILD),
-                BluePipeline.STOP_PERMISSION, Jenkins.getInstance().hasPermission(Item.CANCEL),
-                BluePipeline.CONFIGURE_PERMISSION, Jenkins.getInstance().hasPermission(Item.CONFIGURE)
+                BluePipeline.CREATE_PERMISSION, orgBase.hasPermission(Item.CREATE),
+                BluePipeline.READ_PERMISSION, orgBase.hasPermission(Item.READ),
+                BluePipeline.START_PERMISSION, orgBase.hasPermission(Item.BUILD),
+                BluePipeline.STOP_PERMISSION, orgBase.hasPermission(Item.CANCEL),
+                BluePipeline.CONFIGURE_PERMISSION, orgBase.hasPermission(Item.CONFIGURE)
         );
     }
 
     private Map<String, Boolean> getCredentialPermissions(){
         return ImmutableMap.of(
-                CREDENTIAL_CREATE_PERMISSION, Jenkins.getInstance().hasPermission(CredentialsProvider.CREATE),
-                CREDENTIAL_VIEW_PERMISSION, Jenkins.getInstance().hasPermission(CredentialsProvider.VIEW),
-                CREDENTIAL_DELETE_PERMISSION, Jenkins.getInstance().hasPermission(CredentialsProvider.DELETE),
-                CREDENTIAL_UPDATE_PERMISSION, Jenkins.getInstance().hasPermission(CredentialsProvider.UPDATE),
-                CREDENTIAL_MANAGE_DOMAINS_PERMISSION, Jenkins.getInstance().hasPermission(CredentialsProvider.MANAGE_DOMAINS)
+                CREDENTIAL_CREATE_PERMISSION, orgBase.hasPermission(CredentialsProvider.CREATE),
+                CREDENTIAL_VIEW_PERMISSION, orgBase.hasPermission(CredentialsProvider.VIEW),
+                CREDENTIAL_DELETE_PERMISSION, orgBase.hasPermission(CredentialsProvider.DELETE),
+                CREDENTIAL_UPDATE_PERMISSION, orgBase.hasPermission(CredentialsProvider.UPDATE),
+                CREDENTIAL_MANAGE_DOMAINS_PERMISSION, orgBase.hasPermission(CredentialsProvider.MANAGE_DOMAINS)
         );
     }
 
     private boolean isAnonymous(String name){
         return name.equals("anonymous") || user.getId().equals("anonymous");
+    }
+
+    private static final Pattern pattern = Pattern.compile("/blue/organizations/([^/]*)/");
+
+    private void initOrganizationBase() {
+        orgBase = Jenkins.getInstance();
+
+        String orgName = getOrganizationFromURL();
+        BlueOrganization organization = null;
+
+        OrganizationFactory orgFactory = OrganizationFactory.getInstance();
+        if (orgName != null) {
+            organization = orgFactory.get(orgName);
+        }
+
+        if (organization == null) {
+            Iterator<BlueOrganization> iterator = orgFactory.list().iterator();
+            if (iterator.hasNext()) {
+                organization = iterator.next();
+            }
+        }
+
+        if (organization instanceof AbstractOrganization) {
+            ModifiableTopLevelItemGroup group = ((AbstractOrganization) organization).getGroup();
+            if (group instanceof AccessControlled) {
+                orgBase = (AccessControlled) group;
+            }
+        }
+    }
+
+    private String getOrganizationFromURL() {
+        StaplerRequest currentRequest = Stapler.getCurrentRequest();
+        if (currentRequest == null) {
+            return null;
+        }
+
+        String requestURI = currentRequest.getRequestURI();
+
+        if (requestURI == null) {
+            return null;
+        }
+
+        Matcher matcher = pattern.matcher(requestURI);
+
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return null;
     }
 }
