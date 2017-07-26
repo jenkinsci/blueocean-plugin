@@ -102,7 +102,7 @@ public class BitbucketCloudApi extends BitbucketApi {
                     .addHeader("Authorization", basicAuthHeaderValue)
                     .execute().returnContent().asStream();
             BbPage<BbOrg> page =  om.readValue(inputStream, new TypeReference<BbCloudPage<BbCloudTeam>>(){});
-            if(pageNumber == 1){ //add user org as the first org on first page
+            if(pageNumber == 1){ //add user org as the first organization on first page
                 BbUser user = getUser();
                 if(page instanceof BbCloudPage) {
                     List<BbOrg> teams = new ArrayList<>();
@@ -279,7 +279,7 @@ public class BitbucketCloudApi extends BitbucketApi {
             Preconditions.checkNotNull(request);
             String mode=request.getHeader(X_BB_API_TEST_MODE_HEADER);
             boolean isCloudMode =  StringUtils.isNotBlank(mode) && mode.equals("cloud");
-            return isCloudMode || apiUrl.startsWith("https://bitbucket.org") || apiUrl.startsWith("https://api.bitbucket.org");
+            return isCloudMode || apiUrl.startsWith("https://bitbucket.org") || apiUrl.startsWith("https://api.bitbucket.organization");
         }
 
         @Nonnull

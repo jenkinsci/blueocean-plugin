@@ -5,6 +5,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 
+import javax.annotation.Nonnull;
 import java.util.Iterator;
 
 /**
@@ -21,7 +22,7 @@ public class QueueContainerImpl extends BlueQueueContainer {
 
     @Override
     public BlueQueueItem get(String name) {
-        for (BlueQueueItem blueQueueItem : QueueUtil.getQueuedItems(job)) {
+        for (BlueQueueItem blueQueueItem : QueueUtil.getQueuedItems(pipeline.organization, job)) {
             if(name.equals(blueQueueItem.getId())){
                 return blueQueueItem;
             }
@@ -31,8 +32,9 @@ public class QueueContainerImpl extends BlueQueueContainer {
 
 
     @Override
+    @Nonnull
     public Iterator<BlueQueueItem> iterator() {
-        return QueueUtil.getQueuedItems(job).iterator();
+        return QueueUtil.getQueuedItems(pipeline.organization, job).iterator();
     }
 
     @Override

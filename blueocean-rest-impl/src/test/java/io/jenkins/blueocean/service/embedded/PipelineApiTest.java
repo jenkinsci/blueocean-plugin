@@ -34,7 +34,6 @@ import hudson.tasks.junit.TestResultAction;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueArtifact;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
@@ -287,7 +286,7 @@ public class PipelineApiTest extends BaseTest {
     public void getPipelineRunWithTestResult() throws Exception {
         FreeStyleProject p = j.createFreeStyleProject("pipeline4");
         p.getBuildersList().add(new Shell("echo '<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
-            "<testsuite xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd\" name=\"io.jenkins.blueocean.jsextensions.JenkinsJSExtensionsTest\" time=\"35.7\" tests=\"1\" errors=\"0\" skipped=\"0\" failures=\"0\">\n" +
+            "<testsuite xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xsi:schemaLocation=\"https://maven.apache.organization/surefire/maven-surefire-plugin/xsd/surefire-test-report.xsd\" name=\"io.jenkins.blueocean.jsextensions.JenkinsJSExtensionsTest\" time=\"35.7\" tests=\"1\" errors=\"0\" skipped=\"0\" failures=\"0\">\n" +
             "  <properties>\n" +
             "  </properties>\n" +
             "  <testcase name=\"test\" classname=\"io.jenkins.blueocean.jsextensions.JenkinsJSExtensionsTest\" time=\"34.09\"/>\n" +
@@ -595,16 +594,15 @@ public class PipelineApiTest extends BaseTest {
     public static class PipelineFactoryTestImpl extends BluePipelineFactory {
 
         @Override
-        public BluePipeline getPipeline(Item item, Reachable parent) {
+        public BluePipeline getPipeline(Item item, Reachable parent, BlueOrganization organization) {
             if(item instanceof TestProject){
-                BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(item);
                 return new TestPipelineImpl(organization, (Job)item);
             }
             return null;
         }
 
         @Override
-        public Resource resolve(Item context, Reachable parent, Item target) {
+        public Resource resolve(Item context, Reachable parent, Item target, BlueOrganization organization) {
             return  null;
         }
     }

@@ -364,7 +364,7 @@ public class BitbucketServerApi extends BitbucketApi {
             Preconditions.checkNotNull(request);
             String mode=request.getHeader(X_BB_API_TEST_MODE_HEADER);
             boolean isCloudMode =  StringUtils.isNotBlank(mode) && mode.equals("cloud"); //used for testing
-            return !isCloudMode && !apiUrl.startsWith("https://bitbucket.org") && !apiUrl.startsWith("https://api.bitbucket.org");
+            return !isCloudMode && !apiUrl.startsWith("https://bitbucket.org") && !apiUrl.startsWith("https://api.bitbucket.organization");
         }
 
         @Nonnull

@@ -23,7 +23,13 @@ import jenkins.model.Jenkins;
  * @author Vivek Pandey
  */
 public abstract class BluePipelineFactory implements ExtensionPoint {
-    public abstract BluePipeline getPipeline(Item item, Reachable parent);
+    /**
+     * @param item to convert into a pipeline
+     * @param parent of the item
+     * @param organization the item is a child of
+     * @return resolved pipeline or null
+     */
+    public abstract BluePipeline getPipeline(Item item, Reachable parent, BlueOrganization organization);
 
     /**
      * Finds a blue ocean API model object that pairs up with the given {@code target},
@@ -41,12 +47,14 @@ public abstract class BluePipelineFactory implements ExtensionPoint {
      *      The parent object of the blue ocean API model object that pairs up with the 'context' parameter
      * @param target
      *      The core model object that we are trying to map to {@link Resource}
+     * @param organization
+     *      The organization that the context and target are a child of
      *
      * @return
      *      null if this implementation doesn't know how to map {@code context} to a blue ocean API model object.
      *      Otherwise return the BO API model object that pairs up with {@code target}
      */
-    public abstract Resource resolve(Item context, Reachable parent, Item target);
+    public abstract Resource resolve(Item context, Reachable parent, Item target, BlueOrganization organization);
 
     public static ExtensionList<BluePipelineFactory> all(){
         return ExtensionList.lookup(BluePipelineFactory.class);
@@ -64,7 +72,7 @@ public abstract class BluePipelineFactory implements ExtensionPoint {
         Item nextStep = findNextStep(Jenkins.getInstance(), item);
 
         for (BluePipelineFactory f : all()) {
-            Resource r = f.resolve(nextStep, org.getPipelines(), item);
+            Resource r = f.resolve(nextStep, org.getPipelines(), item, org);
             if (r!=null)    return r;
         }
         return null;
@@ -101,8 +109,12 @@ public abstract class BluePipelineFactory implements ExtensionPoint {
         if(!(item instanceof TopLevelItem)) {
             return null;
         }
+        BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(item);
+        if (organization == null) {
+            return null;
+        }
         for(BluePipelineFactory factory:BluePipelineFactory.all()){
-            BluePipeline pipeline = factory.getPipeline(item, parent);
+            BluePipeline pipeline = factory.getPipeline(item, parent, organization);
 
             if(pipeline != null){
                 return pipeline;

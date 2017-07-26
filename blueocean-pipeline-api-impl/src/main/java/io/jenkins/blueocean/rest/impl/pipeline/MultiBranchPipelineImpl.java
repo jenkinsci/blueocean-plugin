@@ -7,7 +7,6 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.Item;
-import hudson.model.ItemGroup;
 import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
@@ -44,6 +43,7 @@ import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.json.JsonBody;
 
+import javax.annotation.Nonnull;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -66,22 +66,24 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     private static final int MAX_MBP_RUNS_ROWS = Integer.getInteger("MAX_MBP_RUNS_ROWS", 250);
 
     private final Link self;
-    private final BlueOrganization org;
+    private final BlueOrganization organization;
 
-    public MultiBranchPipelineImpl(MultiBranchProject mbp) {
+    public MultiBranchPipelineImpl(BlueOrganization organization, MultiBranchProject mbp) {
         this.mbp = mbp;
-        this.org = OrganizationFactory.getInstance().getContainingOrg((ItemGroup) mbp);
-        if (this.org == null) {
-            throw new ServiceException.UnexpectedErrorException(String.format("could not find organization for %s", mbp.getFullName()));
-        }
-        this.self = org.getLink().rel("pipelines").rel(PipelineImpl.getRecursivePathFromFullName(this));
+        this.organization = organization;
+        this.self = this.organization.getLink().rel("pipelines").rel(PipelineImpl.getRecursivePathFromFullName(this));
+    }
+
+    @Nonnull
+    @Override
+    public BlueOrganization getOrganization() {
+        return organization;
     }
 
     @Override
-    public String getOrganization() {
-        return org.getName();
+    public String getOrganizationName() {
+        return organization.getName();
     }
-
 
     @Override
     public BlueFavorite favorite(@JsonBody BlueFavoriteAction favoriteAction) {
@@ -93,11 +95,7 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
             throw new ServiceException.BadRequestException("no default branch to favorite");
         }
         FavoriteUtil.toggle(favoriteAction, job);
-        BlueOrganization org = OrganizationFactory.getInstance().getContainingOrg(job);
-        if (org == null) {
-            throw new ServiceException.UnexpectedErrorException("Could not find org for " + job.getFullName());
-        }
-        return new FavoriteImpl(new BranchImpl(org, job, getLink().rel("branches")), getLink().rel("favorite"));
+        return new FavoriteImpl(new BranchImpl(organization, job, getLink().rel("branches")), getLink().rel("favorite"));
     }
 
     @Override
@@ -123,12 +121,12 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
 
     @Override
     public String getFullName() {
-        return AbstractPipelineImpl.getFullName(org, mbp);
+        return AbstractPipelineImpl.getFullName(organization, mbp);
     }
 
     @Override
     public String getFullDisplayName() {
-        return AbstractPipelineImpl.getFullDisplayName(org, mbp);
+        return AbstractPipelineImpl.getFullDisplayName(organization, mbp);
     }
 
     @Override
@@ -387,21 +385,21 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     public static class PipelineFactoryImpl extends BluePipelineFactory {
 
         @Override
-        public MultiBranchPipelineImpl getPipeline(Item item, Reachable parent) {
+        public MultiBranchPipelineImpl getPipeline(Item item, Reachable parent, BlueOrganization organization) {
             if (item instanceof MultiBranchProject) {
-                return new MultiBranchPipelineImpl((MultiBranchProject) item);
+                return new MultiBranchPipelineImpl(organization, (MultiBranchProject) item);
             }
             return null;
         }
 
         @Override
-        public Resource resolve(Item context, Reachable parent, Item target) {
+        public Resource resolve(Item context, Reachable parent, Item target, BlueOrganization organization) {
             if (context instanceof MultiBranchProject) {
                 if (context == target)
-                    return getPipeline(context, parent);
+                    return getPipeline(context, parent, organization);
                 if (context == target.getParent()) {
                     // target is a branch
-                    return getPipeline(context, parent).getBranches().get(target.getName());
+                    return getPipeline(context, parent, organization).getBranches().get(target.getName());
                 }
             }
             return null;
