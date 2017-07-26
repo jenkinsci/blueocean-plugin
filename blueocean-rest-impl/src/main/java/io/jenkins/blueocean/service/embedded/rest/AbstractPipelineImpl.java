@@ -58,9 +58,9 @@ public class AbstractPipelineImpl extends BluePipeline {
     private final Job job;
     protected final BlueOrganization org;
 
-    protected AbstractPipelineImpl(Job job) {
+    protected AbstractPipelineImpl(BlueOrganization organization, Job job) {
         this.job = job;
-        this.org = OrganizationFactory.getInstance().getContainingOrg(job);
+        this.org = organization;
     }
 
     @Override
@@ -253,8 +253,9 @@ public class AbstractPipelineImpl extends BluePipeline {
 
         @Override
         public BluePipeline getPipeline(Item item, Reachable parent) {
-            if (item instanceof Job) {
-                return new AbstractPipelineImpl((Job) item);
+            BlueOrganization org = OrganizationFactory.getInstance().getContainingOrg(item);
+            if (org != null && item instanceof Job) {
+                return new AbstractPipelineImpl(org, (Job) item);
             }
             return null;
         }
