@@ -266,9 +266,22 @@ export class PipelineGraph extends Component {
         const { nodeSpacingH, nodeSpacingV } = this.state.layout;
 
         let xp = nodeSpacingH / 2;
+        let previousTopNode = null;
 
         for (const column of nodeColumns) {
-            let yp = ypStart;
+            const topNode = column.nodes[0];
+
+            let yp = ypStart; // Reset Y to top for each column
+
+            if (previousTopNode) {
+                // Advance X position
+                if (previousTopNode.isPlaceholder || topNode.isPlaceholder) {
+                    // Don't space placeholder nodes (start/end) as wide as normal.
+                    xp += Math.floor(nodeSpacingH * 0.7);
+                } else {
+                    xp += nodeSpacingH;
+                }
+            }
 
             for (const node of column.nodes) {
                 node.x = xp;
@@ -277,7 +290,7 @@ export class PipelineGraph extends Component {
                 yp += nodeSpacingV;
             }
 
-            xp += nodeSpacingH;
+            previousTopNode = topNode;
         }
     }
 
