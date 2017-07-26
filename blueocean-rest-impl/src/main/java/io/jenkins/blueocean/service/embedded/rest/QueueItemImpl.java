@@ -6,6 +6,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -50,12 +51,12 @@ public class QueueItemImpl extends BlueQueueItem {
 
     @Override
     public String getOrganization() {
-        if (item.task instanceof Item) {
-            Item i = (Item) item.task;
-            return OrganizationFactory.getInstance().getContainingOrg(i).getName();
-        } else {
+        if (!(item.task instanceof Item)) {
             return null;
         }
+        Item i = (Item) item.task;
+        BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(i);
+        return organization == null ? null : organization.getName();
     }
 
     @Override

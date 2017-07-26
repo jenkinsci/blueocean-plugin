@@ -11,7 +11,9 @@ import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.Resource;
@@ -37,8 +39,8 @@ public class BranchImpl extends PipelineImpl {
     private final Link parent;
     protected final Job job;
 
-    public BranchImpl(Job job, Link parent) {
-        super(job);
+    public BranchImpl(BlueOrganization org, Job job, Link parent) {
+        super(org, job);
         this.job = job;
         this.parent = parent;
     }
@@ -76,8 +78,9 @@ public class BranchImpl extends PipelineImpl {
 
         @Override
         public BluePipeline getPipeline(Item item, Reachable parent) {
-            if (item instanceof WorkflowJob && item.getParent() instanceof MultiBranchProject) {
-                return new BranchImpl((Job) item, parent.getLink());
+            BlueOrganization org = OrganizationFactory.getInstance().getContainingOrg(item);
+            if (org != null && item instanceof WorkflowJob && item.getParent() instanceof MultiBranchProject) {
+                return new BranchImpl(org, (Job) item, parent.getLink());
             }
             return null;
         }

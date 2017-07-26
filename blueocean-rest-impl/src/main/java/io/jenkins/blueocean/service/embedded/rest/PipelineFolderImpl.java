@@ -39,6 +39,9 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     public PipelineFolderImpl(ItemGroup folder, Link parent) {
         this.org = OrganizationFactory.getInstance().getContainingOrg(folder);
+        if (this.org == null) {
+            throw new ServiceException.UnexpectedErrorException(String.format("could not find organization for %s", folder.getFullName()));
+        }
         this.folder = folder;
         this.parent = parent;
     }
