@@ -21,12 +21,12 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
     logger.debug('jenkinsNode', jenkinsNode);
     const isRunning = () => {
         switch (jenkinsNode.state) {
-        case 'RUNNING':
-        case 'PAUSED':
-        case 'QUEUED':
-            return true;
-        default:
-            return false;
+            case 'RUNNING':
+            case 'PAUSED':
+            case 'QUEUED':
+                return true;
+            default:
+                return false;
         }
     };
     const { durationInMillis, startTime } = jenkinsNode;
@@ -169,6 +169,13 @@ export default class PipelineRunGraph extends Component {
         });
     }
 
+    graphNodeClicked = (name, stageId) => {
+        const { callback } = this.props;
+        if (callback) {
+            callback(stageId);
+        }
+    };
+
     render() {
         const { graphNodes, t } = this.state;
 
@@ -182,32 +189,37 @@ export default class PipelineRunGraph extends Component {
             return null;
         }
 
+        // TODO: Move this all into styles
         const outerDivStyle = {
             display: 'flex',
             justifyContent: 'center',
         };
         const id = this.props.selectedStage.id;
-        let selectedStage = graphNodes.filter((item) => {
-            let matches = item.id === id;
-            if (!matches && item.children.length > 0) {
-                const childMatches = item.children.filter(child => child ? child.id === id : false);
-                matches = childMatches.length === 1;
-            }
-            return matches;
-        });
-        if (selectedStage[0] && selectedStage[0].id !== id && selectedStage[0].children.length > 0) {
-            selectedStage = selectedStage[0].children.filter(item => item ? item.id === id : false);
-        }
-        return (
-            <div style={outerDivStyle}>
-                <PipelineGraph
-                  stages={graphNodes}
-                  selectedStage={selectedStage[0]}
-                  onNodeClick={
-                    (name, stageId) => {
-                        this.props.callback(stageId);
+
+        let selectedStage = null;
+
+        // Find selected stage by id
+        for (const topStage of graphNodes) {
+            if (topStage.id === id) {
+                selectedStage = topStage;
+            } else {
+                for (const child of topStage.children) {
+                    if (child.id === id) {
+                        selectedStage = child;
+                        break;
                     }
-                  }
+                }
+            }
+            if (selectedStage) {
+                break;
+            }
+        }
+
+        return (
+            <div className="PipelineGraph-container" style={outerDivStyle}>
+                <PipelineGraph stages={graphNodes}
+                               selectedStage={selectedStage}
+                               onNodeClick={this.graphNodeClicked}
                 />
             </div>
         );
