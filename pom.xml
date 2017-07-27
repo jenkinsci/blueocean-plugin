@@ -564,7 +564,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>junit</artifactId>
-            <version>1.20</version>
+            <version>1.21-20170727.163537-3</version> <!-- TODO: Switch to release once https://github.com/jenkinsci/junit-plugin/pull/76 is merged and released -->
         </dependency>
 
 

@@ -6,6 +6,7 @@ import hudson.model.Run;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory.Result;
+import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
 import io.jenkins.blueocean.rest.model.BlueTestResult.State;
 import io.jenkins.blueocean.rest.model.BlueTestResult.Status;
@@ -41,6 +42,16 @@ public class BlueTestResultFactoryTest extends BaseTest {
         testsToReturn = 0;
         Run<?, ?> run = mock(Run.class);
         Result resolved = BlueTestResultFactory.resolve(run, null);
+        assertNull(resolved.summary);
+        assertNull(resolved.results);
+    }
+
+    @Test
+    public void testFactoryReturnsZeroTestsForNode() {
+        testsToReturn = 0;
+        Run<?, ?> run = mock(Run.class);
+        BluePipelineNode node = mock(BluePipelineNode.class);
+        Result resolved = BlueTestResultFactory.resolve(run, node);
         assertNull(resolved.summary);
         assertNull(resolved.results);
     }

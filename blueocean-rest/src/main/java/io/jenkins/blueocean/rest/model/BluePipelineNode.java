@@ -7,6 +7,7 @@ import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.List;
 
+import static io.jenkins.blueocean.rest.model.BlueRun.TEST_SUMMARY;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE_NODE;
 
 /**
@@ -68,6 +69,18 @@ public abstract class BluePipelineNode extends BluePipelineStep{
      */
     @Navigable
     public abstract BluePipelineStepContainer getSteps();
+
+    /**
+     * @return Gives tests in this node.
+     */
+    @Navigable
+    public abstract BlueTestResultContainer getTests();
+
+    /**
+     * @return Gives the test summary for this node.
+     */
+    @Exported(name = TEST_SUMMARY, inline = true, skipNull = true)
+    public abstract BlueTestSummary getTestSummary();
 
     @ExportedBean
     public abstract static class Edge{

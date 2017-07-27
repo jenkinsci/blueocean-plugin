@@ -1,7 +1,17 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.Iterables;
+import hudson.Extension;
 import hudson.model.Action;
+import hudson.model.Run;
+import hudson.tasks.junit.CaseResult;
+import hudson.tasks.junit.TestResult;
+import hudson.tasks.junit.TestResultAction;
+import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueInputStep;
@@ -9,7 +19,12 @@ import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueTestResult;
+import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
+import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
+import io.jenkins.blueocean.service.embedded.rest.BlueJUnitTestResult;
+import io.jenkins.blueocean.service.embedded.rest.BlueTestResultContainerImpl;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -68,6 +83,16 @@ public class PipelineNodeImpl extends BluePipelineNode {
     @Override
     public BlueRun.BlueRunState getStateObj() {
         return status.getState();
+    }
+
+    @Override
+    public BlueTestResultContainer getTests() {
+        return new BlueTestResultContainerImpl(this, run);
+    }
+
+    @Override
+    public BlueTestSummary getTestSummary() {
+        return BlueTestResultFactory.resolve(run, this).summary;
     }
 
     @Override
@@ -159,6 +184,44 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     FlowNodeWrapper getFlowNodeWrapper(){
         return node;
+    }
+
+    @Extension
+    public static class NodeFactoryImpl extends BlueTestResultFactory {
+        @Override
+        public Result getBlueTestResults(Run<?, ?> run, final Reachable parent) {
+            Iterable<BlueTestResult> results = null;
+            TestResultAction action = run.getAction(TestResultAction.class);
+            if (action != null && parent instanceof BluePipelineNode) {
+                List<CaseResult> testsToTransform = new ArrayList<>();
+
+                // TODO: node.getSteps() doesn't include block-scoped steps, which could add tests - i.e., withMaven
+                TestResult testsForNode = action.getResult().getResultByRunAndNodes(run.getExternalizableId(),
+                    ImmutableList.copyOf(Iterables.transform(((BluePipelineNode) parent).getSteps(),
+                        new Function<BluePipelineStep, String>() {
+                            @Override
+                            public String apply(BluePipelineStep step) {
+                                return step.getId();
+                            }
+                        })));
+                if (testsForNode != null) {
+                    testsToTransform.addAll(testsForNode.getFailedTests());
+                    testsToTransform.addAll(testsForNode.getSkippedTests());
+                    testsToTransform.addAll(testsForNode.getPassedTests());
+                }
+
+                results = Iterables.transform(testsToTransform, new Function<CaseResult, BlueTestResult>() {
+                    @Override
+                    public BlueTestResult apply(@Nullable CaseResult input) {
+                        return new BlueJUnitTestResult(input, parent.getLink());
+                    }
+                });
+            }
+            if (results == null) {
+                results = ImmutableList.of();
+            }
+            return Result.of(results);
+        }
     }
 
 }

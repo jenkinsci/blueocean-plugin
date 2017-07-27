@@ -4,6 +4,7 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
+import hudson.FilePath;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.queue.QueueTaskFuture;
@@ -310,6 +311,40 @@ public class PipelineNodeTest extends PipelineBaseTest {
         resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+testStageId+"/steps/", List.class);
         Assert.assertEquals(7,resp.size());
 
+    }
+
+    @Test
+    public void testTestsInStage() throws Exception{
+        String pipeline = "" +
+            "node {\n" +
+            "  stage ('dev') {\n" +
+            "    junitResults('*.xml')\n" +
+            "  }\n" +
+            "}\n";
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+
+        job1.setDefinition(new CpsFlowDefinition(pipeline,true));
+        FilePath ws = j.jenkins.getWorkspaceFor(job1);
+        FilePath testFile = ws.child("test-result.xml");
+        testFile.copyFrom(PipelineNodeTest.class.getResource("testResult.xml"));
+
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
+        List<FlowNode> stages = getStages(builder);
+
+        Assert.assertEquals(1, stages.size());
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        Assert.assertEquals(1, resp.size());
+
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/tests/", List.class);
+        Assert.assertEquals(1, resp.size());
+
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/6/tests/", List.class);
+        Assert.assertEquals(1, resp.size());
     }
 
     @Test
