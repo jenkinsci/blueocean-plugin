@@ -55,17 +55,20 @@ public class UserImpl extends BlueUser {
 
     protected final User user;
 
-    private AccessControlled orgBase;
+    private final BlueOrganization organization;
+    private final AccessControlled organizationBase;
 
     private final Reachable parent;
-    public UserImpl(User user, Reachable parent) {
+
+    public UserImpl(BlueOrganization organization, User user, Reachable parent) {
         this.parent = parent;
         this.user = user;
-        initOrganizationBase();
+        this.organization = organization;
+        organizationBase = initOrganizationBase();
     }
 
-    public UserImpl(User user) {
-        this(user, null);
+    public UserImpl(BlueOrganization organization, User user) {
+        this(organization, user, null);
     }
 
     @Override
@@ -213,21 +216,21 @@ public class UserImpl extends BlueUser {
 
     private Map<String, Boolean> getPipelinePermissions(){
         return ImmutableMap.of(
-                BluePipeline.CREATE_PERMISSION, orgBase.hasPermission(Item.CREATE),
-                BluePipeline.READ_PERMISSION, orgBase.hasPermission(Item.READ),
-                BluePipeline.START_PERMISSION, orgBase.hasPermission(Item.BUILD),
-                BluePipeline.STOP_PERMISSION, orgBase.hasPermission(Item.CANCEL),
-                BluePipeline.CONFIGURE_PERMISSION, orgBase.hasPermission(Item.CONFIGURE)
+                               BluePipeline.CREATE_PERMISSION, organizationBase.hasPermission(Item.CREATE),
+                               BluePipeline.READ_PERMISSION, organizationBase.hasPermission(Item.READ),
+                               BluePipeline.START_PERMISSION, organizationBase.hasPermission(Item.BUILD),
+                               BluePipeline.STOP_PERMISSION, organizationBase.hasPermission(Item.CANCEL),
+                               BluePipeline.CONFIGURE_PERMISSION, organizationBase.hasPermission(Item.CONFIGURE)
         );
     }
 
     private Map<String, Boolean> getCredentialPermissions(){
         return ImmutableMap.of(
-                CREDENTIAL_CREATE_PERMISSION, orgBase.hasPermission(CredentialsProvider.CREATE),
-                CREDENTIAL_VIEW_PERMISSION, orgBase.hasPermission(CredentialsProvider.VIEW),
-                CREDENTIAL_DELETE_PERMISSION, orgBase.hasPermission(CredentialsProvider.DELETE),
-                CREDENTIAL_UPDATE_PERMISSION, orgBase.hasPermission(CredentialsProvider.UPDATE),
-                CREDENTIAL_MANAGE_DOMAINS_PERMISSION, orgBase.hasPermission(CredentialsProvider.MANAGE_DOMAINS)
+                               CREDENTIAL_CREATE_PERMISSION, organizationBase.hasPermission(CredentialsProvider.CREATE),
+                               CREDENTIAL_VIEW_PERMISSION, organizationBase.hasPermission(CredentialsProvider.VIEW),
+                               CREDENTIAL_DELETE_PERMISSION, organizationBase.hasPermission(CredentialsProvider.DELETE),
+                               CREDENTIAL_UPDATE_PERMISSION, organizationBase.hasPermission(CredentialsProvider.UPDATE),
+                               CREDENTIAL_MANAGE_DOMAINS_PERMISSION, organizationBase.hasPermission(CredentialsProvider.MANAGE_DOMAINS)
         );
     }
 
@@ -235,25 +238,8 @@ public class UserImpl extends BlueUser {
         return name.equals("anonymous") || user.getId().equals("anonymous");
     }
 
-    private static final Pattern pattern = Pattern.compile("/blue/organizations/([^/]*)/");
-
-    private void initOrganizationBase() {
-        orgBase = Jenkins.getInstance();
-
-        String orgName = getOrganizationFromURL();
-        BlueOrganization organization = null;
-
-        OrganizationFactory orgFactory = OrganizationFactory.getInstance();
-        if (orgName != null) {
-            organization = orgFactory.get(orgName);
-        }
-
-        if (organization == null) {
-            Iterator<BlueOrganization> iterator = orgFactory.list().iterator();
-            if (iterator.hasNext()) {
-                organization = iterator.next();
-            }
-        }
+    private AccessControlled initOrganizationBase() {
+        AccessControlled orgBase = Jenkins.getInstance();
 
         if (organization instanceof AbstractOrganization) {
             ModifiableTopLevelItemGroup group = ((AbstractOrganization) organization).getGroup();
@@ -261,25 +247,7 @@ public class UserImpl extends BlueUser {
                 orgBase = (AccessControlled) group;
             }
         }
-    }
 
-    private String getOrganizationFromURL() {
-        StaplerRequest currentRequest = Stapler.getCurrentRequest();
-        if (currentRequest == null) {
-            return null;
-        }
-
-        String requestURI = currentRequest.getRequestURI();
-
-        if (requestURI == null) {
-            return null;
-        }
-
-        Matcher matcher = pattern.matcher(requestURI);
-
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-        return null;
+        return orgBase;
     }
 }
