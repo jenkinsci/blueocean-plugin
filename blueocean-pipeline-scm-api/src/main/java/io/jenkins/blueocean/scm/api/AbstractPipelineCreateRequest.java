@@ -4,6 +4,7 @@ import hudson.model.Item;
 import hudson.model.Items;
 import hudson.model.TopLevelItem;
 import hudson.model.TopLevelItemDescriptor;
+import hudson.model.User;
 import hudson.security.ACL;
 import hudson.security.AccessControlled;
 import io.jenkins.blueocean.commons.ErrorMessage;
@@ -41,27 +42,23 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
 
 
     protected  @Nonnull TopLevelItem createProject(String name, String descriptorName, Class<? extends TopLevelItemDescriptor> descriptorClass) throws IOException{
-        final ModifiableTopLevelItemGroup p = getParent();
-        final ACL acl = (p instanceof AccessControlled) ? ((AccessControlled) p).getACL() : Jenkins.getInstance().getACL(); 
-        Authentication a = Jenkins.getAuthentication();
-        if(!acl.hasPermission(a, Item.CREATE)){
-            throw new ServiceException.ForbiddenException(
-                    String.format("Failed to create pipeline: %s. User %s doesn't have Job create permission", name, a.getName()));
-        }
+        final ModifiableTopLevelItemGroup itemGroup = getParent();
         TopLevelItemDescriptor descriptor = Items.all().findByName(descriptorName);
         if(descriptor == null || !(descriptorClass.isAssignableFrom(descriptor.getClass()))){
             throw new ServiceException.BadRequestException(String.format("Failed to create pipeline: %s, descriptor %s is not found", name, descriptorName));
         }
 
-        if(!descriptor.isApplicableIn(p)){
+        if(!descriptor.isApplicableIn(itemGroup)){
             throw new ServiceException.ForbiddenException(
                     String.format("Failed to create pipeline: %s. Pipeline can't be created in Jenkins root folder", name));
         }
 
-        if(!acl.hasCreatePermission(a, p, descriptor)){
+        final ACL acl = (itemGroup instanceof AccessControlled) ? ((AccessControlled) itemGroup).getACL() : Jenkins.getInstance().getACL();
+        Authentication authentication = Jenkins.getAuthentication();
+        if(!acl.hasCreatePermission(authentication, itemGroup, descriptor)){
             throw new ServiceException.ForbiddenException("Missing permission: " + Item.CREATE.group.title+"/"+Item.CREATE.name + " " + Item.CREATE + "/" + descriptor.getDisplayName());
         }
-        return p.createProject(descriptor, name, true);
+        return itemGroup.createProject(descriptor, name, true);
     }
 
     protected ModifiableTopLevelItemGroup getParent() {
@@ -72,5 +69,20 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
         }
 
         return parent;
+    }
+
+    protected User checkUserIsAuthenticatedAndHasItemCreatePermission() {
+        User authenticatedUser = User.current();
+        if (authenticatedUser == null) {
+            throw new ServiceException.UnauthorizedException("Must be logged in to create a pipeline");
+        }
+        Authentication authentication = Jenkins.getAuthentication();
+        final ModifiableTopLevelItemGroup p = getParent();
+        final ACL acl = (p instanceof AccessControlled) ? ((AccessControlled) p).getACL() : Jenkins.getInstance().getACL();
+        if(!acl.hasPermission(authentication, Item.CREATE)){
+            throw new ServiceException.ForbiddenException(
+                String.format("User %s doesn't have Job create permission", authenticatedUser.getId()));
+        }
+        return authenticatedUser;
     }
 }

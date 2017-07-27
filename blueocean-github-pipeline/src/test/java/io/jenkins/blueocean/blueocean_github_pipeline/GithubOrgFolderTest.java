@@ -43,7 +43,10 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -153,12 +156,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .post("/organizations/" + getOrgName() + "/pipelines/")
-                .data(ImmutableMap.of("name", orgFolderName,
-                        "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("config",ImmutableMap.of(
-                                "credentialId", credentialId,
-                                "uri", githubApiUrl))
-                ))
+                .data(buildRequestBody(credentialId, githubApiUrl, orgFolderName))
                 .build(Map.class);
         assertNotNull(resp);
     }
@@ -206,6 +204,85 @@ public class GithubOrgFolderTest extends GithubMockBase {
                 ))
                 .build(Map.class);
 
+        assertNotNull(resp);
+    }
+
+    @Test
+    public void shouldFailForAnonUserWithCredentialIdMissing() throws Exception {
+        // create credential for vivek
+        createGithubCredential(user);
+
+        String orgFolderName = "cloudbeers";
+        Map resp = new RequestBuilder(baseUrl)
+            .status(401)
+            .post("/organizations/" + getOrgName() + "/pipelines/")
+            .data(buildRequestBody(null, githubApiUrl, orgFolderName, "PR-demo"))
+            .build(Map.class);
+        assertNotNull(resp);
+    }
+
+    @Test
+    public void shouldFailForAnonUserWithCredentialIdSent() throws Exception {
+        // create credential for vivek
+        String credentialId = createGithubCredential(user);
+
+        String orgFolderName = "cloudbeers";
+        Map resp = new RequestBuilder(baseUrl)
+            .status(401)
+            .post("/organizations/" + getOrgName() + "/pipelines/")
+            .data(buildRequestBody(credentialId, githubApiUrl, orgFolderName, "PR-demo"))
+            .build(Map.class);
+        assertNotNull(resp);
+    }
+
+    @Test
+    public void shouldFailForAuthedUserWithoutCredentialCreatedAndCredentialIdMissing() throws Exception {
+        // create credential for vivek
+        createGithubCredential(user);
+        // switch to bob
+        User user = login();
+
+        String orgFolderName = "cloudbeers";
+        Map resp = new RequestBuilder(baseUrl)
+            .status(400)
+            .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .post("/organizations/" + getOrgName() + "/pipelines/")
+            .data(buildRequestBody(null, githubApiUrl, orgFolderName, "PR-demo"))
+            .build(Map.class);
+        assertNotNull(resp);
+    }
+
+    @Test
+    public void shouldFailForAuthedUserWithoutCredentialCreatedAndCredentialIdSent() throws Exception {
+        // create credential for default vivek user
+        String credentialId = createGithubCredential(user);
+        // switch to bob
+        User user = login();
+
+        String orgFolderName = "cloudbeers";
+        Map resp = new RequestBuilder(baseUrl)
+            .status(400)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .post("/organizations/" + getOrgName() + "/pipelines/")
+            .data(buildRequestBody(credentialId, githubApiUrl, orgFolderName, "PR-demo"))
+            .build(Map.class);
+        assertNotNull(resp);
+    }
+
+    @Test
+    public void shouldSucceedForAuthedUserWithCredentialCreatedAndCredentialIdMissing() throws Exception {
+        // switch to bob and create a credential
+        User user = login();
+        createGithubCredential(user);
+
+        String orgFolderName = "cloudbeers";
+        Map resp = new RequestBuilder(baseUrl)
+            .status(201)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .post("/organizations/" + getOrgName() + "/pipelines/")
+            // since credentialId will default to 'github', it's okay to omit it in request
+            .data(buildRequestBody(null, githubApiUrl, orgFolderName, "PR-demo"))
+            .build(Map.class);
         assertNotNull(resp);
     }
 
@@ -331,4 +408,24 @@ public class GithubOrgFolderTest extends GithubMockBase {
         }
     }
 
+
+    private Map buildRequestBody(String credentialId, String apiUrl, String orgFolderName, String... repoNames) {
+        ImmutableMap.Builder scmConfig = ImmutableMap.builder()
+            .put("uri", apiUrl);
+
+        if (credentialId != null) {
+            scmConfig.put("credentialId", credentialId);
+        }
+
+        scmConfig.put("config", ImmutableMap.of(
+            "orgName", orgFolderName,
+            "repos", ImmutableList.copyOf(repoNames)
+        ));
+
+        return ImmutableMap.of(
+            "name", orgFolderName,
+            "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
+            "scmConfig", scmConfig.build()
+        );
+    }
 }

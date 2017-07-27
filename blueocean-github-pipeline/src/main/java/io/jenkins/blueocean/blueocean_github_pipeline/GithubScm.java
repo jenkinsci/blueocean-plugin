@@ -63,7 +63,7 @@ public class GithubScm extends Scm {
     static final String GITHUB_API_URL_PROPERTY = "blueocean.github.url";
 
     static final String DEFAULT_API_URI = "https://api.github.com";
-    private static final String ID = "github";
+    public static final String ID = "github";
 
     //desired scopes
     private static final String USER_EMAIL_SCOPE = "user:email";
