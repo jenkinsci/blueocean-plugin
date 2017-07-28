@@ -31,10 +31,11 @@ public class JSONDataWriterTest {
 
     @Test
     public void testJsonCharacters() throws Exception {
-        String serialize = serialize(new JsonCharacters(), JsonCharacters.class);
-        assertEquals("{\"_class\":\"JsonCharacters\",\"value\":\"\\\"'\\/[]{}\\\\\"}", serialize);
-        final String expected = "{\"_class\":\"JsonCharacters2\",\"value\":\"\\\"foo\\\" isn't \\\"bar\\\". specials: \\b\\r\\n\\f\\t\\\\\\/\"}";
-        assertEquals(expected, serialize(new JsonCharacters2(), JsonCharacters2.class));
+        String jsonCharactersExpected = "{\"_class\":\"JsonCharacters\",\"value\":\"\\\"'\\/[]{}\\\\\"}";
+        assertEquals(jsonCharactersExpected, serialize(new JsonCharacters(), JsonCharacters.class));
+
+        final String jsonCharacters2Expected = "{\"_class\":\"JsonCharacters2\",\"value\":\"\\\"foo\\\" isn't \\\"bar\\\". specials: \\b\\r\\n\\f\\t\\\\\\/\"}";
+        assertEquals(jsonCharacters2Expected, serialize(new JsonCharacters2(), JsonCharacters2.class));
     }
 
     @ExportedBean
