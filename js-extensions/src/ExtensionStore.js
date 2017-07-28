@@ -137,6 +137,19 @@ export default class ExtensionStore {
             return;
         }
 
+        const doOnload = (extensions) => {
+            // Map to instances and call the supplied onload callback.
+            let instanceList = [];
+            extensions.forEach(extension => {
+                if (extension.instance) {
+                    instanceList.push(extension.instance);
+                } else {
+                    logger.warn("Failed to locate/load instance for ExtensionPoint. Check the plugin's jenkins-js-extension.yaml file and make sure the ExtensionPoint is properly defined. If using a Hosted UI bundle, then the plugin should probably be updated in the Jenkins Plugin Manager.", extension);
+                }
+            });
+            onload(instanceList);
+        };
+
         if (filters) {
             // allow calls like: getExtensions('abcd', dataType(something), ext => ...)
             if (!filters.length) {
@@ -145,8 +158,7 @@ export default class ExtensionStore {
             var remaining = [].concat(filters);
             var nextFilter = extensions => {
                 if (remaining.length === 0) {
-                    // Map to instances and proceed
-                    onload(extensions.map(m => m.instance));
+                    doOnload(extensions);
                 } else {
                     var filter = remaining[0];
                     remaining = remaining.slice(1);
@@ -155,8 +167,7 @@ export default class ExtensionStore {
             };
             nextFilter(extensions);
         } else {
-            // Map to instances and proceed
-            onload(extensions.map(m => m.instance));
+            doOnload(extensions);
         }
     }
 
