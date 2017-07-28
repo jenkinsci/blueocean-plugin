@@ -28,6 +28,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.junit.After;
+import org.junit.After;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
 import org.kohsuke.stapler.Stapler;

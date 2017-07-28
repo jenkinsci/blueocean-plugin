@@ -2,7 +2,6 @@ import React from 'react';
 import ScmProvider from '../ScmProvider';
 
 import { GithubCreationApi } from './api/GithubCreationApi';
-import { GithubCredentialsApi } from './api/GithubCredentialsApi';
 
 import GithubDefaultOption from './GithubDefaultOption';
 import GithubFlowManager from './GithubFlowManager';
@@ -17,9 +16,8 @@ export default class GithubScmProvider extends ScmProvider {
 
     getFlowManager() {
         const creationApi = new GithubCreationApi();
-        const credentialsApi = new GithubCredentialsApi();
 
-        this.manager = new GithubFlowManager(creationApi, credentialsApi);
+        this.manager = new GithubFlowManager(creationApi);
         return this.manager;
     }
 
