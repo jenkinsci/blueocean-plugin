@@ -58,7 +58,20 @@ export default class ExtensionStore {
             extension.instance = instance;
             return;
         }
-        throw new Error(`Unable to locate plugin for ${extensionPointId} / ${pluginId} / ${component}`);
+
+        // In the case of hosted UI resources, the installed plugin's ExtensionPoints definition
+        // can be out of sync with the components in the plugin's hosted bundle definition. The
+        // installed plugin should be updated, but we can actually work around the problem here by
+        // manufacturing the extension point definition from the info provided by the bundle
+        // registration call.
+        extensions.push({
+            extensionPoint: extensionPointId,
+            pluginId: pluginId,
+            component: component,
+            instance: instance
+        });
+
+        logger.warn(`Unable to locate ExtensionPoint definition for ${extensionPointId} / ${pluginId} / ${component}. Auto-registered the ExtensionPoint, but the plugin should probably be updated in Jenkins Plugin Manager.`);
     }
 
     /**
