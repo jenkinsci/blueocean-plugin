@@ -237,10 +237,11 @@ public class GithubOrgFolderTest extends GithubMockBase {
 
     @Test
     public void shouldFailForAuthedUserWithoutCredentialCreatedAndCredentialIdMissing() throws Exception {
-        // create credential for vivek
+        // create credential for bob
         createGithubCredential(user);
-        // switch to bob
-        User user = login();
+        // switch to vivek
+
+        User user = login("vivek", "Vivek P", "Vivek@jenkins-ci.org");
 
         String orgFolderName = "cloudbeers";
         Map resp = new RequestBuilder(baseUrl)
@@ -254,10 +255,10 @@ public class GithubOrgFolderTest extends GithubMockBase {
 
     @Test
     public void shouldFailForAuthedUserWithoutCredentialCreatedAndCredentialIdSent() throws Exception {
-        // create credential for default vivek user
+        // create credential for default bob user
         String credentialId = createGithubCredential(user);
-        // switch to bob
-        User user = login();
+        // switch to vivek
+        User user = login("vivek", "Where is vivek", "vivek@jenkins-ci.org");
 
         String orgFolderName = "cloudbeers";
         Map resp = new RequestBuilder(baseUrl)

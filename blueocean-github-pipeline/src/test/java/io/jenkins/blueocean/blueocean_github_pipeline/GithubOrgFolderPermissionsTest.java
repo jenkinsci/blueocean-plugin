@@ -102,7 +102,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         }
         else {
             assertEquals(403, resp.get("code"));
-            assertEquals("Failed to create pipeline: cloudbeers1. User bob doesn't have Job create permission", resp.get("message"));
+            assertEquals("User bob doesn't have Job create permission", resp.get("message"));
             Assert.assertNull(item);
             String r = get("/organizations/"+ getOrgName() + "/pipelines/"+orgFolderName+"/", 404, String.class);
         }
