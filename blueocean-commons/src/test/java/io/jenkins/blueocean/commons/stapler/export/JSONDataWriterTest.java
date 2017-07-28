@@ -33,6 +33,8 @@ public class JSONDataWriterTest {
     public void testJsonCharacters() throws Exception {
         String serialize = serialize(new JsonCharacters(), JsonCharacters.class);
         assertEquals("{\"_class\":\"JsonCharacters\",\"value\":\"\\\"'\\/[]{}\\\\\"}", serialize);
+        final String expected = "{\"_class\":\"JsonCharacters2\",\"value\":\"\\\"foo\\\" isn't \\\"bar\\\". specials: \\b\\r\\n\\f\\t\\\\\\/\"}";
+        assertEquals(expected, serialize(new JsonCharacters2(), JsonCharacters2.class));
     }
 
     @ExportedBean
@@ -40,6 +42,14 @@ public class JSONDataWriterTest {
         @Exported
         public String getValue() {
             return "\"'/[]{}\\";
+        }
+    }
+
+    @ExportedBean
+    public static class JsonCharacters2 {
+        @Exported
+        public String getValue() {
+            return "\"foo\" isn't \"bar\". specials: \b\r\n\f\t\\/";
         }
     }
 
