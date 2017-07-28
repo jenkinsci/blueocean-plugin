@@ -209,7 +209,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
 
     @Test
     public void shouldFailForAnonUserWithCredentialIdMissing() throws Exception {
-        // create credential for vivek
+        // create credential for bob
         createGithubCredential(user);
 
         String orgFolderName = "cloudbeers";
@@ -223,7 +223,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
 
     @Test
     public void shouldFailForAnonUserWithCredentialIdSent() throws Exception {
-        // create credential for vivek
+        // create credential for bob
         String credentialId = createGithubCredential(user);
 
         String orgFolderName = "cloudbeers";
