@@ -7,6 +7,8 @@ import BbLoadingStep from '../steps/BbLoadingStep';
 
 import BbChooseServerStep from './steps/BbChooseServerStep';
 import BbServerManager from './BbServerManager';
+import BbCredentialsStep from '../steps/BbCredentialStep';
+import BbOrgListStep from '../steps/BbOrgListStep';
 import STATE from './BbServerCreationState';
 
 
@@ -51,6 +53,20 @@ export default class BbServerFlowManager extends BbCloudFlowManager {
         return this.selectedServer ? this.selectedServer.apiUrl : null;
     }
 
+    renderCredentialStep() {
+        this.renderStep({
+            stateId: STATE.STEP_CREDENTIAL,
+            stepElement: <BbCredentialsStep />,
+            afterStateId: this._getCredentialsStepAfterStateId(),
+        });
+    }
+
+    listOrganizations() {
+        this._creationApi.listOrganizations(this.credentialId, this.getApiUrl())
+            .then(waitAtLeast(MIN_DELAY))
+            .then(orgs => this._listOrganizationsSuccess(orgs));
+    }
+
     _getCredentialsStepAfterStateId() {
         return STATE.STEP_CHOOSE_SERVER;
     }
@@ -58,6 +74,10 @@ export default class BbServerFlowManager extends BbCloudFlowManager {
     _getOrganizationsStepAfterStateId() {
         return this.isStateAdded(STATE.STEP_CREDENTIAL) ?
             STATE.STEP_CREDENTIAL : STATE.STEP_CHOOSE_SERVER;
+    }
+
+    _renderOrgStep() {
+        return <BbOrgListStep />;
     }
 
     _loadServerList() {

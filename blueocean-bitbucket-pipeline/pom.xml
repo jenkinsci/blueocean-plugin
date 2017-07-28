@@ -47,6 +47,12 @@
       <artifactId>commons-codec</artifactId>
     </dependency>
 
+    <!-- TODO: move these to parent pom dependencyManagement -->
+    <dependency>
+      <groupId>org.bitbucket.b_c</groupId>
+      <artifactId>jose4j</artifactId>
+    </dependency>
+
     <!-- test dependencies -->
     <dependency>
       <groupId>${project.groupId}</groupId>

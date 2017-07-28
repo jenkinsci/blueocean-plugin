@@ -1,4 +1,6 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
+  <!-- TODO: Move it off to bitbucket module -->
+  <script src="https://bitbucket.org/atlassian-connect/all.js"></script>
   <script>
     (function () {
       // construct the state object parent path inside window.$$blueocean.
