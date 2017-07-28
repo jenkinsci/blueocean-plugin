@@ -30,6 +30,20 @@ public class JSONDataWriterTest {
     }
 
     @Test
+    public void testJsonCharacters() throws Exception {
+        String serialize = serialize(new JsonCharacters(), JsonCharacters.class);
+        assertEquals("{\"_class\":\"JsonCharacters\",\"value\":\"\\\"'\\/[]{}\\\\\"}", serialize);
+    }
+
+    @ExportedBean
+    public static class JsonCharacters {
+        @Exported
+        public String getValue() {
+            return "\"'/[]{}\\";
+        }
+    }
+
+    @Test
     public void testSimpleUsage() throws Exception {
         assertEquals("{\"_class\":\"X\",\"a\":\"aval\",\"c\":\"cval\"}",
                 serialize(new X(), X.class));
