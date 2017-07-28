@@ -69,11 +69,11 @@ public class GithubEnterpriseScm extends GithubScm {
         return false;
     }
 
-    @WebMethod(name="") @GET @TreeResponse
+    @Override
     public Object getState() {
         // will produce a 400 if apiUrl wasn't sent
         getUri();
-        return this;
+        return super.getState();
     }
 
     @Navigable

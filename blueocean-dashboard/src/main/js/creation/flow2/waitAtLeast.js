@@ -13,6 +13,7 @@ function time() {
  *
  * @param {number} [delay] millis to delay
  * @returns {function} function to pass to 'then()'
+ * @deprecated
  */
 export default function waitAtLeast(delay = 1000) {
     const begin = time();
