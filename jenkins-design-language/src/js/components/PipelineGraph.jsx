@@ -499,7 +499,7 @@ export class PipelineGraph extends Component {
         };
 
         return (
-            <div style={outerDivStyle}>
+            <div style={outerDivStyle} className="PipelineGraph">
                 <svg width={measuredWidth} height={measuredHeight}>
                     {this.renderSelectionHighlight()}
                     {connections.map(conn => this.renderConnection(conn))}
