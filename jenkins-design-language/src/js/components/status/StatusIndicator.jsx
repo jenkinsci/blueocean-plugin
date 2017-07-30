@@ -6,7 +6,6 @@ import SvgStatus from './SvgStatus';
 
 const validResultValues = {
     // Mostly from io/jenkins/blueocean/rest/model/BlueRun.java
-    // TODO: Do we want to move this? I have NFI
     success: 'success',
     failure: 'failure',
     running: 'running',
