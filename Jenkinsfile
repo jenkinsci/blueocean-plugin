@@ -37,29 +37,15 @@ node() {
           sh "node ./bin/checkshrinkwrap.js"
         }
 
-        stage('ATH - Jenkins 2.7.3') {
-          sh "cd acceptance-tests && ./run.sh --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+        stage('ATH - Jenkins 2.46.3') {
+          sh "cd acceptance-tests && ./run.sh -v=2.46.3 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
           junit 'acceptance-tests/target/surefire-reports/*.xml'
           archive 'acceptance-tests/target/screenshots/*'
         }
+
         if (env.JOB_NAME =~ 'blueocean-weekly-ath') {
           stage('ATH - Jenkins 2.60.1') {
             sh "cd acceptance-tests && ./run.sh -v=2.69.1 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
-            junit 'acceptance-tests/target/surefire-reports/*.xml'
-          }
-
-          stage('ATH - Jenkins 2.46.3') {
-            sh "cd acceptance-tests && ./run.sh -v=2.46.3 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
-            junit 'acceptance-tests/target/surefire-reports/*.xml'
-          }
-
-          stage('ATH - Jenkins 2.32.3') {
-            sh "cd acceptance-tests && ./run.sh -v=2.32.3 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
-            junit 'acceptance-tests/target/surefire-reports/*.xml'
-          }
-
-          stage('ATH - Jenkins 2.19.4') {
-            sh "cd acceptance-tests && ./run.sh -v=2.19.4 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
             junit 'acceptance-tests/target/surefire-reports/*.xml'
           }
         }
