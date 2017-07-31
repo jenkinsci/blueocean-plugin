@@ -9,6 +9,7 @@ import com.google.common.hash.Hashing;
 import com.google.common.io.BaseEncoding;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.Util;
+import hudson.model.User;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import org.junit.Assert;
 import org.junit.Before;
@@ -33,7 +34,7 @@ public class GithubServerTest extends PipelineBaseTest {
 
     @Before
     public void createUser() throws UnirestException {
-        hudson.model.User user = j.jenkins.getUser("alice");
+        hudson.model.User user = User.get("alice");
         user.setFullName("Alice Cooper");
         token = getJwtToken(j.jenkins, "alice", "alice");
     }

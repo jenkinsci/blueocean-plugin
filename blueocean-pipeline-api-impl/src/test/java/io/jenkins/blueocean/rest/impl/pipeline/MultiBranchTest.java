@@ -6,6 +6,7 @@ import hudson.Util;
 import hudson.model.FreeStyleProject;
 import hudson.model.Job;
 import hudson.model.Queue;
+import hudson.model.User;
 import hudson.plugins.favorite.Favorites;
 import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
@@ -572,7 +573,7 @@ public class MultiBranchTest extends PipelineBaseTest {
     @Test
     public void createUserFavouriteMultibranchTopLevelTest() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        hudson.model.User user = j.jenkins.getUser("alice");
+        hudson.model.User user = User.get("alice");
         user.setFullName("Alice Cooper");
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
@@ -645,7 +646,7 @@ public class MultiBranchTest extends PipelineBaseTest {
     @Test
     public void createUserFavouriteMultibranchBranchTest() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        hudson.model.User user = j.jenkins.getUser("alice");
+        hudson.model.User user = User.get("alice");
         user.setFullName("Alice Cooper");
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
@@ -719,7 +720,7 @@ public class MultiBranchTest extends PipelineBaseTest {
     @Test
     public void favoritedFromClassicTest() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        hudson.model.User user = j.jenkins.getUser("alice");
+        hudson.model.User user = User.get("alice");
         user.setFullName("Alice Cooper");
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),

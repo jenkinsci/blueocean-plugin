@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.analytics;
 
 import com.google.common.collect.Maps;
 import hudson.Extension;
+import hudson.Plugin;
 import hudson.util.VersionNumber;
 import io.jenkins.blueocean.analytics.AdditionalAnalyticsProperties;
 import io.jenkins.blueocean.analytics.Analytics.TrackRequest;
@@ -21,7 +22,11 @@ public class ServerInfoAdditionalAnalyticsProperties extends AdditionalAnalytics
         if (version != null && version.toString() != null) {
             props.put("jenkinsVersion", version.toString());
         }
-        props.put("blueoceanVersion", Jenkins.getInstance().getPlugin("blueocean-rest-impl").getWrapper().getVersion());
+        Plugin plugin = Jenkins.getInstance().getPlugin("blueocean-rest-impl");
+        if(plugin != null) {
+            props.put("blueoceanVersion", plugin.getWrapper().getVersion());
+        }
+
         return props;
     }
 }
