@@ -53,6 +53,7 @@ public abstract class BlueRun extends Resource {
 
     /** Date String format */
     public static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    public static final String ABORT_CAUSES = "ABORT_CAUSES";
 
 
     /**
@@ -251,6 +252,12 @@ public abstract class BlueRun extends Resource {
     public abstract Collection<BlueCause> getCauses();
 
     /**
+     * @return cause of the run being aborted
+     */
+    @Exported(name = ABORT_CAUSES)
+    public abstract Collection<BlueAbortionCause> getAbortionCause();
+
+    /**
      * @return cause of what is blocking this run
      */
     @Exported(name = CAUSE_OF_BLOCKAGE)
@@ -268,6 +275,12 @@ public abstract class BlueRun extends Resource {
 
         @Exported(name="cause", merge = true)
         public abstract Object getCause();
+    }
+
+    @ExportedBean
+    public static abstract class BlueAbortionCause {
+        @Exported(name = "shortDescription")
+        public abstract String getShortDescription();
     }
 
     public enum BlueRunState {

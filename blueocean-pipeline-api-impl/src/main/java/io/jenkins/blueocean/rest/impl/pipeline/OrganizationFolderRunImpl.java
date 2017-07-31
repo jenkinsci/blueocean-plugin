@@ -184,6 +184,11 @@ public class OrganizationFolderRunImpl extends BlueRun {
     }
 
     @Override
+    public Collection<BlueAbortionCause> getAbortionCause() {
+        return null;
+    }
+
+    @Override
     public String getCauseOfBlockage() {
         return null;
     }

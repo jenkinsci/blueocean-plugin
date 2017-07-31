@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
+import com.google.common.collect.Iterables;
 import hudson.model.Action;
 import hudson.model.CauseAction;
 import hudson.model.Job;
@@ -26,7 +27,10 @@ import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.GenericResource;
+import jenkins.model.CauseOfInterruption;
+import jenkins.model.InterruptedBuildAction;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.export.Exported;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -159,6 +163,25 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public Collection<BlueCause> getCauses() {
         return BlueCauseImpl.getCauses(this.run);
+    }
+
+    @Override
+    public Collection<BlueAbortionCause> getAbortionCause() {
+        InterruptedBuildAction action = this.run.getAction(InterruptedBuildAction.class);
+        if (action == null) {
+            return null;
+        }
+        return Collections2.transform(action.getCauses(), new Function<CauseOfInterruption, BlueAbortionCause>() {
+            @Override
+            public BlueAbortionCause apply(final CauseOfInterruption input) {
+                return new BlueAbortionCause() {
+                    @Override
+                    public String getShortDescription() {
+                        return input.getShortDescription();
+                    }
+                };
+            }
+        });
     }
 
     @Override
