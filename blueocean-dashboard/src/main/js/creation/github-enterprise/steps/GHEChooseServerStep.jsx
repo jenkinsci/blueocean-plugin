@@ -66,6 +66,7 @@ class GHEChooseServerStep extends React.Component {
         const title = t('creation.githubent.choose_server.title');
         const disabled = flowManager.stepsDisabled;
         const disabledNext = !this.state.selectedServer;
+        const url = this.state.selectedServer ? this.state.selectedServer.apiUrl : null;
 
         return (
             <FlowStep {...this.props} className="github-enterprise-choose-server-step" disabled={disabled} title={title}>
@@ -88,6 +89,12 @@ class GHEChooseServerStep extends React.Component {
                     onClose={cred => this._onAddServerDialogClosed(cred)}
                 />
                 }
+
+                <div className="FormElement">
+                    <div className="FormElement-heading">
+                        <label className="FormElement-title">{url}</label>
+                    </div>
+                </div>
 
                 <button className="button-next-step" disabled={disabledNext} onClick={() => this._onClickNextButton()}>
                     {t('creation.githubent.choose_server.button_next')}

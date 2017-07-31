@@ -18,7 +18,7 @@ require('./JTableStories.jsx');
 require('./LabelStories');
 require('./ListStories');
 require('./liveStatusIndicatorStories');
-require('./pipelinegraph.jsx');
+require('./PipelineGraphStories.jsx');
 require('./pipelineresult.jsx');
 require('./PlaceholderStories');
 require('./PopoverStories');

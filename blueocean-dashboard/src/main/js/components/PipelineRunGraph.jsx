@@ -56,6 +56,9 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
     } else if (jenkinsNode.result === 'ABORTED') {
         state = 'aborted';
         completePercent = 100;
+    } else if (jenkinsNode.state === 'SKIPPED') {
+        state = 'skipped';
+        completePercent = 0;
     } else if (jenkinsNode.state === 'RUNNING') {
         state = 'running';
         completePercent = 50;
@@ -85,12 +88,10 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
 }
 
 /**
- * Convert the graph results of a run as reported by Jenkins into the
- * model required by the PipelineGraph component
+ * Convert the graph results of a run as reported by Jenkins into the  model required by the PipelineGraph component
  *
- * We need isCompleted to determine wether nodes that haven't been run are
- * still pending or simply weren't executed due to logic or early-abort
- * (either failure or intervention)
+ * We need isCompleted (referring to the entire pipeline) to determine wether nodes that haven't been run are still
+ * pending or simply weren't executed due to pipeline logic (skipped) or early-abort (either failure or intervention)
  */
 export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
     if (!jenkinsGraph || !jenkinsGraph.length) {
