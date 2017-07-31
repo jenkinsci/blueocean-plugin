@@ -4,6 +4,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import hudson.model.Action;
 import hudson.model.CauseAction;
+import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -45,7 +46,11 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     public AbstractRunImpl(T run, Reachable parent) {
         this.run = run;
         this.parent = parent;
-        this.org = OrganizationFactory.getInstance().getContainingOrg(run);
+        Job job = run.getParent();
+        this.org = OrganizationFactory.getInstance().getContainingOrg(job);
+        if (this.org == null) {
+            throw new ServiceException.UnexpectedErrorException(String.format("could not find organization for job %s", job.getFullName()));
+        }
     }
 
     @Nonnull

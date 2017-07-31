@@ -9,6 +9,7 @@ import io.jenkins.blueocean.rest.model.BlueOrganization;
 import jenkins.model.ModifiableTopLevelItemGroup;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import java.util.Collection;
 
 /**
@@ -52,6 +53,7 @@ public abstract class OrganizationFactory implements ExtensionPoint {
      * @return
      *      null if the given object doesn't belong to any organization.
      */
+    @CheckForNull
     public BlueOrganization getContainingOrg(ItemGroup p) {
         while (true) {
             BlueOrganization n = of(p);
@@ -66,10 +68,19 @@ public abstract class OrganizationFactory implements ExtensionPoint {
         }
     }
 
+    /**
+     * Use {@link #getContainingOrg(Item)} instead.
+     * @deprecated in 1.2
+     * @param r run
+     * @return organization
+     */
+    @CheckForNull
+    @Deprecated
     public final BlueOrganization getContainingOrg(Run r) {
         return getContainingOrg(r.getParent());
     }
 
+    @CheckForNull
     public final BlueOrganization getContainingOrg(Item i) {
         if (i instanceof ItemGroup) {
             return getContainingOrg((ItemGroup) i);
@@ -78,6 +89,7 @@ public abstract class OrganizationFactory implements ExtensionPoint {
         }
     }
 
+    @Nonnull
     public static OrganizationFactory getInstance() {
         OrganizationFactory r = ExtensionList.lookup(OrganizationFactory.class).get(0);
         if (r==null) {
