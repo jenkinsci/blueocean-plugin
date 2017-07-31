@@ -43,7 +43,7 @@ Favorite.propTypes = {
 
 /* eslint-disable max-len */
 function FavoriteStarSvg(checkedObj) {
-    let checked = checkedObj.checked;
+    const checked = checkedObj.checked;
 
     return (
         <div title={checked ? 'Remove Favourite' : 'Favourite'}>
