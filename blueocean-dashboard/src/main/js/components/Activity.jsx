@@ -107,18 +107,18 @@ export class Activity extends Component {
         };
 
         const latestRun = runs && runs[0];
+
         // Only show the Run button for non multi-branch pipelines.
         // Multi-branch pipelines have the Run/play button beside them on
         // the Branches/PRs tab.
-        const runButton = !isMultiBranchPipeline && (
-            <RunButton
-                buttonType="run-only"
-                innerButtonClasses="btn-secondary"
-                runnable={pipeline}
-                latestRun={latestRun}
-                onNavigation={onNavigation}
-            />
-        );
+        const runButton = isMultiBranchPipeline ? null : (
+                <RunButton buttonType="run-only"
+                           innerButtonClasses="btn-secondary"
+                           runnable={pipeline}
+                           latestRun={latestRun}
+                           onNavigation={onNavigation}
+                />
+            );
 
         if (!isLoading) {
             if (isMultiBranchPipeline && !hasBranches) {
