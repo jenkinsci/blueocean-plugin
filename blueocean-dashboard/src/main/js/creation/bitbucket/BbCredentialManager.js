@@ -1,16 +1,16 @@
 import { action, observable } from 'mobx';
 
 import waitAtLeast from '../flow2/waitAtLeast';
-import { GithubAccessTokenState } from './GithubAccessTokenState';
+import { BbCredentialState } from './BbCredentialState';
 
 const MIN_DELAY = 500;
 
 
 /**
- * Manages retrieving, validating and saving the Github access token.
- * Also holds the state of the token for use in GithubCredentialStep.
+ * Manages retrieving, validating and saving Bitbucket credential
+ * Also holds the state of the credential for use in BbCredentialStep.
  */
-export class GithubAccessTokenManager {
+export class BbCredentialManager {
 
     @observable
     stateId = null;
@@ -49,42 +49,30 @@ export class GithubAccessTokenManager {
 
     @action
     _findExistingCredentialFailure() {
-        this.stateId = GithubAccessTokenState.NEW_REQUIRED;
+        this.stateId = BbCredentialState.NEW_REQUIRED;
         return false;
     }
 
     @action
-    markTokenRevoked() {
-        this.credential = null;
-        this.stateId = GithubAccessTokenState.EXISTING_REVOKED;
-    }
-
-    @action
-    markTokenInvalidScopes() {
-        this.credential = null;
-        this.stateId = GithubAccessTokenState.EXISTING_MISSING_SCOPES;
-    }
-
-    @action
-    createAccessToken(token, apiUrl) {
+    createCredential(apiUrl, userName, password) {
         this.pendingValidation = true;
 
-        return this._credentialsApi.createAccessToken(token, apiUrl)
+        return this._credentialsApi.createBbCredential(apiUrl, userName, password)
             .then(waitAtLeast(MIN_DELAY))
-            .then(response => this._createTokenComplete(response));
+            .then(response => this._createCredentialComplete(response));
     }
 
     @action
-    _createTokenComplete(response) {
+    _createCredentialComplete(response) {
         this.pendingValidation = false;
 
         if (response.success) {
             this.credential = response.credential;
-            this.stateId = GithubAccessTokenState.SAVE_SUCCESS;
-        } else if (response.invalid) {
-            this.stateId = GithubAccessTokenState.VALIDATION_FAILED_TOKEN;
-        } else if (response.scopes) {
-            this.stateId = GithubAccessTokenState.VALIDATION_FAILED_SCOPES;
+            this.stateId = BbCredentialState.SAVE_SUCCESS;
+        } else if (response.code === 401) {
+            this.stateId = BbCredentialState.INVALID_CREDENTIAL;
+        } else {
+            this.stateId = BbCredentialState.UNEXPECTED_ERROR_CREDENTIAL;
         }
 
         return response;

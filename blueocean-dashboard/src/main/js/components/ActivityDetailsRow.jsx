@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {
-    CommitHash,
+    CommitId,
     ReadableDate,
     TimeDuration,
     TableRow,
@@ -85,7 +85,7 @@ class ActivityDetailsRow extends Component {
                     />
                 </TableCell>
                 <TableCell linkTo={runDetailsUrl}>{run.id}</TableCell>
-                <TableCell linkTo={runDetailsUrl}><CommitHash commitId={run.commitId} /></TableCell>
+                <TableCell linkTo={runDetailsUrl}><CommitId commitId={run.commitId} /></TableCell>
                 { isMultibranch && <TableCell linkTo={runDetailsUrl}>{branchName}</TableCell> }
                 <TableCell linkTo={runDetailsUrl}><RunMessageCell run={run} t={t} /></TableCell>
                 <TableCell linkTo={runDetailsUrl}>

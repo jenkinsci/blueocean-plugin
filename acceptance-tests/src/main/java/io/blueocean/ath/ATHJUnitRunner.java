@@ -129,6 +129,7 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
 
     private void runTest(Statement statement, Description description,
                                  RunNotifier notifier, Retry retry) {
+        logger.info(String.format("Running test: '%s'", description.getMethodName()));
         EachTestNotifier eachNotifier = new EachTestNotifier(notifier, description);
         eachNotifier.fireTestStarted();
         try {

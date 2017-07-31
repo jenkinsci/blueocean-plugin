@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {
-    CommitHash,
+    CommitId,
     PlaceholderTable,
     ReadableDate,
     JTable,
@@ -38,16 +38,6 @@ NoChangesPlaceholder.propTypes = {
     t: PropTypes.func,
 };
 
-
-const CommitLink = (commit) => {
-    if (commit.url) {
-        return (<a href={commit.url}>
-            <CommitHash commitId={commit.commitId} />
-        </a>);
-    }
-    return <CommitHash commitId={commit.commitId} />;
-};
-
 export default class RunDetailsChanges extends Component {
 
     render() {
@@ -80,7 +70,7 @@ export default class RunDetailsChanges extends Component {
                 <TableHeaderRow />
                 { changeSet.map(commit => (
                     <TableRow key={commit.commitId}>
-                        <TableCell><CommitLink {...commit} /></TableCell>
+                        <TableCell><CommitId commitId={commit.commitId} url={commit.url} /></TableCell>
                         <TableCell>{commit.author.fullName}</TableCell>
                         <TableCell className="multipleLines">{commit.msg}</TableCell>
                         <TableCell>
