@@ -71,6 +71,9 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     public MultiBranchPipelineImpl(MultiBranchProject mbp) {
         this.mbp = mbp;
         this.org = OrganizationFactory.getInstance().getContainingOrg((ItemGroup) mbp);
+        if (this.org == null) {
+            throw new ServiceException.UnexpectedErrorException(String.format("could not find organization for %s", mbp.getFullName()));
+        }
         this.self = org.getLink().rel("pipelines").rel(PipelineImpl.getRecursivePathFromFullName(this));
     }
 
@@ -90,7 +93,11 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
             throw new ServiceException.BadRequestException("no default branch to favorite");
         }
         FavoriteUtil.toggle(favoriteAction, job);
-        return new FavoriteImpl(new BranchImpl(job, getLink().rel("branches")), getLink().rel("favorite"));
+        BlueOrganization org = OrganizationFactory.getInstance().getContainingOrg(job);
+        if (org == null) {
+            throw new ServiceException.UnexpectedErrorException("Could not find org for " + job.getFullName());
+        }
+        return new FavoriteImpl(new BranchImpl(org, job, getLink().rel("branches")), getLink().rel("favorite"));
     }
 
     @Override

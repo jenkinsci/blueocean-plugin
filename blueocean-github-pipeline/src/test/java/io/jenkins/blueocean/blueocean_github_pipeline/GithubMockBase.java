@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
+import com.github.tomakehurst.wiremock.client.MappingBuilder;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.common.FileSource;
 import com.github.tomakehurst.wiremock.common.SingleRootFileSource;
@@ -8,14 +9,18 @@ import com.github.tomakehurst.wiremock.extension.ResponseTransformer;
 import com.github.tomakehurst.wiremock.http.Request;
 import com.github.tomakehurst.wiremock.http.Response;
 import com.github.tomakehurst.wiremock.junit.WireMockRule;
+import com.github.tomakehurst.wiremock.stubbing.StubMapping;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.junit.After;
 import org.junit.Rule;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
@@ -61,6 +66,8 @@ public abstract class GithubMockBase extends PipelineBaseTest {
                     })
     );
 
+    private final List<StubMapping> perTestStubMappings = new ArrayList<>();
+
     @Override
     public void setup() throws Exception {
         super.setup();
@@ -74,6 +81,17 @@ public abstract class GithubMockBase extends PipelineBaseTest {
 
         this.user = login("vivek", "Vivek Pandey", "vivek.pandey@gmail.com");
         this.githubApiUrl = String.format("http://localhost:%s",githubApi.port());
+    }
+
+    @After
+    public void tearDown() {
+        if (!perTestStubMappings.isEmpty()) {
+            for (StubMapping mapping : perTestStubMappings) {
+                githubApi.removeStub(mapping);
+            }
+
+            perTestStubMappings.clear();
+        }
     }
 
     protected String createGithubCredential() throws UnirestException {
@@ -102,5 +120,15 @@ public abstract class GithubMockBase extends PipelineBaseTest {
 
     protected String getGithubApiUrlEncoded() {
         return DigestUtils.sha256Hex(githubApiUrl);
+    }
+
+    /**
+     * Add a StubMapping to Wiremock corresponding to the supplied builder.
+     * Any mappings added will automatically be removed when @After fires.
+     * @param builder
+     */
+    protected void addPerTestStub(MappingBuilder builder) {
+        StubMapping mapping = githubApi.stubFor(builder);
+        perTestStubMappings.add(mapping);
     }
 }
