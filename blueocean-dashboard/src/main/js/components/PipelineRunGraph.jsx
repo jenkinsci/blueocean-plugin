@@ -21,15 +21,17 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
     logger.debug('jenkinsNode', jenkinsNode);
     const isRunning = () => {
         switch (jenkinsNode.state) {
-            case 'RUNNING':
-            case 'PAUSED':
-            case 'QUEUED':
-                return true;
-            default:
-                return false;
+        case 'RUNNING':
+        case 'PAUSED':
+        case 'QUEUED':
+            return true;
+        default:
+            return false;
         }
     };
+
     const { durationInMillis, startTime } = jenkinsNode;
+
     // we need to make sure that we calculate with the correct time offset
     const harmonized = timeManager.harmonizeTimes({
         isRunning: isRunning(),
