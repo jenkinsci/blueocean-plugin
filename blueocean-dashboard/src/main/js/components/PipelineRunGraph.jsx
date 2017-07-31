@@ -189,11 +189,6 @@ export default class PipelineRunGraph extends Component {
             return null;
         }
 
-        // TODO: Move this all into styles
-        const outerDivStyle = {
-            display: 'flex',
-            justifyContent: 'center',
-        };
         const id = this.props.selectedStage.id;
 
         let selectedStage = null;
@@ -216,7 +211,7 @@ export default class PipelineRunGraph extends Component {
         }
 
         return (
-            <div className="PipelineGraph-container" style={outerDivStyle}>
+            <div className="PipelineGraph-container">
                 <PipelineGraph stages={graphNodes}
                                selectedStage={selectedStage}
                                onNodeClick={this.graphNodeClicked}
