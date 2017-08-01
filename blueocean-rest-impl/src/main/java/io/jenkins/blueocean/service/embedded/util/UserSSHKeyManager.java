@@ -187,11 +187,7 @@ public class UserSSHKeyManager {
         if (host == null) {
             host = Jenkins.getInstance().getRootUrlFromRequest();
         }
-        if (host == null) {
-            host = Jenkins.getInstance().getDisplayName();
-        } else {
-            host = host.replaceAll(".*//([^/]+).*", "$1");
-        }
+        host = host.replaceAll(".*//([^/]+).*", "$1");
         return ((userId == null ? Jenkins.getInstance().getDisplayName() : userId) + "@" + host)
                 .replaceAll("[^:@._a-zA-Z0-9]", "");
     }

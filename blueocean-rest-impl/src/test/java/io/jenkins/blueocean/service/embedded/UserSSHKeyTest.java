@@ -35,6 +35,11 @@ import org.junit.Test;
  * @author kzantow
  */
 public class UserSSHKeyTest extends BaseTest {
+
+    public UserSSHKeyTest() {
+        super(true);
+    }
+    
     @Test
     public void createPersonalSSHKey() throws IOException, UnirestException {
         User user = login();
