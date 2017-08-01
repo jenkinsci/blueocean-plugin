@@ -10,7 +10,7 @@ import { _wrap } from './ContentPageHeader';
 
 // Exported from Zeplin, path could use a little cleanup
 const CloseButton = props => (
-    <span title={props.t('toast.run.open', { defaultValue: 'Close' })}>
+    <span title={props.t('creation.core.header.close', { defaultValue: 'Close' })}>
         <svg className="ResultPageHeader-close" width="24px" height="24px"
           viewBox="0 0 24 24"
           onClick={props.onClick}
