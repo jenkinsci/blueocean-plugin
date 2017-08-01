@@ -3,14 +3,14 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.143-tf-JENKINS-45847-beta2",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.143-tf-JENKINS-45847-beta2",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.143-tf-JENKINS-45847-beta2.tgz"
+      "version": "0.0.148-tf-JENKINS-45847-beta3",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.148-tf-JENKINS-45847-beta3",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.148-tf-JENKINS-45847-beta3.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.141",
-      "from": "@jenkins-cd/design-language@0.0.141",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.141.tgz"
+      "version": "0.0.142",
+      "from": "@jenkins-cd/design-language@0.0.142",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.142.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -25,9 +25,9 @@
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.37-tf-JENKINS-45847-beta2",
-      "from": "@jenkins-cd/js-extensions@0.0.37-tf-JENKINS-45847-beta2",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.37-tf-JENKINS-45847-beta2.tgz"
+      "version": "0.0.37-tf-JENKINS-45847-beta3",
+      "from": "@jenkins-cd/js-extensions@0.0.37-tf-JENKINS-45847-beta3",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.37-tf-JENKINS-45847-beta3.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.10",
