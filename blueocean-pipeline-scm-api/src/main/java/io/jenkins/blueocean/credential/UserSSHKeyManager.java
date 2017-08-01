@@ -20,7 +20,6 @@ import java.security.interfaces.RSAPublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPublicKeySpec;
-import java.util.List;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import jenkins.model.Jenkins;
@@ -35,8 +34,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 public class UserSSHKeyManager {
     private static final int KEY_SIZE = 2048;
     private static final String BLUEOCEAN_GENERATED_SSH_KEY_ID = "jenkins-generated-ssh-key";
-    private static final String BLUEOCEAN_DOMAIN_NAME = "blueocean-git-domain";
-    private static final Domain BLUEOCEAN_DOMAIN = new Domain(BLUEOCEAN_DOMAIN_NAME, null, null);
+    private static final String BLUEOCEAN_DOMAIN_NAME = "blueocean-private-key-domain";
     
     /**
      * Gets the existing generated SSH key for the user or creates one and
@@ -52,7 +50,7 @@ public class UserSSHKeyManager {
             throw new ServiceException.ForbiddenException(String.format("Logged in user: %s doesn't have writable credentials store", user.getId()));
         }
         // try to find the right key
-        for (Credentials cred : store.getCredentials(BLUEOCEAN_DOMAIN)) {
+        for (Credentials cred : store.getCredentials(getDomain(store))) {
             if (cred instanceof BasicSSHUserPrivateKey) {
                 BasicSSHUserPrivateKey sshKey = (BasicSSHUserPrivateKey)cred;
                 if (BLUEOCEAN_GENERATED_SSH_KEY_ID.equals(sshKey.getId())) {
@@ -69,7 +67,7 @@ public class UserSSHKeyManager {
             String id_rsa = Base64.encode(privateKey.getEncoded());
             BasicSSHUserPrivateKey.DirectEntryPrivateKeySource keySource = new BasicSSHUserPrivateKey.DirectEntryPrivateKeySource(id_rsa);
             key = new BasicSSHUserPrivateKey(CredentialsScope.USER, BLUEOCEAN_GENERATED_SSH_KEY_ID, user.getId(), keySource, null, BLUEOCEAN_GENERATED_SSH_KEY_ID);
-            store.addCredentials(BLUEOCEAN_DOMAIN, key);
+            store.addCredentials(getDomain(store), key);
             store.save();
         } catch (IOException ex) {
             throw new RuntimeException(ex);
@@ -117,7 +115,7 @@ public class UserSSHKeyManager {
             
             Credentials key = null;
             // try to find the key
-            for (Credentials cred : store.getCredentials(BLUEOCEAN_DOMAIN)) {
+            for (Credentials cred : store.getCredentials(getDomain(store))) {
                 if (cred instanceof BasicSSHUserPrivateKey) {
                     BasicSSHUserPrivateKey sshKey = (BasicSSHUserPrivateKey)cred;
                     if (BLUEOCEAN_GENERATED_SSH_KEY_ID.equals(sshKey.getId())) {
@@ -127,7 +125,7 @@ public class UserSSHKeyManager {
                 }
             }
             if (key != null) {
-                store.removeCredentials(BLUEOCEAN_DOMAIN, key);
+                store.removeCredentials(getDomain(store), key);
                 store.save();
             }
         } catch (IOException ex) {
@@ -165,5 +163,25 @@ public class UserSSHKeyManager {
         return ((userId == null ? "user" : userId) + "@"
             + Jenkins.getInstance().getDisplayName())
                 .replaceAll("[^@._a-zA-Z0-9]", "");
+    }
+    
+    private static Domain getDomain(CredentialsStore store) {
+        Domain domain = store.getDomainByName(BLUEOCEAN_DOMAIN_NAME);
+        if (domain == null) {
+            try {
+                //create new one
+                boolean result = store.addDomain(new Domain(BLUEOCEAN_DOMAIN_NAME, null, null));
+                if (!result) {
+                    throw new RuntimeException(String.format("Failed to create credential domain: %s", BLUEOCEAN_DOMAIN_NAME));
+                }
+                domain = store.getDomainByName(BLUEOCEAN_DOMAIN_NAME);
+                if (domain == null) {
+                    throw new RuntimeException(String.format("Domain %s created but not found", BLUEOCEAN_DOMAIN_NAME));
+                }
+            } catch (IOException ex) {
+                throw new RuntimeException(ex);
+            }
+        }
+        return domain;
     }
 }

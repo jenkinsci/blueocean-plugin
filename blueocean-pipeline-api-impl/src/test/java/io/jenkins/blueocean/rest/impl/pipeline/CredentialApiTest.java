@@ -278,7 +278,7 @@ public class CredentialApiTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .get("/organizations/jenkins/credentials/user/userkey").build(Map.class);
+                .get("/organizations/jenkins/credentials/user/publickey").build(Map.class);
 
         Object pubKey = resp.get("key");
         Assert.assertTrue(pubKey != null);
@@ -287,7 +287,7 @@ public class CredentialApiTest extends PipelineBaseTest {
         resp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .get("/organizations/jenkins/credentials/user/userkey").build(Map.class);
+                .get("/organizations/jenkins/credentials/user/publickey").build(Map.class);
         
         Object pubKey2 = resp.get("key");
         System.out.println(" ---- " + pubKey + " ---- " + pubKey2);
@@ -297,12 +297,12 @@ public class CredentialApiTest extends PipelineBaseTest {
         new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .delete("/organizations/jenkins/credentials/user/userkey").build(String.class);
+                .delete("/organizations/jenkins/credentials/user/publickey").build(String.class);
         
         resp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .get("/organizations/jenkins/credentials/user/userkey").build(Map.class);
+                .get("/organizations/jenkins/credentials/user/publickey").build(Map.class);
         
         Object pubKey3 = resp.get("key");
         Assert.assertNotEquals(pubKey2, pubKey3);
