@@ -10,9 +10,11 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
+import io.jenkins.blueocean.rest.factory.BlueIssueFactory;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BlueIssue;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
@@ -24,6 +26,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_BRANCH;
@@ -36,6 +39,8 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.PULL_REQUEST;
 @Capability({BLUE_BRANCH, JENKINS_WORKFLOW_JOB, PULL_REQUEST})
 public class BranchImpl extends PipelineImpl {
 
+    public static final String ISSUES = "issues";
+
     private final Link parent;
     protected final Job job;
 
@@ -43,6 +48,11 @@ public class BranchImpl extends PipelineImpl {
         super(org, job);
         this.job = job;
         this.parent = parent;
+    }
+
+    @Exported(name = ISSUES)
+    public Collection<BlueIssue> getIssues() {
+        return BlueIssueFactory.resolve(job);
     }
 
     @Exported(name = PullRequest.PULL_REQUEST, inline = true, skipNull =  true)
