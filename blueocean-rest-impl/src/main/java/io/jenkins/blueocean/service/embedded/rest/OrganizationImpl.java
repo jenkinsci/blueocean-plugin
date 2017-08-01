@@ -62,7 +62,7 @@ public class OrganizationImpl extends AbstractOrganization{
 
     @Override
     public BluePipelineContainer getPipelines() {
-        return new PipelineContainerImpl(group);
+        return new PipelineContainerImpl(this, group, this);
     }
 
     @WebMethod(name="") @DELETE

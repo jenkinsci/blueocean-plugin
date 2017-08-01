@@ -3,6 +3,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Item;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmContentProviderParams;
 import jenkins.scm.api.SCMNavigator;
 import org.kohsuke.stapler.StaplerRequest;
 
@@ -15,6 +16,19 @@ import javax.annotation.Nonnull;
  * @author Vivek Pandey
  */
 public abstract class ScmContentProvider implements ExtensionPoint{
+    /**
+     * Get the "scmId" for the content provider as defined in Scm.getId()
+     * @return SCM identifier
+     */
+    public abstract @Nonnull String getScmId();
+
+    /**
+     * Get the SCM API URL for the provided item
+     * @param item {@link Item} item to resolve backing SCM API URL
+     * @return SCM API URL
+     */
+    public abstract @CheckForNull String getApiUrl(@Nonnull Item item);
+
     /**
      * Gives content of scm file.
      *

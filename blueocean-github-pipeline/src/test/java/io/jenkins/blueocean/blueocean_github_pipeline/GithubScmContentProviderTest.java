@@ -1,42 +1,29 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
-import com.cloudbees.hudson.plugins.folder.AbstractFolderProperty;
-import com.cloudbees.hudson.plugins.folder.AbstractFolderPropertyDescriptor;
-import com.cloudbees.plugins.credentials.domains.Domain;
-import com.google.common.collect.Lists;
 import com.mashape.unirest.http.exceptions.UnirestException;
-import hudson.util.DescribableList;
+import io.jenkins.blueocean.rest.impl.pipeline.ScmContentProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
-import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
-import jenkins.scm.api.SCMNavigator;
-import jenkins.scm.api.SCMSource;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PowerMockIgnore;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 
 import static org.junit.Assert.assertEquals;
-import static org.powermock.api.mockito.PowerMockito.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * @author Vivek Pandey
  */
-@RunWith(PowerMockRunner.class)
-@PrepareForTest({Stapler.class, OrganizationFolder.class})
-@PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*"})
 public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
@@ -174,57 +161,20 @@ public class GithubScmContentProviderTest extends GithubMockBase{
         assertEquals("cloudbeers", file.getContent().getOwner());
     }
 
-    private StaplerRequest mockStapler(){
-        mockStatic(Stapler.class);
-        StaplerRequest staplerRequest = mock(StaplerRequest.class);
-        when(Stapler.getCurrentRequest()).thenReturn(staplerRequest);
-        when(staplerRequest.getRequestURI()).thenReturn("http://localhost:8080/jenkins/blue/rest/");
-        when(staplerRequest.getParameter("path")).thenReturn("Jenkinsfile");
-        when(staplerRequest.getParameter("repo")).thenReturn("PR-demo");
-        return staplerRequest;
+    @Test
+    public void testScmProperties() throws Exception {
+        // ensure the cloud provider works with cloud org folder
+        String credentialId = createGithubCredential();
+        OrganizationFolder orgFolder = mockOrgFolder(credentialId);
+        // unfortunately overriding the GitHub apiUrl for WireMock returns a "localhost" URL here, so we mock the call
+        when(((GitHubSCMNavigator) orgFolder.getSCMNavigators().get(0)).getApiUri()).thenReturn(GitHubSCMSource.GITHUB_URL);
+        ScmContentProvider provider = new GithubScmContentProvider();
+        assertTrue(provider.support(orgFolder));
+        assertEquals(provider.getScmId(), GithubScm.ID);
+        assertEquals(provider.getApiUrl(orgFolder), GitHubSCMSource.GITHUB_URL);
+        // ensure the cloud provider doesn't support enterprise org folder
+        orgFolder = mockOrgFolder(createGithubEnterpriseCredential());
+        assertFalse(provider.support(orgFolder));
     }
-
-    private OrganizationFolder mockOrgFolder(String credentialId){
-
-        OrganizationFolder orgFolder = mock(OrganizationFolder.class);
-
-        //mock GithubSCMNavigator
-        GitHubSCMNavigator navigator = mock(GitHubSCMNavigator.class);
-        when(navigator.getApiUri()).thenReturn(githubApiUrl);
-        when(navigator.getScanCredentialsId()).thenReturn(credentialId);
-        when(navigator.getRepoOwner()).thenReturn("cloudbeers");
-
-
-        when((orgFolder).getSCMNavigators()).thenReturn(Lists.<SCMNavigator>newArrayList(navigator));
-
-        //mock blueocean credential provider stuff
-        BlueOceanCredentialsProvider.FolderPropertyImpl folderProperty = mock(BlueOceanCredentialsProvider.FolderPropertyImpl.class);
-        DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor> properties = new DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor>(orgFolder);
-        properties.add(new BlueOceanCredentialsProvider.FolderPropertyImpl(
-                user.getId(), credentialId,
-                BlueOceanCredentialsProvider.createDomain(githubApiUrl)
-        ));
-        when(orgFolder.getProperties()).thenReturn(properties);
-        Domain domain = mock(Domain.class);
-        when(domain.getName()).thenReturn(GithubScm.DOMAIN_NAME);
-        when(folderProperty.getDomain()).thenReturn(domain);
-        return orgFolder;
-    }
-
-    private MultiBranchProject mockMbp(OrganizationFolder orgFolder, String credentialId){
-        MultiBranchProject mbp = mock(MultiBranchProject.class);
-        when(mbp.getName()).thenReturn("PR-demo");
-        when(mbp.getParent()).thenReturn(orgFolder);
-        GitHubSCMSource scmSource = mock(GitHubSCMSource.class);
-        when(scmSource.getApiUri()).thenReturn(githubApiUrl);
-        when(scmSource.getScanCredentialsId()).thenReturn(credentialId);
-        when(scmSource.getRepoOwner()).thenReturn("cloudbeers");
-        when(scmSource.getRepository()).thenReturn("PR-demo");
-        when(mbp.getSCMSources()).thenReturn(Lists.<SCMSource>newArrayList(scmSource));
-        DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor> mbpProperties = new DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor>(orgFolder);
-        when(mbp.getProperties()).thenReturn(mbpProperties);
-        return mbp;
-    }
-
 
 }

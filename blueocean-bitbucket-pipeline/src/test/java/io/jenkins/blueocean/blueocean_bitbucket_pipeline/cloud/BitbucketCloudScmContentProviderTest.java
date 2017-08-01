@@ -8,8 +8,9 @@ import com.google.common.collect.Lists;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.util.DescribableList;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketScmContentProvider;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketScmSaveFileRequest;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.BitbucketServerScmContentProvider;
+import io.jenkins.blueocean.rest.impl.pipeline.ScmContentProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFile;
@@ -30,7 +31,11 @@ import java.io.IOException;
 import java.io.StringReader;
 
 import static org.junit.Assert.assertEquals;
-import static org.powermock.api.mockito.PowerMockito.*;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
+import static org.powermock.api.mockito.PowerMockito.mock;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
+import static org.powermock.api.mockito.PowerMockito.when;
 
 /**
  * @author Vivek Pandey
@@ -38,14 +43,14 @@ import static org.powermock.api.mockito.PowerMockito.*;
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({Stapler.class})
 @PowerMockIgnore({"javax.crypto.*", "javax.security.*", "javax.net.ssl.*","javax.net.SocketFactory"})
-public class BbCloudContentProviderTest extends BbCloudWireMock{
+public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock{
     @Test
     public void getContent() throws UnirestException, IOException {
         String credentialId = createCredential(BitbucketCloudScm.ID, "cloud");
         StaplerRequest staplerRequest = mockStapler();
         MultiBranchProject mbp = mockMbp(credentialId);
 
-        ScmFile<GitContent> content = (ScmFile<GitContent>) new BitbucketScmContentProvider().getContent(staplerRequest, mbp);
+        ScmFile<GitContent> content = (ScmFile<GitContent>) new BitbucketCloudScmContentProvider().getContent(staplerRequest, mbp);
         assertEquals("Jenkinsfile", content.getContent().getName());
         assertEquals("04553981a05754d4bffef56a59d9d996d500301c", content.getContent().getCommitId());
         assertEquals("demo1", content.getContent().getRepo());
@@ -75,12 +80,28 @@ public class BbCloudContentProviderTest extends BbCloudWireMock{
 
         when(staplerRequest.getReader()).thenReturn(new BufferedReader(new StringReader(request), request.length()));
 
-        ScmFile<GitContent> respContent = (ScmFile<GitContent>) new BitbucketScmContentProvider().saveContent(staplerRequest, mbp);
+        ScmFile<GitContent> respContent = (ScmFile<GitContent>) new BitbucketCloudScmContentProvider().saveContent(staplerRequest, mbp);
         assertEquals("foo", respContent.getContent().getName());
         assertEquals(respContent.getContent().getCommitId(), respContent.getContent().getCommitId());
         assertEquals("demo1", respContent.getContent().getRepo());
         assertEquals("vivekp7", respContent.getContent().getOwner());
         assertEquals("master", respContent.getContent().getBranch());
+    }
+
+    @Test
+    public void checkScmProperties() throws Exception {
+        // ensure cloud provider works with cloud multibranch pipeline
+        String credentialId = createCredential(BitbucketCloudScm.ID, "cloud");
+        MultiBranchProject mbp = mockMbp(credentialId);
+        ScmContentProvider provider = new BitbucketCloudScmContentProvider();
+        // unfortunately overriding the apiUrl for WireMock returns a "localhost" URL here, so we mock the call
+        when(((BitbucketSCMSource) mbp.getSCMSources().get(0)).getServerUrl()).thenReturn(BitbucketCloudScm.API_URL);
+        assertTrue(provider.support(mbp));
+        assertEquals(provider.getScmId(), BitbucketCloudScm.ID);
+        assertEquals(provider.getApiUrl(mbp), BitbucketCloudScm.API_URL);
+        // ensure server provider doesn't work with cloud multibranch pipeline
+        provider = new BitbucketServerScmContentProvider();
+        assertFalse(provider.support(mbp));
     }
 
     private StaplerRequest mockStapler(){
