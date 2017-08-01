@@ -44,6 +44,9 @@ public class PipelineContainerImpl extends BluePipelineContainer {
     public PipelineContainerImpl(ItemGroup itemGroup, Reachable parent) {
         this.itemGroup = itemGroup instanceof Jenkins ? new PermissionFilteredItemGroup((Jenkins) itemGroup) : itemGroup;
         this.org = OrganizationFactory.getInstance().getContainingOrg(itemGroup);
+        if (this.org == null) {
+            throw new ServiceException.UnexpectedErrorException(String.format("could not find organization for %s", itemGroup.getFullName()));
+        }
         if(parent!=null){
             this.self = parent.getLink().rel("pipelines");
         }else{

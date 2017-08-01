@@ -32,6 +32,8 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
 
     @Override
     protected Object getContent(ScmGetRequest request) {
+        GithubScm.validateUserHasPushPermission(request.getApiUrl(), request.getCredentials().getPassword().getPlainText(), request.getOwner(), request.getRepo());
+
         String url = String.format("%s/repos/%s/%s/contents/%s",
                 request.getApiUrl(),
                 request.getOwner(),
@@ -42,7 +44,7 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
         }
         try {
             Map ghContent = HttpRequest.get(url)
-                    .withAuthorization("token " + request.getCredentials().getPassword().getPlainText())
+                    .withAuthorizationToken(request.getCredentials().getPassword().getPlainText())
                     .to(Map.class);
 
             if(ghContent == null){
