@@ -60,10 +60,10 @@ public class OrganizationFolderTest{
         AvatarMetadataAction avatarMetadataAction = mock(AvatarMetadataAction.class);
         when(orgFolder.getAction(AvatarMetadataAction.class)).thenReturn(avatarMetadataAction);
 
-        BlueOrganizationFolder organizationFolder = new OrganizationFolderPipelineImpl(orgFolder, organization.getLink().rel("/pipelines/")){};
+        BlueOrganizationFolder organizationFolder = new OrganizationFolderPipelineImpl(organization, orgFolder, organization.getLink().rel("/pipelines/")){};
         assertEquals(organizationFolder.getName(), organizationFolder.getName());
         assertEquals(organizationFolder.getDisplayName(), organizationFolder.getDisplayName());
-        assertEquals(organization.getName(), organizationFolder.getOrganization());
+        assertEquals(organization.getName(), organizationFolder.getOrganizationName());
         assertNotNull(organizationFolder.getIcon());
         MultiBranchProject multiBranchProject = PowerMockito.mock(MultiBranchProject.class);
         when(orgFolder.getItem("repo1")).thenReturn(multiBranchProject);
@@ -71,7 +71,7 @@ public class OrganizationFolderTest{
         PowerMockito.when(multiBranchProject.getFullName()).thenReturn("p1");
         PowerMockito.when(multiBranchProject.getName()).thenReturn("p1");
         MultiBranchPipelineContainerImpl multiBranchPipelineContainer =
-                new MultiBranchPipelineContainerImpl(orgFolder, organizationFolder);
+                new MultiBranchPipelineContainerImpl(organization, orgFolder, organizationFolder);
 
         assertEquals(multiBranchProject.getName(), multiBranchPipelineContainer.get("repo1").getName());
         when(orgFolder.getItems()).thenReturn(Lists.<MultiBranchProject<?, ?>>newArrayList(multiBranchProject));
@@ -81,7 +81,7 @@ public class OrganizationFolderTest{
     @Test
     @WithoutJenkins
     public void testOrgFolderRun(){
-        OrganizationFolderPipelineImpl organizationFolder = new OrganizationFolderPipelineImpl(orgFolder, new Link("/a/b/")){};
+        OrganizationFolderPipelineImpl organizationFolder = new OrganizationFolderPipelineImpl(mockOrganization(), orgFolder, new Link("/a/b/")){};
 
         OrganizationFolderRunImpl organizationFolderRun =  new OrganizationFolderRunImpl(organizationFolder, new Reachable() {
             @Override
@@ -110,7 +110,7 @@ public class OrganizationFolderTest{
             public Link getLink() {
                 return organization.getLink().rel("/pipelines/");
             }
-        });
+        }, mockOrganization());
         assertNotNull(folderPipeline);
 
         assertNotNull(folderPipeline.getQueue());
@@ -174,10 +174,9 @@ public class OrganizationFolderTest{
     @TestExtension("testOrganizationFolderFactory")
     public static class OrganizationFolderFactoryTestImpl extends OrganizationFolderPipelineImpl.OrganizationFolderFactory {
         @Override
-        protected OrganizationFolderPipelineImpl getFolder(OrganizationFolder folder, Reachable parent) {
-            BlueOrganization organization = mockOrganization();
+        protected OrganizationFolderPipelineImpl getFolder(jenkins.branch.OrganizationFolder folder, Reachable parent, BlueOrganization organization) {
             OrganizationFolder orgFolder = mockOrgFolder(organization);
-            return new OrganizationFolderPipelineImpl(orgFolder, organization.getLink().rel("/pipelines/")){};
+            return new OrganizationFolderPipelineImpl(organization, orgFolder, organization.getLink().rel("/pipelines/")){};
         }
     }
 }

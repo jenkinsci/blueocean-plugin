@@ -3,10 +3,12 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import com.google.common.collect.ImmutableList;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import org.kohsuke.stapler.StaplerRequest;
 
+import javax.annotation.Nonnull;
 import java.util.Iterator;
 
 /**
@@ -32,8 +34,7 @@ public class OrganizationFolderRunContainerImpl extends BlueRunContainer {
 
     @Override
     public BlueRun create(StaplerRequest request) {
-        return null; //OrganizationFolder can be only replayed once created.
-//        return new QueueItemImpl(pipeline.folder.scheduleBuild2(0, new CauseAction(new Cause.UserIdCause())), pipeline, 1);
+        return null;
     }
 
     @Override
@@ -45,6 +46,7 @@ public class OrganizationFolderRunContainerImpl extends BlueRunContainer {
     }
 
     @Override
+    @Nonnull
     public Iterator<BlueRun> iterator() {
         return ImmutableList.of((BlueRun)run).iterator();
     }
