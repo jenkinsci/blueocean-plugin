@@ -94,6 +94,6 @@ public abstract class BlueChangeSetEntry extends Resource {
     /**
      * @return issue
      */
-    @Exported(name = ISSUES)
+    @Exported(name = ISSUES, skipNull = true)
     public abstract Collection<BlueIssue> getIssues();
 }

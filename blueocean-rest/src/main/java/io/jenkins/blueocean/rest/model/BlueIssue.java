@@ -12,12 +12,12 @@ public abstract class BlueIssue {
     /**
      * @return issue identifier
      */
-    @Exported(name = ID)
+    @Exported(name = ID, inline = true)
     public abstract String getId();
 
     /**
      * @return issue URL
      */
-    @Exported(name = URL)
+    @Exported(name = URL, inline = true)
     public abstract String getURL();
 }

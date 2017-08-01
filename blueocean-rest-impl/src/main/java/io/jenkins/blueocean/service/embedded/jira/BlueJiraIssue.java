@@ -1,5 +1,8 @@
 package io.jenkins.blueocean.service.embedded.jira;
 
+import com.google.common.base.Function;
+import com.google.common.base.Predicates;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import hudson.Extension;
@@ -21,16 +24,17 @@ import java.util.Set;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Restricted(NoExternalUse.class)
-public class JIRAIssue extends BlueIssue {
+public class BlueJiraIssue extends BlueIssue {
 
-    private static final Logger LOGGER = Logger.getLogger(JIRAIssue.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(BlueJiraIssue.class.getName());
 
     private final String issueKey;
     private final String issueURL;
 
-    public JIRAIssue(String issueKey, String issueURL) {
+    public BlueJiraIssue(String issueKey, String issueURL) {
         this.issueKey = issueKey;
         this.issueURL = issueURL;
     }
@@ -60,7 +64,7 @@ public class JIRAIssue extends BlueIssue {
             }
             JiraIssue issue = action.getIssue();
             try {
-                return Lists.<BlueIssue>newArrayList(new JIRAIssue(issue.getKey(), jiraSite.getUrl(issue).toString()));
+                return Lists.<BlueIssue>newArrayList(new BlueJiraIssue(issue.getKey(), jiraSite.getUrl(issue).toString()));
             } catch (IOException e) {
                 LOGGER.log(Level.WARNING, "Cannot create representation of JIRA issue", e);
             }
@@ -70,31 +74,42 @@ public class JIRAIssue extends BlueIssue {
         @Override
         public Collection<BlueIssue> getIssues(ChangeLogSet.Entry changeSetEntry) {
             Run run = changeSetEntry.getParent().getRun();
-            JiraSite jiraSite = JiraSite.get(run.getParent());
+            final JiraSite jiraSite = JiraSite.get(run.getParent());
             if (jiraSite == null) {
                 return null;
             }
-            JiraBuildAction action = run.getAction(JiraBuildAction.class);
+            final JiraBuildAction action = run.getAction(JiraBuildAction.class);
             if (action == null) {
                 return null;
             }
-            Matcher m = jiraSite.getIssuePattern().matcher(changeSetEntry.getMsg());
-            Set<BlueIssue> issues = Sets.newHashSet();
-            while (m.find()) {
-                if (m.groupCount() >= 1) {
-                    String id = m.group(1);
-                    JiraIssue issue = action.getIssue(id);
+            Collection<String> issueKeys = findIssueKeys(changeSetEntry.getMsg(), jiraSite.getIssuePattern());
+            Iterable<BlueIssue> transformed = Iterables.transform(issueKeys, new Function<String, BlueIssue>() {
+                @Override
+                public BlueIssue apply(String input) {
+                    JiraIssue issue = action.getIssue(input);
                     if (issue == null) {
-                        continue;
+                        return null;
                     }
                     try {
-                        issues.add(new JIRAIssue(issue.getKey(), jiraSite.getUrl(issue).toString()));
+                        return new BlueJiraIssue(issue.getKey(), jiraSite.getUrl(issue).toString());
                     } catch (IOException e) {
-                        LOGGER.log(Level.WARNING, "Cannot create representation of JIRA issue", e);
+                        return null;
                     }
                 }
-            }
-            return issues;
+            });
+            return Sets.newHashSet(Iterables.filter(transformed, Predicates.notNull()));
         }
+    }
+
+    static Collection<String> findIssueKeys(String input, Pattern pattern) {
+        Matcher m = pattern.matcher(input);
+        Set<String> issues = Sets.newHashSet();
+        while (m.find()) {
+            if (m.groupCount() >= 1) {
+                String id = m.group(1);
+                issues.add(id);
+            }
+        }
+        return issues;
     }
 }
