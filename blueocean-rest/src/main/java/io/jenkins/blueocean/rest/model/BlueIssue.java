@@ -3,6 +3,9 @@ package io.jenkins.blueocean.rest.model;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
+/**
+ * Represents an issue or ticket
+ */
 @ExportedBean
 public abstract class BlueIssue {
 
@@ -12,12 +15,12 @@ public abstract class BlueIssue {
     /**
      * @return issue identifier
      */
-    @Exported(name = ID, inline = true)
+    @Exported(name = ID)
     public abstract String getId();
 
     /**
      * @return issue URL
      */
-    @Exported(name = URL, inline = true)
+    @Exported(name = URL)
     public abstract String getURL();
 }

@@ -50,7 +50,7 @@ public class BranchImpl extends PipelineImpl {
         this.parent = parent;
     }
 
-    @Exported(name = ISSUES, skipNull = true)
+    @Exported(name = ISSUES, skipNull = true, inline = true)
     public Collection<BlueIssue> getIssues() {
         return BlueIssueFactory.resolve(job);
     }

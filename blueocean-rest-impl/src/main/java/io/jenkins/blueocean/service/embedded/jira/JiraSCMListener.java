@@ -31,6 +31,9 @@ public class JiraSCMListener extends SCMListener {
         for (ChangeLogSet.Entry entry : changelog) {
             issueKeys.addAll(BlueJiraIssue.findIssueKeys(entry.getMsg(), jiraSite.getIssuePattern()));
         }
+        if (issueKeys.isEmpty()) {
+            return;
+        }
         String jql = constructJQLQuery(issueKeys);
         JiraSession session = jiraSite.getSession();
         // Query for JIRA issues
