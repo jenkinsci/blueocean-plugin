@@ -1,4 +1,27 @@
-package io.jenkins.blueocean.credential;
+/*
+ * The MIT License
+ *
+ * Copyright (c) 2017, CloudBees, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+package io.jenkins.blueocean.service.embedded.util;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey;
 import com.cloudbees.plugins.credentials.Credentials;
@@ -155,14 +178,22 @@ public class UserSSHKeyManager {
     }
 
     /**
-     * Returns a <user>@<jenkins> sort of comment to help identify the key's origin
+     * Returns a <user>@<jenkins-host> sort of comment to help identify the key's origin
      * @param userId a user id
      * @return an identifier
      */
     private static String getKeyComment(String userId) {
-        return ((userId == null ? "user" : userId) + "@"
-            + Jenkins.getInstance().getDisplayName())
-                .replaceAll("[^@._a-zA-Z0-9]", "");
+        String host = Jenkins.getInstance().getRootUrl();
+        if (host == null) {
+            host = Jenkins.getInstance().getRootUrlFromRequest();
+        }
+        if (host == null) {
+            host = Jenkins.getInstance().getDisplayName();
+        } else {
+            host = host.replaceAll(".*//([^/]+).*", "$1");
+        }
+        return ((userId == null ? Jenkins.getInstance().getDisplayName() : userId) + "@" + host)
+                .replaceAll("[^:@._a-zA-Z0-9]", "");
     }
     
     private static Domain getDomain(CredentialsStore store) {

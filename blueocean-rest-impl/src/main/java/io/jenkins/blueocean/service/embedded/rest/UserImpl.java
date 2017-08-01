@@ -6,6 +6,8 @@ import hudson.model.Item;
 import hudson.model.User;
 import hudson.tasks.Mailer;
 import hudson.tasks.UserAvatarResolver;
+import hudson.util.HttpResponses;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.ServiceException.ForbiddenException;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.Reachable;
@@ -14,12 +16,18 @@ import io.jenkins.blueocean.rest.model.BlueFavoriteContainer;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserPermission;
+import io.jenkins.blueocean.service.embedded.util.UserSSHKeyManager;
+import java.io.IOException;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
 import java.util.Map;
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.verb.DELETE;
+import org.kohsuke.stapler.verb.GET;
 
 /**
  * {@link BlueUser} implementation backed by in-memory {@link User}
@@ -141,6 +149,43 @@ public class UserImpl extends BlueUser {
     @Override
     public Link getLink() {
         return (parent != null)?parent.getLink().rel(getId()): ApiHead.INSTANCE().getLink().rel("users/"+getId());
+    }
+
+    /**
+     * Gets or creates the user's private Jenkins-managed key and returns the
+     * public key to the user
+     * @return JSON response
+     * @throws IOException 
+     */
+    @GET
+    @WebMethod(name="publickey")
+    public HttpResponse publicKey() throws IOException {
+        User authenticatedUser =  User.current();
+        if(authenticatedUser == null) {
+            throw new ServiceException.UnauthorizedException("No authenticated user found");
+        }
+        
+        String publicKey = UserSSHKeyManager.getReadablePublicKey(authenticatedUser, 
+            UserSSHKeyManager.getOrCreate(authenticatedUser));
+        
+        return HttpResponses.okJSON(ImmutableMap.of("key", publicKey));
+    }
+
+    /**
+     * Deletes the user's private Jenkins-managed key
+     * @return
+     * @throws IOException 
+     */
+    @DELETE
+    @WebMethod(name="publickey")
+    public HttpResponse resetPublicKey() throws IOException {
+        User authenticatedUser =  User.current();
+        if(authenticatedUser == null) {
+            throw new ServiceException.UnauthorizedException("No authenticated user found");
+        }
+        
+        UserSSHKeyManager.reset(authenticatedUser);
+        return HttpResponses.ok();
     }
 
     private boolean isAdmin(){
