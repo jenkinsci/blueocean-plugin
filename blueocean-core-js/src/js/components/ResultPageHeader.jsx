@@ -5,15 +5,12 @@ import {
     HeaderDetails,
     LiveStatusIndicator,
 } from '@jenkins-cd/design-language';
-import i18nTranslator from '../i18n/i18n';
-
-const translate = i18nTranslator('blueocean-web');
 
 import { _wrap } from './ContentPageHeader';
 
 // Exported from Zeplin, path could use a little cleanup
 const CloseButton = props => (
-    <span title={translate('toast.run.close', { defaultValue: 'Close' })}>
+    <span title={props.t('toast.run.open', { defaultValue: 'Close' })}>
         <svg className="ResultPageHeader-close" width="24px" height="24px"
           viewBox="0 0 24 24"
           onClick={props.onClick}
@@ -28,6 +25,7 @@ const CloseButton = props => (
 
 CloseButton.propTypes = {
     onClick: PropTypes.func,
+    t: PropTypes.func,
 };
 
 export const ResultPageHeader = props => {
@@ -37,6 +35,7 @@ export const ResultPageHeader = props => {
         onCloseClick,
         startTime,
         estimatedDurationInMillis,
+        t,
     } = props;
 
     const closeClicked = () => {
@@ -66,7 +65,7 @@ export const ResultPageHeader = props => {
                 { titleComp }
                 { topNavLinks }
                 { runButton }
-                <CloseButton onClick={closeClicked} />
+                <CloseButton onClick={closeClicked} t={t} />
             </TopNav>
             <HeaderDetails>
                 <div className="ResultPageHeader-main u-flex-grow">
@@ -87,4 +86,5 @@ ResultPageHeader.propTypes = {
     runButton: PropTypes.node,
     startTime: PropTypes.string,
     estimatedDurationInMillis: PropTypes.number,
+    t: PropTypes.func,
 };
