@@ -1,23 +1,9 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
-import java.io.IOException;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Map;
-
-import org.junit.Assert;
-import org.junit.Test;
-import org.jvnet.hudson.test.MockAuthorizationStrategy;
-import org.jvnet.hudson.test.TestExtension;
-
 import com.cloudbees.hudson.plugins.folder.Folder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
-
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.TopLevelItem;
@@ -29,6 +15,18 @@ import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
+import org.junit.Assert;
+import org.junit.Test;
+import org.jvnet.hudson.test.MockAuthorizationStrategy;
+import org.jvnet.hudson.test.TestExtension;
+
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Map;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 
 
 public class GithubOrgFolderPermissionsTest extends GithubMockBase {
@@ -113,7 +111,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
                 .data(ImmutableMap.of("accessToken", "12345"))
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .put("/organizations/" + getOrgName() + "/scm/github/validate/")
+                .put("/organizations/" + getOrgName() + "/scm/github/validate/?apiUrl="+githubApiUrl)
                 .build(Map.class);
 
         assertEquals("github", r.get("credentialId"));

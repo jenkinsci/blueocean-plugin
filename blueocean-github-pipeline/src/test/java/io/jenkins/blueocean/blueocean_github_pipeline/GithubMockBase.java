@@ -100,8 +100,7 @@ public abstract class GithubMockBase extends PipelineBaseTest {
                 .data(ImmutableMap.of("accessToken", accessToken))
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .put("/organizations/jenkins/scm/github/validate/?apiUrl="+githubApiUrl)
-                .put("/organizations/" + OrganizationFactory.getInstance().list().iterator().next().getName() + "/scm/github/validate/")
+                .put("/organizations/" + OrganizationFactory.getInstance().list().iterator().next().getName() + "/scm/github/validate/?apiUrl="+githubApiUrl)
                 .build(Map.class);
         String credentialId = (String) r.get("credentialId");
         assertEquals("github", credentialId);
