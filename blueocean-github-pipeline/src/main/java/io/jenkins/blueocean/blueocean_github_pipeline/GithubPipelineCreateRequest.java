@@ -17,6 +17,7 @@ import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import io.jenkins.blueocean.scm.api.AbstractPipelineCreateRequest;
@@ -101,10 +102,15 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
         String singleRepo = repos.size() == 1 ? repos.get(0) : null;
 
         User authenticatedUser =  User.current();
-        
+
         ModifiableTopLevelItemGroup orgRoot = getParent();
         
         Item item = Jenkins.getInstance().getItemByFullName(orgRoot.getFullName() + '/' + orgName);
+
+        BlueOrganization organization = findOrganization();
+        if (organization == null) {
+            throw new ServiceException.UnexpectedErrorException("Could not find organization");
+        }
         boolean creatingNewItem = item == null;
         try {
 
@@ -179,7 +185,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
                     gitHubSCMNavigator.setPattern(sb.toString());
                 }
 
-                GithubOrganizationFolder githubOrganizationFolder = new GithubOrganizationFolder(organizationFolder, parent.getLink());
+                GithubOrganizationFolder githubOrganizationFolder = new GithubOrganizationFolder(organization, organizationFolder, parent.getLink());
                 if(singleRepo != null){
                     final boolean hasJenkinsfile = repoHasJenkinsFile(apiUrl,credentialId, orgName, singleRepo, organizationFolder);
                     if(hasJenkinsfile){

@@ -23,37 +23,6 @@
  */
 package io.jenkins.blueocean.preload;
 
-import static org.mockito.Mockito.doReturn;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Collection;
-import java.util.Collections;
-
-import javax.annotation.Nonnull;
-import javax.servlet.ServletException;
-
-import org.acegisecurity.AccessDeniedException;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.jvnet.hudson.test.MockFolder;
-import org.jvnet.hudson.test.TestExtension;
-import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
-import org.kohsuke.stapler.WebMethod;
-import org.kohsuke.stapler.verb.DELETE;
-import org.mockito.Mockito;
-import org.powermock.core.classloader.annotations.PrepareForTest;
-import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.util.CollectionUtils;
-
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.ItemGroup;
@@ -73,6 +42,32 @@ import io.jenkins.blueocean.service.embedded.rest.PipelineContainerImpl;
 import io.jenkins.blueocean.service.embedded.rest.UserContainerImpl;
 import io.jenkins.blueocean.service.embedded.rest.UserImpl;
 import jenkins.model.ModifiableTopLevelItemGroup;
+import org.acegisecurity.AccessDeniedException;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.jvnet.hudson.test.TestExtension;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.StaplerResponse;
+import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.verb.DELETE;
+import org.powermock.core.classloader.annotations.PrepareForTest;
+import org.powermock.modules.junit4.PowerMockRunner;
+import org.springframework.util.CollectionUtils;
+
+import javax.annotation.Nonnull;
+import javax.servlet.ServletException;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Collection;
+import java.util.Collections;
+
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
+import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ Stapler.class, OrganizationFactory.class })
@@ -153,7 +148,7 @@ public class BlueOceanWebURLBuilderOrgOnFolderTest {
 
         @Override
         public BluePipelineContainer getPipelines() {
-            return new PipelineContainerImpl(this);
+            return new PipelineContainerImpl(this, this,this);
         }
 
         @WebMethod(name = "")

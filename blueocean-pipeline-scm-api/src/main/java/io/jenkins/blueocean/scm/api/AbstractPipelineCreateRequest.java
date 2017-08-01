@@ -73,4 +73,8 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
 
         return parent;
     }
+
+    protected BlueOrganization findOrganization() {
+        return OrganizationFactory.getInstance().get(getOrganization());
+    }
 }

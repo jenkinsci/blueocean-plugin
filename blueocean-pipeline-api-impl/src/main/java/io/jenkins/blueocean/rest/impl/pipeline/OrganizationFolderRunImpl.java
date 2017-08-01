@@ -8,6 +8,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -51,7 +52,7 @@ public class OrganizationFolderRunImpl extends BlueRun {
 
     @Override
     public String getOrganization() {
-        return pipeline.getOrganization();
+        return pipeline.getOrganizationName();
     }
 
     @Override
@@ -191,7 +192,7 @@ public class OrganizationFolderRunImpl extends BlueRun {
     @Override
     public BlueRun replay() {
         if(isReplayable()) {
-            return new QueueItemImpl(pipeline.folder.scheduleBuild2(0,new CauseAction(new hudson.model.Cause.UserIdCause())), pipeline, 1).toRun();
+            return new QueueItemImpl(this.pipeline.getOrganization(), pipeline.folder.scheduleBuild2(0,new CauseAction(new hudson.model.Cause.UserIdCause())), pipeline, 1).toRun();
         }
         return null;
     }
