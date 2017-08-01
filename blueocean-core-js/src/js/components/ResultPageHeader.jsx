@@ -10,19 +10,22 @@ import { _wrap } from './ContentPageHeader';
 
 // Exported from Zeplin, path could use a little cleanup
 const CloseButton = props => (
-    <svg className="ResultPageHeader-close" width="24px" height="24px"
-      viewBox="0 0 24 24"
-      onClick={props.onClick}
-      version="1.1"
-    >
-        <g strokeWidth="1">
-            <polygon points="19 6.415 17.585 5 12 10.585 6.415 5 5 6.415 10.585 12 5 17.585 6.415 19 12 13.415 17.585 19 19 17.585 13.415 12" />
-        </g>
-    </svg>
+    <span title={props.t('creation.core.header.close', { defaultValue: 'Close' })}>
+        <svg className="ResultPageHeader-close" width="24px" height="24px"
+          viewBox="0 0 24 24"
+          onClick={props.onClick}
+          version="1.1"
+        >
+            <g strokeWidth="1">
+                <polygon points="19 6.415 17.585 5 12 10.585 6.415 5 5 6.415 10.585 12 5 17.585 6.415 19 12 13.415 17.585 19 19 17.585 13.415 12" />
+            </g>
+        </svg>
+    </span>
 );
 
 CloseButton.propTypes = {
     onClick: PropTypes.func,
+    t: PropTypes.func,
 };
 
 export const ResultPageHeader = props => {
@@ -32,6 +35,7 @@ export const ResultPageHeader = props => {
         onCloseClick,
         startTime,
         estimatedDurationInMillis,
+        t,
     } = props;
 
     const closeClicked = () => {
@@ -61,7 +65,7 @@ export const ResultPageHeader = props => {
                 { titleComp }
                 { topNavLinks }
                 { runButton }
-                <CloseButton onClick={closeClicked} />
+                <CloseButton onClick={closeClicked} t={t} />
             </TopNav>
             <HeaderDetails>
                 <div className="ResultPageHeader-main u-flex-grow">
@@ -82,4 +86,5 @@ ResultPageHeader.propTypes = {
     runButton: PropTypes.node,
     startTime: PropTypes.string,
     estimatedDurationInMillis: PropTypes.number,
+    t: PropTypes.func,
 };
