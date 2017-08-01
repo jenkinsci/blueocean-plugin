@@ -27,7 +27,9 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
 import java.io.IOException;
 import java.util.Map;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -36,10 +38,16 @@ import org.junit.Test;
  */
 public class UserSSHKeyTest extends BaseTest {
 
-    public UserSSHKeyTest() {
-        super(true);
+    @BeforeClass
+    public static void enableJWT() {
+        System.setProperty("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION", "true");
     }
-    
+
+    @AfterClass
+    public static void resetJWT() {
+        System.clearProperty("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION");
+    }
+
     @Test
     public void createPersonalSSHKey() throws IOException, UnirestException {
         User user = login();

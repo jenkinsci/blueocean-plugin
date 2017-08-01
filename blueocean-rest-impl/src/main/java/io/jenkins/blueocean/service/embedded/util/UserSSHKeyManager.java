@@ -82,20 +82,19 @@ public class UserSSHKeyManager {
             }
         }
         // if none found, create one
-        BasicSSHUserPrivateKey key;
         try {
             // create one!
             KeyPair keyPair = SSHKeyUtils.generateRSAKey(KEY_SIZE);
             RSAPrivateKey privateKey = (RSAPrivateKey)keyPair.getPrivate();
             String id_rsa = Base64.encode(privateKey.getEncoded());
             BasicSSHUserPrivateKey.DirectEntryPrivateKeySource keySource = new BasicSSHUserPrivateKey.DirectEntryPrivateKeySource(id_rsa);
-            key = new BasicSSHUserPrivateKey(CredentialsScope.USER, BLUEOCEAN_GENERATED_SSH_KEY_ID, user.getId(), keySource, null, BLUEOCEAN_GENERATED_SSH_KEY_ID);
+            BasicSSHUserPrivateKey key = new BasicSSHUserPrivateKey(CredentialsScope.USER, BLUEOCEAN_GENERATED_SSH_KEY_ID, user.getId(), keySource, null, BLUEOCEAN_GENERATED_SSH_KEY_ID);
             store.addCredentials(getDomain(store), key);
             store.save();
+            return key;
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            throw new ServiceException.UnexpectedErrorException("Failed to create the private key", ex);
         }
-        return key;
     }
     
     /**
@@ -118,7 +117,7 @@ public class UserSSHKeyManager {
             String id_rsa_pub = getSSHPublicKey(publicKey, user);
             return id_rsa_pub;
         } catch (InvalidKeySpecException | NoSuchAlgorithmException | IOException ex) {
-            throw new RuntimeException(ex);
+            throw new ServiceException.UnexpectedErrorException("Unable to get a readable public key", ex);
         }
     }
     
@@ -152,7 +151,7 @@ public class UserSSHKeyManager {
                 store.save();
             }
         } catch (IOException ex) {
-            throw new RuntimeException(ex);
+            throw new ServiceException.UnexpectedErrorException("Unable to reset the user's key", ex);
         }
     }
 
@@ -199,14 +198,14 @@ public class UserSSHKeyManager {
                 //create new one
                 boolean result = store.addDomain(new Domain(BLUEOCEAN_DOMAIN_NAME, null, null));
                 if (!result) {
-                    throw new RuntimeException(String.format("Failed to create credential domain: %s", BLUEOCEAN_DOMAIN_NAME));
+                    throw new ServiceException.UnexpectedErrorException(String.format("Failed to create credential domain: %s", BLUEOCEAN_DOMAIN_NAME));
                 }
                 domain = store.getDomainByName(BLUEOCEAN_DOMAIN_NAME);
                 if (domain == null) {
-                    throw new RuntimeException(String.format("Domain %s created but not found", BLUEOCEAN_DOMAIN_NAME));
+                    throw new ServiceException.UnexpectedErrorException(String.format("Domain %s created but not found", BLUEOCEAN_DOMAIN_NAME));
                 }
             } catch (IOException ex) {
-                throw new RuntimeException(ex);
+                throw new ServiceException.UnexpectedErrorException("Failed to save the Blue Ocean domain.", ex);
             }
         }
         return domain;
