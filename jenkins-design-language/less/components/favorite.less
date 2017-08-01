@@ -1,4 +1,14 @@
 .Favorite {
+
+    @resting: @action-button;
+    @selected: #E79713;
+
+    @resting-dark: @action-button-dark;
+    @selected-dark: white;
+
+    @hover: #E79713;
+    @hover-dark: white;
+
     .Checkbox-indicator {
         border: 0;
         width: 24px;
@@ -20,53 +30,59 @@
         }
     }
 
+    .Favorite-fill {
+        fill: @resting;
+    }
+
+    .Favorite-fill--selected {
+        fill: @selected;
+    }
+
+    .Favorite-stroke--selected {
+        stroke: @selected;
+    }
+
     // hover states for unchecked and checked
     &:hover {
-        .star-empty {
-            fill: @brand-active;
+        .Favorite-fill {
+            fill: @hover;
         }
 
-        .star-filled {
-            fill: darken(#F5A623, 20%);
-        }
-    }
-
-    &.dark-yellow {
-        .star-empty {
-            fill: #FFF;
+        .Favorite-fill--selected {
+            fill: @hover;
         }
 
-        &:hover {
-            .star-empty {
-                fill: @white-active;
-            }
-
-            .start-filled {
-                fill: darken(#F5A623, 20%);
-            }
+        .Favorite-stroke--selected {
+            stroke: @hover;
         }
     }
 
-    &.dark-white {
-        // NOTE: need lowercase hex values for IE11 compat
 
-        // grab all shapes using blue or yellow so we can set them to white
-        path[fill='#4a90e2'], path[fill='#4A90E2'],
-        path[fill='#f5a623'], path[fill='#F5A623'] {
-            fill: #FFF;
+    &.dark {
+        .Favorite-fill {
+            fill: @resting-dark;
         }
 
-        circle[stroke='#f5a623'], circle[stroke='#F5A623'] {
-            stroke: #FFF;
+        .Favorite-fill--selected {
+            fill: @selected-dark;
         }
 
+        .Favorite-stroke--selected {
+            stroke: @selected-dark;
+        }
+
+        // hover states for unchecked and checked
         &:hover {
-            .star-empty {
-                fill: @white-active;
+            .Favorite-fill {
+                fill: @hover-dark;
             }
 
-            .star-filled {
-                fill: @white-active;
+            .Favorite-fill--selected {
+                fill: @hover-dark;
+            }
+
+            .Favorite-stroke--selected {
+                stroke: @hover-dark;
             }
         }
     }

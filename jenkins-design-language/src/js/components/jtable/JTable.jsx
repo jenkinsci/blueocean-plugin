@@ -13,6 +13,7 @@ export type ColumnDescription = {
 };
 
 type Props = {
+    onClick?: Function,
     className?: string,
     children?: ReactChildren,
     columns: Array<ColumnDescription>,
@@ -105,10 +106,8 @@ export class JTable extends Component {
         const {
             className,
             children,
-            style
+            ...restProps
         } = this.props;
-
-        const columns = this.state.columns;
 
         const classNames = ['JTable', 'u-table-maxwidth'];
 
@@ -117,7 +116,7 @@ export class JTable extends Component {
         }
 
         const newChildProps = {
-            columns
+            columns: this.state.columns
         };
 
         const newChildren = [];
@@ -129,8 +128,9 @@ export class JTable extends Component {
         });
 
         const newProps = {
+            ...restProps,
+            columns: undefined,
             className: classNames.join(' '),
-            style: style
         };
 
         return React.createElement('div', newProps, ...newChildren);
@@ -138,6 +138,7 @@ export class JTable extends Component {
 }
 
 JTable.propTypes = {
+    onClick: PropTypes.func,
     className: PropTypes.string,
     children: PropTypes.node,
     style: PropTypes.object,

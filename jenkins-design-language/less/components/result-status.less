@@ -27,8 +27,7 @@
     fill: @brand-warning-lite;
 }
 
-.svgResultStatus circle.aborted,
-.svgResultStatus circle.not_built {
+.svgResultStatus circle.aborted {
     stroke: none;
     fill: @brand-grey-lite;
 }
@@ -127,14 +126,18 @@
     stroke: none;
 }
 
-.progress-spinner.not_built circle {
-    fill: none;
-    stroke: @brand-grey-lite;
-}
+.progress-spinner.not_built,
+.progress-spinner.skipped {
 
-.progress-spinner.not_built path {
-    fill: none;
-    stroke: none;
+    circle {
+        fill: none;
+        stroke: @brand-grey-lite;
+    }
+
+    path {
+        fill: none;
+        stroke: none;
+    }
 }
 
 .result-bg.success {
@@ -198,6 +201,7 @@
     flex: 1 1 auto;
     display:flex;
     align-items:center;
+    min-width: 0;
 }
 
 .result-item-extra-info {
@@ -266,6 +270,15 @@
 
 .pipeline-connector {
     stroke: @brand-grey-lite;
+}
+
+.pipeline-node-terminal {
+    fill: @brand-grey-lite;
+}
+
+.pipeline-connector-skipped {
+    stroke: @brand-grey-lite;
+    stroke-opacity: 0.25;
 }
 
 .pipeline-big-label {

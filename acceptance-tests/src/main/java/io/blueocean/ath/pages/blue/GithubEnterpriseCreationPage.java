@@ -37,6 +37,14 @@ public class GithubEnterpriseCreationPage extends GithubCreationPage {
     @FindBy(css = ".github-enterprise-choose-server-step .button-next-step")
     WebElement buttonServerNext;
 
+
+    @FindBy(css = ".Dropdown-thumb")
+    WebElement dropDown;
+
+    @FindBy(css = ".Dropdown-menu-item")
+    WebElement existingServer;
+
+
     @Override
     public void selectGithubCreation() {
         wait.until(ExpectedConditions.visibilityOf(githubEnterpriseCreationButton)).click();
@@ -51,4 +59,11 @@ public class GithubEnterpriseCreationPage extends GithubCreationPage {
         wait.until(ExpectedConditions.visibilityOf(buttonServerNext)).click();
     }
 
+    public void selectExistingServer() {
+        wait.until(ExpectedConditions.visibilityOf(dropDown)).click();
+        wait.until(ExpectedConditions.visibilityOf(existingServer)).click();
+
+
+
+    }
 }

@@ -1,7 +1,6 @@
 // @flow
 
 import React from 'react';
-import {Link} from 'react-router';
 import { storiesOf } from '@kadira/storybook';
 import WithContext from './WithContext';
 import {
@@ -11,6 +10,8 @@ import {
     TableHeader,
     TableHeaderRow
 } from '../components';
+
+import { Icon } from '@jenkins-cd/react-material-icons';
 
 //--------------------------------------------------------------------------
 //
@@ -32,7 +33,7 @@ storiesOf('JTable', module)
 //--------------------------------------------------------------------------
 
 const rowHeaders =
-    [ "Score", "Batsman",            "For",         "Against",      "Innings", "Test", "Ground",                                    "Date"];
+    [ "Score", "Batsman",            "For",         "Against",      "Innings", "Test", "Ground",                                    "Date",                ""];
 const rowData = [
     [ "400",   "Brian Lara",         "West Indies", "England",      "1st",     "4th",  "Antigua Recreation Ground, St John's",      "10 April 2004"    ],
     [ "380",   "Matthew Hayden",     "Australia",   "Zimbabwe",     "1st",     "1st",  "WACA Ground, Perth",                        "9 October 2003"   ],
@@ -46,7 +47,7 @@ const rowData = [
     [ "334",   "Donald Bradman",     "Australia",   "England",      "1st",     "3rd",  "Headingley, Leeds",                         "11 July 1930"     ],
     [ "334",   "Mark Taylor",        "Australia",   "Pakistan",     "1st",     "2nd",  "Arbab Niaz Stadium, Peshawar",              "15 October 1998"  ]];
 const colWidths =
-    [ 40,      200,                  90,            90,             40,        40,     200,                                         130 ];
+    [ 40,      200,                  90,            90,             40,        40,     200,                                         130,                   90];
 
 //--------------------------------------------------------------------------
 //
@@ -62,7 +63,7 @@ function container(...children) {
 
     const ctx = {
         router: {
-            createHref: x => "/createdHref" + x
+            createHref: x => "/context-url-base" + x
         }
     };
 
@@ -73,10 +74,39 @@ function container(...children) {
     );
 }
 
+function rowClicked(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    const tag = e.currentTarget.attributes.getNamedItem('data-tag');
+    console.log('rowClicked', (tag ? tag.value : 'missing data-tag'));
+}
+
+function cellClicked(e) {
+    e.stopPropagation();
+    e.preventDefault();
+    const tag = e.currentTarget.attributes.getNamedItem('data-tag');
+    console.log('cellClicked', (tag ? tag.value : 'missing data-tag'));
+}
+
 function renderRow(rowData) {
     const key = rowData[1] + rowData[0];
+
+    const boxStyle = {
+        width: '24px',
+        height: '24px',
+        background: '#ccc',
+        overflow: 'hidden'
+    };
+
     return (
-        <TableRow key={key}>{ rowData.map(renderCell) }</TableRow>
+        <TableRow onClick={rowClicked} key={key} data-tag={ 'row-' + key }>
+            { rowData.map(renderCell) }
+            <TableCell className="TableCell--actions">
+                <Icon size={24} icon="history"/>
+                <div style={boxStyle}/>
+                <Icon size={24} icon="delete"/>
+            </TableCell>
+        </TableRow>
     );
 }
 
@@ -161,7 +191,6 @@ function manual() {
     };
 
     return container(
-        <Link to="/relativeurl">This is in a link</Link>,
         <h3>Manual headers, row links</h3>,
         <JTable columns={columns} style={style}>
             <TableRow>
@@ -179,7 +208,7 @@ function manual() {
             {
                 null // Make sure we can have optional rows, as well as optional columns!
             }
-            <TableRow href="http://www.example.org/alpha/">
+            <TableRow onClick={rowClicked} data-tag="row-first" href="http://www.example.org/alpha/">
                 <TableCell>True</TableCell>
                 <TableCell>True</TableCell>
                 <TableCell>True</TableCell>
@@ -191,7 +220,7 @@ function manual() {
                 <TableCell>False</TableCell>
                 <TableCell>Alpha</TableCell>
             </TableRow>
-            <TableRow href="http://www.example.org/bravo/">
+            <TableRow onClick={rowClicked} data-tag="row-2" href="http://www.example.org/bravo/">
                 <TableCell>True</TableCell>
                 <TableCell>False</TableCell>
                 <TableCell>False</TableCell>
@@ -203,7 +232,7 @@ function manual() {
                 <TableCell>True</TableCell>
                 <TableCell>this space intentionally left blank</TableCell>
             </TableRow>
-            <TableRow href="http://www.example.org/charlie/">
+            <TableRow onClick={rowClicked} data-tag="row-3" href="http://www.example.org/charlie/">
                 <TableCell>False</TableCell>
                 <TableCell>True</TableCell>
                 <TableCell>False</TableCell>
@@ -212,14 +241,14 @@ function manual() {
                 <TableCell>True</TableCell>
                 <TableCell>Charlie don't surf</TableCell>
             </TableRow>
-            <TableRow linkTo="/app-specific-url/foo">
+            <TableRow onClick={rowClicked} data-tag="row-last" linkTo="/app-specific-url/foo">
                 <TableCell>False</TableCell>
                 <TableCell>False</TableCell>
-                <TableCell>False</TableCell>
-                <TableCell>False</TableCell>
-                <TableCell>False</TableCell>
-                <TableCell>True</TableCell>
-                <TableCell>&lt;Link&gt;</TableCell>
+                <TableCell onClick={cellClicked} data-tag="row-last-cell-and">False</TableCell>
+                <TableCell onClick={cellClicked} data-tag="row-last-cell-or">False</TableCell>
+                <TableCell onClick={cellClicked} data-tag="row-last-cell-xor">False</TableCell>
+                <TableCell onClick={cellClicked} data-tag="row-last-cell-nand">True</TableCell>
+                <TableCell onClick={cellClicked} data-tag="row-last-cell-last">&lt;Link&gt;</TableCell>
             </TableRow>
         </JTable>,
         <h3>Some Links, some useRollover</h3>,
@@ -233,7 +262,7 @@ function manual() {
                 <TableHeader>NAND</TableHeader>
                 <TableHeader>Comment</TableHeader>
             </TableRow>
-            <TableRow href="http://www.example.org/alpha/">
+            <TableRow linkTo="/app-link">
                 <TableCell>True</TableCell>
                 <TableCell>True</TableCell>
                 <TableCell>True</TableCell>
@@ -261,13 +290,13 @@ function manual() {
                 <TableCell>No link</TableCell>
             </TableRow>
             <TableRow useRollover>
-                <TableCell>False</TableCell>
-                <TableCell>False</TableCell>
-                <TableCell>False</TableCell>
-                <TableCell>False</TableCell>
-                <TableCell>False</TableCell>
-                <TableCell>True</TableCell>
-                <TableCell>No link, useRollover=true</TableCell>
+                <TableCell href="http://example.org/a">False</TableCell>
+                <TableCell href="http://example.org/a">False</TableCell>
+                <TableCell href="http://example.org/a">False</TableCell>
+                <TableCell linkTo="/app-link">False</TableCell>
+                <TableCell linkTo="/app-link">False</TableCell>
+                <TableCell linkTo="/app-link">True</TableCell>
+                <TableCell>Cell links only, useRollover=true</TableCell>
             </TableRow>
         </JTable>
     );

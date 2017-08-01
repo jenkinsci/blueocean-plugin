@@ -150,6 +150,7 @@ export class Dropdown extends React.Component {
             // clicking those elements will actually close the it via different means
             const clickedOutsideDropdown = !this.buttonRef.contains(element) &&
                 !this.thumbRef.contains(element) &&
+                !this.wrapperRef.contains(element) &&
                 !this.menuRef.contains(element);
 
             if (clickedOutsideDropdown) {
@@ -282,7 +283,7 @@ export class Dropdown extends React.Component {
 
     render() {
         // console.log('render', this.state.menuOpen);
-        const { disabled, options, style } = this.props;
+        const { disabled, options, style, title, footer = undefined } = this.props;
         const extraClass = this.props.className || '';
         const openClass = this.state.menuOpen ? 'Dropdown-menu-open' : 'Dropdown-menu-closed';
         const promptClass = !this.state.selectedOption ? 'Dropdown-placeholder' : '';
@@ -290,6 +291,7 @@ export class Dropdown extends React.Component {
         const noOptions = !options || !options.length;
         const buttonDisabled = disabled || noOptions;
         const buttonLabel = this._optionToLabel(this.state.selectedOption) || this.props.placeholder;
+        const buttonTitle = title || buttonLabel;
         const menuWidth = this.buttonRef && this.buttonRef.offsetWidth || 0;
 
         return (
@@ -297,15 +299,15 @@ export class Dropdown extends React.Component {
                 <button ref={button => { this.buttonRef = button; }}
                     className={`Dropdown-button ${promptClass}`}
                     disabled={buttonDisabled}
-                    title={buttonLabel}
+                    title={buttonTitle}
                     onClick={this._onDropdownMouseEvent}
                 >
                     {buttonLabel}
                 </button>
 
                 <a ref={thumb => { this.thumbRef = thumb; }}
-                    className="Dropdown-thumb"
-                    onClick={this._onDropdownMouseEvent}
+                   className="Dropdown-thumb"
+                   onClick={this._onDropdownMouseEvent}
                 >
                     <Icon icon="keyboard_arrow_down" size={16} />
                 </a>
@@ -316,27 +318,30 @@ export class Dropdown extends React.Component {
                     positionFunction={positionMenu}
                     style={{width: menuWidth}}
                 >
-                    <ul
-                        ref={list => { this.menuRef = list; }}
-                        className="Dropdown-menu"
-                        onWheel={this._onMenuScrollEvent}
-                    >
-                        { options && options.map((option, index) => {
-                            const selectedClass = this.state.selectedOption === option ? 'Dropdown-menu-item-selected' : '';
-                            const optionLabel = this._optionToLabel(option);
+                    <div ref={wrapper => this.wrapperRef = wrapper}>
+                        <ul
+                            ref={list => { this.menuRef = list; }}
+                            className="Dropdown-menu"
+                            onWheel={this._onMenuScrollEvent}
+                        >
+                            { options && options.map((option, index) => {
+                                const selectedClass = this.state.selectedOption === option ? 'Dropdown-menu-item-selected' : '';
+                                const optionLabel = this._optionToLabel(option);
 
-                            return (
-                                <li key={index} data-position={index}>
-                                    <a className={`Dropdown-menu-item ${selectedClass}`}
-                                       href="#"
-                                       onClick={event => this._onMenuItemClick(event, option, index)}
-                                    >
-                                        {optionLabel}
-                                    </a>
-                                </li>
-                            );
-                        })}
-                    </ul>
+                                return (
+                                    <li key={index} data-position={index} className={`${selectedClass}`}>
+                                        <a className={`Dropdown-menu-item ${selectedClass}`}
+                                           href="#"
+                                           onClick={event => this._onMenuItemClick(event, option, index)}
+                                        >
+                                            {optionLabel}
+                                        </a>
+                                    </li>
+                                );
+                            })}
+                        </ul>
+                        { footer }
+                    </div>
                 </FloatingElement>
                 }
             </div>
@@ -361,10 +366,12 @@ Dropdown.propTypes = {
     placeholder: PropTypes.string,
     options: PropTypes.array,
     defaultOption: PropTypes.string,
+    title: PropTypes.string,
     labelField: PropTypes.string,
     labelFunction: PropTypes.func,
     disabled: PropTypes.bool,
     onChange: PropTypes.func,
+    footer: PropTypes.element,
 };
 
 Dropdown.defaultProps = {

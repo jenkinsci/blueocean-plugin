@@ -21,7 +21,7 @@ public class QueueUtil {
     public static BlueQueueItem getQueuedItem(final hudson.model.Queue.Item item, Job job) {
 
         for(BlueQueueItem qi: getQueuedItems(job)){
-            if(qi.getId().equalsIgnoreCase(Long.toString(item.getId()))){
+            if(qi.getId() != null && qi.getId().equalsIgnoreCase(Long.toString(item.getId()))){
                 return qi;
             }
         }

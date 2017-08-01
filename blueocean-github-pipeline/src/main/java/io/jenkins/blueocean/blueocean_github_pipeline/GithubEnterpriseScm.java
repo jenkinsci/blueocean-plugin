@@ -12,7 +12,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
-import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.GET;
@@ -64,15 +64,20 @@ public class GithubEnterpriseScm extends GithubScm {
         return DOMAIN_NAME;
     }
 
-    @WebMethod(name="") @GET @TreeResponse
+    @Override
+    public boolean isOrganizationAvatarSupported() {
+        return false;
+    }
+
+    @Override
     public Object getState() {
         // will produce a 400 if apiUrl wasn't sent
         getUri();
-        return this;
+        return super.getState();
     }
 
     @Navigable
-    public Container<GithubServer> getServers() {
+    public ScmServerEndpointContainer getServers() {
         return new GithubServerContainer(getLink());
     }
 

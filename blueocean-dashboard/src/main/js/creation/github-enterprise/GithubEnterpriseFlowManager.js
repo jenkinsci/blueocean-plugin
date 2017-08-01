@@ -18,8 +18,8 @@ export default class GithubEnterpriseFlowManager extends GithubFlowManager {
 
     selectedServer = null;
 
-    constructor(creationApi, credentialsApi, serverApi) {
-        super(creationApi, credentialsApi);
+    constructor(creationApi, serverApi) {
+        super(creationApi);
 
         this.serverManager = new GHEServerManager(serverApi);
     }
@@ -44,6 +44,10 @@ export default class GithubEnterpriseFlowManager extends GithubFlowManager {
         this.setPlaceholders('Complete');
     }
 
+    getScmId() {
+        return 'github-enterprise';
+    }
+
     getApiUrl() {
         return this.selectedServer ? this.selectedServer.apiUrl : null;
     }
@@ -53,7 +57,7 @@ export default class GithubEnterpriseFlowManager extends GithubFlowManager {
     }
 
     _getOrganizationsStepAfterStateId() {
-        return this.isStateAdded(STATE.STEP_ACCESS_TOKEN) ?
+        return this.credentialSelected ?
             STATE.STEP_ACCESS_TOKEN : STATE.STEP_CHOOSE_SERVER;
     }
 
@@ -72,13 +76,7 @@ export default class GithubEnterpriseFlowManager extends GithubFlowManager {
 
     selectServer(server) {
         this.selectedServer = server;
-
-        this.findExistingCredential();
-        this.renderStep({
-            stateId: STATE.PENDING_LOADING_CREDS,
-            stepElement: <GithubLoadingStep />,
-            afterStateId: STATE.STEP_CHOOSE_SERVER,
-        });
+        this._renderCredentialsStep();
     }
 
 }

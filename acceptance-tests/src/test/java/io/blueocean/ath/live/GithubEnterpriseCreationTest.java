@@ -3,6 +3,7 @@ package io.blueocean.ath.live;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.CustomJenkinsServer;
 import io.blueocean.ath.Login;
+import io.blueocean.ath.Retry;
 import io.blueocean.ath.pages.blue.GithubAddServerDialogPage;
 import io.blueocean.ath.pages.blue.GithubEnterpriseCreationPage;
 import io.blueocean.ath.util.GithubHelper;
@@ -52,6 +53,7 @@ public class GithubEnterpriseCreationTest {
     }
 
 
+    @Retry(3)
     @Test
     public void testGitHubEnterpriseCreation_addNewGitHubServer() throws IOException {
         String serverName = getServerNameUnique("My Server");
@@ -71,9 +73,19 @@ public class GithubEnterpriseCreationTest {
         dialog.clickSaveServerButton();
         dialog.findFormErrorMessage("Could not connect");
         // valid form data should submit
+
         dialog.enterServerUrl(serverUrl);
         dialog.clickSaveServerButton();
-        dialog.wasDismissed();
+
+        // As currently api.github.com may up in list thank to github branch source, this can mess up this test
+        if (dialog.hasFormErrorMessage("already exists")) {
+            // if we already have the "test" GHE (ie github cloud) - no worries, we wil cancel and use it
+            dialog.clickCancelButton();
+            creationPage.selectExistingServer();
+        } else {
+            dialog.wasDismissed();
+        }
+
 
         creationPage.clickChooseServerNextStep();
         creationPage.completeCreationFlow(

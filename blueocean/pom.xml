@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.2.0-beta-2-SNAPSHOT</version>
+        <version>1.2.0-beta-4-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean</artifactId>
@@ -78,6 +78,10 @@
             <artifactId>blueocean-git-pipeline</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-bitbucket-pipeline</artifactId>
+        </dependency>
 
         <!-- Bundled plugins for improved out of the box experience -->
         <dependency>

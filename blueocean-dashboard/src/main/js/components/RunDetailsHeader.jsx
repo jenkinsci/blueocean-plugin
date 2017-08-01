@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/react-material-icons';
 import { AppConfig, logging, ResultPageHeader, TimeManager } from '@jenkins-cd/blueocean-core-js';
-import { ExpandablePath, ReadableDate, TimeDuration } from '@jenkins-cd/design-language';
+import { ExpandablePath, ReadableDate, TimeDuration, CommitId } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import { Link } from 'react-router';
 import { buildPipelineUrl } from '../util/UrlUtils';
@@ -38,7 +38,6 @@ class RunDetailsHeader extends Component {
             onCloseClick,
             onAuthorsClick,
             onOrganizationClick,
-            onNameClick,
             topNavLinks,
             runButton,
             isMultiBranch,
@@ -78,14 +77,16 @@ class RunDetailsHeader extends Component {
         const dateFormatShort = t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' });
         const dateFormatLong = t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' });
 
+        const activityUrl = `${buildPipelineUrl(run.organization, pipeline.fullName)}/activity`;
+
         // Sub-trees
         const title = (
             <h1 className="RunDetailsHeader-title">
                 {AppConfig.showOrg() && <span><a onClick={ onOrganizationClick }>{ run.organization === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : run.organization }</a>
                 <span>&nbsp;/&nbsp;</span></span>}
-                <a className="path-link" onClick={ onNameClick }>
+                <Link className="path-link" to={ activityUrl }>
                     <ExpandablePath path={ fullDisplayName } hideFirst className="dark-theme" iconSize={ 20 } />
-                </a>
+                </Link>
                 <span>&nbsp;<RunIdCell run={run} /></span>
             </h1>
         );
@@ -120,11 +121,13 @@ class RunDetailsHeader extends Component {
         );
 
         const commitIdString = run.commitId || '—';
+        const commitUrl = run.commitUrl || '';
+
         const commitSourceDetails = (
             <div className="u-label-value" title={commitLabel + ': ' + commitIdString}>
                 <label className={labelClassName}>{ commitLabel }:</label>
                 <span className="commit">
-                     { commitIdString.substring(0, 7) }
+                    <CommitId commitId={commitIdString} url={commitUrl} />
                 </span>
             </div>
         );
@@ -195,7 +198,6 @@ RunDetailsHeader.propTypes = {
     pipeline: PropTypes.object,
     colors: PropTypes.object,
     onOrganizationClick: PropTypes.func,
-    onNameClick: PropTypes.func,
     onAuthorsClick: PropTypes.func,
     onCloseClick: PropTypes.func,
     t: PropTypes.func,

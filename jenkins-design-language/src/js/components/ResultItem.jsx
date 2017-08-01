@@ -10,7 +10,7 @@ import type { Result } from './status/StatusIndicator';
 
 type State = {
     resultClean: Result,
-    statusGlyph: ?any, // FIXME: It seems Flow doesn't (at 20160611) have a type for PropTypes.node
+    statusGlyph: ?ReactChildren,
     expanded: boolean
 };
 
@@ -58,7 +58,9 @@ export class ResultItem extends Component {
     }
 
     toggleExpanded: Function = (e) => {
-        if (this.props.children) {
+        const selection = window.getSelection ? window.getSelection() : false;
+        const selected = selection && selection.toString();
+        if (this.props.children && !selected) {
             const expanded = !this.state.expanded;
 
             this.setState({expanded}, () => {

@@ -1,19 +1,34 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
+import { generateLink } from './TableRow';
+
+type Props = {
+    children ?: ReactChildren,
+    className ?: string,
+    href ?: string,
+    linkTo ?: string,
+    onClick ?: Function,
+    style ?: Object,
+    title ?: string
+};
 
 /**
  * Takes the place of a <TD>
  */
 export class TableCell extends Component {
 
+    props: Props;
+
     render() {
 
         const {
-            style,
+            href,
+            linkTo,
             title,
             className,
-            children
+            children,
+            ...restProps
         } = this.props;
 
         const classNames = ['JTable-cell'];
@@ -22,31 +37,40 @@ export class TableCell extends Component {
             classNames.push(className);
         }
 
+        const {
+            linkProps,
+            tagOrComponent
+        } = generateLink('div', href, linkTo);
+
         const outerProps = {
+            ...restProps,
+            ...linkProps,
             className: classNames.join(' '),
-            style,
-            title
+            title,
         };
 
         if (typeof title === 'undefined' && typeof children === 'string') {
             outerProps.title = children;
         }
 
-        return (
-            <div {...outerProps}>
-                <div className="JTable-cell-contents">
-                    {children}
-                </div>
+        const wrappedChildren = (
+            <div className="JTable-cell-contents">
+                {children}
             </div>
         );
+
+        return React.createElement(tagOrComponent, outerProps, wrappedChildren);
     }
 }
 
 TableCell.propTypes = {
-    style: PropTypes.object,
-    title: PropTypes.string,
+    children: PropTypes.node,
     className: PropTypes.string,
-    children: PropTypes.node
+    href: PropTypes.string,
+    linkTo: PropTypes.string,
+    onClick: PropTypes.func,
+    style: PropTypes.object,
+    title: PropTypes.string
 };
 
 /**

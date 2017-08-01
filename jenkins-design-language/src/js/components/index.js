@@ -22,7 +22,7 @@ export {
 export { ErrorMessage } from './ErrorMessage';
 export { Favorite } from './favorite/Favorite';
 export { ReadableDate } from './ReadableDate';
-export { CommitId, CommitId as CommitHash } from './CommitId';
+export { CommitId } from './CommitId';
 export { DownloadLink } from './DownloadLink';
 export { EmptyStateView } from './EmptyStateView';
 export { EmptyStateIcon } from './EmptyStateIcon';
