@@ -20,7 +20,6 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
-import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
@@ -56,16 +55,22 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_JOB;
 @Capability(JENKINS_JOB)
 public class AbstractPipelineImpl extends BluePipeline {
     private final Job job;
-    protected final BlueOrganization org;
+    protected final BlueOrganization organization;
 
     protected AbstractPipelineImpl(BlueOrganization organization, Job job) {
         this.job = job;
-        this.org = organization;
+        this.organization = organization;
     }
 
     @Override
-    public String getOrganization() {
-        return org.getName();
+    public String getOrganizationName() {
+        return organization.getName();
+    }
+
+    @Override
+    @Nonnull
+    public BlueOrganization getOrganization() {
+        return organization;
     }
 
     @Override
@@ -134,12 +139,12 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     @Override
     public String getFullName(){
-        return getFullName(org, job);
+        return getFullName(organization, job);
     }
 
     @Override
     public String getFullDisplayName() {
-        return getFullDisplayName(org, job);
+        return getFullDisplayName(organization, job);
     }
 
     /**
@@ -195,7 +200,7 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     @Override
     public Link getLink() {
-        return org.getLink().rel("pipelines").rel(getRecursivePathFromFullName(this));
+        return organization.getLink().rel("pipelines").rel(getRecursivePathFromFullName(this));
     }
 
     /**
@@ -252,18 +257,17 @@ public class AbstractPipelineImpl extends BluePipeline {
     public static class PipelineFactoryImpl extends BluePipelineFactory {
 
         @Override
-        public BluePipeline getPipeline(Item item, Reachable parent) {
-            BlueOrganization org = OrganizationFactory.getInstance().getContainingOrg(item);
-            if (org != null && item instanceof Job) {
-                return new AbstractPipelineImpl(org, (Job) item);
+        public BluePipeline getPipeline(Item item, Reachable parent, BlueOrganization organization) {
+            if (item instanceof Job) {
+                return new AbstractPipelineImpl(organization, (Job) item);
             }
             return null;
         }
 
         @Override
-        public Resource resolve(Item context, Reachable parent, Item target) {
+        public Resource resolve(Item context, Reachable parent, Item target, BlueOrganization organization) {
             if(context == target && target instanceof Job) {
-                return getPipeline(target,parent);
+                return getPipeline(target, parent, organization);
             }
             return null;
         }

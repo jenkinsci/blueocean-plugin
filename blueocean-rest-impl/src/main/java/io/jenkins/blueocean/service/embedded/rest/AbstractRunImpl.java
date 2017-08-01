@@ -4,14 +4,11 @@ import com.google.common.base.Function;
 import com.google.common.collect.Collections2;
 import hudson.model.Action;
 import hudson.model.CauseAction;
-import hudson.model.Job;
 import hudson.model.Result;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
-import io.jenkins.blueocean.rest.factory.BlueRunFactory;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
-import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
@@ -38,19 +35,15 @@ import java.util.Date;
  *
  * @author Vivek Pandey
  */
-public class AbstractRunImpl<T extends Run> extends BlueRun {
+public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
     protected final T run;
-    protected final BlueOrganization org;
+    protected final BlueOrganization organization;
 
     protected final Reachable parent;
-    public AbstractRunImpl(T run, Reachable parent) {
+    public AbstractRunImpl(T run, Reachable parent, BlueOrganization organization) {
         this.run = run;
         this.parent = parent;
-        Job job = run.getParent();
-        this.org = OrganizationFactory.getInstance().getContainingOrg(job);
-        if (this.org == null) {
-            throw new ServiceException.UnexpectedErrorException(String.format("could not find organization for job %s", job.getFullName()));
-        }
+        this.organization = organization;
     }
 
     @Nonnull
@@ -60,7 +53,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public String getOrganization() {
-        return org.getName();
+        return organization.getName();
     }
 
     @Override
@@ -200,16 +193,6 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
         return ActionProxiesImpl.getActionProxies(run.getAllActions(), this);
     }
 
-    public static BlueRun getBlueRun(Run r, Reachable parent){
-        for(BlueRunFactory runFactory:BlueRunFactory.all()){
-            BlueRun blueRun = runFactory.getRun(r,parent);
-            if(blueRun != null){
-                return blueRun;
-            }
-        }
-        return new AbstractRunImpl<>(r, parent);
-    }
-
     @Override
     public BlueRun stop(@QueryParameter("blocking") Boolean blocking, @QueryParameter("timeOutInSecs") Integer timeOutInSecs){
         throw new ServiceException.NotImplementedException("Stop should be implemented on a subclass");
@@ -272,7 +255,7 @@ public class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public Link getLink() {
         if(parent == null){
-            return org.getLink().rel(String.format("pipelines/%s/runs/%s", run.getParent().getName(), getId()));
+            return organization.getLink().rel(String.format("pipelines/%s/runs/%s", run.getParent().getName(), getId()));
         }
         return parent.getLink().rel("runs/"+getId());
     }

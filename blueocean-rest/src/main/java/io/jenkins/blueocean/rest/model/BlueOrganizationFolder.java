@@ -14,6 +14,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_ORGANIZATIO
 public abstract class BlueOrganizationFolder extends BluePipelineFolder {
 
     private static final String SCAN_ALL_REPOS = "scanAllRepos";
+    private static final String SCM_SOURCE = "scmSource";
 
     /**
      * Returns whether pipeline repo discovery was run on all repositories inside organization folder.
@@ -24,4 +25,11 @@ public abstract class BlueOrganizationFolder extends BluePipelineFolder {
      */
     @Exported(name = SCAN_ALL_REPOS)
     public abstract boolean isScanAllRepos();
+
+    /**
+     * Get metadata about the SCM for this pipeline.
+     */
+    @Exported(name = SCM_SOURCE, inline = true)
+    public abstract BlueScmSource getScmSource();
+
 }

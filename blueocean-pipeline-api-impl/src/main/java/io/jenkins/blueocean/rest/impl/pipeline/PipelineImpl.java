@@ -28,7 +28,7 @@ public class PipelineImpl extends AbstractPipelineImpl {
     public static class PipelineFactoryImpl extends BluePipelineFactory {
 
         @Override
-        public BluePipeline getPipeline(Item item, Reachable parent) {
+        public BluePipeline getPipeline(Item item, Reachable parent, BlueOrganization organization) {
             BlueOrganization org = OrganizationFactory.getInstance().getContainingOrg(item);
             if (org != null && item instanceof WorkflowJob) {
                 return new PipelineImpl(org, (Job) item);
@@ -37,9 +37,9 @@ public class PipelineImpl extends AbstractPipelineImpl {
         }
 
         @Override
-        public Resource resolve(Item context, Reachable parent, Item target) {
+        public Resource resolve(Item context, Reachable parent, Item target, BlueOrganization organization) {
             if(context == target && target instanceof WorkflowJob) {
-                return getPipeline(target,parent);
+                return getPipeline(target, parent, organization);
             }
 
             return null;

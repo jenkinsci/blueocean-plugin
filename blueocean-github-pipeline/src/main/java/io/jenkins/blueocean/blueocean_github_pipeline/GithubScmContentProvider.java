@@ -30,6 +30,29 @@ import java.util.Map;
 @Extension(ordinal = -100)
 public class GithubScmContentProvider extends AbstractScmContentProvider {
 
+    @Nonnull
+    @Override
+    public String getScmId() {
+        return GithubScm.ID;
+    }
+
+    @Override
+    public String getApiUrl(@Nonnull Item item) {
+        if (item instanceof OrganizationFolder) {
+            List<SCMNavigator> navigators = ((OrganizationFolder) item).getSCMNavigators();
+            if ((!navigators.isEmpty() && navigators.get(0) instanceof GitHubSCMNavigator)) {
+                return ((GitHubSCMNavigator) navigators.get(0)).getApiUri();
+            }
+        } else if (item instanceof MultiBranchProject) {
+            List<SCMSource> sources = ((MultiBranchProject) item).getSCMSources();
+            if ((!sources.isEmpty() && sources.get(0) instanceof GitHubSCMSource)) {
+                return ((GitHubSCMSource) sources.get(0)).getApiUri();
+            }
+        }
+
+        return null;
+    }
+
     @Override
     protected Object getContent(ScmGetRequest request) {
         GithubScm.validateUserHasPushPermission(request.getApiUrl(), request.getCredentials().getPassword().getPlainText(), request.getOwner(), request.getRepo());
@@ -105,6 +128,18 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
     @SuppressWarnings("unchecked")
     @Override
     public boolean support(@Nonnull Item item) {
+        if (isItemUsingGithubScm(item)) {
+            String apiUrl = getApiUrl(item);
+
+            if (apiUrl != null && apiUrl.startsWith(GitHubSCMSource.GITHUB_URL)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected boolean isItemUsingGithubScm(@Nonnull Item item) {
         if (item instanceof OrganizationFolder) {
             List<SCMNavigator> navigators = ((OrganizationFolder) item).getSCMNavigators();
             return (!navigators.isEmpty() && navigators.get(0) instanceof GitHubSCMNavigator);

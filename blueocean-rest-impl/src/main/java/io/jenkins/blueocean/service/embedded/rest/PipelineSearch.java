@@ -9,6 +9,7 @@ import io.jenkins.blueocean.commons.ServiceException.UnexpectedErrorException;
 import io.jenkins.blueocean.rest.OmniSearch;
 import io.jenkins.blueocean.rest.Query;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
@@ -57,7 +58,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
     @Override
     public Pageable<BluePipeline> search(Query q) {
         String s = q.param(EXCLUDED_FROM_FLATTENING_PARAM);
-        ItemGroup org = org(q);
+        ItemGroup orgItemGroup = findItemGroup(q);
 
         List<Class> excludeList=new ArrayList<>();
         if(s!=null){
@@ -88,17 +89,21 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
 
         Collection<Item> items = new ArrayList<>();
         if(!excludeList.isEmpty()) {
-            for (Item item : getAllItems(org)) {
+            for (Item item : getAllItems(orgItemGroup)) {
                 if (!exclude(item.getParent(), excludeList)) {
                     items.add(item);
                 }
             }
         }else{
-            items = getAllItems(org);
+            items = getAllItems(orgItemGroup);
         }
         items = ContainerFilter.filter(items);
-        final Iterator<BluePipeline> pipelineIterator = new PipelineContainerImpl(org)
-            .getPipelines(items);
+
+        BlueOrganization org = OrganizationFactory.getInstance().getContainingOrg(orgItemGroup);
+        if (org == null) {
+            throw new ServiceException.UnexpectedErrorException("Could not find organization");
+        }
+        final Iterator<BluePipeline> pipelineIterator = new PipelineContainerImpl(org, orgItemGroup, org).getPipelines(items);
         final List<BluePipeline> pipelines = new ArrayList<>();
         String pipeline = q.param(getType());
         if(pipeline == null) {
@@ -155,7 +160,7 @@ public class PipelineSearch extends OmniSearch<BluePipeline>{
      * If the search restricts the scope to a specific org (aka ItemGroup), return that, or else
      * the default scope, which is {@link Jenkins}.
      */
-    private ItemGroup org(Query q) {
+    private ItemGroup findItemGroup(Query q) {
         String org = q.param(ORGANIZATION_PARAM);
         if (org==null)  return Jenkins.getInstance();
         ItemGroup group = OrganizationFactory.getItemGroup(org);
