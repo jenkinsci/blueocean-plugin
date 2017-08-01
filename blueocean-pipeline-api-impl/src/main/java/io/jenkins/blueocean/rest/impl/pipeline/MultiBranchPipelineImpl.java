@@ -21,6 +21,7 @@ import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmSourceImpl;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
@@ -33,6 +34,7 @@ import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
+import io.jenkins.blueocean.rest.model.BlueScmSource;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
@@ -436,5 +438,10 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     @Override
     public BlueIcon getIcon() {
         return null;
+    }
+
+    @Override
+    public BlueScmSource getScmSource() {
+        return new ScmSourceImpl(mbp);
     }
 }

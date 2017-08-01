@@ -7,6 +7,7 @@ import hudson.model.ItemGroup;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmContentProviderParams;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueOrganizationFolder;
 import jenkins.branch.MultiBranchProject;
@@ -122,6 +123,16 @@ public class OrganizationFolderTest{
 
     @TestExtension("testOrganizationFolderFactory")
     public static class ScmContentProviderTest extends ScmContentProvider {
+        @Nonnull
+        @Override
+        public String getScmId() {
+            return "TestProvider";
+        }
+
+        @Override
+        public String getApiUrl(@Nonnull Item item) {
+            return null;
+        }
 
         @Override
         public Object getContent(@Nonnull StaplerRequest staplerRequest, @Nonnull Item item) {
