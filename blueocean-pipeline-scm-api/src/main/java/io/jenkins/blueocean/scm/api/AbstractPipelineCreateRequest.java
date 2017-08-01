@@ -5,6 +5,7 @@ import hudson.model.Items;
 import hudson.model.TopLevelItem;
 import hudson.model.TopLevelItemDescriptor;
 import hudson.security.ACL;
+import hudson.security.AccessControlled;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
@@ -40,7 +41,8 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
 
 
     protected  @Nonnull TopLevelItem createProject(String name, String descriptorName, Class<? extends TopLevelItemDescriptor> descriptorClass) throws IOException{
-        ACL acl = Jenkins.getInstance().getACL();
+        final ModifiableTopLevelItemGroup p = getParent();
+        final ACL acl = (p instanceof AccessControlled) ? ((AccessControlled) p).getACL() : Jenkins.getInstance().getACL(); 
         Authentication a = Jenkins.getAuthentication();
         if(!acl.hasPermission(a, Item.CREATE)){
             throw new ServiceException.ForbiddenException(
@@ -51,14 +53,13 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
             throw new ServiceException.BadRequestException(String.format("Failed to create pipeline: %s, descriptor %s is not found", name, descriptorName));
         }
 
-        ModifiableTopLevelItemGroup p = getParent();
         if(!descriptor.isApplicableIn(p)){
             throw new ServiceException.ForbiddenException(
-                    String.format("Failed to create pipeline: %s. pipeline can't be created in Jenkins root folder", name));
+                    String.format("Failed to create pipeline: %s. Pipeline can't be created in Jenkins root folder", name));
         }
 
         if(!acl.hasCreatePermission(a, p, descriptor)){
-            throw new ServiceException.ForbiddenException("Missing permission: " +Item.CREATE.group.title+"/"+Item.CREATE.name + Item.CREATE + "/" + descriptor.getDisplayName());
+            throw new ServiceException.ForbiddenException("Missing permission: " + Item.CREATE.group.title+"/"+Item.CREATE.name + " " + Item.CREATE + "/" + descriptor.getDisplayName());
         }
         return p.createProject(descriptor, name, true);
     }

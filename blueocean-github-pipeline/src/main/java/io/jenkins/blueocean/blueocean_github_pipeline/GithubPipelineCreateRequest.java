@@ -15,7 +15,6 @@ import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Reachable;
-import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
@@ -26,6 +25,7 @@ import jenkins.branch.CustomOrganizationFolderDescriptor;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
+import jenkins.model.ModifiableTopLevelItemGroup;
 import jenkins.scm.api.SCMFile;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.SCMHeadObserver;
@@ -103,11 +103,14 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
 
         User authenticatedUser =  User.current();
 
+        ModifiableTopLevelItemGroup orgRoot = getParent();
+        
+        Item item = Jenkins.getInstance().getItemByFullName(orgRoot.getFullName() + '/' + orgName);
+
         BlueOrganization organization = findOrganization();
         if (organization == null) {
             throw new ServiceException.UnexpectedErrorException("Could not find organization");
         }
-        Item item = Jenkins.getInstance().getItemByFullName(orgName);
         boolean creatingNewItem = item == null;
         try {
 

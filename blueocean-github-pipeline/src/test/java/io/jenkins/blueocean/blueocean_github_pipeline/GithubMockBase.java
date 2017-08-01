@@ -17,6 +17,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import hudson.util.DescribableList;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
@@ -124,7 +125,7 @@ public abstract class GithubMockBase extends PipelineBaseTest {
                 .data(ImmutableMap.of("accessToken", accessToken))
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .put("/organizations/jenkins/scm/github/validate/?apiUrl="+githubApiUrl)
+                .put("/organizations/" + OrganizationFactory.getInstance().list().iterator().next().getName() + "/scm/github/validate/?apiUrl="+githubApiUrl)
                 .build(Map.class);
         String credentialId = (String) r.get("credentialId");
         assertEquals("github", credentialId);
