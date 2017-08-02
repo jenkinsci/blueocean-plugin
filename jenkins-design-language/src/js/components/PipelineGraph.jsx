@@ -929,7 +929,7 @@ export class PipelineGraph extends Component {
         });
 
         return (
-            <div style={outerDivStyle}>
+            <div style={outerDivStyle} className="PipelineGraph">
                 <svg width={measuredWidth} height={measuredHeight}>
                     {visualElements}
                 </svg>
