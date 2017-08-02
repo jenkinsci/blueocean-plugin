@@ -83,10 +83,15 @@ public class UserSSHKeyTest extends BaseTest {
         Object pubKey3 = ((Map)resp.get("data")).get("key");
         Assert.assertNotEquals(pubKey2, pubKey3);
         
+        // ensure login is required
+        new RequestBuilder(baseUrl)
+                .status(401)
+                .get("/organizations/jenkins/users/bob/publickey").build(Map.class);
+        
         // make sure one user can't see another user's key
         User alice = login("alice", "Alice Cooper", "alice@cooper.abyss");
         new RequestBuilder(baseUrl)
-                .status(401)
+                .status(403)
                 .jwtToken(getJwtToken(j.jenkins, alice.getId(), alice.getId()))
                 .get("/organizations/jenkins/users/bob/publickey").build(Map.class);
     }

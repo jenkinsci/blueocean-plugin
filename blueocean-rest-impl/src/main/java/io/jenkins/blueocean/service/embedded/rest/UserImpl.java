@@ -161,8 +161,11 @@ public class UserImpl extends BlueUser {
     @WebMethod(name="publickey")
     public HttpResponse publicKey() throws IOException {
         User authenticatedUser =  User.current();
-        if(authenticatedUser == null || !StringUtils.equals(getId(), authenticatedUser.getId())) {
+        if (authenticatedUser == null) {
             throw new ServiceException.UnauthorizedException("Not authorized");
+        }
+        if (!StringUtils.equals(getId(), authenticatedUser.getId())) {
+            throw new ServiceException.ForbiddenException("Not authorized");
         }
         
         String publicKey = UserSSHKeyManager.getReadablePublicKey(authenticatedUser, 
@@ -180,8 +183,11 @@ public class UserImpl extends BlueUser {
     @WebMethod(name="publickey")
     public HttpResponse resetPublicKey() throws IOException {
         User authenticatedUser =  User.current();
-        if(authenticatedUser == null || !StringUtils.equals(getId(), authenticatedUser.getId())) {
+        if (authenticatedUser == null) {
             throw new ServiceException.UnauthorizedException("Not authorized");
+        }
+        if (!StringUtils.equals(getId(), authenticatedUser.getId())) {
+            throw new ServiceException.ForbiddenException("Not authorized");
         }
         
         UserSSHKeyManager.reset(authenticatedUser);
