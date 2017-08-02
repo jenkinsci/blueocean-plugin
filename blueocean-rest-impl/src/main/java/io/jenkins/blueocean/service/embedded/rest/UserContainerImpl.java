@@ -7,10 +7,13 @@ import hudson.util.AdaptedIterator;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserContainer;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+
 import java.util.Iterator;
 
 /**
@@ -22,20 +25,24 @@ import java.util.Iterator;
 public class UserContainerImpl extends BlueUserContainer {
 
     private final Reachable parent;
+    @Nullable
+    private final BlueOrganization organization;
 
-    public UserContainerImpl(@Nonnull Reachable parent) {
+    public UserContainerImpl(@Nullable BlueOrganization organization, @Nonnull Reachable parent) {
         this.parent = parent;
+        this.organization = organization;
     }
 
     public UserContainerImpl() {
         this.parent = null;
+        this.organization = null;
     }
 
     @Override
     public BlueUser get(String name) {
         User user = User.get(name, false, ImmutableMap.of());
         if (user==null)     return null;
-        return new UserImpl(user, this);
+        return new UserImpl(organization, user, this);
     }
 
     /**
@@ -46,7 +53,7 @@ public class UserContainerImpl extends BlueUserContainer {
         return new AdaptedIterator<User, BlueUser>(User.getAll()) {
             @Override
             protected BlueUser adapt(User item) {
-                return new UserImpl(item, UserContainerImpl.this);
+                return new UserImpl(organization, item, UserContainerImpl.this);
             }
         };
     }

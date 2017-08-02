@@ -1,7 +1,16 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import java.util.Collections;
+import java.util.Map;
+
+import javax.annotation.Nullable;
+
+import org.acegisecurity.Authentication;
+import org.apache.commons.lang.StringUtils;
+
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.google.common.collect.ImmutableMap;
+
 import hudson.model.Item;
 import hudson.model.User;
 import hudson.security.AccessControlled;
@@ -11,7 +20,6 @@ import io.jenkins.blueocean.commons.ServiceException.ForbiddenException;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
-import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueFavoriteContainer;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
@@ -20,17 +28,6 @@ import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserPermission;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
-
-import org.acegisecurity.Authentication;
-import org.apache.commons.lang.StringUtils;
-import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
-
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * {@link BlueUser} implementation backed by in-memory {@link User}
@@ -47,12 +44,13 @@ public class UserImpl extends BlueUser {
 
     protected final User user;
 
+    @Nullable
     private final BlueOrganization organization;
     private final AccessControlled organizationBase;
 
     private final Reachable parent;
 
-    public UserImpl(BlueOrganization organization, User user, Reachable parent) {
+    public UserImpl(@Nullable BlueOrganization organization, User user, Reachable parent) {
         this.parent = parent;
         this.user = user;
         this.organization = organization;

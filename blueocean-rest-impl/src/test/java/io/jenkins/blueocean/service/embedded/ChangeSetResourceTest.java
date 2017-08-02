@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded;
 import hudson.model.User;
 import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.service.embedded.rest.ChangeSetResource;
 import org.junit.Test;
@@ -30,9 +31,10 @@ public class ChangeSetResourceTest {
         when(entry.getCommitId()).thenReturn("12345");
         when(entry.getMsg()).thenReturn("test changeset");
         when(entry.getAffectedPaths()).thenReturn(Collections.singleton("/foo/bar"));
-        ChangeSetResource changeSetResource = new ChangeSetResource(entry,reachable);
+        ChangeSetResource changeSetResource = new ChangeSetResource(null, entry, reachable);
         assertEquals(user.getId(), changeSetResource.getAuthor().getId());
         assertEquals(entry.getCommitId(), changeSetResource.getCommitId());
         assertEquals(entry.getMsg(), changeSetResource.getMsg());
     }
+
 }

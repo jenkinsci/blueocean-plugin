@@ -23,6 +23,7 @@ import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.ChangeSetResource;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import io.jenkins.blueocean.service.embedded.rest.StoppableRun;
+import io.jenkins.blueocean.service.embedded.util.OrganizationUtil;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMRevisionAction;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
@@ -89,7 +90,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
                     cnt++;
                     String id = e.getCommitId();
                     if (id == null) id = String.valueOf(cnt);
-                    m.put(id, new ChangeSetResource(e, this));
+                    m.put(id, new ChangeSetResource(OrganizationUtil.getOrganization(this.getOrganization(), true), e, this));
                 }
             }
             return Containers.fromResourceMap(getLink(), m);

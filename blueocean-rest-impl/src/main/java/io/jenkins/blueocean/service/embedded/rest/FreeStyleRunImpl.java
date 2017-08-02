@@ -7,10 +7,13 @@ import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
+import io.jenkins.blueocean.service.embedded.util.OrganizationUtil;
+
 import org.kohsuke.stapler.QueryParameter;
 
 import javax.annotation.Nonnull;
@@ -40,7 +43,7 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
             cnt++;
             String id = e.getCommitId();
             if (id==null)   id = String.valueOf(cnt);
-            m.put(id,new ChangeSetResource(e, this));
+            m.put(id, new ChangeSetResource(org, e, this));
         }
         return Containers.fromResourceMap(this.getLink(),m);
     }
