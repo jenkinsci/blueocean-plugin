@@ -17,6 +17,12 @@ import java.io.IOException;
  */
 public abstract class BluePipelineContainer extends Container<BluePipeline>{
 
+    protected final BlueOrganization organization;
+
+    public BluePipelineContainer(BlueOrganization organization) {
+        this.organization = organization;
+    }
+
     /**
      * Create new pipeline.
      *

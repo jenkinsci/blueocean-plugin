@@ -29,7 +29,9 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
             return false;
         }
     };
+
     const { durationInMillis, startTime } = jenkinsNode;
+
     // we need to make sure that we calculate with the correct time offset
     const harmonized = timeManager.harmonizeTimes({
         isRunning: isRunning(),
@@ -54,6 +56,9 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
     } else if (jenkinsNode.result === 'ABORTED') {
         state = 'aborted';
         completePercent = 100;
+    } else if (jenkinsNode.state === 'SKIPPED') {
+        state = 'skipped';
+        completePercent = 0;
     } else if (jenkinsNode.state === 'RUNNING') {
         state = 'running';
         completePercent = 50;
@@ -83,12 +88,10 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
 }
 
 /**
- * Convert the graph results of a run as reported by Jenkins into the
- * model required by the PipelineGraph component
+ * Convert the graph results of a run as reported by Jenkins into the  model required by the PipelineGraph component
  *
- * We need isCompleted to determine wether nodes that haven't been run are
- * still pending or simply weren't executed due to logic or early-abort
- * (either failure or intervention)
+ * We need isCompleted (referring to the entire pipeline) to determine wether nodes that haven't been run are still
+ * pending or simply weren't executed due to pipeline logic (skipped) or early-abort (either failure or intervention)
  */
 export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
     if (!jenkinsGraph || !jenkinsGraph.length) {
@@ -169,6 +172,13 @@ export default class PipelineRunGraph extends Component {
         });
     }
 
+    graphNodeClicked = (name, stageId) => {
+        const { callback } = this.props;
+        if (callback) {
+            callback(stageId);
+        }
+    };
+
     render() {
         const { graphNodes, t } = this.state;
 
@@ -182,32 +192,32 @@ export default class PipelineRunGraph extends Component {
             return null;
         }
 
-        const outerDivStyle = {
-            display: 'flex',
-            justifyContent: 'center',
-        };
         const id = this.props.selectedStage.id;
-        let selectedStage = graphNodes.filter((item) => {
-            let matches = item.id === id;
-            if (!matches && item.children.length > 0) {
-                const childMatches = item.children.filter(child => child ? child.id === id : false);
-                matches = childMatches.length === 1;
-            }
-            return matches;
-        });
-        if (selectedStage[0] && selectedStage[0].id !== id && selectedStage[0].children.length > 0) {
-            selectedStage = selectedStage[0].children.filter(item => item ? item.id === id : false);
-        }
-        return (
-            <div style={outerDivStyle}>
-                <PipelineGraph
-                  stages={graphNodes}
-                  selectedStage={selectedStage[0]}
-                  onNodeClick={
-                    (name, stageId) => {
-                        this.props.callback(stageId);
+
+        let selectedStage = null;
+
+        // Find selected stage by id
+        for (const topStage of graphNodes) {
+            if (topStage.id === id) {
+                selectedStage = topStage;
+            } else {
+                for (const child of topStage.children) {
+                    if (child.id === id) {
+                        selectedStage = child;
+                        break;
                     }
-                  }
+                }
+            }
+            if (selectedStage) {
+                break;
+            }
+        }
+
+        return (
+            <div className="PipelineGraph-container">
+                <PipelineGraph stages={graphNodes}
+                               selectedStage={selectedStage}
+                               onNodeClick={this.graphNodeClicked}
                 />
             </div>
         );

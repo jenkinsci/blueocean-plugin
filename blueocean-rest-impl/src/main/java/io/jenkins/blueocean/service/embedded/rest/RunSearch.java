@@ -10,8 +10,13 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.OmniSearch;
 import io.jenkins.blueocean.rest.Query;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
+import io.jenkins.blueocean.rest.factory.BlueRunFactory;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.rest.pageable.Pageable;
 import io.jenkins.blueocean.rest.pageable.Pageables;
 import jenkins.model.Jenkins;
@@ -68,18 +73,21 @@ public class RunSearch extends OmniSearch<BlueRun> {
         if(job != null){
             pipelines = ImmutableList.of(job);
         }else{
-            pipelines = Jenkins.getActiveInstance().getItems(Job.class);
+            pipelines = Jenkins.getInstance().getItems(Job.class);
         }
         for (Job p : pipelines) {
             RunList<? extends Run> runList = p.getBuilds();
 
             for (Run r : runList) {
-                runs.add(AbstractRunImpl.getBlueRun(r, new Reachable() {
+                BlueRun run = BlueRunFactory.getRun(r, new Reachable() {
                     @Override
                     public Link getLink() {
                         return parent;
                     }
-                }));
+                });
+                if (run != null) {
+                    runs.add(run);
+                }
             }
         }
 
@@ -120,12 +128,15 @@ public class RunSearch extends OmniSearch<BlueRun> {
                 runIterator.next();
                 skipCount--;
             } else {
-                runs.add(AbstractRunImpl.getBlueRun(runIterator.next(), new Reachable() {
+                BlueRun run = BlueRunFactory.getRun(runIterator.next(), new Reachable() {
                     @Override
                     public Link getLink() {
                         return parent;
                     }
-                }));
+                });
+                if (run != null) {
+                    runs.add(run);
+                }
             }
             if (runs.size() >= limit) {
                 return runs;
@@ -134,21 +145,27 @@ public class RunSearch extends OmniSearch<BlueRun> {
         return runs;
     }
 
-
-
-
     public static Iterable<BlueRun> findRuns(Job pipeline){
         return findRuns(pipeline, null);
     }
 
     private BlueRun getLatestRun(Job job){
-        if(job != null){
-            Run r = job.getLastBuild();
-            if(r != null) {
-                AbstractRunImpl.getBlueRun(r, new PipelineContainerImpl().get(job.getFullName()));
-            }
+        if (job == null) {
+            return null;
         }
-        return null;
+        BlueOrganization org = OrganizationFactory.getInstance().getContainingOrg(job);
+        if (org == null) {
+            return null;
+        }
+        Run r = job.getLastBuild();
+        if (r == null) {
+            return null;
+        }
+        Resource resource = BluePipelineFactory.resolve(job);
+        if (resource == null) {
+            return null;
+        }
+        return BlueRunFactory.getRun(r, resource);
     }
 
 }

@@ -10,10 +10,13 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmContentProviderParams;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmSourceImpl;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
 import io.jenkins.blueocean.rest.model.BlueIcon;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueOrganizationFolder;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
@@ -21,11 +24,13 @@ import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
+import io.jenkins.blueocean.rest.model.BlueScmSource;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
+import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.metadata.AvatarMetadataAction;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.kohsuke.stapler.Stapler;
@@ -34,6 +39,7 @@ import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collection;
@@ -53,11 +59,12 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_ORGANIZA
 public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFolder {
     final OrganizationFolder folder;
     private final PipelineFolderImpl pipelineFolder;
+    private final BlueOrganization organization;
 
-
-    public OrganizationFolderPipelineImpl(OrganizationFolder folder, Link parent) {
+    public OrganizationFolderPipelineImpl(BlueOrganization organization, OrganizationFolder folder, Link parent) {
+        this.organization = organization;
         this.folder = folder;
-        this.pipelineFolder = new PipelineFolderImpl(folder, parent);
+        this.pipelineFolder = new PipelineFolderImpl(organization, folder, parent);
     }
 
     @Override
@@ -68,7 +75,7 @@ public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFol
 
     @Navigable
     public BluePipelineContainer getPipelines(){
-        return new MultiBranchPipelineContainerImpl(folder, this);
+        return new MultiBranchPipelineContainerImpl(organization, folder, this);
     }
 
     @Override
@@ -93,8 +100,14 @@ public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFol
     }
 
     @Override
-    public String getOrganization() {
-        return pipelineFolder.getOrganization();
+    public String getOrganizationName() {
+        return pipelineFolder.getOrganizationName();
+    }
+
+    @Nonnull
+    @Override
+    public BlueOrganization getOrganization() {
+        return organization;
     }
 
     @Override
@@ -142,7 +155,7 @@ public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFol
     }
 
     /**
-     * Certain SCM provider org folder implementation might support filtered repo search, if thats the case this method
+     * Certain SCM provider organization folder implementation might support filtered repo search, if thats the case this method
      * must be overriden by their implementations.
      */
     @Override
@@ -150,29 +163,34 @@ public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFol
         return true;
     }
 
+    @Override
+    public BlueScmSource getScmSource() {
+        return new ScmSourceImpl(folder);
+    }
+
     //lower than PipelineFolderImpl.PipelineFactoryImpl so that it gets looked up first
     public abstract static class OrganizationFolderFactory extends BluePipelineFactory {
 
-        protected abstract OrganizationFolderPipelineImpl getFolder(jenkins.branch.OrganizationFolder folder, Reachable parent);
+        protected abstract OrganizationFolderPipelineImpl getFolder(jenkins.branch.OrganizationFolder folder, Reachable parent, BlueOrganization organization);
 
         @Override
-        public OrganizationFolderPipelineImpl getPipeline(Item item, Reachable parent) {
+        public OrganizationFolderPipelineImpl getPipeline(Item item, Reachable parent, BlueOrganization organization) {
             if (item instanceof jenkins.branch.OrganizationFolder) {
-                return getFolder((jenkins.branch.OrganizationFolder)item, parent);
+                return getFolder( (jenkins.branch.OrganizationFolder)item, parent, organization);
             }
             return null;
         }
 
         @Override
-        public Resource resolve(Item context, Reachable parent, Item target) {
-            OrganizationFolderPipelineImpl folder = getPipeline(context, parent);
+        public Resource resolve(Item context, Reachable parent, Item target, BlueOrganization organization) {
+            OrganizationFolderPipelineImpl folder = getPipeline(context, parent, organization);
             if (folder!=null) {
                 if(context == target){
                     return folder;
                 }
                 Item nextChild = findNextStep(folder.folder,target);
                 for (BluePipelineFactory f : all()) {
-                    Resource answer = f.resolve(nextChild, folder, target);
+                    Resource answer = f.resolve(nextChild, folder, target, organization);
                     if (answer!=null)
                         return answer;
                 }
@@ -188,7 +206,7 @@ public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFol
             public BlueQueueItem get(String name) {
                 for(Queue.Item item: Jenkins.getInstance().getQueue().getItems(folder)){
                     if(item.getId() == Long.parseLong(name)){
-                        return new QueueItemImpl(item, OrganizationFolderPipelineImpl.this, 1);
+                        return new QueueItemImpl(organization, item, OrganizationFolderPipelineImpl.this, 1);
                     }
                 }
                 return null;
@@ -210,7 +228,7 @@ public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFol
 
                     @Override
                     public BlueQueueItem next() {
-                        return new QueueItemImpl(it.next(), OrganizationFolderPipelineImpl.this, 1);
+                        return new QueueItemImpl(organization, it.next(), OrganizationFolderPipelineImpl.this, 1);
                     }
 
                     @Override

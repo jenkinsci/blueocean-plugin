@@ -31,7 +31,7 @@
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
-    <jenkins-test-harness.version>2.15</jenkins-test-harness.version>
+    <jenkins-test-harness.version>2.23</jenkins-test-harness.version>
     <scm-api.version>2.2.0</scm-api.version>
     <git.version>3.4.0</git.version>
   </properties>
@@ -426,7 +426,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-display-url</artifactId>
-            <version>2.0</version>
+            <version>2.1.0</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -442,6 +442,11 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>credentials</artifactId>
             <version>2.1.14</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>ssh-credentials</artifactId>
+            <version>1.13</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>

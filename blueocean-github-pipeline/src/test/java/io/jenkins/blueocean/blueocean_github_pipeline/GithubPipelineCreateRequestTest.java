@@ -1,6 +1,8 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
+import com.cloudbees.hudson.plugins.folder.Folder;
 import com.google.common.collect.ImmutableList;
+
 import hudson.model.Item;
 import io.jenkins.blueocean.commons.ServiceException.UnexpectedErrorException;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
@@ -15,10 +17,13 @@ import org.jenkinsci.plugins.pubsub.PubsubBus;
 import org.jenkinsci.plugins.pubsub.SimpleMessage;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
 import org.mockito.Mockito;
 import org.powermock.api.mockito.PowerMockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
+import org.powermock.modules.junit4.PowerMockRunnerDelegate;
 import org.powermock.reflect.Whitebox;
 
 import java.util.Collections;
@@ -28,8 +33,20 @@ import static org.mockito.Mockito.*;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
 
 @RunWith(PowerMockRunner.class)
+@PowerMockRunnerDelegate(Parameterized.class)
 @PrepareForTest({GithubPipelineCreateRequest.class,OrganizationFolder.class, PubsubBus.class, OrganizationFactory.class, Jenkins.class})
 public class GithubPipelineCreateRequestTest {
+
+    @Parameters
+    public static String[] data() {
+        return new String[] { null, "folder" };
+    }
+
+    private final String orgRoot;
+
+    public GithubPipelineCreateRequestTest(String orgRoot) {
+        this.orgRoot = orgRoot;
+    }
 
     // Regression test for JENKINS-43471
     @Test
@@ -57,7 +74,7 @@ public class GithubPipelineCreateRequestTest {
 
     @Test
     public  void test_sendOrganizationScanCompleteEvent() throws Exception {
-        mockOrganization();
+        mockOrganization(orgRoot);
         PubsubBus pubsubBus = Mockito.mock(PubsubBus.class);
         mockStatic(PubsubBus.class);
         Mockito.when(PubsubBus.getBus()).thenReturn(pubsubBus);
@@ -85,7 +102,7 @@ public class GithubPipelineCreateRequestTest {
 
     @Test
     public  void testSendOrganizationScanCompleteEvent() throws Exception {
-        mockOrganization();
+        mockOrganization(orgRoot);
         PubsubBus pubsubBus = Mockito.mock(PubsubBus.class);
         mockStatic(PubsubBus.class);
         Mockito.when(PubsubBus.getBus()).thenReturn(pubsubBus);
@@ -113,7 +130,7 @@ public class GithubPipelineCreateRequestTest {
 
     @Test
     public  void testSendMultibranchIndexingCompleteEvent() throws Exception {
-        mockOrganization();
+        mockOrganization(orgRoot);
         PubsubBus pubsubBus = Mockito.mock(PubsubBus.class);
         mockStatic(PubsubBus.class);
         Mockito.when(PubsubBus.getBus()).thenReturn(pubsubBus);
@@ -139,17 +156,18 @@ public class GithubPipelineCreateRequestTest {
         Mockito.verify(pubsubBus, Mockito.atLeastOnce()).publish(Mockito.any(SimpleMessage.class));
     }
 
-    private void mockOrganization(){
+    private void mockOrganization(String orgRoot) {
         Jenkins jenkins = Mockito.mock(Jenkins.class);
         mockStatic(Jenkins.class);
         when(Jenkins.getInstance()).thenReturn(jenkins);
 
         OrganizationFactory organizationFactory = Mockito.mock(OrganizationFactory.class);
-
+        Folder item = mock(Folder.class);
+        
         mockStatic(OrganizationFactory.class);
         when(OrganizationFactory.getInstance()).thenReturn(organizationFactory);
         when(OrganizationFactory.getInstance().list())
-                .thenReturn(Collections.<BlueOrganization>singleton(new OrganizationImpl("jenkins", jenkins)));
+                .thenReturn(Collections.<BlueOrganization>singleton(new OrganizationImpl("jenkins", orgRoot == null ? jenkins : item)));
     }
 
 }
