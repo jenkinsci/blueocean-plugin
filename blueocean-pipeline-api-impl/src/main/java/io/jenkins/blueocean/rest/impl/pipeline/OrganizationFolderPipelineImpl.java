@@ -10,7 +10,6 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmContentProviderParams;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmSourceImpl;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
@@ -30,7 +29,6 @@ import io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
-import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.metadata.AvatarMetadataAction;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.kohsuke.stapler.Stapler;
@@ -48,6 +46,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_SCM;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_ORGANIZATION_FOLDER;
 
 /**
@@ -55,7 +54,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_ORGANIZA
  *
  * @author Vivek Pandey
  */
-@Capability(JENKINS_ORGANIZATION_FOLDER)
+@Capability({JENKINS_ORGANIZATION_FOLDER, BLUE_SCM})
 public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFolder {
     final OrganizationFolder folder;
     private final PipelineFolderImpl pipelineFolder;

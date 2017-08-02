@@ -44,12 +44,13 @@ import java.util.List;
 import java.util.Map;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.PipelineJobFilters.isPullRequest;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_SCM;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_MULTI_BRANCH_PROJECT;
 
 /**
  * @author Vivek Pandey
  */
-@Capability({JENKINS_MULTI_BRANCH_PROJECT})
+@Capability({JENKINS_MULTI_BRANCH_PROJECT, BLUE_SCM})
 public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     /*package*/ final MultiBranchProject mbp;
 
