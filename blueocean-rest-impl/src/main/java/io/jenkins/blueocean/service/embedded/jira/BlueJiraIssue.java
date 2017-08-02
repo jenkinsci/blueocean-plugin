@@ -56,8 +56,6 @@ public class BlueJiraIssue extends BlueIssue {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
         BlueJiraIssue that = (BlueJiraIssue) o;
         return Objects.equal(issueKey, that.issueKey) &&
             Objects.equal(issueURL, that.issueURL);

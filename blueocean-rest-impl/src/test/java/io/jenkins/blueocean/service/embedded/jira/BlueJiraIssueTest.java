@@ -47,6 +47,20 @@ public class BlueJiraIssueTest {
     }
 
     @Test
+    public void issuesForChangeSetItemForSite() throws Exception {
+        Job job = mock(Job.class);
+        Run run = mock(Run.class);
+        ChangeLogSet logSet = mock(ChangeLogSet.class);
+        ChangeLogSet.Entry entry = mock(ChangeLogSet.Entry.class);
+
+        when(entry.getParent()).thenReturn(logSet);
+        when(logSet.getRun()).thenReturn(run);
+        when(run.getParent()).thenReturn(job);
+
+        Assert.assertTrue(BlueIssueFactory.resolve(entry).isEmpty());
+    }
+
+    @Test
     public void issuesForChangeSetItem() throws Exception {
         Job job = mock(Job.class);
         Run run = mock(Run.class);
