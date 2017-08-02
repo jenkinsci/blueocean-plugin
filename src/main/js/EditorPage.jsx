@@ -1,5 +1,4 @@
 import React from 'react';
-import { Link } from 'react-router';
 import Extensions from '@jenkins-cd/js-extensions';
 import {
         Fetch, getRestUrl, buildPipelineUrl, locationService,
@@ -112,11 +111,22 @@ SaveDialog.propTypes = {
 
 @observer
 class PipelineLoader extends React.Component {
-    state = {}
-    
+    constructor(props) {
+        super(props);
+        this.state = { scmId: 'github' };
+    }
+
     componentWillMount() {
         pipelineStore.setPipeline(null); // reset any previous loaded pipeline
-        this.loadPipeline();
+        const { organization, pipeline } = this.props.params;
+        let href = Paths.rest.pipeline(organization, pipeline);
+        pipelineService.fetchPipeline(href, { useCache: true })
+            .then(pipeline => {
+                if(pipeline.scmSource && pipeline.scmSource.id) {
+                    this.setState({ scmId: pipeline.scmSource.id });
+                }
+                this.loadPipeline();
+            });
     }
     
     componentDidMount() {
@@ -160,6 +170,7 @@ class PipelineLoader extends React.Component {
 
     loadPipeline(onComplete) {
         const { organization, pipeline, branch } = this.props.params;
+        const scmId = this.state.scmId;
         this.opener = locationService.previous;
         
         const makeEmptyPipeline = () => {
@@ -198,10 +209,9 @@ class PipelineLoader extends React.Component {
             const split = pipeline.split('/');
             const team = split[0];
             const repo = split[1];
-            const provider = 'github';
-            Fetch.fetchJSON(`${getRestUrl({organization})}scm/${provider}/`)
+            Fetch.fetchJSON(`${getRestUrl({organization})}scm/${scmId}/`)
             .then( ({ credentialId }) =>
-                Fetch.fetchJSON(`${getRestUrl({organization})}scm/${provider}/organizations/${team}/repositories/${repo}/?credentialId=${credentialId}`)
+                Fetch.fetchJSON(`${getRestUrl({organization})}scm/${scmId}/organizations/${team}/repositories/${repo}/?credentialId=${credentialId}`)
             )
             .then( ({ defaultBranch }) => {
                 this.defaultBranch = defaultBranch || 'master';
@@ -391,7 +401,17 @@ class PipelineLoader extends React.Component {
                             .catch(err => errorHandler(err, body));
                     } else {
                         // otherwise, call indexing so this branch gets picked up
-                        saveApi.index(organization, team, repo, () => this.goToActivity(), err => errorHandler(err));
+                        /**
+                         * orgFolder we continue indexing how we have been indexing.
+                         */
+                        if (this.state.scmId.startsWith('github')) {
+                            saveApi.index(organization, team, repo, () => this.goToActivity(), err => errorHandler(err));
+                        } else {
+                            //other scms, which are always MBP
+                            RunApi.startRun({ _links: { self: { href: this.href + '/' }}})
+                                .then(() => this.goToActivity())
+                                .catch(err => errorHandler(err, body));
+                        }
                     }
                     this.setState({ sha: data.sha });
                 })
