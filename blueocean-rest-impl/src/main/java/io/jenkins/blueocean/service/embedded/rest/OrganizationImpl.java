@@ -35,7 +35,7 @@ public class OrganizationImpl extends AbstractOrganization{
      */
     private final ModifiableTopLevelItemGroup group;
 
-    private final UserContainerImpl users = new UserContainerImpl(this);
+    private final UserContainerImpl users = new UserContainerImpl(this, this);
 
     public OrganizationImpl(String name, ModifiableTopLevelItemGroup group) {
         this.name = name;
@@ -85,7 +85,7 @@ public class OrganizationImpl extends AbstractOrganization{
         if(user == null){
             throw new ServiceException.NotFoundException("No authenticated user found");
         }
-        return new UserImpl(user,new UserContainerImpl(this));
+        return new UserImpl(this, user, new UserContainerImpl(this, this));
     }
 
     @Override

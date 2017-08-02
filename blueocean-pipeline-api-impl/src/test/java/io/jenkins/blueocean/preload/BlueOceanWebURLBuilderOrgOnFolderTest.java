@@ -123,7 +123,7 @@ public class BlueOceanWebURLBuilderOrgOnFolderTest {
         private final String name;
         private final String displayName;
 
-        private final UserContainerImpl users = new UserContainerImpl(this);
+        private final UserContainerImpl users = new UserContainerImpl(this, this);
 
         public TestOrganization(@NonNull String name, @CheckForNull String displayName) {
             this.name = name;
@@ -168,7 +168,7 @@ public class BlueOceanWebURLBuilderOrgOnFolderTest {
             if (user == null) {
                 throw new ServiceException.NotFoundException("No authenticated user found");
             }
-            return new UserImpl(user, new UserContainerImpl(this));
+            return new UserImpl(this, user, new UserContainerImpl(this, this));
         }
 
         @Override

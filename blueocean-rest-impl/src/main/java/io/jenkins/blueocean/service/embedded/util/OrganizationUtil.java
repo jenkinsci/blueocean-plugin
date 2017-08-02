@@ -75,4 +75,13 @@ public class OrganizationUtil {
         return organization;
     }
 
+    /**
+     * Returns the first organization available
+     * 
+     * @return the first organization
+     */
+    public static BlueOrganization getFirst() {
+        return OrganizationFactory.getInstance().list().iterator().next();
+    }
+
 }

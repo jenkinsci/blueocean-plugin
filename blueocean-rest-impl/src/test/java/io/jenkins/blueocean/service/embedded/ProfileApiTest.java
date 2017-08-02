@@ -8,6 +8,7 @@ import hudson.model.User;
 import hudson.tasks.Mailer;
 import hudson.tasks.UserAvatarResolver;
 import io.jenkins.blueocean.service.embedded.rest.UserImpl;
+import io.jenkins.blueocean.service.embedded.util.OrganizationUtil;
 import jenkins.model.Jenkins;
 import org.acegisecurity.adapters.PrincipalAcegiUserToken;
 import org.acegisecurity.context.SecurityContextHolder;
@@ -334,7 +335,7 @@ public class ProfileApiTest extends BaseTest{
 
         SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
 
-        Assert.assertNull(new UserImpl(alice).getPermission());
+        Assert.assertNull(new UserImpl(OrganizationUtil.getFirst(), alice).getPermission());
     }
 
     @Test

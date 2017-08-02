@@ -27,7 +27,9 @@ import hudson.Extension;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.PageStatePreloader;
 import io.jenkins.blueocean.commons.stapler.Export;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.service.embedded.rest.UserImpl;
+import io.jenkins.blueocean.service.embedded.util.OrganizationUtil;
 import net.sf.json.JSONObject;
 
 import java.io.IOException;
@@ -59,10 +61,13 @@ public class UserStatePreloader extends PageStatePreloader {
      */
     @Override
     public String getStateJson() {
+
+        BlueOrganization organization = OrganizationUtil.getOrganization(OrganizationUtil.getOrganizationNameFromURL(), true);
+
         try {
             User currentUser = User.current();
             if (currentUser != null) {
-                return Export.toJson(new UserImpl(currentUser));
+                return Export.toJson(new UserImpl(organization, currentUser));
             } else {
                 return ANONYMOUS;
             }
