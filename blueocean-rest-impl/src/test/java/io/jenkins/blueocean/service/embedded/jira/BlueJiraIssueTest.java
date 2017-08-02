@@ -120,4 +120,41 @@ public class BlueJiraIssueTest {
         Assert.assertEquals("FOO-123", issue.getId());
         Assert.assertEquals("http://jira.example.com/browse/FOO-123", issue.getURL());
     }
+
+    @Test
+    public void issuesForJobNoSite() throws Exception {
+        Job job = mock(Job.class);
+
+        when(JiraSite.get(job)).thenReturn(null);
+
+        // Should resolve no issues because there is no JiraJobAction
+        Assert.assertTrue(BlueIssueFactory.resolve(job).isEmpty());
+    }
+
+    @Test
+    public void issuesForJobNoAction() throws Exception {
+        Job job = mock(Job.class);
+
+        mockStatic(JiraSite.class);
+        JiraSite site = mock(JiraSite.class);
+        when(JiraSite.get(job)).thenReturn(site);
+        when(job.getAction(JiraJobAction.class)).thenReturn(null);
+
+        // Should resolve no issues because there is no JiraJobAction
+        Assert.assertTrue(BlueIssueFactory.resolve(job).isEmpty());
+    }
+
+    @Test
+    public void issuesForJobActionDoesNotHaveIssue() throws Exception {
+        Job job = mock(Job.class);
+
+        mockStatic(JiraSite.class);
+        JiraSite site = mock(JiraSite.class);
+        when(JiraSite.get(job)).thenReturn(site);
+        JiraJobAction action = new JiraJobAction(job, null);
+        when(job.getAction(JiraJobAction.class)).thenReturn(action);
+
+        // Should resolve no issues because there is no JiraJobAction
+        Assert.assertTrue(BlueIssueFactory.resolve(job).isEmpty());
+    }
 }

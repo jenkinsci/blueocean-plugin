@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.jira;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicates;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
@@ -18,6 +19,9 @@ import io.jenkins.blueocean.rest.model.BlueIssue;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.Set;
@@ -62,42 +66,32 @@ public class BlueJiraIssue extends BlueIssue {
             if (action == null) {
                 return null;
             }
-            JiraIssue issue = action.getIssue();
-            try {
-                return Lists.<BlueIssue>newArrayList(new BlueJiraIssue(issue.getKey(), jiraSite.getUrl(issue).toString()));
-            } catch (IOException e) {
-                LOGGER.log(Level.WARNING, "Cannot create representation of JIRA issue", e);
+            BlueIssue issue = BlueJiraIssue.create(jiraSite, action.getIssue());
+            if (issue == null) {
+                return null;
             }
-            return null;
+            return ImmutableList.of(issue);
         }
 
         @Override
         public Collection<BlueIssue> getIssues(ChangeLogSet.Entry changeSetEntry) {
             Run run = changeSetEntry.getParent().getRun();
-            final JiraSite jiraSite = JiraSite.get(run.getParent());
-            if (jiraSite == null) {
+            final JiraSite site = JiraSite.get(run.getParent());
+            if (site == null) {
                 return null;
             }
             final JiraBuildAction action = run.getAction(JiraBuildAction.class);
             if (action == null) {
                 return null;
             }
-            Collection<String> issueKeys = findIssueKeys(changeSetEntry.getMsg(), jiraSite.getIssuePattern());
+            Collection<String> issueKeys = findIssueKeys(changeSetEntry.getMsg(), site.getIssuePattern());
             Iterable<BlueIssue> transformed = Iterables.transform(issueKeys, new Function<String, BlueIssue>() {
                 @Override
                 public BlueIssue apply(String input) {
-                    JiraIssue issue = action.getIssue(input);
-                    if (issue == null) {
-                        return null;
-                    }
-                    try {
-                        return new BlueJiraIssue(issue.getKey(), jiraSite.getUrl(issue).toString());
-                    } catch (IOException e) {
-                        return null;
-                    }
+                return BlueJiraIssue.create(site, action.getIssue(input));
                 }
             });
-            return Sets.newHashSet(Iterables.filter(transformed, Predicates.notNull()));
+            return ImmutableList.copyOf(Iterables.filter(transformed, Predicates.notNull()));
         }
     }
 
@@ -111,5 +105,17 @@ public class BlueJiraIssue extends BlueIssue {
             }
         }
         return issues;
+    }
+
+    @CheckForNull
+    static BlueIssue create(@Nonnull JiraSite site, @Nullable JiraIssue issue) {
+        if (issue == null) {
+            return null;
+        }
+        try {
+            return new BlueJiraIssue(issue.getKey(), site.getUrl(issue).toString());
+        } catch (IOException e) {
+            return null;
+        }
     }
 }
