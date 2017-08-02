@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded.jira;
 
 import com.google.common.base.Function;
+import com.google.common.base.Objects;
 import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
@@ -51,6 +52,20 @@ public class BlueJiraIssue extends BlueIssue {
     @Override
     public String getURL() {
         return issueURL;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        BlueJiraIssue that = (BlueJiraIssue) o;
+        return Objects.equal(issueKey, that.issueKey) &&
+            Objects.equal(issueURL, that.issueURL);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hashCode(issueKey, issueURL);
     }
 
     @Extension
