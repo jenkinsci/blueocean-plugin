@@ -6,6 +6,7 @@ import hudson.Util;
 import hudson.model.FreeStyleProject;
 import hudson.model.Job;
 import hudson.model.Queue;
+import hudson.model.User;
 import hudson.plugins.favorite.Favorites;
 import hudson.plugins.git.util.BuildData;
 import hudson.scm.ChangeLogSet;
@@ -349,6 +350,27 @@ public class MultiBranchTest extends PipelineBaseTest {
             assertEquals(100, s);
         }
     }
+
+    @Test
+    public void multiBranchPipelineIndex() throws Exception {
+        User user = login();
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+                new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        Map map = new RequestBuilder(baseUrl)
+                .post("/organizations/jenkins/pipelines/p/runs/")
+                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .data(ImmutableMap.of())
+                .status(200)
+                .build(Map.class);
+
+        assertNotNull(map);
+    }
+
 
     @Test
     public void getMultiBranchPipelineRuns() throws Exception {
