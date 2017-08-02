@@ -26,6 +26,7 @@ public abstract class BlueMultiBranchPipeline extends BluePipelineFolder{
     public static final String NUMBER_OF_FAILING_PULL_REQUESTS="numberOfFailingPullRequests";
     public static final String NUMBER_OF_SUCCESSFULT_PULL_REQUESTS="numberOfSuccessfulPullRequests";
     public static final String BRANCH_NAMES ="branchNames";
+    public static final String SCM_SOURCE = "scmSource";
 
     /**
      * @return total number of branches
@@ -109,4 +110,10 @@ public abstract class BlueMultiBranchPipeline extends BluePipelineFolder{
             }
         };
     }
+
+    /**
+     * Get metadata about the SCM for this pipeline.
+     */
+    @Exported(name = SCM_SOURCE, inline = true)
+    public abstract BlueScmSource getScmSource();
 }

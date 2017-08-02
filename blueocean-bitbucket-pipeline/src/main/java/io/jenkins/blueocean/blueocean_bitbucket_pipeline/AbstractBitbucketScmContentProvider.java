@@ -21,6 +21,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.kohsuke.stapler.StaplerRequest;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -29,8 +30,8 @@ import java.util.List;
 /**
  * @author Vivek Pandey
  */
-@Extension(ordinal = -100)
-public class BitbucketScmContentProvider extends AbstractScmContentProvider {
+public abstract class AbstractBitbucketScmContentProvider extends AbstractScmContentProvider {
+
     @Override
     protected Object getContent(ScmGetRequest request) {
         BitbucketApi api = BitbucketServerScm.getApi(request.getApiUrl(), request.getCredentials());
@@ -133,13 +134,15 @@ public class BitbucketScmContentProvider extends AbstractScmContentProvider {
     }
 
     @SuppressWarnings("unchecked")
-    @Override
-    public boolean support(@Nonnull Item item) {
+    @CheckForNull
+    protected BitbucketSCMSource getSourceFromItem(@Nonnull Item item) {
         if (item instanceof MultiBranchProject) {
             List<SCMSource> sources = ((MultiBranchProject) item).getSCMSources();
-            return (!sources.isEmpty() && sources.get(0) instanceof BitbucketSCMSource);
+            if (!sources.isEmpty() && sources.get(0) instanceof BitbucketSCMSource) {
+                return (BitbucketSCMSource) sources.get(0);
+            }
         }
-        return false;
+        return null;
     }
 
     //bitbucket api doesn't give SHA of content, we compute it ourselves

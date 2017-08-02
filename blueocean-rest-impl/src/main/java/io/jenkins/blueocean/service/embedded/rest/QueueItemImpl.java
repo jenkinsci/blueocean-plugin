@@ -28,15 +28,18 @@ public class QueueItemImpl extends BlueQueueItem {
     private final Link self;
     private final Link parent;
     private final int expectedBuildNumber;
+    private final BlueOrganization organization;
 
-    public QueueItemImpl(Queue.Item item, BluePipeline pipeline, int expectedBuildNumber) {
-        this(item,
+    public QueueItemImpl(BlueOrganization organization, Queue.Item item, BluePipeline pipeline, int expectedBuildNumber) {
+        this(organization,
+            item,
             pipeline.getName(),expectedBuildNumber,
             pipeline.getQueue().getLink().rel(Long.toString(item.getId())),
             pipeline.getLink());
     }
 
-    QueueItemImpl(Queue.Item item, String name, int expectedBuildNumber, Link self, Link parent) {
+    QueueItemImpl(BlueOrganization organization, Queue.Item item, String name, int expectedBuildNumber, Link self, Link parent) {
+        this.organization = organization;
         this.item = item;
         this.pipelineName = name;
         this.expectedBuildNumber = expectedBuildNumber;

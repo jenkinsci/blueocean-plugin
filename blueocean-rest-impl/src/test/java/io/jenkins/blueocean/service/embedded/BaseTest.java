@@ -11,6 +11,8 @@ import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
 import hudson.model.Job;
 import hudson.model.Run;
+import hudson.model.User;
+import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.JsonConverter;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
@@ -30,6 +32,9 @@ import java.util.Map;
 import java.util.logging.LogManager;
 
 import static io.jenkins.blueocean.auth.jwt.JwtToken.X_BLUEOCEAN_JWT;
+import org.acegisecurity.adapters.PrincipalAcegiUserToken;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.userdetails.UserDetails;
 
 /**
  * @author Vivek Pandey
@@ -482,6 +487,24 @@ public abstract class BaseTest {
         Map u = JSONObject.fromObject(claim);
         Assert.assertEquals(username,u.get("sub"));
         return token;
+    }
+
+    protected User login(String userId, String fullName, String email) throws IOException {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+
+        hudson.model.User bob = j.jenkins.getUser(userId);
+
+        bob.setFullName(fullName);
+        bob.addProperty(new Mailer.UserProperty(email));
+
+
+        UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
+
+        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
+        return bob;
+    }
+    protected User login() throws IOException {
+        return login("bob", "Bob Smith", "bob@jenkins-ci.org");
     }
 
 }

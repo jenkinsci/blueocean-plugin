@@ -127,9 +127,11 @@ public class BranchContainerImpl extends BluePipelineContainer {
     private final Link self;
 
     public BranchContainerImpl(MultiBranchPipelineImpl pipeline, Link self) {
+        super(pipeline.getOrganization());
         this.pipeline = pipeline;
         this.self = self;
     }
+
     //TODO: implement rest of the methods
     @Override
     public BluePipeline get(String name) {

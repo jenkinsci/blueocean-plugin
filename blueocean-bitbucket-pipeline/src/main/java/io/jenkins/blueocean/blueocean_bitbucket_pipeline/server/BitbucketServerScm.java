@@ -14,8 +14,8 @@ import javax.annotation.Nonnull;
  * @author Vivek Pandey
  */
 public class BitbucketServerScm extends AbstractBitbucketScm {
+    public static final String ID = "bitbucket-server";
     static final String DOMAIN_NAME="blueocean-bitbucket-server-domain";
-    static final String ID = "bitbucket-server";
 
     public BitbucketServerScm(Reachable parent) {
         super(parent);
