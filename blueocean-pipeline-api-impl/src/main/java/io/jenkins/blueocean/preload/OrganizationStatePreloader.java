@@ -15,6 +15,7 @@ import io.jenkins.blueocean.commons.PageStatePreloader;
 import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
+import io.jenkins.blueocean.service.embedded.util.OrganizationUtil;
 import net.sf.json.util.JSONBuilder;
 
 /**
@@ -31,21 +32,8 @@ public class OrganizationStatePreloader extends PageStatePreloader {
 
     @Override
     public String getStateJson() {
-        String orgName = getOrganizationFromURL();
-        BlueOrganization organization = null;
+        BlueOrganization organization = OrganizationUtil.getOrganization(OrganizationUtil.getOrganizationNameFromURL(), true);
         
-        OrganizationFactory orgFactory = OrganizationFactory.getInstance();
-        if (orgName != null) {
-            organization = orgFactory.get(orgName);
-        }
-
-        if (organization == null) {
-            Iterator<BlueOrganization> iterator = orgFactory.list().iterator();
-            if (iterator.hasNext()) {
-                organization = iterator.next();
-            }
-        }
-
         if(organization != null) {
             String organizationGroup = "/"; //default is root group
             if (organization instanceof AbstractOrganization) {
@@ -67,25 +55,5 @@ public class OrganizationStatePreloader extends PageStatePreloader {
         }
     }
 
-    private static final Pattern pattern = Pattern.compile("/blue/organizations/([^/]*)/");
 
-    private String getOrganizationFromURL() {
-        StaplerRequest currentRequest = Stapler.getCurrentRequest();
-        if (currentRequest == null) {
-            return null;
-        }
-
-        String requestURI = currentRequest.getRequestURI();
-
-        if (requestURI == null) {
-            return null;
-        }
-
-        Matcher matcher = pattern.matcher(requestURI);
-
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-        return null;
-    }
 }
