@@ -24,6 +24,10 @@
       <artifactId>blueocean-pipeline-scm-api</artifactId>
     </dependency>
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>blueocean-pipeline-api-impl</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>git</artifactId>
     </dependency>
@@ -36,11 +40,6 @@
     <dependency>
       <groupId>io.jenkins.blueocean</groupId>
       <artifactId>blueocean-rest-impl</artifactId>
-      <scope>test</scope>
-    </dependency>
-      <dependency>
-      <groupId>io.jenkins.blueocean</groupId>
-      <artifactId>blueocean-pipeline-api-impl</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
