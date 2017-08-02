@@ -66,7 +66,7 @@ public class OrganizationUtil {
             organization = orgFactory.get(orgName);
         }
 
-        if (organization == null) {
+        if (organization == null && defaultToFirst) {
             Iterator<BlueOrganization> iterator = orgFactory.list().iterator();
             if (iterator.hasNext()) {
                 organization = iterator.next();
