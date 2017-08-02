@@ -17,7 +17,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import static io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl.sortBranchesByLatestRun;
+import static io.jenkins.blueocean.rest.impl.pipeline.MultibranchPipelineRunContainer.sortBranchesByLatestRun;
 
 /**
  * @author Vivek Pandey
