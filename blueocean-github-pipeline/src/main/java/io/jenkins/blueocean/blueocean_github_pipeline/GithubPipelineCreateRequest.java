@@ -87,6 +87,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
         if (scmConfig != null) {
             apiUrl = StringUtils.defaultIfBlank(scmConfig.getUri(), GitHubSCMSource.GITHUB_URL);
             updateEndpoints(apiUrl);
+
             if (scmConfig.getConfig().get("orgName") instanceof String) {
                 orgName = (String) scmConfig.getConfig().get("orgName");
             }
@@ -112,6 +113,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
         }
         boolean creatingNewItem = item == null;
         try {
+
             if(credentialId != null) {
                 validateCredentialId(credentialId, apiUrl);
             }
@@ -149,8 +151,6 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
 
                 StringBuilder sb = new StringBuilder();
                 if (gitHubSCMNavigator != null) {
-                    apiUrl = StringUtils.defaultIfBlank(gitHubSCMNavigator.getApiUri(), scmConfig.getUri());
-
                     // currently, we are setting a series of regular expressions to match the repositories
                     // so we need to extract the current set for incoming create requests to keep them
                     // see a few lines below for the pattern being used
@@ -173,14 +173,6 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
                     if (credentialId == null) {
                         credentialId = gitHubSCMNavigator.getScanCredentialsId();
                     }
-                }
-
-                if (StringUtils.isBlank(apiUrl)) {
-                    apiUrl = StringUtils.defaultIfBlank(scmConfig.getUri(), GithubScm.DEFAULT_API_URI);
-                }
-
-                if(StringUtils.isNotBlank(credentialId)) {
-                    validateCredentialId(credentialId, apiUrl);
                 }
 
                 gitHubSCMNavigator = new GitHubSCMNavigator(apiUrl, orgName, credentialId, credentialId);
