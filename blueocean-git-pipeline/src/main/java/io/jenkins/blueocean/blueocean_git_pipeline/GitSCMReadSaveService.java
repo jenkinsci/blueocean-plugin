@@ -59,7 +59,6 @@ public class GitSCMReadSaveService extends GitReadSaveService {
                 public byte[] invoke(Repository repository) throws IOException, InterruptedException {
                     Git activeRepo = getActiveRepository(repository);
                     File repoDir = activeRepo.getRepository().getDirectory().getParentFile();
-                    System.out.println("Repo cloned to: " + repoDir.getCanonicalPath());
                     try {
                         File f = new File(repoDir, filePath);
                         if (f.canRead()) {
@@ -81,7 +80,6 @@ public class GitSCMReadSaveService extends GitReadSaveService {
                 public Void invoke(Repository repository) throws IOException, InterruptedException {
                     Git activeRepo = getActiveRepository(repository);
                     File repoDir = activeRepo.getRepository().getDirectory().getParentFile();
-                    System.out.println("Repo cloned to: " + repoDir.getCanonicalPath());
                     try {
 //                        if (!sourceBranch.equals(branch)) {
 //                            CheckoutCommand checkout = activeRepo.checkout();
