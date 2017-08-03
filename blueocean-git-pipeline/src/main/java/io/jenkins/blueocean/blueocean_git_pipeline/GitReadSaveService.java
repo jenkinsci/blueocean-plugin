@@ -169,7 +169,23 @@ public class GitReadSaveService extends ScmContentProvider {
                 }
             }
         }
-        return new GitReadSaveRequest(
+        if (false) {
+            return new GitReadSaveRequest(
+                StringUtils.defaultIfEmpty(readUrl, existingReadUrl),
+                StringUtils.defaultIfEmpty(writeUrl, StringUtils.defaultIfEmpty(existingWriteUrl, readUrl)),
+                StringUtils.defaultIfEmpty(readCredentialId, existingReadCredentialId),
+                StringUtils.defaultIfEmpty(writeCredentialId, existingWriteCredentialId),
+                StringUtils.defaultIfEmpty(branch, defaultBranch),
+                commitMessage,
+                StringUtils.defaultIfEmpty(sourceBranch, defaultBranch),
+                filePath,
+                contents,
+                gitTool,
+                gitSource
+            );
+        }
+        return new GitSCMReadSaveService.GitSCMReadSaveRequest(
+            item,
             StringUtils.defaultIfEmpty(readUrl, existingReadUrl),
             StringUtils.defaultIfEmpty(writeUrl, StringUtils.defaultIfEmpty(existingWriteUrl, readUrl)),
             StringUtils.defaultIfEmpty(readCredentialId, existingReadCredentialId),
