@@ -110,11 +110,6 @@ class BbChooseServerStep extends React.Component {
                     onClose={cred => this._onAddServerDialogClosed(cred)}
                 />
                 }
-                <div className="FormElement">
-                    <div className="FormElement-heading">
-                        <label className="FormElement-title">{url}</label>
-                    </div>
-                </div>
                 { this.state.urlErrorMsg &&
                     <div className="FormElement u-error-state" >
                         <div className="FormElement-heading">
