@@ -18,10 +18,10 @@ public class BlueOceanConfigImpl extends BlueOceanConfig {
 
     private BlueOceanConfigImpl() {
         Properties properties = System.getProperties();
-        for (Object key : properties.keySet()) {
-            String ks = key == null ? "" : key.toString();
+        for (Map.Entry<Object, Object> entry : properties.entrySet()) {
+            String ks = entry.getKey() == null ? "" : entry.getKey().toString();
             if (ks.startsWith(BlueOceanConfig.FEATURE_PROPERTY_PREFIX)) {
-                Object value = properties.get(key);
+                Object value = entry.getValue();
                 String vs = value == null ? "" : value.toString();
                 if ("true".equalsIgnoreCase(vs) || "false".equalsIgnoreCase(vs)) {
                     value = Boolean.valueOf(vs);
