@@ -11,6 +11,24 @@ const RERENDER_DELAY = 17;
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.LogConsole');
 
+// TODO: Extract this, write some unit tests
+function decodeANSICodes(input) {
+
+    let i = input.indexOf('CYAN');
+
+    if (i === -1) {
+        return [input];
+    }
+
+    let chunks = [
+        input.substr(0, i),
+        'NYAN',
+        input.substr(i + 4)
+    ];
+
+
+}
+
 export class LogConsole extends Component {
 
     constructor(props) {
@@ -114,6 +132,7 @@ export class LogConsole extends Component {
             this.timeouts.scroll = this.props.scrollToAnchorTimeOut(RERENDER_DELAY + 1);
         }
     }
+
     render() {
         const { isLoading, lines } = this.state;
         const { prefix = '', hasMore = false, router, location, t, currentLogUrl } = this.props; // if hasMore true then show link to full log
@@ -122,11 +141,44 @@ export class LogConsole extends Component {
             return null;
         }
         logger.debug('render lines length', lines.length);
-        // JENKINS-37925 - show more button should open log in new window
-        // const logUrl = url && url.includes(suffix) ? url : `${url}${suffix}`;
-        // JENKINS-41717 reverts above again
-        // fulllog within steps are triggered by
-        // const logUrl = `#${prefix || ''}log-${0}`;
+
+        const renderLine = (line, index) => {
+
+            // TODO: Remove this block vvvvvv
+
+            // const n = Math.min(line.length, 15);
+            // let dbg = [];
+            // let dbg2 = [];
+            //
+            // for (let i = 0; i < n; i++) {
+            //     dbg.push(("  " + line.charCodeAt(i)).substr(-3,3));
+            //     dbg2.push(("   " + line[i]).substr(-3,3));
+            // }
+            //
+            // console.log(dbg2);
+            // console.log(dbg);
+
+            // TODO: Remove this block ^^^^^^
+
+            return (
+                <p key={index + 1} id={`${prefix}log-${index + 1}`}>
+                    <div className="log-boxes">
+                        <a
+                            className="linenumber"
+                            key={index + 1}
+                            href={`#${prefix || ''}log-${index + 1}`}
+                            name={`${prefix}log-${index + 1}`}
+                            onClick={() => {
+                                location.hash = `#${prefix || ''}log-${index + 1}`;
+                                router.push(location);
+                            }}
+                        >
+                        </a>
+                        <span className="line">{line}</span>
+                    </div>
+                </p>
+            );
+        };
 
         return (<div className="log-wrapper">
             { isLoading && <div className="loadingContainer" id={`${prefix}log-${0}`}>
@@ -145,22 +197,7 @@ export class LogConsole extends Component {
                         {t('Show.complete.logs')}
                     </a>
                 </div>}
-                { !isLoading && lines.map((line, index) => <p key={index + 1} id={`${prefix}log-${index + 1}`}>
-                    <div className="log-boxes">
-                        <a
-                          className="linenumber"
-                          key={index + 1}
-                          href={`#${prefix || ''}log-${index + 1}`}
-                          name={`${prefix}log-${index + 1}`}
-                          onClick={() => {
-                              location.hash = `#${prefix || ''}log-${index + 1}`;
-                              router.push(location);
-                          }}
-                        >
-                        </a>
-                        <span className="line">{line}</span>
-                    </div>
-                </p>)}
+                { !isLoading && lines.map(renderLine) }
             </pre></div> }
 
         </div>);
