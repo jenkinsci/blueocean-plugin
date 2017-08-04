@@ -34,7 +34,6 @@
     <jenkins-test-harness.version>2.23</jenkins-test-harness.version>
     <scm-api.version>2.2.0</scm-api.version>
     <git.version>3.4.0</git.version>
-    <jira.client>4.0.0</jira.client>
   </properties>
 
   <scm>
