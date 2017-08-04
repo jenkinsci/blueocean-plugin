@@ -192,7 +192,7 @@ public class UserImplPermissionTest {
 
         @Override
         public BluePipelineContainer getPipelines() {
-            return new PipelineContainerImpl(this);
+            return new PipelineContainerImpl(this, this, this);
         }
 
         @WebMethod(name = "")
