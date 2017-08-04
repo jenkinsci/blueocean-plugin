@@ -1,5 +1,7 @@
 package io.jenkins.blueocean.config;
 
+import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
 import static org.hamcrest.Matchers.notNullValue;
@@ -52,6 +54,11 @@ public class BlueOceanConfigFactoryTest {
             final Boolean value = setValue;
             loaded = true;
             return new BlueOceanConfig() {
+                @Override
+                public Iterable<String> keys() {
+                    return ImmutableSet.of(BlueOceanConfig.ORGANIZATION_ENABLED);
+                }
+                
                 @Override
                 public <T> T get(String key, Class<T> type) {
                     if (key.equals(BlueOceanConfig.ORGANIZATION_ENABLED)) {
