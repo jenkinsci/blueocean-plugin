@@ -66,7 +66,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
  */
 public class GithubScm extends Scm {
     //Used by tests to mock github
-    private static final String ID = "github";
+    static final String ID = "github";
 
     //desired scopes
     private static final String USER_EMAIL_SCOPE = "user:email";
@@ -120,6 +120,12 @@ public class GithubScm extends Scm {
             return githubCredential.getId();
         }
         return null;
+    }
+
+    @Override
+    public Object getState() {
+        this.validateExistingAccessToken();
+        return super.getState();
     }
 
     @Override
@@ -318,6 +324,24 @@ public class GithubScm extends Scm {
         }
 
         return connection;
+    }
+
+    /**
+     * Ensure any existing access token is valid and has the proper scopes.
+     */
+    protected void validateExistingAccessToken() {
+        String credentialId = createCredentialId(getUri());
+        StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+
+        if (githubCredential != null) {
+            HttpURLConnection connection;
+            try {
+                connection = connect(String.format("%s/%s", getUri(), "user"), githubCredential.getPassword().getPlainText());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            validateAccessTokenScopes(connection);
+        }
     }
 
     static void validateAccessTokenScopes(HttpURLConnection connection) {

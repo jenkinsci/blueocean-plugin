@@ -6,4 +6,4 @@ declare var performance: {
 
 // Helpful react stuff
 
-type ReactChildren = string | Array<React$Element<any>>;
+type ReactChildren = string | Array<React$Element<any>> | React$Element<any>;

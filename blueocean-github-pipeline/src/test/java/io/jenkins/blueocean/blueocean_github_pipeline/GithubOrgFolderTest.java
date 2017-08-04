@@ -12,19 +12,34 @@ import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
+
+import hudson.model.ItemGroup;
 import hudson.model.TopLevelItem;
+import hudson.model.TopLevelItemDescriptor;
 import hudson.model.User;
 import io.jenkins.blueocean.credential.CredentialsUtils;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainSpecification;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
+import io.jenkins.blueocean.service.embedded.OrganizationFactoryImpl;
+import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
+import jenkins.model.ModifiableTopLevelItemGroup;
+
 import org.jenkinsci.plugins.github_branch_source.Connector;
 import org.junit.Assert;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import org.jvnet.hudson.test.MockFolder;
+import org.jvnet.hudson.test.TestExtension;
 
 import java.io.IOException;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
@@ -34,7 +49,18 @@ import static org.junit.Assert.*;
 /**
  * @author Vivek Pandey
  */
+@RunWith(Parameterized.class)
 public class GithubOrgFolderTest extends GithubMockBase {
+
+    @Parameters
+    public static Object[] data() {
+        return new Object[] { null, "TestOrg" };
+    }
+
+    public GithubOrgFolderTest(String blueOrganisation) {
+        System.out.println("setting org root to: " + blueOrganisation);
+        TestOrganizationFactoryImpl.orgRoot = blueOrganisation;
+    }
 
     @Test
     public void simpleOrgTest() throws IOException, UnirestException {
@@ -43,7 +69,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .post("/organizations/jenkins/pipelines/")
+                .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", orgFolderName,
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
@@ -56,13 +82,13 @@ public class GithubOrgFolderTest extends GithubMockBase {
         assertEquals(orgFolderName, resp.get("name"));
         assertEquals("io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganizationFolder", resp.get("_class"));
 
-        TopLevelItem item = j.getInstance().getItem(orgFolderName);
+        TopLevelItem item = getOrgRoot().getItem(orgFolderName);
         assertNotNull(item);
 
         Assert.assertTrue(item instanceof OrganizationFolder);
 
 
-        Map r = get("/organizations/jenkins/pipelines/"+orgFolderName+"/");
+        Map r = get("/organizations/"+ getOrgName() + "/pipelines/"+orgFolderName+"/");
         assertEquals(orgFolderName, r.get("name"));
         assertFalse((Boolean) r.get("scanAllRepos"));
     }
@@ -73,7 +99,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .post("/organizations/jenkins/pipelines/")
+                .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "cloudbeers",
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
@@ -102,7 +128,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .post("/organizations/jenkins/pipelines/")
+                .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", orgFolderName,
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
@@ -126,7 +152,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
         resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .post("/organizations/jenkins/pipelines/")
+                .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", orgFolderName,
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",ImmutableMap.of(
@@ -145,7 +171,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .post("/organizations/jenkins/pipelines/")
+                .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", orgFolderName,
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
@@ -169,7 +195,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
         resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .post("/organizations/jenkins/pipelines/")
+                .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", orgFolderName,
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "organization","jenkins",
@@ -213,7 +239,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
         }
 
         //create org folder and attach user and credential id to it
-        OrganizationFolder organizationFolder = j.createProject(OrganizationFolder.class, "demo");
+        OrganizationFolder organizationFolder = (OrganizationFolder) getOrgRoot().createProject((TopLevelItemDescriptor)j.jenkins.getDescriptor(OrganizationFolder.class), "demo", false);
         AbstractFolderProperty prop = new BlueOceanCredentialsProvider.FolderPropertyImpl(user.getId(), credential.getId(),
                 BlueOceanCredentialsProvider.createDomain("https://api.github.com"));
 
@@ -242,4 +268,79 @@ public class GithubOrgFolderTest extends GithubMockBase {
         c = Connector.lookupScanCredentials(organizationFolder, null, credential.getId());
         assertEquals("System Github Access Token", c.getDescription());
     }
+
+    private String createGithubCredential(User user) throws UnirestException {
+        Map r = new RequestBuilder(baseUrl)
+                .data(ImmutableMap.of("accessToken", "12345"))
+                .status(200)
+                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .put("/organizations/" + getOrgName() + "/scm/github/validate/")
+                .build(Map.class);
+
+        assertEquals("github", r.get("credentialId"));
+        return "github";
+    }
+
+    private String getOrgName() {
+        return OrganizationFactory.getInstance().list().iterator().next().getName();
+    }
+
+    private ModifiableTopLevelItemGroup getOrgRoot() {
+        return OrganizationFactory.getItemGroup(getOrgName());
+    }
+
+    
+    @TestExtension
+    public static class TestOrganizationFactoryImpl extends OrganizationFactoryImpl {
+        
+        public static String orgRoot;
+        
+        private OrganizationImpl instance;
+
+        public TestOrganizationFactoryImpl() {
+            System.out.println("TestOrganizationFactoryImpl org root is: " + orgRoot);
+            setOrgRoot(orgRoot);
+        }
+
+        private void setOrgRoot(String root) {
+            if (root != null) {
+                try {
+                    MockFolder itemGroup = Jenkins.getInstance().createProject(MockFolder.class, root);
+                    instance = new OrganizationImpl(root, itemGroup);
+                } catch (IOException e) {
+                    throw new RuntimeException("Test setup failed!", e);
+                }
+                
+            }
+            else {
+                instance = new OrganizationImpl("jenkins", Jenkins.getInstance());
+            }
+        }
+
+        @Override
+        public OrganizationImpl get(String name) {
+            if (instance != null) {
+                if (instance.getName().equals(name)) {
+                    System.out.println("" + name + " Instance returned " + instance);
+                    return instance;
+                }
+            }
+            System.out.println("" + name + " no instance found");
+            return null;
+        }
+
+        @Override
+        public Collection<BlueOrganization> list() {
+            return Collections.singleton((BlueOrganization) instance);
+        }
+
+        @Override
+        public OrganizationImpl of(ItemGroup group) {
+            if (group == instance.getGroup()) {
+                return instance;
+            }
+            return null;
+        }
+    }
+
 }

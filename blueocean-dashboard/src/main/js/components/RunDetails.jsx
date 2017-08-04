@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { TabLink } from '@jenkins-cd/design-language';
-import { i18nTranslator, ReplayButton, RunButton, logging } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, ReplayButton, RunButton, LoginButton, logging } from '@jenkins-cd/blueocean-core-js';
 import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 
 import { Icon } from '@jenkins-cd/react-material-icons';
@@ -213,6 +213,7 @@ class RunDetails extends Component {
             />,
             classicConfigLink(pipeline),
             classicJobRunLink(pipeline, params.branch, params.runId),
+            <LoginButton className="user-component button-bar layout-small inverse" translate={webTranslate} />,
         ];
 
         return (

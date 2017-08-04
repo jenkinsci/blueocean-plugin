@@ -13,9 +13,9 @@ import javax.annotation.Nonnull;
  * @author Vivek Pandey
  */
 public class BitbucketCloudScm extends AbstractBitbucketScm {
+    public static final String ID = "bitbucket-cloud";
+    public static final String API_URL = "https://bitbucket.org";
     static final String DOMAIN_NAME="blueocean-bitbucket-cloud-domain";
-    static final String ID = "bitbucket-cloud";
-    static final String API_URL = "https://bitbucket.org/api/2.0/";
 
     public BitbucketCloudScm(Reachable parent) {
         super(parent);

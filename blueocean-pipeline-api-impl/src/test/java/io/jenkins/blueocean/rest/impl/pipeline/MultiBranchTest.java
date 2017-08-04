@@ -352,6 +352,27 @@ public class MultiBranchTest extends PipelineBaseTest {
     }
 
     @Test
+    public void multiBranchPipelineIndex() throws Exception {
+        User user = login();
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
+                new DefaultBranchPropertyStrategy(new BranchProperty[0])));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        Map map = new RequestBuilder(baseUrl)
+                .post("/organizations/jenkins/pipelines/p/runs/")
+                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+                .data(ImmutableMap.of())
+                .status(200)
+                .build(Map.class);
+
+        assertNotNull(map);
+    }
+
+
+    @Test
     public void getMultiBranchPipelineRuns() throws Exception {
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
@@ -834,13 +855,28 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         j.waitUntilNoActivity();
 
-        Map response = get("/organizations/jenkins/pipelines/p/branches/master/", Map.class);
+        //check MBP capabilities
+        Map<String,Object> response = get("/organizations/jenkins/pipelines/p/");
         String clazz = (String) response.get("_class");
 
         response = get("/classes/"+clazz+"/");
         Assert.assertNotNull(response);
 
         List<String> classes = (List<String>) response.get("classes");
+        Assert.assertTrue(classes.contains(BLUE_SCM)
+                && classes.contains(JENKINS_MULTI_BRANCH_PROJECT)
+                && classes.contains(BLUE_MULTI_BRANCH_PIPELINE)
+                && classes.contains(BLUE_PIPELINE_FOLDER)
+                && classes.contains(JENKINS_ABSTRACT_FOLDER)
+                && classes.contains(BLUE_PIPELINE));
+
+        response = get("/organizations/jenkins/pipelines/p/branches/master/", Map.class);
+        clazz = (String) response.get("_class");
+
+        response = get("/classes/"+clazz+"/");
+        Assert.assertNotNull(response);
+
+        classes = (List<String>) response.get("classes");
         Assert.assertTrue(classes.contains(JENKINS_JOB)
             && classes.contains(JENKINS_WORKFLOW_JOB)
             && classes.contains(BLUE_BRANCH)

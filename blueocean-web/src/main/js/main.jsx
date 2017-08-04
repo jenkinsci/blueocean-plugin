@@ -3,7 +3,7 @@ import { render } from 'react-dom';
 import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-router';
 import { createHistory } from 'history';
 import {
-    logging, i18nTranslator, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound, SiteHeader, toClassicJobPage, User, loadingIndicator,
+    logging, i18nTranslator, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound, SiteHeader, toClassicJobPage, User, loadingIndicator, LoginButton,
 } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
@@ -22,22 +22,6 @@ const LOGGER = logging.logger('io.jenkins.blueocean.web.routing');
 let config; // Holder for various app-wide state
 
 const translate = i18nTranslator('blueocean-web');
-
-function loginOrLogout(t) {
-    if (Security.isSecurityEnabled()) {
-        if (Security.isAnonymousUser()) {
-            const loginUrl = `${UrlConfig.getJenkinsRootURL()}/${AppConfig.getLoginUrl()}?from=${encodeURIComponent(Utils.windowOrGlobal().location.pathname)}`;
-            return (<a href={loginUrl} className="btn-link">{t('login', {
-                defaultValue: 'login',
-            })}</a>);
-        } else {
-            const logoutUrl = `${UrlConfig.getJenkinsRootURL()}/logout`;
-            return (<a href={logoutUrl} className="btn-link">{t('logout', {
-                defaultValue: 'logout',
-            })}</a>);
-        }
-    }
-}
 
 // Show link when only when someone is logged in...unless security is not configured,
 // then show it anyway.
@@ -108,9 +92,7 @@ class App extends Component {
                 </div>
             </Extensions.Renderer>,
             <Extensions.Renderer extensionPoint="jenkins.blueocean.top.login">
-                <div className="user-component button-bar layout-small inverse">
-                    { loginOrLogout(translate) }
-                </div>
+                <LoginButton className="user-component button-bar layout-small inverse" translate={translate} />
             </Extensions.Renderer>
         ];
 

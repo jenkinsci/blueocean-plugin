@@ -6,6 +6,7 @@ import { Promise } from 'es6-promise';
  * @param data
  * @param delay
  * @returns {Promise}
+ * @deprecated
  */
 function pause(data, delay = 1000) {
     return new Promise(resolve => {

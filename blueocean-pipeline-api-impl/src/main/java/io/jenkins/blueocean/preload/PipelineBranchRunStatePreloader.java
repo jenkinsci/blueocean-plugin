@@ -31,6 +31,7 @@ import io.jenkins.blueocean.commons.BlueUrlTokenizer;
 import io.jenkins.blueocean.commons.RESTFetchPreloader;
 import io.jenkins.blueocean.commons.stapler.Export;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
+import io.jenkins.blueocean.rest.factory.BlueRunFactory;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import jenkins.branch.MultiBranchProject;
@@ -83,7 +84,7 @@ public class PipelineBranchRunStatePreloader extends RESTFetchPreloader {
                     Run run = pipelineBranchJob.getBuild(runId);
 
                     if (run != null) {
-                        BlueRun blueRun = AbstractRunImpl.getBlueRun(run, BluePipelineFactory.resolve(pipelineBranchJob));
+                        BlueRun blueRun = BlueRunFactory.getRun(run, BluePipelineFactory.resolve(pipelineBranchJob));
                         if (blueRun != null) {
                             try {
                                 return new FetchData(blueRun.getLink().getHref(), Export.toJson(blueRun));
