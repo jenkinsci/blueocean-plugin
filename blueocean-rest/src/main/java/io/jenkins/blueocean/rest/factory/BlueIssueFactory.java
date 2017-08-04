@@ -10,6 +10,8 @@ import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.rest.model.BlueIssue;
 
 import java.util.Collection;
+import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -38,7 +40,7 @@ public abstract class BlueIssueFactory implements ExtensionPoint {
      * @return issues representing this job
      */
     public static Collection<BlueIssue> resolve(Job job) {
-        List<BlueIssue> allIssues = Lists.newArrayList();
+        LinkedHashSet<BlueIssue> allIssues = Sets.newLinkedHashSet();
         for (BlueIssueFactory factory : ExtensionList.lookup(BlueIssueFactory.class)) {
             Collection<BlueIssue> issues = factory.getIssues(job);
             if (issues == null) {
@@ -56,7 +58,7 @@ public abstract class BlueIssueFactory implements ExtensionPoint {
      * @return issues representing the change
      */
     public static Collection<BlueIssue> resolve(ChangeLogSet.Entry changeSetEntry) {
-        List<BlueIssue> allIssues = Lists.newArrayList();
+        LinkedHashSet<BlueIssue> allIssues = Sets.newLinkedHashSet();
         for (BlueIssueFactory factory : ExtensionList.lookup(BlueIssueFactory.class)) {
             Collection<BlueIssue> issues = factory.getIssues(changeSetEntry);
             if (issues == null) {
