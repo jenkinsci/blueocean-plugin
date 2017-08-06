@@ -492,7 +492,7 @@ public abstract class BaseTest {
     protected User login(String userId, String fullName, String email) throws IOException {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
 
-        hudson.model.User bob = j.jenkins.getUser(userId);
+        hudson.model.User bob = User.get(userId);
 
         bob.setFullName(fullName);
         bob.addProperty(new Mailer.UserProperty(email));
