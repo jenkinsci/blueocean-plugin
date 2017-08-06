@@ -118,7 +118,7 @@ public class GitPipelineUpdateRequest extends BluePipelineCreateRequest {
                 }
 
                 String cred = gitSCMSource.getCredentialsId();
-                if(!gitSCMSource.getCredentialsId().equals(credentialId)){
+                if(cred == null || !cred.equals(credentialId)){
                     cred = credentialId;
                 }
                 GitSCMSource s = new GitSCMSource(gitSCMSource.getId(), remote, cred,

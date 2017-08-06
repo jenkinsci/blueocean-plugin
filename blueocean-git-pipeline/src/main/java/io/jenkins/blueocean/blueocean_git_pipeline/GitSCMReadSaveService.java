@@ -12,8 +12,10 @@ import hudson.plugins.git.GitTool;
 import io.jenkins.blueocean.commons.ServiceException;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.net.URISyntaxException;
 import javax.annotation.Nonnull;
 import jenkins.branch.MultiBranchProject;
@@ -89,8 +91,8 @@ public class GitSCMReadSaveService extends GitReadSaveService {
                     
                         File f = new File(repoDir, filePath);
                         if (!f.exists() || f.canWrite()) {
-                            try (FileWriter fw = new FileWriter(f)) {
-                                fw.write(new String(contents, "utf-8"));
+                            try (Writer w = new OutputStreamWriter(new FileOutputStream(f), "utf-8")) {
+                                w.write(new String(contents, "utf-8"));
                             }
 
                             try {
@@ -140,10 +142,14 @@ public class GitSCMReadSaveService extends GitReadSaveService {
                     if (cloneDir.isDirectory()) {
                         FileUtils.deleteDirectory(cloneDir);
                     } else {
-                        cloneDir.delete();
+                        if (!cloneDir.delete()) {
+                            throw new ServiceException.UnexpectedErrorException("Unable to delete repository clone");
+                        }
                     }
                 }
-                cloneDir.mkdirs();
+                if (!cloneDir.mkdirs()) {
+                    throw new ServiceException.UnexpectedErrorException("Unable to create repository clone directory");
+                }
                 
                 Git gitClient = Git.cloneRepository()
                     .setCloneAllBranches(false)

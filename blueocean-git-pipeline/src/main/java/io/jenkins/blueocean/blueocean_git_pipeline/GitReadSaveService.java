@@ -22,7 +22,6 @@ import hudson.model.Item;
 import hudson.model.TaskListener;
 import hudson.plugins.git.GitException;
 import hudson.plugins.git.GitTool;
-import hudson.plugins.git.extensions.GitSCMExtension;
 import hudson.remoting.Base64;
 import hudson.util.LogTaskListener;
 import io.jenkins.blueocean.rest.impl.pipeline.ScmContentProvider;
@@ -75,7 +74,7 @@ public class GitReadSaveService extends ScmContentProvider {
             this.commitMessage = commitMessage;
             this.sourceBranch = sourceBranch;
             this.filePath = filePath;
-            this.contents = contents;
+            this.contents = contents.clone(); // grr findbugs
             this.gitTool = gitTool;
             this.gitSource = gitSource;
             this.repositoryPath = Files.createTempDirectory("git").toFile();
@@ -157,14 +156,6 @@ public class GitReadSaveService extends ScmContentProvider {
                             .getInstallation(gitSource.getGitTool());
                     if (gitTool == null) {
                         gitTool = GitTool.getDefaultInstallation();
-                    }
-                    for (GitSCMExtension e : gitSource.getExtensions()) {
-                        if (e instanceof GitWritableRepositoryOption) {
-                            GitWritableRepositoryOption writer = (GitWritableRepositoryOption)e;
-                            existingWriteUrl = writer.getRepositoryUrl();
-                            existingWriteCredentialId = writer.getCredentialId();
-                            break;
-                        }
                     }
                 }
             }
