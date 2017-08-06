@@ -107,8 +107,9 @@ public class UserSSHKeyManager {
         Preconditions.checkNotNull(user);
         Preconditions.checkNotNull(key);
 
+        byte[] decodedKey = Preconditions.checkNotNull(Base64.decode(key.getPrivateKey());
         PKCS8EncodedKeySpec keySpec =
-            new PKCS8EncodedKeySpec(Base64.decode(key.getPrivateKey()));
+            new PKCS8EncodedKeySpec(decodedKey);
         try {
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             RSAPrivateCrtKey privateKey = (RSAPrivateCrtKey)keyFactory.generatePrivate(keySpec);
