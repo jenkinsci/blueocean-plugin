@@ -74,7 +74,7 @@ public class GitReadSaveService extends ScmContentProvider {
             this.commitMessage = commitMessage;
             this.sourceBranch = sourceBranch;
             this.filePath = filePath;
-            this.contents = contents.clone(); // grr findbugs
+            this.contents = contents == null ? null : contents.clone(); // grr findbugs
             this.gitTool = gitTool;
             this.gitSource = gitSource;
             this.repositoryPath = Files.createTempDirectory("git").toFile();
