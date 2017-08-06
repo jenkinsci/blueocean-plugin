@@ -65,7 +65,7 @@ public class UserSSHKeyManager {
      * @param user owner of the key
      * @return the user's personal private key
      */
-    public static BasicSSHUserPrivateKey getOrCreate(@Nonnull User user) {
+    public static @Nonnull BasicSSHUserPrivateKey getOrCreate(@Nonnull User user) {
         Preconditions.checkNotNull(user);
 
         CredentialsStore store = getUserStore(user);
@@ -74,7 +74,7 @@ public class UserSSHKeyManager {
         }
         // try to find the right key
         for (Credentials cred : store.getCredentials(getDomain(store))) {
-            if (cred != null && cred instanceof BasicSSHUserPrivateKey) {
+            if (cred instanceof BasicSSHUserPrivateKey) {
                 BasicSSHUserPrivateKey sshKey = (BasicSSHUserPrivateKey)cred;
                 if (BLUEOCEAN_GENERATED_SSH_KEY_ID.equals(sshKey.getId())) {
                     return sshKey;
@@ -103,21 +103,20 @@ public class UserSSHKeyManager {
      * @param key
      * @return
      */
-    public static String getReadablePublicKey(@Nonnull User user, @Nonnull BasicSSHUserPrivateKey key) {
+    public static @Nonnull String getReadablePublicKey(@Nonnull User user, @Nonnull BasicSSHUserPrivateKey key) {
         Preconditions.checkNotNull(user);
         Preconditions.checkNotNull(key);
 
-        byte[] decodedKey = Base64.decode(key.getPrivateKey());
-        PKCS8EncodedKeySpec keySpec =
-            new PKCS8EncodedKeySpec(decodedKey);
         try {
+            PKCS8EncodedKeySpec keySpec =
+                new PKCS8EncodedKeySpec(Base64.decode(key.getPrivateKey()));
             KeyFactory keyFactory = KeyFactory.getInstance("RSA");
             RSAPrivateCrtKey privateKey = (RSAPrivateCrtKey)keyFactory.generatePrivate(keySpec);
             RSAPublicKeySpec publicKeySpec = new java.security.spec.RSAPublicKeySpec(privateKey.getModulus(), privateKey.getPublicExponent());
             RSAPublicKey publicKey = (RSAPublicKey)keyFactory.generatePublic(publicKeySpec);
             String id_rsa_pub = getSSHPublicKey(publicKey, user);
             return id_rsa_pub;
-        } catch (InvalidKeySpecException | NoSuchAlgorithmException | IOException ex) {
+        } catch (NullPointerException | InvalidKeySpecException | NoSuchAlgorithmException | IOException ex) {
             throw new ServiceException.UnexpectedErrorException("Unable to get a readable public key", ex);
         }
     }
