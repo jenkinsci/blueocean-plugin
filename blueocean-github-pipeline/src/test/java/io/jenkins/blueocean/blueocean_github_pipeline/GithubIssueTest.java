@@ -18,7 +18,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
-import javax.mail.Folder;
 import java.util.Collection;
 import java.util.Map;
 
