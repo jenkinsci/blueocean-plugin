@@ -40,7 +40,7 @@ public class BitbucketCloudScmTest extends BbCloudWireMock {
 
     @Test
     public void getOrganizations() throws IOException, UnirestException {
-        String credentialId = createCredential(BitbucketCloudScm.ID, "cloud");
+        String credentialId = createCredential(BitbucketCloudScm.ID);
         List orgs = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
@@ -56,7 +56,7 @@ public class BitbucketCloudScmTest extends BbCloudWireMock {
 
     @Test
     public void getRepositories() throws IOException, UnirestException {
-        String credentialId = createCredential(BitbucketCloudScm.ID, "cloud");
+        String credentialId = createCredential(BitbucketCloudScm.ID);
         Map repoResp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))

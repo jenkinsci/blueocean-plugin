@@ -3,11 +3,9 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 import com.cloudbees.hudson.plugins.folder.Folder;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.TopLevelItem;
-import hudson.model.User;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.service.embedded.OrganizationFactoryImpl;
@@ -58,7 +56,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         authz.grant(Item.CREATE, Item.CONFIGURE).onFolders(getOrgRoot()).to(user);
         j.jenkins.setAuthorizationStrategy(authz);
         // refresh the JWT token otherwise all hell breaks loose.
-        jwtToken = getJwtToken(j.jenkins, "vivek", "vivek");
+        jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
         createGithubOrgFolder(true);
     }
 
@@ -100,22 +98,10 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         }
         else {
             assertEquals(403, resp.get("code"));
-            assertEquals("Failed to create pipeline: cloudbeers1. User vivek doesn't have Job create permission", resp.get("message"));
+            assertEquals("User vivek doesn't have Job create permission", resp.get("message"));
             Assert.assertNull(item);
             String r = get("/organizations/"+ getOrgName() + "/pipelines/"+orgFolderName+"/", 404, String.class);
         }
-    }
-
-    private String createGithubCredential(User user) throws UnirestException {
-        Map r = new RequestBuilder(baseUrl)
-                .data(ImmutableMap.of("accessToken", "12345"))
-                .status(200)
-                .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .put("/organizations/" + getOrgName() + "/scm/github/validate/?apiUrl="+githubApiUrl)
-                .build(Map.class);
-
-        assertEquals("github", r.get("credentialId"));
-        return "github";
     }
 
     private static String getOrgName() {
