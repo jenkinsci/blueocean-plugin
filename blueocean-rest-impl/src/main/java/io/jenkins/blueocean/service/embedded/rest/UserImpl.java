@@ -56,17 +56,16 @@ public class UserImpl extends BlueUser {
 
     protected final User user;
 
-    @Nullable
     private final BlueOrganization organization;
     private final AccessControlled organizationBase;
 
     private final Reachable parent;
 
-    public UserImpl(@Nullable BlueOrganization organization, User user, Reachable parent) {
+    public UserImpl(BlueOrganization organization, User user, Reachable parent) {
         this.parent = parent;
         this.user = user;
         this.organization = organization;
-        organizationBase = initOrganizationBase();
+        organizationBase = getAccessControllerOrganization();
     }
 
     public UserImpl(BlueOrganization organization, User user) {
@@ -240,7 +239,7 @@ public class UserImpl extends BlueUser {
         return name.equals("anonymous") || user.getId().equals("anonymous");
     }
 
-    private AccessControlled initOrganizationBase() {
+    private AccessControlled getAccessControllerOrganization() {
         AccessControlled orgBase = Jenkins.getInstance();
 
         if (organization instanceof AbstractOrganization) {

@@ -29,14 +29,19 @@ import io.jenkins.blueocean.commons.BlueUrlTokenizer;
 import io.jenkins.blueocean.commons.RESTFetchPreloader;
 import io.jenkins.blueocean.commons.stapler.Export;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteContainer;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.rest.UserImpl;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
 import javax.annotation.Nonnull;
+
+import com.google.common.collect.Iterables;
+
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.logging.Level;
@@ -55,9 +60,10 @@ public class FavoritesStatePreloader extends RESTFetchPreloader {
     @Override
     protected FetchData getFetchData(@Nonnull BlueUrlTokenizer blueUrl) {
         User jenkinsUser = User.current();
+        BlueOrganization organization = Iterables.getFirst(OrganizationFactory.getInstance().list(), null);
 
-        if (jenkinsUser != null) {
-            UserImpl blueUser = new UserImpl(OrganizationImpl.getOrganizationFromURL(), jenkinsUser);
+        if (jenkinsUser != null && organization != null) {
+            UserImpl blueUser = new UserImpl(organization, jenkinsUser);
             BlueFavoriteContainer favoritesContainer = blueUser.getFavorites();
 
             if (favoritesContainer != null) {
