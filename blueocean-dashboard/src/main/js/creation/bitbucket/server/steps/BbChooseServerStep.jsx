@@ -88,7 +88,6 @@ class BbChooseServerStep extends React.Component {
         const title = t('creation.bbserver.choose_server.title');
         const disabled = flowManager.stepsDisabled;
         const disabledNext = !this.state.selectedServer || this.state.urlErrorMsg;
-        const url = this.state.selectedServer ? this.state.selectedServer.apiUrl : null;
         return (
             <FlowStep {...this.props} className="github-enterprise-choose-server-step" disabled={disabled} title={title}>
                 <FormElement title={t('creation.bbserver.choose_server.instructions')}>
@@ -110,11 +109,6 @@ class BbChooseServerStep extends React.Component {
                     onClose={cred => this._onAddServerDialogClosed(cred)}
                 />
                 }
-                <div className="FormElement">
-                    <div className="FormElement-heading">
-                        <label className="FormElement-title">{url}</label>
-                    </div>
-                </div>
                 { this.state.urlErrorMsg &&
                     <div className="FormElement u-error-state" >
                         <div className="FormElement-heading">
