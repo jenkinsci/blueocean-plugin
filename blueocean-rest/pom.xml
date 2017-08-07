@@ -86,6 +86,8 @@
                                         <allowedImport>jenkins.model.Jenkins</allowedImport>
                                         <allowedImport>hudson.Util</allowedImport>
                                         <allowedImport>hudson.model.Run</allowedImport>
+                                        <allowedImport>hudson.model.Job</allowedImport>
+                                        <allowedImport>hudson.scm.ChangeLogSet</allowedImport>
                                     </allowedImports>
                                 </restrictImports>
                                 <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
