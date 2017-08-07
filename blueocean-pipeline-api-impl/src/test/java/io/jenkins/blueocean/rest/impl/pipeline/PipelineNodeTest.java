@@ -1845,10 +1845,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("deploy", resp.get(1).get("displayName"));
 
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/steps/", List.class);
-        Assert.assertEquals(7, resp.size());
+        Assert.assertEquals(8, resp.size());
 
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(0).getId()+"/steps/", List.class);
-        Assert.assertEquals(3, resp.size());
+        Assert.assertEquals(4, resp.size());
 
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(1).getId()+"/steps/", List.class);
         Assert.assertEquals(4, resp.size());
@@ -1935,10 +1935,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("FINISHED", resp.get(2).get("state"));
 
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/steps/", List.class);
-        Assert.assertEquals(7, resp.size());
+        Assert.assertEquals(8, resp.size());
 
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(0).getId()+"/steps/", List.class);
-        Assert.assertEquals(3, resp.size());
+        Assert.assertEquals(4, resp.size());
 
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(1).getId()+"/steps/", List.class);
         Assert.assertEquals(0, resp.size());
@@ -1946,6 +1946,161 @@ public class PipelineNodeTest extends PipelineBaseTest {
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(2).getId()+"/steps/", List.class);
         Assert.assertEquals(4, resp.size());
     }
+
+    @Test
+    public void declarativeParallelStage() throws Exception {
+        String script = "pipeline {\n" +
+                "    agent any\n" +
+                "    stages {\n" +
+                "        stage('Build') {\n" +
+                "            steps {\n" +
+                "                echo 'building...'\n" +
+                "            }\n" +
+                "        }\n" +
+                "        stage('Browser Tests') {\n" +
+                "            parallel {\n" +
+                "                stage(\"Firefox\") {\n" +
+                "                    steps {\n" +
+                "                        sh 'echo \\'setting up selenium environment\\''\n" +
+                "                    }\n" +
+                "                }\n" +
+                "                stage(\"Safari\") {\n" +
+                "                    steps {\n" +
+                "                        sh 'echo \\'setting up selenium environment\\''\n" +
+                "                    }\n" +
+                "                }\n" +
+                "                stage(\"Chrome\") {\n" +
+                "                    steps {\n" +
+                "                        sh 'echo \\'setting up selenium environment\\''\n" +
+                "                    }\n" +
+                "                }\n" +
+                "                stage(\"Internet Explorer\") {\n" +
+                "                    steps {\n" +
+                "                        sh 'echo \\'setting up selenium environment\\''\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            }\n" +
+                "        }\n" +
+                "        stage('Static Analysis') {\n" +
+                "            steps {\n" +
+                "                echo 'static analysis...'\n" +
+                "            }\n" +
+                "        }\n" +
+                "        stage('Deploy') {\n" +
+                "            steps {\n" +
+                "                echo 'deploying...'\n" +
+                "            }\n" +
+                "        }\n" +
+                "    }\n" +
+                "    post {\n" +
+                "        always {\n" +
+                "            echo 'post actions completed'\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "p");
+        job1.setDefinition(new CpsFlowDefinition(script));
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+        List<FlowNode> stages = getStages(NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1));
+        List<FlowNode> parallelNodes = getParallelNodes(NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1));
+        assertEquals(4, stages.size());
+        assertEquals(4, parallelNodes.size());
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/p/runs/"+b1.getId()+"/nodes/", List.class);
+        assertEquals(8, resp.size());
+    }
+
+    @Test
+    public void declarativeParallelSkippedStage() throws Exception {
+        String script = "pipeline {\n" +
+                "    agent any\n" +
+                "    stages {\n" +
+                "        stage('Build') {\n" +
+                "            steps {\n" +
+                "                echo 'building...'\n" +
+                "            }\n" +
+                "        }\n" +
+                "        stage('Browser Tests') {\n" +
+                "            parallel {\n" +
+                "                stage(\"Firefox\") {\n" +
+                "                    steps {\n" +
+                "                        sh 'echo \\'setting up selenium environment\\''\n" +
+                "                    }\n" +
+                "                }\n" +
+                "                stage(\"Safari\") {\n" +
+                "                    when {\n" +
+                "                        expression {\n" +
+                "                            return false\n" +
+                "                        }\n" +
+                "                    }\n" +
+                "                    steps {\n" +
+                "                        sh 'echo \\'setting up selenium environment\\''\n" +
+                "                    }\n" +
+                "                }\n" +
+                "                stage(\"Chrome\") {\n" +
+                "                    steps {\n" +
+                "                        sh 'echo \\'setting up selenium environment\\''\n" +
+                "                    }\n" +
+                "                }\n" +
+                "                stage(\"Internet Explorer\") {\n" +
+                "                    when {\n" +
+                "                        expression {\n" +
+                "                            return false\n" +
+                "                        }\n" +
+                "                    }\n" +
+                "                    steps {\n" +
+                "                        sh 'echo \\'setting up selenium environment\\''\n" +
+                "                    }\n" +
+                "                }\n" +
+                "            }\n" +
+                "        }\n" +
+                "        stage('Static Analysis') {\n" +
+                "            steps {\n" +
+                "                echo 'static analysis...'\n" +
+                "            }\n" +
+                "        }\n" +
+                "        stage('Deploy') {\n" +
+                "            steps {\n" +
+                "                echo 'deploying...'\n" +
+                "            }\n" +
+                "        }\n" +
+                "    }\n" +
+                "    post {\n" +
+                "        always {\n" +
+                "            echo 'post actions completed'\n" +
+                "        }\n" +
+                "    }\n" +
+                "}";
+
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "p");
+        job1.setDefinition(new CpsFlowDefinition(script));
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatusSuccess(b1);
+
+        List<FlowNode> stages = getStages(NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1));
+        List<FlowNode> parallelNodes = getParallelNodes(NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1));
+        assertEquals(4, stages.size());
+        assertEquals(4, parallelNodes.size());
+
+        Map runResp = get("/organizations/jenkins/pipelines/p/runs/"+b1.getId(), Map.class);
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/p/runs/"+b1.getId()+"/nodes/", List.class);
+        assertEquals(8, resp.size());
+
+        assertEquals("19", resp.get(4).get("id"));
+        assertEquals("Internet Explorer", resp.get(4).get("displayName"));
+        assertEquals("NOT_BUILT", resp.get(4).get("result"));
+        assertEquals("SKIPPED", resp.get(4).get("state"));
+
+        assertEquals("17", resp.get(5).get("id"));
+        assertEquals("Safari", resp.get(5).get("displayName"));
+        assertEquals("NOT_BUILT", resp.get(5).get("result"));
+        assertEquals("SKIPPED", resp.get(5).get("state"));
+    }
+
     @Test
     public void waitForInputTest() throws Exception {
         String script = "node {\n" +
