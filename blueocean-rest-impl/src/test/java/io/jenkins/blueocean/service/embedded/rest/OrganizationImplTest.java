@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.jenkins.blueocean.service.embedded.util;
+package io.jenkins.blueocean.service.embedded.rest;
 
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.nullValue;
@@ -68,6 +68,7 @@ import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserContainer;
+import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.rest.PipelineContainerImpl;
 import io.jenkins.blueocean.service.embedded.rest.UserContainerImpl;
 import io.jenkins.blueocean.service.embedded.rest.UserImpl;
@@ -75,7 +76,7 @@ import jenkins.model.ModifiableTopLevelItemGroup;
 
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({ Stapler.class, OrganizationFactory.class })
-public class OrganizationUtilTest {
+public class OrganizationImplTest {
     StaplerRequest request;
     private TestOrganization testOrganization;
     private TestOrganization testOrganization2;
@@ -97,30 +98,16 @@ public class OrganizationUtilTest {
     }
 
     @Test
-    public void getFirstOrgTest() {
-        assertThat(OrganizationUtil.getFirst(), equalTo((BlueOrganization) testOrganization));
-    }
-
-    @Test
     public void getOrganizationFromUrlTest() {
         when(request.getRequestURI()).thenReturn("/jenkins/blue/organizations/org/some/remaingin/url");
-        assertThat(OrganizationUtil.getOrganizationNameFromURL(), equalTo("org"));
+        assertThat(OrganizationImpl.getOrganizationFromURL(), equalTo((BlueOrganization) testOrganization));
 
         when(request.getRequestURI()).thenReturn("/jenkins/blue/organizations/org2/some/remaingin/url");
-        assertThat(OrganizationUtil.getOrganizationNameFromURL(), equalTo("org2"));
-    }
+        assertThat(OrganizationImpl.getOrganizationFromURL(), equalTo((BlueOrganization) testOrganization2));
 
-    @Test
-    public void getNonExistentOrganizationNoFallBackTest() {
-        assertThat(OrganizationUtil.getOrganization("NON_EXISTENT_ORG", false), nullValue());
-        assertThat(OrganizationUtil.getOrganization("org2", false), equalTo((BlueOrganization) testOrganization2));
-    }
+        when(request.getRequestURI()).thenReturn("/jenkins/blue/organizations/NON_EXISTENT_ORG/some/remaingin/url");
+        assertThat(OrganizationImpl.getOrganizationFromURL(), equalTo((BlueOrganization) testOrganization));
 
-    @Test
-    public void getNonExistentOrganizationWithFallBackTest() {
-        assertThat(OrganizationUtil.getOrganization("NON_EXISTENT_ORG", true), equalTo((BlueOrganization) testOrganization));
-        assertThat(OrganizationUtil.getOrganization("org1", true), equalTo((BlueOrganization) testOrganization));
-        assertThat(OrganizationUtil.getOrganization("org2", true), equalTo((BlueOrganization) testOrganization2));
     }
 
     public static class TestOrganization extends AbstractOrganization implements ModifiableTopLevelItemGroup {
