@@ -15,7 +15,7 @@ import io.jenkins.blueocean.commons.PageStatePreloader;
 import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
-import io.jenkins.blueocean.service.embedded.util.OrganizationUtil;
+import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import net.sf.json.util.JSONBuilder;
 
 /**
@@ -32,7 +32,7 @@ public class OrganizationStatePreloader extends PageStatePreloader {
 
     @Override
     public String getStateJson() {
-        BlueOrganization organization = OrganizationUtil.getOrganization(OrganizationUtil.getOrganizationNameFromURL(), true);
+        BlueOrganization organization = OrganizationImpl.getOrganizationFromURL();
         
         if(organization != null) {
             String organizationGroup = "/"; //default is root group

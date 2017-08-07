@@ -13,7 +13,6 @@ import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
-import io.jenkins.blueocean.service.embedded.util.OrganizationUtil;
 
 import org.kohsuke.stapler.QueryParameter;
 

@@ -31,8 +31,8 @@ import io.jenkins.blueocean.commons.stapler.Export;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteContainer;
+import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.rest.UserImpl;
-import io.jenkins.blueocean.service.embedded.util.OrganizationUtil;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -57,7 +57,7 @@ public class FavoritesStatePreloader extends RESTFetchPreloader {
         User jenkinsUser = User.current();
 
         if (jenkinsUser != null) {
-            UserImpl blueUser = new UserImpl(OrganizationUtil.getOrganization(OrganizationUtil.getOrganizationNameFromURL(), true), jenkinsUser);
+            UserImpl blueUser = new UserImpl(OrganizationImpl.getOrganizationFromURL(), jenkinsUser);
             BlueFavoriteContainer favoritesContainer = blueUser.getFavorites();
 
             if (favoritesContainer != null) {

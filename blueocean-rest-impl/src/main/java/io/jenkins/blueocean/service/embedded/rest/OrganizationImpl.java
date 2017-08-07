@@ -8,6 +8,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.OrganizationRoute;
 import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -16,10 +17,24 @@ import io.jenkins.blueocean.rest.model.BlueUserContainer;
 import io.jenkins.blueocean.rest.model.GenericResource;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
+
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.DoNotUse;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
+import org.kohsuke.accmod.restrictions.None;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.DELETE;
 
+import com.google.common.base.Objects;
+import com.google.common.collect.Iterables;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 /**
@@ -127,5 +142,39 @@ public class OrganizationImpl extends AbstractOrganization{
 
     private boolean isExportedBean(Class clz){
         return clz.getAnnotation(ExportedBean.class) != null;
+    }
+
+    private static final Pattern pattern = Pattern.compile("/blue/organizations/([^/]*)/");
+
+    /**
+     * Gets the organization from the URL in the form of:
+     * 
+     * <pre>
+     * /blue/organizations/ORG_NAME/...
+     * </pre>
+     * 
+     * Defaulting to the first organization if not found
+     * 
+     * NOTE: designed for exclusive use in preloaders or places where its not possible to get an organization ref in
+     * scope
+     * 
+     * @return the organization name if found, {code}null{code} if not
+     */
+    @CheckForNull
+    @Restricted(None.class) //Should only be used for preloaders
+    public static BlueOrganization getOrganizationFromURL() {
+        String organizationName = null;
+        StaplerRequest currentRequest = Stapler.getCurrentRequest();
+        if (currentRequest != null) {
+            String requestURI = currentRequest.getRequestURI();
+            if (requestURI != null) {
+                Matcher matcher = pattern.matcher(requestURI);
+                if (matcher.find()) {
+                    organizationName = matcher.group(1);
+                }
+            }
+        }
+
+        return Objects.firstNonNull(OrganizationFactory.getInstance().get(organizationName), Iterables.getFirst(OrganizationFactory.getInstance().list(), null));
     }
 }
