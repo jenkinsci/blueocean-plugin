@@ -64,7 +64,7 @@ public class BitbucketServerEndpoint extends ScmServerEndpoint {
         if(!BitbucketServerApi.isSupportedVersion(version)){
             throw new ServiceException.PreconditionRequired(
                     Messages.bbserver_version_validation_error(
-                            apiUrl, version, BitbucketServerApi.MINIMUM_SUPPORTED_VERSION));
+                            version, BitbucketServerApi.MINIMUM_SUPPORTED_VERSION));
         }
         return new HttpResponse(){
             @Override
