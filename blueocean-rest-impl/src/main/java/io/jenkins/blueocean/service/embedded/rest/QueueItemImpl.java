@@ -54,12 +54,7 @@ public class QueueItemImpl extends BlueQueueItem {
 
     @Override
     public String getOrganization() {
-        if (!(item.task instanceof Item)) {
-            return null;
-        }
-        Item i = (Item) item.task;
-        BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(i);
-        return organization == null ? null : organization.getName();
+        return organization.getName();
     }
 
     @Override
