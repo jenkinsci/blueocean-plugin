@@ -26,7 +26,7 @@ public class GithubEnterpriseScmContentProviderTest extends GithubMockBase {
         assertEquals(provider.getScmId(), GithubEnterpriseScm.ID);
         assertEquals(provider.getApiUrl(orgFolder), githubApiUrl);
         // ensure the enterprise provider doesn't support cloud org folder
-        credentialId = createGithubCredential();
+        credentialId = createGithubCredential(user);
         orgFolder = mockOrgFolder(credentialId);
         // unfortunately overriding the GitHub apiUrl for WireMock returns a "localhost" URL here, so we mock the call
         when(((GitHubSCMNavigator) orgFolder.getSCMNavigators().get(0)).getApiUri()).thenReturn(GitHubSCMSource.GITHUB_URL);

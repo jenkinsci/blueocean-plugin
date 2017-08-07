@@ -4,12 +4,15 @@ import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import hudson.scm.RepositoryBrowser;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.BlueIssueFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
+import io.jenkins.blueocean.rest.model.BlueIssue;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import org.kohsuke.stapler.export.ExportedBean;
 
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -77,6 +80,12 @@ public class ChangeSetResource extends BlueChangeSetEntry {
     @Override
     public Collection<String> getAffectedPaths() {
         return changeSet.getAffectedPaths();
+    }
+
+    @Nullable
+    @Override
+    public Collection<BlueIssue> getIssues() {
+        return BlueIssueFactory.resolve(changeSet);
     }
 
     @Override

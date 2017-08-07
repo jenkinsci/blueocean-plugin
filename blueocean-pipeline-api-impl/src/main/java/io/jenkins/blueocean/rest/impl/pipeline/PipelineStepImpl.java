@@ -206,7 +206,7 @@ public class PipelineStepImpl extends BluePipelineStep {
             }
 
             //XXX: execution.doProceed(request) expects submitted form, otherwise we could have simply used it
-            preSubmissionCheck(execution);
+            execution.preSubmissionCheck();
 
             Object o = parseValue(execution, JSONArray.fromObject(body.get(PARAMETERS_ELEMENT)), request);
 
@@ -217,17 +217,6 @@ public class PipelineStepImpl extends BluePipelineStep {
             return response;
         } catch (IOException | InterruptedException | TimeoutException e) {
             throw new ServiceException.UnexpectedErrorException("Error processing Input Submit request."+e.getMessage());
-        }
-    }
-
-    //TODO: InputStepException.preSubmissionCheck() is private, remove it after its made public
-    private void preSubmissionCheck(InputStepExecution execution){
-        if (execution.isSettled()) {
-            throw new ServiceException.BadRequestException("This input has been already given");
-        }
-
-        if(!canSubmit(execution.getInput())){
-            throw new ServiceException.BadRequestException("You need to be "+ execution.getInput().getSubmitter() +" to submit this");
         }
     }
 
@@ -283,9 +272,6 @@ public class PipelineStepImpl extends BluePipelineStep {
         } else {
             return v.getValue();
         }
-    }
-    private boolean canSubmit(InputStep inputStep){
-        return inputStep.canSubmit();
     }
 
     @Override

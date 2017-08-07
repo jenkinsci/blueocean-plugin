@@ -10,14 +10,14 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.2.0-beta-4-SNAPSHOT</version>
+  <version>1.2.0-beta-5-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean Parent</name>
 
   <properties>
     <java.level>7</java.level>
-    <jackson.version>2.8.7</jackson.version>
+    <jackson.version>2.8.9</jackson.version>
     <jenkins.version>2.7.4</jenkins.version> <!-- Should be kept in sync with Dockerfile FROM statement-->
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <node.version>6.4.0</node.version>
@@ -382,7 +382,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-input-step</artifactId>
-            <version>2.7</version>
+            <version>2.8</version> <!-- TODO: Update when released -->
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -437,6 +437,17 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>git</artifactId>
             <version>${git.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>jira</artifactId>
+            <version>2.4</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -500,6 +511,16 @@
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
             <version>1.86</version>
@@ -523,11 +544,6 @@
             <groupId>oro</groupId>
             <artifactId>oro</artifactId>
             <version>2.0.8</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
