@@ -33,7 +33,7 @@
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
     <jenkins-test-harness.version>2.23</jenkins-test-harness.version>
     <scm-api.version>2.2.0</scm-api.version>
-    <git.version>3.4.0</git.version>
+    <git.version>3.5.1</git.version>
   </properties>
 
   <scm>
