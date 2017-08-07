@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {Icon} from '@jenkins-cd/react-material-icons';
+import { Icon } from './Icon';
 
 /**
  * Toast displays a small confirmation message with an optional action link and dismiss link.

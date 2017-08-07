@@ -2,7 +2,7 @@
  * Created by cmeyers on 10/4/16.
  */
 import React, { Component, PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from './Icon';
 
 const SHOW_LABEL_CLASS = 'show-label';
 const SHOW_FOLDER_CLASS = 'show-folder';

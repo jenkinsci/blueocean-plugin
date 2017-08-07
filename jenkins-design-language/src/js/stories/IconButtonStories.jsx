@@ -1,9 +1,11 @@
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
-import { shapes } from '@jenkins-cd/react-material-icons';
 
 import { IconButton } from '../components';
 import { CustomIcons } from './IconButtonStoryHelpers';
+
+import { Icon } from '../components/Icon';
+import * as IconId from '../components/material-ui/svg-icons';
 
 /* eslint-disable max-len, react/self-closing-comp */
 
@@ -26,7 +28,7 @@ function Material() {
                 <p>using iconName (Material UI icons)</p>
 
                 <div style={{ display: 'flex', flexFlow: 'row wrap' }}>
-                    { Object.keys(shapes).slice(50, 75).sort().map(shape => (
+                    { Object.keys(IconId).slice(50, 75).sort().map(shape => (
                         <div key={shape}  style={{padding: 5}}>
                             <IconButton
                                 label={shape}
@@ -41,12 +43,13 @@ function Material() {
                 <p>with className=monochrome</p>
 
                 <div style={{ display: 'flex', flexFlow: 'row wrap' }}>
-                    { Object.keys(shapes).slice(50, 75).sort().map(shape => (
+                    { Object.keys(IconId).slice(50, 75).sort().map(shape => (
                         <div key={shape}  style={{padding: 5}}>
                             <IconButton
                                 className="monochrome"
                                 label={shape}
                                 iconName={shape}
+                                iconFill="#4A4A4A"
                                 style={{textTransform: 'capitalize'}}
                             />
                         </div>
@@ -116,7 +119,7 @@ function Sizing() {
 
     return (
         <div style={style}>
-            { Object.keys(shapes).slice(50, 60).sort().map(shape => (
+            { Object.keys(IconId).slice(50, 60).sort().map(shape => (
             <div key={shape} style={buttonRow}>
                 <div className="layout-small" style={cellStyle}>
                     <button>Small</button>
@@ -144,7 +147,7 @@ function Callbacks() {
         <div style={style}>
             <p>onClick</p>
 
-            <IconButton icon="google" label="Click" onClick={() => console.log('clicked')}/>
+            <IconButton iconName="SocialNotifications" label="Click" onClick={() => console.log('clicked')}/>
         </div>
     );
 }

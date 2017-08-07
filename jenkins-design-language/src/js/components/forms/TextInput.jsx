@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '../Icon';
 
 import { TextControl } from './TextControl';
 
