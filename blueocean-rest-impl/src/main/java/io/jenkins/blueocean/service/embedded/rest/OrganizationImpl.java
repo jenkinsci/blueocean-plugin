@@ -143,38 +143,4 @@ public class OrganizationImpl extends AbstractOrganization{
     private boolean isExportedBean(Class clz){
         return clz.getAnnotation(ExportedBean.class) != null;
     }
-
-    private static final Pattern pattern = Pattern.compile("/blue/organizations/([^/]*)/");
-
-    /**
-     * Gets the organization from the URL in the form of:
-     * 
-     * <pre>
-     * /blue/organizations/ORG_NAME/...
-     * </pre>
-     * 
-     * Defaulting to the first organization if not found
-     * 
-     * NOTE: designed for exclusive use in preloaders or places where its not possible to get an organization ref in
-     * scope
-     * 
-     * @return the organization name if found, {code}null{code} if not
-     */
-    @CheckForNull
-    @Restricted(None.class) //Should only be used for preloaders
-    public static BlueOrganization getOrganizationFromURL() {
-        String organizationName = null;
-        StaplerRequest currentRequest = Stapler.getCurrentRequest();
-        if (currentRequest != null) {
-            String requestURI = currentRequest.getRequestURI();
-            if (requestURI != null) {
-                Matcher matcher = pattern.matcher(requestURI);
-                if (matcher.find()) {
-                    organizationName = matcher.group(1);
-                }
-            }
-        }
-
-        return Objects.firstNonNull(OrganizationFactory.getInstance().get(organizationName), Iterables.getFirst(OrganizationFactory.getInstance().list(), null));
-    }
 }

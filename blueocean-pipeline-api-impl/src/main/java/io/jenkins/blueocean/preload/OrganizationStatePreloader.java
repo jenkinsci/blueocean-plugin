@@ -1,21 +1,16 @@
 package io.jenkins.blueocean.preload;
 
 import java.io.StringWriter;
-import java.util.Iterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
 
-import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import com.google.common.collect.Iterables;
 
 import hudson.Extension;
 import io.jenkins.blueocean.commons.PageStatePreloader;
 import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
-import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import net.sf.json.util.JSONBuilder;
 
 /**
@@ -32,7 +27,7 @@ public class OrganizationStatePreloader extends PageStatePreloader {
 
     @Override
     public String getStateJson() {
-        BlueOrganization organization = OrganizationImpl.getOrganizationFromURL();
+        BlueOrganization organization = Iterables.getFirst(OrganizationFactory.getInstance().list(), null);
         
         if(organization != null) {
             String organizationGroup = "/"; //default is root group

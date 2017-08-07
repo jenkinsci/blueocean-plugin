@@ -27,6 +27,11 @@ public class UserSearch extends OmniSearch<BlueUser> {
     public Pageable<BlueUser> search(Query q) {
         List<BlueUser> users = new ArrayList<>();
         BlueOrganization organization = getOrganization(q);
+        
+        if(organization == null) {
+            organization = OrganizationFactory.getInstance().list().iterator().next();
+        }
+        
         for(hudson.model.User u:hudson.model.User.getAll()){
             users.add(new UserImpl(organization, u));
         }
