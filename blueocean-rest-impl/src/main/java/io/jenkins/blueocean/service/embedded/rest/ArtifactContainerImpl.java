@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.google.common.util.concurrent.Service;
+import hudson.Functions;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
@@ -34,6 +35,11 @@ public class ArtifactContainerImpl extends BlueArtifactContainer {
 
     @Override
     public BlueArtifact get(final String name) {
+        // Check security for artifacts
+        if(Functions.isArtifactsPermissionEnabled() && !run.hasPermission(Run.ARTIFACTS)) {
+            return null;
+        }
+
         final VirtualFile file = run.getArtifactManager().root().child(name);
         try {
             if(file == null || !file.exists() || !file.isFile()) {
@@ -77,6 +83,11 @@ public class ArtifactContainerImpl extends BlueArtifactContainer {
 
     @Override
     public Iterator<BlueArtifact> iterator(int start, int limit) {
+        // Check security for artifacts
+        if(Functions.isArtifactsPermissionEnabled() && !run.hasPermission(Run.ARTIFACTS)) {
+           return Iterators.emptyIterator();
+        }
+
         List<Run.Artifact> artifactsUpTo = run.getArtifactsUpTo(limit);
 
         // If start exceeds number of artifacts return an emtpy one.

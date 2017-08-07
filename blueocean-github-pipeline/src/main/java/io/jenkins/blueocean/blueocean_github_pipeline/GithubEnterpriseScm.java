@@ -5,11 +5,9 @@ import hudson.Extension;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
-import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
@@ -51,8 +49,7 @@ public class GithubEnterpriseScm extends GithubScm {
 
     @Override
     public String getCredentialId() {
-        String credentialId = createCredentialId(getUri());
-        StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+        StandardUsernamePasswordCredentials githubCredential = getCredential(getUri());
         if(githubCredential != null){
             return githubCredential.getId();
         }

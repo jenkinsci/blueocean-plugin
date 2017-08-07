@@ -98,6 +98,13 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
         return null;
     }
 
+    StandardUsernamePasswordCredentials getCredential(String apiUrl){
+        String credentialId = createCredentialId(apiUrl);
+        return CredentialsUtils.findCredential(credentialId,
+                StandardUsernamePasswordCredentials.class,
+                new BlueOceanDomainRequirement());
+    }
+
     @Override
     public Container<ScmOrganization> getOrganizations() {
         User authenticatedUser = getAuthenticatedUser();
