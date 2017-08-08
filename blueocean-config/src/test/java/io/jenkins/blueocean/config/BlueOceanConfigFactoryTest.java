@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.config;
 
-import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.not;
@@ -65,6 +64,7 @@ public class BlueOceanConfigFactoryTest {
                         if (value != null) {
                             return (T) value;
                         }
+                        return (T) Boolean.FALSE;
                     }
                     return null;
                 }

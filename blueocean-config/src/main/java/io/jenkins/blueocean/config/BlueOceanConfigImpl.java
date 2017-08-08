@@ -6,6 +6,8 @@ import java.util.Map;
 import hudson.Extension;
 import io.jenkins.blueocean.rest.factory.BlueOceanConfigFactory;
 import io.jenkins.blueocean.rest.model.BlueOceanConfig;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.util.Properties;
 
 /**
@@ -27,6 +29,21 @@ public class BlueOceanConfigImpl extends BlueOceanConfig {
                     value = Boolean.valueOf(vs);
                 }
                 config.put(ks.substring(BlueOceanConfig.FEATURE_PROPERTY_PREFIX.length()), value);
+            }
+        }
+        for (Field f : BlueOceanConfig.class.getFields()) {
+            if (Modifier.isStatic(f.getModifiers())
+            && Modifier.isPublic(f.getModifiers())
+            && f.getType() == String.class) {
+                try {
+                    String featureName = (String)f.get(null);
+                    if (!BlueOceanConfig.FEATURE_PROPERTY_PREFIX.equals(featureName)
+                    && !config.containsKey(featureName)) {
+                        config.put(featureName, Boolean.FALSE);
+                    }
+                } catch (IllegalArgumentException | IllegalAccessException ex) {
+                    throw new RuntimeException("Unable to read field: " + f.toString(), ex);
+                }
             }
         }
     }
