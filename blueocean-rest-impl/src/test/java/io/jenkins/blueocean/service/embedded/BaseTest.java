@@ -400,7 +400,7 @@ public abstract class BaseTest {
             return this;
         }
 
-        public <T> T build(Class<T> clzzz) {
+        public <T> HttpResponse<T> execute(Class<T> clzzz) {
             assert url != null;
             assert url.startsWith("/");
             try {
@@ -441,12 +441,16 @@ public abstract class BaseTest {
                 if(request instanceof HttpRequestWithBody && data != null) {
                     ((HttpRequestWithBody)request).body(data);
                 }
-                HttpResponse<T> response = request.asObject(clzzz);
-                Assert.assertEquals(expectedStatus, response.getStatus());
-                return response.getBody();
+                return request.asObject(clzzz);
             } catch (UnirestException e) {
                 throw new RuntimeException(e);
             }
+        }
+            
+        public <T> T build(Class<T> clzzz) {
+            HttpResponse<T> response = execute(clzzz);
+            Assert.assertEquals(expectedStatus, response.getStatus());
+            return response.getBody();
         }
     }
 
