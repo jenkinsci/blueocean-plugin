@@ -7,6 +7,7 @@ import hudson.Functions;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.BlueArtifactFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueArtifact;
 import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
@@ -14,6 +15,7 @@ import io.jenkins.blueocean.rest.model.Resource;
 import jenkins.util.VirtualFile;
 import org.kohsuke.stapler.Stapler;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Iterator;
@@ -78,45 +80,17 @@ public class ArtifactContainerImpl extends BlueArtifactContainer {
             public Link getLink() {
                 return new Link(getUrl());
             }
+
+            @Override
+            public boolean isDownloadable() {
+                return true;
+            }
         };
     }
 
     @Override
-    public Iterator<BlueArtifact> iterator(int start, int limit) {
-        // Check security for artifacts
-        if(Functions.isArtifactsPermissionEnabled() && !run.hasPermission(Run.ARTIFACTS)) {
-           return Iterators.emptyIterator();
-        }
-
-        List<Run.Artifact> artifactsUpTo = run.getArtifactsUpTo(limit);
-
-        // If start exceeds number of artifacts return an emtpy one.
-        if(start >= artifactsUpTo.size()) {
-            return Iterators.emptyIterator();
-        }
-
-        int calculatedLimit = limit;
-
-        if(calculatedLimit > artifactsUpTo.size()) {
-            calculatedLimit = artifactsUpTo.size();
-        }
-
-        List<Run.Artifact> artifacts = artifactsUpTo.subList(start, calculatedLimit);
-
-        return Iterators.transform(artifacts.iterator(), new Function<Run.Artifact, BlueArtifact>() {
-            @Override
-            public BlueArtifact apply(@Nullable Run.Artifact artifact) {
-                if(artifact == null) {
-                    return null;
-                }
-
-                return new ArtifactImpl(run, artifact, ArtifactContainerImpl.this);
-            }
-        });
-    }
-
-    @Override
+    @Nonnull
     public Iterator<BlueArtifact> iterator() {
-        throw new ServiceException.NotImplementedException("Not implemented");
+        return BlueArtifactFactory.resolve(run, this).iterator();
     }
 }

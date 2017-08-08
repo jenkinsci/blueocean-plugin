@@ -7,6 +7,7 @@ public abstract class BlueArtifact extends Resource{
     public static final String URL = "url";
     public static final String SIZE = "size";
     public static final String PATH = "path";
+    public static final String DOWNLOADABLE = "downloadable";
 
     @Exported(name=NAME)
     public abstract String getName();
@@ -19,4 +20,7 @@ public abstract class BlueArtifact extends Resource{
 
     @Exported(name=SIZE)
     public abstract long getSize();
+
+    @Exported(name = DOWNLOADABLE)
+    public abstract boolean isDownloadable();
 }
