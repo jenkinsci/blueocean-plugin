@@ -1,13 +1,12 @@
 package io.jenkins.blueocean.rest.impl.pipeline.scm;
 
-import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import hudson.model.Item;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
 import jenkins.scm.api.SCMNavigator;
 import jenkins.scm.api.SCMSource;
-import org.jenkinsci.plugins.github_branch_source.Connector;
+import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -31,13 +30,11 @@ public abstract class ScmContentProviderParams {
         String apiUrl = null;
         String owner=null;
         String repo = null;
-        String credentialId = null;
         if (item instanceof OrganizationFolder) {
             List<SCMNavigator> navigators = ((OrganizationFolder) item).getSCMNavigators();
             if (!navigators.isEmpty()) {
                 SCMNavigator navigator = navigators.get(0);
                 apiUrl = apiUrl(navigator);
-                credentialId = credentialId(navigator);
                 owner = owner(navigator);
             }
         } else if (item instanceof MultiBranchProject) {
@@ -45,23 +42,14 @@ public abstract class ScmContentProviderParams {
             if (!sources.isEmpty()) {
                 SCMSource source = sources.get(0);
                 apiUrl = apiUrl(source);
-                credentialId = credentialId(source);
                 owner = owner(source);
                 repo = repo(source);
             }
         }
-        this.apiUrl = apiUrl;
-
-        StandardUsernamePasswordCredentials cred = null;
-        if (credentialId != null) {
-            StandardCredentials credentials = Connector.lookupScanCredentials(item, this.apiUrl, credentialId);
-            if (credentials instanceof StandardUsernamePasswordCredentials) {
-                cred = (StandardUsernamePasswordCredentials) credentials;
-            }
-        }
+        this.apiUrl = apiUrl == null ? GitHubSCMSource.GITHUB_URL : apiUrl;;
         this.owner = owner;
         this.repo = repo;
-        this.credentials = cred;
+        this.credentials = getCredentialForUser(item, this.apiUrl);;
     }
 
     public String getApiUrl() {
@@ -120,13 +108,10 @@ public abstract class ScmContentProviderParams {
     protected abstract @CheckForNull String apiUrl(@Nonnull SCMNavigator scmNavigator);
 
     /**
-     * Gives credential id attached to SCMSource
+     * Gives credential for SCM with this URL
+     * @param item pipeline job item
+     * @param apiUrl api url of scm provider
+     * @return credential
      */
-    protected abstract @CheckForNull String credentialId(@Nonnull SCMSource scmSource);
-
-    /**
-     * Gives credential id attached to SCMNavigator
-     */
-    protected abstract @CheckForNull String credentialId(@Nonnull SCMNavigator scmNavigator);
-
+    protected abstract @Nonnull StandardUsernamePasswordCredentials getCredentialForUser(@Nonnull Item item, @Nonnull String apiUrl);
 }

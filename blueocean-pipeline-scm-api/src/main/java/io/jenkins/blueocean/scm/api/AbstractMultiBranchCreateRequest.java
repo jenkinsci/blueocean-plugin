@@ -113,10 +113,8 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
     }
 
     private void validateInternal(String name, BlueScmConfig scmConfig) {
-        User authenticatedUser =  User.current();
-        if(authenticatedUser == null){
-            throw new ServiceException.UnauthorizedException("Must login to create a pipeline");
-        }
+
+        checkUserIsAuthenticatedAndHasItemCreatePermission();
 
         // If scmConfig is empty then we are missing the uri and name
         if (scmConfig == null) {

@@ -26,7 +26,7 @@ public class GithubApiTest extends GithubMockBase {
     @Test
     public void validateGithubToken() throws IOException, UnirestException {
         //check credentialId of this SCM, should be null
-        createGithubCredential();
+        createGithubCredential(user);
         //check if this credentialId is created in correct user domain
         Domain domain = CredentialsUtils.findDomain("github", user);
         assertEquals("blueocean-github-domain", domain.getName());
@@ -54,7 +54,7 @@ public class GithubApiTest extends GithubMockBase {
 
     @Test
     public void fetchExistingCredentialTokenInvalid() throws UnirestException {
-        createGithubCredential();
+        createGithubCredential(user);
 
         addPerTestStub(
             WireMock.get(urlEqualTo("/user"))
@@ -72,7 +72,7 @@ public class GithubApiTest extends GithubMockBase {
 
     @Test
     public void fetchExistingCredentialScopesInvalid() throws UnirestException {
-        createGithubCredential();
+        createGithubCredential(user);
 
         addPerTestStub(
             WireMock.get(urlEqualTo("/user"))
@@ -90,7 +90,7 @@ public class GithubApiTest extends GithubMockBase {
 
     @Test
     public void getOrganizationsAndRepositories() throws Exception {
-        String credentialId = createGithubCredential();
+        String credentialId = createGithubCredential(user);
 
         List l = new RequestBuilder(baseUrl)
                 .status(200)

@@ -66,7 +66,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
  */
 public class GithubScm extends Scm {
     //Used by tests to mock github
-    static final String ID = "github";
+    public static final String ID = "github";
 
     //desired scopes
     private static final String USER_EMAIL_SCOPE = "user:email";
@@ -115,11 +115,18 @@ public class GithubScm extends Scm {
 
     @Override
     public String getCredentialId(){
-        StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(getId(), StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+        StandardUsernamePasswordCredentials githubCredential = getCredential(getUri());
         if(githubCredential != null){
             return githubCredential.getId();
         }
         return null;
+    }
+
+    StandardUsernamePasswordCredentials getCredential(String apiUrl){
+        String credentialId = createCredentialId(apiUrl);
+        return CredentialsUtils.findCredential(credentialId,
+                StandardUsernamePasswordCredentials.class,
+                new BlueOceanDomainRequirement());
     }
 
     @Override
@@ -225,16 +232,21 @@ public class GithubScm extends Scm {
             } catch (URISyntaxException ex) {
                 throw new ServiceException.BadRequestException(new ErrorMessage(400, "Invalid URI: " + apiUri));
             }
-
-            if (apiUri.endsWith("/")) {
-                apiUri = apiUri.substring(0, apiUri.length() - 1);
-            }
+            apiUri = normalizeUrl(apiUri);
         } else {
             apiUri = "";
         }
 
         return apiUri;
     }
+
+    static String normalizeUrl(@Nonnull String apiUrl){
+        if (apiUrl.endsWith("/")) {
+            apiUrl = apiUrl.substring(0, apiUrl.length() - 1);
+        }
+        return apiUrl;
+    }
+
 
      private static String getCredentialIdFromRequest(StaplerRequest request){
         String credentialId = request.getParameter(CREDENTIAL_ID);

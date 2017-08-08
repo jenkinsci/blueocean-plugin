@@ -4,6 +4,7 @@ import hudson.model.Item;
 import hudson.model.Items;
 import hudson.model.TopLevelItem;
 import hudson.model.TopLevelItemDescriptor;
+import hudson.model.User;
 import hudson.security.ACL;
 import hudson.security.AccessControlled;
 import io.jenkins.blueocean.commons.ErrorMessage;
@@ -42,7 +43,7 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
 
     protected  @Nonnull TopLevelItem createProject(String name, String descriptorName, Class<? extends TopLevelItemDescriptor> descriptorClass) throws IOException{
         final ModifiableTopLevelItemGroup p = getParent();
-        final ACL acl = (p instanceof AccessControlled) ? ((AccessControlled) p).getACL() : Jenkins.getInstance().getACL(); 
+        final ACL acl = (p instanceof AccessControlled) ? ((AccessControlled) p).getACL() : Jenkins.getInstance().getACL();
         Authentication a = Jenkins.getAuthentication();
         if(!acl.hasPermission(a, Item.CREATE)){
             throw new ServiceException.ForbiddenException(
@@ -75,6 +76,20 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
     }
 
     protected BlueOrganization findOrganization() {
-        return OrganizationFactory.getInstance().get(getOrganization());
+            return OrganizationFactory.getInstance().get(getOrganization());
+    }
+    protected User checkUserIsAuthenticatedAndHasItemCreatePermission() {
+        User authenticatedUser = User.current();
+        if (authenticatedUser == null) {
+            throw new ServiceException.UnauthorizedException("Must be logged in to create a pipeline");
+        }
+        Authentication authentication = Jenkins.getAuthentication();
+        ModifiableTopLevelItemGroup p = getParent();
+        ACL acl = (p instanceof AccessControlled) ? ((AccessControlled) p).getACL() : Jenkins.getInstance().getACL();
+        if(!acl.hasPermission(authentication, Item.CREATE)){
+            throw new ServiceException.ForbiddenException(
+                String.format("User %s doesn't have Job create permission", authenticatedUser.getId()));
+        }
+        return authenticatedUser;
     }
 }

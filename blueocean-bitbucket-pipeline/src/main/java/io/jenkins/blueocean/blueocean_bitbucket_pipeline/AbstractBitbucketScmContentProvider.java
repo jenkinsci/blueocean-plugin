@@ -1,17 +1,26 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 
 import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSource;
+import com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketEndpointConfiguration;
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
+import com.google.common.base.Preconditions;
 import hudson.Extension;
 import hudson.model.Item;
+import hudson.model.User;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.BitbucketCloudScm;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbBranch;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbSaveContentResponse;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.BitbucketServerScm;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.AbstractScmContentProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmContentProviderParams;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFile;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import jenkins.branch.MultiBranchProject;
 import jenkins.scm.api.SCMNavigator;
 import jenkins.scm.api.SCMSource;
@@ -19,6 +28,8 @@ import net.sf.json.JSONObject;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
 import javax.annotation.CheckForNull;
@@ -192,16 +203,47 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
         }
 
         @Override
-        protected String credentialId(@Nonnull SCMSource scmSource) {
-            if (scmSource instanceof BitbucketSCMSource) {
-                return ((BitbucketSCMSource)scmSource).getCredentialsId();
+        @Nonnull
+        protected StandardUsernamePasswordCredentials getCredentialForUser(@Nonnull final Item item, @Nonnull String apiUrl){
+            User user = User.current();
+            if(user == null){ //ensure this session has authenticated user
+                throw new ServiceException.UnauthorizedException("No logged in user found");
             }
-            return null;
-        }
 
-        @Override
-        protected String credentialId(@Nonnull SCMNavigator scmNavigator) {
-            return null;
+            StaplerRequest request = Stapler.getCurrentRequest();
+            String scmId = request.getParameter("scmId");
+
+            //get credential for this user
+            AbstractBitbucketScm scm;
+            final BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(item);
+            if(BitbucketEndpointConfiguration.normalizeServerUrl(apiUrl)
+                    .startsWith(BitbucketEndpointConfiguration.normalizeServerUrl(BitbucketCloudScm.API_URL))
+                    //tests might add scmId to indicate which Scm should be used to find credential
+                    //We have to do this because apiUrl might be of WireMock server and not Github
+                    || (StringUtils.isNotBlank(scmId) && scmId.equals(BitbucketCloudScm.ID))) {
+                scm = new BitbucketCloudScm(new Reachable() {
+                    @Override
+                    public Link getLink() {
+                        Preconditions.checkNotNull(organization);
+                        return organization.getLink().rel("scm");
+                    }
+                });
+            }else{ //server
+                scm = new BitbucketServerScm((new Reachable() {
+                    @Override
+                    public Link getLink() {
+                        Preconditions.checkNotNull(organization);
+                        return organization.getLink().rel("scm");
+                    }
+                }));
+            }
+
+            //pick up github credential from user's store
+            StandardUsernamePasswordCredentials credential = scm.getCredential(BitbucketEndpointConfiguration.normalizeServerUrl(apiUrl));
+            if(credential == null){
+                throw new ServiceException.PreconditionRequired("Can't access content from Bitbucket: no credential found");
+            }
+            return credential;
         }
     }
 }

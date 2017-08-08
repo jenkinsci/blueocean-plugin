@@ -17,8 +17,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
-import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import hudson.util.DescribableList;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import jenkins.branch.MultiBranchProject;
@@ -28,7 +28,6 @@ import jenkins.scm.api.SCMSource;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
-import org.junit.After;
 import org.junit.After;
 import org.junit.Rule;
 import org.junit.runner.RunWith;
@@ -47,9 +46,7 @@ import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlMatching;
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.junit.Assert.assertEquals;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
+import static org.powermock.api.mockito.PowerMockito.*;
 
 /**
  * @author Vivek Pandey
@@ -121,6 +118,10 @@ public abstract class GithubMockBase extends PipelineBaseTest {
     }
 
     protected String createGithubCredential() throws UnirestException {
+        return createGithubCredential(this.user);
+    }
+
+    protected String createGithubCredential(User user) throws UnirestException {
         Map r = new RequestBuilder(baseUrl)
                 .data(ImmutableMap.of("accessToken", accessToken))
                 .status(200)
@@ -128,11 +129,14 @@ public abstract class GithubMockBase extends PipelineBaseTest {
                 .put("/organizations/" + OrganizationFactory.getInstance().list().iterator().next().getName() + "/scm/github/validate/?apiUrl="+githubApiUrl)
                 .build(Map.class);
         String credentialId = (String) r.get("credentialId");
-        assertEquals("github", credentialId);
+        assertEquals(GithubScm.ID, credentialId);
         return credentialId;
     }
 
     protected String createGithubEnterpriseCredential() throws UnirestException {
+        return createGithubEnterpriseCredential(this.user);
+    }
+    protected String createGithubEnterpriseCredential(User user) throws UnirestException {
         Map r = new RequestBuilder(baseUrl)
             .data(ImmutableMap.of("accessToken", accessToken))
             .status(200)
