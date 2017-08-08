@@ -6,6 +6,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import hudson.Extension;
 import hudson.Functions;
+import hudson.Util;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueArtifactFactory;
@@ -21,13 +22,11 @@ import java.util.List;
 public class ArtifactImpl extends BlueArtifact {
     final private Run run;
     final private Run.Artifact artifact;
-    final private Link self;
 
-    public ArtifactImpl(Run run, Run.Artifact artifact, Reachable parent) {
+    public ArtifactImpl(Run run, Run.Artifact artifact, Link parent) {
+        super(parent);
         this.run = run;
         this.artifact = artifact;
-        this.self = parent.getLink().rel(this.getPath());
-
     }
 
     @Override
@@ -42,7 +41,7 @@ public class ArtifactImpl extends BlueArtifact {
 
     @Override
     public String getUrl() {
-        return "/" + run.getUrl()+"artifact/"+ artifact.getHref();
+        return String.format("/%sartifact/%s", run.getUrl(), artifact.getHref());
     }
 
     @Override
@@ -59,11 +58,6 @@ public class ArtifactImpl extends BlueArtifact {
         return true;
     }
 
-    @Override
-    public Link getLink() {
-        return self;
-    }
-
     @Extension(ordinal = -1)
     public static class FactoryImpl extends BlueArtifactFactory {
         @Override
@@ -75,7 +69,7 @@ public class ArtifactImpl extends BlueArtifact {
             return Collections2.transform(run.getArtifacts(), new Function<Run.Artifact, BlueArtifact>() {
                 @Override
                 public BlueArtifact apply(Run.Artifact artifact) {
-                    return new ArtifactImpl(run, artifact, parent);
+                    return new ArtifactImpl(run, artifact, parent.getLink());
                 }
             });
         }

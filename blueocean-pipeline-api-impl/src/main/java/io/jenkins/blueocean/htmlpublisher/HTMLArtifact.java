@@ -1,10 +1,8 @@
 package io.jenkins.blueocean.htmlpublisher;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import htmlpublisher.HtmlPublisherTarget;
 import hudson.Extension;
-import hudson.Util;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueArtifactFactory;
@@ -17,16 +15,10 @@ import java.util.List;
 public class HTMLArtifact extends BlueArtifact {
 
     private final HtmlPublisherTarget.HTMLBuildAction action;
-    private final Reachable parent;
 
-    public HTMLArtifact(HtmlPublisherTarget.HTMLBuildAction action, Reachable parent) {
+    public HTMLArtifact(HtmlPublisherTarget.HTMLBuildAction action, Link parent) {
+        super(parent);
         this.action = action;
-        this.parent = parent;
-    }
-
-    @Override
-    public Link getLink() {
-        return parent.getLink().rel(Util.rawEncode(action.getHTMLTarget().getReportName()));
     }
 
     @Override
@@ -64,10 +56,7 @@ public class HTMLArtifact extends BlueArtifact {
             }
             List<BlueArtifact> foundArtifacts = Lists.newArrayList();
             for (HtmlPublisherTarget.HTMLBuildAction action : actions) {
-
-
-
-                foundArtifacts.add(new HTMLArtifact(action, parent));
+                foundArtifacts.add(new HTMLArtifact(action, parent.getLink()));
             }
             return foundArtifacts;
         }
