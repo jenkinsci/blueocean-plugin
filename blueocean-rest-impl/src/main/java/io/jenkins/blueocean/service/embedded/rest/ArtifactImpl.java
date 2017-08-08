@@ -64,7 +64,7 @@ public class ArtifactImpl extends BlueArtifact {
         return self;
     }
 
-    @Extension
+    @Extension(ordinal = -1)
     public static class FactoryImpl extends BlueArtifactFactory {
         @Override
         public Collection<BlueArtifact> getArtifacts(final Run<?, ?> run, final Reachable parent) {
