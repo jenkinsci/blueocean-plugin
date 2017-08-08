@@ -1,8 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
 
-import { CustomIcons } from './IconButtonStoryHelpers';
-
 import { Icon } from '../components/Icon';
 import * as IconId from '../components/material-ui/svg-icons';
 
@@ -43,7 +41,7 @@ function VerticalPositioning() {
             <div style={style}> 
                 <h1>Material-UI-Icons</h1>
 
-                <p style={{ marginTop: '40px' }}>
+                <p style={{ margin: '60px 0 0', fontWeight: 'bold' }}>
                     Vertical Align Middle
                 </p>
 
@@ -56,7 +54,7 @@ function VerticalPositioning() {
                     ) )}
                 </div>
 
-                <p style={{ marginTop: '40px' }}>
+                <p style={{ margin: '60px 0 0', fontWeight: 'bold' }}>
                     Vertical Align Bottom
                 </p>
                 <div style={{ display: 'flex', flexFlow: 'row wrap' }}>

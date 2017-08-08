@@ -4,7 +4,6 @@ import { storiesOf } from '@kadira/storybook';
 import { IconButton } from '../components';
 import { CustomIcons } from './IconButtonStoryHelpers';
 
-import { Icon } from '../components/Icon';
 import * as IconId from '../components/material-ui/svg-icons';
 
 /* eslint-disable max-len, react/self-closing-comp */
@@ -49,7 +48,6 @@ function Material() {
                                 className="monochrome"
                                 label={shape}
                                 iconName={shape}
-                                iconFill="#4A4A4A"
                                 style={{textTransform: 'capitalize'}}
                             />
                         </div>

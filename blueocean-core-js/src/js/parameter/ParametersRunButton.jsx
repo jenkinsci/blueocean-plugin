@@ -157,7 +157,7 @@ export class ParametersRunButton extends Component {
             </Dialog>);
         }
         return (<div className="ParametersRunButton">
-            <RunButton {...runButtonProps} />
+            <RunButton {...runButtonProps} iconColor={this.props.iconColor ? this.props.iconColor : '#ffffff'} hoverIconColor={this.props.hoverIconColor ? this.props.hoverIconColor : ''} />
             { this.state.visible &&
                 <div className="inputParameters">
                     { dialog }
@@ -179,6 +179,8 @@ ParametersRunButton.propTypes = {
     onClick: func,
     runText: string,
     innerButtonClasses: string,
+    iconColor: string,
+    hoverIconColor: string,
 };
 
 ParametersRunButton.contextTypes = {

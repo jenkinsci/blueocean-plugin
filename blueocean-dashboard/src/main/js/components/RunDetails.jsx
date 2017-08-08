@@ -3,7 +3,7 @@ import { TabLink } from '@jenkins-cd/design-language';
 import { i18nTranslator, ReplayButton, RunButton, LoginButton, logging } from '@jenkins-cd/blueocean-core-js';
 import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '@jenkins-cd/design-language';
 
 import {
     rootPath,
@@ -33,7 +33,7 @@ const classicConfigLink = (pipeline) => {
         let url = buildClassicConfigUrl(pipeline);
         link = (
             <a href={ url } target="_blank" style={ { height: '24px' } }>
-                <Icon size={ 24 } icon="settings" style={ { fill: '#fff' } } />
+                <Icon size={ 24 } icon="ActionSettings" style={ { fill: '#fff' } } />
             </a>
         );
     }
@@ -49,7 +49,7 @@ const classicJobRunLink = (pipeline, branch, runId) => {
     }
     return (
         <a className="rundetails_exit_to_app" href={ runUrl } style={ { height: '24px' } } title={webTranslate('go.to.classic', { defaultValue: 'Go to classic' })}>
-            <Icon size={ 24 } icon="exit_to_app" style={ { fill: '#fff' } } />
+            <Icon size={ 24 } icon="ActionExitToApp" style={ { fill: '#fff' } } />
         </a>
     );
 };

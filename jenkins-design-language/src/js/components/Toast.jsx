@@ -37,7 +37,7 @@ export class Toast extends Component {
                 <a className="dismiss" onClick={() => this.onDismissClick()}>
                   <Icon {...{
                       size: 18,
-                      icon: 'clear',
+                      icon: 'ContentClear',
                       style: { fill: "#fff" },
                   }} />
                 </a>
