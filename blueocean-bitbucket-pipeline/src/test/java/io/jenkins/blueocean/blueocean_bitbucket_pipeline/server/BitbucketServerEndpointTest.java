@@ -247,6 +247,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         assertEquals("apiUrl", error1.get("field"));
         assertEquals("INVALID", error1.get("code"));
         assertNotNull(error1.get("message"));
+        assertEquals("This Bitbucket Server is too old (5.0.2) to work with Jenkins. Please upgrade Bitbucket to 5.2.0 or later.", error1.get("message"));
     }
 
     @Test

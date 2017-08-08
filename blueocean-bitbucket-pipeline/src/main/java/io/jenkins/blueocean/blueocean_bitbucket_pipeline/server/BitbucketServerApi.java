@@ -175,7 +175,7 @@ public class BitbucketServerApi extends BitbucketApi {
             if(!isSupportedVersion(version)){
                 throw new ServiceException.PreconditionRequired(
                         Messages.bbserver_version_validation_error(
-                                apiUrl, version, BitbucketServerApi.MINIMUM_SUPPORTED_VERSION));
+                                version, BitbucketServerApi.MINIMUM_SUPPORTED_VERSION));
             }
             MultipartEntityBuilder builder = MultipartEntityBuilder.create()
                     .addTextBody("content", content)
