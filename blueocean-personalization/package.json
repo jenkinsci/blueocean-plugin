@@ -39,8 +39,8 @@
     "react-addons-test-utils": "15.3.2"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.150-SNAPSHOT-nicu",
-    "@jenkins-cd/design-language": "0.0.145-SNAPSHOT-nicu",
+    "@jenkins-cd/blueocean-core-js": "0.0.150-SNAPSHOT-nicu2",
+    "@jenkins-cd/design-language": "0.0.145-SNAPSHOT-nicu2",
     "@jenkins-cd/js-extensions": "0.0.36",
     "@jenkins-cd/js-modules": "0.0.10",
     "immutable": "3.8.1",

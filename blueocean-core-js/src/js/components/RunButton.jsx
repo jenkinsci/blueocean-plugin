@@ -109,7 +109,7 @@ export class RunButton extends Component {
             <div className={`run-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
                 { showRunButton &&
                 <a className={`run-button ${innerButtonClass}`} title={runLabel} onClick={onClick}>
-                    <Icon size={24} color={this.props.iconColor} hoverColor={this.props.hoverIconColor} icon="AvPlayCircleOutline" style={{marginRight: '5px'}} />
+                    <Icon size={24} color={this.props.iconColor} hoverColor={this.props.hoverIconColor} icon="AvPlayCircleOutline" style={{ marginRight: '5px' }} />
                     <span className="button-label">{runLabel}</span>
                 </a>
                 }
