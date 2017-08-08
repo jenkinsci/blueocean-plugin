@@ -1845,10 +1845,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("deploy", resp.get(1).get("displayName"));
 
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/steps/", List.class);
-        Assert.assertEquals(8, resp.size());
+        Assert.assertEquals(7, resp.size());
 
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(0).getId()+"/steps/", List.class);
-        Assert.assertEquals(4, resp.size());
+        Assert.assertEquals(3, resp.size());
 
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(1).getId()+"/steps/", List.class);
         Assert.assertEquals(4, resp.size());
@@ -1935,10 +1935,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("FINISHED", resp.get(2).get("state"));
 
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/steps/", List.class);
-        Assert.assertEquals(8, resp.size());
+        Assert.assertEquals(7, resp.size());
 
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(0).getId()+"/steps/", List.class);
-        Assert.assertEquals(4, resp.size());
+        Assert.assertEquals(3, resp.size());
 
         resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/"+stages.get(1).getId()+"/steps/", List.class);
         Assert.assertEquals(0, resp.size());
