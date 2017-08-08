@@ -1,3 +1,26 @@
+/*
+ * The MIT License
+ *
+ * Copyright (c) 2017, CloudBees, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
 import java.io.File;
@@ -25,6 +48,7 @@ import hudson.plugins.git.GitTool;
 import hudson.remoting.Base64;
 import hudson.util.LogTaskListener;
 import io.jenkins.blueocean.rest.impl.pipeline.ScmContentProvider;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
@@ -136,7 +160,8 @@ public class GitReadSaveService extends ScmContentProvider {
     private GitReadSaveRequest makeSaveRequest(
             Item item, String readUrl, String writeUrl,
             String readCredentialId, String writeCredentialId,String branch, String commitMessage,
-            String sourceBranch, String filePath, byte[] contents) throws IOException, InterruptedException {
+            String sourceBranch, String filePath, byte[] contents, boolean useGitReadSaveSerice
+            ) throws IOException, InterruptedException {
         String existingReadUrl = readUrl;
         String existingWriteUrl = writeUrl;
         String existingReadCredentialId = readCredentialId;
@@ -160,7 +185,7 @@ public class GitReadSaveService extends ScmContentProvider {
                 }
             }
         }
-        if (false) {
+        if (useGitReadSaveSerice) {
             return new GitReadSaveRequest(
                 StringUtils.defaultIfEmpty(readUrl, existingReadUrl),
                 StringUtils.defaultIfEmpty(writeUrl, StringUtils.defaultIfEmpty(existingWriteUrl, readUrl)),
@@ -203,7 +228,8 @@ public class GitReadSaveService extends ScmContentProvider {
             req.getParameter("commitMessage"),
             req.getParameter("sourceBranch"),
             req.getParameter("path"),
-            Base64.decode(req.getParameter("contents"))
+            Base64.decode(req.getParameter("contents")),
+            Boolean.parseBoolean(req.getParameter("useGitReadSaveSerice"))
         );
     }
 
@@ -219,7 +245,8 @@ public class GitReadSaveService extends ScmContentProvider {
             content.getString("message"),
             content.getString("sourceBranch"),
             content.getString("path"),
-            Base64.decode(content.getString("base64Data"))
+            Base64.decode(content.getString("base64Data")),
+            content.has("useGitReadSaveSerice") && content.getBoolean("useGitReadSaveSerice")
         );
     }
 
@@ -231,7 +258,7 @@ public class GitReadSaveService extends ScmContentProvider {
             r.cloneRepo();
             String encoded = Base64.encode(r.read());
             return new GitFile(
-                new GitContent(r.readUrl, r.readUrl, r.readUrl, r.filePath, 0, "sha", encoded, "", r.branch, r.sourceBranch, true)
+                new GitContent(r.readUrl, r.readUrl, r.readUrl, r.filePath, 0, "sha", encoded, "", r.branch, r.sourceBranch, true, "")
             );
         } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
@@ -252,7 +279,7 @@ public class GitReadSaveService extends ScmContentProvider {
             r.cloneRepo();
             r.save();
             return new GitFile(
-                new GitContent(r.readUrl, r.readUrl, r.readUrl, r.filePath, 0, "sha", null, "", r.branch, r.sourceBranch, true)
+                new GitContent(r.readUrl, r.readUrl, r.readUrl, r.filePath, 0, "sha", null, "", r.branch, r.sourceBranch, true, "")
             );
         } catch (IOException | InterruptedException | GitException | URISyntaxException e) {
             throw new RuntimeException(e);

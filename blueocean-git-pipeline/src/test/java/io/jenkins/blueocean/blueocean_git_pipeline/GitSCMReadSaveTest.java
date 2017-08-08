@@ -98,6 +98,15 @@ public class GitSCMReadSaveTest extends PipelineBaseTest {
 
     @Test
     public void testGitReadWrite() throws UnirestException, IOException {
+        testGitReadWrite(true);
+    }
+
+    @Test
+    public void testGitSCMReadWrite() throws UnirestException, IOException {
+        testGitReadWrite(false);
+    }
+    
+    private void testGitReadWrite(boolean useGitReadSaveSerice) throws UnirestException, IOException {
         User user = login();
 
         Map r = new RequestBuilder(baseUrl)
@@ -107,7 +116,8 @@ public class GitSCMReadSaveTest extends PipelineBaseTest {
                 .data(ImmutableMap.of(
                         "name", "sampleRepo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("uri", sampleRepo.getRoot().getCanonicalPath())
+                        "scmConfig", ImmutableMap.of("uri", sampleRepo.getRoot().getCanonicalPath(),
+                        "useGitReadSaveSerice", useGitReadSaveSerice ? true : false)
                 )).build(Map.class);
 
         assertEquals("sampleRepo", r.get("name"));
