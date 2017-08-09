@@ -32,7 +32,7 @@ export default class BbOrgListStep extends React.Component {
 
     render() {
         const { flowManager } = this.props;
-        const title = t('creation.core.repository.title');
+        const title = t('creation.bbcloud.repository.title');
         const disabled = flowManager.stepsDisabled;
 
         return (
