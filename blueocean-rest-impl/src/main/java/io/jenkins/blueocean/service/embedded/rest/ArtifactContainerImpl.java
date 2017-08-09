@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Predicate;
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.Reachable;
@@ -12,7 +11,6 @@ import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.Collection;
 import java.util.Iterator;
 
 public class ArtifactContainerImpl extends BlueArtifactContainer {

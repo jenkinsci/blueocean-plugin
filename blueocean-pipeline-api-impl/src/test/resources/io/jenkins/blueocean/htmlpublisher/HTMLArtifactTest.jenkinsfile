@@ -1,0 +1,13 @@
+node {
+    sh 'mkdir coverage'
+    sh 'touch coverage/foo.html'
+    sh 'echo "hello world" > coverage/index.html'
+    publishHTML (target: [
+      allowMissing: false,
+      alwaysLinkToLastBuild: false,
+      keepAll: true,
+      reportDir: 'coverage',
+      reportFiles: 'index.html',
+      reportName: "My Cool report"
+    ])
+}
