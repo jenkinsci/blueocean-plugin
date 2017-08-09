@@ -63,7 +63,7 @@ public class ArtifactImpl extends BlueArtifact {
         @Override
         public Collection<BlueArtifact> getArtifacts(final Run<?, ?> run, final Reachable parent) {
             // TODO: we need to figure out if calling run.getArtifacts() is expensive or not
-            return Collections2.transform(run.getArtifactsUpTo(100), new Function<Run.Artifact, BlueArtifact>() {
+            return Collections2.transform(run.getArtifactsUpTo(101), new Function<Run.Artifact, BlueArtifact>() {
                 @Override
                 public BlueArtifact apply(Run.Artifact artifact) {
                     return new ArtifactImpl(run, artifact, parent.getLink());
