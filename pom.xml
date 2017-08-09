@@ -441,7 +441,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>jira</artifactId>
-            <version>2.4</version>
+            <version>2.4.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
