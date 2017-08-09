@@ -11,7 +11,7 @@ const organization = blueocean.organization || {};
 const pfx = 'features=';
 const pfxlen = pfx.length;
 (window.location.href.split('?')[1] || '').split('&')
-        .map(p => p.startsWith(pfx)
+        .forEach(p => p.startsWith(pfx)
             && (p.substring(pfxlen).split(',').forEach(f => features[f] = true)));
 
 export default {
