@@ -10,8 +10,19 @@ import java.util.Collection;
 import java.util.LinkedHashSet;
 
 public abstract class BlueArtifactFactory {
+
+    /**
+     * @param run to resolve from
+     * @param parent typically the artifact container
+     * @return artifacts
+     */
     public abstract Collection<BlueArtifact> getArtifacts(Run<?, ?> run, Reachable parent);
 
+    /**
+     * @param run to resolve from
+     * @param parent typically the artifact container
+     * @return artifacts
+     */
     public static Collection<BlueArtifact> resolve(Run<?, ?> run, Reachable parent) {
         LinkedHashSet<BlueArtifact> allArtifacts = Sets.newLinkedHashSet();
         for (BlueArtifactFactory factory : ExtensionList.lookup(BlueArtifactFactory.class)) {
