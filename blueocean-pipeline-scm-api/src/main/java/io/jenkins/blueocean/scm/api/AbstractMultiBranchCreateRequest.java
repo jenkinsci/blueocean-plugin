@@ -25,10 +25,7 @@ import jenkins.branch.MultiBranchProject;
 import jenkins.branch.MultiBranchProjectDescriptor;
 import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMFile;
-import jenkins.scm.api.SCMHead;
-import jenkins.scm.api.SCMHeadObserver;
 import jenkins.scm.api.SCMProbeStat;
-import jenkins.scm.api.SCMRevision;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.SCMSourceCriteria;
 import jenkins.scm.api.SCMSourceEvent;
@@ -37,8 +34,6 @@ import org.jenkinsci.plugins.pubsub.MessageException;
 import org.jenkinsci.plugins.pubsub.PubsubBus;
 import org.jenkinsci.plugins.pubsub.SimpleMessage;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -53,8 +48,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Creates {@link MultiBranchProject}s with a single {@link SCMSource}
  */
 public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineCreateRequest {
-    private static final Logger logger = LoggerFactory.getLogger(AbstractMultiBranchCreateRequest.class);
-
     private static final String DESCRIPTOR_NAME = "org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject";
 
     private static final String ERROR_FIELD_SCM_CONFIG_URI = "scmConfig.uri";
@@ -111,7 +104,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
      */
     protected abstract List<Error> validate(String name, BlueScmConfig scmConfig);
 
-    private static class JenkinsfileCriteria implements SCMSourceCriteria {
+    public static class JenkinsfileCriteria implements SCMSourceCriteria {
         private static final long serialVersionUID = 1L;
         private AtomicBoolean jenkinsFileFound = new AtomicBoolean();
 
@@ -130,30 +123,16 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
         }
     }
 
-    public static boolean repoHasJenkinsFile(SCMSource bbScmSource){
-        final JenkinsfileCriteria criteria = new JenkinsfileCriteria();
-        try {
-            bbScmSource.fetch(criteria, new SCMHeadObserver() {
-                @Override
-                public void observe(@Nonnull SCMHead head, @Nonnull SCMRevision revision) throws IOException, InterruptedException {
-                    //do nothing
-                }
-
-                @Override
-                public boolean isObserving() {
-                    //if jenkinsfile is found stop observing
-                    return !criteria.isJekinsfileFound();
-
-                }
-            }, TaskListener.NULL);
-        } catch (IOException | InterruptedException e) {
-            logger.warn("Error detecting Jenkinsfile: "+e.getMessage(), e);
-        }
-
-        return criteria.isJekinsfileFound();
+    /**
+     * Certain SCMSource can tell whether it can detect presence of Jenkinsfile across all branches
+     * @param scmSource scm source
+     * @return true as default. false if it can determine there is no Jenkinsfile in all branches
+     */
+    protected boolean repoHasJenkinsFile(@Nonnull SCMSource scmSource) {
+        return true; //default
     }
 
-    protected void sendMultibranchIndexingCompleteEvent(final MultiBranchProject mbp, final int iterations) {
+    private void sendMultibranchIndexingCompleteEvent(final MultiBranchProject mbp, final int iterations) {
         Executors.newScheduledThreadPool(1).schedule(new Runnable() {
             @Override
             public void run() {
