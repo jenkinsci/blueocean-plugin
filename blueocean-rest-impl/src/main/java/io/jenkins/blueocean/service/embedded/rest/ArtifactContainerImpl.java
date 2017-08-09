@@ -38,7 +38,7 @@ public class ArtifactContainerImpl extends BlueArtifactContainer {
         return Iterators.find(iterator(), new Predicate<BlueArtifact>() {
             @Override
             public boolean apply(@Nullable BlueArtifact input) {
-                return input != null && input.getName().equals(name);
+                return input != null && input.getId().equals(name);
             }
         }, null);
     }

@@ -12,11 +12,17 @@ public abstract class BlueArtifact extends Resource{
     public static final String SIZE = "size";
     public static final String PATH = "path";
     public static final String DOWNLOADABLE = "downloadable";
+    public static final String ID = "id";
 
     protected final Link parent;
 
     public BlueArtifact(Link parent) {
         this.parent = parent;
+    }
+
+    @Exported(name= ID)
+    public final String getId() {
+        return this.getClass().getName() + ":" + rawEncode(getName());
     }
 
     @Exported(name=NAME)
@@ -36,6 +42,6 @@ public abstract class BlueArtifact extends Resource{
 
     @Override
     public final Link getLink() {
-        return parent.rel(Util.rawEncode(rawEncode(this.getClass().getName()) + ":" + rawEncode(getName())));
+        return parent.rel(Util.rawEncode(rawEncode(getId())));
     }
 }
