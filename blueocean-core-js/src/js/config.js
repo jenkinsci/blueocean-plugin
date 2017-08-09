@@ -8,10 +8,11 @@ const features = config.features || {};
 const organization = blueocean.organization || {};
 
 // any all features added by ?features=SOMETHING,SOMETHING_ELSE
-const pfx = 'features=', pfxlen = pfx.length;
+const pfx = 'features=';
+const pfxlen = pfx.length;
 (window.location.href.split('?')[1] || '').split('&')
         .map(p => p.startsWith(pfx)
-            && (p.substring(pfxlen).split(',').map(f => features[f] = true)));
+            && (p.substring(pfxlen).split(',').map(f => features[f] = true && 'nice')));
 
 export default {
     loadUrls() {
