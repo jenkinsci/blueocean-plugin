@@ -35,6 +35,8 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
+import java.util.Date;
+import java.util.TimeZone;
 import javax.annotation.Nonnull;
 import jenkins.branch.MultiBranchProject;
 import jenkins.plugins.git.GitSCMFileSystem;
@@ -56,6 +58,8 @@ import org.eclipse.jgit.api.RemoteRemoveCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.ProgressMonitor;
 import org.eclipse.jgit.lib.Repository;
+import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.RefSpec;
 import org.eclipse.jgit.transport.URIish;
 
 /**
@@ -64,6 +68,8 @@ import org.eclipse.jgit.transport.URIish;
  */
 @Extension
 public class GitSCMReadSaveService extends GitReadSaveService {
+    private static boolean useBareRepo = true;
+    
     public static class GitSCMReadSaveRequest extends GitReadSaveRequest {
         final Item item;
         public GitSCMReadSaveRequest(Item item, String readUrl, String writeUrl, String writeCredentialId, String readCredentialId, String branch, String commitMessage, String sourceBranch, String filePath, byte[] contents, GitTool gitTool, GitSCMSource gitSource) throws IOException, InterruptedException {
@@ -73,6 +79,7 @@ public class GitSCMReadSaveService extends GitReadSaveService {
 
         @Override
         byte[] read() throws IOException, InterruptedException {
+            if (useBareRepo) return readFromBareRepo();
             GitSCMFileSystem fs = getFilesystem();
             return fs.invoke(new GitSCMFileSystem.FSFunction<byte[]>() {
                 @Override
@@ -91,9 +98,27 @@ public class GitSCMReadSaveService extends GitReadSaveService {
                 }
             });
         }
+        
+        private static final String REMOTE_ORIGIN_REF_BASE = "refs/remotes/origin/";
+        byte[] readFromBareRepo() throws IOException, InterruptedException {
+            GitSCMFileSystem fs = getFilesystem();
+            return fs.invoke(new GitSCMFileSystem.FSFunction<byte[]>() {
+                @Override
+                public byte[] invoke(Repository repository) throws IOException, InterruptedException {
+                    try (Git git = new Git(repository)) {
+                        return GitUtils.readFile(repository, REMOTE_ORIGIN_REF_BASE + branch, filePath);
+                    }
+                }
+            });
+        }
 
         @Override
         void save() throws IOException, InterruptedException, GitException, URISyntaxException {
+            if (useBareRepo) {
+                saveFromBareRepo();
+                return;
+            }
+            
             GitSCMFileSystem fs = getFilesystem();
             fs.invoke(new GitSCMFileSystem.FSFunction<Void>() {
                 @Override
@@ -141,6 +166,42 @@ public class GitSCMReadSaveService extends GitReadSaveService {
             });
         }
         
+        private void saveFromBareRepo() throws IOException, InterruptedException, GitException, URISyntaxException {
+            GitSCMFileSystem fs = getFilesystem();
+            fs.invoke(new GitSCMFileSystem.FSFunction<Void>() {
+                @Override
+                public Void invoke(Repository db) throws IOException, InterruptedException {
+                    // Adapted from: https://gist.github.com/porcelli/3882505
+                    GitUtils.commit(db, REMOTE_ORIGIN_REF_BASE + branch, filePath, contents, "Jenkins", "jenkins@jenkins.x", commitMessage, TimeZone.getDefault(), new Date());
+                    // See:
+                    // https://github.com/eclipse/jgit/blob/master/org.eclipse.jgit.test/tst/org/eclipse/jgit/api/PushCommandTest.java#L165
+                    String remote = readUrl;//"origin";
+                    String localBranchSpec = REMOTE_ORIGIN_REF_BASE + branch;
+                    
+                    // git push <repository> <refspec>
+                    // git push git@github.com:jenkinsci/blueocean-plugin.git refs/heads/master
+
+                    try (Git git = new Git(db)) {
+                        String theRefSpec = "+" + localBranchSpec + ":refs/heads/" + branch;
+                        RefSpec spec = new RefSpec(localBranchSpec + ":" + branch);
+//                        Iterable<PushResult> resultIterable = git.push().setRemote(remote)
+//                                        .setRefSpecs(spec).call();
+                        Iterable<PushResult> resultIterable = git.push()
+                            .add(theRefSpec)
+                            .setRemote(remote)
+                            .call();
+                        PushResult result = resultIterable.iterator().next();
+                        if (result.getRemoteUpdates().size() < 1) {
+                            throw new RuntimeException("No remote updates");
+                        }
+                    } catch (GitAPIException ex) {
+                        throw new ServiceException.UnexpectedErrorException("Unable to save and push Jenkinsfile: " + ex.getMessage(), ex);
+                    }
+                    return null;
+                }
+            });
+        }
+        
         private @Nonnull GitSCMFileSystem getFilesystem() throws IOException, InterruptedException {
             MultiBranchProject mbp = (MultiBranchProject)item;
             GitSCMSource source = (GitSCMSource)mbp.getSCMSources().iterator().next();
@@ -171,7 +232,7 @@ public class GitSCMReadSaveService extends GitReadSaveService {
                 
                 Git gitClient = Git.cloneRepository()
                     .setCloneAllBranches(false)
-                    .setProgressMonitor(new ReadSaveProgressMonitor())
+                    .setProgressMonitor(new CloneProgressMonitor())
                     .setURI(repository.getDirectory().getCanonicalPath())
                     .setDirectory(cloneDir)
                     .call();
@@ -212,13 +273,12 @@ public class GitSCMReadSaveService extends GitReadSaveService {
                 
                 return gitClient;
             } catch (GitAPIException | URISyntaxException ex) {
-                ex.printStackTrace();
                 throw new ServiceException.UnexpectedErrorException("Unable to get working repository directory", ex);
             }
         }
     }
     
-    public static class ReadSaveProgressMonitor implements ProgressMonitor {
+    public static class CloneProgressMonitor implements ProgressMonitor {
         @Override
         public void beginTask(String string, int i) {
             System.out.println("beginTask" + string + " " + i);

@@ -12,11 +12,13 @@ import hudson.remoting.Base64;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import static io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest.getJwtToken;
+import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import jenkins.model.ModifiableTopLevelItemGroup;
 import jenkins.plugins.git.GitSampleRepoRule;
+import org.apache.commons.io.FileUtils;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
@@ -97,16 +99,16 @@ public class GitSCMReadSaveTest extends PipelineBaseTest {
     }
 
     @Test
-    public void testGitReadWrite() throws UnirestException, IOException {
+    public void testGitReadWrite() throws UnirestException, IOException, Exception {
         testGitReadWrite(true);
     }
 
     @Test
-    public void testGitSCMReadWrite() throws UnirestException, IOException {
+    public void testGitSCMReadWrite() throws UnirestException, IOException, Exception {
         testGitReadWrite(false);
     }
     
-    private void testGitReadWrite(boolean useGitReadSaveSerice) throws UnirestException, IOException {
+    private void testGitReadWrite(boolean useGitReadSaveSerice) throws UnirestException, IOException, Exception {
         User user = login();
 
         Map r = new RequestBuilder(baseUrl)
@@ -156,7 +158,12 @@ public class GitSCMReadSaveTest extends PipelineBaseTest {
                 .build(Map.class);
 
         base64Data = (String)((Map)r.get("content")).get("base64Data");
+        
+        sampleRepo.git("reset", "--hard", "refs/heads/master");
+        String remoteJenkinsfile = FileUtils.readFileToString(new File(sampleRepo.getRoot(), "Jenkinsfile"));
 
         Assert.assertEquals(base64Data, newBase64Data);
+        
+        Assert.assertEquals(new String(Base64.decode(newBase64Data), "utf-8"), remoteJenkinsfile);
     }
 }
