@@ -119,7 +119,9 @@ class PipelineLoader extends React.Component {
     componentWillMount() {
         pipelineStore.setPipeline(null); // reset any previous loaded pipeline
         const { organization, pipeline } = this.props.params;
-        let href = Paths.rest.pipeline(organization, pipeline);
+        const split = pipeline.split('/');
+        const team = split[0];
+        let href = Paths.rest.pipeline(organization, team);
         pipelineService.fetchPipeline(href, { useCache: true })
             .then(pipeline => {
                 if(pipeline.scmSource && pipeline.scmSource.id) {
