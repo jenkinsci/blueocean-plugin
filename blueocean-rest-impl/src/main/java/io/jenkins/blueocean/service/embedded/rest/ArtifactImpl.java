@@ -62,10 +62,6 @@ public class ArtifactImpl extends BlueArtifact {
     public static class FactoryImpl extends BlueArtifactFactory {
         @Override
         public Collection<BlueArtifact> getArtifacts(final Run<?, ?> run, final Reachable parent) {
-            // Check security for artifacts
-            if(Functions.isArtifactsPermissionEnabled() && !run.hasPermission(Run.ARTIFACTS)) {
-                return ImmutableList.of();
-            }
             return Collections2.transform(run.getArtifacts(), new Function<Run.Artifact, BlueArtifact>() {
                 @Override
                 public BlueArtifact apply(Run.Artifact artifact) {

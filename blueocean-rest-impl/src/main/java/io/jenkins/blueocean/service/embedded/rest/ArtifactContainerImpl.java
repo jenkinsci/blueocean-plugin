@@ -1,7 +1,9 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
+import hudson.Functions;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueArtifactFactory;
@@ -29,6 +31,10 @@ public class ArtifactContainerImpl extends BlueArtifactContainer {
 
     @Override
     public BlueArtifact get(final String name) {
+        // Check security for artifacts
+        if(Functions.isArtifactsPermissionEnabled() && !run.hasPermission(Run.ARTIFACTS)) {
+            return null;
+        }
         return Iterators.find(iterator(), new Predicate<BlueArtifact>() {
             @Override
             public boolean apply(@Nullable BlueArtifact input) {
@@ -40,6 +46,10 @@ public class ArtifactContainerImpl extends BlueArtifactContainer {
     @Override
     @Nonnull
     public Iterator<BlueArtifact> iterator() {
+        // Check security for artifacts
+        if(Functions.isArtifactsPermissionEnabled() && !run.hasPermission(Run.ARTIFACTS)) {
+            return ImmutableList.<BlueArtifact>of().iterator();
+        }
         return BlueArtifactFactory.resolve(run, this).iterator();
     }
 }
