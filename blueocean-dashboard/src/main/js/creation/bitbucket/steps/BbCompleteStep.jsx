@@ -37,7 +37,7 @@ export default class BbCompleteStep extends React.Component {
     }
 
     _getTitle(state, repo) {
-        if (state === STATE.PENDING_CREATION_SAVING) {
+        if (state === STATE.PENDING_CREATION_SAVING || state === STATE.PENDING_CREATION_EVENTS) {
             return t('creation.bitbucket.pending.title');
         } else if (state === STATE.STEP_COMPLETE_SAVING_ERROR) {
             return t('creation.error.creating_pipeline');
@@ -55,8 +55,7 @@ export default class BbCompleteStep extends React.Component {
     }
 
     _getError(state) {
-        return state === STATE.STEP_COMPLETE_SAVING_ERROR ||
-            state === STATE.STEP_COMPLETE_EVENT_ERROR;
+        return state === STATE.STEP_COMPLETE_EVENT_ERROR;
     }
 
     _getContent(state) {
@@ -66,8 +65,10 @@ export default class BbCompleteStep extends React.Component {
         let showDashboardLink = false;
         let showCreateLink = false;
 
-        if (state === STATE.STEP_COMPLETE_SAVING_ERROR) {
-            copy = t('creation.core.error.saving.pipeline');
+        if (state === STATE.PENDING_CREATION_EVENTS) {
+            setTimeout(() => this.navigatePipeline(), redirectTimeout);
+        } else if (state === STATE.PENDING_CREATION_EVENTS) {
+            copy = t('creation.bitbucket.pending.title');
         } else if (state === STATE.STEP_COMPLETE_EVENT_ERROR) {
             copy = t('creation.core.error.creating.pipeline');
             showDashboardLink = true;
@@ -109,7 +110,8 @@ export default class BbCompleteStep extends React.Component {
         const error = this._getError(flowManager.stateId);
         const title = this._getTitle(flowManager.stateId, flowManager.selectedRepository);
         const content = this._getContent(flowManager.stateId);
-        const loading = flowManager.stateId === STATE.PENDING_CREATION_SAVING;
+        const loading = (flowManager.stateId === STATE.PENDING_CREATION_SAVING ||
+                            flowManager.stateId === STATE.PENDING_CREATION_EVENTS);
 
         return (
             <FlowStep {...this.props} className="github-complete-step" title={title} status={status} loading={loading} error={error}>

@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import hudson.model.Cause;
 import hudson.model.Failure;
+import hudson.model.TaskListener;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ErrorMessage;
@@ -23,19 +24,36 @@ import jenkins.branch.BranchSource;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.MultiBranchProjectDescriptor;
 import jenkins.model.Jenkins;
+import jenkins.scm.api.SCMFile;
+import jenkins.scm.api.SCMHead;
+import jenkins.scm.api.SCMHeadObserver;
+import jenkins.scm.api.SCMProbeStat;
+import jenkins.scm.api.SCMRevision;
 import jenkins.scm.api.SCMSource;
+import jenkins.scm.api.SCMSourceCriteria;
+import jenkins.scm.api.SCMSourceEvent;
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.plugins.pubsub.MessageException;
+import org.jenkinsci.plugins.pubsub.PubsubBus;
+import org.jenkinsci.plugins.pubsub.SimpleMessage;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Creates {@link MultiBranchProject}s with a single {@link SCMSource}
  */
 public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineCreateRequest {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractMultiBranchCreateRequest.class);
 
     private static final String DESCRIPTOR_NAME = "org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject";
 
@@ -57,8 +75,24 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
         SCMSource source = createSource(project, scmConfig);
         project.setSourcesList(ImmutableList.of(new BranchSource(source)));
         project.save();
-        project.scheduleBuild(new Cause.UserIdCause());
+        final boolean hasJenkinsfile = repoHasJenkinsFile(source);
+        if(!hasJenkinsfile){
+            sendMultibranchIndexingCompleteEvent(project, 5);
+            AbstractScmSourceEvent scmSourceEvent = getScmSourceEvent(project, source);
+            if(scmSourceEvent != null) {
+                SCMSourceEvent.fireNow(scmSourceEvent);
+            }
+        }else{
+            project.scheduleBuild(new Cause.UserIdCause());
+        }
         return BluePipelineFactory.getPipelineInstance(project, OrganizationFactory.getInstance().getContainingOrg(project.getItemGroup()));
+    }
+
+    /**
+     * @return Get {@link SCMSourceEvent}
+     */
+    protected @Nullable AbstractScmSourceEvent getScmSourceEvent(@Nonnull MultiBranchProject project, @Nonnull SCMSource source){
+        return null;
     }
 
     /**
@@ -76,6 +110,80 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
      * @return errors occuring during validation
      */
     protected abstract List<Error> validate(String name, BlueScmConfig scmConfig);
+
+    private static class JenkinsfileCriteria implements SCMSourceCriteria {
+        private static final long serialVersionUID = 1L;
+        private AtomicBoolean jenkinsFileFound = new AtomicBoolean();
+
+        @Override
+        public boolean isHead(@Nonnull Probe probe, @Nonnull TaskListener listener) throws IOException {
+            SCMProbeStat stat = probe.stat("Jenkinsfile");
+            boolean foundJekinsFile =  stat.getType() != SCMFile.Type.NONEXISTENT && stat.getType() != SCMFile.Type.DIRECTORY;
+            if(foundJekinsFile && !jenkinsFileFound.get()) {
+                jenkinsFileFound.set(true);
+            }
+            return foundJekinsFile;
+        }
+
+        public boolean isJekinsfileFound() {
+            return jenkinsFileFound.get();
+        }
+    }
+
+    public static boolean repoHasJenkinsFile(SCMSource bbScmSource){
+        final JenkinsfileCriteria criteria = new JenkinsfileCriteria();
+        try {
+            bbScmSource.fetch(criteria, new SCMHeadObserver() {
+                @Override
+                public void observe(@Nonnull SCMHead head, @Nonnull SCMRevision revision) throws IOException, InterruptedException {
+                    //do nothing
+                }
+
+                @Override
+                public boolean isObserving() {
+                    //if jenkinsfile is found stop observing
+                    return !criteria.isJekinsfileFound();
+
+                }
+            }, TaskListener.NULL);
+        } catch (IOException | InterruptedException e) {
+            logger.warn("Error detecting Jenkinsfile: "+e.getMessage(), e);
+        }
+
+        return criteria.isJekinsfileFound();
+    }
+
+    protected void sendMultibranchIndexingCompleteEvent(final MultiBranchProject mbp, final int iterations) {
+        Executors.newScheduledThreadPool(1).schedule(new Runnable() {
+            @Override
+            public void run() {
+                _sendMultibranchIndexingCompleteEvent(mbp, iterations);
+            }
+        }, 1, TimeUnit.SECONDS);
+    }
+
+    private void _sendMultibranchIndexingCompleteEvent(MultiBranchProject mbp, int iterations) {
+        try {
+            SimpleMessage msg = new SimpleMessage();
+            msg.set("jenkins_object_type", "org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject");
+            msg.set("job_run_status","ALLOCATED");
+            msg.set("job_name",mbp.getName());
+            msg.set("jenkins_org","jenkins");
+            msg.set("job_orgfolder_indexing_status","COMPLETE");
+            msg.set("job_run_queueId","1");
+            msg.set("jenkins_object_name",mbp.getName());
+            msg.set("blueocean_job_rest_url","/blue/rest/organizations/jenkins/pipelines/"+mbp.getName()+"/");
+            msg.set("jenkins_event","job_run_queue_task_complete");
+            msg.set("job_multibranch_indexing_result","SUCCESS");
+            msg.set("blueocean_job_pipeline_name",mbp.getName());
+            msg.set("jenkins_object_url","job/"+mbp.getName()+"/");
+            msg.set("jenkins_channel","job");
+            msg.set("jenkinsfile_present","false");
+            PubsubBus.getBus().publish(msg);
+        } catch (MessageException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private MultiBranchProject createMultiBranchProject() throws IOException {
         TopLevelItem item = createProject(getName(), DESCRIPTOR_NAME, MultiBranchProjectDescriptor.class);
