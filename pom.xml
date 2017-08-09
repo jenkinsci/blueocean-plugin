@@ -33,7 +33,7 @@
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
     <jenkins-test-harness.version>2.23</jenkins-test-harness.version>
     <scm-api.version>2.2.0</scm-api.version>
-    <git.version>3.4.0</git.version>
+    <git.version>3.5.1</git.version>
   </properties>
 
   <scm>
@@ -305,17 +305,17 @@
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-model-definition</artifactId>
-            <version>1.1.6</version>
+            <version>1.1.9</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-cps</artifactId>
-            <version>2.36</version>
+            <version>2.39</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-api</artifactId>
-            <version>2.18</version>
+            <version>2.20</version>
         </dependency>
 
         <!--
@@ -336,7 +336,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-branch-source</artifactId>
-            <version>2.0.7</version>
+            <version>2.2.3</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -351,7 +351,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-durable-task-step</artifactId>
-            <version>2.12</version>
+            <version>2.13</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -387,7 +387,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-build-step</artifactId>
-            <version>2.5</version>
+            <version>2.5.1</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -397,14 +397,14 @@
         <dependency>
             <groupId>com.coravy.hudson.plugins.github</groupId>
             <artifactId>github</artifactId>
-            <version>1.27.0</version>
+            <version>1.28.0</version>
         </dependency>
 
         <!-- Bitbucket dependencies -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-bitbucket-branch-source</artifactId>
-            <version>2.2.2</version>
+            <version>2.2.3</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -462,12 +462,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-folder</artifactId>
-            <version>6.1.0</version>
+            <version>6.1.2</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.main</groupId>
             <artifactId>maven-plugin</artifactId>
-            <version>2.16</version>
+            <version>2.17</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -483,7 +483,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>structs</artifactId>
-            <version>1.9</version>
+            <version>1.10</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -544,7 +544,7 @@
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.5</version>
+            <version>3.6</version>
         </dependency>
         <dependency>
             <groupId>oro</groupId>
@@ -559,7 +559,7 @@
         <dependency>
             <groupId>org.bitbucket.b_c</groupId>
             <artifactId>jose4j</artifactId>
-            <version>0.5.7</version>
+            <version>0.6.0</version>
         </dependency>
         <dependency>
             <groupId>org.jvnet.hudson.plugins</groupId>
@@ -575,7 +575,7 @@
         <dependency>
             <groupId>io.keen</groupId>
             <artifactId>keen-client-api-java</artifactId>
-            <version>3.0.0</version>
+            <version>5.2.0</version>
         </dependency>
 
         <!-- Included in core -->
@@ -596,7 +596,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>junit</artifactId>
-            <version>1.20</version>
+            <version>1.21</version>
         </dependency>
 
 
