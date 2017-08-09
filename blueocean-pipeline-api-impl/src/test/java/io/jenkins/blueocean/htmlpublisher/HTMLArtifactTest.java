@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.htmlpublisher;
 
 import com.google.common.base.Charsets;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterators;
 import com.google.common.io.Resources;
 import hudson.model.Run;
@@ -10,16 +9,12 @@ import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.model.BlueArtifact;
 import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 import io.jenkins.blueocean.rest.model.BluePipeline;
-import io.jenkins.blueocean.rest.model.Resource;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 public class HTMLArtifactTest extends PipelineBaseTest {
 
