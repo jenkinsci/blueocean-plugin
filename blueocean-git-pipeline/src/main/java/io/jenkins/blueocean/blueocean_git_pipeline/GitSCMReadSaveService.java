@@ -183,11 +183,12 @@ public class GitSCMReadSaveService extends GitReadSaveService {
 
                     try (Git git = new Git(db)) {
                         String theRefSpec = "+" + localBranchSpec + ":refs/heads/" + branch;
-                        RefSpec spec = new RefSpec(localBranchSpec + ":" + branch);
+                        RefSpec spec = new RefSpec(theRefSpec);
 //                        Iterable<PushResult> resultIterable = git.push().setRemote(remote)
 //                                        .setRefSpecs(spec).call();
                         Iterable<PushResult> resultIterable = git.push()
-                            .add(theRefSpec)
+                            //.add(theRefSpec)
+                            .setRefSpecs(spec)
                             .setRemote(remote)
                             .call();
                         PushResult result = resultIterable.iterator().next();
