@@ -17,6 +17,7 @@ export const latestRuns = [{
                 'name':'hey',
                 'path': 'hey',
                 'size':4,
+                'downloadable': true,
                 'url':'/jenkins/job/jenkinsfile-experiments/branch/master/1/artifact/hey'
             }
         ],
