@@ -2,6 +2,7 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud;
 
 import hudson.Extension;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.AbstractBitbucketScm;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketCredentialUtils;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
@@ -35,7 +36,7 @@ public class BitbucketCloudScm extends AbstractBitbucketScm {
     @Nonnull
     @Override
     protected String createCredentialId(@Nonnull String apiUrl) {
-        return ID;
+        return BitbucketCredentialUtils.computeCredentialId(ID, apiUrl);
     }
 
     @Nonnull

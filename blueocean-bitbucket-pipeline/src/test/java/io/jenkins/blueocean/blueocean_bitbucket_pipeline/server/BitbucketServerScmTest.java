@@ -80,22 +80,12 @@ public class BitbucketServerScmTest extends BbServerWireMock {
     }
 
     @Test
-    public void getOrganizationsWithoutCredentialId() throws IOException, UnirestException {
-        Map r = new RequestBuilder(baseUrl)
-                .status(400)
-                .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-                .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/organizations/?apiUrl="+apiUrl)
-                .build(Map.class);
-
-    }
-
-    @Test
     public void getOrganizations() throws IOException, UnirestException {
-        String credentialId = createCredential(BitbucketServerScm.ID);
+        createCredential(BitbucketServerScm.ID);
         List orgs = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-                .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/organizations/?apiUrl="+apiUrl+"&credentialId="+credentialId)
+                .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/organizations/?apiUrl="+apiUrl)
                 .build(List.class);
         assertEquals(2, orgs.size());
         assertEquals("test1", ((Map)orgs.get(0)).get("name"));
@@ -105,12 +95,21 @@ public class BitbucketServerScmTest extends BbServerWireMock {
     }
 
     @Test
+    public void getOrganizationsWithInvalidCredentialId() throws IOException, UnirestException {
+        Map r = new RequestBuilder(baseUrl)
+            .status(400)
+            .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
+            .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/organizations/?apiUrl="+apiUrl+"&credentialId=foo")
+            .build(Map.class);
+    }
+
+    @Test
     public void getRepositories() throws IOException, UnirestException {
-        String credentialId = createCredential(BitbucketServerScm.ID);
+        createCredential(BitbucketServerScm.ID);
         Map repoResp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-                .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/organizations/TESTP/repositories/?apiUrl="+apiUrl+"&credentialId="+credentialId)
+                .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/organizations/TESTP/repositories/?apiUrl="+apiUrl)
                 .build(Map.class);
         List repos = (List) ((Map)repoResp.get("repositories")).get("items");
         assertEquals(2, repos.size());

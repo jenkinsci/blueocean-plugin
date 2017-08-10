@@ -112,7 +112,10 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
         StaplerRequest request = Stapler.getCurrentRequest();
         Preconditions.checkNotNull(request, "This request must be made in HTTP context");
 
-        String credentialId = getCredentialIdFromRequest(request);
+        String credentialId = StringUtils.defaultIfBlank(
+            getCredentialIdFromRequest(request),
+            BitbucketCredentialUtils.computeCredentialId(getId(), getUri())
+        );
 
         List<ErrorMessage.Error> errors = new ArrayList<>();
         StandardUsernamePasswordCredentials credential = null;

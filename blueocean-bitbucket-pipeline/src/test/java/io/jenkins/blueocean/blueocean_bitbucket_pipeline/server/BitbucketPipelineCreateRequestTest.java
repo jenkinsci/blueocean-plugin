@@ -23,7 +23,7 @@ public class BitbucketPipelineCreateRequestTest extends BbServerWireMock {
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
                 .post("/organizations/jenkins/pipelines/")
                 .data(ImmutableMap.of("name", "pipeline1", "$class", "io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("credentialId", credentialId, "uri", apiUrl,
+                        "scmConfig", ImmutableMap.of("id", BitbucketServerScm.ID,"uri", apiUrl,
                                 "config", ImmutableMap.of("repoOwner", "TESTP", "repository", "pipeline-demo-test"))))
                 .build(Map.class);
         assertNotNull(r);

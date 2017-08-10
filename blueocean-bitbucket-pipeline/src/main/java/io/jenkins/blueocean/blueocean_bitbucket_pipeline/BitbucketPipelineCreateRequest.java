@@ -36,7 +36,7 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
         if(StringUtils.isBlank(scmConfig.getUri())){
             throw new ServiceException.BadRequestException("scmConfig.uri must be present");
         }
-        BitbucketSCMSource bitbucketSCMSource = new BitbucketSCMSourceBuilder(null, scmConfig.getUri(), scmConfig.getCredentialId(),
+        BitbucketSCMSource bitbucketSCMSource = new BitbucketSCMSourceBuilder(null, scmConfig.getUri(), computeCredentialId(scmConfig),
                 (String)scmConfig.getConfig().get("repoOwner"),
                 (String)scmConfig.getConfig().get("repository"))
                 .withTrait(new BranchDiscoveryTrait(3)) //take all branches
@@ -60,7 +60,7 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
     protected List<ErrorMessage.Error> validate(String name, BlueScmConfig scmConfig) {
         List<ErrorMessage.Error> errors = Lists.newArrayList();
         StandardUsernamePasswordCredentials credentials = null;
-        String credentialId = scmConfig.getCredentialId();
+        String credentialId = computeCredentialId(scmConfig);
         if(credentialId != null){
             credentials = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
         }
@@ -88,5 +88,16 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
         }
 
         return errors;
+    }
+
+    @Override
+    protected String computeCredentialId(BlueScmConfig scmConfig) {
+        String credentialId = scmConfig.getCredentialId();
+
+        if (StringUtils.isBlank(credentialId)) {
+            credentialId = BitbucketCredentialUtils.computeCredentialId(scmConfig.getId(), scmConfig.getUri());
+        }
+
+        return credentialId;
     }
 }
