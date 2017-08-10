@@ -23,79 +23,97 @@
  */
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
-import hudson.model.Item;
-import hudson.plugins.git.GitException;
-import hudson.plugins.git.GitTool;
+import com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey;
+import hudson.model.User;
+import hudson.tasks.MailAddressResolver;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.service.embedded.util.UserSSHKeyManager;
 import java.io.IOException;
-import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.TimeZone;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import jenkins.plugins.git.GitSCMFileSystem;
 import jenkins.plugins.git.GitSCMSource;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.ObjectId;
+import org.eclipse.jgit.lib.RefUpdate;
 import org.eclipse.jgit.lib.Repository;
-import org.eclipse.jgit.transport.PushResult;
-import org.eclipse.jgit.transport.RefSpec;
 
 /**
  * Uses the SCM Git cache operating on the bare repository to load/save content
  * "as efficiently as possible"
  * @author kzantow
  */
-public class GitBareRepoReadSaveRequest extends GitCacheCloneReadSaveRequest {
+class GitBareRepoReadSaveRequest extends GitCacheCloneReadSaveRequest {
     private static final String LOCAL_REF_BASE = "refs/remotes/origin/";
     private static final String REMOTE_REF_BASE = "refs/heads/";
 
-    public GitBareRepoReadSaveRequest(Item item, String readUrl, String writeUrl, String writeCredentialId, String readCredentialId, String branch, String commitMessage, String sourceBranch, String filePath, byte[] contents, GitTool gitTool, GitSCMSource gitSource) throws IOException, InterruptedException {
-        super(item, readUrl, writeUrl, writeCredentialId, readCredentialId, branch, commitMessage, sourceBranch, filePath, contents, gitTool, gitSource);
+    public GitBareRepoReadSaveRequest(GitSCMSource gitSource, String branch, String commitMessage, String sourceBranch, String filePath, byte[] contents) {
+        super(gitSource, branch, commitMessage, sourceBranch, filePath, contents);
     }
 
     @Override
-    byte[] read() throws IOException, InterruptedException {
-        GitSCMFileSystem fs = getFilesystem();
-        return fs.invoke(new GitSCMFileSystem.FSFunction<byte[]>() {
-            @Override
-            public byte[] invoke(Repository repository) throws IOException, InterruptedException {
-                try (Git git = new Git(repository)) {
-                    return GitUtils.readFile(repository, LOCAL_REF_BASE + branch, filePath);
-                }
-            }
-        });
-    }
-
-    @Override
-    void save() throws IOException, InterruptedException, GitException, URISyntaxException {
-        GitSCMFileSystem fs = getFilesystem();
-        fs.invoke(new GitSCMFileSystem.FSFunction<Void>() {
-            @Override
-            public Void invoke(Repository db) throws IOException, InterruptedException {
-                String localBranchRef = LOCAL_REF_BASE + sourceBranch;
-                
-                // TODO: rollback on fail
-                // TODO: correct credentials
-                // TODO: author and commiter
-                GitUtils.commit(db, localBranchRef, filePath, contents, "Jenkins", "jenkins@jenkins.x", commitMessage, TimeZone.getDefault(), new Date());
-                
-                String remote = readUrl;
-
-                try (Git git = new Git(db)) {
-                    String pushSpec = "+" + localBranchRef + ":" + REMOTE_REF_BASE + branch;
-                    Iterable<PushResult> resultIterable = git.push()
-                        //.setCredentialsProvider(credentialsProvider)
-                        .setRefSpecs(new RefSpec(pushSpec))
-                        .setRemote(remote)
-                        .call();
-                    PushResult result = resultIterable.iterator().next();
-                    if (result.getRemoteUpdates().isEmpty()) {
-                        throw new RuntimeException("No remote updates");
+    byte[] read() throws IOException {
+        try {
+            GitSCMFileSystem fs = getFilesystem();
+            return fs.invoke(new GitSCMFileSystem.FSFunction<byte[]>() {
+                @Override
+                public byte[] invoke(Repository repository) throws IOException, InterruptedException {
+                    try (Git git = new Git(repository)) {
+                        return GitUtils.readFile(repository, LOCAL_REF_BASE + branch, filePath);
                     }
-                } catch (GitAPIException ex) {
-                    throw new ServiceException.UnexpectedErrorException("Unable to save and push Jenkinsfile: " + ex.getMessage(), ex);
                 }
-                return null;
-            }
-        });
+            });
+        } catch (InterruptedException ex) {
+            throw new ServiceException.UnexpectedErrorException("Unable to read " + filePath, ex);
+        }
+    }
+
+    @Override
+    void save() throws IOException {
+        try {
+            GitSCMFileSystem fs = getFilesystem();
+            fs.invoke(new GitSCMFileSystem.FSFunction<Void>() {
+                @Override
+                public Void invoke(Repository repo) throws IOException, InterruptedException {
+                    String localBranchRef = LOCAL_REF_BASE + sourceBranch;
+
+                    ObjectId branchHead = repo.resolve(localBranchRef);
+
+                    try {
+                        // Get committer info and credentials
+                        User user = User.current();
+                        if (user == null) {
+                            throw new ServiceException.UnauthorizedException("Not authenticated");
+                        }
+                        String mailAddress = MailAddressResolver.resolve(user);
+                        BasicSSHUserPrivateKey privateKey = UserSSHKeyManager.getOrCreate(user);
+
+                        // Make sure up-to-date and credentials work
+                        GitUtils.fetch(repo, privateKey);
+
+                        GitUtils.commit(repo, localBranchRef, filePath, contents, user.getId(), mailAddress, commitMessage, TimeZone.getDefault(), new Date());
+
+                        GitUtils.push(gitSource, repo, privateKey, localBranchRef, REMOTE_REF_BASE + branch);
+                        return null;
+                    } catch (RuntimeException e) {
+                        // if anything bad happened, roll back
+                        try {
+                            RefUpdate rollback = repo.updateRef(localBranchRef);
+                            rollback.setNewObjectId(branchHead);
+                            rollback.forceUpdate();
+                        } catch(Exception ex) {
+                            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Unable to roll back repo after save failure", ex);
+                            throw new ServiceException.UnexpectedErrorException("Unable to roll back repo after save failure", e);
+                        }
+                        throw e;
+                    }
+                }
+            });
+        } catch (InterruptedException ex) {
+            throw new ServiceException.UnexpectedErrorException("Unable to save " + filePath, ex);
+        }
     }
 }

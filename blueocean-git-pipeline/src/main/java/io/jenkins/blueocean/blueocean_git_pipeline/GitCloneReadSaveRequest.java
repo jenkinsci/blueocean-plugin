@@ -1,0 +1,147 @@
+/*
+ * The MIT License
+ *
+ * Copyright (c) 2017, CloudBees, Inc.
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+ */
+package io.jenkins.blueocean.blueocean_git_pipeline;
+
+import hudson.EnvVars;
+import hudson.model.TaskListener;
+import hudson.plugins.git.GitException;
+import hudson.plugins.git.GitTool;
+import hudson.util.LogTaskListener;
+import io.jenkins.blueocean.commons.ServiceException;
+import java.io.File;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.util.Arrays;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import jenkins.model.Jenkins;
+import jenkins.plugins.git.GitSCMSource;
+import jenkins.plugins.git.traits.GitToolSCMSourceTrait;
+import jenkins.scm.api.trait.SCMSourceTrait;
+import org.apache.commons.io.FileUtils;
+import org.eclipse.jgit.transport.URIish;
+import org.jenkinsci.plugins.gitclient.Git;
+import org.jenkinsci.plugins.gitclient.GitClient;
+
+/**
+ * Basic functional read/save using a clone of the remote
+ * @author kzantow
+ */
+public class GitCloneReadSaveRequest extends GitReadSaveRequest {
+    final GitTool gitTool;
+
+    GitClient git;
+    File repositoryPath;
+
+    public GitCloneReadSaveRequest(GitSCMSource gitSource, String branch, String commitMessage, String sourceBranch, String filePath, byte[] contents) {
+        super(gitSource, branch, commitMessage, sourceBranch, filePath, contents);
+
+        GitTool.DescriptorImpl toolDesc = Jenkins.getInstance().getDescriptorByType(GitTool.DescriptorImpl.class);
+        GitTool foundGitTool = toolDesc.getInstallation(gitSource.getGitTool());
+        for (SCMSourceTrait trait : gitSource.getTraits()) {
+            if (trait instanceof GitToolSCMSourceTrait) {
+                foundGitTool = toolDesc.getInstallation(((GitToolSCMSourceTrait) trait).getGitTool());
+            }
+        }
+        if (foundGitTool == null) {
+            foundGitTool = GitTool.getDefaultInstallation();
+        }
+
+        this.gitTool = foundGitTool;
+    }
+
+    private void cloneRepo() throws InterruptedException, IOException {
+        repositoryPath = Files.createTempDirectory("git").toFile();
+
+        EnvVars environment = new EnvVars();
+        TaskListener taskListener = new LogTaskListener(Logger.getAnonymousLogger(), Level.ALL);
+        String gitExe = gitTool.getGitExe();
+        git = Git.with(taskListener, environment)
+                .in(repositoryPath)
+                .using(gitExe)
+                .getClient();
+
+        git.clone(gitSource.getRemote(), "origin", true, null);
+    }
+
+    @Override
+    byte[] read() throws IOException {
+        try {
+            cloneRepo();
+            try {
+                // thank you test for how to use something...
+                // https://github.com/jenkinsci/git-client-plugin/blob/master/src/test/java/org/jenkinsci/plugins/gitclient/GitClientTest.java#L1108
+                git.checkoutBranch(branch, "origin/" + branch);
+            } catch(Exception e) {
+                throw new RuntimeException("Branch not found: " + branch);
+            }
+            File f = new File(repositoryPath, filePath);
+            if (f.canRead()) {
+                return FileUtils.readFileToByteArray(f);
+            }
+            return null;
+        } catch (InterruptedException ex) {
+            throw new ServiceException.UnexpectedErrorException("Unable to read " + filePath, ex);
+        } finally {
+            cleanupRepo();
+        }
+    }
+
+    @Override
+    void save() throws IOException {
+        try {
+            cloneRepo();
+            try {
+                git.checkoutBranch(sourceBranch, "origin/" + sourceBranch);
+            } catch(Exception e) {
+                throw new RuntimeException("Branch not found: " + sourceBranch);
+            }
+            if (!sourceBranch.equals(branch)) {
+                //git.branch(branch);
+                git.checkoutBranch(branch, "origin/" + sourceBranch);
+            }
+            File f = new File(repositoryPath, filePath);
+            // commit will fail if the contents hasn't changed
+            if (!f.exists() || !Arrays.equals(FileUtils.readFileToByteArray(f), contents)) {
+                FileUtils.writeByteArrayToFile(f, contents);
+                git.add(filePath);
+                git.commit(commitMessage);
+            }
+            git.push().ref(branch).to(new URIish(gitSource.getRemote())).execute();
+        } catch (InterruptedException | GitException | URISyntaxException ex) {
+            throw new ServiceException.UnexpectedErrorException("Unable to save " + filePath, ex);
+        } finally {
+            cleanupRepo();
+        }
+    }
+
+    private void cleanupRepo() {
+        try {
+            FileUtils.deleteDirectory(repositoryPath);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+    }
+}

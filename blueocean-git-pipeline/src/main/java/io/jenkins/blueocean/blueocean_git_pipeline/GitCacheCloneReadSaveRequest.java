@@ -23,9 +23,6 @@
  */
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
-import hudson.model.Item;
-import hudson.plugins.git.GitException;
-import hudson.plugins.git.GitTool;
 import io.jenkins.blueocean.commons.ServiceException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -35,7 +32,6 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
 import javax.annotation.Nonnull;
-import jenkins.branch.MultiBranchProject;
 import jenkins.plugins.git.GitSCMFileSystem;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMFileSystem;
@@ -60,43 +56,46 @@ import org.eclipse.jgit.transport.URIish;
  * Uses the SCM Git cache with a local clone to load/save content
  * @author kzantow
  */
-public class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
-    final Item item;
-    public GitCacheCloneReadSaveRequest(Item item, String readUrl, String writeUrl, String writeCredentialId, String readCredentialId, String branch, String commitMessage, String sourceBranch, String filePath, byte[] contents, GitTool gitTool, GitSCMSource gitSource) throws IOException, InterruptedException {
-        super(readUrl, writeUrl, writeCredentialId, readCredentialId, branch, commitMessage, sourceBranch, filePath, contents, gitTool, gitSource);
-        this.item = item;
+class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
+    public GitCacheCloneReadSaveRequest(GitSCMSource gitSource, String branch, String commitMessage, String sourceBranch, String filePath, byte[] contents) {
+        super(gitSource, branch, commitMessage, sourceBranch, filePath, contents);
     }
 
     @Override
-    byte[] read() throws IOException, InterruptedException {
-        GitSCMFileSystem fs = getFilesystem();
-        return fs.invoke(new GitSCMFileSystem.FSFunction<byte[]>() {
-            @Override
-            public byte[] invoke(Repository repository) throws IOException, InterruptedException {
-                Git activeRepo = getActiveRepository(repository);
-                File repoDir = activeRepo.getRepository().getDirectory().getParentFile();
-                try {
-                    File f = new File(repoDir, filePath);
-                    if (f.canRead()) {
-                        return IOUtils.toByteArray(new FileInputStream(f));
+    byte[] read() throws IOException {
+        try {
+            GitSCMFileSystem fs = getFilesystem();
+            return fs.invoke(new GitSCMFileSystem.FSFunction<byte[]>() {
+                @Override
+                public byte[] invoke(Repository repository) throws IOException, InterruptedException {
+                    Git activeRepo = getActiveRepository(repository);
+                    File repoDir = activeRepo.getRepository().getDirectory().getParentFile();
+                    try {
+                        File f = new File(repoDir, filePath);
+                        if (f.canRead()) {
+                            return IOUtils.toByteArray(new FileInputStream(f));
+                        }
+                        return null;
+                    } finally {
+                        FileUtils.deleteDirectory(repoDir);
                     }
-                    return null;
-                } finally {
-                    FileUtils.deleteDirectory(repoDir);
                 }
-            }
-        });
+            });
+        } catch (InterruptedException ex) {
+            throw new ServiceException.UnexpectedErrorException("Unable to read " + filePath, ex);
+        }
     }
 
     @Override
-    void save() throws IOException, InterruptedException, GitException, URISyntaxException {
-        GitSCMFileSystem fs = getFilesystem();
-        fs.invoke(new GitSCMFileSystem.FSFunction<Void>() {
-            @Override
-            public Void invoke(Repository repository) throws IOException, InterruptedException {
-                Git activeRepo = getActiveRepository(repository);
-                File repoDir = activeRepo.getRepository().getDirectory().getParentFile();
-                try {
+    void save() throws IOException {
+        try {
+            GitSCMFileSystem fs = getFilesystem();
+            fs.invoke(new GitSCMFileSystem.FSFunction<Void>() {
+                @Override
+                public Void invoke(Repository repository) throws IOException, InterruptedException {
+                    Git activeRepo = getActiveRepository(repository);
+                    File repoDir = activeRepo.getRepository().getDirectory().getParentFile();
+                    try {
 //                        if (!sourceBranch.equals(branch)) {
 //                            CheckoutCommand checkout = activeRepo.checkout();
 //                            checkout.setName(sourceBranch);
@@ -119,7 +118,7 @@ public class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
                             commit.call();
 
                             PushCommand push = activeRepo.push();
-                            push.setRemote(readUrl);
+                            push.setRemote(gitSource.getRemote());
                             push.call();
                         } catch (GitAPIException ex) {
                             throw new ServiceException.UnexpectedErrorException(ex.getMessage(), ex);
@@ -130,17 +129,18 @@ public class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
                     throw new ServiceException.UnexpectedErrorException("Unable to write " + filePath);
 //                    } catch (GitAPIException ex) {
 //                        throw new ServiceException.UnexpectedErrorException(ex.getMessage(), ex);
-                } finally {
-                    FileUtils.deleteDirectory(repoDir);
+                    } finally {
+                        FileUtils.deleteDirectory(repoDir);
+                    }
                 }
-            }
-        });
+            });
+        } catch (InterruptedException ex) {
+            throw new ServiceException.UnexpectedErrorException("Unable to save " + filePath, ex);
+        }
     }
 
-    protected @Nonnull GitSCMFileSystem getFilesystem() throws IOException, InterruptedException {
-        MultiBranchProject mbp = (MultiBranchProject)item;
-        GitSCMSource source = (GitSCMSource)mbp.getSCMSources().iterator().next();
-        GitSCMFileSystem fs = (GitSCMFileSystem)SCMFileSystem.of(source, new SCMHead(branch));
+    @Nonnull GitSCMFileSystem getFilesystem() throws IOException, InterruptedException {
+        GitSCMFileSystem fs = (GitSCMFileSystem)SCMFileSystem.of(gitSource, new SCMHead(branch));
         if (fs == null) {
             throw new ServiceException.NotFoundException("No file found");
         }
@@ -165,21 +165,22 @@ public class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
                 throw new ServiceException.UnexpectedErrorException("Unable to create repository clone directory");
             }
 
+            String url = repository.getConfig().getString( "remote", "origin", "url" );
             Git gitClient = Git.cloneRepository()
                 .setCloneAllBranches(false)
-                .setProgressMonitor(new CloneProgressMonitor())
+                .setProgressMonitor(new CloneProgressMonitor(url))
                 .setURI(repository.getDirectory().getCanonicalPath())
                 .setDirectory(cloneDir)
                 .call();
 
-            RemoteRemoveCommand rrm = gitClient.remoteRemove();
-            rrm.setName("origin");
-            rrm.call();
+            RemoteRemoveCommand remove = gitClient.remoteRemove();
+            remove.setName("origin");
+            remove.call();
 
-            RemoteAddCommand radd = gitClient.remoteAdd();
-            radd.setName("origin");
-            radd.setUri(new URIish(readUrl));
-            radd.call();
+            RemoteAddCommand add = gitClient.remoteAdd();
+            add.setName("origin");
+            add.setUri(new URIish(gitSource.getRemote()));
+            add.call();
 
             FetchCommand fetch = gitClient.fetch();
             fetch.call();

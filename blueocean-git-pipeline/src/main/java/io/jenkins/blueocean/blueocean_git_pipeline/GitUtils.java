@@ -1,19 +1,26 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
+import com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey;
 import com.cloudbees.plugins.credentials.CredentialsMatchers;
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
 import hudson.EnvVars;
 import hudson.model.ItemGroup;
 import hudson.model.TaskListener;
 import hudson.plugins.git.GitException;
+import hudson.remoting.Base64;
 import hudson.security.ACL;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
+import io.jenkins.blueocean.service.embedded.util.UserSSHKeyManager;
 import java.io.ByteArrayInputStream;
+
+import org.eclipse.jgit.transport.*;
 import org.jenkinsci.plugins.gitclient.Git;
 import org.jenkinsci.plugins.gitclient.GitClient;
 import org.slf4j.Logger;
@@ -28,7 +35,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import jenkins.plugins.git.GitSCMSource;
+import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.api.errors.JGitInternalException;
 import org.eclipse.jgit.dircache.DirCache;
 import org.eclipse.jgit.dircache.DirCacheBuilder;
@@ -49,6 +59,7 @@ import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
+import org.eclipse.jgit.util.FS;
 
 /**
  * @author Vivek Pandey
@@ -113,70 +124,100 @@ class GitUtils {
         return standardCredentials;
     }
 
+    private static TransportConfigCallback getSSHKeyTransport(final BasicSSHUserPrivateKey privateKey) {
+        final SshSessionFactory sshSessionFactory = new JschConfigSessionFactory() {
+            @Override
+            protected void configure(OpenSshConfig.Host hc, com.jcraft.jsch.Session session) {
+                // do nothing
+            }
+
+            @Override
+            protected JSch createDefaultJSch(FS fs) throws JSchException {
+                JSch defaultJSch = super.createDefaultJSch(fs);
+                defaultJSch.addIdentity("key",
+                    Base64.decode(privateKey.getPrivateKey()),
+                    UserSSHKeyManager.getPublicKey(privateKey),
+                    null);
+                return defaultJSch;
+            }
+        };
+        return new TransportConfigCallback() {
+            @Override
+            public void configure(Transport transport) {
+                if (transport instanceof SshTransport) {
+                    SshTransport sshTransport = (SshTransport) transport;
+                    sshTransport.setSshSessionFactory(sshSessionFactory);
+                }
+            }
+        };
+    }
+
+    public static void fetch(final Repository repo, final BasicSSHUserPrivateKey privateKey) {
+        try {
+            org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(repo);
+            git.fetch()
+                    .setTransportConfigCallback(getSSHKeyTransport(privateKey))
+                    .setRemote("origin")
+                    .setRemoveDeletedRefs(true)
+                    .setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*"))
+                    .call();
+        } catch (GitAPIException ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
     public static void commit(final Repository repo, final String refName, final String path, final byte[] contents,
             final String name, final String email, final String message, final TimeZone timeZone, final Date when) {
 
-        final String gitPath = path; // fixPath(path); ???
-
         final PersonIdent author = buildPersonIdent(repo, name, email, timeZone, when);
 
-        try {
-            final ObjectInserter odi = repo.newObjectInserter();
-            try {
-                // Create the in-memory index of the new/updated issue.
-                final ObjectId headId = repo.resolve(refName + "^{commit}");
-                final DirCache index = createTemporaryIndex(repo, headId, gitPath, contents);
-                final ObjectId indexTreeId = index.writeTree(odi);
+        try (final ObjectInserter odi = repo.newObjectInserter()) {
+            // Create the in-memory index of the new/updated issue.
+            final ObjectId headId = repo.resolve(refName + "^{commit}");
+            final DirCache index = createTemporaryIndex(repo, headId, path, contents);
+            final ObjectId indexTreeId = index.writeTree(odi);
 
-                // Create a commit object
-                final CommitBuilder commit = new CommitBuilder();
-                commit.setAuthor(author);
-                commit.setCommitter(author);
-                commit.setEncoding(Constants.CHARACTER_ENCODING);
-                commit.setMessage(message);
-                //headId can be null if the repository has no commit yet
-                if (headId != null) {
-                    commit.setParentId(headId);
-                }
-                commit.setTreeId(indexTreeId);
-
-                // Insert the commit into the repository
-                final ObjectId commitId = odi.insert(commit);
-                odi.flush();
-
-                final RevWalk revWalk = new RevWalk(repo);
-                try {
-                    final RevCommit revCommit = revWalk.parseCommit(commitId);
-                    final RefUpdate ru = repo.updateRef(refName);
-                    if (headId == null) {
-                        ru.setExpectedOldObjectId(ObjectId.zeroId());
-                    } else {
-                        ru.setExpectedOldObjectId(headId);
-                    }
-                    ru.setNewObjectId(commitId);
-                    ru.setRefLogMessage("commit: " + revCommit.getShortMessage(), false);
-                    final RefUpdate.Result rc = ru.forceUpdate();
-                    switch (rc) {
-                        case NEW:
-                        case FORCED:
-                        case FAST_FORWARD:
-                            break;
-                        case REJECTED:
-                        case LOCK_FAILURE:
-                            throw new ConcurrentRefUpdateException(JGitText.get().couldNotLockHEAD, ru.getRef(), rc);
-                        default:
-                            throw new JGitInternalException(MessageFormat.format(JGitText.get().updatingRefFailed, Constants.HEAD, commitId.toString(), rc));
-                    }
-
-                } finally {
-                    //revWalk.release();
-                }
-            } finally {
-                //odi.release();
-                repo.close();
+            // Create a commit object
+            final CommitBuilder commit = new CommitBuilder();
+            commit.setAuthor(author);
+            commit.setCommitter(author);
+            commit.setEncoding(Constants.CHARACTER_ENCODING);
+            commit.setMessage(message);
+            //headId can be null if the repository has no commit yet
+            if (headId != null) {
+                commit.setParentId(headId);
             }
-        } catch (final Throwable t) {
-            throw new RuntimeException(t);
+            commit.setTreeId(indexTreeId);
+
+            // Insert the commit into the repository
+            final ObjectId commitId = odi.insert(commit);
+            odi.flush();
+
+            try (RevWalk revWalk = new RevWalk(repo)) {
+                final RevCommit revCommit = revWalk.parseCommit(commitId);
+                final RefUpdate ru = repo.updateRef(refName);
+                if (headId == null) {
+                    ru.setExpectedOldObjectId(ObjectId.zeroId());
+                } else {
+                    ru.setExpectedOldObjectId(headId);
+                }
+                ru.setNewObjectId(commitId);
+                ru.setRefLogMessage("commit: " + revCommit.getShortMessage(), false);
+                final RefUpdate.Result rc = ru.forceUpdate();
+                switch (rc) {
+                    case NEW:
+                    case FORCED:
+                    case FAST_FORWARD:
+                        break;
+                    case REJECTED:
+                    case LOCK_FAILURE:
+                        throw new ConcurrentRefUpdateException(JGitText.get().couldNotLockHEAD, ru.getRef(), rc);
+                    default:
+                        throw new JGitInternalException(MessageFormat.format(JGitText.get().updatingRefFailed, Constants.HEAD, commitId.toString(), rc));
+                }
+            }
+        } catch (ConcurrentRefUpdateException | IOException | JGitInternalException ex) {
+            throw new RuntimeException(ex);
         }
     }
 
@@ -201,55 +242,50 @@ class GitUtils {
 
         final DirCache inCoreIndex = DirCache.newInCore();
         final DirCacheBuilder dcBuilder = inCoreIndex.builder();
-        final ObjectInserter inserter = repo.newObjectInserter();
-        
-        long lastModified = System.currentTimeMillis();
+        try (final ObjectInserter inserter = repo.newObjectInserter()) {
+            long lastModified = System.currentTimeMillis();
 
-        try {
-            if (contents != null) {
-                final DirCacheEntry dcEntry = new DirCacheEntry(path);
-                dcEntry.setLength(contents.length);
-                dcEntry.setLastModified(lastModified);
-                dcEntry.setFileMode(FileMode.REGULAR_FILE);
+            try {
+                if (contents != null) {
+                    final DirCacheEntry dcEntry = new DirCacheEntry(path);
+                    dcEntry.setLength(contents.length);
+                    dcEntry.setLastModified(lastModified);
+                    dcEntry.setFileMode(FileMode.REGULAR_FILE);
 
-                final InputStream inputStream = new ByteArrayInputStream(contents);
-                try {
-                    dcEntry.setObjectId(inserter.insert(Constants.OBJ_BLOB, contents.length, inputStream));
-                } finally {
-                    inputStream.close();
-                }
-
-                dcBuilder.add(dcEntry);
-            }
-
-            if (headId != null) {
-                final TreeWalk treeWalk = new TreeWalk(repo);
-                final int hIdx = treeWalk.addTree(new RevWalk(repo).parseTree(headId));
-                treeWalk.setRecursive(true);
-
-                while (treeWalk.next()) {
-                    final String walkPath = treeWalk.getPathString();
-                    final CanonicalTreeParser hTree = treeWalk.getTree(hIdx, CanonicalTreeParser.class);
-
-                    if (!walkPath.equals(path)) {
-                        // add entries from HEAD for all other paths
-                        // create a new DirCacheEntry with data retrieved from HEAD
-                        final DirCacheEntry dcEntry = new DirCacheEntry(walkPath);
-                        dcEntry.setObjectId(hTree.getEntryObjectId());
-                        dcEntry.setFileMode(hTree.getEntryFileMode());
-
-                        // add to temporary in-core index
-                        dcBuilder.add(dcEntry);
+                    try (InputStream inputStream = new ByteArrayInputStream(contents)) {
+                        dcEntry.setObjectId(inserter.insert(Constants.OBJ_BLOB, contents.length, inputStream));
                     }
-                }
-                //treeWalk.release();
-            }
 
-            dcBuilder.finish();
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        } finally {
-            //inserter.release();
+                    dcBuilder.add(dcEntry);
+                }
+
+                if (headId != null) {
+                    final TreeWalk treeWalk = new TreeWalk(repo);
+                    final int hIdx = treeWalk.addTree(new RevWalk(repo).parseTree(headId));
+                    treeWalk.setRecursive(true);
+
+                    while (treeWalk.next()) {
+                        final String walkPath = treeWalk.getPathString();
+                        final CanonicalTreeParser hTree = treeWalk.getTree(hIdx, CanonicalTreeParser.class);
+
+                        if (!walkPath.equals(path)) {
+                            // add entries from HEAD for all other paths
+                            // create a new DirCacheEntry with data retrieved from HEAD
+                            final DirCacheEntry dcEntry = new DirCacheEntry(walkPath);
+                            dcEntry.setObjectId(hTree.getEntryObjectId());
+                            dcEntry.setFileMode(hTree.getEntryFileMode());
+
+                            // add to temporary in-core index
+                            dcBuilder.add(dcEntry);
+                        }
+                    }
+                    //treeWalk.release();
+                }
+
+                dcBuilder.finish();
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
         }
 
         if (contents == null) {
@@ -277,5 +313,23 @@ class GitUtils {
             throw new RuntimeException(ex);
         }
         return null;
+    }
+
+    public static void push(GitSCMSource gitSource, Repository db, BasicSSHUserPrivateKey privateKey, String localBranchRef, String remoteBranchRef) {
+        String remote = gitSource.getRemote();
+        try (org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(db)) {
+            String pushSpec = "+" + localBranchRef + ":" + remoteBranchRef;
+            Iterable<PushResult> resultIterable = git.push()
+                .setTransportConfigCallback(getSSHKeyTransport(privateKey))
+                .setRefSpecs(new RefSpec(pushSpec))
+                .setRemote(remote)
+                .call();
+            PushResult result = resultIterable.iterator().next();
+            if (result.getRemoteUpdates().isEmpty()) {
+                throw new RuntimeException("No remote updates occurred");
+            }
+        } catch (GitAPIException ex) {
+            throw new ServiceException.UnexpectedErrorException("Unable to save and push to: " + remote + " - " + ex.getMessage(), ex);
+        }
     }
 }

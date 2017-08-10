@@ -58,7 +58,7 @@ public class UserSSHKeyManager {
     private static final int KEY_SIZE = 2048;
     private static final String BLUEOCEAN_GENERATED_SSH_KEY_ID = "jenkins-generated-ssh-key";
     private static final String BLUEOCEAN_DOMAIN_NAME = "blueocean-private-key-domain";
-    
+
     /**
      * Gets the existing generated SSH key for the user or creates one and
      * returns it in the user's credential store
@@ -67,7 +67,7 @@ public class UserSSHKeyManager {
      */
     public static @Nonnull BasicSSHUserPrivateKey getOrCreate(@Nonnull User user) {
         Preconditions.checkNotNull(user);
-        
+
         CredentialsStore store = getUserStore(user);
         if(store == null){
             throw new ServiceException.ForbiddenException(String.format("Logged in user: %s doesn't have writable credentials store", user.getId()));
@@ -96,45 +96,35 @@ public class UserSSHKeyManager {
             throw new ServiceException.UnexpectedErrorException("Failed to create the private key", ex);
         }
     }
-    
+
     /**
-     * Gets a readable SSH-compatible public key a user could paste somewhere
-     * @param user
-     * @param key 
-     * @return 
+     * Gets an "ssh-rsa"-style formatted public key with useful identifier,
+     * in text format user could paste somewhere
+     * @param user the user which will be used to build a useful description
+     * @param key the private key to use
+     * @return a public ssh key
      */
     public static @Nonnull String getReadablePublicKey(@Nonnull User user, @Nonnull BasicSSHUserPrivateKey key) {
         Preconditions.checkNotNull(user);
         Preconditions.checkNotNull(key);
-        
-        PKCS8EncodedKeySpec keySpec =
-            new PKCS8EncodedKeySpec(Base64.decode(key.getPrivateKey()));
-        try {
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            RSAPrivateCrtKey privateKey = (RSAPrivateCrtKey)keyFactory.generatePrivate(keySpec);
-            RSAPublicKeySpec publicKeySpec = new java.security.spec.RSAPublicKeySpec(privateKey.getModulus(), privateKey.getPublicExponent());
-            RSAPublicKey publicKey = (RSAPublicKey)keyFactory.generatePublic(publicKeySpec);
-            String id_rsa_pub = getSSHPublicKey(publicKey, user);
-            return id_rsa_pub;
-        } catch (InvalidKeySpecException | NoSuchAlgorithmException | IOException ex) {
-            throw new ServiceException.UnexpectedErrorException("Unable to get a readable public key", ex);
-        }
+
+        return "ssh-rsa " + Base64.encode(getPublicKey(key)) + " " + getKeyComment(user.getId());
     }
-    
+
     /**
      * Resets the user's generated key by deleting it and creating a new one
-     * @param user 
+     * @param user user to reset a key for
      */
     public static void reset(@Nonnull User user) {
         Preconditions.checkNotNull(user);
-        
+
         try {
             // create one!
             CredentialsStore store = getUserStore(user);
             if(store == null){
                 throw new ServiceException.ForbiddenException(String.format("Logged in user: %s doesn't have writable credentials store", user.getId()));
             }
-            
+
             Credentials key = null;
             // try to find the key
             for (Credentials cred : store.getCredentials(getDomain(store))) {
@@ -156,6 +146,25 @@ public class UserSSHKeyManager {
     }
 
     /**
+     * Gets the public key from a BasicSSHUserPrivateKey
+     * @param key the private key
+     * @return the public key bytes
+     */
+    public static byte[] getPublicKey(BasicSSHUserPrivateKey key) {
+        PKCS8EncodedKeySpec keySpec =
+            new PKCS8EncodedKeySpec(Base64.decode(key.getPrivateKey()));
+        try {
+            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
+            RSAPrivateCrtKey privateKey = (RSAPrivateCrtKey)keyFactory.generatePrivate(keySpec);
+            RSAPublicKeySpec publicKeySpec = new java.security.spec.RSAPublicKeySpec(privateKey.getModulus(), privateKey.getPublicExponent());
+            RSAPublicKey publicKey = (RSAPublicKey)keyFactory.generatePublic(publicKeySpec);
+            return SSHKeyUtils.encodePublicKey(publicKey);
+        } catch (InvalidKeySpecException | NoSuchAlgorithmException ex) {
+            throw new ServiceException.UnexpectedErrorException("Unable to get a readable public key", ex);
+        }
+    }
+
+    /**
      * Gets the user's CredentialStore
      * @param user user to find a store for
      * @return the credential store or null if not found
@@ -167,13 +176,6 @@ public class UserSSHKeyManager {
             }
         }
         return null;
-    }
-    
-    /**
-     * Gets an "ssh-rsa"-style formatted public key with useful identifier
-     */
-    private static String getSSHPublicKey(RSAPublicKey key, User user) throws IOException {
-        return "ssh-rsa " + Base64.encode(SSHKeyUtils.encodePublicKey(key)) + " " + getKeyComment(user.getId());
     }
 
     /**
@@ -190,7 +192,7 @@ public class UserSSHKeyManager {
         return ((userId == null ? Jenkins.getInstance().getDisplayName() : userId) + "@" + host)
                 .replaceAll("[^:@._a-zA-Z0-9]", "");
     }
-    
+
     private static Domain getDomain(CredentialsStore store) {
         Domain domain = store.getDomainByName(BLUEOCEAN_DOMAIN_NAME);
         if (domain == null) {
