@@ -91,14 +91,15 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
 
     private void assignCredentialToProject(BlueScmConfig scmConfig, MultiBranchProject project) throws IOException {
         User authenticatedUser = User.current();
-        if(StringUtils.isNotBlank(scmConfig.getCredentialId())) {
-            Domain domain = CredentialsUtils.findDomain(scmConfig.getCredentialId(), authenticatedUser);
+        String credentialId = computeCredentialId(scmConfig);
+        if(StringUtils.isNotBlank(credentialId)) {
+            Domain domain = CredentialsUtils.findDomain(credentialId, authenticatedUser);
             if(domain == null){
                 throw new ServiceException.BadRequestException(
                     new ErrorMessage(400, "Failed to create pipeline")
                         .add(new Error(ERROR_FIELD_SCM_CREDENTIAL_ID,
                             Error.ErrorCodes.INVALID.toString(),
-                            "No domain in user credentials found for credentialId: "+ scmConfig.getCredentialId())));
+                            "No domain in user credentials found for credentialId: "+ credentialId)));
             }
             if (StringUtils.isEmpty(scmConfig.getUri())) {
                 throw new ServiceException.BadRequestException("uri not specified");
@@ -106,7 +107,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
             if(domain.test(new BlueOceanDomainRequirement())) { //this is blueocean specific domain
                 project.addProperty(
                     new BlueOceanCredentialsProvider.FolderPropertyImpl(authenticatedUser.getId(),
-                        scmConfig.getCredentialId(),
+                        credentialId,
                         BlueOceanCredentialsProvider.createDomain(scmConfig.getUri())));
             }
         }
