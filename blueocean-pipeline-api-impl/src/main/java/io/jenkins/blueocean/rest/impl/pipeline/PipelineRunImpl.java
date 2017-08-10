@@ -10,6 +10,7 @@ import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.Branch;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.PullRequest;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
@@ -89,7 +90,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
                     cnt++;
                     String id = e.getCommitId();
                     if (id == null) id = String.valueOf(cnt);
-                    m.put(id, new ChangeSetResource(e, this));
+                    m.put(id, new ChangeSetResource(OrganizationFactory.getInstance().get(getOrganization()), e, this));
                 }
             }
             return Containers.fromResourceMap(getLink(), m);

@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright (c) 2016, CloudBees, Inc.
+ * Copyright (c) 2017, CloudBees, Inc.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -21,9 +21,9 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.jenkins.blueocean.preload;
+package io.jenkins.blueocean.service.embedded.rest;
 
-import static org.mockito.Mockito.doReturn;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.powermock.api.mockito.PowerMockito.mockStatic;
@@ -33,102 +33,141 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Map;
 
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 
 import org.acegisecurity.AccessDeniedException;
-import org.junit.Assert;
+import org.acegisecurity.Authentication;
+import org.acegisecurity.GrantedAuthority;
+import org.apache.commons.lang.StringUtils;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.jvnet.hudson.test.MockFolder;
-import org.jvnet.hudson.test.TestExtension;
-import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
-import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
-import org.springframework.util.CollectionUtils;
+
+import com.cloudbees.plugins.credentials.CredentialsProvider;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import hudson.model.ItemGroup;
 import hudson.model.TopLevelItem;
 import hudson.model.TopLevelItemDescriptor;
 import hudson.model.User;
+import hudson.security.ACL;
+import hudson.security.AccessControlled;
+import hudson.security.Permission;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
-import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.model.BlueOrganization;
+import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserContainer;
-import io.jenkins.blueocean.service.embedded.rest.PipelineContainerImpl;
-import io.jenkins.blueocean.service.embedded.rest.UserContainerImpl;
-import io.jenkins.blueocean.service.embedded.rest.UserImpl;
+import io.jenkins.blueocean.rest.model.BlueUserPermission;
+import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
 
 @RunWith(PowerMockRunner.class)
-@PrepareForTest({ Stapler.class, OrganizationFactory.class })
-public class BlueOceanWebURLBuilderOrgOnFolderTest {
-    StaplerRequest request;
+@PrepareForTest({ Jenkins.class, User.class })
+public class UserImplPermissionTest {
+    private TestOrganization testOrganization;
+    private User user;
+    private Authentication authentication;
+    private Jenkins jenkins;
+
     @Before
     public void setup() throws IOException {
-        TestOrganizationFactoryImpl orgFactory = new TestOrganizationFactoryImpl();
-        TestOrganization testOrganization = new TestOrganization("org", "orgDisplayName");
-        TestOrganization testOrganization2 = new TestOrganization("org2", "orgDisplayName2");
-        orgFactory.testOrganizations = new TestOrganization[] { testOrganization, testOrganization2 };
+        testOrganization = new TestOrganization("org", "orgDisplayName");
 
-        request = mock(StaplerRequest.class);
+        user = mock(User.class);
+        when(user.getId()).thenReturn("some_user");
+        authentication = new Authentication() {
+            public String getName() {
+                return "some_user";
+            }
+            public GrantedAuthority[] getAuthorities() { return null; }
+            public Object getCredentials() { return null; }
+            public Object getDetails() { return null; }
+            public Object getPrincipal() { return null; }
+            public boolean isAuthenticated() { return false; }
+            public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {}
+        };
+        
+        jenkins = mock(Jenkins.class);
+        when(jenkins.getACL()).thenReturn(new ACL() {
+            public boolean hasPermission(Authentication a, Permission permission) {
+                return false;
+            }
+        });
 
-        mockStatic(OrganizationFactory.class);
-        when(OrganizationFactory.getInstance()).thenReturn(orgFactory);
+        mockStatic(Jenkins.class);
+        when(Jenkins.getAuthentication()).thenReturn(authentication);
+        when(Jenkins.getInstance()).thenReturn(jenkins);
 
-        mockStatic(Stapler.class);
-        when(Stapler.getCurrentRequest()).thenReturn(request);
+        mockStatic(User.class);
+        when(User.get("some_user", false, Collections.EMPTY_MAP)).thenReturn(user);
     }
 
-    private static final String MATCHER_ORG = ".*\"name\".*\"%s\".*"; //Matches "name":"ORG_NAME"
 
+    /**
+     * Tests that the permissions are checked against the organization base and not the Jenkins instance. In this case
+     * Jenkins instance will always return false to permission request and the organization base true.
+     */
     @Test
-    public void test_get_org_from_url() throws Exception {
-        
-        OrganizationStatePreloader preloader=new OrganizationStatePreloader();
-        
-        //If org on url does not match the default one, it should return the matching one
-        when(request.getRequestURI()).thenReturn("/jenkins/blue/organizations/org2/some/remaingin/url");
-
-        String state = preloader.getStateJson();
-        Assert.assertTrue("Expected detected organization to be 'org2' from the url", state.matches(String.format(MATCHER_ORG, "org2")));
-
-        //If org on url does not exist, should fall back to first one
-        when(request.getRequestURI()).thenReturn("/jenkins/blue/organizations/non_existent_org/some/remaingin/url");
-        state = preloader.getStateJson();
-        Assert.assertTrue("Expected detected organization to be 'org' from the first on the list", state.matches(String.format(MATCHER_ORG, "org")));
-
-        //If the url does not contain an organization, should fall back to first one
-        when(request.getRequestURI()).thenReturn("/jenkins/blue/some/remaingin/url");
-        state = preloader.getStateJson();
-        Assert.assertTrue("Expected detected organization to be 'org' from the first on the list", state.matches(String.format(MATCHER_ORG, "org")));
-        
-        //If there is no request
-        //If the url does not contain an organization, should fall back to first one
-        when(request.getRequestURI()).thenReturn(null);
-        state = preloader.getStateJson();
-        Assert.assertTrue("Expected detected organization to be 'org' from the first on the list", state.matches(String.format(MATCHER_ORG, "org")));
+    public void useTestAgainstOrgBaseOnFolder() {
+        UserImpl userImpl = new UserImpl(testOrganization, user, testOrganization);
+        checkPermissions(userImpl.getPermission(), false, true);
     }
 
-    public static class TestOrganization extends AbstractOrganization implements ModifiableTopLevelItemGroup {
+    /**
+     * Tests against jenkins
+     */
+    @Test
+    public void useTestAgainstJenkinsRoot() {
+        OrganizationImpl baseOrg = new OrganizationImpl("jenkins", jenkins);
+        UserImpl userImpl = new UserImpl(baseOrg, user, baseOrg);
+        checkPermissions(userImpl.getPermission(), false, false);
+
+        when(jenkins.getACL()).thenReturn(new ACL() {
+            public boolean hasPermission(Authentication a, Permission permission) {
+                return true;
+            }
+        });
+
+        checkPermissions(userImpl.getPermission(), true, true);
+    }
+
+    private void checkPermissions(BlueUserPermission permission, boolean shouldBeAdmin, boolean shouldHaveOtherPermissions) {
+
+        assertEquals("User permission does not match", permission.isAdministration(), shouldBeAdmin);
+
+        Map<String, Boolean> premissions = permission.getPipelinePermission();
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(BluePipeline.CREATE_PERMISSION));
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(BluePipeline.READ_PERMISSION));
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(BluePipeline.START_PERMISSION));
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(BluePipeline.STOP_PERMISSION));
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(BluePipeline.CONFIGURE_PERMISSION));
+
+        premissions = permission.getCredentialPermission();
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(CredentialsProvider.CREATE.name.toLowerCase()));
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(CredentialsProvider.VIEW.name.toLowerCase()));
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(CredentialsProvider.DELETE.name.toLowerCase()));
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(CredentialsProvider.UPDATE.name.toLowerCase()));
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(StringUtils.uncapitalize(CredentialsProvider.MANAGE_DOMAINS.name)));
+    }
+
+    public static class TestOrganization extends AbstractOrganization implements ModifiableTopLevelItemGroup, AccessControlled {
         private final String name;
         private final String displayName;
 
-        private final UserContainerImpl users = new UserContainerImpl(this);
+        private final UserContainerImpl users = new UserContainerImpl(this, this);
 
         public TestOrganization(@NonNull String name, @CheckForNull String displayName) {
             this.name = name;
@@ -173,7 +212,7 @@ public class BlueOceanWebURLBuilderOrgOnFolderTest {
             if (user == null) {
                 throw new ServiceException.NotFoundException("No authenticated user found");
             }
-            return new UserImpl(user, new UserContainerImpl(this));
+            return new UserImpl(this, user, new UserContainerImpl(this, this));
         }
 
         @Override
@@ -252,43 +291,19 @@ public class BlueOceanWebURLBuilderOrgOnFolderTest {
         public TopLevelItem createProject(TopLevelItemDescriptor type, String name, boolean notify) throws IOException {
             return null;
         }
-    }
-
-    @TestExtension
-    public static class TestOrganizationFactoryImpl extends OrganizationFactory {
-        TestOrganization[] testOrganizations;
 
         @Override
-        public BlueOrganization get(String name) {
-            if (testOrganizations != null) {
-                for (TestOrganization org : testOrganizations) {
-                    if (org.getName().equals(name)) {
-                        return org;
-                    }
-                }
-            }
+        public ACL getACL() {
             return null;
         }
 
         @Override
-        public Collection<BlueOrganization> list() {
-            if (testOrganizations != null) {
-                return CollectionUtils.arrayToList(testOrganizations);
-            } else {
-                return Collections.emptyList();
-            }
+        public void checkPermission(Permission permission) throws AccessDeniedException {
         }
 
         @Override
-        public TestOrganization of(ItemGroup group) {
-            if (testOrganizations != null) {
-                for (TestOrganization org : testOrganizations) {
-                    if (group == org.getGroup()) {
-                        return org;
-                    }
-                }
-            }
-            return null;
+        public boolean hasPermission(Permission permission) {
+            return true;
         }
     }
 }
