@@ -63,11 +63,11 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
         String credentialId = scmConfig.getCredentialId();
         if(credentialId != null){
             credentials = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
-            if (credentials == null) {
-                errors.add(new ErrorMessage.Error("scmConfig.credentialId",
-                                ErrorMessage.Error.ErrorCodes.NOT_FOUND.toString(),
-                                "No Credentials instance found for credentialId: " + credentialId));
-            }
+        }
+        if (credentials == null) {
+            errors.add(new ErrorMessage.Error("scmConfig.credentialId",
+                ErrorMessage.Error.ErrorCodes.NOT_FOUND.toString(),
+                "No Credentials instance found for credentialId: " + credentialId));
         }
         if(StringUtils.isBlank((String)scmConfig.getConfig().get("repoOwner"))){
             errors.add(new ErrorMessage.Error("scmConfig.repoOwner",
