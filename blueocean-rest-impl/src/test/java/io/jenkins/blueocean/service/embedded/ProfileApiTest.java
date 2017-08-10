@@ -2,11 +2,14 @@ package io.jenkins.blueocean.service.embedded;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
+
 import hudson.model.FreeStyleProject;
 import hudson.model.Project;
 import hudson.model.User;
 import hudson.tasks.Mailer;
 import hudson.tasks.UserAvatarResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.service.embedded.rest.UserImpl;
 import jenkins.model.Jenkins;
 import org.acegisecurity.adapters.PrincipalAcegiUserToken;
@@ -334,7 +337,7 @@ public class ProfileApiTest extends BaseTest{
 
         SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
 
-        Assert.assertNull(new UserImpl(alice).getPermission());
+        Assert.assertNull(new UserImpl(Iterables.getFirst(OrganizationFactory.getInstance().list(), null), alice).getPermission());
     }
 
     @Test
