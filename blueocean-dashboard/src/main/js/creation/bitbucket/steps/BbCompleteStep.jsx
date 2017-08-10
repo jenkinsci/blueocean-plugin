@@ -65,11 +65,7 @@ export default class BbCompleteStep extends React.Component {
         let showDashboardLink = false;
         let showCreateLink = false;
 
-        if (state === STATE.PENDING_CREATION_EVENTS) {
-            setTimeout(() => this.navigatePipeline(), redirectTimeout);
-        } else if (state === STATE.PENDING_CREATION_EVENTS) {
-            copy = t('creation.bitbucket.pending.title');
-        } else if (state === STATE.STEP_COMPLETE_EVENT_ERROR) {
+        if (state === STATE.STEP_COMPLETE_EVENT_ERROR) {
             copy = t('creation.core.error.creating.pipeline');
             showDashboardLink = true;
         } else if (state === STATE.STEP_COMPLETE_EVENT_TIMEOUT) {

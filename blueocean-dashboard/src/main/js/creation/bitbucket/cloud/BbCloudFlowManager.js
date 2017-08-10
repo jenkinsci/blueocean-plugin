@@ -303,16 +303,16 @@ export default class BbCloudFlowManager extends FlowManager {
         this.outcome = result.outcome;
         if (result.outcome === CreateMbpOutcome.SUCCESS) {
             if (!this.isStateAdded(STATE.STEP_COMPLETE_MISSING_JENKINSFILE)) {
-                setTimeout(() => this._checkForBranchCreation(result.pipeline.name, true, ({ isFound, hasError, pipeline }) => {
+                this._checkForBranchCreation(result.pipeline.name, true, ({ isFound, hasError, pipeline }) => {
                     if (!hasError && isFound) {
                         this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
                         this.pipeline = pipeline;
                         this.pipelineName = pipeline.name;
                     }
-                }), this.redirectTimeout);
+                }, this.redirectTimeout);
                 if (!this.isStateAdded(STATE.STEP_COMPLETE_MISSING_JENKINSFILE)
                     && !this.isStateAdded(STATE.STEP_COMPLETE_SUCCESS)) {
-                    this.changeState(STATE.PENDING_CREATION_SAVING);
+                    this.changeState(STATE.PENDING_CREATION_EVENTS);
                     this.pipeline = result.pipeline;
                     this.pipelineName = result.pipeline.name;
                 }
@@ -375,25 +375,12 @@ export default class BbCloudFlowManager extends FlowManager {
             this._logEvent(event);
         }
 
-        if (event.jenkins_object_type === 'org.jenkinsci.plugins.workflow.job.WorkflowRun') {
-            if (event.job_run_status === 'ALLOCATED' || event.job_run_status === 'RUNNING') {
-                this._checkForBranchCreation(event.blueocean_job_pipeline_name, false, ({ hasError, pipeline }) => {
-                    if (!hasError) {
-                        this._finishListening(STATE.PENDING_CREATION_EVENTS);
-                        this.pipeline = { organization: event.jenkins_org, fullName: event.blueocean_job_pipeline_name };
-                        this.pipelineName = pipeline.name;
-                    }
-                });
-                return;
-            }
-            if (event.job_run_status === 'SUCCESS') {
-                this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
-                return;
-            }
-            if (event.job_run_status === 'FAILURE') {
-                this._finishListening(STATE.STEP_COMPLETE_EVENT_ERROR);
-                return;
-            }
+        if (event.blueocean_job_pipeline_name === this.pipelineName
+            && event.jenkins_object_type === 'org.jenkinsci.plugins.workflow.job.WorkflowRun'
+            && (event.job_run_status === 'ALLOCATED' || event.job_run_status === 'RUNNING' ||
+                    event.job_run_status === 'SUCCESS' || event.job_run_status === 'FAILURE')) {
+            this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+            return;
         }
 
         const multiBranchIndexingComplete = event.job_multibranch_indexing_result === 'SUCCESS' &&
