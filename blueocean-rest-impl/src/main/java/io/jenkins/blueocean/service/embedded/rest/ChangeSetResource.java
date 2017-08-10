@@ -13,13 +13,13 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import org.kohsuke.stapler.export.ExportedBean;
 
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
-
-import javax.annotation.Nullable;
 
 /**
  * Represents a single commit as a REST resource.
@@ -38,7 +38,7 @@ public class ChangeSetResource extends BlueChangeSetEntry {
     @Nullable
     private final BlueOrganization organization;
 
-    public ChangeSetResource(@Nullable BlueOrganization organization, Entry changeSet, Reachable parent) {
+    public ChangeSetResource(@Nonnull BlueOrganization organization, Entry changeSet, Reachable parent) {
         this.organization = organization;
         this.changeSet = changeSet;
         this.parent = parent;
