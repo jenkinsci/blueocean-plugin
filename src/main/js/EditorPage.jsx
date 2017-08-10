@@ -409,9 +409,7 @@ class PipelineLoader extends React.Component {
                             saveApi.index(organization, team, repo, () => this.goToActivity(), err => errorHandler(err));
                         } else {
                             //other scms, which are always MBP
-                            RunApi.startRun({ _links: { self: { href: this.href + '/' }}})
-                                .then(() => this.goToActivity())
-                                .catch(err => errorHandler(err, body));
+                            saveApi.indexMbp(this.href, () => this.goToActivity(), err => errorHandler(err));
                         }
                     }
                     this.setState({ sha: data.sha, isSaved: true });
@@ -430,12 +428,16 @@ class PipelineLoader extends React.Component {
         const { pipelineScript } = this.state;
         const pipeline = pipelineService.getPipeline(this.href);
         const repo = pipelineName && pipelineName.split('/')[1];
+        let title = pipeline ? decodeURIComponent(pipeline.fullDisplayName.replace('/', ' / ')) : pipelineName;
+        if (branch || repo){
+            title += ' / ' + (branch || repo);
+        }
         return (<div className="pipeline-page">
             <Extensions.Renderer extensionPoint="pipeline.editor.css"/>
             <ContentPageHeader>
                 <div className="u-flex-grow">
                     <h1>
-                        {pipeline && (decodeURIComponent(pipeline.fullDisplayName.replace('/', ' / ')) + ' / ' + (branch || repo))}
+                        {pipeline && title}
                     </h1>
                 </div>
                 <div className="editor-page-header-controls">
