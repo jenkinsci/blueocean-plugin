@@ -89,7 +89,11 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
         // extract some configuration
         if (scmConfig != null) {
             apiUrl = StringUtils.defaultIfBlank(scmConfig.getUri(), GitHubSCMSource.GITHUB_URL);
-            credentialId = StringUtils.defaultIfBlank(scmConfig.getCredentialId(), GithubScm.ID);
+            if (StringUtils.isNotBlank(scmConfig.getCredentialId())) {
+                credentialId = scmConfig.getCredentialId();
+            } else {
+                credentialId = computeCredentialId(scmConfig);
+            }
             if (scmConfig.getConfig().get("orgName") instanceof String) {
                 orgName = (String) scmConfig.getConfig().get("orgName");
             }
@@ -106,7 +110,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
         String singleRepo = repos.size() == 1 ? repos.get(0) : null;
 
         ModifiableTopLevelItemGroup orgRoot = getParent();
-        
+
         Item item = Jenkins.getInstance().getItemByFullName(orgRoot.getFullName() + '/' + orgName);
 
         BlueOrganization organization = findOrganization();
@@ -129,7 +133,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
                             new ErrorMessage(400, "Failed to create pipeline")
                                     .add(new ErrorMessage.Error("scm.credentialId",
                                             ErrorMessage.Error.ErrorCodes.INVALID.toString(),
-                                            "No domain in user credentials found for credentialId: "+ scmConfig.getCredentialId())));
+                                            "No domain in user credentials found for credentialId: "+ credentialId)));
                 }
                 if(domain.test(new BlueOceanDomainRequirement())) {
                     ((OrganizationFolder) item)
@@ -203,6 +207,11 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
             return cleanupOnError(e, getName(), item, creatingNewItem);
         }
         return null;
+    }
+
+    @Override
+    protected String computeCredentialId(BlueScmConfig scmConfig) {
+        return GithubCredentialUtils.computeCredentialId(scmConfig.getId(), scmConfig.getUri());
     }
 
     private void updateEndpoints(String apiUrl) {

@@ -16,6 +16,7 @@ import java.util.Map;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
@@ -27,7 +28,7 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
     @Test
     public void validateGithubToken() throws IOException, UnirestException {
         String credentialId = createGithubEnterpriseCredential();
-        assertEquals("github-enterprise:" + getGithubApiUrlEncoded(), credentialId);
+        assertEquals(GithubCredentialUtils.computeCredentialId(GithubEnterpriseScm.ID, githubApiUrl), credentialId);
 
         //check if this credentialId is created in correct user domain
         Domain domain = CredentialsUtils.findDomain(credentialId, user);
@@ -56,7 +57,7 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
             .get("/organizations/jenkins/scm/github-enterprise/?apiUrl=" + githubApiUrl)
             .build(Map.class);
 
-        assertEquals("github-enterprise:" + getGithubApiUrlEncoded(), r.get("credentialId"));
+        assertEquals(GithubCredentialUtils.computeCredentialId(GithubEnterpriseScm.ID, githubApiUrl), r.get("credentialId"));
         assertEquals(githubApiUrl, r.get("uri"));
     }
 
@@ -132,7 +133,7 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
         List l = new RequestBuilder(baseUrl)
             .status(200)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-            .get("/organizations/jenkins/scm/github-enterprise/organizations/?credentialId=" + credentialId+"&apiUrl="+githubApiUrl)
+            .get("/organizations/jenkins/scm/github-enterprise/organizations/?credentialId="+credentialId+"&apiUrl="+githubApiUrl)
             .build(List.class);
 
         Assert.assertTrue(l.size() > 0);
@@ -142,5 +143,17 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
             Map<String, String> org = it.next();
             assertNull(org.get("avatar"));
         }
+
+        Map resp = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .get("/organizations/jenkins/scm/github-enterprise/organizations/CloudBees-community/repositories/?pageSize=10&page=1&apiUrl="+githubApiUrl)
+            .build(Map.class);
+
+        Map repos = (Map) resp.get("repositories");
+        assertNotNull(repos);
+
+        List<Map> repoItems = (List<Map>) repos.get("items");
+        assertTrue(repoItems.size() > 0);
     }
 }

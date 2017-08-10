@@ -29,6 +29,7 @@ import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
 
+import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.Connector;
 import org.junit.Assert;
 import org.junit.Test;
@@ -67,7 +68,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
 
     @Test
     public void simpleOrgTest() throws IOException, UnirestException {
-        String credentialId = createGithubCredential(user);
+        createGithubCredential(user);
         String orgFolderName = "cloudbeers1";
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
@@ -77,7 +78,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
                                 ImmutableMap.of("repos", ImmutableList.of("PR-demo"), "orgName","cloudbeers"),
-                                "credentialId", credentialId,
+                                "id", GithubScm.ID,
                                 "uri", githubApiUrl)
                 ))
                 .build(Map.class);
@@ -98,7 +99,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
 
     @Test
     public void createGithubOrgTest() throws IOException, UnirestException {
-        String credentialId = createGithubCredential(user);
+        createGithubCredential(user);
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
@@ -107,7 +108,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
                                 ImmutableMap.of("repos", ImmutableList.of("PR-demo")),
-                                "credentialId", credentialId,
+                                "id", GithubScm.ID,
                                 "uri", githubApiUrl)
                 ))
                 .build(Map.class);
@@ -136,7 +137,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
                                 ImmutableMap.of("repos", ImmutableList.of("PR-demo")),
-                                "credentialId", credentialId,
+                                "id", GithubScm.ID,
                                 "uri", githubApiUrl)
                 ))
                 .build(Map.class);
@@ -156,7 +157,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .post("/organizations/" + getOrgName() + "/pipelines/")
-                .data(buildRequestBody(credentialId, githubApiUrl, orgFolderName))
+                .data(GithubTestUtils.buildRequestBody(GithubScm.ID, credentialId, githubApiUrl, orgFolderName, null))
                 .build(Map.class);
         assertNotNull(resp);
     }
@@ -174,7 +175,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
                                 ImmutableMap.of("repos", ImmutableList.of("PR-demo")),
-                                "credentialId", credentialId,
+                                "id", GithubScm.ID,
                                 "uri", githubApiUrl)
                 ))
                 .build(Map.class);
@@ -199,7 +200,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
                         "organization","jenkins",
                         "scmConfig", ImmutableMap.of("config",
                                 ImmutableMap.of("repos", ImmutableList.of("PR-demo")),
-                                "credentialId", credentialId,
+                                "id", GithubScm.ID,
                                 "uri", githubApiUrl)
                 ))
                 .build(Map.class);
@@ -216,7 +217,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
         Map resp = new RequestBuilder(baseUrl)
             .status(401)
             .post("/organizations/"+getOrgName()+"/pipelines/")
-            .data(buildRequestBody(null, githubApiUrl, orgFolderName, "PR-demo"))
+            .data(GithubTestUtils.buildRequestBody(GithubScm.ID,null, githubApiUrl, orgFolderName, "PR-demo"))
             .build(Map.class);
         assertNotNull(resp);
     }
@@ -230,7 +231,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
         Map resp = new RequestBuilder(baseUrl)
             .status(401)
             .post("/organizations/"+getOrgName()+"/pipelines/")
-            .data(buildRequestBody(credentialId, githubApiUrl, orgFolderName, "PR-demo"))
+            .data(GithubTestUtils.buildRequestBody(GithubScm.ID, credentialId, githubApiUrl, orgFolderName, "PR-demo"))
             .build(Map.class);
         assertNotNull(resp);
     }
@@ -247,7 +248,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
             .status(400)
             .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
             .post("/organizations/"+getOrgName()+"/pipelines/")
-            .data(buildRequestBody(null, githubApiUrl, orgFolderName, "PR-demo"))
+            .data(GithubTestUtils.buildRequestBody(GithubScm.ID,null, githubApiUrl, orgFolderName, "PR-demo"))
             .build(Map.class);
         assertNotNull(resp);
     }
@@ -264,7 +265,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
             .status(400)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
             .post("/organizations/"+getOrgName()+"/pipelines/")
-            .data(buildRequestBody(credentialId, githubApiUrl, orgFolderName, "PR-demo"))
+            .data(GithubTestUtils.buildRequestBody(GithubScm.ID, credentialId, githubApiUrl, orgFolderName, "PR-demo"))
             .build(Map.class);
         assertNotNull(resp);
     }
@@ -281,7 +282,56 @@ public class GithubOrgFolderTest extends GithubMockBase {
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
             .post("/organizations/"+getOrgName()+"/pipelines/")
             // since credentialId will default to 'github', it's okay to omit it in request
-            .data(buildRequestBody(null, githubApiUrl, orgFolderName, "PR-demo"))
+            .data(GithubTestUtils.buildRequestBody(GithubScm.ID, null, githubApiUrl, orgFolderName, "PR-demo"))
+            .build(Map.class);
+        assertNotNull(resp);
+    }
+
+    @Test
+    public void shouldSucceedForAuthedUserWithCredentialCreatedAndCredentialIdSent() throws Exception {
+        // switch to bob and create a credential
+        User user = login();
+        String credentialId = createGithubCredential(user);
+
+        String orgFolderName = "cloudbeers";
+        Map resp = new RequestBuilder(baseUrl)
+            .status(201)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .post("/organizations/"+getOrgName()+"/pipelines/")
+            .data(GithubTestUtils.buildRequestBody(GithubScm.ID, credentialId, githubApiUrl, orgFolderName, "PR-demo"))
+            .build(Map.class);
+        assertNotNull(resp);
+    }
+
+    @Test
+    public void shouldFailForAuthedUserWithCredentialCreatedAndBogusCredentialIdSent() throws Exception {
+        // switch to bob and create a credential
+        User user = login();
+        createGithubCredential(user);
+
+        String orgFolderName = "cloudbeers";
+        Map resp = new RequestBuilder(baseUrl)
+            .status(400)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .post("/organizations/"+getOrgName()+"/pipelines/")
+            .data(GithubTestUtils.buildRequestBody(GithubScm.ID, "bogus-cred", githubApiUrl, orgFolderName, "PR-demo"))
+            .build(Map.class);
+        assertNotNull(resp);
+    }
+
+    @Test
+    public void shouldSucceedForAuthedUserWithCredentialCreatedAndCredentialIdMissingEnterprise() throws Exception {
+        // switch to bob and create a credential
+        User user = login();
+        createGithubEnterpriseCredential(user);
+
+        String orgFolderName = "cloudbeers";
+        Map resp = new RequestBuilder(baseUrl)
+            .status(201)
+            .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
+            .post("/organizations/"+getOrgName()+"/pipelines/")
+            // since credentialId will default to 'github', it's okay to omit it in request
+            .data(GithubTestUtils.buildRequestBody(GithubEnterpriseScm.ID, null, githubApiUrl, orgFolderName, "PR-demo"))
             .build(Map.class);
         assertNotNull(resp);
     }
@@ -346,20 +396,16 @@ public class GithubOrgFolderTest extends GithubMockBase {
         assertEquals("System Github Access Token", c.getDescription());
     }
 
-    private String getOrgName() {
-        return OrganizationFactory.getInstance().list().iterator().next().getName();
-    }
-
     private ModifiableTopLevelItemGroup getOrgRoot() {
         return OrganizationFactory.getItemGroup(getOrgName());
     }
 
-    
+
     @TestExtension
     public static class TestOrganizationFactoryImpl extends OrganizationFactoryImpl {
-        
+
         public static String orgRoot;
-        
+
         private OrganizationImpl instance;
 
         public TestOrganizationFactoryImpl() {
@@ -375,7 +421,7 @@ public class GithubOrgFolderTest extends GithubMockBase {
                 } catch (IOException e) {
                     throw new RuntimeException("Test setup failed!", e);
                 }
-                
+
             }
             else {
                 instance = new OrganizationImpl("jenkins", Jenkins.getInstance());
@@ -408,23 +454,4 @@ public class GithubOrgFolderTest extends GithubMockBase {
         }
     }
 
-    private Map buildRequestBody(String credentialId, String apiUrl, String orgFolderName, String... repoNames) {
-        ImmutableMap.Builder scmConfig = ImmutableMap.builder()
-            .put("uri", apiUrl);
-
-        if (credentialId != null) {
-            scmConfig.put("credentialId", credentialId);
-        }
-
-        scmConfig.put("config", ImmutableMap.of(
-            "orgName", orgFolderName,
-            "repos", ImmutableList.copyOf(repoNames)
-        ));
-
-        return ImmutableMap.of(
-            "name", orgFolderName,
-            "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
-            "scmConfig", scmConfig.build()
-        );
-    }
 }

@@ -96,7 +96,6 @@ public class GithubApiTest extends GithubMockBase {
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .get("/organizations/jenkins/scm/github/organizations/?credentialId=" + credentialId+"&apiUrl="+githubApiUrl)
-                .header(Scm.X_CREDENTIAL_ID, credentialId + "sdsdsd") //it must be ignored as credentialId query parameter overrides it.
                 .build(List.class);
 
         Assert.assertTrue(l.size() > 0);
@@ -104,8 +103,7 @@ public class GithubApiTest extends GithubMockBase {
         Map resp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/?credentialId=" + credentialId + "&pageSize=10&page=1"+"&apiUrl="+githubApiUrl)
-                .header(Scm.X_CREDENTIAL_ID, credentialId + "sdsdsd") //it must be ignored as credentialId query parameter overrides it.
+                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/?pageSize=10&page=1&apiUrl="+githubApiUrl)
                 .build(Map.class);
 
         Map repos = (Map) resp.get("repositories");
@@ -117,8 +115,7 @@ public class GithubApiTest extends GithubMockBase {
         resp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/RunMyProcess-task/?credentialId=" + credentialId+"&apiUrl="+githubApiUrl)
-                .header(Scm.X_CREDENTIAL_ID, credentialId + "sdsdsd") //it must be ignored as credentialId query parameter overrides it.
+                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/RunMyProcess-task/?apiUrl="+githubApiUrl)
                 .build(Map.class);
 
         assertEquals("RunMyProcess-task", resp.get("name"));

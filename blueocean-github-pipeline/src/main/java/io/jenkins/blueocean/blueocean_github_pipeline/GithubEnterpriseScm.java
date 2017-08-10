@@ -4,16 +4,12 @@ import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredenti
 import hudson.Extension;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.kohsuke.stapler.WebMethod;
-import org.kohsuke.stapler.verb.GET;
 import org.parboiled.common.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -80,7 +76,7 @@ public class GithubEnterpriseScm extends GithubScm {
 
     @Override
     protected @Nonnull String createCredentialId(@Nonnull String apiUri) {
-        return getId() + ":" + DigestUtils.sha256Hex(apiUri);
+        return GithubCredentialUtils.computeCredentialId(GithubEnterpriseScm.ID, apiUri);
     }
 
     @Override

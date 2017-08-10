@@ -25,7 +25,6 @@ import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
 import jenkins.scm.api.SCMNavigator;
 import jenkins.scm.api.SCMSource;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.junit.After;
@@ -117,6 +116,10 @@ public abstract class GithubMockBase extends PipelineBaseTest {
         }
     }
 
+    static String getOrgName() {
+        return OrganizationFactory.getInstance().list().iterator().next().getName();
+    }
+
     protected String createGithubCredential() throws UnirestException {
         return createGithubCredential(this.user);
     }
@@ -126,7 +129,7 @@ public abstract class GithubMockBase extends PipelineBaseTest {
                 .data(ImmutableMap.of("accessToken", accessToken))
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .put("/organizations/" + OrganizationFactory.getInstance().list().iterator().next().getName() + "/scm/github/validate/?apiUrl="+githubApiUrl)
+                .put("/organizations/" + getOrgName() + "/scm/github/validate/?apiUrl="+githubApiUrl)
                 .build(Map.class);
         String credentialId = (String) r.get("credentialId");
         assertEquals(GithubScm.ID, credentialId);
@@ -141,15 +144,11 @@ public abstract class GithubMockBase extends PipelineBaseTest {
             .data(ImmutableMap.of("accessToken", accessToken))
             .status(200)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-            .put("/organizations/jenkins/scm/github-enterprise/validate/?apiUrl="+githubApiUrl)
+            .put("/organizations/" + getOrgName() + "/scm/github-enterprise/validate/?apiUrl="+githubApiUrl)
             .build(Map.class);
         String credentialId = (String) r.get("credentialId");
-        assertEquals(GithubEnterpriseScm.ID+":"+ getGithubApiUrlEncoded(), credentialId);
+        assertEquals(GithubCredentialUtils.computeCredentialId(GithubEnterpriseScm.ID, githubApiUrl), credentialId);
         return credentialId;
-    }
-
-    protected String getGithubApiUrlEncoded() {
-        return DigestUtils.sha256Hex(githubApiUrl);
     }
 
     /**
