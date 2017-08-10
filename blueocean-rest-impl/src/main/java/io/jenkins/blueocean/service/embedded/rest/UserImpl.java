@@ -49,14 +49,14 @@ public class UserImpl extends BlueUser {
 
     private final Reachable parent;
 
-    public UserImpl(@Nonnull BlueOrganization organization, @Nonnull User user, @Nonnull Reachable parent) {
+    public UserImpl(@Nonnull BlueOrganization organization, @Nonnull User user, Reachable parent) {
         this.parent = parent;
         this.user = user;
         this.organization = organization;
         organizationBase = getAccessControllerOrganization();
     }
 
-    public UserImpl(BlueOrganization organization, User user) {
+    public UserImpl(@Nonnull BlueOrganization organization, @Nonnull User user) {
         this(organization, user, null);
     }
 
