@@ -3,7 +3,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 import java.util.Collections;
 import java.util.Map;
 
-import javax.annotation.Nullable;
+import javax.annotation.Nonnull;
 
 import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
@@ -49,7 +49,7 @@ public class UserImpl extends BlueUser {
 
     private final Reachable parent;
 
-    public UserImpl(BlueOrganization organization, User user, Reachable parent) {
+    public UserImpl(@Nonnull BlueOrganization organization, @Nonnull User user, @Nonnull Reachable parent) {
         this.parent = parent;
         this.user = user;
         this.organization = organization;

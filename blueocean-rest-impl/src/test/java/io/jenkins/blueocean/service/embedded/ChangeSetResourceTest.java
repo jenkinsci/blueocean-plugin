@@ -3,10 +3,13 @@ package io.jenkins.blueocean.service.embedded;
 import hudson.model.User;
 import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.rest.Reachable;
-import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.service.embedded.rest.ChangeSetResource;
+import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
+
 import org.junit.Test;
+
+import com.cloudbees.hudson.plugins.folder.Folder;
 
 import java.util.Collections;
 
@@ -31,7 +34,7 @@ public class ChangeSetResourceTest {
         when(entry.getCommitId()).thenReturn("12345");
         when(entry.getMsg()).thenReturn("test changeset");
         when(entry.getAffectedPaths()).thenReturn(Collections.singleton("/foo/bar"));
-        ChangeSetResource changeSetResource = new ChangeSetResource(null, entry, reachable);
+        ChangeSetResource changeSetResource = new ChangeSetResource(new OrganizationImpl("testorg", mock(Folder.class)), entry, reachable);
         assertEquals(user.getId(), changeSetResource.getAuthor().getId());
         assertEquals(entry.getCommitId(), changeSetResource.getCommitId());
         assertEquals(entry.getMsg(), changeSetResource.getMsg());
