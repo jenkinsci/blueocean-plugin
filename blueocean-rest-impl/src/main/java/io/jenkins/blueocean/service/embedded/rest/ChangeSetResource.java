@@ -35,7 +35,6 @@ public class ChangeSetResource extends BlueChangeSetEntry {
     private final ChangeLogSet.Entry changeSet;
     private final Reachable parent;
 
-    @Nullable
     private final BlueOrganization organization;
 
     public ChangeSetResource(@Nonnull BlueOrganization organization, Entry changeSet, Reachable parent) {
