@@ -169,6 +169,7 @@ public class BitbucketServerApi extends BitbucketApi {
                                       @Nonnull String content,
                                       @Nonnull String commitMessage,
                                       @Nullable String branch,
+                                      @Nullable String sourceBranch,
                                       @Nullable String commitId){
         try {
             String version = getVersion(apiUrl);
@@ -181,8 +182,11 @@ public class BitbucketServerApi extends BitbucketApi {
                     .addTextBody("content", content)
                     .addTextBody("message", commitMessage);
 
-            if(!StringUtils.isBlank(branch)){
+            if(StringUtils.isNotBlank(branch)){
                 builder.addTextBody("branch", branch);
+            }
+            if(StringUtils.isNotBlank(sourceBranch)){
+                builder.addTextBody("sourceBranch", sourceBranch);
             }
             if(org.apache.commons.lang.StringUtils.isNotBlank(commitId)){
                    builder.addTextBody("sourceCommitId", commitId);

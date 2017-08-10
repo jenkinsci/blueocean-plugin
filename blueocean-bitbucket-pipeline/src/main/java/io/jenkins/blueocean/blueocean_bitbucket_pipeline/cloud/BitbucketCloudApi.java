@@ -188,6 +188,7 @@ public class BitbucketCloudApi extends BitbucketApi {
                                              @Nonnull String content,
                                              @Nonnull String commitMessage,
                                              @Nullable String branch,
+                                             @Nullable String sourceBranch,
                                              @Nullable String commitId) {
         try {
             MultipartEntityBuilder builder = MultipartEntityBuilder.create()

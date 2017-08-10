@@ -120,7 +120,7 @@ public class BitbucketApiTest  extends BbCloudWireMock{
         //create new file
         BbSaveContentResponse saveResponse = api.saveContent("vivekp7","demo1","foo",
                 "This is test content in new file",
-                "first commit", "null",null);
+                "first commit", "null",null,null);
         assertNotNull(saveResponse.getCommitId());
         String content = api.getContent("vivekp7", "demo1", "foo", (String) saveResponse.getCommitId());
         assertEquals("This is test content in new file", content);
