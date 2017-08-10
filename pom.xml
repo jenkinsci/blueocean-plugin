@@ -331,7 +331,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-graph-analysis</artifactId>
-            <version>1.5-20170726.145848-11</version> <!-- TODO: update to release when https://github.com/jenkinsci/pipeline-graph-analysis-plugin/pull/11 is merged and released -->
+            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
