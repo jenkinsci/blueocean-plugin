@@ -88,7 +88,7 @@ export default class BbServerFlowManager extends BbCloudFlowManager {
     _renderChooseOrg() {
         this.renderStep({
             stateId: STATE.STEP_CHOOSE_ORGANIZATION,
-            stepElement: <BbOrgListStep title={'creation.bbserver.repository.title'}/>,
+            stepElement: <BbOrgListStep title={'creation.bbserver.repository.title'} />,
             afterStateId: this._getOrganizationsStepAfterStateId(),
         });
     }
