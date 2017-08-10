@@ -10,7 +10,9 @@ import hudson.model.Item;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
+import io.jenkins.blueocean.rest.factory.BlueRunFactory;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -29,8 +31,8 @@ public class MatrixProjectImpl extends PipelineFolderImpl {
 
     private final MatrixProject matrixProject;
 
-    public MatrixProjectImpl(MatrixProject folder, Link parent) {
-        super(folder, parent);
+    public MatrixProjectImpl(BlueOrganization organization, MatrixProject folder, Link parent) {
+        super(organization, folder, parent);
         this.matrixProject = folder;
     }
 
@@ -38,23 +40,23 @@ public class MatrixProjectImpl extends PipelineFolderImpl {
     public static class PipelineFactoryImpl extends BluePipelineFactory{
 
         @Override
-        public MatrixProjectImpl getPipeline(Item item, Reachable parent) {
+        public MatrixProjectImpl getPipeline(Item item, Reachable parent, BlueOrganization organization) {
             if (item instanceof MatrixProject) {
-                return new MatrixProjectImpl((MatrixProject) item, parent.getLink());
+                return new MatrixProjectImpl(organization, (MatrixProject) item, parent.getLink());
             }
             return null;
         }
 
         @Override
-        public Resource resolve(Item context, Reachable parent, Item target) {
-            MatrixProjectImpl project = getPipeline(context, parent);
+        public Resource resolve(Item context, Reachable parent, Item target, BlueOrganization organization) {
+            MatrixProjectImpl project = getPipeline(context, parent, organization);
             if (project!=null) {
                 if(context == target){
                     return project;
                 }
                 Item nextChild = findNextStep(project.matrixProject,target);
                 for (BluePipelineFactory f : all()) {
-                    Resource answer = f.resolve(nextChild, project, target);
+                    Resource answer = f.resolve(nextChild, project, target, organization);
                     if (answer!=null)
                         return answer;
                 }
@@ -95,9 +97,6 @@ public class MatrixProjectImpl extends PipelineFolderImpl {
 
     @Override
     public BlueRun getLatestRun() {
-        if(matrixProject.getLastBuild() == null){
-            return null;
-        }
-        return AbstractRunImpl.getBlueRun(matrixProject.getLastBuild(), this);
+        return matrixProject.getLastBuild() == null ? null : BlueRunFactory.getRun(matrixProject.getLastBuild(), this);
     }
 }

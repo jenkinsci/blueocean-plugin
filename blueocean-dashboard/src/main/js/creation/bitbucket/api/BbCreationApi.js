@@ -178,4 +178,30 @@ export class BbCreationApi {
             },
         };
     }
+
+    findBranches(pipelineName) {
+        const path = UrlConfig.getJenkinsRootURL();
+        const pipelineUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/pipelines/${pipelineName}/`);
+        return this._fetch(pipelineUrl)
+            .then(response => capabilityAugmenter.augmentCapabilities(response))
+            .then(
+                pipeline => this._findBranchesSuccess(pipeline),
+                (error) => this._findBranchesFailure(error),
+            );
+    }
+
+    _findBranchesSuccess(pipeline) {
+        return {
+            isFound: pipeline.getTotalNumberOfBranches > 0,
+            hasError: false,
+            pipeline,
+        };
+    }
+
+    _findBranchesFailure(error) {
+        return {
+            hasError: true,
+            error,
+        };
+    }
 }

@@ -51,13 +51,25 @@
         "displayName": "Steve",
         "edges": [
             {
-                "id": "129"
+                "id": "35"
             }
         ],
         "id": "29",
         "result": "UNKNOWN",
         "startTime": "2016-05-02T16:06:29.942+1000",
         "state": "NOT_BUILT"
+    },
+    {
+        "displayName": "Skipped Stage",
+        "edges": [
+            {
+                "id": "129"
+            }
+        ],
+        "id": "35",
+        "result": "UNKNOWN",
+        "startTime": "2016-05-02T16:06:29.942+1000",
+        "state": "SKIPPED"
     },
     {
         "displayName": "Banana is Unstable",

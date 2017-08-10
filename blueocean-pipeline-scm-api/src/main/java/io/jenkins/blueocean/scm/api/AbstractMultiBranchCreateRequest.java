@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
 import hudson.model.Cause;
 import hudson.model.Failure;
+import hudson.model.TaskListener;
 import hudson.model.TopLevelItem;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ErrorMessage;
@@ -23,20 +24,30 @@ import jenkins.branch.BranchSource;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.MultiBranchProjectDescriptor;
 import jenkins.model.Jenkins;
+import jenkins.scm.api.SCMFile;
+import jenkins.scm.api.SCMProbeStat;
 import jenkins.scm.api.SCMSource;
+import jenkins.scm.api.SCMSourceCriteria;
+import jenkins.scm.api.SCMSourceEvent;
 import org.apache.commons.lang.StringUtils;
+import org.jenkinsci.plugins.pubsub.MessageException;
+import org.jenkinsci.plugins.pubsub.PubsubBus;
+import org.jenkinsci.plugins.pubsub.SimpleMessage;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * Creates {@link MultiBranchProject}s with a single {@link SCMSource}
  */
 public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineCreateRequest {
-
     private static final String DESCRIPTOR_NAME = "org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject";
 
     private static final String ERROR_FIELD_SCM_CONFIG_URI = "scmConfig.uri";
@@ -57,8 +68,24 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
         SCMSource source = createSource(project, scmConfig);
         project.setSourcesList(ImmutableList.of(new BranchSource(source)));
         project.save();
-        project.scheduleBuild(new Cause.UserIdCause());
+        final boolean hasJenkinsfile = repoHasJenkinsFile(source);
+        if(!hasJenkinsfile){
+            sendMultibranchIndexingCompleteEvent(project, 5);
+            AbstractScmSourceEvent scmSourceEvent = getScmSourceEvent(project, source);
+            if(scmSourceEvent != null) {
+                SCMSourceEvent.fireNow(scmSourceEvent);
+            }
+        }else{
+            project.scheduleBuild(new Cause.UserIdCause());
+        }
         return BluePipelineFactory.getPipelineInstance(project, OrganizationFactory.getInstance().getContainingOrg(project.getItemGroup()));
+    }
+
+    /**
+     * @return Get {@link SCMSourceEvent}
+     */
+    protected @Nullable AbstractScmSourceEvent getScmSourceEvent(@Nonnull MultiBranchProject project, @Nonnull SCMSource source){
+        return null;
     }
 
     /**
@@ -76,6 +103,66 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
      * @return errors occuring during validation
      */
     protected abstract List<Error> validate(String name, BlueScmConfig scmConfig);
+
+    public static class JenkinsfileCriteria implements SCMSourceCriteria {
+        private static final long serialVersionUID = 1L;
+        private AtomicBoolean jenkinsFileFound = new AtomicBoolean();
+
+        @Override
+        public boolean isHead(@Nonnull Probe probe, @Nonnull TaskListener listener) throws IOException {
+            SCMProbeStat stat = probe.stat("Jenkinsfile");
+            boolean foundJekinsFile =  stat.getType() != SCMFile.Type.NONEXISTENT && stat.getType() != SCMFile.Type.DIRECTORY;
+            if(foundJekinsFile && !jenkinsFileFound.get()) {
+                jenkinsFileFound.set(true);
+            }
+            return foundJekinsFile;
+        }
+
+        public boolean isJekinsfileFound() {
+            return jenkinsFileFound.get();
+        }
+    }
+
+    /**
+     * Certain SCMSource can tell whether it can detect presence of Jenkinsfile across all branches
+     * @param scmSource scm source
+     * @return true as default. false if it can determine there is no Jenkinsfile in all branches
+     */
+    protected boolean repoHasJenkinsFile(@Nonnull SCMSource scmSource) {
+        return true; //default
+    }
+
+    private void sendMultibranchIndexingCompleteEvent(final MultiBranchProject mbp, final int iterations) {
+        Executors.newScheduledThreadPool(1).schedule(new Runnable() {
+            @Override
+            public void run() {
+                _sendMultibranchIndexingCompleteEvent(mbp, iterations);
+            }
+        }, 1, TimeUnit.SECONDS);
+    }
+
+    private void _sendMultibranchIndexingCompleteEvent(MultiBranchProject mbp, int iterations) {
+        try {
+            SimpleMessage msg = new SimpleMessage();
+            msg.set("jenkins_object_type", "org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject");
+            msg.set("job_run_status","ALLOCATED");
+            msg.set("job_name",mbp.getName());
+            msg.set("jenkins_org","jenkins");
+            msg.set("job_orgfolder_indexing_status","COMPLETE");
+            msg.set("job_run_queueId","1");
+            msg.set("jenkins_object_name",mbp.getName());
+            msg.set("blueocean_job_rest_url","/blue/rest/organizations/jenkins/pipelines/"+mbp.getName()+"/");
+            msg.set("jenkins_event","job_run_queue_task_complete");
+            msg.set("job_multibranch_indexing_result","SUCCESS");
+            msg.set("blueocean_job_pipeline_name",mbp.getName());
+            msg.set("jenkins_object_url","job/"+mbp.getName()+"/");
+            msg.set("jenkins_channel","job");
+            msg.set("jenkinsfile_present","false");
+            PubsubBus.getBus().publish(msg);
+        } catch (MessageException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     private MultiBranchProject createMultiBranchProject() throws IOException {
         TopLevelItem item = createProject(getName(), DESCRIPTOR_NAME, MultiBranchProjectDescriptor.class);
@@ -113,10 +200,8 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
     }
 
     private void validateInternal(String name, BlueScmConfig scmConfig) {
-        User authenticatedUser =  User.current();
-        if(authenticatedUser == null){
-            throw new ServiceException.UnauthorizedException("Must login to create a pipeline");
-        }
+
+        checkUserIsAuthenticatedAndHasItemCreatePermission();
 
         // If scmConfig is empty then we are missing the uri and name
         if (scmConfig == null) {
@@ -140,7 +225,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
             errors.add(new Error(ERROR_FIELD_SCM_CONFIG_NAME, Error.ErrorCodes.INVALID.toString(),  getName() + " in not a valid name"));
         }
 
-        if(Jenkins.getInstance().getItem(name)!=null) {
+        if(getParent().getItem(name)!=null) {
             errors.add(new Error(ERROR_NAME, Error.ErrorCodes.ALREADY_EXISTS.toString(), getName() + " already exists"));
         }
 

@@ -11,6 +11,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.PUT;
 
+import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
@@ -55,10 +56,16 @@ public abstract class BluePipeline extends Resource {
     private static final String PARAMETERS = "parameters";
 
     /**
+     * @return the organization that this pipeline is a child of
+     */
+    @Nonnull
+    public abstract BlueOrganization getOrganization();
+
+    /**
      * @return name of the organization
      */
     @Exported(name = ORGANIZATION)
-    public abstract String getOrganization();
+    public abstract String getOrganizationName();
 
     /**
      * @return name of the pipeline

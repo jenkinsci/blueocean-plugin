@@ -3,7 +3,7 @@ import { storiesOf } from '@kadira/storybook';
 import {PipelineGraph, defaultLayout} from '../components/PipelineGraph';
 
 import { StatusIndicator } from '../components';
-const validResultValues = StatusIndicator.validResultValues; 
+const validResultValues = StatusIndicator.validResultValues;
 
 storiesOf('PipelineGraph', module)
     .add('Mixed', renderMultiParallelPipeline)
@@ -106,6 +106,7 @@ function renderConstructomatic() {
             makeNode("Job 2", [], validResultValues.running),
             makeNode("Job 3", [], validResultValues.running)
         ]),
+        makeNode("Skipped", [], validResultValues.skipped),
         makeNode("Queued", [
             makeNode("Job 4", [], validResultValues.queued),
             makeNode("This is Job number 5", [], validResultValues.queued),
@@ -184,8 +185,14 @@ function renderMultiParallelPipeline() {
             makeNode("Safari", [], validResultValues.running, 60),
             makeNode("Chrome", [], validResultValues.running, 120)
         ]),
-        makeNode("Dev"),
-        makeNode("Staging"),
+        makeNode("Skizzled", [], validResultValues.skipped),
+        makeNode("Foshizzle", [], validResultValues.skipped),
+        makeNode("Dev", [
+            makeNode("US-East", [], validResultValues.success),
+            makeNode("US-West", [], validResultValues.success),
+            makeNode("APAC", [], validResultValues.success),
+        ], validResultValues.success),
+        makeNode("Staging", [], validResultValues.skipped),
         makeNode("Production")
     ];
 

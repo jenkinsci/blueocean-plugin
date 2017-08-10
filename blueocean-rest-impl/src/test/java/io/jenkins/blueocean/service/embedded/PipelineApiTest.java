@@ -34,7 +34,6 @@ import hudson.tasks.junit.TestResultAction;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueArtifact;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
@@ -42,6 +41,7 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.ArtifactContainerImpl;
+import io.jenkins.blueocean.service.embedded.rest.ArtifactImpl;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import jenkins.model.Jenkins;
@@ -506,12 +506,15 @@ public class PipelineApiTest extends BaseTest {
         assertEquals(1, artifacts.size());
         assertEquals("fizz", ((Map) artifacts.get(0)).get("name"));
 
-        BlueArtifact blueArtifact = new ArtifactContainerImpl(b, new Reachable() {
+        String artifactName = (String) ((Map) artifacts.get(0)).get("name");
+        String name = ArtifactImpl.class.getName() + ":" + artifactName;
+        ArtifactContainerImpl container = new ArtifactContainerImpl(b, new Reachable() {
             @Override
             public Link getLink() {
                 return new Link("/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/artifacts/");
             }
-        }).get((String) ((Map) artifacts.get(0)).get("path"));
+        });
+        BlueArtifact blueArtifact = container.get(name);
         assertNotNull(blueArtifact);
     }
 
@@ -595,16 +598,15 @@ public class PipelineApiTest extends BaseTest {
     public static class PipelineFactoryTestImpl extends BluePipelineFactory {
 
         @Override
-        public BluePipeline getPipeline(Item item, Reachable parent) {
+        public BluePipeline getPipeline(Item item, Reachable parent, BlueOrganization organization) {
             if(item instanceof TestProject){
-                BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(item);
                 return new TestPipelineImpl(organization, (Job)item);
             }
             return null;
         }
 
         @Override
-        public Resource resolve(Item context, Reachable parent, Item target) {
+        public Resource resolve(Item context, Reachable parent, Item target, BlueOrganization organization) {
             return  null;
         }
     }

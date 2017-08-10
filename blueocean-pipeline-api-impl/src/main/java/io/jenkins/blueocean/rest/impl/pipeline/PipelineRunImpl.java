@@ -13,6 +13,7 @@ import io.jenkins.blueocean.rest.factory.BlueRunFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.Branch;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.PullRequest;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
@@ -54,8 +55,8 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW
 @Capability(JENKINS_WORKFLOW_RUN)
 public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     private static final Logger logger = LoggerFactory.getLogger(PipelineRunImpl.class);
-    public PipelineRunImpl(WorkflowRun run, Reachable parent) {
-        super(run, parent);
+    public PipelineRunImpl(WorkflowRun run, Reachable parent, BlueOrganization organization) {
+        super(run, parent, organization);
     }
 
     @Exported(name = "description")
@@ -82,9 +83,12 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
             Run run = this.run.getParent().getBuildByNumber(replayCause.getOriginalNumber());
             if (run == null) {
                 return Containers.empty(getLink());
-            } else {
-                return AbstractRunImpl.getBlueRun(run, parent).getChangeSet();
             }
+            BlueRun blueRun = BlueRunFactory.getRun(run, parent);
+            if (blueRun == null) {
+                return Containers.empty(getLink());
+            }
+            return blueRun.getChangeSet();
         } else {
             Map<String, BlueChangeSetEntry> m = new LinkedHashMap<>();
             int cnt = 0;
@@ -155,12 +159,12 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
             throw new ServiceException.UnexpectedErrorException("Run was not added to queue.");
         }
 
-        BlueQueueItem queueItem = QueueUtil.getQueuedItem(item, run.getParent());
+        BlueQueueItem queueItem = QueueUtil.getQueuedItem(this.organization, item, run.getParent());
         WorkflowRun replayedRun = QueueUtil.getRun(run.getParent(), item.getId());
         if (queueItem != null) { // If the item is still queued
             return queueItem.toRun();
         } else if (replayedRun != null) { // If the item has left the queue and is running
-                return new PipelineRunImpl(replayedRun, parent);
+            return new PipelineRunImpl(replayedRun, parent, organization);
         } else { // For some reason could not be added to the queue
             throw new ServiceException.UnexpectedErrorException("Run was not added to queue.");
         }
@@ -228,7 +232,11 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
                 if (run == null) {
                     continue;
                 }
-                changeSets = AbstractRunImpl.getBlueRun(run, parent).getChangeSet();
+                BlueRun blueRun = BlueRunFactory.getRun(run, parent);
+                if (blueRun == null) {
+                    continue;
+                }
+                changeSets = blueRun.getChangeSet();
             }
         }
         return null;
@@ -256,9 +264,9 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     public static class FactoryImpl extends BlueRunFactory {
 
         @Override
-        public BlueRun getRun(Run run, Reachable parent) {
+        public BlueRun getRun(Run run, Reachable parent, BlueOrganization organization) {
             if(run instanceof WorkflowRun) {
-                return new PipelineRunImpl((WorkflowRun) run, parent);
+                return new PipelineRunImpl((WorkflowRun) run, parent, organization);
             }
             return null;
         }

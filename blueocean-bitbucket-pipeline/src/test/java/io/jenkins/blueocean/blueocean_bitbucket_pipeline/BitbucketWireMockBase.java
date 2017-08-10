@@ -6,6 +6,7 @@ import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.BitbucketCloudScm;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import org.junit.Before;
 
@@ -57,8 +58,7 @@ public abstract class BitbucketWireMockBase extends PipelineBaseTest{
         this.apiUrl = String.format("http://localhost:%s",bitbucketApi.port());
     }
 
-    protected String createCredential(String scmId, String apiMode) throws IOException, UnirestException {
-        User user = login();
+    protected String createCredential(String scmId, String apiMode, User user) throws IOException, UnirestException {
 
         RequestBuilder builder = new RequestBuilder(baseUrl)
                 .status(200)
@@ -71,14 +71,22 @@ public abstract class BitbucketWireMockBase extends PipelineBaseTest{
         }
         Map r = builder.build(Map.class);
 
-
         assertNotNull(r);
         String credentialId = (String) r.get("credentialId");
         assertNotNull(credentialId);
         return credentialId;
     }
 
+    protected String createCredential(String scmId, User user) throws IOException, UnirestException {
+        String apiMode = "server";
+        if(scmId.equals(BitbucketCloudScm.ID)){
+            apiMode = "cloud";
+        }
+        return createCredential(scmId, apiMode, user);
+    }
+
     protected String createCredential(String scmId) throws IOException, UnirestException {
-        return createCredential(scmId, "server");
+        User user = login();
+        return createCredential(scmId, user);
     }
 }

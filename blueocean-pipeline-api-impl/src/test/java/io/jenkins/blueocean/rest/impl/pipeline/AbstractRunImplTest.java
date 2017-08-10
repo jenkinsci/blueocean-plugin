@@ -8,9 +8,12 @@ import hudson.model.Queue;
 import hudson.model.Run;
 import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
+import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.plugins.git.GitSampleRepoRule;
 import jenkins.scm.api.SCMSource;
@@ -69,14 +72,14 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         WorkflowRun b2 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b2);
 
-        Assert.assertNotEquals(new PipelineRunImpl(b1, null).getCommitId(), new PipelineRunImpl(b2, null).getCommitId());
+        Assert.assertNotEquals(new PipelineRunImpl(b1, null, null).getCommitId(), new PipelineRunImpl(b2, null, null).getCommitId());
 
         request().post("/organizations/jenkins/pipelines/pipeline1/runs/1/replay").build(String.class);
 
         j.waitForCompletion(job1.getLastBuild());
 
         Map r = request().get("/organizations/jenkins/pipelines/pipeline1/runs/3/").build(Map.class);
-        assertEquals(r.get("commitId"), new PipelineRunImpl(b2,null).getCommitId());
+        assertEquals(r.get("commitId"), new PipelineRunImpl(b2,null, null).getCommitId());
     }
 
     // Disabled, see JENKINS-40084
@@ -116,7 +119,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         WorkflowRun b2 = job1.scheduleBuild2(0).get();
         j.assertBuildStatusSuccess(b2);
 
-        Assert.assertNotEquals(new PipelineRunImpl(b1, null).getCommitId(), new PipelineRunImpl(b2, null).getCommitId());
+        Assert.assertNotEquals(new PipelineRunImpl(b1, null, null).getCommitId(), new PipelineRunImpl(b2, null, null).getCommitId());
 
         Map replayBuild = request().post("/organizations/jenkins/pipelines/p/branches/master/runs/"+ b1.getNumber()+"/replay").build(Map.class);
         Queue.Item item = j.getInstance().getQueue().getItem(Long.parseLong((String)replayBuild.get("id")));
@@ -124,7 +127,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         WorkflowRun replayedRun = (WorkflowRun)item.getFuture().get();
 
         Map r = request().get("/organizations/jenkins/pipelines/p/branches/master/runs/"+replayedRun.getNumber()+"/").build(Map.class);
-        assertEquals(new PipelineRunImpl(b1,null).getCommitId(), r.get("commitId"));
+        assertEquals(new PipelineRunImpl(b1,null, null).getCommitId(), r.get("commitId"));
     }
 
     @Test

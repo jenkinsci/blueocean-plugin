@@ -17,7 +17,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 
-import static io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl.sortBranchesByLatestRun;
+import static io.jenkins.blueocean.rest.impl.pipeline.MultibranchPipelineRunContainer.sortBranchesByLatestRun;
 
 /**
  * @author Vivek Pandey
@@ -39,7 +39,7 @@ public class MultiBranchPipelineQueueContainer extends BlueQueueContainer {
             if(item != null && item.task instanceof Job){
                 Job job = ((Job) item.task);
                 if(job.getParent() != null && job.getParent().getFullName().equals(multiBranchPipeline.mbp.getFullName())) {
-                    return QueueUtil.getQueuedItem(item, job);
+                    return QueueUtil.getQueuedItem(multiBranchPipeline.getOrganization(), item, job);
                 }
             }
         }catch (NumberFormatException e){
@@ -58,7 +58,7 @@ public class MultiBranchPipelineQueueContainer extends BlueQueueContainer {
         List<BlueQueueItem> queueItems = Lists.newArrayList();
         for(Object o: multiBranchPipeline.mbp.getItems()) {
             if(o instanceof Job) {
-                queueItems.addAll(QueueUtil.getQueuedItems((Job)o));
+                queueItems.addAll(QueueUtil.getQueuedItems(multiBranchPipeline.getOrganization(), (Job)o));
             }
         }
         return queueItems.iterator();

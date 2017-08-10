@@ -1,22 +1,30 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.google.common.base.Preconditions;
 import hudson.Extension;
 import hudson.model.Item;
+import hudson.model.User;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import io.jenkins.blueocean.rest.impl.pipeline.ScmContentProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.AbstractScmContentProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmContentProviderParams;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
 import jenkins.scm.api.SCMNavigator;
 import jenkins.scm.api.SCMSource;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
+import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 
 import javax.annotation.Nonnull;
@@ -29,6 +37,29 @@ import java.util.Map;
  */
 @Extension(ordinal = -100)
 public class GithubScmContentProvider extends AbstractScmContentProvider {
+
+    @Nonnull
+    @Override
+    public String getScmId() {
+        return GithubScm.ID;
+    }
+
+    @Override
+    public String getApiUrl(@Nonnull Item item) {
+        if (item instanceof OrganizationFolder) {
+            List<SCMNavigator> navigators = ((OrganizationFolder) item).getSCMNavigators();
+            if ((!navigators.isEmpty() && navigators.get(0) instanceof GitHubSCMNavigator)) {
+                return ((GitHubSCMNavigator) navigators.get(0)).getApiUri();
+            }
+        } else if (item instanceof MultiBranchProject) {
+            List<SCMSource> sources = ((MultiBranchProject) item).getSCMSources();
+            if ((!sources.isEmpty() && sources.get(0) instanceof GitHubSCMSource)) {
+                return ((GitHubSCMSource) sources.get(0)).getApiUri();
+            }
+        }
+
+        return null;
+    }
 
     @Override
     protected Object getContent(ScmGetRequest request) {
@@ -105,6 +136,18 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
     @SuppressWarnings("unchecked")
     @Override
     public boolean support(@Nonnull Item item) {
+        if (isItemUsingGithubScm(item)) {
+            String apiUrl = getApiUrl(item);
+
+            if (apiUrl != null && apiUrl.startsWith(GitHubSCMSource.GITHUB_URL)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    protected boolean isItemUsingGithubScm(@Nonnull Item item) {
         if (item instanceof OrganizationFolder) {
             List<SCMNavigator> navigators = ((OrganizationFolder) item).getSCMNavigators();
             return (!navigators.isEmpty() && navigators.get(0) instanceof GitHubSCMNavigator);
@@ -166,19 +209,45 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
         }
 
         @Override
-        protected String credentialId(@Nonnull SCMSource scmSource) {
-            if (scmSource instanceof GitHubSCMSource) {
-                return ((GitHubSCMSource) scmSource).getScanCredentialsId();
+        protected StandardUsernamePasswordCredentials getCredentialForUser(final Item item, String apiUrl){
+            User user = User.current();
+            if(user == null){ //ensure this session has authenticated user
+                throw new ServiceException.UnauthorizedException("No logged in user found");
             }
-            return null;
-        }
 
-        @Override
-        protected String credentialId(@Nonnull SCMNavigator scmNavigator) {
-            if(scmNavigator instanceof GitHubSCMNavigator){
-                return ((GitHubSCMNavigator)scmNavigator).getScanCredentialsId();
+            StaplerRequest request = Stapler.getCurrentRequest();
+            String scmId = request.getParameter("scmId");
+
+            //get credential for this user
+            GithubScm scm;
+            final BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(item);
+            if(apiUrl.startsWith(GitHubSCMSource.GITHUB_URL)
+                    //tests might add scmId to indicate which Scm should be used to find credential
+                    //We have to do this because apiUrl might be of WireMock server and not Github
+                    || (StringUtils.isNotBlank(scmId) && scmId.equals(GithubScm.ID))) {
+                scm = new GithubScm(new Reachable() {
+                    @Override
+                    public Link getLink() {
+                        Preconditions.checkNotNull(organization);
+                        return organization.getLink().rel("scm");
+                    }
+                });
+            }else{ //GHE
+                scm = new GithubEnterpriseScm((new Reachable() {
+                    @Override
+                    public Link getLink() {
+                        Preconditions.checkNotNull(organization);
+                        return organization.getLink().rel("scm");
+                    }
+                }));
             }
-            return null;
+
+            //pick up github credential from user's store
+            StandardUsernamePasswordCredentials githubCredential = scm.getCredential(GithubScm.normalizeUrl(apiUrl));
+            if(githubCredential == null){
+                throw new ServiceException.PreconditionRequired("Can't access content from github: no credential found");
+            }
+            return githubCredential;
         }
     }
 }

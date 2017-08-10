@@ -169,20 +169,24 @@ public class BitbucketServerApi extends BitbucketApi {
                                       @Nonnull String content,
                                       @Nonnull String commitMessage,
                                       @Nullable String branch,
+                                      @Nullable String sourceBranch,
                                       @Nullable String commitId){
         try {
             String version = getVersion(apiUrl);
             if(!isSupportedVersion(version)){
                 throw new ServiceException.PreconditionRequired(
                         Messages.bbserver_version_validation_error(
-                                apiUrl, version, BitbucketServerApi.MINIMUM_SUPPORTED_VERSION));
+                                version, BitbucketServerApi.MINIMUM_SUPPORTED_VERSION));
             }
             MultipartEntityBuilder builder = MultipartEntityBuilder.create()
                     .addTextBody("content", content)
                     .addTextBody("message", commitMessage);
 
-            if(!StringUtils.isBlank(branch)){
+            if(StringUtils.isNotBlank(branch)){
                 builder.addTextBody("branch", branch);
+            }
+            if(StringUtils.isNotBlank(sourceBranch)){
+                builder.addTextBody("sourceBranch", sourceBranch);
             }
             if(org.apache.commons.lang.StringUtils.isNotBlank(commitId)){
                    builder.addTextBody("sourceCommitId", commitId);

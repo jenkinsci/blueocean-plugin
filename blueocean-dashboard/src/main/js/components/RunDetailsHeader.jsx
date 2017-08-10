@@ -172,6 +172,7 @@ class RunDetailsHeader extends Component {
                               className="RunDetailsHeader"
                               topNavLinks={ topNavLinks }
                               runButton={ runButton }
+                              t= { t }
             >
                 <div className="RunDetailsHeader-sources">
                     { branchSourceDetails }
