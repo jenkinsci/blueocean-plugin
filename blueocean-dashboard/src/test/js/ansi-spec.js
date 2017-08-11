@@ -2,11 +2,53 @@ import { assert } from 'chai';
 
 import {
     tokenizeANSIString,
+    parseEscapeCode,
 } from '../../main/js/util/ansi';
 
 describe('ansi', () => {
 
-    describe('parser', () => {
+    describe('escape code parser', () => {
+
+        function testCase(desc, input, expected) {
+            it(desc, () => {
+                const result = parseEscapeCode(input);
+                assert.equal(result.resetFG, expected.resetFG, 'result.resetFG');
+                assert.equal(result.resetBG, expected.resetBG, 'result.resetBG');
+                assert.equal(result.setFG, expected.setFG, 'result.setFG');
+                assert.equal(result.setBG, expected.setBG, 'result.setBG');
+            })
+        }
+
+        testCase('supports test case 1', '\x1b[m', {
+            resetFG: true,
+            resetBG: true,
+            setFG: false,
+            setBG: false,
+        });
+
+        testCase('supports test case 2', '\x1b[31m', {
+            resetFG: false,
+            resetBG: false,
+            setFG: 1,
+            setBG: false,
+        });
+
+        testCase('supports test case 3', '\x1b[31;43m', {
+            resetFG: false,
+            resetBG: false,
+            setFG: 1,
+            setBG: 3,
+        });
+
+        testCase('supports test case 4', '\x1b[31;43;35m', {
+            resetFG: false,
+            resetBG: false,
+            setFG: 5,
+            setBG: 3,
+        });
+    });
+
+    describe('tokenizer', () => {
 
         it('handles empty inputs', () => {
             assert.deepEqual(tokenizeANSIString(), [], 'No input');
