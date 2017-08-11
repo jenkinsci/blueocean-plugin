@@ -36,21 +36,15 @@
                 margin-bottom: 10px;
                 min-width: 220px;
                 height: 56px;
+                opacity: 0.75;
 
-                &:not(.active) .IconButton-text {
-                    opacity: 0.75;
+                &:hover {
+                    background-color: rgba(74,144,226,0.04);
+                    opacity: 1;
                 }
 
-                &:not(.active):hover {
-                    background-color: rgba(74,144,226,0.04);
-
-                    path {
-                        fill: #4C4C4C;
-                    }
-
-                    .IconButton-text {
-                        opacity: 1;
-                    }
+                &.active {
+                    opacity: 1;
                 }
             }
 
