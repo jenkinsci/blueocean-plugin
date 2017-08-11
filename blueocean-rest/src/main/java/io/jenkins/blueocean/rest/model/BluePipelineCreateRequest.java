@@ -13,7 +13,6 @@ import java.io.IOException;
 public abstract class BluePipelineCreateRequest {
 
     private String name;
-    private String organization;
 
     /** Name of the pipeline */
     public @CheckForNull String getName(){
@@ -24,19 +23,11 @@ public abstract class BluePipelineCreateRequest {
         this.name = name;
     }
 
-    /* Jenkins organization */
-    public String getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(String organization) {
-        this.organization = organization;
-    }
-
     /**
      * Create an instance of {@link BluePipeline} from the given request.
      *
      * @return created pipeline
      */
-    public abstract @CheckForNull BluePipeline create(Reachable parent) throws IOException;
+    public abstract @CheckForNull BluePipeline create(Reachable parent, BlueOrganization organization) throws IOException;
+
 }
