@@ -305,7 +305,7 @@
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-model-definition</artifactId>
-            <version>1.2-beta-4-20170808.202216-2</version> <!-- TODO:Update to 1.2 when released -->
+            <version>1.2-beta-4-20170811.170221-3</version> <!-- TODO:Update to 1.2 when released -->
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
