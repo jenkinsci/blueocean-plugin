@@ -1,14 +1,10 @@
 package io.jenkins.blueocean.preload;
 
 import java.io.StringWriter;
-import java.util.Iterator;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import javax.annotation.Nonnull;
 
-import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
+import com.google.common.collect.Iterables;
 
 import hudson.Extension;
 import io.jenkins.blueocean.commons.PageStatePreloader;
@@ -31,21 +27,8 @@ public class OrganizationStatePreloader extends PageStatePreloader {
 
     @Override
     public String getStateJson() {
-        String orgName = getOrganizationFromURL();
-        BlueOrganization organization = null;
+        BlueOrganization organization = Iterables.getFirst(OrganizationFactory.getInstance().list(), null);
         
-        OrganizationFactory orgFactory = OrganizationFactory.getInstance();
-        if (orgName != null) {
-            organization = orgFactory.get(orgName);
-        }
-
-        if (organization == null) {
-            Iterator<BlueOrganization> iterator = orgFactory.list().iterator();
-            if (iterator.hasNext()) {
-                organization = iterator.next();
-            }
-        }
-
         if(organization != null) {
             String organizationGroup = "/"; //default is root group
             if (organization instanceof AbstractOrganization) {
@@ -67,25 +50,5 @@ public class OrganizationStatePreloader extends PageStatePreloader {
         }
     }
 
-    private static final Pattern pattern = Pattern.compile("/blue/organizations/([^/]*)/");
 
-    private String getOrganizationFromURL() {
-        StaplerRequest currentRequest = Stapler.getCurrentRequest();
-        if (currentRequest == null) {
-            return null;
-        }
-
-        String requestURI = currentRequest.getRequestURI();
-
-        if (requestURI == null) {
-            return null;
-        }
-
-        Matcher matcher = pattern.matcher(requestURI);
-
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-        return null;
-    }
 }

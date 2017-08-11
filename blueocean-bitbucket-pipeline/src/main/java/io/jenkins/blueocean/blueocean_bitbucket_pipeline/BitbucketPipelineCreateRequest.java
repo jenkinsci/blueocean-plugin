@@ -5,26 +5,39 @@ import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSourceBuilder;
 import com.cloudbees.jenkins.plugins.bitbucket.BranchDiscoveryTrait;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.annotations.NonNull;
+import hudson.model.TaskListener;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import io.jenkins.blueocean.scm.api.AbstractMultiBranchCreateRequest;
+import io.jenkins.blueocean.scm.api.AbstractScmSourceEvent;
 import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
 import jenkins.model.JenkinsLocationConfiguration;
+import jenkins.scm.api.SCMHead;
+import jenkins.scm.api.SCMHeadObserver;
+import jenkins.scm.api.SCMRevision;
 import jenkins.scm.api.SCMSource;
+import jenkins.scm.api.SCMSourceOwner;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.List;
 
 /**
  * @author Vivek Pandey
  */
 public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateRequest {
+    private static final Logger logger = LoggerFactory.getLogger(BitbucketPipelineCreateRequest.class);
+
     @DataBoundConstructor
     public BitbucketPipelineCreateRequest(String name, BlueScmConfig scmConfig) {
         super(name, scmConfig);
@@ -54,6 +67,47 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
             }
         }
         return bitbucketSCMSource;
+    }
+
+    @Nullable
+    @Override
+    protected AbstractScmSourceEvent getScmSourceEvent(final MultiBranchProject project, SCMSource source) {
+        if(source instanceof BitbucketSCMSource) {
+            return new AbstractScmSourceEvent(((BitbucketSCMSource)source).getRepository(),
+                    ((BitbucketSCMSource)source).getServerUrl()) {
+                @Override
+                public boolean isMatch(@NonNull SCMSource source) {
+                    SCMSourceOwner sourceOwner = source.getOwner();
+                    return ((BitbucketSCMSource)source).getRepository().equals(getSourceName()) && sourceOwner != null
+                            && sourceOwner.getFullName().equals(project.getFullName());
+                }
+            };
+        }
+        return null;
+    }
+
+    @Override
+    protected boolean repoHasJenkinsFile(@Nonnull SCMSource scmSource) {
+        final JenkinsfileCriteria criteria = new JenkinsfileCriteria();
+        try {
+            scmSource.fetch(criteria, new SCMHeadObserver() {
+                @Override
+                public void observe(@Nonnull SCMHead head, @Nonnull SCMRevision revision) throws IOException, InterruptedException {
+                    //do nothing
+                }
+
+                @Override
+                public boolean isObserving() {
+                    //if jenkinsfile is found stop observing
+                    return !criteria.isJekinsfileFound();
+
+                }
+            }, TaskListener.NULL);
+        } catch (IOException | InterruptedException e) {
+            logger.warn("Error detecting Jenkinsfile: "+e.getMessage(), e);
+        }
+
+        return criteria.isJekinsfileFound();
     }
 
     @Override

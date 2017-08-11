@@ -4,6 +4,7 @@ import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 import waitAtLeast from '../../flow2/waitAtLeast';
 import BbCloudFlowManager from '../cloud/BbCloudFlowManager';
 import BbLoadingStep from '../steps/BbLoadingStep';
+import BbOrgListStep from '../steps/BbOrgListStep';
 
 import BbChooseServerStep from './steps/BbChooseServerStep';
 import BbServerManager from './BbServerManager';
@@ -81,6 +82,14 @@ export default class BbServerFlowManager extends BbCloudFlowManager {
             stateId: STATE.PENDING_LOADING_CREDS,
             stepElement: <BbLoadingStep />,
             afterStateId: STATE.STEP_CHOOSE_SERVER,
+        });
+    }
+
+    _renderChooseOrg() {
+        this.renderStep({
+            stateId: STATE.STEP_CHOOSE_ORGANIZATION,
+            stepElement: <BbOrgListStep title={'creation.bbserver.repository.title'} />,
+            afterStateId: this._getOrganizationsStepAfterStateId(),
         });
     }
 }

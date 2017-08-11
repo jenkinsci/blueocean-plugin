@@ -42,7 +42,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
     @Test
     public void canNotCreateWhenHaveNoPermissionOnDefaultOrg() throws Exception {
         MockAuthorizationStrategy authz = new MockAuthorizationStrategy();
-        authz.grant(Item.READ).everywhere().to(user);
+        authz.grant(Item.READ, Jenkins.READ).everywhere().to(user);
         j.jenkins.setAuthorizationStrategy(authz);
         // refresh the JWT token otherwise all hell breaks loose.
         jwtToken = getJwtToken(j.jenkins, "vivek", "vivek");
@@ -52,7 +52,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
     @Test
     public void canCreateWhenHavePermissionsOnCustomOrg() throws Exception {
         MockAuthorizationStrategy authz = new MockAuthorizationStrategy();
-        authz.grant(Item.READ).everywhere().to(user);
+        authz.grant(Item.READ,Jenkins.READ).everywhere().to(user);
         authz.grant(Item.CREATE, Item.CONFIGURE).onFolders(getOrgRoot()).to(user);
         j.jenkins.setAuthorizationStrategy(authz);
         // refresh the JWT token otherwise all hell breaks loose.
@@ -63,7 +63,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
     @Test
     public void canNotCreateWhenHaveNoPermissionOnCustomOrg() throws Exception {
         MockAuthorizationStrategy authz = new MockAuthorizationStrategy();
-        authz.grant(Item.READ).everywhere().to(user);
+        authz.grant(Item.READ, Jenkins.READ).everywhere().to(user);
         j.jenkins.setAuthorizationStrategy(authz);
         // refresh the JWT token otherwise all hell breaks loose.
         jwtToken = getJwtToken(j.jenkins, "vivek", "vivek");

@@ -30,7 +30,6 @@ const translate = i18nTranslator('blueocean-dashboard');
 export default class BbCloudFlowManager extends FlowManager {
 
     credentialManager = null;
-    queuedIndexAllocations = 0;
 
     get credentialId() {
         return this.credentialManager && this.credentialManager.credentialId;
@@ -59,10 +58,11 @@ export default class BbCloudFlowManager extends FlowManager {
     selectedRepository = null;
 
     @computed get stepsDisabled() {
-        return this.stateId === STATE.STEP_COMPLETE_SAVING_ERROR ||
-            this.stateId === STATE.STEP_COMPLETE_EVENT_ERROR ||
+        return this.stateId === STATE.STEP_COMPLETE_EVENT_ERROR ||
             this.stateId === STATE.STEP_COMPLETE_EVENT_TIMEOUT ||
             this.stateId === STATE.STEP_COMPLETE_MISSING_JENKINSFILE ||
+            this.stateId === STATE.PENDING_CREATION_SAVING ||
+            this.stateId === STATE.PENDING_CREATION_EVENTS ||
             this.stateId === STATE.STEP_COMPLETE_SUCCESS;
     }
 
@@ -182,11 +182,7 @@ export default class BbCloudFlowManager extends FlowManager {
         if (response.outcome === ListOrganizationsOutcome.SUCCESS) {
             this.organizations = response.organizations;
 
-            this.renderStep({
-                stateId: STATE.STEP_CHOOSE_ORGANIZATION,
-                stepElement: <BbOrgListStep />,
-                afterStateId: this._getOrganizationsStepAfterStateId(),
-            });
+            this._renderChooseOrg();
         } else if (response.outcome === ListOrganizationsOutcome.INVALID_CREDENTIAL_ID) {
             this.organizations = response.organizations;
 
@@ -200,6 +196,14 @@ export default class BbCloudFlowManager extends FlowManager {
                 stepElement: <BbUnknownErrorStep message={response.error} />,
             });
         }
+    }
+
+    _renderChooseOrg() {
+        this.renderStep({
+            stateId: STATE.STEP_CHOOSE_ORGANIZATION,
+            stepElement: <BbOrgListStep />,
+            afterStateId: this._getOrganizationsStepAfterStateId(),
+        });
     }
 
     @action
@@ -302,8 +306,21 @@ export default class BbCloudFlowManager extends FlowManager {
     _createPipelineComplete(result) {
         this.outcome = result.outcome;
         if (result.outcome === CreateMbpOutcome.SUCCESS) {
-            this.changeState(STATE.STEP_COMPLETE_SUCCESS);
-            this.pipeline = result.pipeline;
+            if (!this.isStateAdded(STATE.STEP_COMPLETE_MISSING_JENKINSFILE)) {
+                this._checkForBranchCreation(result.pipeline.name, true, ({ isFound, hasError, pipeline }) => {
+                    if (!hasError && isFound) {
+                        this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+                        this.pipeline = pipeline;
+                        this.pipelineName = pipeline.name;
+                    }
+                }, this.redirectTimeout);
+                if (!this.isStateAdded(STATE.STEP_COMPLETE_MISSING_JENKINSFILE)
+                    && !this.isStateAdded(STATE.STEP_COMPLETE_SUCCESS)) {
+                    this.changeState(STATE.PENDING_CREATION_EVENTS);
+                    this.pipeline = result.pipeline;
+                    this.pipelineName = result.pipeline.name;
+                }
+            }
         } else if (result.outcome === CreateMbpOutcome.INVALID_NAME) {
             this.renderStep({
                 stateId: STATE.STEP_RENAME,
@@ -362,21 +379,32 @@ export default class BbCloudFlowManager extends FlowManager {
             this._logEvent(event);
         }
 
-        if (event.job_multibranch_indexing_status === 'INDEXING' && event.job_run_status === 'QUEUED') {
-            this.queuedIndexAllocations++;
-        }
-
-        if (event.job_multibranch_indexing_result) {
-            this.queuedIndexAllocations--;
+        if (event.blueocean_job_pipeline_name === this.pipelineName
+            && event.jenkins_object_type === 'org.jenkinsci.plugins.workflow.job.WorkflowRun'
+            && (event.job_run_status === 'ALLOCATED' || event.job_run_status === 'RUNNING' ||
+                    event.job_run_status === 'SUCCESS' || event.job_run_status === 'FAILURE')) {
+            this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+            return;
         }
 
         const multiBranchIndexingComplete = event.job_multibranch_indexing_result === 'SUCCESS' &&
             event.blueocean_job_pipeline_name === this.pipelineName;
 
         if (multiBranchIndexingComplete) {
-            this.savedPipeline = this.pipelineName;
             LOGGER.info(`creation succeeded for ${this.pipelineName}`);
-            this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+            if (event.jenkinsfile_present === 'false') {
+                this._finishListening(STATE.STEP_COMPLETE_MISSING_JENKINSFILE);
+            }
+        } else if (event.job_multibranch_indexing_result === 'FAILURE') {
+            this._finishListening(STATE.STEP_COMPLETE_EVENT_ERROR);
+        } else {
+            this._checkForBranchCreation(event.blueocean_job_pipeline_name, false, ({ isFound, hasError, pipeline }) => {
+                if (isFound && !hasError) {
+                    this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+                    this.pipeline = pipeline;
+                    this.pipelineName = pipeline.name;
+                }
+            });
         }
     }
 
@@ -391,6 +419,23 @@ export default class BbCloudFlowManager extends FlowManager {
         this.changeState(STATE.STEP_COMPLETE_EVENT_TIMEOUT);
         this._cleanupListeners();
     }
+
+    _checkForBranchCreation(pipelineName, multiBranchIndexingComplete, onComplete, delay = 500) {
+        if (multiBranchIndexingComplete) {
+            LOGGER.debug(`multibranch indexing for ${pipelineName} completed`);
+        }
+
+        LOGGER.debug(`will check for branches of ${pipelineName} in ${delay}ms`);
+
+        setTimeout(() => {
+            this._creationApi.findBranches(pipelineName)
+                .then(data => {
+                    LOGGER.debug(`check for pipeline complete. created? ${data.isFound}`);
+                    onComplete(data);
+                });
+        }, delay);
+    }
+
 
     _logEvent(event) {
         if (event.job_multibranch_indexing_result === 'SUCCESS' || event.job_multibranch_indexing_result === 'FAILURE') {
