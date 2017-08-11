@@ -140,6 +140,7 @@ public abstract class BitbucketApi {
                                                                @Nonnull String content,
                                                                @Nonnull String commitMessage,
                                                                @Nullable String branch,
+                                                               @Nullable String sourceBranch,
                                                                @Nullable String commitId);
 
     /**
