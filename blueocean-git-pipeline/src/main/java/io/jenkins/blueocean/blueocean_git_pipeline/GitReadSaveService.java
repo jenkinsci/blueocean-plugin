@@ -64,7 +64,7 @@ public class GitReadSaveService extends ScmContentProvider {
             if (type != null) {
                 return ReadSaveType.valueOf(type.toUpperCase());
             }
-            return DEFAULT == null ? ReadSaveType.CLONE : DEFAULT;
+            return DEFAULT == null ? ReadSaveType.CACHE_BARE : DEFAULT;
         }
     }
 

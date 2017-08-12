@@ -23,13 +23,13 @@
  */
 package io.jenkins.blueocean.service.embedded.util;
 
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.KeyPair;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigInteger;
-import java.security.KeyPair;
-import java.security.KeyPairGenerator;
-import java.security.NoSuchAlgorithmException;
 import java.security.interfaces.RSAPublicKey;
 
 /**
@@ -38,18 +38,37 @@ import java.security.interfaces.RSAPublicKey;
  * @author kzantow
  */
 public class SSHKeyUtils {
-    
     /**
-     * Generates a new RSA key with specified keySize
+     * Generates a new SSH private key with specified keySize
      * @param keySize size to use for the key
-     * @return a public/private key pair
+     * @return a SSH private key
      */
-    public static KeyPair generateRSAKey(int keySize) {
+    public static String generateKey(int keySize) {
         try {
-            KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA");
-            generator.initialize(keySize);
-            return generator.genKeyPair();
-        } catch (NoSuchAlgorithmException ex) {
+            JSch jsch = new JSch();
+            KeyPair pair = KeyPair.genKeyPair(jsch, KeyPair.RSA, keySize);
+            ByteArrayOutputStream keyOut = new ByteArrayOutputStream();
+            pair.writePrivateKey(keyOut);
+            return new String(keyOut.toByteArray(), "utf-8");
+        } catch(Exception ex) {
+            throw new RuntimeException(ex);
+        }
+    }
+
+    /**
+     * Gets the public key, with a comment for the given private key
+     * @param privateKey SSH private key to use
+     * @param comment comment with the key
+     * @return SSH public key
+     */
+    public static String getPublicKey(String privateKey, String comment) {
+        try {
+            JSch jsch = new JSch();
+            KeyPair pair = KeyPair.load(jsch, privateKey.getBytes(), null );
+            ByteArrayOutputStream keyOut = new ByteArrayOutputStream();
+            pair.writePublicKey(keyOut, comment);
+            return new String(keyOut.toByteArray(), "utf-8");
+        } catch(Exception ex) {
             throw new RuntimeException(ex);
         }
     }
@@ -88,5 +107,5 @@ public class SSHKeyUtils {
         tmp[2] = (byte) ((value >>> 8) & 0xff);
         tmp[3] = (byte) (value & 0xff);
         out.write(tmp);
-    }    
+    }
 }

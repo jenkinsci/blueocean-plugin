@@ -155,11 +155,11 @@ public class UserImpl extends BlueUser {
      * Gets or creates the user's private Jenkins-managed key and returns the
      * public key to the user
      * @return JSON response
-     * @throws IOException 
+     * @throws IOException
      */
     @GET
     @WebMethod(name="publickey")
-    public HttpResponse publicKey() throws IOException {
+    public HttpResponse publicKey() {
         User authenticatedUser =  User.current();
         if (authenticatedUser == null) {
             throw new ServiceException.UnauthorizedException("Not authorized");
@@ -167,21 +167,21 @@ public class UserImpl extends BlueUser {
         if (!StringUtils.equals(getId(), authenticatedUser.getId())) {
             throw new ServiceException.ForbiddenException("Not authorized");
         }
-        
-        String publicKey = UserSSHKeyManager.getReadablePublicKey(authenticatedUser, 
+
+        String publicKey = UserSSHKeyManager.getPublicKey(authenticatedUser,
             UserSSHKeyManager.getOrCreate(authenticatedUser));
-        
+
         return HttpResponses.okJSON(ImmutableMap.of("key", publicKey));
     }
 
     /**
      * Deletes the user's private Jenkins-managed key
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     @DELETE
     @WebMethod(name="publickey")
-    public HttpResponse resetPublicKey() throws IOException {
+    public HttpResponse resetPublicKey() {
         User authenticatedUser =  User.current();
         if (authenticatedUser == null) {
             throw new ServiceException.UnauthorizedException("Not authorized");
@@ -189,7 +189,7 @@ public class UserImpl extends BlueUser {
         if (!StringUtils.equals(getId(), authenticatedUser.getId())) {
             throw new ServiceException.ForbiddenException("Not authorized");
         }
-        
+
         UserSSHKeyManager.reset(authenticatedUser);
         return HttpResponses.ok();
     }

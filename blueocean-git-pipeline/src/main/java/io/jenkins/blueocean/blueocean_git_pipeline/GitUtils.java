@@ -7,17 +7,16 @@ import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.domains.URIRequirementBuilder;
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.KeyPair;
 import hudson.EnvVars;
 import hudson.model.ItemGroup;
 import hudson.model.TaskListener;
 import hudson.plugins.git.GitException;
-import hudson.remoting.Base64;
 import hudson.security.ACL;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
-import io.jenkins.blueocean.service.embedded.util.UserSSHKeyManager;
 import java.io.ByteArrayInputStream;
 
 import org.eclipse.jgit.transport.*;
@@ -130,14 +129,15 @@ class GitUtils {
             protected void configure(OpenSshConfig.Host hc, com.jcraft.jsch.Session session) {
                 // do nothing
             }
-
             @Override
             protected JSch createDefaultJSch(FS fs) throws JSchException {
                 JSch defaultJSch = super.createDefaultJSch(fs);
+                KeyPair pair = KeyPair.load(defaultJSch, privateKey.getPrivateKey().getBytes(), null);
+                byte[] passphrase = new byte[0];
                 defaultJSch.addIdentity("key",
-                    Base64.decode(privateKey.getPrivateKey()),
-                    UserSSHKeyManager.getPublicKey(privateKey),
-                    null);
+                    pair.forSSHAgent(),
+                    null,
+                    passphrase);
                 return defaultJSch;
             }
         };
