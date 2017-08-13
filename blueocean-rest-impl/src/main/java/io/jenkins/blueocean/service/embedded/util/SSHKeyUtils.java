@@ -51,7 +51,7 @@ public class SSHKeyUtils {
             pair.writePrivateKey(keyOut);
             return new String(keyOut.toByteArray(), "utf-8");
         } catch(Exception ex) {
-            throw new RuntimeException(ex);
+            throw ex instanceof RuntimeException ? (RuntimeException)ex : new RuntimeException(ex);
         }
     }
 
@@ -64,12 +64,12 @@ public class SSHKeyUtils {
     public static String getPublicKey(String privateKey, String comment) {
         try {
             JSch jsch = new JSch();
-            KeyPair pair = KeyPair.load(jsch, privateKey.getBytes(), null );
+            KeyPair pair = KeyPair.load(jsch, privateKey.getBytes("utf-8"), null );
             ByteArrayOutputStream keyOut = new ByteArrayOutputStream();
             pair.writePublicKey(keyOut, comment);
             return new String(keyOut.toByteArray(), "utf-8");
         } catch(Exception ex) {
-            throw new RuntimeException(ex);
+            throw ex instanceof RuntimeException ? (RuntimeException)ex : new RuntimeException(ex);
         }
     }
 
