@@ -29,6 +29,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.concurrent.ExecutionException;
 
 /**
  * Basic {@link BlueRun} implementation.
@@ -186,7 +187,11 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public BlueTestSummary getTestSummary() {
-        return BlueTestResultFactory.resolve(run, this).summary;
+        if (getStateObj() == BlueRunState.FINISHED) {
+            return Caches.loadTestSummary(run, this).orNull();
+        } else {
+            return BlueTestResultFactory.resolve(run, this).summary;
+        }
     }
 
     public Collection<BlueActionProxy> getActions() {

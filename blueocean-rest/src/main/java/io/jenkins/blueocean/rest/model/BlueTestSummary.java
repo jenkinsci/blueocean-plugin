@@ -78,4 +78,8 @@ public final class BlueTestSummary {
             this.total + summary.total
         );
     }
+
+    public static BlueTestSummary empty() {
+        return new BlueTestSummary(0, 0, 0, 0, 0, 0, 0);
+    }
 }
