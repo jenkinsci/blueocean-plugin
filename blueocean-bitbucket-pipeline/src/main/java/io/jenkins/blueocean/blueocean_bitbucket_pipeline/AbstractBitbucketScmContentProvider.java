@@ -4,7 +4,6 @@ import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSource;
 import com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketEndpointConfiguration;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.google.common.base.Preconditions;
-import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.User;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.BitbucketCloudScm;
@@ -26,7 +25,6 @@ import jenkins.scm.api.SCMNavigator;
 import jenkins.scm.api.SCMSource;
 import net.sf.json.JSONObject;
 import org.apache.commons.codec.binary.Base64;
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.Stapler;
@@ -74,7 +72,8 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
                     .owner(request.getOwner())
                     .repo(request.getRepo())
                     .name(request.getPath())
-                    .sha(sha(content))
+                    //we use commitId as sha value - bitbucket doesn't use content sha to detect collision
+                    .sha(branch.getLatestCommit())
                     .commitId(branch.getLatestCommit())
                     .build();
 
@@ -110,7 +109,7 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
         BitbucketScmParams scmParamsFromItem = new BitbucketScmParams(item);
         String owner = scmParamsFromItem.getOwner();
         String repo = scmParamsFromItem.getRepo();
-        String commitId = gitContent.getCommitId();
+        String commitId = StringUtils.isNotBlank(gitContent.getCommitId()) ? gitContent.getCommitId() : gitContent.getSha();
         BitbucketApi api = BitbucketServerScm.getApi(scmParamsFromItem.getApiUrl(), scmParamsFromItem.getCredentials());
 
         String content;
@@ -124,14 +123,14 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
             message = gitContent.getPath()+" created with BlueOcean";
         }
         BbSaveContentResponse response = api.saveContent(owner,repo,gitContent.getPath(),content,
-                message, gitContent.getBranch(), commitId);
+                message, gitContent.getBranch(), gitContent.getSourceBranch(), commitId);
 
         final GitContent respContent =  new GitContent.Builder()
                 .branch(gitContent.getBranch())
                 .path(gitContent.getPath())
                 .owner(gitContent.getOwner())
                 .repo(gitContent.getRepo())
-                .sha(sha(content))
+                .sha(response.getCommitId())
                 .name(gitContent.getPath())
                 .commitId(response.getCommitId())
                 .build();
@@ -154,11 +153,6 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
             }
         }
         return null;
-    }
-
-    //bitbucket api doesn't give SHA of content, we compute it ourselves
-    private String sha(String data){
-        return DigestUtils.sha1Hex("blob " + data.length() + "\0" + data);
     }
 
     static class BitbucketScmParams extends ScmContentProviderParams {

@@ -13,6 +13,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import jenkins.model.Jenkins;
+import org.acegisecurity.Authentication;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerProxy;
 import org.kohsuke.stapler.StaplerRequest;
@@ -55,8 +56,21 @@ public class BlueOceanRootAction implements UnprotectedRootAction, StaplerProxy 
         StaplerRequest request = Stapler.getCurrentRequest();
 
         if(request.getOriginalRestOfPath().startsWith("/rest/")) {
+            /**
+             * If JWT is enabled, authenticate request using JWT token and set authentication context
+             */
             if (enableJWT && !JwtAuthenticationFilter.didRequestHaveValidatedJwtToken()) {
                 throw new ServiceException.UnauthorizedException("Unauthorized: Jwt token verification failed, no valid authentication instance found");
+            }
+            /**
+             * Check overall read permission. This will make sure we have all rest api protected in case request
+             * doesn't carry overall read permission.
+             *
+             * @see Jenkins#getTarget()
+             */
+            Authentication a = Jenkins.getAuthentication();
+            if(!Jenkins.getInstance().getACL().hasPermission(a,Jenkins.READ)){
+                throw new ServiceException.ForbiddenException("Forbidden");
             }
         }else{
             //If user doesn't have overall Jenkins read permission then return 403, which results in classic UI redirecting
