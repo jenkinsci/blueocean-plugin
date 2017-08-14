@@ -63,7 +63,7 @@ public class SearchTest {
         dashboardPage.clearSearchText();
         dashboardPage.testJobCountAtLeast(totalJobs);
 
-        dashboardPage.enterSearchText("*freestyle*");
+        dashboardPage.enterSearchText("*search-test*");
         dashboardPage.testJobCountEqualTo(2);
         dashboardPage.clearSearchText();
         dashboardPage.testJobCountAtLeast(totalJobs);
