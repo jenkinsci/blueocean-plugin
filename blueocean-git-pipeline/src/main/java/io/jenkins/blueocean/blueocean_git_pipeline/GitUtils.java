@@ -29,6 +29,7 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -132,13 +133,17 @@ class GitUtils {
             @Override
             protected JSch createDefaultJSch(FS fs) throws JSchException {
                 JSch defaultJSch = super.createDefaultJSch(fs);
-                KeyPair pair = KeyPair.load(defaultJSch, privateKey.getPrivateKey().getBytes(), null);
-                byte[] passphrase = new byte[0];
-                defaultJSch.addIdentity("key",
-                    pair.forSSHAgent(),
-                    null,
-                    passphrase);
-                return defaultJSch;
+                try {
+                    KeyPair pair = KeyPair.load(defaultJSch, privateKey.getPrivateKey().getBytes("utf-8"), null);
+                    byte[] passphrase = new byte[0];
+                    defaultJSch.addIdentity("key",
+                        pair.forSSHAgent(),
+                        null,
+                        passphrase);
+                    return defaultJSch;
+                } catch (UnsupportedEncodingException e) {
+                    throw new RuntimeException(e);
+                }
             }
         };
         return new TransportConfigCallback() {
