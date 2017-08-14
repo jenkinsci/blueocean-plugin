@@ -28,6 +28,7 @@ public class SearchTest {
         int totalJobs = 4;
         String alpha = "search-test-freestyle-alpha";
         String bravo = "search-test-freestyle-bravo";
+
         jobApi.createFreeStyleJob(alpha, "echo alpha");
         jobApi.createFreeStyleJob(bravo, "echo bravo");
         FolderJob jobFolder = jobApi.getFolder(Folder.folders("folder1", "folder2"), true);
@@ -39,22 +40,23 @@ public class SearchTest {
         dashboardPage.testJobCountEqualTo(1);
         dashboardPage.findJob(alpha);
         dashboardPage.clearSearchText();
-        dashboardPage.testJobCountEqualTo(4);
+        dashboardPage.testJobCountAtLeast(totalJobs);
+
         dashboardPage.enterSearchText("folder1/");
         dashboardPage.testJobCountEqualTo(2);
         dashboardPage.clearSearchText();
-        dashboardPage.testJobCountEqualTo(totalJobs);
+        dashboardPage.testJobCountAtLeast(totalJobs);
 
         dashboardPage.enterSearchText("f*/z*");
         dashboardPage.testJobCountEqualTo(2);
         dashboardPage.clearSearchText();
-        dashboardPage.testJobCountEqualTo(totalJobs);
+        dashboardPage.testJobCountAtLeast(totalJobs);
 
 
         dashboardPage.enterSearchText("z*");
         dashboardPage.testJobCountEqualTo(2);
         dashboardPage.clearSearchText();
-        dashboardPage.testJobCountEqualTo(totalJobs);
+        dashboardPage.testJobCountAtLeast(totalJobs);
 
         dashboardPage.enterSearchText("zz*");
         dashboardPage.testJobCountEqualTo(1);
