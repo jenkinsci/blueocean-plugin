@@ -61,10 +61,7 @@ public class BranchImpl extends PipelineImpl {
 
     @Exported(name = Branch.BRANCH, inline = true)
     public Branch getBranch() {
-        ObjectMetadataAction om = job.getAction(ObjectMetadataAction.class);
-        PrimaryInstanceMetadataAction pima = job.getAction(PrimaryInstanceMetadataAction.class);
-        String url = om != null && om.getObjectUrl() != null ? om.getObjectUrl() : null;
-        return new Branch(url, pima != null);
+        return Branch.getBranch(job);
     }
 
     @Override
