@@ -14,6 +14,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.Branch;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.PullRequest;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
+import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
@@ -38,6 +39,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -112,6 +114,35 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         } catch (InterruptedException | TimeoutException e) {
             logger.error("Error getting StateObject from execution context: "+e.getMessage(), e);
         }
+
+        // TODO: Probably move this elsewhere - maybe into PipelineNodeContainerImpl?
+        boolean isQueued = false;
+        boolean isRunning = false;
+
+        String causeOfBlockage = getCauseOfBlockage();
+        for (BluePipelineNode n : getNodes()) {
+            BlueRunState nodeState = n.getStateObj();
+            // Handle cases where there is a previous successful run - PipelineNodeGraphVisitor.union results in a null
+            // getStateObj().
+            if (nodeState == null) {
+                if (causeOfBlockage != null) {
+                    isQueued = true;
+                } else {
+                    isRunning = true;
+                }
+            } else if (nodeState.equals(BlueRunState.QUEUED)) {
+                isQueued = true;
+            } else if (nodeState.equals(BlueRunState.RUNNING)) {
+                isRunning = true;
+            }
+        }
+
+        if (!isRunning && (isQueued || causeOfBlockage != null)) {
+            // This would mean we're explicitly queued or we have no running nodes but do have a cause of blockage,
+            // which works out the same..
+            return BlueRunState.QUEUED;
+        }
+
         return super.getStateObj();
     }
 

@@ -21,10 +21,13 @@ import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import org.jenkinsci.plugins.workflow.test.steps.SemaphoreStep;
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.BuildWatcher;
 import org.jvnet.hudson.test.Issue;
 
 import java.net.URL;
@@ -38,6 +41,8 @@ import static org.junit.Assert.assertEquals;
 public class AbstractRunImplTest extends PipelineBaseTest {
     @Rule
     public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();
+    @ClassRule
+    public static BuildWatcher buildWatcher = new BuildWatcher();
 
     @Before
     public void setup() throws Exception{
@@ -155,6 +160,9 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         String url = "/organizations/jenkins/pipelines/project/runs/" + r.getId() + "/";
         Map m = request().get(url).build(Map.class);
 
+        // Wait 'til we're out of queue and actually on the node.
+        j.waitForMessage("Running on master", r);
+
         // While the run has not finished keep checking that the result is unknown
         while (!"FINISHED".equals(m.get("state").toString())) {
             Assert.assertEquals("RUNNING", m.get("state"));
@@ -189,14 +197,16 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         j.jenkins.setNumExecutors(0);
 
         // Schedule another run so it goes in the queue
-        p.scheduleBuild2(0);
+        WorkflowRun r2 = p.scheduleBuild2(0).waitForStart();
+        j.waitForMessage("Still waiting to schedule task", r2);
 
         // Get latest run for this pipeline
         pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
         Map latestRun = (Map) pipeline.get("latestRun");
 
-        Assert.assertEquals("RUNNING", latestRun.get("state"));
+        Assert.assertEquals("QUEUED", latestRun.get("state"));
         Assert.assertEquals("2", latestRun.get("id"));
+        Assert.assertEquals("Waiting for next available executor", latestRun.get("causeOfBlockage"));
 
         String idOfSecondRun = (String) latestRun.get("id");
 
@@ -209,13 +219,143 @@ public class AbstractRunImplTest extends PipelineBaseTest {
             request().post("/organizations/jenkins/pipelines/project/runs/" + idOfSecondRun + "/replay/").build(String.class);
         }
 
+        // Sleep to make sure the build actually gets launched.
+        Thread.sleep(1000);
+        WorkflowRun r3 = p.getLastBuild();
+
+        j.waitForMessage("Still waiting to schedule task", r3);
 
         // Get latest run for this pipeline
         pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
         latestRun = (Map) pipeline.get("latestRun");
 
         // It should be running
-        Assert.assertEquals("RUNNING", latestRun.get("state"));
+        Assert.assertEquals("QUEUED", latestRun.get("state"));
         Assert.assertEquals("3", latestRun.get("id"));
+        Assert.assertEquals("Waiting for next available executor", latestRun.get("causeOfBlockage"));
+    }
+
+    @Issue("JENKINS-44981")
+    @Test
+    public void queuedSingleNode() throws Exception {
+        WorkflowJob p = j.createProject(WorkflowJob.class, "project");
+
+        URL resource = Resources.getResource(getClass(), "queuedSingleNode.jenkinsfile");
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+        p.save();
+
+        // Ensure null before first run
+        Map pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        Assert.assertNull(pipeline.get("latestRun"));
+
+        // Run until completed
+        WorkflowRun r = p.scheduleBuild2(0).waitForStart();
+        j.waitForMessage("Still waiting to schedule task", r);
+
+        // Get latest run for this pipeline
+        pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        Map latestRun = (Map) pipeline.get("latestRun");
+
+        Assert.assertEquals("QUEUED", latestRun.get("state"));
+        Assert.assertEquals("1", latestRun.get("id"));
+        Assert.assertEquals("Waiting for next available executor", latestRun.get("causeOfBlockage"));
+
+        j.createOnlineSlave(Label.get("test"));
+
+        j.assertBuildStatusSuccess(j.waitForCompletion(r));
+    }
+
+    @Issue("JENKINS-44981")
+    @Test
+    public void declarativeQueuedAgent() throws Exception {
+        WorkflowJob p = j.createProject(WorkflowJob.class, "project");
+
+        URL resource = Resources.getResource(getClass(), "declarativeQueuedAgent.jenkinsfile");
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+        p.save();
+        j.jenkins.setNumExecutors(0);
+        // Ensure null before first run
+        Map pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        Assert.assertNull(pipeline.get("latestRun"));
+
+        // Run until completed
+        WorkflowRun r = p.scheduleBuild2(0).waitForStart();
+        j.waitForMessage("Still waiting to schedule task", r);
+
+        // Get latest run for this pipeline
+        String url = "/organizations/jenkins/pipelines/project/runs/" + r.getId() + "/";
+        Map latestRun = request().get(url).build(Map.class);
+
+        Assert.assertEquals("QUEUED", latestRun.get("state"));
+        Assert.assertEquals("1", latestRun.get("id"));
+        Assert.assertEquals("Waiting for next available executor", latestRun.get("causeOfBlockage"));
+
+        j.jenkins.setNumExecutors(2);
+
+        j.assertBuildStatusSuccess(j.waitForCompletion(r));
+
+        // Disable the executors.
+        j.jenkins.setNumExecutors(0);
+
+        // Run until we hang.
+        WorkflowRun r2 = p.scheduleBuild2(0).waitForStart();
+        j.waitForMessage("Still waiting to schedule task", r2);
+
+        // Get latest run for this pipeline
+        url = "/organizations/jenkins/pipelines/project/runs/" + r2.getId() + "/";
+        latestRun = request().get(url).build(Map.class);
+
+        Assert.assertEquals("2", latestRun.get("id"));
+        Assert.assertEquals("QUEUED", latestRun.get("state"));
+        Assert.assertEquals("Waiting for next available executor", latestRun.get("causeOfBlockage"));
+
+        j.jenkins.setNumExecutors(2);
+
+        j.assertBuildStatusSuccess(j.waitForCompletion(r2));
+    }
+
+    @Issue("JENKINS-44981")
+    @Test
+    public void queuedAndRunningParallel() throws Exception {
+        WorkflowJob p = j.createProject(WorkflowJob.class, "project");
+
+        URL resource = Resources.getResource(getClass(), "queuedAndRunningParallel.jenkinsfile");
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+        p.save();
+
+        // Ensure null before first run
+        Map pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        Assert.assertNull(pipeline.get("latestRun"));
+        j.createOnlineSlave(Label.get("first"));
+
+        // Run until completed
+        WorkflowRun r = p.scheduleBuild2(0).waitForStart();
+        SemaphoreStep.waitForStart("wait-a/1", r);
+        j.waitForMessage("[Pipeline] [b] node", r);
+
+        // Get latest run for this pipeline
+        pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        Map latestRun = (Map) pipeline.get("latestRun");
+
+        Assert.assertEquals("RUNNING", latestRun.get("state"));
+        Assert.assertEquals("1", latestRun.get("id"));
+
+        SemaphoreStep.success("wait-a/1", null);
+        // Sleep to make sure we get the a branch end node...
+        Thread.sleep(1000);
+
+        pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
+        latestRun = (Map) pipeline.get("latestRun");
+
+        Assert.assertEquals("QUEUED", latestRun.get("state"));
+        Assert.assertEquals("1", latestRun.get("id"));
+        Assert.assertEquals("There are no nodes with the label ‘second’", latestRun.get("causeOfBlockage"));
+
+        j.createOnlineSlave(Label.get("second"));
+
+        j.assertBuildStatusSuccess(j.waitForCompletion(r));
     }
 }
