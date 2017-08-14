@@ -2,7 +2,7 @@
  * Created by cmeyers on 8/26/16.
  */
 import React, { Component, PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '@jenkins-cd/design-language';
 import { RunApi as runApi, ToastService as toastService, ToastUtils } from '../';
 import Security from '../security';
 import { stopProp } from '../utils';
@@ -104,11 +104,12 @@ export class RunButton extends Component {
         }
 
         const { onClick = () => this._onRunClick() } = this.props;
+
         return (
             <div className={`run-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
                 { showRunButton &&
                 <a className={`run-button ${innerButtonClass}`} title={runLabel} onClick={onClick}>
-                    <Icon size={24} icon="play_circle_outline" />
+                    <Icon size={24} color={this.props.iconColor} hoverColor={this.props.hoverIconColor} icon="AvPlayCircleOutline" style={{ marginRight: '5px' }} />
                     <span className="button-label">{runLabel}</span>
                 </a>
                 }
@@ -140,9 +141,13 @@ RunButton.propTypes = {
     onClick: PropTypes.func,
     runText: PropTypes.string,
     innerButtonClasses: PropTypes.string,
+    iconColor: PropTypes.string,
+    hoverIconColor: PropTypes.string,
 };
 
 RunButton.defaultProps = {
     buttonType: 'toggle',
     innerButtonClasses: 'btn inverse',
+    iconColor: '#ffffff',
+    hoverIconColor: '',
 };

@@ -1,5 +1,5 @@
 import React, {Component, PropTypes} from 'react';
-import {Icon} from '@jenkins-cd/react-material-icons';
+import { Icon } from './Icon';
 
 /**
  * Toast displays a small confirmation message with an optional action link and dismiss link.
@@ -37,7 +37,7 @@ export class Toast extends Component {
                 <a className="dismiss" onClick={() => this.onDismissClick()}>
                   <Icon {...{
                       size: 18,
-                      icon: 'clear',
+                      icon: 'ContentClear',
                       style: { fill: "#fff" },
                   }} />
                 </a>

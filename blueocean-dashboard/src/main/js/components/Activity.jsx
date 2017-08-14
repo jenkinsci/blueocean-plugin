@@ -117,6 +117,7 @@ export class Activity extends Component {
                            runnable={pipeline}
                            latestRun={latestRun}
                            onNavigation={onNavigation}
+                           iconColor="#4A90E2"
                 />
             );
 

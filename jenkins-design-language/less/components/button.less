@@ -129,6 +129,10 @@ button, .btn, .btn-default, .btn-primary, .btn-secondary, .btn-danger, a.btn-lin
 button, .btn, .btn-default, .btn-primary, .btn-secondary {
     &.monochrome {
         .btn-styles(transparent, @gray-light, @text-color, @gray-lighter, @gray-lighter);
+
+        svg {
+            fill: @text-color !important;
+        }
     }
 }
 
