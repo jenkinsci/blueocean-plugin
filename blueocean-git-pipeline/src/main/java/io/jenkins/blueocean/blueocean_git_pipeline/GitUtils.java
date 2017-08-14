@@ -128,7 +128,7 @@ class GitUtils {
         final SshSessionFactory sshSessionFactory = new JschConfigSessionFactory() {
             @Override
             protected void configure(OpenSshConfig.Host hc, com.jcraft.jsch.Session session) {
-                session.setConfig("StrictHostKeyChecking", "no"); // jenkins user doesn't likely have the hos key
+                session.setConfig("StrictHostKeyChecking", "no"); // jenkins user doesn't likely have the host key
             }
 
             @Override
