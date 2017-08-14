@@ -8,6 +8,7 @@ import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.listeners.ItemListener;
+import io.jenkins.blueocean.rest.factory.BlueIssueFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.Branch;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.PullRequest;
 import jenkins.model.Jenkins;
@@ -17,7 +18,6 @@ import jenkins.scm.api.metadata.ObjectMetadataAction;
 import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
 import jenkins.scm.api.mixin.ChangeRequestSCMHead;
 
-import javax.annotation.Nullable;
 import java.util.concurrent.TimeUnit;
 
 class Caches {
@@ -96,7 +96,7 @@ class Caches {
                 return Optional.absent();
             }
             String url = om != null && om.getObjectUrl() != null ? om.getObjectUrl() : null;
-            return Optional.of(new Branch(url, pima != null));
+            return Optional.of(new Branch(url, pima != null, BlueIssueFactory.resolve(job)));
         }
     }
 
