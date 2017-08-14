@@ -53,6 +53,7 @@ public abstract class BlueRun extends Resource {
 
     /** Date String format */
     public static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
 
 
     /**
@@ -96,7 +97,7 @@ public abstract class BlueRun extends Resource {
      */
     @Exported(name=START_TIME)
     public final String getStartTimeString(){
-        return new SimpleDateFormat(DATE_FORMAT_STRING).format(getStartTime());
+        return DATE_FORMAT.format(getStartTime());
     }
 
     /**
@@ -106,7 +107,7 @@ public abstract class BlueRun extends Resource {
 
      @Exported(name=ENQUEUE_TIME)
      public final String getEnQueueTimeString() {
-        return new SimpleDateFormat(DATE_FORMAT_STRING).format(getEnQueueTime());
+        return DATE_FORMAT.format(getEnQueueTime());
      }
 
     /**
@@ -120,7 +121,7 @@ public abstract class BlueRun extends Resource {
         if(endTime == null) {
             return null;
         } else {
-            return new SimpleDateFormat(DATE_FORMAT_STRING).format(endTime);
+            return DATE_FORMAT.format(endTime);
         }
     }
 
