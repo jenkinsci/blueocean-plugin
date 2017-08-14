@@ -75,7 +75,6 @@ public class UserSSHKeyManager {
         try {
             // create one!
             String privateKey = SSHKeyUtils.generateKey(KEY_SIZE).trim();
-            System.out.println("Generated key: \n" + privateKey);
             BasicSSHUserPrivateKey.DirectEntryPrivateKeySource keySource = new BasicSSHUserPrivateKey.DirectEntryPrivateKeySource(privateKey);
             BasicSSHUserPrivateKey key = new BasicSSHUserPrivateKey(CredentialsScope.USER, BLUEOCEAN_GENERATED_SSH_KEY_ID, user.getId(), keySource, null, BLUEOCEAN_GENERATED_SSH_KEY_ID);
             store.addCredentials(getDomain(store), key);
@@ -98,9 +97,6 @@ public class UserSSHKeyManager {
         Preconditions.checkNotNull(key);
 
         String publicKey = SSHKeyUtils.getPublicKey(key.getPrivateKey(), getKeyComment(user.getId())).trim();
-
-        System.out.println("Got publicKey: \n" + publicKey);
-
         return publicKey;
     }
 
