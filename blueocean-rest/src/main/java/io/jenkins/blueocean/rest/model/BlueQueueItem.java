@@ -54,7 +54,7 @@ public abstract class BlueQueueItem extends Resource {
 
     @Exported(name=QUEUED_TIME)
     public final String getQueuedTimeString(){
-        return new SimpleDateFormat(DATE_FORMAT_STRING).format(getQueuedTime());
+        return BlueRun.DATE_FORMAT.print(getQueuedTime().getTime());
     }
     /**
      *
