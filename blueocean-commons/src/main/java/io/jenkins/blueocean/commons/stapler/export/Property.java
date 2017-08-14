@@ -141,15 +141,14 @@ public abstract class Property implements Comparable<Property> {
         if (merge) {
             // merged property will get all its properties written here
             if (d != null) {
-                Model model;
-                try {
-                    model = owner.get(d.getClass(), parent.type, name);
-                } catch (NotExportableException e) {
+                if (d.getClass().getAnnotation(ExportedBean.class) == null) {
                     if(writer.getExportConfig().isSkipIfFail()){
                         return;
+                    } else {
+                        throw new NotExportableException(d.getClass());
                     }
-                    throw e;
                 }
+                Model model = owner.getOrNull(d.getClass(), parent.type, name);
                 model.writeNestedObjectTo(d, new FilteringTreePruner(parent.HAS_PROPERTY_NAME_IN_ANCESTORY,child), writer);
             }
         } else {
@@ -201,106 +200,21 @@ public abstract class Property implements Comparable<Property> {
 
         Class c = value.getClass();
 
-        Model model;
-        try {
-            model = owner.get(c, parent.type, name);
-        } catch (NotExportableException ex) {
-            if(STRING_TYPES.contains(c)) {
-                writer.value(value.toString());
-                return;
-            }
-            if(PRIMITIVE_TYPES.contains(c)) {
-                writer.valuePrimitive(value);
-                return;
-            }
-            Class act = c.getComponentType();
-            if (act !=null) { // array
-                Range r = pruner.getRange();
-                writer.startArray();
-                if (value instanceof Object[]) {
-                    // typical case
-                    for (Object item : r.apply((Object[]) value)) {
-                        writeBuffered(act, item, pruner, writer);
-                    }
-                } else {
-                    // more generic case
-                    int len = Math.min(r.max, Array.getLength(value));
-                    for (int i=r.min; i<len; i++) {
-                        writeBuffered(act, Array.get(value, i), pruner, writer);
-                    }
+        if (c.getAnnotation(ExportedBean.class) == null) {
+            handleNotExportable(expected, value, pruner, writer, skipIfFail, c);
+        } else {
+            try {
+                Model model = owner.getOrNull(c, parent.type, name);
+                if (model == null) {
+                    throw new NotExportableException(c);
                 }
-                writer.endArray();
-                return;
-            }
-            if(value instanceof Iterable) {
-                writer.startArray();
-                Type expectedItemType = Types.getTypeArgument(expected, 0, null);
-                for (Object item : pruner.getRange().apply((Iterable) value)) {
-                    writeBuffered(expectedItemType, item, pruner, writer);
-                }
-                writer.endArray();
-                return;
-            }
-            if(value instanceof Map) {
-                if (verboseMap!=null) {// verbose form
-                    writer.startArray();
-                    for (Map.Entry e : ((Map<?,?>) value).entrySet()) {
-                        BufferedDataWriter buffer = new BufferedDataWriter(writer.getExportConfig());
-                        try {
-                            writeStartObjectNullType(buffer);
-                            buffer.name(verboseMap[0]);
-                            writeValue(null, e.getKey(), pruner, buffer);
-                            buffer.name(verboseMap[1]);
-                            writeValue(null, e.getValue(), pruner, buffer);
-                            buffer.endObject();
-                            buffer.finished();
-                        } catch (IOException x) {
-                            if (x.getCause() instanceof InvocationTargetException) {
-                                LOGGER.log(Level.WARNING, "skipping export of " + e, x);
-                            }
-                        }
-                        buffer.commit(writer);
-                    }
-                    writer.endArray();
-                } else {// compact form
-                    writeStartObjectNullType(writer);
-                    for (Map.Entry e : ((Map<?,?>) value).entrySet()) {
-                        BufferedDataWriter buffer = new BufferedDataWriter(writer.getExportConfig());
-                        try {
-                            buffer.name(e.getKey().toString());
-                            writeValue(null, e.getValue(), pruner, buffer);
-                            buffer.finished();
-                        } catch (IOException x) {
-                            if (x.getCause() instanceof InvocationTargetException) {
-                                LOGGER.log(Level.WARNING, "skipping export of " + e, x);
-                            }
-                        }
-                        buffer.commit(writer);
-                    }
-                    writer.endObject();
-                }
-                return;
-            }
-            if(value instanceof Date) {
-                writer.valuePrimitive(((Date) value).getTime());
-                return;
-            }
-            if(value instanceof Calendar) {
-                writer.valuePrimitive(((Calendar) value).getTimeInMillis());
-                return;
-            }
-            if(value instanceof Enum) {
-                writer.value(value.toString());
-                return;
-            }
-
-            if (skipIfFail) {
                 writer.startObject();
+                model.writeNestedObjectTo(value, pruner, writer);
                 writer.endObject();
+            } catch (NotExportableException ex) {
+                handleNotExportable(expected, value, pruner, writer, skipIfFail, c);
                 return;
             }
-
-            throw ex;
         }
 
         try {
@@ -308,11 +222,105 @@ public abstract class Property implements Comparable<Property> {
         } catch (AbstractMethodError _) {
             // legacy impl that doesn't understand it
         }
+    }
 
+    private void handleNotExportable(Type expected, Object value, TreePruner pruner, DataWriter writer, boolean skipIfFail, Class c) throws IOException {
+        if(STRING_TYPES.contains(c)) {
+            writer.value(value.toString());
+            return;
+        }
+        if(PRIMITIVE_TYPES.contains(c)) {
+            writer.valuePrimitive(value);
+            return;
+        }
+        Class act = c.getComponentType();
+        if (act !=null) { // array
+            Range r = pruner.getRange();
+            writer.startArray();
+            if (value instanceof Object[]) {
+                // typical case
+                for (Object item : r.apply((Object[]) value)) {
+                    writeBuffered(act, item, pruner, writer);
+                }
+            } else {
+                // more generic case
+                int len = Math.min(r.max, Array.getLength(value));
+                for (int i=r.min; i<len; i++) {
+                    writeBuffered(act, Array.get(value, i), pruner, writer);
+                }
+            }
+            writer.endArray();
+            return;
+        }
+        if(value instanceof Iterable) {
+            writer.startArray();
+            Type expectedItemType = Types.getTypeArgument(expected, 0, null);
+            for (Object item : pruner.getRange().apply((Iterable) value)) {
+                writeBuffered(expectedItemType, item, pruner, writer);
+            }
+            writer.endArray();
+            return;
+        }
+        if(value instanceof Map) {
+            if (verboseMap!=null) {// verbose form
+                writer.startArray();
+                for (Map.Entry e : ((Map<?,?>) value).entrySet()) {
+                    BufferedDataWriter buffer = new BufferedDataWriter(writer.getExportConfig());
+                    try {
+                        writeStartObjectNullType(buffer);
+                        buffer.name(verboseMap[0]);
+                        writeValue(null, e.getKey(), pruner, buffer);
+                        buffer.name(verboseMap[1]);
+                        writeValue(null, e.getValue(), pruner, buffer);
+                        buffer.endObject();
+                        buffer.finished();
+                    } catch (IOException x) {
+                        if (x.getCause() instanceof InvocationTargetException) {
+                            LOGGER.log(Level.WARNING, "skipping export of " + e, x);
+                        }
+                    }
+                    buffer.commit(writer);
+                }
+                writer.endArray();
+            } else {// compact form
+                writeStartObjectNullType(writer);
+                for (Map.Entry e : ((Map<?,?>) value).entrySet()) {
+                    BufferedDataWriter buffer = new BufferedDataWriter(writer.getExportConfig());
+                    try {
+                        buffer.name(e.getKey().toString());
+                        writeValue(null, e.getValue(), pruner, buffer);
+                        buffer.finished();
+                    } catch (IOException x) {
+                        if (x.getCause() instanceof InvocationTargetException) {
+                            LOGGER.log(Level.WARNING, "skipping export of " + e, x);
+                        }
+                    }
+                    buffer.commit(writer);
+                }
+                writer.endObject();
+            }
+            return;
+        }
+        if(value instanceof Date) {
+            writer.valuePrimitive(((Date) value).getTime());
+            return;
+        }
+        if(value instanceof Calendar) {
+            writer.valuePrimitive(((Calendar) value).getTimeInMillis());
+            return;
+        }
+        if(value instanceof Enum) {
+            writer.value(value.toString());
+            return;
+        }
 
-        writer.startObject();
-        model.writeNestedObjectTo(value, pruner, writer);
-        writer.endObject();
+        if (skipIfFail) {
+            writer.startObject();
+            writer.endObject();
+            return;
+        }
+
+        throw new NotExportableException(c);
     }
 
     private static class BufferedDataWriter implements DataWriter {
