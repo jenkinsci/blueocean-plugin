@@ -75,7 +75,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
     @SuppressWarnings("unchecked")
     @SuppressFBWarnings(value = "REC_CATCH_EXCEPTION", justification = "Runtime exception is thrown from the catch block")
     @Override
-    public BluePipeline create(Reachable parent, @Nonnull BlueOrganization organization) throws IOException {
+    public BluePipeline create(@Nonnull BlueOrganization organization, @Nonnull Reachable parent) throws IOException {
         Preconditions.checkNotNull(parent, "Parent passed is null");
         Preconditions.checkNotNull(getName(), "Name provided was null");
 

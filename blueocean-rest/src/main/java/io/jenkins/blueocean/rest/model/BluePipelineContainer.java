@@ -51,7 +51,7 @@ public abstract class BluePipelineContainer extends Container<BluePipeline>{
     }
 
     public CreateResponse create(BluePipelineCreateRequest request) throws IOException {
-        BluePipeline pipeline = request.create(this, organization);
+        BluePipeline pipeline = request.create(organization, this);
         if(pipeline == null){
             throw new ServiceException.UnexpectedErrorException("Failed to create pipeline: "+request.getName());
         }

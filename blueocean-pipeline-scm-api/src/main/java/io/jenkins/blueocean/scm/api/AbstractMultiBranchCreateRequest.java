@@ -63,7 +63,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
 
     @Override
     @SuppressWarnings("unchecked")
-    public BluePipeline create(Reachable parent, BlueOrganization organization) throws IOException {
+    public BluePipeline create(@Nonnull BlueOrganization organization, @Nonnull Reachable parent) throws IOException {
         validateInternal(getName(), scmConfig, organization);
         MultiBranchProject project = createMultiBranchProject(organization);
         assignCredentialToProject(scmConfig, project);
