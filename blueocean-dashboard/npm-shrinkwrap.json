@@ -3,14 +3,14 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.149",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.149",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.149.tgz"
+      "version": "0.0.150",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.150",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.150.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.144",
-      "from": "@jenkins-cd/design-language@0.0.144",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.144.tgz"
+      "version": "0.0.145",
+      "from": "@jenkins-cd/design-language@0.0.145",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.145.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -71,11 +71,6 @@
       "version": "0.0.4",
       "from": "@jenkins-cd/preferences@0.0.4",
       "resolved": "https://registry.npmjs.org/@jenkins-cd/preferences/-/preferences-0.0.4.tgz"
-    },
-    "@jenkins-cd/react-material-icons": {
-      "version": "1.0.0",
-      "from": "@jenkins-cd/react-material-icons@1.0.0",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/react-material-icons/-/react-material-icons-1.0.0.tgz"
     },
     "@jenkins-cd/sse-gateway": {
       "version": "0.0.21",

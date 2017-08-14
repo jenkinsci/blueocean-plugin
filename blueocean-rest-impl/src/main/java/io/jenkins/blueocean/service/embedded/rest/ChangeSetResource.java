@@ -8,10 +8,13 @@ import io.jenkins.blueocean.rest.factory.BlueIssueFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
 import io.jenkins.blueocean.rest.model.BlueIssue;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import org.kohsuke.stapler.export.ExportedBean;
 
+
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
@@ -32,7 +35,10 @@ public class ChangeSetResource extends BlueChangeSetEntry {
     private final ChangeLogSet.Entry changeSet;
     private final Reachable parent;
 
-    public ChangeSetResource(Entry changeSet, Reachable parent) {
+    private final BlueOrganization organization;
+
+    public ChangeSetResource(@Nonnull BlueOrganization organization, Entry changeSet, Reachable parent) {
+        this.organization = organization;
         this.changeSet = changeSet;
         this.parent = parent;
     }
@@ -40,7 +46,7 @@ public class ChangeSetResource extends BlueChangeSetEntry {
 
     @Override
     public BlueUser getAuthor() {
-        return new UserImpl(changeSet.getAuthor());
+        return new UserImpl(organization, changeSet.getAuthor());
     }
 
     @Override

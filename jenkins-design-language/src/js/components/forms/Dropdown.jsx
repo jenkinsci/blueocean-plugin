@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import debounce from 'lodash.debounce';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '../Icon';
 
 import {FloatingElement} from '../FloatingElement';
 import KeyCodes from '../../KeyCodes';
@@ -309,7 +309,7 @@ export class Dropdown extends React.Component {
                    className="Dropdown-thumb"
                    onClick={this._onDropdownMouseEvent}
                 >
-                    <Icon icon="keyboard_arrow_down" size={16} />
+                    <Icon icon="HardwareKeyboardArrowDown" size={16} color="#949494" />
                 </a>
 
                 { this.state.menuOpen &&
