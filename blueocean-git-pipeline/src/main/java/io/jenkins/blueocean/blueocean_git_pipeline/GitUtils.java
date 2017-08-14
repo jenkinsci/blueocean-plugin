@@ -130,17 +130,20 @@ class GitUtils {
             protected void configure(OpenSshConfig.Host hc, com.jcraft.jsch.Session session) {
                 session.setConfig("StrictHostKeyChecking", "no"); // jenkins user doesn't likely have the hos key
             }
+
             @Override
-            protected JSch createDefaultJSch(FS fs) throws JSchException {
-                JSch defaultJSch = super.createDefaultJSch(fs);
+            protected JSch getJSch(OpenSshConfig.Host hc, FS fs) throws JSchException {
+                JSch jsch = new JSch();
+                configureJSch(jsch);
+                // TODO: might need this: jsch.setHostKeyRepository(new KnownHosts(this));
                 try {
-                    KeyPair pair = KeyPair.load(defaultJSch, privateKey.getPrivateKey().getBytes("utf-8"), null);
+                    KeyPair pair = KeyPair.load(jsch, privateKey.getPrivateKey().getBytes("utf-8"), null);
                     byte[] passphrase = new byte[0];
-                    defaultJSch.addIdentity("key",
+                    jsch.addIdentity(privateKey.getUsername(),
                         pair.forSSHAgent(),
                         null,
                         passphrase);
-                    return defaultJSch;
+                    return jsch;
                 } catch (UnsupportedEncodingException e) {
                     throw new RuntimeException(e);
                 }

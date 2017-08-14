@@ -36,7 +36,6 @@ import java.util.logging.Logger;
 
 import jenkins.plugins.git.GitSCMFileSystem;
 import jenkins.plugins.git.GitSCMSource;
-import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.RefUpdate;
 import org.eclipse.jgit.lib.Repository;
@@ -50,7 +49,7 @@ class GitBareRepoReadSaveRequest extends GitCacheCloneReadSaveRequest {
     private static final String LOCAL_REF_BASE = "refs/remotes/origin/";
     private static final String REMOTE_REF_BASE = "refs/heads/";
 
-    public GitBareRepoReadSaveRequest(GitSCMSource gitSource, String branch, String commitMessage, String sourceBranch, String filePath, byte[] contents) {
+    GitBareRepoReadSaveRequest(GitSCMSource gitSource, String branch, String commitMessage, String sourceBranch, String filePath, byte[] contents) {
         super(gitSource, branch, commitMessage, sourceBranch, filePath, contents);
     }
 
@@ -60,10 +59,17 @@ class GitBareRepoReadSaveRequest extends GitCacheCloneReadSaveRequest {
             GitSCMFileSystem fs = getFilesystem();
             return fs.invoke(new GitSCMFileSystem.FSFunction<byte[]>() {
                 @Override
-                public byte[] invoke(Repository repository) throws IOException, InterruptedException {
-                    try (Git git = new Git(repository)) {
-                        return GitUtils.readFile(repository, LOCAL_REF_BASE + branch, filePath);
+                public byte[] invoke(Repository repo) throws IOException, InterruptedException {
+                    // Get committer info and credentials
+                    User user = User.current();
+                    if (user == null) {
+                        throw new ServiceException.UnauthorizedException("Not authenticated");
                     }
+                    BasicSSHUserPrivateKey privateKey = UserSSHKeyManager.getOrCreate(user);
+
+                    // Make sure up-to-date and credentials work
+                    GitUtils.fetch(repo, privateKey);
+                    return GitUtils.readFile(repo, LOCAL_REF_BASE + branch, filePath);
                 }
             });
         } catch (InterruptedException ex) {
