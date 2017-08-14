@@ -30,8 +30,8 @@
     "zombie": "4.2.1"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.150-SNAPSHOT-nicu2",
-    "@jenkins-cd/design-language": "0.0.145-SNAPSHOT-nicu2",
+    "@jenkins-cd/blueocean-core-js": "0.0.150-SNAPSHOT-nicu3",
+    "@jenkins-cd/design-language": "0.0.145-SNAPSHOT-nicu4",
     "@jenkins-cd/js-extensions": "0.0.36",
     "@jenkins-cd/js-modules": "0.0.10",
     "history": "2.0.2",

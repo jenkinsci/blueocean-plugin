@@ -1,11 +1,11 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.150-SNAPSHOT-nicu",
+  "version": "0.0.150-SNAPSHOT-nicu2",
   "dependencies": {
     "@jenkins-cd/design-language": {
-      "version": "0.0.145-SNAPSHOT-nicu2",
-      "from": "@jenkins-cd/design-language@0.0.145-SNAPSHOT-nicu2",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.145-SNAPSHOT-nicu2.tgz"
+      "version": "0.0.145-SNAPSHOT-nicu4",
+      "from": "@jenkins-cd/design-language@0.0.145-SNAPSHOT-nicu4",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.145-SNAPSHOT-nicu4.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -1446,11 +1446,6 @@
           "dev": true
         }
       }
-    },
-    "change-emitter": {
-      "version": "0.1.6",
-      "from": "change-emitter@>=0.1.2 <0.2.0",
-      "resolved": "https://registry.npmjs.org/change-emitter/-/change-emitter-0.1.6.tgz"
     },
     "cheerio": {
       "version": "0.20.0",
@@ -3469,7 +3464,8 @@
     "hoist-non-react-statics": {
       "version": "1.2.0",
       "from": "hoist-non-react-statics@>=1.2.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/hoist-non-react-statics/-/hoist-non-react-statics-1.2.0.tgz"
+      "resolved": "https://registry.npmjs.org/hoist-non-react-statics/-/hoist-non-react-statics-1.2.0.tgz",
+      "dev": true
     },
     "home-or-tmp": {
       "version": "2.0.0",
@@ -6399,11 +6395,6 @@
       "resolved": "https://registry.npmjs.org/rechoir/-/rechoir-0.6.2.tgz",
       "dev": true
     },
-    "recompose": {
-      "version": "0.24.0",
-      "from": "recompose@0.24.0",
-      "resolved": "https://registry.npmjs.org/recompose/-/recompose-0.24.0.tgz"
-    },
     "redbox-react": {
       "version": "1.4.2",
       "from": "redbox-react@>=1.2.2 <2.0.0",
@@ -6757,7 +6748,7 @@
     },
     "setimmediate": {
       "version": "1.0.5",
-      "from": "setimmediate@>=1.0.4 <2.0.0",
+      "from": "setimmediate@>=1.0.5 <2.0.0",
       "resolved": "https://registry.npmjs.org/setimmediate/-/setimmediate-1.0.5.tgz"
     },
     "setprototypeof": {
@@ -7248,7 +7239,8 @@
     "symbol-observable": {
       "version": "1.0.4",
       "from": "symbol-observable@>=1.0.2 <2.0.0",
-      "resolved": "https://registry.npmjs.org/symbol-observable/-/symbol-observable-1.0.4.tgz"
+      "resolved": "https://registry.npmjs.org/symbol-observable/-/symbol-observable-1.0.4.tgz",
+      "dev": true
     },
     "symbol-tree": {
       "version": "3.2.2",
