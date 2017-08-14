@@ -61,12 +61,12 @@ public class SearchTest {
         dashboardPage.enterSearchText("zz*");
         dashboardPage.testJobCountEqualTo(1);
         dashboardPage.clearSearchText();
-        dashboardPage.testJobCountEqualTo(totalJobs);
+        dashboardPage.testJobCountAtLeast(totalJobs);
 
         dashboardPage.enterSearchText("*freestyle*");
         dashboardPage.testJobCountEqualTo(2);
         dashboardPage.clearSearchText();
-        dashboardPage.testJobCountEqualTo(totalJobs);
+        dashboardPage.testJobCountAtLeast(totalJobs);
 
     }
 }
