@@ -76,7 +76,7 @@ public class GithubEnterpriseScm extends GithubScm {
 
     @Override
     protected @Nonnull String createCredentialId(@Nonnull String apiUri) {
-        return GithubCredentialUtils.computeCredentialId(GithubEnterpriseScm.ID, apiUri);
+        return GithubCredentialUtils.computeCredentialId(null, GithubEnterpriseScm.ID, apiUri);
     }
 
     @Override

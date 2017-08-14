@@ -89,11 +89,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
         // extract some configuration
         if (scmConfig != null) {
             apiUrl = StringUtils.defaultIfBlank(scmConfig.getUri(), GitHubSCMSource.GITHUB_URL);
-            if (StringUtils.isNotBlank(scmConfig.getCredentialId())) {
-                credentialId = scmConfig.getCredentialId();
-            } else {
-                credentialId = computeCredentialId(scmConfig);
-            }
+            credentialId = computeCredentialId(scmConfig);
             if (scmConfig.getConfig().get("orgName") instanceof String) {
                 orgName = (String) scmConfig.getConfig().get("orgName");
             }
@@ -211,7 +207,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
 
     @Override
     protected String computeCredentialId(BlueScmConfig scmConfig) {
-        return GithubCredentialUtils.computeCredentialId(scmConfig.getId(), scmConfig.getUri());
+        return GithubCredentialUtils.computeCredentialId(scmConfig.getCredentialId(), scmConfig.getId(), scmConfig.getUri());
     }
 
     private void updateEndpoints(String apiUrl) {

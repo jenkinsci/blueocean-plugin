@@ -139,10 +139,7 @@ public class GithubScm extends AbstractScm {
     @Override
     public Container<ScmOrganization> getOrganizations() {
         StaplerRequest request = Stapler.getCurrentRequest();
-        String credentialId = StringUtils.defaultIfBlank(
-            getCredentialIdFromRequest(request),
-            GithubCredentialUtils.computeCredentialId(getId(), getUri())
-        );
+        String credentialId = GithubCredentialUtils.computeCredentialId(getCredentialIdFromRequest(request), getId(), getUri());
 
         User authenticatedUser = getAuthenticatedUser();
         final StandardUsernamePasswordCredentials credential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
@@ -216,7 +213,7 @@ public class GithubScm extends AbstractScm {
     }
 
     protected @Nonnull String createCredentialId(@Nonnull String apiUrl) {
-        return GithubCredentialUtils.computeCredentialId(GithubScm.ID, apiUrl);
+        return GithubCredentialUtils.computeCredentialId(null, GithubScm.ID, apiUrl);
     }
 
     protected @Nonnull String getCredentialDescription() {
