@@ -37,6 +37,11 @@ class SSHProcessFactory implements Factory<Command> {
         return new InvertedShellWrapper(this.createInvertedShell());
     }
 
+    @Override
+    public Command get() {
+        return this.create();
+    }
+
     private InvertedShell createInvertedShell() {
         return new SSHShell(cwd, interactive, this.resolveEffectiveCommand(this.getCommand()));
     }

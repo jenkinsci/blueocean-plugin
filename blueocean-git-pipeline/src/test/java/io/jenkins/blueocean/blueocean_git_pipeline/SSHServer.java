@@ -1,8 +1,10 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
+import com.google.common.collect.ImmutableList;
 import hudson.remoting.Base64;
 import io.jenkins.blueocean.service.embedded.util.SSHKeyUtils;
 import org.apache.commons.io.FileUtils;
+import org.apache.sshd.common.NamedFactory;
 import org.apache.sshd.common.PropertyResolverUtils;
 import org.apache.sshd.common.file.nativefs.NativeFileSystemFactory;
 import org.apache.sshd.common.file.root.RootedFileSystemProvider;
@@ -12,6 +14,7 @@ import org.apache.sshd.common.session.Session;
 import org.apache.sshd.server.Command;
 import org.apache.sshd.server.CommandFactory;
 import org.apache.sshd.server.SshServer;
+import org.apache.sshd.server.auth.UserAuth;
 import org.apache.sshd.server.auth.pubkey.PublickeyAuthenticator;
 import org.apache.sshd.server.auth.pubkey.UserAuthPublicKeyFactory;
 import org.apache.sshd.server.forward.AcceptAllForwardingFilter;
@@ -30,14 +33,12 @@ import java.security.interfaces.RSAPublicKey;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static java.util.Collections.*;
-
 class SSHServer {
     private static final Logger logger = Logger.getLogger(SSHShell.class.getName());
 
     private final SshServer sshd;
 
-    public SSHServer(File cwd, File keyFile, int port, boolean allowLocalUser, Map<String, String> authorizedUsers) {
+    public SSHServer(final File cwd, final File keyFile, final int port, final boolean allowLocalUser, final Map<String, String> authorizedUsers) {
         // Set up sshd defaults, bind go IPv4 and random non-privileged port
         sshd = SshServer.setUpDefaultServer();
         sshd.setHost("0.0.0.0");
@@ -87,17 +88,17 @@ class SSHServer {
             }
         };
         sshd.setPublickeyAuthenticator(authenticator);
-        sshd.setUserAuthFactories(Collections.singletonList(new UserAuthPublicKeyFactory()));
+        sshd.setUserAuthFactories(Collections.<NamedFactory<UserAuth>>singletonList(new UserAuthPublicKeyFactory()));
 
         final RootedFileSystemProvider rootFsProvider = new RootedFileSystemProvider();
         sshd.setFileSystemFactory(new NativeFileSystemFactory() {
             @Override
             public FileSystem createFileSystem(Session session) throws IOException {
-                return rootFsProvider.newFileSystem(cwd.toPath(), emptyMap());
+                return rootFsProvider.newFileSystem(cwd.toPath(), Collections.<String, Object>emptyMap());
             }
         });
 
-        sshd.setSubsystemFactories(Collections.singletonList(new SftpSubsystemFactory()));
+        sshd.setSubsystemFactories(ImmutableList.<NamedFactory<Command>>of(new SftpSubsystemFactory()));
 
         sshd.setTcpipForwardingFilter(AcceptAllForwardingFilter.INSTANCE);
         PropertyResolverUtils.updateProperty(sshd, "welcome-banner", "Welcome to SSHD\n");
