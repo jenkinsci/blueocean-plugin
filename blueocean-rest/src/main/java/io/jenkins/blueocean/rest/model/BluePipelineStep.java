@@ -53,7 +53,7 @@ public abstract class BluePipelineStep extends Resource{
         if(getStartTime() == null) {
             return null;
         }
-        return BlueRun.DATE_FORMAT.format(getStartTime());
+        return BlueRun.DATE_FORMAT.print(getStartTime().getTime());
     }
 
     @Exported(name= DURATION_IN_MILLIS)

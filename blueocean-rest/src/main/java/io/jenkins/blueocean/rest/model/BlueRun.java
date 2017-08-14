@@ -3,6 +3,9 @@ package io.jenkins.blueocean.rest.model;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.DateTimeFormatterBuilder;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
@@ -53,8 +56,7 @@ public abstract class BlueRun extends Resource {
 
     /** Date String format */
     public static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat(DATE_FORMAT_STRING);
-
+    public static final DateTimeFormatter DATE_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     /**
      * @return name of the organization
@@ -97,7 +99,7 @@ public abstract class BlueRun extends Resource {
      */
     @Exported(name=START_TIME)
     public final String getStartTimeString(){
-        return DATE_FORMAT.format(getStartTime());
+        return DATE_FORMAT.print(getStartTime().getTime());
     }
 
     /**
@@ -107,7 +109,7 @@ public abstract class BlueRun extends Resource {
 
      @Exported(name=ENQUEUE_TIME)
      public final String getEnQueueTimeString() {
-        return DATE_FORMAT.format(getEnQueueTime());
+        return DATE_FORMAT.print(getEnQueueTime().getTime());
      }
 
     /**
@@ -121,7 +123,7 @@ public abstract class BlueRun extends Resource {
         if(endTime == null) {
             return null;
         } else {
-            return DATE_FORMAT.format(endTime);
+            return DATE_FORMAT.print(endTime.getTime());
         }
     }
 
