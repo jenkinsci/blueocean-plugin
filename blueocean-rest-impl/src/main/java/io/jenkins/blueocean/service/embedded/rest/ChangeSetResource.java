@@ -52,7 +52,7 @@ public class ChangeSetResource extends BlueChangeSetEntry {
     @Override
     public String getTimestamp(){
         if(changeSet.getTimestamp() > 0) {
-            return new SimpleDateFormat(BlueRun.DATE_FORMAT_STRING).format(changeSet.getTimestamp());
+            return BlueRun.DATE_FORMAT.print(changeSet.getTimestamp());
         }else{
             return null;
         }
