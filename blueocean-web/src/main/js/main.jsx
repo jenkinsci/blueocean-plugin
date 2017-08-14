@@ -14,7 +14,7 @@ import { ToastDrawer } from './components/ToastDrawer';
 import { BackendConnectFailure } from './components/BackendConnectFailure';
 import { DevelopmentFooter } from './DevelopmentFooter';
 import { useStrict } from 'mobx';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '@jenkins-cd/design-language';
 useStrict(true);
 
 const LOGGER = logging.logger('io.jenkins.blueocean.web.routing');
@@ -88,7 +88,7 @@ class App extends Component {
         const userComponents = [
             <Extensions.Renderer extensionPoint="jenkins.blueocean.top.go.classic">
                 <div className="user-component icon" title={translate('go.to.classic', { defaultValue: 'Go to classic' })}>
-                    <a className="main_exit_to_app" href={classicUrl}><Icon icon="exit_to_app" /></a>
+                    <a className="main_exit_to_app" href={classicUrl}><Icon icon="ActionExitToApp" /></a>
                 </div>
             </Extensions.Renderer>,
             <Extensions.Renderer extensionPoint="jenkins.blueocean.top.login">

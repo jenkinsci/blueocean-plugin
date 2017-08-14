@@ -182,11 +182,7 @@ export default class BbCloudFlowManager extends FlowManager {
         if (response.outcome === ListOrganizationsOutcome.SUCCESS) {
             this.organizations = response.organizations;
 
-            this.renderStep({
-                stateId: STATE.STEP_CHOOSE_ORGANIZATION,
-                stepElement: <BbOrgListStep />,
-                afterStateId: this._getOrganizationsStepAfterStateId(),
-            });
+            this._renderChooseOrg();
         } else if (response.outcome === ListOrganizationsOutcome.INVALID_CREDENTIAL_ID) {
             this.organizations = response.organizations;
 
@@ -200,6 +196,14 @@ export default class BbCloudFlowManager extends FlowManager {
                 stepElement: <BbUnknownErrorStep message={response.error} />,
             });
         }
+    }
+
+    _renderChooseOrg() {
+        this.renderStep({
+            stateId: STATE.STEP_CHOOSE_ORGANIZATION,
+            stepElement: <BbOrgListStep />,
+            afterStateId: this._getOrganizationsStepAfterStateId(),
+        });
     }
 
     @action

@@ -13,6 +13,7 @@ require('./FilterableListStories');
 require('./FloatingElementStories');
 require('./FormElementStories');
 require('./HeaderStories.jsx');
+require('./IconStories');
 require('./IconButtonStories');
 require('./JTableStories.jsx');
 require('./LabelStories');
