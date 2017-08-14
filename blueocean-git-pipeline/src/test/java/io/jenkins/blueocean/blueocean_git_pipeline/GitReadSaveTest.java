@@ -31,31 +31,10 @@ import hudson.model.User;
 import hudson.remoting.Base64;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
-import io.jenkins.blueocean.service.embedded.util.SSHKeyUtils;
 import io.jenkins.blueocean.service.embedded.util.UserSSHKeyManager;
 import jenkins.plugins.git.GitSampleRepoRule;
 import org.apache.commons.io.FileUtils;
-import org.apache.sshd.common.NamedFactory;
-import org.apache.sshd.common.file.FileSystemFactory;
-import org.apache.sshd.common.file.nativefs.NativeFileSystemFactory;
-import org.apache.sshd.common.file.virtualfs.VirtualFileSystemFactory;
-import org.apache.sshd.common.random.JceRandomFactory;
-import org.apache.sshd.common.random.SingletonRandomFactory;
-import org.apache.sshd.common.session.Session;
-import org.apache.sshd.common.util.GenericUtils;
 import org.apache.sshd.common.util.OsUtils;
-import org.apache.sshd.server.Command;
-import org.apache.sshd.server.CommandFactory;
-import org.apache.sshd.server.Environment;
-import org.apache.sshd.server.SshServer;
-import org.apache.sshd.server.auth.UserAuth;
-import org.apache.sshd.server.auth.pubkey.PublickeyAuthenticator;
-import org.apache.sshd.server.auth.pubkey.UserAuthPublicKeyFactory;
-import org.apache.sshd.server.keyprovider.AbstractGeneratorHostKeyProvider;
-import org.apache.sshd.server.keyprovider.SimpleGeneratorHostKeyProvider;
-import org.apache.sshd.server.session.ServerSession;
-import org.apache.sshd.server.shell.*;
-import org.jenkinsci.plugins.gitserver.ssh.SshCommandFactoryImpl;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.junit.*;
 import org.junit.runners.Parameterized;
@@ -64,11 +43,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.FileSystem;
-import java.nio.file.Files;
-import java.security.PublicKey;
-import java.security.interfaces.RSAPublicKey;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
 
@@ -86,7 +63,9 @@ public class GitReadSaveTest extends PipelineBaseTest {
     @Rule
     public GitSampleRepoRule repoForSSH = new GitSampleRepoRule();
 
-    private SshServer sshd;
+    private final Logger logger = Logger.getLogger(getClass().getName());
+
+    private SSHServer sshd;
 
     @Parameterized.Parameters
     public static Object[] data() {
@@ -98,7 +77,6 @@ public class GitReadSaveTest extends PipelineBaseTest {
     }
 
     private GitReadSaveTest(String blueOrganisation) {
-        System.out.println("setting org root to: " + blueOrganisation);
         GitScmTest.TestOrganizationFactoryImpl.orgRoot = blueOrganisation;
     }
 
@@ -116,30 +94,6 @@ public class GitReadSaveTest extends PipelineBaseTest {
     private static final String masterPipelineScript = "pipeline { stage('Build 1') { steps { echo 'build' } } }";
     private static final String branchPipelineScript = "pipeline { stage('Build 2') { steps { echo 'build' } } }";
     private static final String newPipelineScript = "pipeline { stage('Build 3') { steps { echo 'build' } } }";
-
-    static class GitCommandFactory extends SshCommandFactoryImpl implements CommandFactory {
-        final File cwd;
-
-        GitCommandFactory(File cwd) {
-            this.cwd = cwd;
-        }
-
-        @Override
-        public Command createCommand(String command) {
-            System.out.println("Incoming command: " + command);
-            CommandLine cmd = new CommandLine(command);
-            try {
-                Process proc = new ProcessBuilder(cmd.toArray(new String[cmd.size()]))
-                    .directory(cwd)
-                    .redirectErrorStream(true)
-                    .inheritIO()
-                    .start();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            return new ProcessShellFactory(cmd.toArray(new String[cmd.size()])).create();
-        }
-    }
 
     private void setupScm() throws Exception {
         // create git repo
@@ -177,223 +131,68 @@ public class GitReadSaveTest extends PipelineBaseTest {
         // we're using this to test push/pull, allow pushes to current branch, we reset it to match
         repoForSSH.git("config", "--local", "--add", "receive.denyCurrentBranch", "false");
 
-        final File rootFsDir = repoForSSH.getRoot().getParentFile();
-
         // Set up an SSH server with access to a git repo
         User user = login();
-        final String userName = user.getId();
         final BasicSSHUserPrivateKey key = UserSSHKeyManager.getOrCreate(user);
         final JSch jsch = new JSch();
         final KeyPair pair = KeyPair.load(jsch, key.getPrivateKey().getBytes(), null);
 
-        // Set up sshd defaults, bind go IPv4 and random non-privileged port
-        sshd = SshServer.setUpDefaultServer();
-        sshd.setHost("0.0.0.0");
-        sshd.setPort(Integer.parseInt(System.getProperty("TEST_SSH_SERVER_PORT", "0")));
-
-        // Set up an RSA host key
         File keyFile = new File(System.getProperty("TEST_SSH_SERVER_KEY_FILE", File.createTempFile("hostkey", "ser").getCanonicalPath()));
-        AbstractGeneratorHostKeyProvider hostKeyProvider =
-            new SimpleGeneratorHostKeyProvider(keyFile);
-        hostKeyProvider.setAlgorithm("RSA");
-        sshd.setKeyPairProvider(hostKeyProvider);
-
-        // Set key exchange factories so recent clients can connect
-//        sshd.setKeyExchangeFactories(Arrays.<NamedFactory<KeyExchange>>asList(
-//            BuiltinDHFactories.dhg14, // this is only registered by default with BC provider... JCE doesn't support 2048 bit?
-//            BuiltinDHFactories.dhg1));
-        sshd.setRandomFactory(new SingletonRandomFactory(new JceRandomFactory()));
-
-        // Set up a default shell
-        if (OsUtils.isUNIX()) {
-            ProcessShellFactory shellFactory = new ProcessShellFactory(new String[]{"/bin/sh", "-i", "-l"}) {
-                private TtyFilterOutputStream in;
-                private TtyFilterInputStream out;
-                private TtyFilterInputStream err;
-                @Override
-                protected InvertedShell createInvertedShell() {
-                    return new ProcessShell() {
-                        public void start(Environment env) throws IOException {
-                            Map<String, String> varsMap = this.resolveShellEnvironment(env.getEnv());
-                            List<String> command = getCommand();
-                            for(int i = 0; i < command.size(); ++i) {
-                                String cmd = (String)command.get(i);
-                                if ("$USER".equals(cmd)) {
-                                    cmd = (String)varsMap.get("USER");
-                                    command.set(i, cmd);
-                                    //cmdValue = GenericUtils.join(command, ' ');
-                                }
-                            }
-
-                            ProcessBuilder builder = new ProcessBuilder(command);
-                            Map modes;
-                            if (GenericUtils.size(varsMap) > 0) {
-                                try {
-                                    modes = builder.environment();
-                                    modes.putAll(varsMap);
-                                } catch (Exception var5) {
-                                    throw new RuntimeException(var5);
-
-                                }
-                            }
-
-                            if (this.log.isDebugEnabled()) {
-                                this.log.debug("Starting shell with command: '{}' and env: {}", builder.command(), builder.environment());
-                            }
-
-                            Process process = builder.start();
-                            modes = this.resolveShellTtyOptions(env.getPtyModes());
-                            out = new TtyFilterInputStream(process.getInputStream(), modes);
-                            err = new TtyFilterInputStream(process.getErrorStream(), modes);
-                            in = new TtyFilterOutputStream(process.getOutputStream(), err, modes);
-                        }
-                    };
-                }
-            };
-            sshd.setShellFactory(shellFactory);//,
-//                EnumSet.of(ProcessShellFactory.TtyOptions.ONlCr)));
-        } else {
-            ProcessShellFactory shellFactory = new ProcessShellFactory(new String[]{"cmd.exe "});
-            sshd.setShellFactory(shellFactory);//,
-//                EnumSet.of(ProcessShellFactory.TtyOptions.Echo, ProcessShellFactory.TtyOptions.ICrNl, ProcessShellFactory.TtyOptions.ONlCr)));
-        }
-
-        InteractiveProcessShellFactory shellFactory = new InteractiveProcessShellFactory() {
-            @Override
-            public Command create() {
-                return super.create();
-            }
-        };
-        //sshd.setShellFactory(shellFactory);
-
-        FileSystemFactory fileSystemFactory = new VirtualFileSystemFactory(repoForSSH.getRoot().toPath()) ;
-        sshd.setFileSystemFactory(fileSystemFactory);
-
-        // Set up git + scp command support
-        //CommandFactory gitCommandFactory = new GitCommandFactory(cwd);
-        //sshd.setCommandFactory(new ScpCommandFactory(gitCommandFactory));
-
-        // Set up the user's SSH key for authentication
-        PublickeyAuthenticator authenticator = new PublickeyAuthenticator() {
-            @Override
-            public boolean authenticate(String username, PublicKey key, ServerSession session) {
-                File localPublicKey = new File(System.getProperty("user.home") + "/.ssh/id_rsa.pub");
-                try {
-                    byte[] incoming = SSHKeyUtils.encodePublicKey((RSAPublicKey)key);
-                    String incomingHex = Base64.encode(incoming);
-                    if (localPublicKey.canRead() && FileUtils.readFileToString(localPublicKey).contains(incomingHex)) {
-                        return true;
-                    }
-                    String userPublicKey = Base64.encode(pair.getPublicKeyBlob());
-                    System.out.println(" ---- Authentication request for: " + username + " with key: " + incomingHex + " user's public key is: " + userPublicKey);
-                    return userName.equals(username) && userPublicKey.equals(incomingHex);
-                } catch (Exception e) {
-                    throw new RuntimeException(e);
-                }
-            }
-        };
-        sshd.setPublickeyAuthenticator(authenticator);
-        sshd.setUserAuthFactories(Collections.<NamedFactory<UserAuth>>singletonList(new UserAuthPublicKeyFactory()));
-
-        // Try to serve up filesystem stuff
-//        NativeFileSystemFactory fsFactory = new NativeFileSystemFactory() {
-//            @Override
-//            public FileSystemView createFileSystemView(Session session) {
-//                return new FileSystemView() {
-//                    @Override
-//                    public SshFile getFile(String file) {
-//                        System.out.println("Get file: " + file);
-//                        if ("repo".equals(file)) {
-//                            return new RepoSshFile("/", rootFsDir, userName);
-//                        }
-//                        if ("repo.git".equals(file)) {
-//                            return new RepoSshFile("/", new File(rootFsDir, ".git"), userName);
-//                        }
-//                        return null;
-//                    }
-//                    @Override
-//                    public SshFile getFile(SshFile baseDir, String file) {
-//                        System.out.println("Get dir: " + baseDir.getAbsolutePath() + " file: " + file);
-//                        if ("repo.git".equals(file)) {
-//                            return new RepoSshFile("/", new File(rootFsDir, ".git"), userName);
-//                        }
-//                        List<SshFile> subdirs = new ArrayList<>();
-//                        // Get the .git dir
-//                        SshFile repoDir = baseDir;
-//                        while (repoDir != null && !"repo.git".equals(repoDir.getName())) {
-//                            subdirs.add(0, repoDir);
-//                            repoDir = repoDir.getParentFile();
-//                        }
-//
-//                        File f = new File(rootFsDir, ".git");
-//                        if (repoDir != null) {
-//                            for (SshFile sf : subdirs) {
-//                                f = new File(f, sf.getName());
-//                            }
-//                            return new RepoSshFile(file, new File(f, file), userName);
-//                        }
-//                        return null;
-//                    }
-//                };
-//            }
-//        };
-//        sshd.setFileSystemFactory(fsFactory);
-
+        int port = Integer.parseInt(System.getProperty("TEST_SSH_SERVER_PORT", "0"));
+        boolean allowLocalUser = Boolean.getBoolean("TEST_SSH_SERVER_ALLOW_LOCAL");
+        String userPublicKey = Base64.encode(pair.getPublicKeyBlob());
+        sshd = new SSHServer(repoForSSH.getRoot(), keyFile, port, allowLocalUser, ImmutableMap.of("bob", userPublicKey));
         // Go, go, go
         sshd.start();
     }
-//
-//    class RepoSshFile extends NativeSshFile {
-//        RepoSshFile(final String fileName, final File file, final String userName) {
-//            super(fileName, file, userName);
-//        }
-//    }
 
     @After
     public void stopSSHServer() throws InterruptedException, IOException {
         if (sshd != null) {
-            sshd.stop(true);
+            String ssh = "ssh -p " + sshd.getPort() + " bob@127.0.0.1";
+            String remote = "ssh://bob@127.0.0.1:" + sshd.getPort() + "" + repoForSSH.getRoot().getCanonicalPath();
+            logger.fine(ssh + " // remote: " + remote);
+            sshd.stop();
         }
     }
 
     @Test
     public void testGitCloneReadWrite() throws Exception {
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CLONE, repoWithJenkinsfiles.getRoot(), masterPipelineScript);
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CLONE, repoNoJenkinsfile.getRoot(), null);
+        testGitReadWrite(GitReadSaveService.ReadSaveType.CLONE, repoWithJenkinsfiles, masterPipelineScript);
+        testGitReadWrite(GitReadSaveService.ReadSaveType.CLONE, repoNoJenkinsfile, null);
     }
 
     @Test
     public void testGitCacheCloneReadWrite() throws Exception {
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_CLONE, repoWithJenkinsfiles.getRoot(), masterPipelineScript);
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_CLONE, repoNoJenkinsfile.getRoot(), null);
+        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_CLONE, repoWithJenkinsfiles, masterPipelineScript);
+        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_CLONE, repoNoJenkinsfile, null);
     }
 
     @Test
     public void testBareRepoReadWrite() throws Exception {
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, repoWithJenkinsfiles.getRoot(), masterPipelineScript);
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, repoNoJenkinsfile.getRoot(), null);
+        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, repoWithJenkinsfiles, masterPipelineScript);
+        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, repoNoJenkinsfile, null);
     }
 
-    //@Test
+    @Test
     public void bareRepoReadWriteOverSSH() throws Exception {
+        if (!OsUtils.isUNIX()) {
+            return; // can't really run this on windows
+        }
         startSSH();
-
-        String ssh = "ssh -p " + sshd.getPort() + " bob@127.0.0.1";
-        System.out.println(ssh);
         String userHostPort = "bob@127.0.0.1:" + sshd.getPort();
-        String remote = "ssh://" + userHostPort + "/repo/repo.git";
-        //remote = userHostPort + ":repo/repo.git";
-        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, remote, repoForSSH.getRoot(), masterPipelineScript);
+        String remote = "ssh://" + userHostPort + "" + repoForSSH.getRoot().getCanonicalPath();
+        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, remote, repoForSSH, masterPipelineScript);
     }
 
-    private void testGitReadWrite(final @Nonnull GitReadSaveService.ReadSaveType type, @Nonnull File remoteDir, @Nullable String startPipelineScript) throws Exception {
-        testGitReadWrite(type, remoteDir.getCanonicalPath(), remoteDir, startPipelineScript);
+    private void testGitReadWrite(final @Nonnull GitReadSaveService.ReadSaveType type, @Nonnull GitSampleRepoRule repo, @Nullable String startPipelineScript) throws Exception {
+        testGitReadWrite(type, repo.getRoot().getCanonicalPath(), repo, startPipelineScript);
     }
 
-    private void testGitReadWrite(final @Nonnull GitReadSaveService.ReadSaveType type, @Nonnull String remote, @Nonnull File remoteDir, @Nullable String startPipelineScript) throws Exception {
+    private void testGitReadWrite(final @Nonnull GitReadSaveService.ReadSaveType type, @Nonnull String remote, @Nonnull GitSampleRepoRule repo, @Nullable String startPipelineScript) throws Exception {
         GitReadSaveService.setType(type);
 
-        String jobName = remoteDir.getName();
+        String jobName = repo.getRoot().getName();
 
         User user = login();
 
@@ -444,8 +243,8 @@ public class GitReadSaveTest extends PipelineBaseTest {
 
         // Check to make sure the remote was actually updated:
         // refs udpated in our sample repo, not working tree, update it to get contents:
-        repoWithJenkinsfiles.git("reset", "--hard", "refs/heads/master");
-        String remoteJenkinsfile = FileUtils.readFileToString(new File(repoWithJenkinsfiles.getRoot(), "Jenkinsfile"));
+        repo.git("reset", "--hard", "refs/heads/master");
+        String remoteJenkinsfile = FileUtils.readFileToString(new File(repo.getRoot(), "Jenkinsfile"));
         Assert.assertEquals(newPipelineScript, remoteJenkinsfile);
 
         // check to make sure we get the same thing from the service
