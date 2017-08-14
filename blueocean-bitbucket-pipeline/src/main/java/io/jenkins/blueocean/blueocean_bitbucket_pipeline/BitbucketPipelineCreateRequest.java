@@ -146,12 +146,6 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
 
     @Override
     protected String computeCredentialId(BlueScmConfig scmConfig) {
-        String credentialId = scmConfig.getCredentialId();
-
-        if (StringUtils.isBlank(credentialId)) {
-            credentialId = BitbucketCredentialUtils.computeCredentialId(scmConfig.getId(), scmConfig.getUri());
-        }
-
-        return credentialId;
+        return BitbucketCredentialUtils.computeCredentialId(scmConfig.getCredentialId(), scmConfig.getId(), scmConfig.getUri());
     }
 }

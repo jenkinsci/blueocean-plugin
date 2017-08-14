@@ -41,7 +41,7 @@ public class BitbucketServerScm extends AbstractBitbucketScm {
 
     @Override
     protected  @Nonnull String createCredentialId(@Nonnull String apiUrl){
-        return BitbucketCredentialUtils.computeCredentialId(ID, apiUrl);
+        return BitbucketCredentialUtils.computeCredentialId(null, ID, apiUrl);
     }
 
     @Nonnull
