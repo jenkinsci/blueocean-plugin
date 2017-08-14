@@ -100,7 +100,7 @@ public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFol
 
     @Override
     public String getOrganizationName() {
-        return pipelineFolder.getOrganizationName();
+        return organization.getName();
     }
 
     @Nonnull
