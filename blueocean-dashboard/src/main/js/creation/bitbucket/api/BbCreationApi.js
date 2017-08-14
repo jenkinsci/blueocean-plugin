@@ -90,12 +90,12 @@ export class BbCreationApi {
             .then(response => capabilityAugmenter.augmentCapabilities(response));
     }
 
-    createMbp(credentialId, apiUrl, itemName, bbOrganizationKey, repoName) {
+    createMbp(credentialId, scmId, apiUrl, itemName, bbOrganizationKey, repoName) {
         const path = UrlConfig.getJenkinsRootURL();
         const createUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/pipelines/`);
 
         const requestBody = this._buildRequestBody(
-            credentialId, apiUrl, itemName, bbOrganizationKey, repoName,
+            credentialId, scmId, apiUrl, itemName, bbOrganizationKey, repoName,
         );
 
         const fetchOptions = {
@@ -164,11 +164,12 @@ export class BbCreationApi {
         };
     }
 
-    _buildRequestBody(credentialId, apiUrl, itemName, organizationName, repoName) {
+    _buildRequestBody(credentialId, scmId, apiUrl, itemName, organizationName, repoName) {
         return {
             name: itemName,
             $class: 'io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketPipelineCreateRequest',
             scmConfig: {
+                id: scmId,
                 credentialId,
                 uri: apiUrl,
                 config: {

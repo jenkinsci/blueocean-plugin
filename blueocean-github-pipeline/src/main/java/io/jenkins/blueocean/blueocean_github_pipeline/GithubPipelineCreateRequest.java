@@ -89,7 +89,7 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
         // extract some configuration
         if (scmConfig != null) {
             apiUrl = StringUtils.defaultIfBlank(scmConfig.getUri(), GitHubSCMSource.GITHUB_URL);
-            credentialId = computeCredentialId(scmConfig);
+            credentialId = computeCredentialIdWithGithubDefault(scmConfig);
             if (scmConfig.getConfig().get("orgName") instanceof String) {
                 orgName = (String) scmConfig.getConfig().get("orgName");
             }
@@ -208,6 +208,15 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
     @Override
     protected String computeCredentialId(BlueScmConfig scmConfig) {
         return GithubCredentialUtils.computeCredentialId(scmConfig.getCredentialId(), scmConfig.getId(), scmConfig.getUri());
+    }
+
+    // NOTE: if ScmConfig.id is omitted, we assume "github" for backwards compat with old Editor
+    private String computeCredentialIdWithGithubDefault(BlueScmConfig blueScmConfig) {
+        if (StringUtils.isBlank(blueScmConfig.getId())) {
+            return GithubScm.ID;
+        }
+
+        return computeCredentialId(blueScmConfig);
     }
 
     private void updateEndpoints(String apiUrl) {

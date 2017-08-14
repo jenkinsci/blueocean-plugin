@@ -48,6 +48,10 @@ export default class BbServerFlowManager extends BbCloudFlowManager {
         this.setPlaceholders(translate('creation.core.status.completed'));
     }
 
+    getScmId() {
+        return 'bitbucket-server';
+    }
+
     getApiUrl() {
         return this.selectedServer ? this.selectedServer.apiUrl : null;
     }
