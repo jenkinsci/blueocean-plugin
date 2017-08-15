@@ -13,6 +13,34 @@ const RERENDER_DELAY = 17;
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.LogConsole');
 
+const LogLine = ({ prefix, line, index, router, location }) => {
+    const tokenized = tokenizeANSIString(line);
+    const lineChunks = makeReactChildren(tokenized);
+
+    const onClick = () => {
+        location.hash = `#${prefix || ''}log-${index + 1}`;
+        router.push(location);
+    };
+
+    return (
+        <p key={index + 1} id={`${prefix}log-${index + 1}`}>
+            <div className="log-boxes">
+                <a
+                    className="linenumber"
+                    key={index + 1}
+                    href={`#${prefix || ''}log-${index + 1}`}
+                    name={`${prefix}log-${index + 1}`}
+                    onClick={onClick}
+                >
+                </a>
+                {
+                    React.createElement('span', { className: 'line ansi-color' }, ...lineChunks)
+                }
+            </div>
+        </p>
+    );
+};
+
 export class LogConsole extends Component {
 
     constructor(props) {
@@ -126,64 +154,31 @@ export class LogConsole extends Component {
         }
         logger.debug('render lines length', lines.length);
 
-        const renderLine = (line, index) => {
-
-            const tokenized = tokenizeANSIString(line);
-
-            console.log(); // TODO: RM
-            console.log('tokenized', tokenized);  // TODO: RM
-
-            let dbg = []; // TODO: RM
-            for (let i = 0; i < line.length; i++) {
-                dbg.push([line[i], line.charCodeAt(i)]);
-            }
-            console.table(dbg);
-
-
-
-            // TODO: Extract LogLine as a simple component
-
-            return (
-                <p key={index + 1} id={`${prefix}log-${index + 1}`}>
-                    <div className="log-boxes">
-                        <a
-                            className="linenumber"
-                            key={index + 1}
-                            href={`#${prefix || ''}log-${index + 1}`}
-                            name={`${prefix}log-${index + 1}`}
-                            onClick={() => {
-                                location.hash = `#${prefix || ''}log-${index + 1}`;
-                                router.push(location);
-                            }}
-                        >
-                        </a>
-                        {
-                            React.createElement('span', { className: 'line ansi-color'}, ...makeReactChildren(tokenized))
-                        }
-                    </div>
-                </p>
-            );
-        };
 
         return (<div className="log-wrapper">
-            { isLoading && <div className="loadingContainer" id={`${prefix}log-${0}`}>
+            {isLoading && <div className="loadingContainer" id={`${prefix}log-${0}`}>
                 <Progress />
             </div>}
 
-
-            { !isLoading && <div className="log-body"><pre>
-                { hasMore && <div key={0} id={`${prefix}log-${0}`} className="fullLog">
-                    <a
-                      className="btn-link inverse"
-                      key={0}
-                      target="_blank"
-                      href={`${currentLogUrl}?start=0`}
+            {!isLoading && <div className="log-body"><pre>
+                {hasMore && <div key={0} id={`${prefix}log-${0}`} className="fullLog">
+                    <a className="btn-link inverse"
+                       key={0}
+                       target="_blank"
+                       href={`${currentLogUrl}?start=0`}
                     >
                         {t('Show.complete.logs')}
                     </a>
                 </div>}
-                { !isLoading && lines.map(renderLine) }
-            </pre></div> }
+                {!isLoading && lines.map((line, index) => (
+                    <LogLine prefix={prefix}
+                             index={index}
+                             line={line}
+                             router={router}
+                             location={location} />
+                ))}
+            </pre>
+            </div>}
 
         </div>);
     }
