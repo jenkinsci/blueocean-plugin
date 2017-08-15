@@ -4,12 +4,51 @@ import { logging } from '@jenkins-cd/blueocean-core-js';
 
 import { scrollHelper } from '../../ScrollHelper';
 
+import { makeReactChildren, tokenizeANSIString } from '../../../util/ansi';
+
 const INITIAL_RENDER_CHUNK_SIZE = 100;
 const INITIAL_RENDER_DELAY = 300;
 const RENDER_CHUNK_SIZE = 500;
 const RERENDER_DELAY = 17;
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.LogConsole');
+
+const LogLine = ({ prefix, line, index, router, location }) => {
+    const tokenized = tokenizeANSIString(line);
+    const lineChunks = makeReactChildren(tokenized);
+
+    const onClick = () => {
+        const loc2 = location; // For eslint 🙄
+        loc2.hash = `#${prefix || ''}log-${index + 1}`;
+        router.push(loc2);
+    };
+
+    return (
+        <p key={index + 1} id={`${prefix}log-${index + 1}`}>
+            <div className="log-boxes">
+                <a
+                    className="linenumber"
+                    key={index + 1}
+                    href={`#${prefix || ''}log-${index + 1}`}
+                    name={`${prefix}log-${index + 1}`}
+                    onClick={onClick}
+                >
+                </a>
+                {
+                    React.createElement('span', { className: 'line ansi-color' }, ...lineChunks)
+                }
+            </div>
+        </p>
+    );
+};
+
+LogLine.propTypes = {
+    prefix: PropTypes.string,
+    line: PropTypes.string,
+    index: PropTypes.number,
+    router: PropTypes.object,
+    location: PropTypes.object,
+};
 
 export class LogConsole extends Component {
 
@@ -114,6 +153,7 @@ export class LogConsole extends Component {
             this.timeouts.scroll = this.props.scrollToAnchorTimeOut(RERENDER_DELAY + 1);
         }
     }
+
     render() {
         const { isLoading, lines } = this.state;
         const { prefix = '', hasMore = false, router, location, t, currentLogUrl } = this.props; // if hasMore true then show link to full log
@@ -122,46 +162,32 @@ export class LogConsole extends Component {
             return null;
         }
         logger.debug('render lines length', lines.length);
-        // JENKINS-37925 - show more button should open log in new window
-        // const logUrl = url && url.includes(suffix) ? url : `${url}${suffix}`;
-        // JENKINS-41717 reverts above again
-        // fulllog within steps are triggered by
-        // const logUrl = `#${prefix || ''}log-${0}`;
+
 
         return (<div className="log-wrapper">
-            { isLoading && <div className="loadingContainer" id={`${prefix}log-${0}`}>
+            {isLoading && <div className="loadingContainer" id={`${prefix}log-${0}`}>
                 <Progress />
             </div>}
 
-
-            { !isLoading && <div className="log-body"><pre>
-                { hasMore && <div key={0} id={`${prefix}log-${0}`} className="fullLog">
-                    <a
-                      className="btn-link inverse"
-                      key={0}
-                      target="_blank"
-                      href={`${currentLogUrl}?start=0`}
+            {!isLoading && <div className="log-body"><pre>
+                {hasMore && <div key={0} id={`${prefix}log-${0}`} className="fullLog">
+                    <a className="btn-link inverse"
+                       key={0}
+                       target="_blank"
+                       href={`${currentLogUrl}?start=0`}
                     >
                         {t('Show.complete.logs')}
                     </a>
                 </div>}
-                { !isLoading && lines.map((line, index) => <p key={index + 1} id={`${prefix}log-${index + 1}`}>
-                    <div className="log-boxes">
-                        <a
-                          className="linenumber"
-                          key={index + 1}
-                          href={`#${prefix || ''}log-${index + 1}`}
-                          name={`${prefix}log-${index + 1}`}
-                          onClick={() => {
-                              location.hash = `#${prefix || ''}log-${index + 1}`;
-                              router.push(location);
-                          }}
-                        >
-                        </a>
-                        <span className="line">{line}</span>
-                    </div>
-                </p>)}
-            </pre></div> }
+                {!isLoading && lines.map((line, index) => (
+                    <LogLine prefix={prefix}
+                             index={index}
+                             line={line}
+                             router={router}
+                             location={location} />
+                ))}
+            </pre>
+            </div>}
 
         </div>);
     }
