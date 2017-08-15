@@ -71,7 +71,7 @@ public class GithubEnterpriseCreationTest {
         dialog.enterServerUrl("foo");
         dialog.waitForErrorMessagesGone();
         dialog.clickSaveServerButton();
-        dialog.findFormErrorMessage("Could not connect");
+        dialog.findFormErrorMessage("Invalid server");
         // valid form data should submit
 
         dialog.enterServerUrl(serverUrl);
