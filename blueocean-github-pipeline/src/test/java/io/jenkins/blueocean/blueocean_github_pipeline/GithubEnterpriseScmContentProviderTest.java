@@ -17,19 +17,29 @@ import static org.powermock.api.mockito.PowerMockito.when;
 public class GithubEnterpriseScmContentProviderTest extends GithubMockBase {
 
     @Test
-    public void testScmProperties() throws Exception {
+    public void testScmSourcePropertiesUsingNullApiUrl() throws Exception {
+        testScmSourceProperties(null);
+    }
+
+    @Test
+    public void testScmSourcePropertiesUsingGithubApiUrl() throws Exception {
+        testScmSourceProperties(GitHubSCMSource.GITHUB_URL);
+    }
+
+    private void testScmSourceProperties(String mockedApiUrl) throws Exception {
         String credentialId = createGithubEnterpriseCredential();
         OrganizationFolder orgFolder = mockOrgFolder(credentialId);
         // ensure the enterprise provider works with enterprise org folder
         ScmContentProvider provider = new GithubEnterpriseScmContentProvider();
-        assertTrue(provider.support(orgFolder));
-        assertEquals(provider.getScmId(), GithubEnterpriseScm.ID);
-        assertEquals(provider.getApiUrl(orgFolder), githubApiUrl);
+        assertTrue("github enterprise provider should support github enterprise org folder", provider.support(orgFolder));
+        assertEquals(GithubEnterpriseScm.ID, provider.getScmId());
+        assertEquals(githubApiUrl, provider.getApiUrl(orgFolder));
+
         // ensure the enterprise provider doesn't support cloud org folder
         credentialId = createGithubCredential(user);
         orgFolder = mockOrgFolder(credentialId);
         // unfortunately overriding the GitHub apiUrl for WireMock returns a "localhost" URL here, so we mock the call
-        when(((GitHubSCMNavigator) orgFolder.getSCMNavigators().get(0)).getApiUri()).thenReturn(GitHubSCMSource.GITHUB_URL);
-        assertFalse(provider.support(orgFolder));
+        when(((GitHubSCMNavigator) orgFolder.getSCMNavigators().get(0)).getApiUri()).thenReturn(mockedApiUrl);
+        assertFalse("github enterprise provider should not support github org folder", provider.support(orgFolder));
     }
 }

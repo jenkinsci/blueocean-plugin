@@ -25,6 +25,7 @@ import org.apache.commons.lang.NotImplementedException;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpResponseException;
 import org.apache.http.client.fluent.Request;
 import org.apache.http.client.fluent.Response;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
@@ -237,6 +238,9 @@ public class BitbucketCloudApi extends BitbucketApi {
                     .execute().returnContent().asStream();
             return om.readValue(inputStream, BbCloudBranch.class);
         } catch (IOException e) {
+            if (e instanceof HttpResponseException && ((HttpResponseException) e).getStatusCode() == 404) {
+                return null;
+            }
             throw handleException(e);
         }
     }

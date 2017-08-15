@@ -139,7 +139,7 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
         if (isItemUsingGithubScm(item)) {
             String apiUrl = getApiUrl(item);
 
-            if (apiUrl != null && apiUrl.startsWith(GitHubSCMSource.GITHUB_URL)) {
+            if (apiUrl == null || apiUrl.startsWith(GitHubSCMSource.GITHUB_URL)) {
                 return true;
             }
         }

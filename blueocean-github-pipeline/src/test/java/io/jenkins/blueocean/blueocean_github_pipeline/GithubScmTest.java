@@ -98,12 +98,6 @@ public class GithubScmTest {
     }
 
     @Test
-    public void getAuthenticatedUser() throws Exception {
-        User u = GithubScm.getAuthenticatedUser();
-        Assert.assertEquals("joe", u.getId());
-    }
-
-    @Test
     public void validateAndCreate() throws Exception{
         Mailer.UserProperty userProperty = mock(Mailer.UserProperty.class);
         when(userProperty.getAddress()).thenReturn("joe@example.com");

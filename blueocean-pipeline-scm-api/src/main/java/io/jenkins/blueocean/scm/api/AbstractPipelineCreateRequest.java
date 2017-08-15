@@ -92,4 +92,6 @@ public abstract class AbstractPipelineCreateRequest extends BluePipelineCreateRe
         }
         return authenticatedUser;
     }
+
+    protected abstract String computeCredentialId(BlueScmConfig scmConfig);
 }

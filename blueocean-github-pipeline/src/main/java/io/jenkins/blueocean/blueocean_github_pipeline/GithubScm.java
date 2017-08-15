@@ -21,6 +21,7 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainSpecification;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.AbstractScm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmOrganization;
@@ -64,7 +65,7 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 /**
  * @author Vivek Pandey
  */
-public class GithubScm extends Scm {
+public class GithubScm extends AbstractScm {
     //Used by tests to mock github
     public static final String ID = "github";
 
@@ -138,8 +139,7 @@ public class GithubScm extends Scm {
     @Override
     public Container<ScmOrganization> getOrganizations() {
         StaplerRequest request = Stapler.getCurrentRequest();
-
-        String credentialId = getCredentialIdFromRequest(request);
+        String credentialId = GithubCredentialUtils.computeCredentialId(getCredentialIdFromRequest(request), getId(), getUri());
 
         User authenticatedUser = getAuthenticatedUser();
         final StandardUsernamePasswordCredentials credential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
@@ -213,7 +213,7 @@ public class GithubScm extends Scm {
     }
 
     protected @Nonnull String createCredentialId(@Nonnull String apiUrl) {
-        return ID;
+        return GithubCredentialUtils.computeCredentialId(null, GithubScm.ID, apiUrl);
     }
 
     protected @Nonnull String getCredentialDescription() {
@@ -245,19 +245,6 @@ public class GithubScm extends Scm {
             apiUrl = apiUrl.substring(0, apiUrl.length() - 1);
         }
         return apiUrl;
-    }
-
-
-     private static String getCredentialIdFromRequest(StaplerRequest request){
-        String credentialId = request.getParameter(CREDENTIAL_ID);
-
-        if(credentialId == null){
-            credentialId = request.getHeader(X_CREDENTIAL_ID);
-        }
-        if(credentialId == null){
-            throw new ServiceException.BadRequestException("Missing credential id. It must be provided either as HTTP header: " + X_CREDENTIAL_ID+" or as query parameter 'credentialId'");
-        }
-        return credentialId;
     }
 
     @Override
@@ -391,16 +378,6 @@ public class GithubScm extends Scm {
         }
     }
 
-    private HttpResponse createResponse(final String credentialId) {
-        return new HttpResponse() {
-            @Override
-            public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
-                rsp.setStatus(200);
-                rsp.getWriter().print(JsonConverter.toJson(ImmutableMap.of("credentialId", credentialId)));
-            }
-        };
-    }
-
     @Extension
     public static class GithubScmFactory extends ScmFactory {
         @Override
@@ -416,13 +393,5 @@ public class GithubScm extends Scm {
         public Scm getScm(Reachable parent) {
             return new GithubScm(parent);
         }
-    }
-
-    static User getAuthenticatedUser(){
-        User authenticatedUser = User.current();
-        if(authenticatedUser == null){
-            throw new ServiceException.UnauthorizedException("No logged in user found");
-        }
-        return authenticatedUser;
     }
 }
