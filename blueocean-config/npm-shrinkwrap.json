@@ -3,14 +3,14 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.148-tf-JENKINS-45847-beta3",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.148-tf-JENKINS-45847-beta3",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.148-tf-JENKINS-45847-beta3.tgz"
+      "version": "0.0.151-tf-JENKINS-45847-beta4",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.151-tf-JENKINS-45847-beta4",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.151-tf-JENKINS-45847-beta4.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.142",
-      "from": "@jenkins-cd/design-language@0.0.142",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.142.tgz"
+      "version": "0.0.145",
+      "from": "@jenkins-cd/design-language@0.0.145",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.145.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -25,9 +25,9 @@
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.37-tf-JENKINS-45847-beta3",
-      "from": "@jenkins-cd/js-extensions@0.0.37-tf-JENKINS-45847-beta3",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.37-tf-JENKINS-45847-beta3.tgz"
+      "version": "0.0.37-tf-JENKINS-45847-beta4",
+      "from": "@jenkins-cd/js-extensions@0.0.37-tf-JENKINS-45847-beta4",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.37-tf-JENKINS-45847-beta4.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.10",
@@ -38,11 +38,6 @@
       "version": "0.0.6",
       "from": "@jenkins-cd/logging@0.0.6",
       "resolved": "https://registry.npmjs.org/@jenkins-cd/logging/-/logging-0.0.6.tgz"
-    },
-    "@jenkins-cd/react-material-icons": {
-      "version": "1.0.0",
-      "from": "@jenkins-cd/react-material-icons@1.0.0",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/react-material-icons/-/react-material-icons-1.0.0.tgz"
     },
     "@jenkins-cd/sse-gateway": {
       "version": "0.0.21",
@@ -4294,9 +4289,9 @@
       "dev": true
     },
     "node-fetch": {
-      "version": "1.7.1",
+      "version": "1.7.2",
       "from": "node-fetch@>=1.0.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/node-fetch/-/node-fetch-1.7.1.tgz"
+      "resolved": "https://registry.npmjs.org/node-fetch/-/node-fetch-1.7.2.tgz"
     },
     "node-http-server": {
       "version": "3.0.5",
