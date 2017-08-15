@@ -4,30 +4,14 @@ import { logging } from '@jenkins-cd/blueocean-core-js';
 
 import { scrollHelper } from '../../ScrollHelper';
 
+import { makeReactChildren, tokenizeANSIString } from '../../../util/ansi';
+
 const INITIAL_RENDER_CHUNK_SIZE = 100;
 const INITIAL_RENDER_DELAY = 300;
 const RENDER_CHUNK_SIZE = 500;
 const RERENDER_DELAY = 17;
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.LogConsole');
-
-// TODO: Extract this, write some unit tests
-function decodeANSICodes(input) {
-
-    let i = input.indexOf('CYAN');
-
-    if (i === -1) {
-        return [input];
-    }
-
-    let chunks = [
-        input.substr(0, i),
-        'NYAN',
-        input.substr(i + 4)
-    ];
-
-
-}
 
 export class LogConsole extends Component {
 
@@ -144,21 +128,20 @@ export class LogConsole extends Component {
 
         const renderLine = (line, index) => {
 
-            // TODO: Remove this block vvvvvv
+            const tokenized = tokenizeANSIString(line);
 
-            // const n = Math.min(line.length, 15);
-            // let dbg = [];
-            // let dbg2 = [];
-            //
-            // for (let i = 0; i < n; i++) {
-            //     dbg.push(("  " + line.charCodeAt(i)).substr(-3,3));
-            //     dbg2.push(("   " + line[i]).substr(-3,3));
-            // }
-            //
-            // console.log(dbg2);
-            // console.log(dbg);
+            console.log(); // TODO: RM
+            console.log('tokenized', tokenized);  // TODO: RM
 
-            // TODO: Remove this block ^^^^^^
+            let dbg = []; // TODO: RM
+            for (let i = 0; i < line.length; i++) {
+                dbg.push([line[i], line.charCodeAt(i)]);
+            }
+            console.table(dbg);
+
+
+
+            // TODO: Extract LogLine as a simple component
 
             return (
                 <p key={index + 1} id={`${prefix}log-${index + 1}`}>
@@ -174,7 +157,9 @@ export class LogConsole extends Component {
                             }}
                         >
                         </a>
-                        <span className="line">{line}</span>
+                        {
+                            React.createElement('span', { className: 'line ansi-color'}, ...makeReactChildren(tokenized))
+                        }
                     </div>
                 </p>
             );

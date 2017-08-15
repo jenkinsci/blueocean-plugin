@@ -1,6 +1,27 @@
 import React from 'react';
 
-// TODO: DOCS once the results are locked down
+/**
+ * Parse an isolated escape code, looking for "SelectGraphicsRendition" codes specifically.
+ *
+ * Result:
+ * ```
+ * // Suppoerted code
+ * {
+ *     isSelectGraphicRendition: true,
+ *     escapeCode: string, // input
+ *     setFG: integer | false, // 0-7 if a foreground color is specified
+ *     setBG: integer | false, // 0-7 if a background color is specified
+ *     resetFG: bool, // true if contains a reset back to default foreground
+ *     resetBG: bool // true if contains a reset back to default background
+ * }
+ *
+ * // Unsupported or malformed code:
+ * {
+ *     isSelectGraphicRendition: false,
+ *     escapeCode: string // input
+ * }
+ * ```
+ */
 export function parseEscapeCode(escapeCode) {
     const graphicsPattern = /^\u001b\[([;0-9]*)m$/; // We only care about SGR codes
 
@@ -31,7 +52,7 @@ export function parseEscapeCode(escapeCode) {
 
             } else if (num >= 40 && num <= 47) {
 
-                result.setFG = num - 40; // Normal BG set
+                result.setBG = num - 40; // Normal BG set
 
             } else {
 
@@ -68,7 +89,7 @@ export function tokenizeANSIString(input) {
         return [];
     }
 
-    let i1 = 0, i2 = 0, i3 = 0; // TODO: Rename these
+    let i1 = 0, i2 = 0;
     let result = [];
 
     while (i1 < len) {
@@ -105,7 +126,7 @@ export function tokenizeANSIString(input) {
         //--------------------------------------------------------------------------
         //  Create token for the escape code
 
-        result.push(parseEscapeCode(input.substring(i1, i2)));
+        result.push(parseEscapeCode(input.substring(i1, i2 + 1)));
 
         //--------------------------------------------------------------------------
         //  Keep looking in the rest of the string
@@ -120,3 +141,58 @@ export function tokenizeANSIString(input) {
     return result;
 }
 
+/**
+ * Takes an array of string snippets and parsed escape codes produced bv tokenizeANSIString, and creates
+ * an array of strings and spans with classNames for attributes.
+ */
+export function makeReactChildren(tokenizedInput) {
+    const result = [];
+    let currentState = {
+        setFG: false,
+        setBG: false
+    };
+
+    for (const codeOrString of tokenizedInput) {
+        if (typeof codeOrString === 'string') {
+            // Need to output a <span> or plain text if there's no interesting current state
+
+            if (currentState.setFG === false && currentState.setBG === false) {
+                result.push(codeOrString);
+            } else {
+                const classNames = [];
+
+                if (typeof currentState.setFG === 'number') {
+                    classNames.push(`ansi-fg-${currentState.setFG}`);
+                }
+                if (typeof currentState.setBG === 'number') {
+                    classNames.push(`ansi-bg-${currentState.setBG}`);
+                }
+
+                result.push(
+                    <span className={classNames.join(' ')}>{ codeOrString }</span>
+                );
+            }
+        } else if (codeOrString.isSelectGraphicRendition) {
+            // Update the current FG / BG colors for the next text span
+            const nextState = { ...currentState };
+
+            if (codeOrString.resetFG) {
+                nextState.setFG = false;
+            }
+            if (codeOrString.resetBG) {
+                nextState.setBG = false;
+            }
+
+            if (typeof codeOrString.setFG === 'number') {
+                nextState.setFG = codeOrString.setFG;
+            }
+            if (typeof codeOrString.setBG === 'number') {
+                nextState.setBG = codeOrString.setBG;
+            }
+
+            currentState = nextState;
+        }
+    }
+
+    return result;
+}
