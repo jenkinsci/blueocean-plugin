@@ -796,3 +796,29 @@
         }
     }
 }
+
+.dialog-token {
+    width: 480px;
+
+    .Dialog-content-margin {
+        margin: 32px 40px;
+    }
+
+    .Dialog-button-bar {
+        display: none;
+    }
+
+    &.loading {
+        display: none;
+    }
+
+    .credentials-picker-github, .credentials-picker-github-enterprise {
+        > .FormElement .FormElement-children {
+            flex-direction: column;
+
+            .button-connect {
+                margin: 1em 0 0 0;
+            }
+        }
+    }
+}

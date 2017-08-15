@@ -12,11 +12,14 @@ import {
     FormElement,
     Alerts,
 } from '@jenkins-cd/design-language';
+
+
+import ScmContentApi, {LoadError} from './api/ScmContentApi';
+
 import { convertInternalModelToJson, convertJsonToPipeline, convertPipelineToJson, convertJsonToInternalModel } from './services/PipelineSyntaxConverter';
 import pipelineValidator from './services/PipelineValidator';
 import pipelineStore from './services/PipelineStore';
 import { observer } from 'mobx-react';
-import { observable, action } from 'mobx';
 import saveApi from './SaveApi';
 import { EditorMain } from './components/editor/EditorMain';
 import { CopyPastePipelineDialog } from './components/editor/CopyPastePipelineDialog';
@@ -111,24 +114,25 @@ SaveDialog.propTypes = {
 
 @observer
 class PipelineLoader extends React.Component {
+    state = {
+
+    };
+
     constructor(props) {
         super(props);
-        this.state = { scmId: 'github' };
+
+        this.contentApi = new ScmContentApi();
+
+        this.state = {
+            scmSource: null,
+            credential: null,
+            sha: null,
+        };
     }
 
     componentWillMount() {
         pipelineStore.setPipeline(null); // reset any previous loaded pipeline
-        const { organization, pipeline } = this.props.params;
-        const split = pipeline.split('/');
-        const team = split[0];
-        let href = Paths.rest.pipeline(organization, team);
-        pipelineService.fetchPipeline(href, { useCache: true })
-            .then(pipeline => {
-                if(pipeline.scmSource && pipeline.scmSource.id) {
-                    this.setState({ scmId: pipeline.scmSource.id });
-                }
-                this.loadPipeline();
-            });
+        this.loadPipeline();
     }
     
     componentDidMount() {
@@ -159,7 +163,7 @@ class PipelineLoader extends React.Component {
             return t;
         }
     }
-    
+
     checkForModification() {
         if (!this.lastPipeline) {
             this.lastPipeline = JSON.stringify(convertInternalModelToJson(pipelineStore.pipeline));
@@ -170,114 +174,140 @@ class PipelineLoader extends React.Component {
         }
     }
 
-    loadPipeline(onComplete) {
-        const { organization, pipeline, branch } = this.props.params;
-        const scmId = this.state.scmId;
-        this.opener = locationService.previous;
-        
-        const makeEmptyPipeline = () => {
-            // maybe show a dialog the user can choose
-            // empty or template
-            pipelineStore.setPipeline({
-                agent: { type: 'any' },
-                children: [],
+    makeEmptyPipeline() {
+        // maybe show a dialog the user can choose
+        // empty or template
+        pipelineStore.setPipeline({
+            agent: { type: 'any' },
+            children: [],
+        });
+        this.forceUpdate();
+    }
+
+    showLoadingError(err) {
+        this.showErrorDialog(
+            <div className="errors">
+                <div>
+                    There was an error loading the pipeline from the Jenkinsfile in this repository.
+                    Correct the error by editing the Jenkinsfile using the declarative syntax then commit it back to the repository.
+                </div>
+                <div>&nbsp;</div>
+                <div><i>{this.extractErrorMessage(err)}</i></div>
+            </div>
+            , {
+                buttonRow: <button className="btn-primary" onClick={() => this.cancel()}>Go Back</button>,
+                onClose: () => this.cancel(),
+                title: 'Error loading Pipeline',
             });
-            this.forceUpdate();
-        };
+    }
+
+    loadPipeline() {
+        const { pipeline } = this.props.params;
+        this.opener = locationService.previous;
 
         if (!pipeline) {
-            makeEmptyPipeline();
+            this.makeEmptyPipeline();
             return; // no pipeline to load
         }
 
-        const showLoadingError = err => {
-            this.showErrorDialog(
-                <div className="errors">
-                    <div>
-                        There was an error loading the pipeline from the Jenkinsfile in this repository.
-                        Correct the error by editing the Jenkinsfile using the declarative syntax then commit it back to the repository.
-                    </div>
-                    <div>&nbsp;</div>
-                    <div><i>{this.extractErrorMessage(err)}</i></div>
-                </div>
-                , {
-                    buttonRow: <button className="btn-primary" onClick={() => this.cancel()}>Go Back</button>,
-                    onClose: () => this.cancel(),
-                    title: 'Error loading Pipeline',
-                });
-        };
-        
+        this.loadPipelineMetadata()
+            .then(() => {
+                this.loadBranchMetadata();
+                this.loadContent();
+            });
+    }
+
+    refreshPipeline(onComplete) {
+        this.loadContent(onComplete);
+    }
+
+    loadPipelineMetadata() {
+        const { organization, pipeline } = this.props.params;
+        const split = pipeline.split('/');
+        const team = split[0];
+        this.href = Paths.rest.pipeline(organization, team);
+        return pipelineService.fetchPipeline(this.href, { useCache: true })
+            .then(pipeline => this._savePipelineMetadata(pipeline))
+            .catch(err => {
+                this.showErrorDialog(err);
+            });
+    }
+
+    loadBranchMetadata() {
+        const { organization, pipeline, branch } = this.props.params;
+
         if (!branch) {
             const split = pipeline.split('/');
             const team = split[0];
             const repo = split.length > 1 ? split[1] : team;
-            Fetch.fetchJSON(`${getRestUrl({organization})}scm/${scmId}/`)
-            .then( ({ credentialId }) =>
-                Fetch.fetchJSON(`${getRestUrl({organization})}scm/${scmId}/organizations/${team}/repositories/${repo}/?credentialId=${credentialId}`)
-            )
-            .then( ({ defaultBranch }) => {
-                this.defaultBranch = defaultBranch || 'master';
-            })
-            .catch(err => this.defaultBranch = 'master');
-        } else {
-            this.defaultBranch = branch;
+            const { id: scmId, apiUrl } = this.state.scmSource;
+            // TODO: bitbucket isn't passing the pipeline in "orgname/reponame" format so this request 404's with bogus team name
+            let repositoryUrl = `${getRestUrl({organization})}scm/${scmId}/organizations/${team}/repositories/${repo}/`;
+            if (apiUrl) {
+                repositoryUrl += `?apiUrl=${apiUrl}`;
+            }
+            return Fetch.fetchJSON(repositoryUrl)
+                .then( ({ defaultBranch }) => {
+                    this.defaultBranch = defaultBranch || 'master';
+                })
+                .catch(err => this.defaultBranch = 'master');
         }
 
-        Fetch.fetchJSON(`${getRestUrl(this.props.params)}scm/content/?branch=${encodeURIComponent(branch)}&path=Jenkinsfile`)
-        .then( ({ content }) => {
-            const pipelineScript = Base64.decode(content.base64Data);
-            this.setState({ sha: content.sha, isSaved: true });
-            convertPipelineToJson(pipelineScript, (p, err) => {
-                if (!err) {
-                    const internal = convertJsonToInternalModel(p);
-                    if (onComplete) {
-                        onComplete(internal);
+        this.defaultBranch = branch;
+        return new Promise(resolve => resolve(null));
+    }
+
+    _savePipelineMetadata(pipeline) {
+        this.setState({
+            scmSource: pipeline.scmSource,
+        });
+    }
+
+    loadContent(onComplete) {
+        const { organization, pipeline, branch } = this.props.params;
+        this.contentApi.loadContent({ organization, pipeline, branch })
+            .then( ({ content }) => {
+                const pipelineScript = Base64.decode(content.base64Data);
+                this.setState({sha: content.sha});
+                convertPipelineToJson(pipelineScript, (p, err) => {
+                    if (!err) {
+                        const internal = convertJsonToInternalModel(p);
+                        if (onComplete) {
+                            onComplete(internal);
+                        } else {
+                            pipelineStore.setPipeline(internal);
+                            this.forceUpdate();
+                        }
                     } else {
-                        pipelineStore.setPipeline(internal);
-                        this.forceUpdate();
+                        this.showLoadingError(err);
+                        if(err[0].location) {
+                            // revalidate in case something missed it (e.g. create an empty stage then load/save)
+                            pipelineValidator.validate();
+                        }
                     }
+                });
+            })
+            .catch(err => {
+                if (err.type === LoadError.JENKINSFILE_NOT_FOUND) {
+                    this.makeEmptyPipeline();
+                } else if (err.type === LoadError.TOKEN_NOT_FOUND || err.type === LoadError.TOKEN_REVOKED) {
+                    this.createTokenDialog({ loading: true });
                 } else {
-                    showLoadingError(err);
-                    if(err[0].location) {
-                        // revalidate in case something missed it (e.g. create an empty stage then load/save)
-                        pipelineValidator.validate();
-                    }
+                    this.showLoadingError(err);
                 }
             });
-        })
-        .catch(err => {
-            if (err.response.status != 404) {
-                showLoadingError(err);
-            } else {
-                makeEmptyPipeline();
-            }
-        });
-        
-        this.href = Paths.rest.pipeline(organization, pipeline);
-        pipelineService.fetchPipeline(this.href, { useCache: true })
-        .then(pipeline => this.forceUpdate())
-        .catch(err => {
-            // No pipeline, use org folder
-            const team = pipeline.split('/')[0];
-            this.href = Paths.rest.pipeline(organization, team);
-            pipelineService.fetchPipeline(this.href, { useCache: true })
-            .then(pipeline => this.forceUpdate())
-            .catch(err => {
-                this.showErrorDialog(err);
-            });
-        });
     }
 
     overwriteChanges(saveToBranch, commitMessage, errorHandler) {
         const currentPipeline = pipelineStore.pipeline;
-        this.loadPipeline(() => {
+        this.refreshPipeline(() => {
             pipelineStore.setPipeline(currentPipeline);
             this.save(saveToBranch, commitMessage, errorHandler);
         });
     }
 
     discardChanges() {
-        this.loadPipeline(pipeline => {
+        this.refreshPipeline(pipeline => {
             pipelineStore.setPipeline(pipeline);
             this.setState({ showSaveDialog: false });
         });
@@ -354,7 +384,71 @@ class PipelineLoader extends React.Component {
             </Dialog>
         )});
     }
-    
+
+    createTokenDialog({ loading = false } = {}) {
+        const pipeline = pipelineService.getPipeline(this.href);
+        const { scmSource } = pipeline;
+        const title = this.getScmTitle(scmSource.id);
+        const githubConfig = {
+            scmId: scmSource.id,
+            apiUrl: scmSource.apiUrl,
+        };
+        // hide the dialog until it reports as ready (i.e. credential fetch is done)
+        const dialogClassName = `dialog-token ${loading ? 'loading' : ''}`;
+
+        this.setState({
+            dialog: (
+                <Dialog
+                    title={title}
+                    className={dialogClassName}
+                    buttons={[]}
+                    onDismiss={() => this.cancel()}
+                >
+                    <Extensions.Renderer
+                        extensionPoint="jenkins.credentials.selection"
+                        onStatus={status => this.onCredentialStatus(status)}
+                        onComplete={cred => this.onCredentialSelected(cred)}
+                        type={scmSource.id}
+                        githubConfig={githubConfig}
+                    />
+                </Dialog>
+            )
+        });
+    }
+
+    getScmTitle(scmId) {
+        let scmLabel = '';
+
+        if (scmId === 'github') {
+            scmLabel = 'GitHub';
+        } else if (scmId === 'github-enterprise') {
+            scmLabel = 'GitHub Enterprise';
+        }
+
+        if (scmLabel) {
+            return `Connect to ${scmLabel}`;
+        }
+
+        return 'Unknown SCM Provider';
+    }
+
+    onCredentialStatus(status) {
+        if (status === 'promptReady') {
+            this.createTokenDialog();
+        }
+    }
+
+    onCredentialSelected(credential) {
+        this.setState({
+            credential,
+        });
+
+        this.loadContent(internal => {
+            pipelineStore.setPipeline(internal);
+            this.setState({dialog: null});
+        });
+    }
+
     showSaveDialog() {
         pipelineValidator.validate(err => {
             if (!pipelineValidator.hasValidationErrors(pipelineStore.pipeline)) {
@@ -374,30 +468,25 @@ class PipelineLoader extends React.Component {
         const saveMessage = commitMessage || (this.state.isSaved ? 'Updated Jenkinsfile' : 'Added Jenkinsfile');
         convertJsonToPipeline(JSON.stringify(pipelineJson), (pipelineScript, err) => {
             if (!err) {
-                const body = {
-                    "content": {
-                      "message": saveMessage,
-                      "path": "Jenkinsfile",
-                      branch: saveToBranch || this.defaultBranch,
-                      sourceBranch: branch,
-                      repo: repo ? repo : team, // if no repo, this is not in an org folder
-                      "sha": this.state.sha,
-                      "base64Data": Base64.encode(pipelineScript),
-                    }
+                const saveParams = {
+                    organization,
+                    pipeline: team,
+                    repo,
+                    sourceBranch: branch,
+                    targetBranch: saveToBranch || this.defaultBranch,
+                    sha: this.state.sha,
+                    message: saveMessage,
+                    content: pipelineScript,
                 };
-                const pipelineObj = pipelineService.getPipeline(this.href);
-                Fetch.fetchJSON(`${getRestUrl({organization: organization, pipeline: team})}scm/content/`, {
-                    fetchOptions: {
-                        method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify(body),
-                    }
-                })
+
+                // TODO: building the body so we can pass it down is a little awkward
+                const body = this.contentApi.buildSaveContentRequest(saveParams);
+                this.contentApi.saveContent(saveParams)
                 .then(data => {
                     this.pipelineIsModified = false;
                     this.lastPipeline = JSON.stringify(convertInternalModelToJson(pipelineStore.pipeline));
                     // If this is a save on the same branch that already has a Jenkinsfile, just re-run it
-                    if (this.state.isSaved && branch === body.content.branch) {
+                    if (this.state.isSaved && branch === data.content.branch) {
                         RunApi.startRun({ _links: { self: { href: this.href + 'branches/' + encodeURIComponent(branch) + '/' }}})
                             .then(() => this.goToActivity())
                             .catch(err => errorHandler(err, body));
@@ -405,8 +494,12 @@ class PipelineLoader extends React.Component {
                         // if a different branch, call indexing so this one gets picked up
                         // only time we have 'github' is when we are using an org folder
                         // in which case use the existing saveApi
-                        if (this.state.scmId.startsWith('github')) {
-                            saveApi.index(organization, team, repo, () => this.goToActivity(), err => errorHandler(err));
+                        const { id: scmId, apiUrl } = this.state.scmSource;
+                        if (scmId.startsWith('github')) {
+                            saveApi.index(organization, team, repo, scmId, apiUrl,
+                                () => this.goToActivity(),
+                                err => errorHandler(err),
+                            );
                         } else {
                             //other scms, which are always MBP
                             saveApi.indexMbp(this.href, () => this.goToActivity(), err => errorHandler(err));

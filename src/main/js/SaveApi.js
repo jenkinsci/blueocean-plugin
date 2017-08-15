@@ -1,6 +1,6 @@
 // @flow
 
-import { Fetch, getRestUrl, sseService, loadingIndicator, capabilityAugmenter, RunApi } from '@jenkins-cd/blueocean-core-js';
+import { Fetch, getRestUrl, sseService, loadingIndicator, RunApi } from '@jenkins-cd/blueocean-core-js';
 
 const TIMEOUT = 60*1000;
 
@@ -28,14 +28,15 @@ export class SaveApi {
         });
     }
 
-    indexRepo(organization, teamName, repoName) {
+    indexRepo(organization, teamName, repoName, scmId, apiUrl) {
         const createUrl = `${getRestUrl({organization})}/pipelines/`;
 
         const requestBody = {
             name: teamName,
             $class: 'io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest',
             scmConfig: {
-                uri: 'https://api.github.com',
+                id: scmId,
+                uri: apiUrl,
                 config: {
                     orgName: teamName,
                     repos: [repoName],
@@ -51,17 +52,16 @@ export class SaveApi {
             body: JSON.stringify(requestBody),
         };
 
-        return Fetch.fetchJSON(createUrl, { fetchOptions })
-            .then(pipeline => capabilityAugmenter.augmentCapabilities(pipeline));
+        return Fetch.fetchJSON(createUrl, { fetchOptions });
     }
 
-    index(organization, folder, repo, complete, onError, progress) {
+    index(organization, folder, repo, scmId, apiUrl, complete, onError, progress) {
         loadingIndicator.show();
         const timeoutId = setTimeout(() => {
             this._cleanup(timeoutId, complete, onError);
         }, TIMEOUT);
         this._registerSse(timeoutId, complete, onError);
-        this.indexRepo(organization, folder, repo);
+        this.indexRepo(organization, folder, repo, scmId, apiUrl);
     }
 
     /**
