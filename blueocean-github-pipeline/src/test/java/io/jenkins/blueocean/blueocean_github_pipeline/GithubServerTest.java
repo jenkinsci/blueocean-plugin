@@ -56,7 +56,7 @@ public class GithubServerTest extends PipelineBaseTest {
 
         Map error1 = (Map) errors.get(0);
         Assert.assertEquals("apiUrl", error1.get("field"));
-        Assert.assertEquals("Specified URL is not a Github server", error1.get("message"));
+        Assert.assertEquals(GithubServerContainer.ERROR_MESSAGE_INVALID_SERVER, error1.get("message"));
         Assert.assertEquals("INVALID", error1.get("code"));
     }
 
@@ -78,7 +78,7 @@ public class GithubServerTest extends PipelineBaseTest {
 
         Map error1 = (Map) errors.get(0);
         Assert.assertEquals("apiUrl", error1.get("field"));
-        Assert.assertEquals("Specified URL is not a Github server API endpoint", error1.get("message"));
+        Assert.assertEquals(GithubServerContainer.ERROR_MESSAGE_INVALID_APIURL, error1.get("message"));
         Assert.assertEquals("INVALID", error1.get("code"));
     }
 

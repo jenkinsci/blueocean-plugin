@@ -43,6 +43,8 @@ import java.util.logging.Logger;
 public class GithubServerContainer extends ScmServerEndpointContainer {
 
     private static final Logger LOGGER = Logger.getLogger(GithubServerContainer.class.getName());
+    static final String ERROR_MESSAGE_INVALID_SERVER = "Specified URL is not a GitHub server; check hostname";
+    static final String ERROR_MESSAGE_INVALID_APIURL = "Specified URL is not a GitHub API endpoint; check path";
 
     private final Link parent;
 
@@ -87,7 +89,7 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
                 connection.connect();
 
                 if (connection.getHeaderField("X-GitHub-Request-Id") == null) {
-                    errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Specified URL is not a Github server"));
+                    errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), ERROR_MESSAGE_INVALID_SERVER));
                 } else {
                     boolean isGithubCloud = false;
                     boolean isGithubEnterprise = false;
@@ -112,7 +114,7 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
                     }
 
                     if (!isGithubCloud && !isGithubEnterprise) {
-                        errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Specified URL is not a Github server API endpoint"));
+                        errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), ERROR_MESSAGE_INVALID_APIURL));
                     }
                 }
             } catch (Throwable e) {
