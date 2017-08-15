@@ -77,3 +77,9 @@ WORKDIR /home/bouser
 #========================================
 RUN git config --global user.name "John Doe"
 RUN git config --global user.email johndoe@example.com
+
+
+#========================================
+# Need ssh
+#========================================
+RUN sudo apt-get update -qqy && sudo apt-get install -y ssh
