@@ -1,11 +1,12 @@
 import React, { PropTypes } from 'react';
 
 import GithubCredentialsPicker from './github/GithubCredentialsPicker';
+import BbCredentialsPicker from './bitbucket/BbCredentialsPicker';
 
 
 /**
  * Provides UI and backend integration for acquiring a credential.
- * type: 'github', 'github-enterprise'
+ * type: 'github', 'github-enterprise', 'bitbucket-cloud', 'bitbucket-server'
  * onStatus: function invoked with 'promptLoading', 'promptReady'
  * onComplete: function invoked with credential and 'autoSelected', 'userSelected'
  */
@@ -24,6 +25,15 @@ class CredentialsPicker extends React.Component {
                     apiUrl={apiUrl}
                 />
             );
+        } else if (type === 'bitbucket-cloud' || type === 'bitbucket-server') {
+            const { id: scmId, apiUrl } = this.props.scmSource;
+
+            typedPicker = (
+                <BbCredentialsPicker
+                    scmId={scmId}
+                    apiUrl={apiUrl}
+                />
+            );
         }
 
         return (
@@ -38,6 +48,10 @@ CredentialsPicker.propTypes = {
     type: PropTypes.string,
     onStatus: PropTypes.func,
     onComplete: PropTypes.func,
+    scmSource: PropTypes.shape({
+        id: PropTypes.string,
+        apiUrl: PropTypes.string,
+    }),
     githubConfig: PropTypes.shape({
         scmId: PropTypes.string,
         apiUrl: PropTypes.string,

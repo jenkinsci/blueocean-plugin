@@ -2,7 +2,6 @@ import React from 'react';
 import ScmProvider from '../../ScmProvider';
 
 import { BbCreationApi } from '../api/BbCreationApi';
-import { BbCredentialsApi } from '../api/BbCredentialsApi';
 
 import BbDefaultOption from '../BbDefaultOption';
 import BbServerFlowManager from './BbServerFlowManager';
@@ -18,9 +17,8 @@ export default class BbServerScmProvider extends ScmProvider {
 
     getFlowManager() {
         const creationApi = new BbCreationApi('bitbucket-server');
-        const credentialsApi = new BbCredentialsApi('bitbucket-server');
         const serverApi = new BbServerApi();
-        this.manager = new BbServerFlowManager(creationApi, credentialsApi, serverApi);
+        this.manager = new BbServerFlowManager(creationApi, serverApi);
         return this.manager;
     }
 

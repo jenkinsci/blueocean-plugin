@@ -8,7 +8,6 @@ import FlowManager from '../../flow2/FlowManager';
 
 import STATE from './BbCloudCreationState';
 
-import { BbCredentialManager } from '../BbCredentialManager';
 import { ListOrganizationsOutcome } from '../api/BbCreationApi';
 import { CreateMbpOutcome } from '../api/BbCreationApi';
 
@@ -29,11 +28,9 @@ const translate = i18nTranslator('blueocean-dashboard');
 
 export default class BbCloudFlowManager extends FlowManager {
 
-    credentialManager = null;
+    credentialId = null;
 
-    get credentialId() {
-        return this.credentialManager && this.credentialManager.credentialId;
-    }
+    credentialSelected = false;
 
     @observable
     organizations = [];
@@ -76,10 +73,9 @@ export default class BbCloudFlowManager extends FlowManager {
 
     _sseTimeoutId = null;
 
-    constructor(creationApi, credentialsApi) {
+    constructor(creationApi) {
         super();
         this._creationApi = creationApi;
-        this.credentialManager = new BbCredentialManager(credentialsApi);
     }
 
     translate(key, opts) {
@@ -110,7 +106,7 @@ export default class BbCloudFlowManager extends FlowManager {
     }
 
     onInitialized() {
-        this.findExistingCredential();
+        this._renderCredentialsStep();
         this.setPlaceholders(translate('creation.core.status.completed'));
     }
 
@@ -118,37 +114,24 @@ export default class BbCloudFlowManager extends FlowManager {
         this._cleanupListeners();
     }
 
-    findExistingCredential() {
-        return this.credentialManager.findExistingCredential(this.getApiUrl())
-            .then(waitAtLeast(MIN_DELAY))
-            .then(success => this._findExistingCredentialComplete(success));
-    }
-
-    _findExistingCredentialComplete(success) {
-        if (success) {
-            this.changeState(STATE.PENDING_LOADING_ORGANIZATIONS);
-            this.listOrganizations();
-        } else {
-            this.renderStep({
-                stateId: STATE.STEP_CREDENTIAL,
-                stepElement: <BbCredentialsStep />,
-                afterStateId: this._getCredentialsStepAfterStateId(),
-            });
-        }
-    }
-
     _getCredentialsStepAfterStateId() {
         return null;
     }
-    createCredential(userName, password) {
-        return this.credentialManager.createCredential(this.getApiUrl(), userName, password)
-            .then(success => this._createCredentialComplete(success));
+
+    _renderCredentialsStep() {
+        this.renderStep({
+            stateId: STATE.STEP_CREDENTIAL,
+            stepElement: <BbCredentialsStep
+                onCredentialSelected={(cred, selectionType) => this._onCredentialSelected(cred, selectionType)}
+            />,
+            afterStateId: this._getCredentialsStepAfterStateId(),
+        });
     }
 
-    _createCredentialComplete(response) {
-        if (response.success) {
-            this._renderLoadingOrganizations();
-        }
+    _onCredentialSelected(credential, selectionType) {
+        this.credentialId = credential.credentialId;
+        this.credentialSelected = selectionType === 'userSelected';
+        this._renderLoadingOrganizations();
     }
 
     _renderLoadingOrganizations() {
