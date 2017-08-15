@@ -41,7 +41,7 @@ export function parseEscapeCode(escapeCode) {
         result.resetBG = false;
 
         // Convert param string to array<int> with length > 1
-        let params = (match[1] || '').split(';').map(str => parseInt(str || '0'));
+        const params = (match[1] || '').split(';').map(str => parseInt(str || '0'));
 
         // Now go through the ints, decode them into bg/fg info
         for (const num of params) {
@@ -90,7 +90,7 @@ export function tokenizeANSIString(input) {
     }
 
     let i1 = 0, i2 = 0;
-    let result = [];
+    const result = [];
 
     while (i1 < len) {
 
@@ -149,7 +149,7 @@ export function makeReactChildren(tokenizedInput) {
     const result = [];
     let currentState = {
         setFG: false,
-        setBG: false
+        setBG: false,
     };
 
     for (const codeOrString of tokenizedInput) {
@@ -169,7 +169,7 @@ export function makeReactChildren(tokenizedInput) {
                 }
 
                 result.push(
-                    <span className={classNames.join(' ')}>{ codeOrString }</span>
+                    <span className={classNames.join(' ')}>{codeOrString}</span>,
                 );
             }
         } else if (codeOrString.isSelectGraphicRendition) {

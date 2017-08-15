@@ -18,8 +18,9 @@ const LogLine = ({ prefix, line, index, router, location }) => {
     const lineChunks = makeReactChildren(tokenized);
 
     const onClick = () => {
-        location.hash = `#${prefix || ''}log-${index + 1}`;
-        router.push(location);
+        const loc2 = location; // For eslint 🙄
+        loc2.hash = `#${prefix || ''}log-${index + 1}`;
+        router.push(loc2);
     };
 
     return (
@@ -39,6 +40,14 @@ const LogLine = ({ prefix, line, index, router, location }) => {
             </div>
         </p>
     );
+};
+
+LogLine.propTypes = {
+    prefix: PropTypes.string,
+    line: PropTypes.string,
+    index: PropTypes.number,
+    router: PropTypes.object,
+    location: PropTypes.object,
 };
 
 export class LogConsole extends Component {
