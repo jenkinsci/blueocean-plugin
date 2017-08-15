@@ -134,11 +134,18 @@ export default class BbCloudFlowManager extends FlowManager {
         this._renderLoadingOrganizations();
     }
 
+    _getOrganizationsStepAfterStateId() {
+        // if the credential was manually selected, add the organizations step after it
+        // if auto-selected, just replace it altogether
+        return this.credentialSelected ?
+            STATE.STEP_CREDENTIAL : null;
+    }
+
     _renderLoadingOrganizations() {
         this.renderStep({
             stateId: STATE.PENDING_LOADING_ORGANIZATIONS,
             stepElement: <BbLoadingStep />,
-            afterStateId: STATE.STEP_CREDENTIAL,
+            afterStateId: this._getOrganizationsStepAfterStateId(),
         });
 
         this.listOrganizations();
@@ -157,11 +164,6 @@ export default class BbCloudFlowManager extends FlowManager {
         this._creationApi.listOrganizations(this.credentialId, this.getApiUrl())
             .then(waitAtLeast(MIN_DELAY))
             .then(orgs => this._listOrganizationsSuccess(orgs));
-    }
-
-    _getOrganizationsStepAfterStateId() {
-        return this.isStateAdded(STATE.STEP_CREDENTIAL) ?
-            STATE.STEP_CREDENTIAL : null;
     }
 
     @action

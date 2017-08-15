@@ -18,6 +18,7 @@ class BbCredentialsPicker extends React.Component {
         this.credentialsManager = new BbCredentialsManager();
 
         this.state = {
+            loading: false,
             usernameValue: null,
             usernameErrorMsg: null,
             passwordValue: null,
