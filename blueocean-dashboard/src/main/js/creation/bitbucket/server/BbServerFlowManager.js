@@ -61,7 +61,7 @@ export default class BbServerFlowManager extends BbCloudFlowManager {
     }
 
     _getOrganizationsStepAfterStateId() {
-        return this.isStateAdded(STATE.STEP_CREDENTIAL) ?
+        return this.credentialSelected ?
             STATE.STEP_CREDENTIAL : STATE.STEP_CHOOSE_SERVER;
     }
 
