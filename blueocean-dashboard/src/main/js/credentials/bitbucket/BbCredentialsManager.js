@@ -14,7 +14,7 @@ const { delayBoth } = PromiseDelayUtils;
  * Manages retrieving, validating and saving Bitbucket credential
  * Also holds the state of the credential for use in BbCredentialStep.
  */
-class BbCredentialManager {
+class BbCredentialsManager {
 
     @observable
     stateId = null;
@@ -44,7 +44,7 @@ class BbCredentialManager {
     _findExistingCredentialFailure(error) {
         if (error.type === LoadError.TOKEN_NOT_FOUND) {
             this.stateId = BbCredentialState.NEW_REQUIRED;
-        } else if ( error.type === LoadError.TOKEN_INVALID) {
+        } else if (error.type === LoadError.TOKEN_INVALID) {
             this.stateId = BbCredentialState.INVALID_CREDENTIAL;
         } else {
             this.stateId = BbCredentialState.UNEXPECTED_ERROR_CREDENTIAL;
@@ -81,4 +81,4 @@ class BbCredentialManager {
 
 }
 
-export default BbCredentialManager;
+export default BbCredentialsManager;
