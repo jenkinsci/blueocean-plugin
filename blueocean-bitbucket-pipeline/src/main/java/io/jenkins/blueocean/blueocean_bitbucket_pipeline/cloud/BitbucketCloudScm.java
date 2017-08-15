@@ -2,6 +2,7 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud;
 
 import hudson.Extension;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.AbstractBitbucketScm;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketCredentialUtils;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
@@ -13,9 +14,9 @@ import javax.annotation.Nonnull;
  * @author Vivek Pandey
  */
 public class BitbucketCloudScm extends AbstractBitbucketScm {
+    public static final String ID = "bitbucket-cloud";
+    public static final String API_URL = "https://bitbucket.org";
     static final String DOMAIN_NAME="blueocean-bitbucket-cloud-domain";
-    static final String ID = "bitbucket-cloud";
-    static final String API_URL = "https://bitbucket.org/api/2.0/";
 
     public BitbucketCloudScm(Reachable parent) {
         super(parent);
@@ -35,7 +36,7 @@ public class BitbucketCloudScm extends AbstractBitbucketScm {
     @Nonnull
     @Override
     protected String createCredentialId(@Nonnull String apiUrl) {
-        return ID;
+        return BitbucketCredentialUtils.computeCredentialId(null, ID, apiUrl);
     }
 
     @Nonnull

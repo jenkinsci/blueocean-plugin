@@ -3,10 +3,16 @@ package io.jenkins.blueocean.blueocean_git_pipeline;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.Item;
+import hudson.model.ItemGroup;
 import hudson.model.User;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
+import io.jenkins.blueocean.service.embedded.OrganizationFactoryImpl;
+import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
+import jenkins.model.ModifiableTopLevelItemGroup;
 import jenkins.plugins.git.GitSampleRepoRule;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.junit.Assert;
@@ -14,8 +20,15 @@ import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.junit.runners.Parameterized;
+import org.junit.runners.Parameterized.Parameters;
+import org.jvnet.hudson.test.MockFolder;
+import org.jvnet.hudson.test.TestExtension;
 
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -24,9 +37,20 @@ import static org.junit.Assert.*;
 /**
  * @author Vivek Pandey
  */
+@RunWith(Parameterized.class)
 public class GitScmTest extends PipelineBaseTest {
     @Rule
     public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();
+
+    @Parameters
+    public static Object[] data() {
+        return new Object[] { null, "TestOrg" };
+    }
+
+    public GitScmTest(String blueOrganisation) {
+        System.out.println("setting org root to: " + blueOrganisation);
+        TestOrganizationFactoryImpl.orgRoot = blueOrganisation;
+    }
 
     @Before
     public void setup() throws Exception{
@@ -38,7 +62,7 @@ public class GitScmTest extends PipelineBaseTest {
         return new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .post("/organizations/jenkins/credentials/user/")
+                .post("/organizations/" + getOrgName() + "/credentials/user/")
                 .data(credRequest).build(Map.class);
     }
 
@@ -72,7 +96,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map r = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .post("/organizations/jenkins/pipelines/")
+                .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", "https://github.com/vivek/test-no-jenkins-file.git",
@@ -104,7 +128,7 @@ public class GitScmTest extends PipelineBaseTest {
         String credentialId = (String) resp.get("id");
         Assert.assertNotNull(credentialId);
 
-        post("/organizations/jenkins/pipelines/",
+        post("/organizations/" + getOrgName() + "/pipelines/",
                 ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
@@ -132,7 +156,7 @@ public class GitScmTest extends PipelineBaseTest {
         String credentialId = (String) resp.get("id");
         Assert.assertNotNull(credentialId);
 
-        post("/organizations/jenkins/pipelines/",
+        post("/organizations/" + getOrgName() + "/pipelines/",
                 ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
@@ -147,7 +171,7 @@ public class GitScmTest extends PipelineBaseTest {
         User user = login();
         this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
-        post("/organizations/jenkins/pipelines/",
+        post("/organizations/" + getOrgName() + "/pipelines/",
                 ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", "/sdsd/sdsd/sdsd")
@@ -179,7 +203,7 @@ public class GitScmTest extends PipelineBaseTest {
         resp = new RequestBuilder(baseUrl)
                 .status(400)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .post("/organizations/jenkins/pipelines/")
+                .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", "git@github.com:vivek/capability-annotation.git",
@@ -200,7 +224,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
-                .post("/organizations/jenkins/pipelines/")
+                .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
@@ -212,7 +236,7 @@ public class GitScmTest extends PipelineBaseTest {
 
     @Test
     public void shouldFailOnValidation1(){
-        Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
+        Map<String,Object> resp = post("/organizations/" + getOrgName() + "/pipelines/",
                 ImmutableMap.of(
                         "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
                 ), 400);
@@ -233,7 +257,7 @@ public class GitScmTest extends PipelineBaseTest {
         User user = login();
         this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
-        Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
+        Map<String,Object> resp = post("/organizations/" + getOrgName() + "/pipelines/",
                 ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest"
                 ), 400);
@@ -244,7 +268,7 @@ public class GitScmTest extends PipelineBaseTest {
 
         assertEquals("scmConfig", errors.get(0).get("field"));
         assertEquals("MISSING", errors.get(0).get("code"));
-        assertNull(Jenkins.getInstance().getItem("demo"));
+        assertNull(getOrgRoot().getItem("demo"));
     }
 
     @Test
@@ -253,7 +277,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
                 .status(400)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
-                .post("/organizations/jenkins/pipelines/")
+                .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of()))
@@ -265,7 +289,7 @@ public class GitScmTest extends PipelineBaseTest {
 
         assertEquals(errors.get(0).get("field"), "scmConfig.uri");
         assertEquals(errors.get(0).get("code"), "MISSING");
-        assertNull(Jenkins.getInstance().getItem("demo"));
+        assertNull(getOrgRoot().getItem("demo"));
 
     }
 
@@ -277,7 +301,7 @@ public class GitScmTest extends PipelineBaseTest {
         Map resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
-                .post("/organizations/jenkins/pipelines/")
+                .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl())
@@ -290,7 +314,7 @@ public class GitScmTest extends PipelineBaseTest {
         resp = new RequestBuilder(baseUrl)
                 .status(400)
                 .jwtToken(getJwtToken(j.jenkins,"bob", "bob"))
-                .post("/organizations/jenkins/pipelines/")
+                .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl(),
@@ -318,7 +342,7 @@ public class GitScmTest extends PipelineBaseTest {
         User user = login();
         this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
 
-        Map<String,Object> resp = post("/organizations/jenkins/pipelines/",
+        Map<String,Object> resp = post("/organizations/" + getOrgName() + "/pipelines/",
                 ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl(), "credentialId", "sdsdsd")
@@ -327,20 +351,20 @@ public class GitScmTest extends PipelineBaseTest {
 
         assertEquals("scmConfig.credentialId", errors.get(0).get("field"));
         assertEquals("NOT_FOUND", errors.get(0).get("code"));
-        assertNull(Jenkins.getInstance().getItem("demo"));
+        assertNull(getOrgRoot().getItem("demo"));
     }
 
     private String createMbp(User user) throws UnirestException {
         Map<String,Object> resp = new RequestBuilder(baseUrl)
                 .status(201)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .post("/organizations/jenkins/pipelines/")
+                .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("uri", sampleRepo.fileUrl()))).build(Map.class);
 
         assertEquals("demo", resp.get("name"));
-        Item item = Jenkins.getInstance().getItem("demo");
+        Item item = getOrgRoot().getItem("demo");
         assertNotNull(item);
         assertTrue(item instanceof MultiBranchProject);
         return "demo";
@@ -371,4 +395,68 @@ public class GitScmTest extends PipelineBaseTest {
         sampleRepo.write("file", "subsequent content1");
         sampleRepo.git("commit", "--all", "--message=tweaked1");
     }
+    
+    
+
+    private String getOrgName() {
+        return OrganizationFactory.getInstance().list().iterator().next().getName();
+    }
+
+    private ModifiableTopLevelItemGroup getOrgRoot() {
+        return OrganizationFactory.getItemGroup(getOrgName());
+    }
+
+    @TestExtension
+    public static class TestOrganizationFactoryImpl extends OrganizationFactoryImpl {
+        
+        public static String orgRoot;
+        
+        private OrganizationImpl instance;
+
+        public TestOrganizationFactoryImpl() {
+            System.out.println("TestOrganizationFactoryImpl org root is: " + orgRoot);
+            setOrgRoot(orgRoot);
+        }
+
+        private void setOrgRoot(String root) {
+            if (root != null) {
+                try {
+                    MockFolder itemGroup = Jenkins.getInstance().createProject(MockFolder.class, root);
+                    instance = new OrganizationImpl(root, itemGroup);
+                } catch (IOException e) {
+                    throw new RuntimeException("Test setup failed!", e);
+                }
+                
+            }
+            else {
+                instance = new OrganizationImpl("jenkins", Jenkins.getInstance());
+            }
+        }
+
+        @Override
+        public OrganizationImpl get(String name) {
+            if (instance != null) {
+                if (instance.getName().equals(name)) {
+                    System.out.println("" + name + " Instance returned " + instance);
+                    return instance;
+                }
+            }
+            System.out.println("" + name + " no instance found");
+            return null;
+        }
+
+        @Override
+        public Collection<BlueOrganization> list() {
+            return Collections.singleton((BlueOrganization) instance);
+        }
+
+        @Override
+        public OrganizationImpl of(ItemGroup group) {
+            if (group == instance.getGroup()) {
+                return instance;
+            }
+            return null;
+        }
+    }
+
 }

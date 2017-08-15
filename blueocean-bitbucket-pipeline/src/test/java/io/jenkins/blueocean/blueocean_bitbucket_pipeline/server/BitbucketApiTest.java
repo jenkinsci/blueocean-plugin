@@ -106,7 +106,7 @@ public class BitbucketApiTest extends BbServerWireMock {
         //update content
         api.saveContent("TESTP", "pipeline-demo-test","Jenkinsfile","node{\n" +
                 "  echo 'hello world!'\n" +
-                "}", "another commit", "master",branch.getLatestCommit());
+                "}", "another commit", "master",null,branch.getLatestCommit());
     }
 
     @Test
@@ -117,7 +117,7 @@ public class BitbucketApiTest extends BbServerWireMock {
         //create new file
         BbSaveContentResponse saveResponse = api.saveContent("TESTP","pipeline-demo-test","README.md",
                 "This is test content in new file",
-                "another commit", "master",null);
+                "another commit", "master",null,null);
         assertNotNull(saveResponse.getCommitId());
         String content = api.getContent("TESTP", "pipeline-demo-test", "README.md", (String) saveResponse.getCommitId());
         assertEquals("This is test content in new file", content);
@@ -139,7 +139,7 @@ public class BitbucketApiTest extends BbServerWireMock {
         //create new file
         BbSaveContentResponse saveResponse = api.saveContent("TESTP","empty-repo-test","README.md",
                 "This is test content in new file",
-                "another commit", "master",null);
+                "another commit", "master",null,null);
         assertNotNull(saveResponse.getCommitId());
         String content = api.getContent("TESTP", "empty-repo-test", "README.md", (String) saveResponse.getCommitId());
         assertEquals("This is test content in new file", content);

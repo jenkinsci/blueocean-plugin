@@ -47,6 +47,7 @@ export {
     Dialog
 } from './dialog';
 export { FloatingElement } from './FloatingElement';
+export { Icon } from './Icon';
 export { IconButton } from './IconButton';
 export { Dropdown } from './forms/Dropdown';
 export { Checkbox } from './forms/Checkbox';

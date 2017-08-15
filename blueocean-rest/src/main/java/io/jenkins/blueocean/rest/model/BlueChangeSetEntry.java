@@ -13,6 +13,15 @@ import java.util.Collection;
  * @author Ivan Meredith
  */
 public abstract class BlueChangeSetEntry extends Resource {
+
+    public static final String AUTHOR = "author";
+    public static final String COMMIT_ID = "commitId";
+    public static final String TIMESTAMP = "timestamp";
+    public static final String MESSAGE = "msg";
+    public static final String AFFECTED_PATHS = "affectedPaths";
+    public static final String URL = "url";
+    public static final String ISSUES = "issues";
+
     /**
      * Returns a human readable display name of the commit number, revision number, and such thing
      * that identifies this entry.
@@ -23,7 +32,7 @@ public abstract class BlueChangeSetEntry extends Resource {
      *      in CVS there's no single identifier for commits. Each file gets a different revision number.
      */
     @Nullable
-    @Exported
+    @Exported(name = COMMIT_ID)
     public abstract  String getCommitId();
 
     /**
@@ -33,7 +42,7 @@ public abstract class BlueChangeSetEntry extends Resource {
      *      never null.
      */
     @Nonnull
-    @Exported(inline = true)
+    @Exported(name = AUTHOR, inline = true)
     public abstract BlueUser getAuthor();
 
     /**
@@ -44,7 +53,7 @@ public abstract class BlueChangeSetEntry extends Resource {
      *      spreads over time between multiple changes on multiple files, so there's no single timestamp.)
      */
     @Nullable
-    @Exported
+    @Exported(name = TIMESTAMP)
     public abstract String getTimestamp();
 
     /**
@@ -54,7 +63,7 @@ public abstract class BlueChangeSetEntry extends Resource {
      *      Can be empty but never null.
      */
     @Nonnull
-    @Exported
+    @Exported(name = MESSAGE)
     public abstract String getMsg();
 
     /**
@@ -68,7 +77,7 @@ public abstract class BlueChangeSetEntry extends Resource {
      * @return never null.
      */
     @Nonnull
-    @Exported
+    @Exported(name = AFFECTED_PATHS)
     public abstract Collection<String> getAffectedPaths();
 
     /**
@@ -79,6 +88,12 @@ public abstract class BlueChangeSetEntry extends Resource {
      * @return null if no applicable website exists
      */
     @Nullable
-    @Exported
+    @Exported(name = URL)
     public abstract String getUrl();
+
+    /**
+     * @return issue
+     */
+    @Exported(name = ISSUES, skipNull = true, inline = true)
+    public abstract Collection<BlueIssue> getIssues();
 }

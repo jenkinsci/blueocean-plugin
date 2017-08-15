@@ -2,6 +2,7 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
 
 import hudson.Extension;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.AbstractBitbucketScm;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketCredentialUtils;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
@@ -14,8 +15,8 @@ import javax.annotation.Nonnull;
  * @author Vivek Pandey
  */
 public class BitbucketServerScm extends AbstractBitbucketScm {
+    public static final String ID = "bitbucket-server";
     static final String DOMAIN_NAME="blueocean-bitbucket-server-domain";
-    static final String ID = "bitbucket-server";
 
     public BitbucketServerScm(Reachable parent) {
         super(parent);
@@ -40,7 +41,7 @@ public class BitbucketServerScm extends AbstractBitbucketScm {
 
     @Override
     protected  @Nonnull String createCredentialId(@Nonnull String apiUrl){
-        return String.format("%s:%s",getId(),DigestUtils.sha256Hex(apiUrl));
+        return BitbucketCredentialUtils.computeCredentialId(null, ID, apiUrl);
     }
 
     @Nonnull

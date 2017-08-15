@@ -112,7 +112,7 @@ export default class BbCredentialsStep extends React.Component {
         };
 
         return (
-            <FlowStep {...this.props} className="github-credentials-step" disabled={disabled} title={title}>
+            <FlowStep {...this.props} className="bitbucket-credentials-step" disabled={disabled} title={title}>
                 <p className="instructions">
                     {t('creation.bitbucket.connect.authorize')}. &nbsp;
                 </p>

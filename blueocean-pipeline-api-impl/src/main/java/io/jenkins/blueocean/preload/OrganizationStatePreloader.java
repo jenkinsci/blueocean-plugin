@@ -1,21 +1,24 @@
 package io.jenkins.blueocean.preload;
 
+import java.io.StringWriter;
+
+import javax.annotation.Nonnull;
+
+import com.google.common.collect.Iterables;
+
 import hudson.Extension;
 import io.jenkins.blueocean.commons.PageStatePreloader;
 import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
-import jenkins.model.Jenkins;
 import net.sf.json.util.JSONBuilder;
-
-import javax.annotation.Nonnull;
-import java.io.StringWriter;
 
 /**
  * @author Vivek Pandey
  */
 @Extension
 public class OrganizationStatePreloader extends PageStatePreloader {
+
     @Nonnull
     @Override
     public String getStatePropertyPath() {
@@ -24,12 +27,14 @@ public class OrganizationStatePreloader extends PageStatePreloader {
 
     @Override
     public String getStateJson() {
-        BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(Jenkins.getInstance());
-        String organizationGroup="/"; //default is root group
-        if(organization instanceof AbstractOrganization){
-            organizationGroup = "/"+((AbstractOrganization) organization).getGroup().getFullName();
-        }
+        BlueOrganization organization = Iterables.getFirst(OrganizationFactory.getInstance().list(), null);
+        
         if(organization != null) {
+            String organizationGroup = "/"; //default is root group
+            if (organization instanceof AbstractOrganization) {
+                organizationGroup = "/" + ((AbstractOrganization) organization).getGroup().getFullName();
+            }
+
             StringWriter writer = new StringWriter();
             new JSONBuilder(writer)
                     .object()
@@ -44,4 +49,6 @@ public class OrganizationStatePreloader extends PageStatePreloader {
             return "{}";// if will happen only when there is no implementation of BlueOrganization found.
         }
     }
+
+
 }

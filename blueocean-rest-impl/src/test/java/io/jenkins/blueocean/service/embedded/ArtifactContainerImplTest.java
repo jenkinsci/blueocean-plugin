@@ -43,5 +43,7 @@ public class ArtifactContainerImplTest extends BaseTest {
         Map artifact = request().get("/organizations/jenkins/pipelines/"+JOB_NAME+"/runs/"+r.getId()+"/artifacts/test%252Fme%252Fout%252F0.txt").build(Map.class);
 
         Assert.assertEquals(100, artifact.size());
-      }
+    }
+
+
 }

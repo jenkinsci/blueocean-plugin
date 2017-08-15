@@ -3,6 +3,7 @@
 @import 'git';
 @import 'github';
 @import 'github-enterprise';
+@import 'bitbucket';
 
 .create-pipeline {
     .ContentPageHeader-main {
@@ -35,6 +36,16 @@
                 margin-bottom: 10px;
                 min-width: 220px;
                 height: 56px;
+                opacity: 0.75;
+
+                &:hover {
+                    background-color: rgba(74,144,226,0.04);
+                    opacity: 1;
+                }
+
+                &.active {
+                    opacity: 1;
+                }
             }
 
             &:last-child .IconButton {
@@ -92,6 +103,10 @@
     }
 }
 
+.creation-selected-server-url {
+    font-style: italic;
+}
+
 
 
 // from the JDL
@@ -100,4 +115,8 @@
 .provider-button button.active {
     border-color: @brand-primary;
     background-color: lighten(@brand-primary, 37.5%);
+
+    path {
+        fill: #4C4C4C;
+    }
 }

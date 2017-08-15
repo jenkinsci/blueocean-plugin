@@ -1,16 +1,20 @@
 package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
+import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.GET;
 import org.kohsuke.stapler.verb.PUT;
+
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_SCM;
 
 /**
  * SCM resource attached to a pipeline
  *
  * @author Vivek Pandey
  */
+@Capability(BLUE_SCM)
 public abstract class BluePipelineScm extends Resource {
     /**
      * Gives content in scm attached to a pipeline.

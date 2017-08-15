@@ -174,8 +174,16 @@ export class BranchDetailsRow extends Component {
                 runnable={branch}
                 latestRun={branch.latestRun}
                 onNavigation={openRunDetails}
+                iconColor="rgba(53, 64, 82, 0.25)"
+                hoverIconColor="#4a90e2"
             />,
-            <RunHistoryButton pipeline={pipeline} branchName={branch.name} />,
+            <RunHistoryButton
+                pipeline={pipeline}
+                branchName={branch.name}
+                t={t}
+                iconColor="rgba(53, 64, 82, 0.25)"
+                hoverIconColor="#4a90e2"
+            />,
             <Extensions.Renderer
                 extensionPoint="jenkins.pipeline.branches.list.action"
                 filter={sortByOrdinal}
