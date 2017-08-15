@@ -12,26 +12,48 @@ import BbCredentialsPicker from './bitbucket/BbCredentialsPicker';
  */
 class CredentialsPicker extends React.Component {
 
+    resolveType(props) {
+        if (props.type) {
+            return props.type;
+        }
+        if (props.scmSource && props.scmSource.id) {
+            return props.scmSource.id;
+        }
+        return null;
+    }
+
+    resolveScmSource(props) {
+        if (props.scmSource) {
+            return props.scmSource;
+        }
+        if (props.githubConfig) {
+            return {
+                id: props.githubConfig.scmId,
+                apiUrl: props.githubConfig.apiUrl,
+            };
+        }
+        return {};
+    }
+
     render() {
-        const { type, onStatus, onComplete } = this.props;
+        const { onStatus, onComplete } = this.props;
+        const type = this.resolveType(this.props);
+        const scmSource = this.resolveScmSource(this.props);
+
         let typedPicker = null;
 
         if (type === 'github' || type === 'github-enterprise') {
-            const { scmId, apiUrl } = this.props.githubConfig;
-
             typedPicker = (
                 <GithubCredentialsPicker
-                    scmId={scmId}
-                    apiUrl={apiUrl}
+                    scmId={scmSource.id}
+                    apiUrl={scmSource.apiUrl}
                 />
             );
         } else if (type === 'bitbucket-cloud' || type === 'bitbucket-server') {
-            const { id: scmId, apiUrl } = this.props.scmSource;
-
             typedPicker = (
                 <BbCredentialsPicker
-                    scmId={scmId}
-                    apiUrl={apiUrl}
+                    scmId={scmSource.id}
+                    apiUrl={scmSource.apiUrl}
                 />
             );
         }
