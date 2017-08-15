@@ -68,7 +68,7 @@ public class GithubEnterpriseCreationTest {
         dialog.findFormErrorMessage("enter a valid URL");
         // server-side URL validation
         dialog.enterServerName(serverName);
-        dialog.enterServerUrl("foo");
+        dialog.enterServerUrl("http://www.google.com");
         dialog.waitForErrorMessagesGone();
         dialog.clickSaveServerButton();
         dialog.findFormErrorMessage("Invalid server");
