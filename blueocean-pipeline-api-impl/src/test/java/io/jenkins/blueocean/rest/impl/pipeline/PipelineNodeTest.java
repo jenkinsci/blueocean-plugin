@@ -318,7 +318,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         String pipeline = "" +
             "node {\n" +
             "  stage ('dev') {\n" +
-            "    junitResults('*.xml')\n" +
+            "    junit('*.xml')\n" +
             "  }\n" +
             "}\n";
 
