@@ -103,7 +103,7 @@ public class DashboardPage {
             ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".search-pipelines-input input"))
         );
         element.sendKeys(searchText);
-        logger.info("entered search text =" + searchText);
+        logger.info("entered search text = " + searchText);
     }
 
     public void clearSearchText() {
