@@ -46,6 +46,7 @@ import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import jenkins.model.Jenkins;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.Issue;
@@ -236,7 +237,7 @@ public class PipelineApiTest extends BaseTest {
     }
 
     /** TODO: latest stapler change broke delete, disabled for now */
-//    @Test
+    @Test @Ignore
     public void deletePipelineTest() throws IOException {
         Project p = j.createFreeStyleProject("pipeline1");
 

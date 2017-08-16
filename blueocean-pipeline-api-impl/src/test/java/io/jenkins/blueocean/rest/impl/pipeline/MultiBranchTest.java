@@ -37,6 +37,7 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.BuildWatcher;
@@ -1049,7 +1050,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
 
     //Disabled test for now as I can't get it to work. Tested manually.
-    //@Test
+    @Test @Ignore
     public void getPipelineJobrRuns() throws Exception {
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         sampleRepo1.init();
