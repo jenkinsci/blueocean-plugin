@@ -1,6 +1,9 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Function;
+import com.google.common.base.Optional;
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Collections2;
 import hudson.model.Action;
 import hudson.model.CauseAction;
@@ -32,7 +35,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Basic {@link BlueRun} implementation.
@@ -42,6 +47,12 @@ import java.util.concurrent.ExecutionException;
 public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     public static final DateTimeFormatter DATE_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
+    private static final long TEST_SUMMARY_CACHE_MAX_SIZE = Long.getLong("TEST_SUMMARY_CACHE_MAX_SIZE", 10000);
+    private static final Cache<String, Optional<BlueTestSummary>> TEST_SUMMARY = CacheBuilder.newBuilder()
+        .maximumSize(TEST_SUMMARY_CACHE_MAX_SIZE)
+        .expireAfterAccess(1, TimeUnit.DAYS)
+        .build();
 
     protected final T run;
     protected final BlueOrganization organization;
@@ -214,7 +225,17 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public BlueTestSummary getTestSummary() {
         if (getStateObj() == BlueRunState.FINISHED) {
-            return Caches.loadTestSummary(run, this).orNull();
+            try {
+                return TEST_SUMMARY.get(run.getExternalizableId(), new Callable<Optional<BlueTestSummary>>() {
+                    @Override
+                    public Optional<BlueTestSummary> call() throws Exception {
+                        BlueTestSummary summary = BlueTestResultFactory.resolve(run, parent).summary;
+                        return summary == null ? Optional.<BlueTestSummary>absent() : Optional.of(summary);
+                    }
+                }).orNull();
+            } catch (ExecutionException e) {
+                return null;
+            }
         } else {
             return BlueTestResultFactory.resolve(run, this).summary;
         }
