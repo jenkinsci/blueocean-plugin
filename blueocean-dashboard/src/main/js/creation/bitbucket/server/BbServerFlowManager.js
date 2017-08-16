@@ -19,8 +19,8 @@ export default class BbServerFlowManager extends BbCloudFlowManager {
 
     selectedServer = null;
 
-    constructor(creationApi, credentialsApi, serverApi) {
-        super(creationApi, credentialsApi);
+    constructor(creationApi, serverApi) {
+        super(creationApi);
         this.serverManager = new BbServerManager(serverApi);
     }
 
@@ -61,7 +61,7 @@ export default class BbServerFlowManager extends BbCloudFlowManager {
     }
 
     _getOrganizationsStepAfterStateId() {
-        return this.isStateAdded(STATE.STEP_CREDENTIAL) ?
+        return this.credentialSelected ?
             STATE.STEP_CREDENTIAL : STATE.STEP_CHOOSE_SERVER;
     }
 
@@ -80,13 +80,7 @@ export default class BbServerFlowManager extends BbCloudFlowManager {
 
     selectServer(server) {
         this.selectedServer = server;
-
-        this.findExistingCredential();
-        this.renderStep({
-            stateId: STATE.PENDING_LOADING_CREDS,
-            stepElement: <BbLoadingStep />,
-            afterStateId: STATE.STEP_CHOOSE_SERVER,
-        });
+        this._renderCredentialsStep();
     }
 
     _renderChooseOrg() {
