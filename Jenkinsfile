@@ -71,6 +71,13 @@ node() {
         if (err.toString().contains('exit code 143')) {
           currentBuild.result = "ABORTED"
         }
+
+        publishHTML target: [
+          allowMissing: false,
+          reportDir: 'target/code-coverage/report/',
+          reportFiles: '*/**'
+          reportName: 'coverage'
+        ]
       } finally {
         stage('Cleanup') {
           sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
