@@ -23,7 +23,10 @@ import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.GenericResource;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.kohsuke.stapler.QueryParameter;
+import org.kohsuke.stapler.export.Exported;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -37,6 +40,9 @@ import java.util.concurrent.ExecutionException;
  * @author Vivek Pandey
  */
 public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
+
+    public static final DateTimeFormatter DATE_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+
     protected final T run;
     protected final BlueOrganization organization;
 
@@ -87,6 +93,26 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
     @Override
     public Date getEnQueueTime() {
         return new Date(run.getTimeInMillis());
+    }
+
+    @Override
+    public String getEnQueueTimeString() {
+        return DATE_FORMAT.print(getEnQueueTime().getTime());
+    }
+
+    @Override
+    public String getStartTimeString(){
+        return DATE_FORMAT.print(getStartTime().getTime());
+    }
+
+    @Override
+    public String getEndTimeString(){
+        Date endTime = getEndTime();
+        if(endTime == null) {
+            return null;
+        } else {
+            return DATE_FORMAT.print(endTime.getTime());
+        }
     }
 
     @Override

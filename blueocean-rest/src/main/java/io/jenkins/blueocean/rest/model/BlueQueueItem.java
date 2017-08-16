@@ -53,9 +53,8 @@ public abstract class BlueQueueItem extends Resource {
     public abstract Date getQueuedTime();
 
     @Exported(name=QUEUED_TIME)
-    public final String getQueuedTimeString(){
-        return BlueRun.DATE_FORMAT.print(getQueuedTime().getTime());
-    }
+    public abstract String getQueuedTimeString();
+
     /**
      *
      * @return  The expected build number of the build. This may change.

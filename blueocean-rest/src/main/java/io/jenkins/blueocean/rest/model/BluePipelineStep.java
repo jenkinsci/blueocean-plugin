@@ -49,12 +49,7 @@ public abstract class BluePipelineStep extends Resource{
     public abstract Date getStartTime();
 
     @Exported(name = START_TIME)
-    public final String getStartTimeString(){
-        if(getStartTime() == null) {
-            return null;
-        }
-        return BlueRun.DATE_FORMAT.print(getStartTime().getTime());
-    }
+    public abstract String getStartTimeString();
 
     @Exported(name= DURATION_IN_MILLIS)
     public abstract Long getDurationInMillis();

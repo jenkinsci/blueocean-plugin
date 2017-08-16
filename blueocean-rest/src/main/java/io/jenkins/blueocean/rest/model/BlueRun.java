@@ -3,9 +3,6 @@ package io.jenkins.blueocean.rest.model;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
-import org.joda.time.format.DateTimeFormatterBuilder;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
@@ -14,7 +11,6 @@ import org.kohsuke.stapler.verb.POST;
 import org.kohsuke.stapler.verb.PUT;
 
 import javax.annotation.Nonnull;
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 
@@ -56,7 +52,6 @@ public abstract class BlueRun extends Resource {
 
     /** Date String format */
     public static final String DATE_FORMAT_STRING = "yyyy-MM-dd'T'HH:mm:ss.SSSZ";
-    public static final DateTimeFormatter DATE_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
 
     /**
      * @return name of the organization
@@ -98,19 +93,15 @@ public abstract class BlueRun extends Resource {
      * @return run start time
      */
     @Exported(name=START_TIME)
-    public final String getStartTimeString(){
-        return DATE_FORMAT.print(getStartTime().getTime());
-    }
+    public abstract String getStartTimeString();
 
     /**
      * @return Time when build is scheduled and is in queue waiting for executor
      */
     public abstract Date getEnQueueTime();
 
-     @Exported(name=ENQUEUE_TIME)
-     public final String getEnQueueTimeString() {
-        return DATE_FORMAT.print(getEnQueueTime().getTime());
-     }
+    @Exported(name=ENQUEUE_TIME)
+    public abstract String getEnQueueTimeString();
 
     /**
      * @return Build end time
@@ -118,14 +109,7 @@ public abstract class BlueRun extends Resource {
     public abstract Date getEndTime();
 
     @Exported(name=END_TIME)
-    public final String getEndTimeString(){
-        Date endTime = getEndTime();
-        if(endTime == null) {
-            return null;
-        } else {
-            return DATE_FORMAT.print(endTime.getTime());
-        }
-    }
+    public abstract String getEndTimeString();
 
     /**
      * @return Build duration in milli seconds
