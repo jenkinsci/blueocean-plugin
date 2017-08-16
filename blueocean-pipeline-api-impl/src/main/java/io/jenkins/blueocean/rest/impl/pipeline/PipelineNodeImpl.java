@@ -195,16 +195,9 @@ public class PipelineNodeImpl extends BluePipelineNode {
             if (action != null && parent instanceof BluePipelineNode) {
                 List<CaseResult> testsToTransform = new ArrayList<>();
 
-                // TODO: node.getSteps() doesn't include block-scoped steps, which could add tests - i.e., withMaven
-                TestResult testsForNode = action.getResult().getResultByRunAndNodes(run.getExternalizableId(),
-                    ImmutableList.copyOf(Iterables.transform(((BluePipelineNode) parent).getSteps(),
-                        new Function<BluePipelineStep, String>() {
-                            @Override
-                            public String apply(BluePipelineStep step) {
-                                return step.getId();
-                            }
-                        })));
-                if (testsForNode != null) {
+                TestResult.BlocksWithChildren block = action.getResult().getBlockWithChildren(run.getExternalizableId(), ((BluePipelineNode) parent).getId());
+                if (block != null) {
+                    TestResult testsForNode = block.toTestResult(run.getExternalizableId(), action.getResult());
                     testsToTransform.addAll(testsForNode.getFailedTests());
                     testsToTransform.addAll(testsForNode.getSkippedTests());
                     testsToTransform.addAll(testsForNode.getPassedTests());
