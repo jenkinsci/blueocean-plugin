@@ -290,7 +290,7 @@ export function PipelineCardRenderer(props) {
             { branchText ?
                 <span className="branch">
                     <span className="octicon octicon-git-branch"></span>
-                    <span className="branchText">{branchText}</span>
+                    <span className="branchText" title={branchText}>{branchText}</span>
                 </span>
                 :
                 <span className="branch"></span>
