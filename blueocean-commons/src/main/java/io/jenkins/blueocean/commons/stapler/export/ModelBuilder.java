@@ -50,10 +50,6 @@ public class ModelBuilder {
         return get(type, null, null);
     }
 
-    public <T> Model<T> getOrNull(Class<T> type) throws NotExportableException {
-        return get(type, null, null);
-    }
-
     public <T> Model<T> get(Class<T> type, @CheckForNull Class<?> propertyOwner, @Nullable String property) {
         if (type.getAnnotation(ExportedBean.class) == null) {
             throw new NotExportableException(type);
