@@ -106,9 +106,6 @@ public class PipelineStepImpl extends BluePipelineStep {
 
     @Override
     public String getStartTimeString(){
-        if(getStartTime() == null) {
-            return null;
-        }
         return AbstractRunImpl.DATE_FORMAT.print(getStartTime().getTime());
     }
 
