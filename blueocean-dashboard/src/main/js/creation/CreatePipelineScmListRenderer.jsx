@@ -76,7 +76,7 @@ export class CreatePipelineScmListRenderer extends React.Component {
             <div className="scm-provider-list layout-large">
                 { this.state.providers.map(provider => {
                     let defaultOption;
-                    
+
                     try {
                         defaultOption = provider.getDefaultOption();
                     } catch (error) {
