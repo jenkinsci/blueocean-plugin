@@ -75,11 +75,11 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
     @SuppressWarnings("unchecked")
     @SuppressFBWarnings(value = "REC_CATCH_EXCEPTION", justification = "Runtime exception is thrown from the catch block")
     @Override
-    public BluePipeline create(Reachable parent) throws IOException {
+    public BluePipeline create(@Nonnull BlueOrganization organization, @Nonnull Reachable parent) throws IOException {
         Preconditions.checkNotNull(parent, "Parent passed is null");
         Preconditions.checkNotNull(getName(), "Name provided was null");
 
-        User authenticatedUser = checkUserIsAuthenticatedAndHasItemCreatePermission();
+        User authenticatedUser = checkUserIsAuthenticatedAndHasItemCreatePermission(organization);
 
         String apiUrl = null;
         String orgName = getName(); //default
@@ -105,18 +105,14 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
         updateEndpoints(apiUrl);
         String singleRepo = repos.size() == 1 ? repos.get(0) : null;
 
-        ModifiableTopLevelItemGroup orgRoot = getParent();
-
+        ModifiableTopLevelItemGroup orgRoot = getParent(organization);
+        
         Item item = Jenkins.getInstance().getItemByFullName(orgRoot.getFullName() + '/' + orgName);
 
-        BlueOrganization organization = findOrganization();
-        if (organization == null) {
-            throw new ServiceException.UnexpectedErrorException("Could not find organization");
-        }
         boolean creatingNewItem = item == null;
         try {
             if (item == null) {
-                item = createProject(getName(), DESCRIPTOR, CustomOrganizationFolderDescriptor.class);
+                item = createProject(getName(), DESCRIPTOR, CustomOrganizationFolderDescriptor.class, organization);
             }
 
             if (item instanceof OrganizationFolder) {
