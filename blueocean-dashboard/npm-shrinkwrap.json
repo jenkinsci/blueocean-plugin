@@ -39,9 +39,9 @@
       }
     },
     "@jenkins-cd/js-builder-jest": {
-      "version": "0.0.4-SNAPSHOT-3",
-      "from": "@jenkins-cd/js-builder-jest@0.0.4-SNAPSHOT-3",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder-jest/-/js-builder-jest-0.0.4-SNAPSHOT-3.tgz",
+      "version": "0.0.4",
+      "from": "@jenkins-cd/js-builder-jest@0.0.4",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder-jest/-/js-builder-jest-0.0.4.tgz",
       "dev": true,
       "dependencies": {
         "minimist": {
