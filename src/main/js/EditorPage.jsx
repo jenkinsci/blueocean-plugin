@@ -291,7 +291,7 @@ class PipelineLoader extends React.Component {
                 if (err.type === LoadError.JENKINSFILE_NOT_FOUND) {
                     this.makeEmptyPipeline();
                 } else if (err.type === LoadError.TOKEN_NOT_FOUND || err.type === LoadError.TOKEN_REVOKED) {
-                    this.createTokenDialog({ loading: true });
+                    this.showCredentialDialog({ loading: true });
                 } else {
                     this.showLoadingError(err);
                 }
@@ -385,7 +385,7 @@ class PipelineLoader extends React.Component {
         )});
     }
 
-    createTokenDialog({ loading = false } = {}) {
+    showCredentialDialog({ loading = false } = {}) {
         const pipeline = pipelineService.getPipeline(this.href);
         const { scmSource } = pipeline;
         const title = this.getScmTitle(scmSource.id);
@@ -423,6 +423,12 @@ class PipelineLoader extends React.Component {
             scmLabel = 'GitHub';
         } else if (scmId === 'github-enterprise') {
             scmLabel = 'GitHub Enterprise';
+        } else if (scmId === 'bitbucket-cloud') {
+            scmLabel = 'Bitbucket Cloud';
+        } else if (scmId === 'bitbucket-server') {
+            scmLabel = 'Bitbucket Server';
+        } else if (scmId === 'git') {
+            scmLabel = 'Git';
         }
 
         if (scmLabel) {
@@ -434,7 +440,7 @@ class PipelineLoader extends React.Component {
 
     onCredentialStatus(status) {
         if (status === 'promptReady') {
-            this.createTokenDialog();
+            this.showCredentialDialog();
         }
     }
 
