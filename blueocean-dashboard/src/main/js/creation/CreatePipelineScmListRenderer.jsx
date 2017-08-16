@@ -27,9 +27,10 @@ export class CreatePipelineScmListRenderer extends React.Component {
         const providerKeys = Object.keys(providers);
 
         for (let i = 0; i <= providerKeys.length; i++) {
-            if (providers[i] && ((providers[i].constructor.name == providerToSearch) || !providerToSearch)) {
+            if (providers[i] && ((providers[i].constructor.name === providerToSearch) || !providerToSearch)) {
                 sortedProviders.push(providers[i]);
 
+                // eslint-disable-next-line
                 delete providers[i];
                 break;
             }
@@ -50,6 +51,7 @@ export class CreatePipelineScmListRenderer extends React.Component {
 
             providers = providers.filter(provider => !!provider);
 
+            // eslint-disable-next-line
             let sortedProviders = [];
 
             this.customSortProviders(providers, sortedProviders, 'BbCloudScmProvider');
