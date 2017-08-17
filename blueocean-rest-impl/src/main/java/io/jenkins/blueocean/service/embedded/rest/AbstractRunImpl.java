@@ -38,6 +38,8 @@ import java.util.Date;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Basic {@link BlueRun} implementation.
@@ -47,6 +49,7 @@ import java.util.concurrent.TimeUnit;
 public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     public static final DateTimeFormatter DATE_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+    private static final Logger LOGGER = Logger.getLogger(AbstractRunImpl.class.getName());
 
     private static final long TEST_SUMMARY_CACHE_MAX_SIZE = Long.getLong("TEST_SUMMARY_CACHE_MAX_SIZE", 10000);
     private static final Cache<String, Optional<BlueTestSummary>> TEST_SUMMARY = CacheBuilder.newBuilder()
@@ -234,6 +237,7 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
                     }
                 }).orNull();
             } catch (ExecutionException e) {
+                LOGGER.log(Level.SEVERE, "Could not load summary from cache", e);
                 return null;
             }
         } else {

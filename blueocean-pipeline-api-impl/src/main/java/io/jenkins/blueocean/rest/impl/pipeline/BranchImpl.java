@@ -23,6 +23,7 @@ import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
+import javax.annotation.CheckForNull;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 
@@ -46,11 +47,13 @@ public class BranchImpl extends PipelineImpl {
     }
 
     @Exported(name = PullRequest.PULL_REQUEST, inline = true, skipNull =  true)
+    @CheckForNull
     public PullRequest getPullRequest() {
         return PullRequest.get(job);
     }
 
     @Exported(name = Branch.BRANCH, inline = true)
+    @CheckForNull
     public Branch getBranch() {
         return Branch.getBranch(job);
     }
