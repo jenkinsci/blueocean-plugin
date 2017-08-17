@@ -31,6 +31,7 @@ public class BranchContainerImplTest extends PipelineBaseTest {
     public void setup() throws Exception{
         super.setup();
         setupScm();
+        Caches.BRANCH_METADATA.invalidateAll();
     }
 
     @Test
