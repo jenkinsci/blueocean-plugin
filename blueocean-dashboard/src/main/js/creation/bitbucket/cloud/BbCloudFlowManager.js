@@ -372,6 +372,9 @@ export default class BbCloudFlowManager extends FlowManager {
             && event.jenkins_object_type === 'org.jenkinsci.plugins.workflow.job.WorkflowRun'
             && (event.job_run_status === 'ALLOCATED' || event.job_run_status === 'RUNNING' ||
                     event.job_run_status === 'SUCCESS' || event.job_run_status === 'FAILURE')) {
+
+            // set pipeline details thats needed later on in BbCompleteStep.navigatePipeline()
+            this.pipeline = { organization: event.jenkins_org, fullName: this.pipelineName };
             this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
             return;
         }
