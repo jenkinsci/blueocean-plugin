@@ -25,6 +25,7 @@ import org.jenkinsci.plugins.workflow.test.steps.SemaphoreStep;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.BuildWatcher;
@@ -50,7 +51,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         sampleRepo.init();
     }
     //Disabled, see JENKINS-36453
-    //@Test
+    @Test @Ignore
     public void replayRunTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
         j.createOnlineSlave(Label.get("remote"));
@@ -83,7 +84,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
     }
 
     // Disabled, see JENKINS-40084
-    // @Test
+    @Test @Ignore
     public void replayRunTestMB() throws Exception {
         j.createOnlineSlave(Label.get("remote"));
 
