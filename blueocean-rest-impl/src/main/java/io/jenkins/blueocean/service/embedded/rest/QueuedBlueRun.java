@@ -123,6 +123,21 @@ public class QueuedBlueRun extends BlueRun {
     }
 
     @Override
+    public String getStartTimeString() {
+        return null;
+    }
+
+    @Override
+    public String getEnQueueTimeString() {
+        return null;
+    }
+
+    @Override
+    public String getEndTimeString() {
+        return null;
+    }
+
+    @Override
     public String getArtifactsZipFile() {
         return null;
     }

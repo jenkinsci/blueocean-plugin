@@ -98,35 +98,6 @@ public class MultiBranchTest extends PipelineBaseTest {
     }
 
     @Test
-    public void testGetURL() {
-        BlueOrganization org = mock(BlueOrganization.class);
-        Job job = mock(Job.class);
-        BranchImpl branch = new BranchImpl(org, job, new Link("foo"));
-        assertNotNull(branch.getBranch());
-        assertNull(branch.getBranch().getUrl());
-        assertFalse(branch.getBranch().isPrimary());
-        ObjectMetadataAction oma = new ObjectMetadataAction("My Branch", "A feature branch", "https://path/to/branch");
-        when(job.getAction(ObjectMetadataAction.class)).thenReturn(oma);
-        assertEquals("https://path/to/branch", branch.getBranch().getUrl());
-    }
-
-    @Test
-    public void testBranchInfo() {
-        BlueOrganization org = mock(BlueOrganization.class);
-        Job job = mock(Job.class);
-        BranchImpl branch = new BranchImpl(org, job, new Link("foo"));
-        assertNotNull(branch.getBranch());
-        assertNull(branch.getBranch().getUrl());
-        assertFalse(branch.getBranch().isPrimary());
-        ObjectMetadataAction oma = new ObjectMetadataAction("My Branch", "A feature branch", "https://path/to/branch");
-        when(job.getAction(ObjectMetadataAction.class)).thenReturn(oma);
-        assertEquals("https://path/to/branch", branch.getBranch().getUrl());
-        assertFalse(branch.getBranch().isPrimary());
-        when(job.getAction(PrimaryInstanceMetadataAction.class)).thenReturn(new PrimaryInstanceMetadataAction());
-        assertTrue(branch.getBranch().isPrimary());
-    }
-
-    @Test
     public void resolveMbpLink() throws Exception {
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         FreeStyleProject f = j.jenkins.createProject(FreeStyleProject.class, "f");

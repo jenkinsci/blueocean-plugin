@@ -31,6 +31,7 @@ public class BranchContainerImplTest extends PipelineBaseTest {
     public void setup() throws Exception{
         super.setup();
         setupScm();
+        Caches.BRANCH_METADATA.invalidateAll();
     }
 
     @Test
@@ -69,7 +70,6 @@ public class BranchContainerImplTest extends PipelineBaseTest {
         Assert.assertEquals(4,l.size());
         Map o = (Map)l.get(1);
         Map o2 = (Map)l.get(0);
-        Assert.assertTrue(o.get("name").equals("feature2") || o.get("name").equals("feature4"));
 
         WorkflowJob j1 = findBranchProject(mp, (String)o.get("name"));
         j.waitForCompletion(j1.getLastBuild());
