@@ -34,7 +34,6 @@ describe("ExtensionUtils", () => {
             ];
 
             const sorted = sortByOrdinal(extensions);
-            console.log(sorted);
             assert.equal(sorted[0].pluginId, 'A');
             assert.equal(sorted[1].pluginId, 'B');
             assert.equal(sorted[2].pluginId, 'C');
