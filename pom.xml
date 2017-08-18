@@ -575,7 +575,7 @@
         <dependency>
           <groupId>io.jenkins.blueocean</groupId>
           <artifactId>blueocean-pipeline-editor</artifactId>
-          <version>0.3.0-beta-3</version>
+          <version>0.3.0-beta-4</version>
         </dependency>
 
         <dependency>
