@@ -5,9 +5,12 @@ class TypedError {
 
     constructor(type, serverError) {
         this.type = type;
-        this.code = serverError.code;
-        this.message = serverError.message;
-        this.errors = serverError.errors;
+
+        if (serverError) {
+            this.code = serverError.code;
+            this.message = serverError.message;
+            this.errors = serverError.errors;
+        }
     }
 
 }

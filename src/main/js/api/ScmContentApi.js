@@ -33,7 +33,7 @@ class ScmContentApi {
     _loadContentErrorHandler(error) {
         const { status } = error.response;
         const { responseBody } = error;
-        const { message } = responseBody;
+        const { message } = responseBody || {};
 
         if (status === 404) {
             throw new TypedError(LoadError.JENKINSFILE_NOT_FOUND, responseBody);
