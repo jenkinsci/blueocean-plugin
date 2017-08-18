@@ -115,7 +115,7 @@ gulp.task('test-jest', () => {
         process.env.JEST_JUNIT_OUTPUT = config.test.reports;
     }
 
-    runJest({
+    return runJest({
         config: {
             collectCoverage: true,
             coverageDirectory: config.test.coverage,
