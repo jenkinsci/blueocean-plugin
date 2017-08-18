@@ -23,6 +23,20 @@ export class CreatePipelineScmListRenderer extends React.Component {
         this._initialize();
     }
 
+    customSortProviders(providers, sortedProviders, providerToSearch) {
+        const providerKeys = Object.keys(providers);
+
+        for (let i = 0; i <= providerKeys.length; i++) {
+            if (providers[i] && ((providers[i].constructor.name === providerToSearch) || !providerToSearch)) {
+                sortedProviders.push(providers[i]);
+
+                // eslint-disable-next-line
+                delete providers[i];
+                break;
+            }
+        }
+    }
+
     _initialize() {
         // load and store the SCM providers that contributed the specified extension point
         Extensions.store.getExtensions(this.props.extensionPoint, (extensions) => {
@@ -37,8 +51,18 @@ export class CreatePipelineScmListRenderer extends React.Component {
 
             providers = providers.filter(provider => !!provider);
 
+            // eslint-disable-next-line
+            let sortedProviders = [];
+
+            this.customSortProviders(providers, sortedProviders, 'BbCloudScmProvider');
+            this.customSortProviders(providers, sortedProviders, 'BbServerScmProvider');
+            this.customSortProviders(providers, sortedProviders, 'GithubScmProvider');
+            this.customSortProviders(providers, sortedProviders, 'GithubEnterpriseScmProvider');
+            this.customSortProviders(providers, sortedProviders, 'GitScmProvider');
+            this.customSortProviders(providers, sortedProviders); // add all other providers
+
             this.setState({
-                providers,
+                providers: sortedProviders,
             });
         });
     }
