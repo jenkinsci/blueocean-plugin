@@ -27,6 +27,7 @@ import hudson.Extension;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.BlueUrlTokenizer;
 import io.jenkins.blueocean.commons.RESTFetchPreloader;
+import io.jenkins.blueocean.commons.json.JSON;
 import io.jenkins.blueocean.commons.stapler.Export;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
@@ -73,7 +74,7 @@ public class FavoritesStatePreloader extends RESTFetchPreloader {
                 while(favoritesIterator.hasNext()) {
                     Reachable favorite = favoritesIterator.next();
                     try {
-                        favorites.add(JSONObject.fromObject(Export.toJson(favorite)));
+                        favorites.add(JSONObject.fromObject(JSON.toJson(favorite)));
                     } catch (IOException e) {
                         LOGGER.log(Level.FINE, String.format("Unable to preload favorites for User '%s'. Serialization error.", jenkinsUser.getFullName()), e);
                         return null;

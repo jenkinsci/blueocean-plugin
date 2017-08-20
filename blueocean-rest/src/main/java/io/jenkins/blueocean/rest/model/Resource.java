@@ -25,7 +25,7 @@ public abstract class Resource implements Reachable{
      * @return DTO object
      */
     @WebMethod(name="") @GET
-    @TreeResponse /* this annotation does the above new Api(...).doJson(...) */
+    @TreeResponse /* this annotation does the above new Api(...).toJson(...) */
     public Object getState() {
         return this;
     }

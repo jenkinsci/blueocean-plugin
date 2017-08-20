@@ -27,6 +27,7 @@ import hudson.Extension;
 import hudson.model.Item;
 import io.jenkins.blueocean.commons.BlueUrlTokenizer;
 import io.jenkins.blueocean.commons.RESTFetchPreloader;
+import io.jenkins.blueocean.commons.json.JSON;
 import io.jenkins.blueocean.commons.stapler.Export;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.model.BluePipeline;
@@ -70,7 +71,7 @@ public class PipelineActivityStatePreloader extends RESTFetchPreloader {
             while(activitiesIterator.hasNext()) {
                 Resource blueActivity = activitiesIterator.next();
                 try {
-                    activities.add(JSONObject.fromObject(Export.toJson(blueActivity)));
+                    activities.add(JSONObject.fromObject(JSON.toJson(blueActivity)));
                 } catch (IOException e) {
                     LOGGER.log(Level.FINE, String.format("Unable to preload runs for Job '%s'. Activity serialization error.", pipeline.getFullName()), e);
                     return null;

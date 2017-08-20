@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.rest.pageable;
 
 import com.google.common.collect.Iterators;
-import io.jenkins.blueocean.commons.stapler.Export;
+import io.jenkins.blueocean.commons.json.JSON;
 import org.kohsuke.stapler.CancelRequestHandlingException;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
@@ -67,7 +67,7 @@ public @interface PagedResponse {
                     }
                     rsp.setHeader("Link", "<" + url + separator + "start=" + (start + limit) + "&limit="+limit + ">; rel=\"next\"");
 
-                    Export.doJson(req, rsp, page);
+                    JSON.toJson(req, rsp, page);
                 }
             };
         }

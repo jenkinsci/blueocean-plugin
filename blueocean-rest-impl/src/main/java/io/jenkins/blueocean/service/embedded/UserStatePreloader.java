@@ -26,6 +26,7 @@ package io.jenkins.blueocean.service.embedded;
 import hudson.Extension;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.PageStatePreloader;
+import io.jenkins.blueocean.commons.json.JSON;
 import io.jenkins.blueocean.commons.stapler.Export;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
@@ -70,7 +71,7 @@ public class UserStatePreloader extends PageStatePreloader {
         try {
             User currentUser = User.current();
             if (currentUser != null && organization != null) {
-                return Export.toJson(new UserImpl(organization, currentUser));
+                return JSON.toJson(new UserImpl(organization, currentUser));
             } else {
                 return ANONYMOUS;
             }
