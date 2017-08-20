@@ -46,19 +46,6 @@ public class JSON {
     }
 
     public static void toJson(@Nonnull StaplerRequest req, @Nonnull StaplerResponse rsp, @Nonnull Object bean) throws IOException, ServletException {
-
-        final ObjectMapper MAPPER = new ObjectMapper();
-        MAPPER.setAnnotationIntrospector(new StaplerAnnotationIntrospector());
-        MAPPER.configure(SerializationFeature.FAIL_ON_EMPTY_BEANS, false);
-        MAPPER.configure(JsonGenerator.Feature.AUTO_CLOSE_TARGET, false);
-        MAPPER.registerModule(new SimpleModule() {
-            @Override
-            public void setupModule(SetupContext context) {
-                super.setupModule(context);
-                context.addBeanSerializerModifier(new ClassBeanSerializerModifier());
-            }
-        });
-
         rsp.setHeader("X-Jenkins", Jenkins.VERSION);
         rsp.setHeader("X-Jenkins-Session", Jenkins.SESSION_HASH);
         rsp.setContentType("application/json;charset=UTF-8");

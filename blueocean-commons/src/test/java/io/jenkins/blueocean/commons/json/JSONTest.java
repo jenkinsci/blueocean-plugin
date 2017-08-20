@@ -92,13 +92,33 @@ public class JSONTest {
     }
 
     @Test
+    public void propertiesAreMerged() throws Exception {
+        Assert.assertEquals("",
+            JSON.toJson(new MergedProperties()));
+    }
+
+    @ExportedBean
+    class MergedProperties {
+        public String getFoo() {
+            return "bar";
+        }
+
+        @Exported(merge = true)
+        public X getX() {
+            return new X();
+        }
+    }
+
+    @Test
     public void exceptionHandling() throws IOException {
         Assert.assertEquals("{\"_class\":\"Supers\",\"elements\":[{\"_class\":\"Sub\",\"basic\":\"super\",\"generic\":\"sub\",\"specific\":\"sub\"},{\"_class\":\"Sub2\",\"basic\":\"super\",\"generic\":\"sub2\"}]}",
             JSON.toJson(new Supers(new Sub(), new Broken(), new Sub2())));
     }
+
     public static class Broken extends Super {
         @Exported @Override public String generic() {throw new RuntimeException("oops");}
     }
+
     @ExportedBean public static class Supers {
         @Exported public final List<? extends Super> elements;
         public Supers(Super... elements) {
