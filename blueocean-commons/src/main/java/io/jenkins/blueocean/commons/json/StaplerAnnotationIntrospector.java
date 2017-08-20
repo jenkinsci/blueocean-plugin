@@ -12,6 +12,7 @@ import com.fasterxml.jackson.databind.introspect.AnnotatedMethod;
 import com.fasterxml.jackson.databind.introspect.JacksonAnnotationIntrospector;
 import com.google.common.base.Strings;
 import com.google.common.collect.Sets;
+import io.jenkins.blueocean.commons.stapler.Export;
 import org.apache.commons.beanutils.BeanUtilsBean2;
 import org.apache.commons.lang.ClassUtils;
 import org.kohsuke.stapler.export.Exported;
@@ -72,17 +73,7 @@ class StaplerAnnotationIntrospector extends JacksonAnnotationIntrospector {
     }
 
     @Override
-    public JsonIgnoreProperties.Value findPropertyIgnorals(Annotated a) {
-        return super.findPropertyIgnorals(a);
-//        Set<String> toIgnore = Sets.newHashSet();
-//        for (Method method : a.getRawType().getMethods()) {
-//            Exported exported = method.getAnnotation(Exported.class);
-//            if (exported == null) toIgnore.add(Introspector.decapitalize(method.getName().substring(method.getName().startsWith("is") ? 2 : 3)));
-//        }
-//        for (Field field : a.getRawType().getFields()) {
-//            Exported exported = field.getAnnotation(Exported.class);
-//            if (exported == null) toIgnore.add(field.getName());
-//        }
-//        return JsonIgnoreProperties.Value.forIgnoredProperties(toIgnore);
+    protected boolean _isIgnorable(Annotated a) {
+        return !_hasAnnotation(a, Exported.class) || super._isIgnorable(a);
     }
 }
