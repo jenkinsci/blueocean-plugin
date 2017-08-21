@@ -36,6 +36,9 @@ import java.lang.reflect.Type;
  * @author Kohsuke Kawaguchi
  */
 class JSONDataWriter implements DataWriter {
+
+    private static final JsonStringEncoder jsonEncoder = new JsonStringEncoder ();
+
     protected boolean needComma;
     protected final Writer out;
     protected final ExportConfig config;
@@ -105,7 +108,8 @@ class JSONDataWriter implements DataWriter {
     public void value(String v) throws IOException {
         StringBuilder buf = new StringBuilder(v.length());
         buf.append('\"');
-        JsonStringEncoder.getInstance().quoteAsString(v, buf);
+        // TODO: remove when JENKINS-45099 has been fixed correctly in upstream stapler
+        jsonEncoder.quoteAsString(v, buf);
         buf.append('\"');
         data(buf.toString());
     }
