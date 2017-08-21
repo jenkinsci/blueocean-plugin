@@ -18,7 +18,8 @@
   "license": "MIT",
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "^0.0.52",
+    "@jenkins-cd/js-builder": "0.0.59",
+    "@jenkins-cd/js-extensions": "0.0.36",
     "@jenkins-cd/js-test": "1.2.3",
     "@kadira/storybook": "2.20.1",
     "babel": "6.5.2",
@@ -40,19 +41,16 @@
     "react-addons-test-utils": "15.3.2"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.84",
-    "@jenkins-cd/design-language": "0.0.121",
-    "@jenkins-cd/js-extensions": "0.0.33",
+    "@jenkins-cd/blueocean-core-js": "0.0.150",
+    "@jenkins-cd/design-language": "0.0.145",
     "@jenkins-cd/js-modules": "0.0.8",
-    "@jenkins-cd/react-material-icons": "1.0.0",
+    "lodash.debounce": "4.0.8",
     "mobx": "2.6.0",
     "mobx-react": "3.5.7",
     "mobx-utils": "1.1.2",
-    "lodash.debounce": "4.0.8",
     "react": "15.3.2",
     "react-addons-css-transition-group": "15.3.2",
     "react-dom": "15.3.2",
-    "react-material-icons-blue": "1.0.4",
     "react-router": "2.3.0"
   },
   "jenkinscd": {

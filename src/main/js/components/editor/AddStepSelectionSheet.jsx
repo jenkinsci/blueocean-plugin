@@ -3,7 +3,7 @@
 import React, { Component, PropTypes } from 'react';
 import pipelineMetadataService from '../../services/PipelineMetadataService';
 import { Dialog } from '@jenkins-cd/design-language';
-import { Icon } from "react-material-icons-blue";
+import { Icon } from '@jenkins-cd/design-language';
 import debounce from 'lodash.debounce';
 
 const isStepValidForSelectionUI = (step) => {
@@ -101,7 +101,7 @@ export class AddStepSelectionSheet extends Component<DefaultProps, Props, State>
         return (
             <div className="editor-step-selection-dialog">
                 <div className="editor-step-search">
-                    <Icon icon="search" style={{ fill: '#ddd' }} size={22} />
+                    <Icon icon="ActionSearch" color="#dddddd" size={22} />
                     <input ref="searchInput" type="text" className="editor-step-search-input" onChange={e => this.filterSteps(e.target.value)}
                         placeholder="Find steps by name" />
                 </div>

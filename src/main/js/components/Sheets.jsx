@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import { Icon } from "@jenkins-cd/react-material-icons";
+import { Icon } from '@jenkins-cd/design-language';
 
 export class Sheet extends React.Component {
     onClose() {
@@ -13,7 +13,7 @@ export class Sheet extends React.Component {
             <div className="sheet-header">
                 {child.props.onClose &&
                     <span className="back-from-sheet" onClick={e => this.onClose()}>
-                        <Icon icon="arrow_back"/>
+                        <Icon icon="NavigationArrowBack" color="#c3cfd7" hoverColor="#4a4a4a" />
                     </span>
                 }
                 {child.getTitle && child.getTitle() || child.props.title}

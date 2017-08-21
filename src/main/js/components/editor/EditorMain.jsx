@@ -13,7 +13,6 @@ import type { StageInfo, StepInfo } from '../../services/PipelineStore';
 import pipelineMetadataService from '../../services/PipelineMetadataService';
 import { Sheets } from '../Sheets';
 import { MoreMenu } from '../MoreMenu';
-import { Icon } from "@jenkins-cd/react-material-icons";
 import pipelineValidator from '../../services/PipelineValidator';
 import { ValidationMessageList } from './ValidationMessageList';
 import focusOnElement from './focusOnElement';

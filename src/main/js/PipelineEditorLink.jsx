@@ -2,7 +2,7 @@
 
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '@jenkins-cd/design-language';
 import { Paths, pipelineService, AppConfig } from '@jenkins-cd/blueocean-core-js';
 import Security from './services/Security';
 
@@ -34,7 +34,7 @@ class PipelineEditorLink extends React.Component {
 
         return (
             <Link className="pipeline-editor-link" to={baseUrl} title="Edit">
-                <Icon icon="mode_edit" size={24} />
+                <Icon icon="ImageEdit" size={24} color="rgba(53, 64, 82, 0.25)" hoverColor="#4a90e2" />
             </Link>
         );
     }

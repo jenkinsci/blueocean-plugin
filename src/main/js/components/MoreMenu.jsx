@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import { Icon } from "@jenkins-cd/react-material-icons";
+import { Icon } from '@jenkins-cd/design-language';
 
 const transitionDuration = 100;
 
@@ -54,7 +54,7 @@ export class MoreMenu extends React.Component {
         return (
             <div className="more-menu">
                 <span onClick={e => this.state.showDropDown ? this.closePopover() : this.openPopover()}>
-                    <Icon icon="more_horiz" size={22} />
+                    <Icon icon="NavigationMoreHoriz" size={22} color="#4A90E2" />
                 </span>
                 <ReactCSSTransitionGroup
                     transitionName="more-menu"

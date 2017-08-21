@@ -4,7 +4,7 @@ import React, { Component, PropTypes } from 'react';
 import { getAddIconGroup, getGrabIconGroup } from './common';
 import pipelineMetadataService from '../../services/PipelineMetadataService';
 import type { StepInfo } from '../../services/PipelineStore';
-import { Icon } from "@jenkins-cd/react-material-icons";
+import { Icon } from '@jenkins-cd/design-language';
 import pipelineValidator from '../../services/PipelineValidator';
 
 type Props = {
@@ -161,7 +161,7 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
             {this.renderSteps(steps, parent)}
             <div className="editor-button-bar">
                 <button className="btn-primary add" onClick={(e) => this.addStepClicked(e)}>
-                    <Icon icon="add" size={20} />
+                    <Icon icon="ContentAdd" color="#ffffff" size={20} />
                     Add step
                 </button>
             </div>
