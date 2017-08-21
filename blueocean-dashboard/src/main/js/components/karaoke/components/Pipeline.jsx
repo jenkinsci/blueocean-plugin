@@ -166,9 +166,9 @@ export default class Pipeline extends Component {
         // do we have something to display?
         const noResultsToDisplay = this.pager.steps === undefined || (this.pager.steps && !this.pager.steps.data.hasResultsForSteps);
         // Queue magic since a pipeline is only showing queued state a short time even if still waiting for executors
-        const isPipelineQueued = run.isQueued() || (run.isRunning() && noResultsToDisplay);
+        const isPipelineQueued = (run.isQueued() || run.isRunning()) && noResultsToDisplay;
         logger.debug('isQueued', run.isQueued(), 'noResultsToDisplay', noResultsToDisplay, 'isPipelineQueued', isPipelineQueued);
-        if (run.isQueued()) { // if queued we are saying that we are waiting to start
+        if (isPipelineQueued) { // if queued we are saying that we are waiting to start
             logger.debug('EarlyOut - abort due to run queued.');
             return (<QueuedState
                 translation={t}

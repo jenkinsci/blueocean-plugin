@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { FileSize, JTable, TableRow, TableCell, TableHeaderRow } from '@jenkins-cd/design-language';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '@jenkins-cd/design-language';
 import { observer } from 'mobx-react';
 import mobxUtils from 'mobx-utils';
 import { logging, UrlConfig } from '@jenkins-cd/blueocean-core-js';
@@ -109,7 +109,7 @@ export default class RunDetailsArtifacts extends Component {
                        download={fileName} title={downloadLabel}
                        href={`${rootURL}${artifact.url}`}
                     >
-                        <Icon icon="file_download" />
+                        <Icon icon="FileFileDownload" color="rgba(53, 64, 82, 0.25)" />
                     </a>
                 );
             }
@@ -150,7 +150,7 @@ export default class RunDetailsArtifacts extends Component {
                         <TableCell>-</TableCell>
                         <TableCell className="TableCell--actions">
                             <a target="_blank" className="action-button-colors" title={downloadLabel} href={logDownloadURL}>
-                                <Icon icon="file_download" />
+                                <Icon icon="FileFileDownload" color="rgba(53, 64, 82, 0.25)" />
                             </a>
                         </TableCell>
                     </TableRow>

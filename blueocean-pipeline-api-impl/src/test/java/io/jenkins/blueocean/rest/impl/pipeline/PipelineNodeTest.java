@@ -24,6 +24,7 @@ import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
@@ -78,7 +79,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
     }
 
     //TODO: Enable this test if there is way to determine when test starts running and not waiting till launched
-//    @Test
+    @Test @Ignore
     public void nodesTest1() throws IOException, ExecutionException, InterruptedException {
         WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, "p1");
         job.setDefinition(new CpsFlowDefinition("node {\n" +

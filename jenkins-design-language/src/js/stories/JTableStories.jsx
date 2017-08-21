@@ -11,7 +11,7 @@ import {
     TableHeaderRow
 } from '../components';
 
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '../components/Icon';
 
 //--------------------------------------------------------------------------
 //
@@ -102,9 +102,9 @@ function renderRow(rowData) {
         <TableRow onClick={rowClicked} key={key} data-tag={ 'row-' + key }>
             { rowData.map(renderCell) }
             <TableCell className="TableCell--actions">
-                <Icon size={24} icon="history"/>
+                <Icon size={24} icon="ActionHistory" color="#cccccc" />
                 <div style={boxStyle}/>
-                <Icon size={24} icon="delete"/>
+                <Icon size={24} icon="ActionDelete" color="#cccccc" />
             </TableCell>
         </TableRow>
     );

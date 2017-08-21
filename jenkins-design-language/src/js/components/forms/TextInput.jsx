@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '../Icon';
 
 import { TextControl } from './TextControl';
 
@@ -8,7 +8,7 @@ import { TextControl } from './TextControl';
 function NestedIcon(props) {
     return (
         <div className={`TextInput-icon ${props.className}`}>
-            <Icon icon={props.icon} />
+            <Icon icon={props.icon} color="#999999" />
         </div>
     );
 }

@@ -331,7 +331,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-graph-analysis</artifactId>
-            <version>1.4</version>
+            <version>1.5</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -357,6 +357,12 @@
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-support</artifactId>
             <version>2.14</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-support</artifactId>
+            <version>2.14</version>
+            <classifier>tests</classifier>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -569,7 +575,7 @@
         <dependency>
           <groupId>io.jenkins.blueocean</groupId>
           <artifactId>blueocean-pipeline-editor</artifactId>
-          <version>0.3.0-beta-2</version>
+          <version>0.3.0-beta-4</version>
         </dependency>
 
         <dependency>
@@ -590,6 +596,12 @@
             <groupId>ua_parser</groupId>
             <artifactId>ua-parser</artifactId>
             <version>1.3.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>2.9.9</version>
         </dependency>
 
         <!-- Needed for blueocean-display-url plugin -->

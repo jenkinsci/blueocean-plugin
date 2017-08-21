@@ -111,11 +111,10 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
             this.inStageScope = true;
         }
 
-        if(endNode instanceof StepStartNode){
-            if(endNode.getDisplayFunctionName().equals("node")){
-                agentNode = (StepStartNode) endNode;
-            }
+        if (endNode instanceof StepStartNode && PipelineNodeUtil.isAgentStart(endNode)) {
+            agentNode = (StepStartNode) endNode;
         }
+
         // if we're using marker-based (and not block-scoped) stages, add the last node as part of its contents
         if (!(endNode instanceof BlockEndNode)) {
             atomNode(null, endNode, afterChunk, scanner);
@@ -131,26 +130,21 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
         if(node != null && chunk.getFirstNode().equals(node)){
             stageStepsCollectionCompleted = true;
             inStageScope = false;
-            try {
-                final String cause = PipelineNodeUtil.getCauseOfBlockage(chunk.getFirstNode(), agentNode, run);
-                if(cause != null) {
-                    //Now add a step that indicates bloackage cause
-                    FlowNode step = new AtomNode(chunk.getFirstNode().getExecution(), UUID.randomUUID().toString(), chunk.getFirstNode()) {
+            final String cause = PipelineNodeUtil.getCauseOfBlockage(chunk.getFirstNode(), agentNode);
+            if(cause != null) {
+                // TODO: This should probably be changed (elsewhere?) to instead just render this directly, not via a fake step.
+                //Now add a step that indicates bloackage cause
+                FlowNode step = new AtomNode(chunk.getFirstNode().getExecution(), UUID.randomUUID().toString(), chunk.getFirstNode()) {
 
-                        @Override
-                        protected String getTypeDisplayName() {
+                    @Override
+                    protected String getTypeDisplayName() {
                             return cause;
                         }
-                    };
+                };
 
-                    FlowNodeWrapper stepNode = new FlowNodeWrapper(step, new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.QUEUED),new TimingInfo(), run);
-                    steps.push(stepNode);
-                    stepMap.put(step.getId(), stepNode);
-                }
-            } catch (IOException | InterruptedException e) {
-                //log the error but don't fail. This is better as in worst case all we will lose is blockage cause of a node.
-                logger.error(String.format("Error trying to get blockage status of pipeline: %s, runId: %s node block: %s. %s"
-                        ,run.getParent().getFullName(), run.getId(), agentNode, e.getMessage()), e);
+                FlowNodeWrapper stepNode = new FlowNodeWrapper(step, new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.QUEUED),new TimingInfo(), run);
+                steps.push(stepNode);
+                stepMap.put(step.getId(), stepNode);
             }
         }if(node != null && PipelineNodeUtil.isStage(node) && !inStageScope && !chunk.getFirstNode().equals(node)){
             resetSteps();

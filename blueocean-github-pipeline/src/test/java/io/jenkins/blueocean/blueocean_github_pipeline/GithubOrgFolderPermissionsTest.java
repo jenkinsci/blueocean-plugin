@@ -40,7 +40,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
     }
 
     @Test
-    public void canNotCreateWhenHaveNoPermissionOnDefaultOrg() throws Exception {        
+    public void canNotCreateWhenHaveNoPermissionOnDefaultOrg() throws Exception {
         MockAuthorizationStrategy authz = new MockAuthorizationStrategy();
         authz.grant(Item.READ, Jenkins.READ).everywhere().to(user);
         j.jenkins.setAuthorizationStrategy(authz);
@@ -81,7 +81,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
                         "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
                         "scmConfig", ImmutableMap.of("config",
                                 ImmutableMap.of("repos", ImmutableList.of("PR-demo"), "orgName","cloudbeers"),
-                                "credentialId", credentialId,
+                                "id", GithubScm.ID,
                                 "uri", githubApiUrl)
                 ))
                 .build(Map.class);
@@ -102,10 +102,6 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
             Assert.assertNull(item);
             String r = get("/organizations/"+ getOrgName() + "/pipelines/"+orgFolderName+"/", 404, String.class);
         }
-    }
-
-    private static String getOrgName() {
-        return OrganizationFactory.getInstance().list().iterator().next().getName();
     }
 
     private static ModifiableTopLevelItemGroup getOrgRoot() {

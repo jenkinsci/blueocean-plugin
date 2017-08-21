@@ -92,7 +92,7 @@ class GHEChooseServerStep extends React.Component {
 
                 <div className="FormElement">
                     <div className="FormElement-heading">
-                        <label className="FormElement-title">{url}</label>
+                        <label className="FormElement-title creation-selected-server-url">{url}</label>
                     </div>
                 </div>
 

@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '@jenkins-cd/design-language';
 import { AppConfig, logging, ResultPageHeader, TimeManager } from '@jenkins-cd/blueocean-core-js';
 import { ExpandablePath, ReadableDate, TimeDuration, CommitId } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
@@ -102,7 +102,7 @@ class RunDetailsHeader extends Component {
                         <Link to={ branchUrl }>{ displayName }</Link>
                         { !run.pullRequest && run.branch && run.branch.url &&
                             <a className="inline-svg" title="Opens branch in a new window" target="_blank" href={ run.branch.url }>
-                                <Icon size={14} icon="launch" />
+                                <Icon size={14} icon="ActionLaunch" />
                             </a>
                         }
                     </span>
@@ -113,7 +113,7 @@ class RunDetailsHeader extends Component {
                 { run.pullRequest && run.pullRequest.url &&
                     <span>
                         <a title="Opens pull request in a new window" target="_blank" href={run.pullRequest.url}>
-                            <Icon size={14} icon="launch" />
+                            <Icon size={14} icon="ActionLaunch" />
                         </a>
                     </span>
                 }
@@ -134,7 +134,7 @@ class RunDetailsHeader extends Component {
 
         const durationDetails = (
             <div>
-                <Icon size={ 16 } icon="timelapse" style={ { fill: '#fff' } } />
+                <Icon size={ 16 } icon="ImageTimelapse" style={ { fill: '#fff' } } />
                 <TimeDuration
                     millis={ isRunning() ? this.durationInMillis : durationInMillis }
                     liveUpdate={ isRunning() }
@@ -149,7 +149,7 @@ class RunDetailsHeader extends Component {
 
         const endTimeDetails = (
             <div>
-                <Icon size={ 16 } icon="access_time" style={ { fill: '#fff' } } />
+                <Icon size={ 16 } icon="DeviceAccessTime" style={ { fill: '#fff' } } />
                 <ReadableDate
                     date={ endTime }
                     liveUpdate

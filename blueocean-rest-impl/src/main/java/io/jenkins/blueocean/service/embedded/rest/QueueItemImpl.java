@@ -15,6 +15,7 @@ import io.jenkins.blueocean.rest.model.BlueRun.BlueRunResult;
 import io.jenkins.blueocean.rest.model.BlueRun.BlueRunState;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl.BlueCauseImpl;
 import jenkins.model.Jenkins;
+import org.kohsuke.stapler.export.Exported;
 
 import java.util.Collection;
 import java.util.Date;
@@ -54,12 +55,7 @@ public class QueueItemImpl extends BlueQueueItem {
 
     @Override
     public String getOrganization() {
-        if (!(item.task instanceof Item)) {
-            return null;
-        }
-        Item i = (Item) item.task;
-        BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(i);
-        return organization == null ? null : organization.getName();
+        return organization.getName();
     }
 
     @Override
@@ -70,6 +66,11 @@ public class QueueItemImpl extends BlueQueueItem {
     @Override
     public Date getQueuedTime() {
         return new Date(item.getInQueueSince());
+    }
+
+    @Exported(name=QUEUED_TIME)
+    public String getQueuedTimeString(){
+        return AbstractRunImpl.DATE_FORMAT.print(getQueuedTime().getTime());
     }
 
     @Override
