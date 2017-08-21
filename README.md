@@ -21,7 +21,6 @@ And in another term,
 npm run bundle:watch
 ```
 
-
 ## Running in another development Jenkins Instance
 
 ```
