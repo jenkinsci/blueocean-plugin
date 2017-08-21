@@ -7,6 +7,7 @@ const validResultValues = StatusIndicator.validResultValues;
 
 storiesOf('PipelineGraph', module)
     .add('Mixed', renderMultiParallelPipeline)
+    .add('Edge cases 1', renderEdgeCases1)
     .add('Long names', renderLongNames)
     .add('Duplicate Names', renderWithDuplicateNames)
     .add('Fat', renderFlatPipelineFat)
@@ -166,6 +167,43 @@ function renderParallelPipeline() {
                 Error, quibusdam!
             </p>
             <PipelineGraph stages={stages}/>
+        </div>
+    );
+}
+
+function renderEdgeCases1() {
+
+    const stages1 = [
+        makeNode("Alpha", [], validResultValues.skipped),
+        makeNode("Bravo", [], validResultValues.success),
+        makeNode("Charlie", [], validResultValues.skipped),
+    ];
+
+    const stages2 = [
+        makeNode("Alpha", [
+            makeNode("Delta", [], validResultValues.success),
+            makeNode("Echo", [], validResultValues.success),
+            makeNode("Foxtrot", [], validResultValues.success),
+        ]),
+        makeNode("Bravo", [], validResultValues.success),
+        makeNode("Charlie", [
+            makeNode("Golf", [], validResultValues.success),
+            makeNode("Hotel", [], validResultValues.success),
+            makeNode("Indigo", [], validResultValues.success),
+        ]),
+    ];
+
+    const stages3 = [
+        makeNode("Alpha", [], validResultValues.success),
+        makeNode("Bravo", [], validResultValues.skipped),
+        makeNode("Charlie", [], validResultValues.skipped),
+    ];
+
+    return (
+        <div>
+            <PipelineGraph stages={stages1} selectedStage={stages1[1]}/>
+            <PipelineGraph stages={stages2} selectedStage={stages2[1]}/>
+            <PipelineGraph stages={stages3} selectedStage={stages3[0]}/>
         </div>
     );
 }
