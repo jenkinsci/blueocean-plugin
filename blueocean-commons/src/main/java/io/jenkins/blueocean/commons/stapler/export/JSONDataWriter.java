@@ -23,6 +23,8 @@
 
 package io.jenkins.blueocean.commons.stapler.export;
 
+import com.fasterxml.jackson.core.io.JsonStringEncoder;
+
 import javax.annotation.Nonnull;
 import java.io.IOException;
 import java.io.Writer;
@@ -103,17 +105,7 @@ class JSONDataWriter implements DataWriter {
     public void value(String v) throws IOException {
         StringBuilder buf = new StringBuilder(v.length());
         buf.append('\"');
-        for( int i=0; i<v.length(); i++ ) {
-            char c = v.charAt(i);
-            switch(c) {
-                case '"':   buf.append("\\\"");break;
-                case '\\':  buf.append("\\\\");break;
-                case '\n':  buf.append("\\n");break;
-                case '\r':  buf.append("\\r");break;
-                case '\t':  buf.append("\\t");break;
-                default:    buf.append(c);break;
-            }
-        }
+        JsonStringEncoder.getInstance().quoteAsString(v, buf);
         buf.append('\"');
         data(buf.toString());
     }
