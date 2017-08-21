@@ -501,7 +501,15 @@ class PipelineLoader extends React.Component {
                         // only time we have 'github' is when we are using an org folder
                         // in which case use the existing saveApi
                         const { id: scmId, apiUrl } = this.state.scmSource;
-                        saveApi.index(this.href, () => this.goToActivity(), err => errorHandler(err));
+                        if (scmId.startsWith('github')) {
+                            saveApi.index(organization, team, repo, scmId, apiUrl,
+                                () => this.goToActivity(),
+                                err => errorHandler(err),
+                            );
+                        } else {
+                            //other scms, which are always MBP
+                            saveApi.indexMbp(this.href, () => this.goToActivity(), err => errorHandler(err));
+                        }
                     }
                     this.setState({ sha: data.sha, isSaved: true });
                 })
