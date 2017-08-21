@@ -530,7 +530,10 @@ export class PipelineGraph extends Component {
             nodeRadius,
             terminalRadius,
             curveRadius,
-            nodeSpacingV } = this.state.layout;
+            nodeSpacingV,
+            nodeSpacingH } = this.state.layout;
+
+        const halfSpacingH = nodeSpacingH / 2;
 
         // Stroke props common to straight / curved connections
         const connectorStroke = {
@@ -562,7 +565,7 @@ export class PipelineGraph extends Component {
         leftNode = sourceNodes[0];
         rightNode = skippedNodes[0];
 
-        let midPointX = Math.round((leftNode.x + rightNode.x) / 2);
+        let midPointX = Math.round(rightNode.x - halfSpacingH);
 
         for (leftNode of sourceNodes.slice(1)) {
             const leftNodeRadius = leftNode.isPlaceholder ? terminalRadius : nodeRadius;
@@ -586,7 +589,7 @@ export class PipelineGraph extends Component {
         leftNode = lastSkippedNode;
         rightNode = destinationNodes[0];
 
-        midPointX = Math.round((leftNode.x + rightNode.x) / 2);
+        midPointX = Math.round(leftNode.x + halfSpacingH);
 
         for (rightNode of destinationNodes.slice(1)) {
             const rightNodeRadius = rightNode.isPlaceholder ? terminalRadius : nodeRadius;
@@ -625,7 +628,7 @@ export class PipelineGraph extends Component {
         const p1y = leftNode.y;
 
         // Begin curve down point
-        const p2x = Math.round((leftNode.x + skippedNodes[0].x) / 2);
+        const p2x = Math.round(skippedNodes[0].x - halfSpacingH);
         const p2y = p1y;
         const c1x = p2x + controlOffsetUpper;
         const c1y = p2y;
@@ -651,7 +654,7 @@ export class PipelineGraph extends Component {
         const c5y = p5y;
 
         // End curve up point
-        const p7x = Math.round((lastSkippedNode.x + rightNode.x) / 2);
+        const p7x = Math.round(lastSkippedNode.x + halfSpacingH);
         const p7y = rightNode.y;
         const c8x = p7x - controlOffsetUpper;
         const c8y = p7y;
@@ -716,9 +719,10 @@ export class PipelineGraph extends Component {
      * Adds all the SVG components to the elements list.
      */
     renderBasicCurvedConnection(leftNode: NodeInfo, rightNode: NodeInfo, elements: SVGChildren) {
-        const { nodeRadius, terminalRadius, curveRadius, connectorStrokeWidth } = this.state.layout;
+        const { nodeRadius, terminalRadius, curveRadius, connectorStrokeWidth, nodeSpacingH } = this.state.layout;
         const leftNodeRadius = leftNode.isPlaceholder ? terminalRadius : nodeRadius;
         const rightNodeRadius = rightNode.isPlaceholder ? terminalRadius : nodeRadius;
+        const halfSpacingH = nodeSpacingH / 2;
 
         const key = connectorKey(leftNode, rightNode);
 
@@ -738,7 +742,9 @@ export class PipelineGraph extends Component {
             strokeWidth: connectorStrokeWidth,
         };
 
-        const midPointX = Math.round((leftPos.x + rightPos.x) / 2);
+        const midPointX = leftNode.y > rightNode.y
+            ? Math.round(leftNode.x + halfSpacingH)
+            : Math.round(rightNode.x - halfSpacingH);
 
         const pathData = `M ${leftPos.x} ${leftPos.y}` +
             this.svgCurve(leftPos.x, leftPos.y, rightPos.x, rightPos.y, midPointX, curveRadius);
