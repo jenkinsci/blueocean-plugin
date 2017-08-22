@@ -177,6 +177,7 @@
                         linkHPI('blueocean-config')
                         linkHPI('blueocean-github-pipeline')
                         linkHPI('blueocean-git-pipeline')
+                        linkHPI('blueocean-pipeline-editor')
                     </source>
                 </configuration>
             </plugin>
