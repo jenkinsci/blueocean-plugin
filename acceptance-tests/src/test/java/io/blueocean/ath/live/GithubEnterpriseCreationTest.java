@@ -81,6 +81,7 @@ public class GithubEnterpriseCreationTest {
 
         // valid form data should submit
         dialog.enterServerUrl(serverUrl);
+        dialog.waitForErrorMessagesGone();
         dialog.clickSaveServerButton();
 
         // As currently api.github.com may up in list thank to github branch source, this can mess up this test
