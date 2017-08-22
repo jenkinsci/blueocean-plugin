@@ -10,7 +10,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.2.0-beta-6-SNAPSHOT</version>
+  <version>1.2.0-beta-7-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean Parent</name>
@@ -125,6 +125,7 @@
     <module>blueocean-github-pipeline</module>
     <module>blueocean-git-pipeline</module>
     <module>blueocean-bitbucket-pipeline</module>
+    <module>blueocean-pipeline-editor</module>
   </modules>
 
   <repositories>
@@ -293,6 +294,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-bitbucket-pipeline</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-pipeline-editor</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -571,11 +577,6 @@
             <groupId>org.jvnet.hudson.plugins</groupId>
             <artifactId>favorite</artifactId>
             <version>2.3.0</version>
-        </dependency>
-        <dependency>
-          <groupId>io.jenkins.blueocean</groupId>
-          <artifactId>blueocean-pipeline-editor</artifactId>
-          <version>0.3.0-beta-5</version>
         </dependency>
 
         <dependency>
