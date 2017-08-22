@@ -25,6 +25,8 @@ class PipelineEditorLink extends React.Component {
         const { run, pipeline } = this.props;
         const pipelinePath = pipeline.fullName.split('/');
         const branch = run ? run.pipeline : pipelinePath[pipelinePath.length - 1];
+        const editIconColor = run ? '#ffffff' : 'rgba(53, 64, 82, 0.25)';
+        const editIconHoverColor = run ? '#ffffff' : '#4a90e2';
         // this shows up in the branches table, each pipeline.fullName includes the branch
         // if it's not on the branches table, branch is in the run
         if (!run) {
@@ -34,7 +36,7 @@ class PipelineEditorLink extends React.Component {
 
         return (
             <Link className="pipeline-editor-link" to={baseUrl} title="Edit">
-                <Icon icon="ImageEdit" size={24} color="rgba(53, 64, 82, 0.25)" hoverColor="#4a90e2" />
+                <Icon icon="ImageEdit" size={24} color={editIconColor} hoverColor={editIconHoverColor} />
             </Link>
         );
     }
