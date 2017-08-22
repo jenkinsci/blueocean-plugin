@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.2.0-beta-6-SNAPSHOT</version>
+        <version>1.2.0-beta-7-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean</artifactId>
@@ -177,6 +177,7 @@
                         linkHPI('blueocean-config')
                         linkHPI('blueocean-github-pipeline')
                         linkHPI('blueocean-git-pipeline')
+                        linkHPI('blueocean-pipeline-editor')
                     </source>
                 </configuration>
             </plugin>
