@@ -19,7 +19,6 @@
 
     <properties>
         <java.level>7</java.level>
-        <jackson.version>2.2.3</jackson.version>
         <jenkins.version>2.7.1</jenkins.version>
         <node.version>6.2.1</node.version>
         <npm.version>3.9.3</npm.version>
