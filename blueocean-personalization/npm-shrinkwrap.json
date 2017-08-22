@@ -3,9 +3,9 @@
   "version": "0.0.2-unpublished",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.151",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.151",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.151.tgz"
+      "version": "0.0.152-SNAPSHOT-1",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.152-SNAPSHOT-1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.152-SNAPSHOT-1.tgz"
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.146",
@@ -53,9 +53,9 @@
       }
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.36",
-      "from": "@jenkins-cd/js-extensions@0.0.36",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.36.tgz"
+      "version": "0.0.37-SNAPSHOT-2",
+      "from": "@jenkins-cd/js-extensions@0.0.37-SNAPSHOT-2",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.37-SNAPSHOT-2.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.10",
@@ -7655,9 +7655,9 @@
           "resolved": "https://registry.npmjs.org/esprima/-/esprima-3.1.3.tgz"
         },
         "source-map": {
-          "version": "0.5.6",
+          "version": "0.5.7",
           "from": "source-map@>=0.5.0 <0.6.0",
-          "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.5.6.tgz"
+          "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.5.7.tgz"
         }
       }
     },
