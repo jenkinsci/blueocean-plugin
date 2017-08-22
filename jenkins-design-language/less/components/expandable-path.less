@@ -18,8 +18,8 @@
             align-items: center;
 
             &.show-label {
-                .svg-icon.folder {
-                    display: none;
+                svg[icon="FileFolder"] {
+                    display: none !important;
                 }
 
                 .path-text{
@@ -47,7 +47,7 @@
 
         /* on hover, show all labels */
         &:hover {
-            .svg-icon.folder {
+            svg[icon="FileFolder"] {
                 display: none !important;
             }
 

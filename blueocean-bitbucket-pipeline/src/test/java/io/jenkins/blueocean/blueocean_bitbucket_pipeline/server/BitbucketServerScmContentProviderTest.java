@@ -6,11 +6,12 @@ import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSource;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.collect.Lists;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import hudson.model.User;
+import hudson.tasks.Mailer;
 import hudson.util.DescribableList;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.AbstractBitbucketScmContentProvider;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketScmSaveFileRequest;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.BitbucketCloudScm;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.BitbucketCloudScmContentProvider;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.impl.pipeline.ScmContentProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
@@ -31,9 +32,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.StringReader;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.powermock.api.mockito.PowerMockito.*;
 
 /**
@@ -58,6 +57,28 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
     }
 
     @Test
+    public void unauthorizedAccessToContentShouldFail() throws UnirestException, IOException {
+        User alice = j.jenkins.getUser("alice");
+        alice.setFullName("Alice Cooper");
+        alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
+
+        String aliceCredentialId = createCredential(BitbucketServerScm.ID, alice);
+
+        StaplerRequest staplerRequest = mockStapler();
+
+        MultiBranchProject mbp = mockMbp(aliceCredentialId, alice);
+
+        try {
+            //Bob trying to access content but his credential is not setup so should fail
+            new BitbucketServerScmContentProvider().getContent(staplerRequest, mbp);
+        } catch (ServiceException.PreconditionRequired e) {
+            assertEquals("Can't access content from Bitbucket: no credential found", e.getMessage());
+            return;
+        }
+        fail("Should have failed with PreConditionException");
+    }
+
+    @Test
     public void newContent() throws UnirestException, IOException {
         String credentialId = createCredential(BitbucketServerScm.ID);
         StaplerRequest staplerRequest = mockStapler();
@@ -74,7 +95,7 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
                 "    \"path\" : \"README.md\",\n" +
                 "    \"branch\" : \"master\",\n" +
                 "    \"repo\" : \"pipeline-demo-test\",\n" +
-                "    \"base64Data\" : "+"\"bm9kZXsKICBlY2hvICdoZWxsbyB3b3JsZCEnCn0K\""+
+                "    \"base64Data\" : " + "\"bm9kZXsKICBlY2hvICdoZWxsbyB3b3JsZCEnCn0K\"" +
                 "  }\n" +
                 "}";
 
@@ -87,6 +108,44 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
         assertEquals("TESTP", respContent.getContent().getOwner());
         assertEquals("master", respContent.getContent().getBranch());
     }
+
+
+    @Test
+    public void unauthorizedSaveContentShouldFail() throws UnirestException, IOException {
+        User alice = j.jenkins.getUser("alice");
+        alice.setFullName("Alice Cooper");
+        alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
+
+        String aliceCredentialId = createCredential(BitbucketServerScm.ID, alice);
+        StaplerRequest staplerRequest = mockStapler();
+        MultiBranchProject mbp = mockMbp(aliceCredentialId, alice);
+
+        GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("bm9kZXsKICBlY2hvICdoZWxsbyB3b3JsZCEnCn0K")
+                .branch("master").message("new commit").owner("TESTP").path("README.md").repo("pipeline-demo-test").build();
+
+        when(staplerRequest.bindJSON(Mockito.eq(BitbucketScmSaveFileRequest.class), Mockito.any(JSONObject.class))).thenReturn(new BitbucketScmSaveFileRequest(content));
+
+        String request = "{\n" +
+                "  \"content\" : {\n" +
+                "    \"message\" : \"new commit\",\n" +
+                "    \"path\" : \"README.md\",\n" +
+                "    \"branch\" : \"master\",\n" +
+                "    \"repo\" : \"pipeline-demo-test\",\n" +
+                "    \"base64Data\" : " + "\"bm9kZXsKICBlY2hvICdoZWxsbyB3b3JsZCEnCn0K\"" +
+                "  }\n" +
+                "}";
+
+        when(staplerRequest.getReader()).thenReturn(new BufferedReader(new StringReader(request), request.length()));
+
+        try {
+            new BitbucketServerScmContentProvider().saveContent(staplerRequest, mbp);
+        } catch (ServiceException.PreconditionRequired e) {
+            assertEquals("Can't access content from Bitbucket: no credential found", e.getMessage());
+            return;
+        }
+        fail("Should have failed with PreConditionException");
+    }
+
 
     @Test
     public void updateContent() throws UnirestException, IOException {
@@ -106,7 +165,7 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
                 "    \"branch\" : \"master\",\n" +
                 "    \"repo\" : \"pipeline-demo-test\",\n" +
                 "    \"commitId\" : \"0bae0ddbed2e897d3b44abc3aca9ba26e2f61710\",\n" +
-                "    \"base64Data\" : "+"\"bm9kZXsKICBlY2hvICdoZWxsbyB3b3JsZCEnCn0K\""+
+                "    \"base64Data\" : " + "\"bm9kZXsKICBlY2hvICdoZWxsbyB3b3JsZCEnCn0K\"" +
                 "  }\n" +
                 "}";
 
@@ -123,7 +182,7 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
     @Test
     public void checkScmProperties() throws Exception {
         // ensure server provider works with server multibranch pipeline
-        String credentialId = createCredential(BitbucketServerScm.ID, "server");
+        String credentialId = createCredential(BitbucketServerScm.ID, authenticatedUser);
         MultiBranchProject mbp = mockMbp(credentialId);
         ScmContentProvider provider = new BitbucketServerScmContentProvider();
         assertTrue(provider.support(mbp));
@@ -134,7 +193,7 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
         assertFalse(provider.support(mbp));
     }
 
-    private StaplerRequest mockStapler(){
+    private StaplerRequest mockStapler() {
         mockStatic(Stapler.class);
         StaplerRequest staplerRequest = mock(StaplerRequest.class);
         when(Stapler.getCurrentRequest()).thenReturn(staplerRequest);
@@ -144,7 +203,11 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
         return staplerRequest;
     }
 
-    private MultiBranchProject mockMbp(String credentialId){
+    private MultiBranchProject mockMbp(String credentialId) {
+        return mockMbp(credentialId, authenticatedUser);
+    }
+
+    private MultiBranchProject mockMbp(String credentialId, User user) {
         MultiBranchProject mbp = mock(MultiBranchProject.class);
         when(mbp.getName()).thenReturn("pipeline1");
         when(mbp.getParent()).thenReturn(j.jenkins);
@@ -157,9 +220,9 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
 
         //mock blueocean credential provider stuff
         BlueOceanCredentialsProvider.FolderPropertyImpl folderProperty = mock(BlueOceanCredentialsProvider.FolderPropertyImpl.class);
-        DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor> properties = new DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor>(mbp);
+        DescribableList<AbstractFolderProperty<?>, AbstractFolderPropertyDescriptor> properties = new DescribableList<AbstractFolderProperty<?>, AbstractFolderPropertyDescriptor>(mbp);
         properties.add(new BlueOceanCredentialsProvider.FolderPropertyImpl(
-                authenticatedUser.getId(), credentialId,
+                user.getId(), credentialId,
                 BlueOceanCredentialsProvider.createDomain(apiUrl)
         ));
         Domain domain = mock(Domain.class);

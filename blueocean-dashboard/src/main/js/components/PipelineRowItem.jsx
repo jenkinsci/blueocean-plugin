@@ -4,7 +4,7 @@ import Extensions from '@jenkins-cd/js-extensions';
 import { buildPipelineUrl } from '../util/UrlUtils';
 import { capable, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 import { MATRIX_PIPELINE } from '../Capabilities';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '@jenkins-cd/design-language';
 
 // Generate classic URL to redirect matrix-style / multiconfig jobs.
 function generateRedirectURL(pipeline) {
@@ -103,8 +103,8 @@ export class PipelineRowItem extends Component {
         return (
             <TableRow useRollover data-pipeline={name} data-organization={organization} columns={columns}>
                 <TableCell className="TableCell--pipelineLink" {...linkProps}>
-                    <ExpandablePath path={fullDisplayPath} />
-                    { matrixRedirectURL && <Icon size={24} icon="exit_to_app" /> }
+                    <ExpandablePath path={fullDisplayPath} showIcon={false} />
+                    { matrixRedirectURL && <Icon size={24} icon="ActionExitToApp" /> }
                 </TableCell>
                 <TableCell {...linkProps}>
                     <WeatherIcon score={weatherScore} />

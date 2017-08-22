@@ -86,7 +86,8 @@ public class LogResource{
                 text = appenderLogReader.read();
             }
         }
-        rsp.addHeader("X-Text-Size",String.valueOf(r));
+        rsp.addHeader("X-Text-Size", String.valueOf(r));
+        rsp.addHeader("X-Text-Delivered", String.valueOf(r - offset));
         w.close();
 
     }

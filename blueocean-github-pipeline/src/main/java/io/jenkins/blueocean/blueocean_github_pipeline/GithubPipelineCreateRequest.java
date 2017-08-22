@@ -75,23 +75,24 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
     @SuppressWarnings("unchecked")
     @SuppressFBWarnings(value = "REC_CATCH_EXCEPTION", justification = "Runtime exception is thrown from the catch block")
     @Override
-    public BluePipeline create(Reachable parent) throws IOException {
+    public BluePipeline create(@Nonnull BlueOrganization organization, @Nonnull Reachable parent) throws IOException {
         Preconditions.checkNotNull(parent, "Parent passed is null");
         Preconditions.checkNotNull(getName(), "Name provided was null");
 
+        User authenticatedUser = checkUserIsAuthenticatedAndHasItemCreatePermission(organization);
+
         String apiUrl = null;
         String orgName = getName(); //default
-        String credentialId = null;
+        String credentialId = GithubScm.ID; // default to 'github' as it's the only valid credentialId value for GitHub
         List<String> repos = new ArrayList<>();
 
+        // extract some configuration
         if (scmConfig != null) {
             apiUrl = StringUtils.defaultIfBlank(scmConfig.getUri(), GitHubSCMSource.GITHUB_URL);
-            updateEndpoints(apiUrl);
-
+            credentialId = computeCredentialIdWithGithubDefault(scmConfig);
             if (scmConfig.getConfig().get("orgName") instanceof String) {
                 orgName = (String) scmConfig.getConfig().get("orgName");
             }
-            credentialId = scmConfig.getCredentialId();
             if (scmConfig.getConfig().get("repos") instanceof List) {
                 for (String r : (List<String>) scmConfig.getConfig().get("repos")) {
                     repos.add(r);
@@ -99,49 +100,40 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
             }
         }
 
+        validateCredentialId(credentialId, apiUrl);
+        // TODO: validate the endpoint already exists? validateCredentialId is doing that somewhat implicitly above
+        updateEndpoints(apiUrl);
         String singleRepo = repos.size() == 1 ? repos.get(0) : null;
 
-        User authenticatedUser =  User.current();
-
-        ModifiableTopLevelItemGroup orgRoot = getParent();
+        ModifiableTopLevelItemGroup orgRoot = getParent(organization);
         
         Item item = Jenkins.getInstance().getItemByFullName(orgRoot.getFullName() + '/' + orgName);
 
-        BlueOrganization organization = findOrganization();
-        if (organization == null) {
-            throw new ServiceException.UnexpectedErrorException("Could not find organization");
-        }
         boolean creatingNewItem = item == null;
         try {
-
-            if(credentialId != null) {
-                validateCredentialId(credentialId, apiUrl);
-            }
-
             if (item == null) {
-                item = createProject(getName(), DESCRIPTOR, CustomOrganizationFolderDescriptor.class);
+                item = createProject(getName(), DESCRIPTOR, CustomOrganizationFolderDescriptor.class, organization);
             }
 
             if (item instanceof OrganizationFolder) {
-                if(credentialId != null) {
-                    //Find domain attached to this credentialId, if present check if it's BlueOcean specific domain then
-                    //add the properties otherwise simply use it
-                    Domain domain = CredentialsUtils.findDomain(credentialId, authenticatedUser);
-                    if(domain == null){ //this should not happen since validateCredentialId found the credential
-                        throw new ServiceException.BadRequestException(
-                                new ErrorMessage(400, "Failed to create pipeline")
-                                        .add(new ErrorMessage.Error("scm.credentialId",
-                                                ErrorMessage.Error.ErrorCodes.INVALID.toString(),
-                                                "No domain in user credentials found for credentialId: "+ scmConfig.getCredentialId())));
-                    }
-                    if(domain.test(new BlueOceanDomainRequirement())) {
-                        ((OrganizationFolder) item)
-                                .addProperty(
-                                        new BlueOceanCredentialsProvider.FolderPropertyImpl(
-                                                authenticatedUser.getId(), credentialId,
-                                                BlueOceanCredentialsProvider.createDomain(apiUrl)
-                                        ));
-                    }
+                //Find domain attached to this credentialId, if present check if it's BlueOcean specific domain then
+                //add the properties otherwise simply use it
+                // TODO: this check probably isn't required anymore
+                Domain domain = CredentialsUtils.findDomain(credentialId, authenticatedUser);
+                if(domain == null){ //this should not happen since validateCredentialId found the credential
+                    throw new ServiceException.BadRequestException(
+                            new ErrorMessage(400, "Failed to create pipeline")
+                                    .add(new ErrorMessage.Error("scm.credentialId",
+                                            ErrorMessage.Error.ErrorCodes.INVALID.toString(),
+                                            "No domain in user credentials found for credentialId: "+ credentialId)));
+                }
+                if(domain.test(new BlueOceanDomainRequirement())) {
+                    ((OrganizationFolder) item)
+                            .addProperty(
+                                    new BlueOceanCredentialsProvider.FolderPropertyImpl(
+                                            authenticatedUser.getId(), credentialId,
+                                            BlueOceanCredentialsProvider.createDomain(apiUrl)
+                                    ));
                 }
 
                 // cick of github scan build
@@ -168,10 +160,6 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
                         if (!repos.contains(p.getName())) {
                             repos.add(p.getName());
                         }
-                    }
-
-                    if (credentialId == null) {
-                        credentialId = gitHubSCMNavigator.getScanCredentialsId();
                     }
                 }
 
@@ -211,6 +199,20 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
             return cleanupOnError(e, getName(), item, creatingNewItem);
         }
         return null;
+    }
+
+    @Override
+    protected String computeCredentialId(BlueScmConfig scmConfig) {
+        return GithubCredentialUtils.computeCredentialId(scmConfig.getCredentialId(), scmConfig.getId(), scmConfig.getUri());
+    }
+
+    // NOTE: if ScmConfig.id is omitted, we assume "github" for backwards compat with old Editor
+    private String computeCredentialIdWithGithubDefault(BlueScmConfig blueScmConfig) {
+        if (StringUtils.isBlank(blueScmConfig.getId())) {
+            return GithubScm.ID;
+        }
+
+        return computeCredentialId(blueScmConfig);
     }
 
     private void updateEndpoints(String apiUrl) {
@@ -364,6 +366,16 @@ public class GithubPipelineCreateRequest extends AbstractPipelineCreateRequest {
                 String accessToken = credentials.getPassword().getPlainText();
                 validateGithubAccessToken(accessToken, apiUrl);
             }
+        } else {
+            throw new ServiceException.BadRequestException(
+                new ErrorMessage(400, "Failed to create Github pipeline")
+                    .add(
+                        new ErrorMessage.Error("scmConfig.credentialId",
+                        ErrorMessage.Error.ErrorCodes.MISSING.toString(),
+                        "credentialId is required"
+                    )
+                )
+            );
         }
     }
 

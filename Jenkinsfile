@@ -45,7 +45,7 @@ node() {
 
         if (env.JOB_NAME =~ 'blueocean-weekly-ath') {
           stage('ATH - Jenkins 2.60.1') {
-            sh "cd acceptance-tests && ./run.sh -v=2.69.1 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+            sh "cd acceptance-tests && ./run.sh -v=2.60.1 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
             junit 'acceptance-tests/target/surefire-reports/*.xml'
           }
         }

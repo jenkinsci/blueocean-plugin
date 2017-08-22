@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '@jenkins-cd/design-language';
 import Autocomplete from 'react-autocomplete';
 
 /**
@@ -106,10 +106,10 @@ export class ColumnFilter extends Component {
                 )}
             />
             <span className="Icon-filter">
-                <Icon icon="filter_list" size={15} />
+                <Icon icon="ContentFilterList" size={15} color="#bbcdd5" style={{ verticalAlign: 'top' }} />
             </span>
             <span className="Icon-clear" onClick={() => this.clearInput()}>
-                <Icon icon="clear" size={15} />
+                <Icon icon="ContentClear" size={15} color="#bbcdd5" style={{ verticalAlign: 'top' }} />
             </span>
           </div>);
     }

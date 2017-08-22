@@ -94,7 +94,7 @@ public class GithubPipelineCreateRequestTest {
         config.put("repos", ImmutableList.of("PR-demo"));
         config.put("orgName", ImmutableList.of("cloudbeers"));
         GithubPipelineCreateRequest pipelineCreateRequest = new GithubPipelineCreateRequest("cloudbeers",
-                new BlueScmConfig(null, "12345", config));
+                new BlueScmConfig(GithubScm.ID, null, "12345", config));
 
         Whitebox.invokeMethod(pipelineCreateRequest, "_sendOrganizationScanCompleteEvent", item, organizationFolder);
         Mockito.verify(pubsubBus, Mockito.atLeastOnce()).publish(Mockito.any(SimpleMessage.class));
@@ -122,7 +122,7 @@ public class GithubPipelineCreateRequestTest {
         config.put("repos", ImmutableList.of("PR-demo"));
         config.put("orgName", ImmutableList.of("cloudbeers"));
         GithubPipelineCreateRequest pipelineCreateRequest = new GithubPipelineCreateRequest("cloudbeers",
-                new BlueScmConfig(null, "12345", config));
+                new BlueScmConfig(GithubScm.ID,null, "12345", config));
 
         Whitebox.invokeMethod(pipelineCreateRequest, "sendOrganizationScanCompleteEvent", item, organizationFolder);
     }
@@ -150,7 +150,7 @@ public class GithubPipelineCreateRequestTest {
         config.put("repos", ImmutableList.of("PR-demo"));
         config.put("orgName", ImmutableList.of("cloudbeers"));
         GithubPipelineCreateRequest pipelineCreateRequest = new GithubPipelineCreateRequest("cloudbeers",
-                new BlueScmConfig(null, "12345", config));
+                new BlueScmConfig(GithubScm.ID,null, "12345", config));
 
         Whitebox.invokeMethod(pipelineCreateRequest, "_sendMultibranchIndexingCompleteEvent", item, organizationFolder, "cloudbeers",5);
         Mockito.verify(pubsubBus, Mockito.atLeastOnce()).publish(Mockito.any(SimpleMessage.class));
@@ -163,7 +163,7 @@ public class GithubPipelineCreateRequestTest {
 
         OrganizationFactory organizationFactory = Mockito.mock(OrganizationFactory.class);
         Folder item = mock(Folder.class);
-        
+
         mockStatic(OrganizationFactory.class);
         when(OrganizationFactory.getInstance()).thenReturn(organizationFactory);
         when(OrganizationFactory.getInstance().list())

@@ -99,14 +99,20 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
         return null;
     }
 
+    StandardUsernamePasswordCredentials getCredential(String apiUrl){
+        String credentialId = createCredentialId(apiUrl);
+        return CredentialsUtils.findCredential(credentialId,
+                StandardUsernamePasswordCredentials.class,
+                new BlueOceanDomainRequirement());
+    }
+
     @Override
     public Container<ScmOrganization> getOrganizations() {
         User authenticatedUser = getAuthenticatedUser();
 
         StaplerRequest request = Stapler.getCurrentRequest();
         Preconditions.checkNotNull(request, "This request must be made in HTTP context");
-
-        String credentialId = getCredentialIdFromRequest(request);
+        String credentialId = BitbucketCredentialUtils.computeCredentialId(getCredentialIdFromRequest(request), getId(), getUri());
 
         List<ErrorMessage.Error> errors = new ArrayList<>();
         StandardUsernamePasswordCredentials credential = null;

@@ -26,7 +26,7 @@ public class GithubApiTest extends GithubMockBase {
     @Test
     public void validateGithubToken() throws IOException, UnirestException {
         //check credentialId of this SCM, should be null
-        createGithubCredential();
+        createGithubCredential(user);
         //check if this credentialId is created in correct user domain
         Domain domain = CredentialsUtils.findDomain("github", user);
         assertEquals("blueocean-github-domain", domain.getName());
@@ -54,7 +54,7 @@ public class GithubApiTest extends GithubMockBase {
 
     @Test
     public void fetchExistingCredentialTokenInvalid() throws UnirestException {
-        createGithubCredential();
+        createGithubCredential(user);
 
         addPerTestStub(
             WireMock.get(urlEqualTo("/user"))
@@ -72,7 +72,7 @@ public class GithubApiTest extends GithubMockBase {
 
     @Test
     public void fetchExistingCredentialScopesInvalid() throws UnirestException {
-        createGithubCredential();
+        createGithubCredential(user);
 
         addPerTestStub(
             WireMock.get(urlEqualTo("/user"))
@@ -90,13 +90,12 @@ public class GithubApiTest extends GithubMockBase {
 
     @Test
     public void getOrganizationsAndRepositories() throws Exception {
-        String credentialId = createGithubCredential();
+        String credentialId = createGithubCredential(user);
 
         List l = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
                 .get("/organizations/jenkins/scm/github/organizations/?credentialId=" + credentialId+"&apiUrl="+githubApiUrl)
-                .header(Scm.X_CREDENTIAL_ID, credentialId + "sdsdsd") //it must be ignored as credentialId query parameter overrides it.
                 .build(List.class);
 
         Assert.assertTrue(l.size() > 0);
@@ -104,8 +103,7 @@ public class GithubApiTest extends GithubMockBase {
         Map resp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/?credentialId=" + credentialId + "&pageSize=10&page=1"+"&apiUrl="+githubApiUrl)
-                .header(Scm.X_CREDENTIAL_ID, credentialId + "sdsdsd") //it must be ignored as credentialId query parameter overrides it.
+                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/?pageSize=10&page=1&apiUrl="+githubApiUrl)
                 .build(Map.class);
 
         Map repos = (Map) resp.get("repositories");
@@ -117,8 +115,7 @@ public class GithubApiTest extends GithubMockBase {
         resp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
-                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/RunMyProcess-task/?credentialId=" + credentialId+"&apiUrl="+githubApiUrl)
-                .header(Scm.X_CREDENTIAL_ID, credentialId + "sdsdsd") //it must be ignored as credentialId query parameter overrides it.
+                .get("/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/RunMyProcess-task/?apiUrl="+githubApiUrl)
                 .build(Map.class);
 
         assertEquals("RunMyProcess-task", resp.get("name"));

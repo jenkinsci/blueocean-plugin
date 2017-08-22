@@ -111,7 +111,7 @@ class GHEAddServerDialog extends React.Component {
     }
 
     _onCreateServerFailure(error) {
-        const { duplicateName, duplicateUrl, invalidUrl } = error;
+        const { duplicateName, duplicateUrl, invalidServer, invalidApiUrl } = error;
 
         const newState = {
             pending: false,
@@ -126,11 +126,13 @@ class GHEAddServerDialog extends React.Component {
 
         if (duplicateUrl) {
             newState.urlErrorMsg = t('creation.githubent.add_server.text_url_error_duplicate');
-        } else if (invalidUrl) {
-            newState.urlErrorMsg = t('creation.githubent.add_server.text_url_error_invalid');
+        } else if (invalidServer) {
+            newState.urlErrorMsg = t('creation.githubent.add_server.text_url_error_invalid_server');
+        } else if (invalidApiUrl) {
+            newState.urlErrorMsg = t('creation.githubent.add_server.text_url_error_invalid_apiurl');
         }
 
-        if (!duplicateName && !duplicateUrl && !invalidUrl) {
+        if (!duplicateName && !duplicateUrl && !invalidServer && !invalidApiUrl) {
             newState.unknownError = error;
         }
 

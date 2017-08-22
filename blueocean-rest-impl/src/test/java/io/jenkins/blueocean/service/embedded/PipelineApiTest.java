@@ -42,6 +42,7 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.ArtifactContainerImpl;
+import io.jenkins.blueocean.service.embedded.rest.ArtifactImpl;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import jenkins.model.Jenkins;
@@ -237,7 +238,7 @@ public class PipelineApiTest extends BaseTest {
     }
 
     /** TODO: latest stapler change broke delete, disabled for now */
-//    @Test
+    @Test @Ignore
     public void deletePipelineTest() throws IOException {
         Project p = j.createFreeStyleProject("pipeline1");
 
@@ -507,12 +508,15 @@ public class PipelineApiTest extends BaseTest {
         assertEquals(1, artifacts.size());
         assertEquals("fizz", ((Map) artifacts.get(0)).get("name"));
 
-        BlueArtifact blueArtifact = new ArtifactContainerImpl(b, new Reachable() {
+        String artifactName = (String) ((Map) artifacts.get(0)).get("name");
+        String name = ArtifactImpl.class.getName() + ":" + artifactName;
+        ArtifactContainerImpl container = new ArtifactContainerImpl(b, new Reachable() {
             @Override
             public Link getLink() {
                 return new Link("/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/artifacts/");
             }
-        }).get((String) ((Map) artifacts.get(0)).get("path"));
+        });
+        BlueArtifact blueArtifact = container.get(name);
         assertNotNull(blueArtifact);
     }
 

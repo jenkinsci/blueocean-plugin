@@ -2,7 +2,6 @@ import React from 'react';
 import ScmProvider from '../../ScmProvider';
 
 import { BbCreationApi } from '../api/BbCreationApi';
-import { BbCredentialsApi } from '../api/BbCredentialsApi';
 
 import BbDefaultOption from '../BbDefaultOption';
 import BbCloudFlowManager from './BbCloudFlowManager';
@@ -12,14 +11,12 @@ export default class BbCloudScmProvider extends ScmProvider {
     manager = null;
 
     getDefaultOption() {
-        return <BbDefaultOption className="github-enterprise-creation" label="Bitbucket Cloud" />;
+        return <BbDefaultOption label="Bitbucket Cloud" />;
     }
 
     getFlowManager() {
         const creationApi = new BbCreationApi('bitbucket-cloud');
-        const credentialsApi = new BbCredentialsApi('bitbucket-cloud');
-
-        this.manager = new BbCloudFlowManager(creationApi, credentialsApi);
+        this.manager = new BbCloudFlowManager(creationApi);
         return this.manager;
     }
 
