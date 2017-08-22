@@ -25,7 +25,7 @@
         <declarative.version>1.0</declarative.version>
     </properties>
 
-    <url>https://wiki.jenkins-ci.org/display/JENKINS/BlueOcean+Pipeline+Editor+Plugin</url>
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
 
     <licenses>
         <license>
@@ -33,13 +33,6 @@
             <url>http://opensource.org/licenses/MIT</url>
         </license>
     </licenses>
-
-    <scm>
-      <connection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</connection>
-      <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
-      <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
-      <tag>HEAD</tag>
-    </scm>
 
     <developers>
      <developer>
