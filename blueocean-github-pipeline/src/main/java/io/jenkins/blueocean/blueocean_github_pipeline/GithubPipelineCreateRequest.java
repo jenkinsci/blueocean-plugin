@@ -88,7 +88,7 @@ public class GithubPipelineCreateRequest extends AbstractMultiBranchCreateReques
             errors.add(new ErrorMessage.Error("scmConfig.credentialId",
                     ErrorMessage.Error.ErrorCodes.NOT_FOUND.toString(),
                     "No Credentials instance found for credentialId: " + credentialId));
-        }else if(StringUtils.isBlank(scmConfig.getUri())){
+        }else if(StringUtils.isNotBlank(scmConfig.getUri())){
             String accessToken = credentials.getPassword().getPlainText();
             try {
                 validateGithubAccessToken(accessToken, scmConfig.getUri());

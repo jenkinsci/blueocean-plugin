@@ -77,6 +77,9 @@ export default class GithubFlowManager extends FlowManager {
 
     _sseTimeoutId = null;
 
+    pipeline = null;
+    pipelineName=null;
+
     constructor(creationApi) {
         super();
 
