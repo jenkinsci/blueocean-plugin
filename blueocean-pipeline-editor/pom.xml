@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>org.jenkins-ci.plugins</groupId>
+        <artifactId>plugin</artifactId>
+        <version>2.17</version>
+    </parent>
+
+    <name>Blue Ocean Pipeline Editor</name>
+    <description>
+        The Blue Ocean Pipeline Editor is the simplest way for anyone wanting to get started with creating Pipelines in Jenkins
+    </description>
+    
+    <groupId>io.jenkins.blueocean</groupId>
+    <artifactId>blueocean-pipeline-editor</artifactId>
+    <version>0.3.0-beta-6-SNAPSHOT</version>
+    <packaging>hpi</packaging>
+
+    <properties>
+        <java.level>7</java.level>
+        <jackson.version>2.2.3</jackson.version>
+        <jenkins.version>2.7.1</jenkins.version>
+        <node.version>6.2.1</node.version>
+        <npm.version>3.9.3</npm.version>
+        <blueocean.version>1.2.0-beta-6</blueocean.version>
+        <declarative.version>1.0</declarative.version>
+    </properties>
+
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/BlueOcean+Pipeline+Editor+Plugin</url>
+    
+    <licenses>
+        <license>
+            <name>MIT License</name>
+            <url>http://opensource.org/licenses/MIT</url>
+        </license>
+    </licenses>
+
+    <scm>
+      <connection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</connection>
+      <developerConnection>scm:git:git@github.com:jenkinsci/${project.artifactId}-plugin.git</developerConnection>
+      <url>https://github.com/jenkinsci/${project.artifactId}-plugin</url>
+      <tag>HEAD</tag>
+    </scm>
+    
+    <developers>
+     <developer>
+       <id>sophistifunk</id>
+       <name>Josh McDonald</name>
+     </developer>
+     <developer>
+       <id>kzantow</id>
+       <name>Keith Zantow</name>
+     </developer>
+     <developer>
+       <id>abayer</id>
+       <name>Andrew Bayer</name>
+     </developer>
+    </developers>
+    
+    <repositories>
+        <repository>
+            <id>repo.jenkins-ci.org</id>
+            <url>https://repo.jenkins-ci.org/public/</url>
+        </repository>
+    </repositories>
+
+    <pluginRepositories>
+        <pluginRepository>
+            <id>repo.jenkins-ci.org</id>
+            <url>https://repo.jenkins-ci.org/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>io.jenkins.blueocean</groupId>
+            <artifactId>blueocean-rest</artifactId>
+            <version>${blueocean.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-web</artifactId>
+            <version>${blueocean.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jenkins.blueocean</groupId>
+            <artifactId>blueocean-commons</artifactId>
+            <version>${blueocean.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jenkins.blueocean</groupId>
+            <artifactId>blueocean-pipeline-api-impl</artifactId>
+            <version>${blueocean.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkinsci.plugins</groupId>
+            <artifactId>pipeline-model-definition</artifactId>
+            <version>${declarative.version}</version>
+        </dependency>
+
+        <!-- test deps for hpi:run -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-dashboard</artifactId>
+            <version>${blueocean.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-personalization</artifactId>
+            <version>${blueocean.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-i18n</artifactId>
+            <version>${blueocean.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-jwt</artifactId>
+            <version>${blueocean.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-rest-impl</artifactId>
+            <version>${blueocean.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-pipeline-api-impl</artifactId>
+            <version>${blueocean.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-config</artifactId>
+            <version>${blueocean.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-github-pipeline</artifactId>
+            <version>${blueocean.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-git-pipeline</artifactId>
+            <version>${blueocean.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-events</artifactId>
+            <version>${blueocean.version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+</project>
