@@ -40,8 +40,8 @@ describe("ResourceLoadTracker.js", function () {
             ResourceLoadTracker.onMount('ep-1');
             cssElements = document.getElementsByTagName('link');
             expect(cssElements.length).to.equal(2);
-            expect(cssElements[0].getAttribute('href')).to.include('/jenkins/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
-            expect(cssElements[1].getAttribute('href')).to.include('/jenkins/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-2/extensions.css');
+            expect(cssElements[0].getAttribute('href')).to.include('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
+            expect(cssElements[1].getAttribute('href')).to.include('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-2/extensions.css');
 
             // Unmounting ep-1 should result in the CSS for both plugins being
             // unloaded ...
@@ -69,7 +69,7 @@ describe("ResourceLoadTracker.js", function () {
             ResourceLoadTracker.onMount('ep-2');
             cssElements = document.getElementsByTagName('link');
             expect(cssElements.length).to.equal(1);
-            expect(cssElements[0].getAttribute('href')).to.include('/jenkins/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
+            expect(cssElements[0].getAttribute('href')).to.include('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
 
             // Unmounting ep-2 should result in no CSS on the page.
             ResourceLoadTracker.onUnmount('ep-2');
@@ -98,8 +98,8 @@ describe("ResourceLoadTracker.js", function () {
             ResourceLoadTracker.onMount('ep-3');
             cssElements = document.getElementsByTagName('link');
             expect(cssElements.length).to.equal(2);
-            expect(cssElements[0].getAttribute('href')).to.include('/jenkins/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
-            expect(cssElements[1].getAttribute('href')).to.include('/jenkins/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-2/extensions.css');
+            expect(cssElements[0].getAttribute('href')).to.include('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
+            expect(cssElements[1].getAttribute('href')).to.include('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-2/extensions.css');
 
             done();
         });
@@ -137,7 +137,7 @@ describe("ResourceLoadTracker.js", function () {
             cssElements = document.getElementsByTagName('link');
             expect(cssElements.length).to.equal(2);
             expect(cssElements[0].getAttribute('href')).to.equal('http://resources.acme.com/javascript/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
-            expect(cssElements[1].getAttribute('href')).to.include('/jenkins/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-2/extensions.css');
+            expect(cssElements[1].getAttribute('href')).to.include('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-2/extensions.css');
 
             done();
         });
