@@ -23,17 +23,22 @@ node() {
   docker.image('blueocean_build_env').inside("--net=container:blueo-selenium") {
     withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
       try {
-        stage('Building JS Libraries') {
-          sh 'npm --prefix ./js-extensions run build'
-          sh 'npm --prefix ./jenkins-design-language run build'
-          sh 'npm --prefix ./blueocean-core-js run build'
-        }
-
-        stage('Building BlueOcean') {
-          sh "mvn clean install -B -DcleanNode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
-          junit '**/target/surefire-reports/TEST-*.xml'
-          junit '**/target/jest-reports/*.xml'
-          archive '*/target/*.hpi'
+        stage('Building') {
+          steps {
+            parallel (
+              'Building JS Libraries': {
+                sh 'npm --prefix ./js-extensions run build'
+                sh 'npm --prefix ./jenkins-design-language run build'
+                sh 'npm --prefix ./blueocean-core-js run build'
+              },
+              'Building BlueOcean': {
+                sh "mvn clean install -B -DcleanNode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
+                junit '**/target/surefire-reports/TEST-*.xml'
+                junit '**/target/jest-reports/*.xml'
+                archive '*/target/*.hpi'
+              }
+            )
+          }
         }
 
         stage('Sanity check dependencies') {
