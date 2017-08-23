@@ -801,19 +801,6 @@ public class PipelineApiTest extends BaseTest {
                 ), 400);
     }
 
-    @Ignore
-    @Test public void mavenModulesNoteListed() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", Maven.MavenInstallation.MAVEN_21);
-        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
-        m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
-        assertFalse("MavenModuleSet.isNonRecursive() should be false", m.isNonRecursive());
-        j.buildAndAssertSuccess(m);
-        List responses = get("/organizations/jenkins/pipelines/", List.class);
-        assertEquals(1, responses.size());
-        assertEquals("p", ((Map) responses.get(0)).get("name"));
-
-    }
-
     @Test
     public void actionsTest() throws Exception {
         FreeStyleProject p = j.createFreeStyleProject("pipeline1");
