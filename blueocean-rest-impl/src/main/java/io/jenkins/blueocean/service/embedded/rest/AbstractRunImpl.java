@@ -272,14 +272,11 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
                     throw new ServiceException.BadRequestException("timeOutInSecs must be >= 0");
                 }
 
-                long timeOutInMillis = timeOutInSecs*1000;
+                stoppableRun.stop();
 
+                long timeOutInMillis = timeOutInSecs*1000;
                 long sleepingInterval = timeOutInMillis/10; //one tenth of timeout
                 do{
-                    if(isCompletedOrAborted()){
-                        return this;
-                    }
-                    stoppableRun.stop();
                     if(isCompletedOrAborted()){
                         return this;
                     }
