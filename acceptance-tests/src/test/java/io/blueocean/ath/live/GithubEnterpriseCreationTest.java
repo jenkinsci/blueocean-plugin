@@ -66,14 +66,20 @@ public class GithubEnterpriseCreationTest {
         dialog.clickSaveServerButton();
         dialog.findFormErrorMessage("enter a name");
         dialog.findFormErrorMessage("enter a valid URL");
-        // server-side URL validation
+
         dialog.enterServerName(serverName);
-        dialog.enterServerUrl("foo");
+        // server-side URL validation (non-GitHub server)
+        dialog.enterServerUrl("http://www.google.com");
         dialog.waitForErrorMessagesGone();
         dialog.clickSaveServerButton();
-        dialog.findFormErrorMessage("Could not connect");
-        // valid form data should submit
+        dialog.findFormErrorMessage("Check hostname");
+        // check GitHub server with invalid path
+        dialog.enterServerUrl("https://github.beescloud.com");
+        dialog.waitForErrorMessagesGone();
+        dialog.clickSaveServerButton();
+        dialog.findFormErrorMessage("Check path");
 
+        // valid form data should submit
         dialog.enterServerUrl(serverUrl);
         dialog.clickSaveServerButton();
 

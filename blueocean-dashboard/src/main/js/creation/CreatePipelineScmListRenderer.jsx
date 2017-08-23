@@ -23,18 +23,25 @@ export class CreatePipelineScmListRenderer extends React.Component {
         this._initialize();
     }
 
+    customSortProviders(providers, sortedProviders, providerToSearch) {
+        const providerKeys = Object.keys(providers);
+
+        for (let i = 0; i <= providerKeys.length; i++) {
+            if (providers[i] && ((providers[i].constructor.name === providerToSearch) || !providerToSearch)) {
+                sortedProviders.push(providers[i]);
+
+                // eslint-disable-next-line
+                delete providers[i];
+                break;
+            }
+        }
+    }
+
     _initialize() {
         // load and store the SCM providers that contributed the specified extension point
         Extensions.store.getExtensions(this.props.extensionPoint, (extensions) => {
             let providers = extensions.map(Provider => {
                 try {
-                    // TODO: remove this feature flag once all of bitbucket lands
-                    // Show Bitbucket creation with query param '?bitbucket'
-                    if ((Provider.name === 'BbCloudScmProvider' || Provider.name === 'BbServerScmProvider')
-                        && (!this.context.location || !this.context.location.query
-                        || !('bitbucket' in this.context.location.query))) {
-                        return null;
-                    }
                     return new Provider();
                 } catch (error) {
                     console.warn('error initializing ScmProvider', Provider, error);
@@ -44,8 +51,18 @@ export class CreatePipelineScmListRenderer extends React.Component {
 
             providers = providers.filter(provider => !!provider);
 
+            // eslint-disable-next-line
+            let sortedProviders = [];
+
+            this.customSortProviders(providers, sortedProviders, 'BbCloudScmProvider');
+            this.customSortProviders(providers, sortedProviders, 'BbServerScmProvider');
+            this.customSortProviders(providers, sortedProviders, 'GithubScmProvider');
+            this.customSortProviders(providers, sortedProviders, 'GithubEnterpriseScmProvider');
+            this.customSortProviders(providers, sortedProviders, 'GitScmProvider');
+            this.customSortProviders(providers, sortedProviders); // add all other providers
+
             this.setState({
-                providers,
+                providers: sortedProviders,
             });
         });
     }

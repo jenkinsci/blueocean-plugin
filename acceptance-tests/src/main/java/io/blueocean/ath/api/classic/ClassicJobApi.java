@@ -52,7 +52,13 @@ public class ClassicJobApi {
             }
         }
     }
-    public void createFreeStyleJob(String jobName, String command, String ...folders) throws IOException {
+    public void createFreeStyleJob(FolderJob folder, String jobName, String command) throws IOException {
+        deletePipeline(folder, jobName);
+        URL url = Resources.getResource(this.getClass(), "freestyle.xml");
+        jenkins.createJob(folder, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{command}}", command));
+        logger.info("Created freestyle job "+ jobName);
+    }
+    public void createFreeStyleJob(String jobName, String command) throws IOException {
         deletePipeline(jobName);
         URL url = Resources.getResource(this.getClass(), "freestyle.xml");
         jenkins.createJob(null, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{command}}", command));

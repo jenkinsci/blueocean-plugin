@@ -8,6 +8,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.OrganizationRoute;
 import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
@@ -16,10 +17,24 @@ import io.jenkins.blueocean.rest.model.BlueUserContainer;
 import io.jenkins.blueocean.rest.model.GenericResource;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
+
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.DoNotUse;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
+import org.kohsuke.accmod.restrictions.None;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.DELETE;
 
+import com.google.common.base.Objects;
+import com.google.common.collect.Iterables;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 
 /**
@@ -35,7 +50,7 @@ public class OrganizationImpl extends AbstractOrganization{
      */
     private final ModifiableTopLevelItemGroup group;
 
-    private final UserContainerImpl users = new UserContainerImpl(this);
+    private final UserContainerImpl users = new UserContainerImpl(this, this);
 
     public OrganizationImpl(String name, ModifiableTopLevelItemGroup group) {
         this.name = name;
@@ -85,7 +100,7 @@ public class OrganizationImpl extends AbstractOrganization{
         if(user == null){
             throw new ServiceException.NotFoundException("No authenticated user found");
         }
-        return new UserImpl(user,new UserContainerImpl(this));
+        return new UserImpl(this, user, new UserContainerImpl(this, this));
     }
 
     @Override

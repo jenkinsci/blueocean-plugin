@@ -380,7 +380,7 @@ export default class GithubFlowManager extends FlowManager {
 
         this._initListeners();
 
-        this._creationApi.createOrgFolder(this.credentialId, this.getApiUrl(), this.selectedOrganization, repoNames)
+        this._creationApi.createOrgFolder(this.credentialId, this.getScmId(), this.getApiUrl(), this.selectedOrganization, repoNames)
             .then(waitAtLeast(MIN_DELAY * 2))
             .then(r => this._saveOrgFolderSuccess(r), e => this._saveOrgFolderFailure(e));
     }

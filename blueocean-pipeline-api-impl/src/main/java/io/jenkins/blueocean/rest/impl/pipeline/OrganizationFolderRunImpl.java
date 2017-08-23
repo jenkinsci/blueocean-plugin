@@ -8,7 +8,6 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
-import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -93,6 +92,21 @@ public class OrganizationFolderRunImpl extends BlueRun {
 
     @Override
     public Date getEndTime() {
+        return null;
+    }
+
+    @Override
+    public String getStartTimeString() {
+        return null;
+    }
+
+    @Override
+    public String getEnQueueTimeString() {
+        return null;
+    }
+
+    @Override
+    public String getEndTimeString() {
         return null;
     }
 

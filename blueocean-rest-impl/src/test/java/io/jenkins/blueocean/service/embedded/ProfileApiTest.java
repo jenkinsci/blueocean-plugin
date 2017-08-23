@@ -2,11 +2,17 @@ package io.jenkins.blueocean.service.embedded;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Iterables;
+import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.FreeStyleProject;
+import hudson.model.Hudson;
 import hudson.model.Project;
 import hudson.model.User;
+import hudson.security.GlobalMatrixAuthorizationStrategy;
+import hudson.security.HudsonPrivateSecurityRealm;
 import hudson.tasks.Mailer;
 import hudson.tasks.UserAvatarResolver;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.service.embedded.rest.UserImpl;
 import jenkins.model.Jenkins;
 import org.acegisecurity.adapters.PrincipalAcegiUserToken;
@@ -23,9 +29,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Vivek Pandey
@@ -41,10 +45,63 @@ public class ProfileApiTest extends BaseTest{
         assertEquals("http://avatar.example/i/img.png", response.get("avatar"));
     }
 
+    @Test
+    public void shouldFailForAnonymousRead() throws IOException {
+        HudsonPrivateSecurityRealm realm = new HudsonPrivateSecurityRealm(false);
+        realm.createAccount("alice","alice");
+        j.jenkins.setSecurityRealm(realm);
+
+        GlobalMatrixAuthorizationStrategy as = new GlobalMatrixAuthorizationStrategy();
+        j.jenkins.setAuthorizationStrategy(as);
+        as.add(Hudson.READ,"alice");
+
+        Map resp = new RequestBuilder(baseUrl)
+                .status(403)
+                .get("/users/")
+                .build(Map.class);
+        assertEquals(403, resp.get("code"));
+    }
+
+    @Test
+    public void shouldSucceedForAnonymousRead() throws IOException {
+        HudsonPrivateSecurityRealm realm = new HudsonPrivateSecurityRealm(false);
+        realm.createAccount("alice","alice");
+        j.jenkins.setSecurityRealm(realm);
+
+        GlobalMatrixAuthorizationStrategy as = new GlobalMatrixAuthorizationStrategy();
+        j.jenkins.setAuthorizationStrategy(as);
+        as.add(Hudson.READ,"anonymous");
+
+        List resp = new RequestBuilder(baseUrl)
+                .status(200)
+                .get("/users/")
+                .build(List.class);
+        assertEquals(1, resp.size());
+    }
+
+    @Test
+    public void shouldFailForUnauthorizedUser() throws IOException, UnirestException {
+        HudsonPrivateSecurityRealm realm = new HudsonPrivateSecurityRealm(false);
+        realm.createAccount("alice","alice");
+        realm.createAccount("bob","bob");
+        j.jenkins.setSecurityRealm(realm);
+
+        GlobalMatrixAuthorizationStrategy as = new GlobalMatrixAuthorizationStrategy();
+        j.jenkins.setAuthorizationStrategy(as);
+        as.add(Hudson.READ,"alice");
+
+        Map resp = new RequestBuilder(baseUrl)
+                .status(403)
+                .auth("bob", "bob")
+                .get("/users/")
+                .build(Map.class);
+        assertEquals(403, resp.get("code"));
+    }
+
     //XXX: There is no method on User API to respond to POST or PUT or PATH. Since there are other tests that
     // does POST, PUT for successful case, its ok to disable them.
     //UX-159
-//    @Test
+    @Test @Ignore
     public void postCrumbTest() throws Exception {
         User system = User.get("SYSTEM");
         Map response = post("/users/"+system.getId()+"/", Collections.emptyMap());
@@ -61,7 +118,7 @@ public class ProfileApiTest extends BaseTest{
     }
 
     //UX-159
-    //@Test
+    @Test @Ignore
     public void putMimeTest() throws Exception {
         User system = User.get("SYSTEM");
         Map response = put("/users/"+system.getId()+"/", Collections.emptyMap());
@@ -76,7 +133,7 @@ public class ProfileApiTest extends BaseTest{
     }
 
     //UX-159
-//    @Test
+    @Test @Ignore
     public void patchMimeTest() throws Exception {
         User system = User.get("SYSTEM");
 
@@ -334,7 +391,7 @@ public class ProfileApiTest extends BaseTest{
 
         SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
 
-        Assert.assertNull(new UserImpl(alice).getPermission());
+        Assert.assertNull(new UserImpl(Iterables.getFirst(OrganizationFactory.getInstance().list(), null), alice).getPermission());
     }
 
     @Test

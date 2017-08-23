@@ -32,6 +32,7 @@
     "react/jsx-sort-props": 0,
     "react/jsx-uses-react": 2,
     "react/jsx-uses-vars": 2,
+    "react/jsx-closing-bracket-location": 0,
     "react/no-did-mount-set-state": 2,
     "react/no-did-update-set-state": 2,
     "react/no-multi-comp": 0,
@@ -41,6 +42,10 @@
     "react/self-closing-comp": 2,
     "react/wrap-multilines": 2,
     "react/jsx-indent-props": 0,
+    "padded-blocks": 0,
+    "one-var-declaration-per-line": 0,
+    "one-var": 0,
+    "radix": 0,
     "quotes": [0, "single"],
     "space-before-function-paren": [2, {
       "anonymous": "always",

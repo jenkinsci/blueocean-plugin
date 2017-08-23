@@ -31,12 +31,16 @@ export default class BbOrgListStep extends React.Component {
     }
 
     render() {
-        const { flowManager } = this.props;
-        const title = t('creation.core.repository.title');
+        const {
+            flowManager,
+            title = 'creation.bbcloud.repository.title',
+        } = this.props;
+
+        const titleString = t(title);
         const disabled = flowManager.stepsDisabled;
 
         return (
-            <FlowStep {...this.props} className="github-org-list-step layout-large" title={title} disabled={disabled}>
+            <FlowStep {...this.props} className="github-org-list-step layout-large" title={titleString} disabled={disabled}>
                 <List
                     className="org-list"
                     data={flowManager.organizations}
@@ -52,4 +56,5 @@ export default class BbOrgListStep extends React.Component {
 
 BbOrgListStep.propTypes = {
     flowManager: PropTypes.object,
+    title: PropTypes.string,
 };
