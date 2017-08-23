@@ -1350,7 +1350,7 @@
     },
     "bluebird": {
       "version": "3.4.6",
-      "from": "bluebird@https://registry.npmjs.org/bluebird/-/bluebird-3.4.6.tgz",
+      "from": "bluebird@3.4.6",
       "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.4.6.tgz",
       "dev": true
     },
