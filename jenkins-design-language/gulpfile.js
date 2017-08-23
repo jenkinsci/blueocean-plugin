@@ -9,7 +9,6 @@ const gutil = require('gulp-util');
 const fs = require('fs');
 const sourcemaps = require('gulp-sourcemaps');
 const babel = require('gulp-babel');
-const concat = require('gulp-concat');
 const less = require('gulp-less');
 const clean = require('gulp-clean');
 const runSequence = require('run-sequence');
@@ -17,9 +16,6 @@ const rename = require('gulp-rename');
 const copy = require('gulp-copy');
 const svgmin = require('gulp-svgmin');
 const lint = require('gulp-eslint');
-const Karma = require('karma').Server;
-const mocha = require('gulp-mocha');
-const babelCompiler = require('babel-core/register');
 const jest = require('gulp-jest').default;
 const minimist = require('minimist');
 
@@ -113,13 +109,6 @@ gulp.task("lint", () => (
         .pipe(lint.failAfterError())
 ));
 
-gulp.task("test-mocha", () => (
-    gulp.src(config.test.sources)
-        .pipe(mocha({
-            compilers: { js: babelCompiler }
-        }))
-));
-
 gulp.task("test", ['test-jest']);
 
 gulp.task("test-debug", ['test-jest-debug']);
@@ -171,22 +160,6 @@ gulp.task('test-jest-debug', () =>
         },
     })
 );
-
-gulp.task("test-karma", (done) => {
-    new Karma({
-        configFile: __dirname + '/karma.conf.js',
-    }, done).start();
-});
-
-gulp.task("test-karma-debug", (done) => {
-    new Karma({
-        configFile: __dirname + '/karma.conf.js',
-        colors: true,
-        autoWatch: true,
-        singleRun: false,
-        browsers: ['Chrome'],
-    }, done).start();
-});
 
 // Build all
 
