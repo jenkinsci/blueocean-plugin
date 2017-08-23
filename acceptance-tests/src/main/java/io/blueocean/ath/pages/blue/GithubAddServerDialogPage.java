@@ -44,6 +44,7 @@ public class GithubAddServerDialogPage {
 
 
     public void enterServerName(String name) {
+        logger.info(String.format("enter server name '%s", name));
         WebElementUtils.setText(
             wait.until(ExpectedConditions.visibilityOf(textName)),
             name
@@ -51,6 +52,7 @@ public class GithubAddServerDialogPage {
     }
 
     public void enterServerUrl(String url) {
+        logger.info(String.format("enter server url '%s", url));
         WebElementUtils.setText(
             wait.until(ExpectedConditions.visibilityOf(textUrl)),
             url
@@ -58,6 +60,7 @@ public class GithubAddServerDialogPage {
     }
 
     public void clickSaveServerButton() {
+        logger.info("clicking save button");
         wait.until(ExpectedConditions.visibilityOf(buttonCreate)).click();
     }
 
