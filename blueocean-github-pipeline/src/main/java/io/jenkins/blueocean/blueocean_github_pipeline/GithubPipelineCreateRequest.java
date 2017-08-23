@@ -6,7 +6,6 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.annotations.NonNull;
-import hudson.model.Item;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
@@ -15,15 +14,12 @@ import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import io.jenkins.blueocean.scm.api.AbstractMultiBranchCreateRequest;
 import io.jenkins.blueocean.scm.api.AbstractScmSourceEvent;
 import jenkins.branch.MultiBranchProject;
-import jenkins.scm.api.SCMNavigator;
 import jenkins.scm.api.SCMSource;
-import jenkins.scm.api.SCMSourceEvent;
 import jenkins.scm.api.SCMSourceOwner;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
 import org.jenkinsci.plugins.github_branch_source.GitHubConfiguration;
-import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSourceBuilder;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -152,37 +148,6 @@ public class GithubPipelineCreateRequest extends AbstractMultiBranchCreateReques
                 throw e;
             }
             throw new ServiceException.UnexpectedErrorException("Failure validating github access token: "+e.getMessage(), e);
-        }
-    }
-
-    static class SCMSourceEventImpl extends SCMSourceEvent<Object> {
-        private final String repoName;
-        private final Item project;
-        private final GitHubSCMNavigator navigator;
-
-        public SCMSourceEventImpl(String repoName, Item project, String origin, GitHubSCMNavigator navigator) {
-            super(Type.CREATED, new Object(), origin);
-            this.repoName = repoName;
-            this.project=project;
-            this.navigator = navigator;
-        }
-
-        @Override
-        public boolean isMatch(@Nonnull SCMNavigator navigator) {
-            return this.navigator == navigator;
-        }
-
-        @Override
-        public boolean isMatch(@Nonnull SCMSource source) {
-            SCMSourceOwner sourceOwner = source.getOwner();
-            return ((GitHubSCMSource)source).getRepository().equals(getSourceName()) && sourceOwner != null
-                    && sourceOwner.getFullName().equals(project.getFullName());
-        }
-
-        @Nonnull
-        @Override
-        public String getSourceName() {
-            return repoName;
         }
     }
 }
