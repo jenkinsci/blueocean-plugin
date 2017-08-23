@@ -41,7 +41,10 @@ public class GithubPipelineCreateRequest extends AbstractMultiBranchCreateReques
 
     @Override
     protected SCMSource createSource(@Nonnull MultiBranchProject project, @Nonnull BlueScmConfig scmConfig) {
-        updateEndpoints(scmConfig.getUri());
+        // Update endpoint only if its Github Enterprise
+        if(scmConfig.getId().equals(GithubEnterpriseScm.ID)) {
+            updateEndpoints(scmConfig.getUri());
+        }
         return new GitHubSCMSourceBuilder(null, scmConfig.getUri(), computeCredentialId(scmConfig),
                 (String)scmConfig.getConfig().get("repoOwner"),
                 (String)scmConfig.getConfig().get("repository"))
