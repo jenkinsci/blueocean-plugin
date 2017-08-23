@@ -22,7 +22,7 @@ public class ServerInfoAdditionalAnalyticsProperties extends AdditionalAnalytics
         if (version != null && version.toString() != null) {
             props.put("jenkinsVersion", version.toString());
         }
-        Plugin plugin = Jenkins.getInstance().getPlugin("blueocean-rest-impl");
+        Plugin plugin = Jenkins.getInstance().getPlugin("blueocean-rest");
         if(plugin != null) {
             props.put("blueoceanVersion", plugin.getWrapper().getVersion());
         }
