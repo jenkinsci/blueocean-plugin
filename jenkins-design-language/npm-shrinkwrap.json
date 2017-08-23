@@ -2,11 +2,6 @@
   "name": "@jenkins-cd/design-language",
   "version": "0.0.147-SNAPSHOT",
   "dependencies": {
-    "@jenkins-cd/react-material-icons": {
-      "version": "1.0.0",
-      "from": "@jenkins-cd/react-material-icons@https://registry.npmjs.org/@jenkins-cd/react-material-icons/-/react-material-icons-1.0.0.tgz",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/react-material-icons/-/react-material-icons-1.0.0.tgz"
-    },
     "@kadira/react-split-pane": {
       "version": "1.4.7",
       "from": "@kadira/react-split-pane@https://registry.npmjs.org/@kadira/react-split-pane/-/react-split-pane-1.4.7.tgz",
@@ -1737,6 +1732,12 @@
       "version": "1.0.2",
       "from": "cli-cursor@https://registry.npmjs.org/cli-cursor/-/cli-cursor-1.0.2.tgz",
       "resolved": "https://registry.npmjs.org/cli-cursor/-/cli-cursor-1.0.2.tgz",
+      "dev": true
+    },
+    "cli-spinner": {
+      "version": "0.2.6",
+      "from": "cli-spinner@0.2.6",
+      "resolved": "https://registry.npmjs.org/cli-spinner/-/cli-spinner-0.2.6.tgz",
       "dev": true
     },
     "cli-width": {
