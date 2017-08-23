@@ -13,7 +13,6 @@ const copy = require('gulp-copy');
 const del = require('del');
 const runSequence = require('run-sequence');
 const lint = require('gulp-eslint');
-const Karma = require('karma').Server;
 const jest = require('gulp-jest').default;
 const fs = require('fs');
 const minimist = require('minimist');
@@ -82,22 +81,6 @@ gulp.task("test", ['test-jest']);
 gulp.task("test-debug", ['test-jest-debug']);
 
 gulp.task("test-fast", ['test-jest-fast']);
-
-gulp.task("test-karma", (done) => {
-    new Karma({
-        configFile: __dirname + '/karma.conf.js',
-    }, done).start();
-});
-
-gulp.task("test-karma-debug", (done) => {
-    new Karma({
-        configFile: __dirname + '/karma.conf.js',
-        colors: true,
-        autoWatch: true,
-        singleRun: false,
-        browsers: ['Chrome'],
-    }, done).start();
-});
 
 function runJest(options) {
     const argv = minimist(process.argv.slice(2));
