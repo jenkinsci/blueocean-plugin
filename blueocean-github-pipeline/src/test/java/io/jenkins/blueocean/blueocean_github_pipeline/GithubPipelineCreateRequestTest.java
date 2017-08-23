@@ -22,8 +22,11 @@ import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsPr
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainSpecification;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
+import io.jenkins.blueocean.rest.model.BlueScmConfig;
+import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
+import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.github_branch_source.Connector;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
@@ -53,6 +56,22 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
                 .build(Map.class);
         assertNotNull(r);
         assertEquals("pipeline1", r.get("name"));
+    }
+
+    @Test
+    public void createPipelineNoJenkinsFile() throws UnirestException, IOException {
+//        AbstractMultiBranchCreateRequest.JenkinsfileCriteria criteria = Mockito.mock(AbstractMultiBranchCreateRequest.JenkinsfileCriteria.class);
+//        when(criteria.isJekinsfileFound()).thenReturn(true);
+        OrganizationImpl organization = new OrganizationImpl("jenkins", j.jenkins);
+        String credentialId = createGithubCredential(user);
+
+        JSONObject config = JSONObject.fromObject(ImmutableMap.of("repoOwner", "vivek", "repository", "empty1"));
+
+        GithubPipelineCreateRequest request = new GithubPipelineCreateRequest(
+                "empty1", new BlueScmConfig(GithubScm.ID, githubApiUrl, credentialId, config));
+
+        request.create(organization, organization);
+//        verify(criteria, atLeastOnce()).isJekinsfileFound();
     }
 
     @Test

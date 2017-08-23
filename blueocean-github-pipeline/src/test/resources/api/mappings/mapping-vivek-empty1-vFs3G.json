@@ -1,0 +1,31 @@
+{
+  "id" : "199144fc-0044-39ca-803d-5ec52c36c660",
+  "request" : {
+    "url" : "/repos/vivek/empty1",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-vivek-empty1-vFs3G.json",
+    "headers" : {
+      "Server" : "GitHub.com",
+      "Date" : "Tue, 22 Aug 2017 23:24:59 GMT",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Status" : "401 Unauthorized",
+      "X-GitHub-Media-Type" : "github.v3; format=json",
+      "X-RateLimit-Limit" : "60",
+      "X-RateLimit-Remaining" : "59",
+      "X-RateLimit-Reset" : "1503447899",
+      "Access-Control-Expose-Headers" : "ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval",
+      "Access-Control-Allow-Origin" : "*",
+      "Content-Security-Policy" : "default-src 'none'",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "deny",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Runtime-rack" : "0.545661",
+      "X-GitHub-Request-Id" : "CDC6:036A:9F4CBF:15695EB:599CBD4A"
+    }
+  },
+  "uuid" : "199144fc-0044-39ca-803d-5ec52c36c660"
+}
