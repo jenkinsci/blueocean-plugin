@@ -25,12 +25,12 @@ node() {
       try {
         stage('Building') {
             parallel (
-              'Building JS Libraries': {
+              'JS Libraries': {
                 sh 'npm --prefix ./js-extensions run build'
                 sh 'npm --prefix ./jenkins-design-language run build'
                 sh 'npm --prefix ./blueocean-core-js run build'
               },
-              'Building BlueOcean': {
+              'BlueOcean': {
                 sh "mvn clean install -B -DcleanNode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
                 junit '**/target/surefire-reports/TEST-*.xml'
                 junit '**/target/jest-reports/*.xml'
