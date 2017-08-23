@@ -16,8 +16,6 @@
 
     <properties>
         <jacoco.haltOnFailure>true</jacoco.haltOnFailure>
-        <!-- Skip DefaultRunImpl for test coverage for now-->
-        <jacoco.missedclass.coverage>1.00</jacoco.missedclass.coverage>
     </properties>
 
     <dependencies>
