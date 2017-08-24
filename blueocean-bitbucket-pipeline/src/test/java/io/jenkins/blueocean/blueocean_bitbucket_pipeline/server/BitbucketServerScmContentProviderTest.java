@@ -58,7 +58,7 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
 
     @Test
     public void unauthorizedAccessToContentShouldFail() throws UnirestException, IOException {
-        User alice = j.jenkins.getUser("alice");
+        User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
@@ -112,7 +112,7 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
 
     @Test
     public void unauthorizedSaveContentShouldFail() throws UnirestException, IOException {
-        User alice = j.jenkins.getUser("alice");
+        User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 

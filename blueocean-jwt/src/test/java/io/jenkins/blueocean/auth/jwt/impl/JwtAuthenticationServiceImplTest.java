@@ -29,7 +29,7 @@ public class JwtAuthenticationServiceImplTest {
     public void getToken() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
 
-        User user = j.jenkins.getUser("alice");
+        User user = User.get("alice");
         user.setFullName("Alice Cooper");
         user.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 

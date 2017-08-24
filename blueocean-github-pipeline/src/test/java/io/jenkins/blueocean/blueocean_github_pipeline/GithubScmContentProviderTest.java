@@ -103,7 +103,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void unauthorizedAccessToContentForOrgFolderShouldFail() throws UnirestException, IOException {
-        User alice = j.jenkins.getUser("alice");
+        User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
@@ -125,7 +125,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void unauthorizedAccessToContentForOrgFolderGHEShouldFail() throws UnirestException, IOException {
-        User alice = j.jenkins.getUser("alice");
+        User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
@@ -147,7 +147,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void unauthorizedAccessToContentForMbpShouldFail() throws UnirestException, IOException {
-        User alice = j.jenkins.getUser("alice");
+        User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
@@ -171,7 +171,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void unauthorizedAccessToContentForMbpGHEShouldFail() throws UnirestException, IOException {
-        User alice = j.jenkins.getUser("alice");
+        User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
@@ -262,7 +262,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void unauthorizedSaveContentToOrgFolderShouldFail() throws UnirestException, IOException {
-        User alice = j.jenkins.getUser("alice");
+        User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
@@ -302,7 +302,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void unauthorizedSaveContentToOrgFolderGHEShouldFail() throws UnirestException, IOException {
-        User alice = j.jenkins.getUser("alice");
+        User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
@@ -413,7 +413,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void unauthorizedSaveContentToMbpShouldFail() throws UnirestException, IOException {
-        User alice = j.jenkins.getUser("alice");
+        User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
@@ -455,7 +455,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void unauthorizedSaveContentToMbpGHEShouldFail() throws UnirestException, IOException {
-        User alice = j.jenkins.getUser("alice");
+        User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
