@@ -11,9 +11,8 @@ module.exports = {
      * Create Pipeline Job
      * @param browser
      */
-    'Step 01': function (browser) {
-        // temporarily disabling login step to see if retries work
-        // browser.login();
+    'Step 01': !function (browser) {        
+        browser.login();
         const pipelinesCreate = browser.page.pipelineCreate().navigate();
         pipelinesCreate.createPipeline('my-pipeline', 'three-stages.groovy');
     },
@@ -22,7 +21,7 @@ module.exports = {
      * Check Job on Blue Ocean Pipelines Page
      * @param browser
      */
-    'Step 02': function (browser) {
+    'Step 02': !function (browser) {
         const bluePipelineActivity = browser.page.bluePipelineActivity();
         const bluePipelinesPage = browser.page.bluePipelines();
 
@@ -42,7 +41,7 @@ module.exports = {
      * Check Job Blue Ocean Pipeline Activity Page is empty
      * @param browser
      */
-    'Step 03': function (browser) {
+    'Step 03': !function (browser) {
         const blueActivityPage = browser.page.bluePipelineActivity().forJob('my-pipeline', 'jenkins');
 
         blueActivityPage.assertBasicLayoutOkay();
@@ -53,7 +52,7 @@ module.exports = {
      * Build Pipeline Job
      * @param browser
      */
-    'Step 04': function (browser) {
+    'Step 04': !function (browser) {
         var pipelinePage = browser.page.jobUtils().forJob('my-pipeline');
         pipelinePage.build(function() {
             // Reload the job page and check that there was a build done.
@@ -66,7 +65,7 @@ module.exports = {
      * Check Job Blue Ocean Pipeline Activity Page has run
      * @param browser
      */
-    'Step 05': function (browser) {
+    'Step 05': !function (browser) {
         const blueActivityPage = browser.page.bluePipelineActivity().forJob('my-pipeline', 'jenkins');
 
         blueActivityPage.assertBasicLayoutOkay();
@@ -80,7 +79,7 @@ module.exports = {
      * Check Job Blue Ocean Pipeline run detail page
      * @param browser
      */
-    'Step 06': function (browser) {
+    'Step 06': !function (browser) {
         const blueRunDetailPage = browser.page.bluePipelineRunDetail().forRun('my-pipeline', 'jenkins', 1);
 
         blueRunDetailPage.assertBasicLayoutOkay();
@@ -92,7 +91,7 @@ module.exports = {
      * Regression test @see {@link https://issues.jenkins-ci.org/browse/JENKINS-38240|JENKINS-38240}
      * @param browser
      */
-    'Step 07': function (browser) {
+    'Step 07': !function (browser) {
         const blueActivityPage = browser.page.bluePipelineActivity().forJob('my-pipeline', 'jenkins');
         blueActivityPage.clickRunButtonAndOpenDetail();
         // Check the run itself
