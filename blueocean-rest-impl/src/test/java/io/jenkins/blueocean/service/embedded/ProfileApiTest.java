@@ -37,7 +37,7 @@ import static org.junit.Assert.*;
 public class ProfileApiTest extends BaseTest{
     @Test
     public void getUserTest() throws Exception {
-        User system = j.jenkins.getUser("SYSTEM");
+        User system = User.get("SYSTEM");
         get("/users/", List.class);
         Map response = get("/users/"+system.getId());
         assertEquals(system.getId(), response.get("id"));
@@ -101,9 +101,9 @@ public class ProfileApiTest extends BaseTest{
     //XXX: There is no method on User API to respond to POST or PUT or PATH. Since there are other tests that
     // does POST, PUT for successful case, its ok to disable them.
     //UX-159
-//    @Test
+    @Test @Ignore
     public void postCrumbTest() throws Exception {
-        User system = j.jenkins.getUser("SYSTEM");
+        User system = User.get("SYSTEM");
         Map response = post("/users/"+system.getId()+"/", Collections.emptyMap());
         assertEquals(system.getId(), response.get("id"));
         assertEquals(system.getFullName(), response.get("fullName"));
@@ -112,15 +112,15 @@ public class ProfileApiTest extends BaseTest{
     //UX-159
     @Test
     public void postCrumbFailTest() throws Exception {
-        User system = j.jenkins.getUser("SYSTEM");
+        User system = User.get("SYSTEM");
 
         post("/users/"+system.getId()+"/", "", "text/plain", 403);
     }
 
     //UX-159
-    //@Test
+    @Test @Ignore
     public void putMimeTest() throws Exception {
-        User system = j.jenkins.getUser("SYSTEM");
+        User system = User.get("SYSTEM");
         Map response = put("/users/"+system.getId()+"/", Collections.emptyMap());
         assertEquals(system.getId(), response.get("id"));
         assertEquals(system.getFullName(), response.get("fullName"));
@@ -128,14 +128,14 @@ public class ProfileApiTest extends BaseTest{
 
     @Test
     public void putMimeFailTest() throws Exception {
-        User system = j.jenkins.getUser("SYSTEM");
+        User system = User.get("SYSTEM");
         put("/users/"+system.getId(), "","text/plain", 415);
     }
 
     //UX-159
-//    @Test
+    @Test @Ignore
     public void patchMimeTest() throws Exception {
-        User system = j.jenkins.getUser("SYSTEM");
+        User system = User.get("SYSTEM");
 
         Map response = patch("/users/"+system.getId()+"/", Collections.emptyMap());
         assertEquals(system.getId(), response.get("id"));
@@ -144,7 +144,7 @@ public class ProfileApiTest extends BaseTest{
 
     @Test
     public void patchMimeFailTest() throws Exception {
-        User system = j.jenkins.getUser("SYSTEM");
+        User system = User.get("SYSTEM");
 
         new RequestBuilder(baseUrl)
             .contentType("text/plain")
@@ -156,11 +156,11 @@ public class ProfileApiTest extends BaseTest{
     @Test
     public void getUserDetailsTest() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        hudson.model.User alice = j.jenkins.getUser("alice");
+        hudson.model.User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
-        hudson.model.User bob = j.jenkins.getUser("bob");
+        hudson.model.User bob = User.get("bob");
 
         bob.setFullName("Bob Smith");
         bob.addProperty(new Mailer.UserProperty("bob@jenkins-ci.org"));
@@ -196,7 +196,7 @@ public class ProfileApiTest extends BaseTest{
     @Test
     public void createUserFavouriteTest() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        hudson.model.User user = j.jenkins.getUser("alice");
+        hudson.model.User user = User.get("alice");
         user.setFullName("Alice Cooper");
 
         Project p = j.createFreeStyleProject("pipeline1");
@@ -247,7 +247,7 @@ public class ProfileApiTest extends BaseTest{
     @Test
     public void createUserFavouriteFolderTest() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        hudson.model.User user = j.jenkins.getUser("alice");
+        hudson.model.User user = User.get("alice");
         user.setFullName("Alice Cooper");
 
         MockFolder folder1 = j.createFolder("folder1");
@@ -324,8 +324,8 @@ public class ProfileApiTest extends BaseTest{
     @Test
     public void FindUsersTest() throws Exception {
         List<String> names = ImmutableList.of("alice", "bob");
-        j.jenkins.getUser(names.get(0));
-        j.jenkins.getUser(names.get(1));
+        User.get(names.get(0));
+        User.get(names.get(1));
 
         List response = get("/search?q=type:user;organization:jenkins", List.class);
 
@@ -341,7 +341,7 @@ public class ProfileApiTest extends BaseTest{
     @Test
     public void getAuthenticatedUser() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        hudson.model.User user = j.jenkins.getUser("alice");
+        hudson.model.User user = User.get("alice");
         user.setFullName("Alice Cooper");
         user.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
@@ -378,12 +378,12 @@ public class ProfileApiTest extends BaseTest{
     public void testPermissionOfOtherUser() throws IOException {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
 
-        hudson.model.User alice = j.jenkins.getUser("alice");
+        hudson.model.User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
 
-        hudson.model.User bob = j.jenkins.getUser("bob");
+        hudson.model.User bob = User.get("bob");
         bob.setFullName("Bob Cooper");
         bob.addProperty(new Mailer.UserProperty("bob@jenkins-ci.org"));
 
@@ -397,11 +397,11 @@ public class ProfileApiTest extends BaseTest{
     @Test
     public void getAuthenticatedUserShouldFail() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        hudson.model.User user = j.jenkins.getUser("alice");
+        hudson.model.User user = User.get("alice");
         user.setFullName("Alice Cooper");
         user.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
-        hudson.model.User user1 = j.jenkins.getUser("bob");
+        hudson.model.User user1 = User.get("bob");
         user1.setFullName("Bob Cooper");
         user1.addProperty(new Mailer.UserProperty("bob@jenkins-ci.org"));
 

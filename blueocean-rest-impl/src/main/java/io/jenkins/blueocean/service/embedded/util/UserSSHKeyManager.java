@@ -86,8 +86,7 @@ public class UserSSHKeyManager {
     }
 
     /**
-     * Gets an "ssh-rsa"-style formatted public key with useful identifier,
-     * in text format user could paste somewhere
+     * Gets a readable SSH-compatible public key a user could paste somewhere
      * @param user the user which will be used to build a useful description
      * @param key the private key to use
      * @return a public ssh key

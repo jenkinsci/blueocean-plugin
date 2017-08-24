@@ -103,7 +103,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void unauthorizedAccessToContentForOrgFolderShouldFail() throws UnirestException, IOException {
-        User alice = j.jenkins.getUser("alice");
+        User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
@@ -125,7 +125,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void unauthorizedAccessToContentForOrgFolderGHEShouldFail() throws UnirestException, IOException {
-        User alice = j.jenkins.getUser("alice");
+        User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
@@ -147,7 +147,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void unauthorizedAccessToContentForMbpShouldFail() throws UnirestException, IOException {
-        User alice = j.jenkins.getUser("alice");
+        User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
@@ -171,7 +171,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void unauthorizedAccessToContentForMbpGHEShouldFail() throws UnirestException, IOException {
-        User alice = j.jenkins.getUser("alice");
+        User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
@@ -262,7 +262,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void unauthorizedSaveContentToOrgFolderShouldFail() throws UnirestException, IOException {
-        User alice = j.jenkins.getUser("alice");
+        User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
@@ -302,7 +302,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void unauthorizedSaveContentToOrgFolderGHEShouldFail() throws UnirestException, IOException {
-        User alice = j.jenkins.getUser("alice");
+        User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
@@ -413,7 +413,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void unauthorizedSaveContentToMbpShouldFail() throws UnirestException, IOException {
-        User alice = j.jenkins.getUser("alice");
+        User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
@@ -455,7 +455,7 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
     @Test
     public void unauthorizedSaveContentToMbpGHEShouldFail() throws UnirestException, IOException {
-        User alice = j.jenkins.getUser("alice");
+        User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@jenkins-ci.org"));
 
@@ -531,19 +531,29 @@ public class GithubScmContentProviderTest extends GithubMockBase{
     }
 
     @Test
-    public void testScmProperties() throws Exception {
+    public void testScmSourcePropertiesUsingNullApiUrl() throws Exception {
+        testScmSourceProperties(null);
+    }
+
+    @Test
+    public void testScmSourcePropertiesUsingGithubApiUrl() throws Exception {
+        testScmSourceProperties(GitHubSCMSource.GITHUB_URL);
+    }
+
+    private void testScmSourceProperties(String mockedApiUrl) throws Exception {
         // ensure the cloud provider works with cloud org folder
         String credentialId = createGithubCredential(user);
         OrganizationFolder orgFolder = mockOrgFolder(credentialId);
         // unfortunately overriding the GitHub apiUrl for WireMock returns a "localhost" URL here, so we mock the call
-        when(((GitHubSCMNavigator) orgFolder.getSCMNavigators().get(0)).getApiUri()).thenReturn(GitHubSCMSource.GITHUB_URL);
+        when(((GitHubSCMNavigator) orgFolder.getSCMNavigators().get(0)).getApiUri()).thenReturn(mockedApiUrl);
         ScmContentProvider provider = new GithubScmContentProvider();
-        assertTrue(provider.support(orgFolder));
-        assertEquals(provider.getScmId(), GithubScm.ID);
-        assertEquals(provider.getApiUrl(orgFolder), GitHubSCMSource.GITHUB_URL);
+        assertTrue("github provider should support github org folder", provider.support(orgFolder));
+        assertEquals(GithubScm.ID, provider.getScmId());
+        assertEquals(mockedApiUrl, provider.getApiUrl(orgFolder));
+
         // ensure the cloud provider doesn't support enterprise org folder
         orgFolder = mockOrgFolder(createGithubEnterpriseCredential());
-        assertFalse(provider.support(orgFolder));
+        assertFalse("github provider should not support github enterprise org folder", provider.support(orgFolder));
     }
 
     protected StaplerRequest mockStapler(){

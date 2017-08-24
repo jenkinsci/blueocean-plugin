@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.config;
 
 import hudson.Extension;
+import hudson.Plugin;
 import hudson.security.AuthorizationStrategy;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import hudson.security.SecurityRealm;
@@ -94,6 +95,10 @@ public class BlueOceanConfigStatePreloader extends PageStatePreloader {
 
     /** gives Blueocean plugin version. blueocean-web being core module is looked at to determine the version */
     private String getBlueOceanPluginVersion(){
-        return Jenkins.getInstance().getPlugin("blueocean-web").getWrapper().getVersion();
+        Plugin plugin = Jenkins.getInstance().getPlugin("blueocean-web");
+        if(plugin == null) {
+            return null;
+        }
+        return plugin.getWrapper().getVersion();
     }
 }

@@ -9,6 +9,7 @@ import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -77,6 +78,13 @@ public class PipelineNodeImpl extends BluePipelineNode {
             return null;
         }
         return new Date(nodeTime);
+    }
+
+    public String getStartTimeString(){
+        if(getStartTime() == null) {
+            return null;
+        }
+        return AbstractRunImpl.DATE_FORMAT.print(getStartTime().getTime());
     }
 
     @Override
