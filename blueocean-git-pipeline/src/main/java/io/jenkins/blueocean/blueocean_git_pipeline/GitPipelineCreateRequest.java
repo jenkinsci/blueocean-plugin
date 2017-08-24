@@ -56,6 +56,11 @@ public class GitPipelineCreateRequest extends AbstractMultiBranchCreateRequest {
     }
 
     @Override
+    protected boolean repoHasJenkinsFile(@Nonnull SCMSource scmSource) {
+        return true;
+    }
+
+    @Override
     protected String computeCredentialId(BlueScmConfig scmConfig) {
         return scmConfig.getCredentialId();
     }
