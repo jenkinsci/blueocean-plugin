@@ -13,18 +13,23 @@ extensions:
 # creation for Git repos
   - component: creation/git/GitScmProvider
     extensionPoint: jenkins.pipeline.create.scm.provider
+    ordinal: 500
 # creation for GitHub
   - component: creation/github/GithubScmProvider
     extensionPoint: jenkins.pipeline.create.scm.provider
+    ordinal: 300
 # creation for GitHub Enterprise
   - component: creation/github-enterprise/GithubEnterpriseScmProvider
     extensionPoint: jenkins.pipeline.create.scm.provider
+    ordinal: 400
 # creation for Bitbucket Cloud
   - component: creation/bitbucket/cloud/BbCloudScmProvider
     extensionPoint: jenkins.pipeline.create.scm.provider
+    ordinal: 100
 # creation for Bitbucket Server
   - component: creation/bitbucket/server/BbServerScmProvider
     extensionPoint: jenkins.pipeline.create.scm.provider
+    ordinal: 200
 # Karaoke
   - component: components/karaoke/components/FreeStyle
     extensionPoint: jenkins.pipeline.karaoke.freestyle.provider
