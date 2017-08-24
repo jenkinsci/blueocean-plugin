@@ -12,7 +12,8 @@ module.exports = {
      * @param browser
      */
     'Step 01': function (browser) {
-        browser.login();
+        // temporarily disabling login step to see if retries work
+        // browser.login();
         const pipelinesCreate = browser.page.pipelineCreate().navigate();
         pipelinesCreate.createPipeline('my-pipeline', 'three-stages.groovy');
     },
