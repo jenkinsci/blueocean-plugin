@@ -9,24 +9,12 @@ import {
 import { LiveStatusIndicator, RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
-import RunMessageCell from './RunMessageCell';
 
+import RunMessageCell from './RunMessageCell';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import RunHistoryButton from './RunHistoryButton';
 
-// For sorting the extensions in the actions column
-function sortByOrdinal(extensions, done) {
-    const sorted = extensions.sort((a, b) => {
-        if (a.ordinal || b.ordinal) {
-            if (!a.ordinal) return 1;
-            if (!b.ordinal) return -1;
-            if (a.ordinal < b.ordinal) return -1;
-            return 1;
-        }
-        return a.pluginId.localeCompare(b.pluginId);
-    });
-    done(sorted);
-}
+const { sortByOrdinal } = Extensions.Utils;
 
 function noRun(branch, openRunDetails, t, store, columns) {
     const cleanBranchName = decodeURIComponent(branch.name);

@@ -281,7 +281,10 @@ export default class BbCloudFlowManager extends FlowManager {
 
         this._initListeners();
 
-        this._creationApi.createMbp(this.credentialId, this.getScmId(), this.getApiUrl(), this.pipelineName, this.selectedOrganization.key, this.selectedRepository.name)
+        this._creationApi.createMbp(this.credentialId, this.getScmId(), this.getApiUrl(), this.pipelineName,
+                                    this.selectedOrganization.key, this.selectedRepository.name,
+            'io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketPipelineCreateRequest',
+    )
             .then(waitAtLeast(MIN_DELAY * 2))
             .then(result => this._createPipelineComplete(result));
     }

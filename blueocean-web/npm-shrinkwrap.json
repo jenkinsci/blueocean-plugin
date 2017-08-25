@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.152",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.152",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.152.tgz"
+      "version": "0.0.153",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.153",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.153.tgz"
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.146",
@@ -39,9 +39,9 @@
       }
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.37",
-      "from": "@jenkins-cd/js-extensions@0.0.37",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.37.tgz"
+      "version": "0.0.38",
+      "from": "@jenkins-cd/js-extensions@0.0.38",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.38.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.10",

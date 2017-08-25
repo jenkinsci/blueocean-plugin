@@ -29,6 +29,7 @@ checkProject('../blueocean-web');
 checkProject('../blueocean-config');
 checkProject('../blueocean-core-js');
 checkProject('../blueocean-pipeline-editor');
+checkProject('../jenkins-design-language');
 
 const ellapsed = new Date().getTime() - start;
 console.log(`all dependencies look good! took ${ellapsed}ms`);

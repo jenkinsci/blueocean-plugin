@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded;
 
+import hudson.model.User;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.OrganizationRoute;
@@ -43,7 +44,7 @@ public class APIHeadTest extends BaseTest {
     @Test
     public void defaultCacheHeaderTest() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        hudson.model.User alice = j.jenkins.getUser("alice");
+        hudson.model.User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@example.com"));
 

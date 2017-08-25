@@ -260,7 +260,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
         Assert.assertEquals("QUEUED", latestRun.get("state"));
         Assert.assertEquals("1", latestRun.get("id"));
-        Assert.assertEquals("Waiting for next available executor", latestRun.get("causeOfBlockage"));
+        Assert.assertEquals("Jenkins doesn’t have label test", latestRun.get("causeOfBlockage"));
 
         j.createOnlineSlave(Label.get("test"));
 
