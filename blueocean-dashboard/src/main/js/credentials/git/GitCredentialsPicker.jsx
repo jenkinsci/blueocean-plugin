@@ -1,18 +1,18 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
-import { FormElement, PasswordInput } from '@jenkins-cd/design-language';
+import { FormElement } from '@jenkins-cd/design-language';
 import { Fetch, AppConfig } from '@jenkins-cd/blueocean-core-js';
 
 import { Button } from '../../creation/github/Button';
 
 function copySelectionText() {
-    var copysuccess // var to check whether execCommand successfully executed
-    try{
-        copysuccess = document.execCommand("copy") // run command to copy selected text to clipboard
-    } catch(e){
-        copysuccess = false
+    let copysuccess; // var to check whether execCommand successfully executed
+    try {
+        copysuccess = document.execCommand('copy'); // copy selected text to clipboard
+    } catch (_) {
+        copysuccess = false;
     }
-    return copysuccess
+    return copysuccess;
 }
 
 @observer
@@ -27,7 +27,7 @@ class GitCredentialsPicker extends React.Component {
         if (onStatus) {
             onStatus('promptLoading');
         }
-        Fetch.fetchJSON(AppConfig.getRestRoot() + '/organizations/' + AppConfig.getOrganizationName() + "/user/publickey/")
+        Fetch.fetchJSON(AppConfig.getRestRoot() + '/organizations/' + AppConfig.getOrganizationName() + '/user/publickey/')
             .then(credential => {
                 this.setState({ publicKey: credential.publickey });
                 if (onStatus) {
@@ -52,7 +52,7 @@ class GitCredentialsPicker extends React.Component {
                     textBox.onmouseup = null;
                     return false;
                 };
-            }
+            };
         }
     }
 
@@ -69,7 +69,7 @@ class GitCredentialsPicker extends React.Component {
                         copy and paste it in your git repository's list
                         of authorized users to continue.
                     </p>
-                    <textarea className="TextArea-control" ref="publicKey" onChange={e => null} value={this.state.publicKey} />
+                    <textarea className="TextArea-control" ref="publicKey" onChange={e => e} value={this.state.publicKey} />
                 </div>
                 {this.props.dialog && <Button onClick={() => this.closeDialog()}>Ok</Button>}
             </FormElement>
