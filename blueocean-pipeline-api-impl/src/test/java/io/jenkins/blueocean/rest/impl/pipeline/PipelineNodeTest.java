@@ -2048,12 +2048,12 @@ public class PipelineNodeTest extends PipelineBaseTest {
     public void submitInput() throws Exception {
         String script = "node {\n" +
                 "    stage(\"parallelStage\"){\n" +
-                "      parallel left : {\n" +
+                "      parallel aa : {\n" +
                 "            echo \"running\"\n" +
                 "            def branchInput = input message: 'Please input branch to test against', parameters: [[$class: 'StringParameterDefinition', defaultValue: 'master', description: '', name: 'branch']]\n" +
                 "            echo \"BRANCH NAME: ${branchInput}\"\n" +
                 "        }, \n" +
-                "        right : {\n" +
+                "        bb : {\n" +
                 "            sh 'echo \"right done\"'\n" +
                 "        }\n" +
                 "    }\n" +
@@ -2072,15 +2072,13 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         List<Map> stepsResp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
 
-        Assert.assertEquals("RUNNING", stepsResp.get(0).get("state"));
-        Assert.assertEquals("UNKNOWN", stepsResp.get(0).get("result"));
-        Assert.assertEquals("13", stepsResp.get(0).get("id"));
 
-        Assert.assertEquals("PAUSED", stepsResp.get(2).get("state"));
-        Assert.assertEquals("UNKNOWN", stepsResp.get(2).get("result"));
-        Assert.assertEquals("12", stepsResp.get(2).get("id"));
 
-        Map<String,Object> input = (Map<String, Object>) stepsResp.get(2).get("input");
+        Assert.assertEquals("PAUSED", stepsResp.get(1).get("state"));
+        Assert.assertEquals("UNKNOWN", stepsResp.get(1).get("result"));
+        Assert.assertEquals("12", stepsResp.get(1).get("id"));
+
+        Map<String,Object> input = (Map<String, Object>) stepsResp.get(1).get("input");
         Assert.assertNotNull(input);
         String id = (String) input.get("id");
         Assert.assertNotNull(id);
