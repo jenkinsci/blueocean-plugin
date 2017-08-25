@@ -1,5 +1,6 @@
 package io.blueocean.ath.live;
 
+import com.github.tomakehurst.wiremock.junit.WireMockRule;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.CustomJenkinsServer;
 import io.blueocean.ath.Login;
@@ -7,9 +8,11 @@ import io.blueocean.ath.Retry;
 import io.blueocean.ath.pages.blue.GithubAddServerDialogPage;
 import io.blueocean.ath.pages.blue.GithubEnterpriseCreationPage;
 import io.blueocean.ath.util.GithubHelper;
+import io.blueocean.ath.util.WireMockBase;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.WebDriver;
@@ -20,10 +23,16 @@ import java.io.IOException;
 
 @Login
 @RunWith(ATHJUnitRunner.class)
-public class GithubEnterpriseCreationTest {
+public class GithubEnterpriseCreationTest extends WireMockBase {
 
     private static GithubHelper githubHelper;
     private String repositoryName;
+
+    @Rule
+    public WireMockRule mockServer = createWireMockServerRule(
+        "api/github-enterprise",
+        "https://api.github.com/"
+    );
 
     @Inject
     WebDriver driver;
@@ -52,12 +61,11 @@ public class GithubEnterpriseCreationTest {
         githubHelper.cleanupRepository();
     }
 
-
     @Retry(3)
     @Test
     public void testGitHubEnterpriseCreation_addNewGitHubServer() throws IOException {
         String serverName = getServerNameUnique("My Server");
-        String serverUrl = getServerUrlUnique("https://api.github.com");
+        String serverUrl = getServerUrl(mockServer);
 
         creationPage.beginCreationFlow(githubHelper.getOrganizationOrUsername());
         creationPage.clickAddServerButton();
