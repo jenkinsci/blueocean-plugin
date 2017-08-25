@@ -521,6 +521,12 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>metrics</artifactId>
             <version>3.1.2.10</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jenkins-ci.plugins</groupId>
+                    <artifactId>jackson2-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -552,11 +558,6 @@
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
             <version>1.86</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>jackson2-api</artifactId>
-            <version>2.7.3</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
