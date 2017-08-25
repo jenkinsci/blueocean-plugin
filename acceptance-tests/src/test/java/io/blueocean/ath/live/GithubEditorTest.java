@@ -1,11 +1,9 @@
 package io.blueocean.ath.live;
 
-import com.google.common.io.Resources;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.Login;
 import io.blueocean.ath.Retry;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
-import io.blueocean.ath.model.Folder;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.pages.blue.ActivityPage;
 import io.blueocean.ath.pages.blue.BranchPage;
@@ -19,7 +17,6 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.kohsuke.github.GHContentUpdateResponse;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 import org.openqa.selenium.WebDriver;
@@ -29,7 +26,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.URL;
 import java.security.SecureRandom;
 import java.util.Properties;
 
@@ -127,7 +123,7 @@ public class GithubEditorTest {
     @Test
     public void testEditor() throws IOException {
         creationPage.createPipeline(token, organization, repo, true);
-        MultiBranchPipeline pipeline = mbpFactory.pipeline(Folder.folders(organization), repo);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
         editorPage.simplePipeline();
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
         driver.navigate().refresh();

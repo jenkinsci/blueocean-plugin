@@ -594,7 +594,6 @@
             <artifactId>favorite</artifactId>
             <version>2.3.0</version>
         </dependency>
-
         <dependency>
             <groupId>io.keen</groupId>
             <artifactId>keen-client-api-java</artifactId>
