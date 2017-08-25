@@ -101,6 +101,10 @@
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-model-definition</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.jenkinsci.plugins</groupId>
+            <artifactId>plain-credentials</artifactId>
+        </dependency>
 
         <!-- Test plugins -->
         <dependency>
