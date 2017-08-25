@@ -8,10 +8,17 @@ import org.kohsuke.stapler.export.ExportedBean;
  */
 @ExportedBean
 public class UserKey {
+    private final String id;
     private final String publicKey;
 
-    public UserKey(String publicKey) {
+    public UserKey(String id, String publicKey) {
+        this.id = id;
         this.publicKey = publicKey;
+    }
+
+    @Exported(name="id")
+    public String getId() {
+        return id;
     }
 
     @Exported(name="publickey")

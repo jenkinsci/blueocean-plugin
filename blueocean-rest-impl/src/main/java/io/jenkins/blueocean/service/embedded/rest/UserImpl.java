@@ -187,10 +187,10 @@ public class UserImpl extends BlueUser {
             throw new ServiceException.ForbiddenException("Not authorized");
         }
 
-        String publicKey = UserSSHKeyManager.getPublicKey(authenticatedUser,
+        UserKey publicKey = UserSSHKeyManager.getPublicKey(authenticatedUser,
             UserSSHKeyManager.getOrCreate(authenticatedUser));
 
-        return new UserKey(publicKey);
+        return publicKey;
     }
 
     /**

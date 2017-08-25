@@ -35,6 +35,8 @@ import io.jenkins.blueocean.commons.ServiceException;
 import java.io.IOException;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+
+import io.jenkins.blueocean.service.embedded.rest.UserKey;
 import jenkins.model.Jenkins;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -91,12 +93,12 @@ public class UserSSHKeyManager {
      * @param key the private key to use
      * @return a public ssh key
      */
-    public static @Nonnull String getPublicKey(@Nonnull User user, @Nonnull BasicSSHUserPrivateKey key) {
+    public static @Nonnull UserKey getPublicKey(@Nonnull User user, @Nonnull BasicSSHUserPrivateKey key) {
         Preconditions.checkNotNull(user);
         Preconditions.checkNotNull(key);
 
         String publicKey = SSHKeyUtils.getPublicKey(key.getPrivateKey(), getKeyComment(user.getId())).trim();
-        return publicKey;
+        return new UserKey(key.getId(), publicKey);
     }
 
     /**

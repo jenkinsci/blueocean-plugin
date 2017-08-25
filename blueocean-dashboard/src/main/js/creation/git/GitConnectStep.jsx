@@ -1,7 +1,8 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
-
+import Extensions from '@jenkins-cd/js-extensions';
+import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Dropdown, FormElement, TextInput } from '@jenkins-cd/design-language';
 
 import FlowStep from '../flow2/FlowStep';
@@ -17,6 +18,28 @@ function validateUrl(url) {
     return !!url && !!url.trim();
 }
 
+function isSshRepositoryUrl(url) {
+    if (!validateUrl(url)) {
+        return false;
+    }
+
+    if (/ssh:\/\/.*/.test(url)) {
+        return true;
+    }
+
+    if (/[^@:]+@.*/.test(url)) {
+        return true;
+    }
+
+    return false;
+}
+
+function isNonSshRepositoryUrl(url) {
+    if (!validateUrl(url)) {
+        return false;
+    }
+    return !isSshRepositoryUrl(url) && /[^@:]+:\/\/.*/.test(url);
+}
 
 /**
  * Component that accepts repository URL and credentials to initiate
@@ -108,9 +131,11 @@ export default class GitConnectStep extends React.Component {
         this.setState(newState);
 
         // TODO: control this more cleanly via a future 'selectedOption' prop on Dropdown
-        this.dropdown.setState({
-            selectedOption: credential,
-        });
+        if (this.dropdown) {
+            this.dropdown.setState({
+                selectedOption: credential,
+            });
+        }
     }
 
     _performValidation() {
@@ -157,23 +182,39 @@ export default class GitConnectStep extends React.Component {
                     <TextInput className="text-repository-url" onChange={val => this._repositoryUrlChange(val)} />
                 </FormElement>
 
+                <ReactCSSTransitionGroup transitionName="slide-down"
+                                         transitionAppear
+                                         transitionAppearTimeout={300}
+                                         transitionEnterTimeout={300}
+                                         transitionLeaveTimeout={300}>
+                {isSshRepositoryUrl(this.state.repositoryUrl) &&
+                <Extensions.Renderer
+                    extensionPoint="jenkins.credentials.selection"
+                    onComplete={(credential) => this._onCreateCredentialClosed(credential)}
+                    type="git"
+                />
+                }
+
+                {isNonSshRepositoryUrl(this.state.repositoryUrl) &&
                 <FormElement title={t('creation.git.step1.credentials')} errorMessage={credentialErrorMsg}>
                     <Dropdown
-                      ref={dropdown => this._bindDropdown(dropdown)}
-                      className="dropdown-credentials"
-                      options={flowManager.credentials}
-                      defaultOption={noCredentialsOption}
-                      labelField="displayName"
-                      onChange={opt => this._selectedCredentialChange(opt)}
+                        ref={dropdown => this._bindDropdown(dropdown)}
+                        className="dropdown-credentials"
+                        options={flowManager.credentials}
+                        defaultOption={noCredentialsOption}
+                        labelField="displayName"
+                        onChange={opt => this._selectedCredentialChange(opt)}
                     />
 
                     <button
-                      className="button-create-credential btn-secondary"
-                      onClick={() => this._onCreateCredentialClick()}
+                        className="button-create-credential btn-secondary"
+                        onClick={() => this._onCreateCredentialClick()}
                     >
                         {t('creation.git.step1.create_credential_button')}
                     </button>
                 </FormElement>
+                }
+                </ReactCSSTransitionGroup>
 
                 { this.state.showCreateCredentialDialog &&
                     <CreateCredentialDialog

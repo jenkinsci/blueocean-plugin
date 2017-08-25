@@ -157,12 +157,15 @@ public class GitReadSaveService extends ScmContentProvider {
             throw new ServiceException.UnauthorizedException("Not authenticated");
         }
 
+        GitReadSaveRequest r = makeSaveRequest(item, req);
         try {
-            GitReadSaveRequest r = makeSaveRequest(item, req);
             String encoded = Base64.encode(r.read());
             return new GitFile(
                 new GitContent(r.filePath, user.getId(), r.gitSource.getRemote(), r.filePath, 0, "sha", encoded, "", r.branch, r.sourceBranch, true, "")
             );
+        } catch (ServiceException.UnauthorizedException e) {
+            //if (r.gitSource.getRemote().matches("([^@:]+@.*|ssh://.*)"))
+            throw new ServiceException.PreconditionRequired("Invalid credential", e);
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException("Unable to get file content", e);
         }

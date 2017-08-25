@@ -23,6 +23,7 @@
  */
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
+import hudson.plugins.git.GitException;
 import io.jenkins.blueocean.commons.ServiceException;
 import java.io.File;
 import java.io.FileInputStream;
@@ -140,11 +141,19 @@ class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
     }
 
     @Nonnull GitSCMFileSystem getFilesystem() throws IOException, InterruptedException {
-        GitSCMFileSystem fs = (GitSCMFileSystem)SCMFileSystem.of(gitSource, new SCMHead(branch));
-        if (fs == null) {
-            throw new ServiceException.NotFoundException("No file found");
+        try {
+            GitSCMFileSystem fs = (GitSCMFileSystem) SCMFileSystem.of(gitSource, new SCMHead(branch));
+            if (fs == null) {
+                throw new ServiceException.NotFoundException("No file found");
+            }
+            return fs;
+        } catch(GitException e) {
+            // TODO localization?
+            if (e.getMessage().contains("Permission denied")) {
+                throw new ServiceException.UnauthorizedException("Not authorized", e);
+            }
+            throw e;
         }
-        return fs;
     }
 
     private @Nonnull Git getActiveRepository(Repository repository) throws IOException {
