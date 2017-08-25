@@ -1,5 +1,7 @@
 import React, { PropTypes } from 'react';
 
+import { AppConfig } from '@jenkins-cd/blueocean-core-js';
+
 import GitCredentialsPicker from './git/GitCredentialsPicker';
 import GithubCredentialsPicker from './github/GithubCredentialsPicker';
 import BbCredentialsPicker from './bitbucket/BbCredentialsPicker';
@@ -57,7 +59,7 @@ class CredentialsPicker extends React.Component {
                     apiUrl={scmSource.apiUrl}
                 />
             );
-        } else if (type === 'git') {
+        } else if (AppConfig.isFeatureEnabled('GIT_PIPELINE_EDITOR', false) && type === 'git') {
             children = (
                 <GitCredentialsPicker
                     scmId={scmSource.id}

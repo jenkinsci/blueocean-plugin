@@ -56,28 +56,23 @@ class GitCredentialsPicker extends React.Component {
         }
     }
 
-    closeDialog() {
-        this.props.onComplete();
-    }
 
     render() {
         if (!this.state.publicKey) {
             return null;
         }
         return (
-            <div>
-                <FormElement title={""} errorMessage={undefined}>
-                    <div className="credentials-picker-git">
-                        <p className="instructions">
-                            This is your personal Jenkins key, please
-                            copy and paste it in your git repository's list
-                            of authorized users to continue.
-                        </p>
-                        <textarea className="TextArea-control" ref="publicKey" onChange={e => null} value={this.state.publicKey} />
-                    </div>
-                </FormElement>
+            <FormElement title={""} errorMessage={undefined}>
+                <div className="credentials-picker-git">
+                    <p className="instructions">
+                        This is your personal Jenkins key, please
+                        copy and paste it in your git repository's list
+                        of authorized users to continue.
+                    </p>
+                    <textarea className="TextArea-control" ref="publicKey" onChange={e => null} value={this.state.publicKey} />
+                </div>
                 {this.props.dialog && <Button onClick={() => this.closeDialog()}>Ok</Button>}
-            </div>
+            </FormElement>
         );
     }
 }

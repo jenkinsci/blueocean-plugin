@@ -4,6 +4,7 @@ import debounce from 'lodash.debounce';
 import Extensions from '@jenkins-cd/js-extensions';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Dropdown, FormElement, TextInput } from '@jenkins-cd/design-language';
+import { AppConfig } from '@jenkins-cd/blueocean-core-js';
 
 import FlowStep from '../flow2/FlowStep';
 
@@ -187,7 +188,7 @@ export default class GitConnectStep extends React.Component {
                                          transitionAppearTimeout={300}
                                          transitionEnterTimeout={300}
                                          transitionLeaveTimeout={300}>
-                {isSshRepositoryUrl(this.state.repositoryUrl) &&
+                {AppConfig.isFeatureEnabled('GIT_PIPELINE_EDITOR', false) && isSshRepositoryUrl(this.state.repositoryUrl) &&
                 <Extensions.Renderer
                     extensionPoint="jenkins.credentials.selection"
                     onComplete={(credential) => this._onCreateCredentialClosed(credential)}
@@ -195,7 +196,7 @@ export default class GitConnectStep extends React.Component {
                 />
                 }
 
-                {isNonSshRepositoryUrl(this.state.repositoryUrl) &&
+                {!AppConfig.isFeatureEnabled('GIT_PIPELINE_EDITOR', false) || isNonSshRepositoryUrl(this.state.repositoryUrl) &&
                 <FormElement title={t('creation.git.step1.credentials')} errorMessage={credentialErrorMsg}>
                     <Dropdown
                         ref={dropdown => this._bindDropdown(dropdown)}
