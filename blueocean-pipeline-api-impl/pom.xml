@@ -102,7 +102,7 @@
             <artifactId>pipeline-model-definition</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jenkinsci.plugins</groupId>
+            <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>plain-credentials</artifactId>
         </dependency>
 
