@@ -23,8 +23,10 @@
  */
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
+import com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey;
 import hudson.EnvVars;
 import hudson.model.TaskListener;
+import hudson.model.User;
 import hudson.plugins.git.GitException;
 import hudson.plugins.git.GitTool;
 import hudson.util.LogTaskListener;
@@ -36,6 +38,8 @@ import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import io.jenkins.blueocean.service.embedded.util.UserSSHKeyManager;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.plugins.git.traits.GitToolSCMSourceTrait;
@@ -49,16 +53,17 @@ import org.jenkinsci.plugins.gitclient.GitClient;
  * Basic functional read/save using a clone of the remote
  * @author kzantow
  */
-public class GitCloneReadSaveRequest extends GitReadSaveRequest {
-    final GitTool gitTool;
+class GitCloneReadSaveRequest extends GitReadSaveRequest {
+    private final GitTool gitTool;
 
-    GitClient git;
-    File repositoryPath;
+    private GitClient git;
+    private File repositoryPath;
 
     public GitCloneReadSaveRequest(GitSCMSource gitSource, String branch, String commitMessage, String sourceBranch, String filePath, byte[] contents) {
         super(gitSource, branch, commitMessage, sourceBranch, filePath, contents);
 
         GitTool.DescriptorImpl toolDesc = Jenkins.getInstance().getDescriptorByType(GitTool.DescriptorImpl.class);
+        @SuppressWarnings("deprecation")
         GitTool foundGitTool = toolDesc.getInstallation(gitSource.getGitTool());
         for (SCMSourceTrait trait : gitSource.getTraits()) {
             if (trait instanceof GitToolSCMSourceTrait) {
@@ -83,7 +88,19 @@ public class GitCloneReadSaveRequest extends GitReadSaveRequest {
                 .using(gitExe)
                 .getClient();
 
+        if (GitUtils.isSshUrl(gitSource.getRemote())) {
+            // Set user ssh credentials
+            User user = User.current();
+            if (user == null) {
+                throw new ServiceException.UnauthorizedException("Not authenticated");
+            }
+            BasicSSHUserPrivateKey privateKey = UserSSHKeyManager.getOrCreate(user);
+            git.addCredentials(gitSource.getRemote(), privateKey);
+        }
+
         git.clone(gitSource.getRemote(), "origin", true, null);
+
+        log.fine("Repository; " + gitSource.getRemote() + " cloned to: " + repositoryPath.getCanonicalPath());
     }
 
     @Override

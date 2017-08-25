@@ -23,6 +23,9 @@
  */
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
+import com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
+import hudson.model.User;
 import hudson.plugins.git.GitException;
 import io.jenkins.blueocean.commons.ServiceException;
 import java.io.File;
@@ -33,6 +36,8 @@ import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
 import javax.annotation.Nonnull;
+
+import io.jenkins.blueocean.service.embedded.util.UserSSHKeyManager;
 import jenkins.plugins.git.GitSCMFileSystem;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMFileSystem;
@@ -44,9 +49,7 @@ import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.CreateBranchCommand;
-import org.eclipse.jgit.api.FetchCommand;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.PushCommand;
 import org.eclipse.jgit.api.RemoteAddCommand;
 import org.eclipse.jgit.api.RemoteRemoveCommand;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -58,6 +61,9 @@ import org.eclipse.jgit.transport.URIish;
  * @author kzantow
  */
 class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
+    private static final String LOCAL_REF_BASE = "refs/heads/";
+    private static final String REMOTE_REF_BASE = "refs/heads/";
+
     public GitCacheCloneReadSaveRequest(GitSCMSource gitSource, String branch, String commitMessage, String sourceBranch, String filePath, byte[] contents) {
         super(gitSource, branch, commitMessage, sourceBranch, filePath, contents);
     }
@@ -70,7 +76,8 @@ class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
                 @Override
                 public byte[] invoke(Repository repository) throws IOException, InterruptedException {
                     Git activeRepo = getActiveRepository(repository);
-                    File repoDir = activeRepo.getRepository().getDirectory().getParentFile();
+                    Repository repo = activeRepo.getRepository();
+                    File repoDir = repo.getDirectory().getParentFile();
                     try {
                         File f = new File(repoDir, filePath);
                         if (f.canRead()) {
@@ -95,41 +102,44 @@ class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
                 @Override
                 public Void invoke(Repository repository) throws IOException, InterruptedException {
                     Git activeRepo = getActiveRepository(repository);
-                    File repoDir = activeRepo.getRepository().getDirectory().getParentFile();
+                    Repository repo = activeRepo.getRepository();
+                    File repoDir = repo.getDirectory().getParentFile();
+                    log.fine("Repo cloned to: " + repoDir.getCanonicalPath());
                     try {
-//                        if (!sourceBranch.equals(branch)) {
-//                            CheckoutCommand checkout = activeRepo.checkout();
-//                            checkout.setName(sourceBranch);
-//                            checkout.call();
-//                        }
+                        File f = new File(repoDir, filePath);
+                        if (!f.exists() || f.canWrite()) {
+                            try (Writer w = new OutputStreamWriter(new FileOutputStream(f), "utf-8")) {
+                                w.write(new String(contents, "utf-8"));
+                            }
 
-                    File f = new File(repoDir, filePath);
-                    if (!f.exists() || f.canWrite()) {
-                        try (Writer w = new OutputStreamWriter(new FileOutputStream(f), "utf-8")) {
-                            w.write(new String(contents, "utf-8"));
+                            try {
+                                AddCommand add = activeRepo.add();
+                                add.addFilepattern(filePath);
+                                add.call();
+
+                                CommitCommand commit = activeRepo.commit();
+                                commit.setMessage(commitMessage);
+                                commit.call();
+
+                                StandardCredentials credential = null;
+                                if (GitUtils.isSshUrl(gitSource.getRemote())) {
+                                    // Get committer info and credentials
+                                    User user = User.current();
+                                    if (user == null) {
+                                        throw new ServiceException.UnauthorizedException("Not authenticated");
+                                    }
+                                    credential = UserSSHKeyManager.getOrCreate(user);
+                                }
+
+                                // Push the changes
+                                GitUtils.push(gitSource, repo, credential, LOCAL_REF_BASE + sourceBranch, REMOTE_REF_BASE + branch);
+                            } catch (GitAPIException ex) {
+                                throw new ServiceException.UnexpectedErrorException(ex.getMessage(), ex);
+                            }
+
+                            return null;
                         }
-
-                        try {
-                            AddCommand add = activeRepo.add();
-                            add.addFilepattern(filePath);
-                            add.call();
-
-                            CommitCommand commit = activeRepo.commit();
-                            commit.setMessage(commitMessage);
-                            commit.call();
-
-                            PushCommand push = activeRepo.push();
-                            push.setRemote(gitSource.getRemote());
-                            push.call();
-                        } catch (GitAPIException ex) {
-                            throw new ServiceException.UnexpectedErrorException(ex.getMessage(), ex);
-                        }
-
-                        return null;
-                    }
-                    throw new ServiceException.UnexpectedErrorException("Unable to write " + filePath);
-//                    } catch (GitAPIException ex) {
-//                        throw new ServiceException.UnexpectedErrorException(ex.getMessage(), ex);
+                        throw new ServiceException.UnexpectedErrorException("Unable to write " + filePath);
                     } finally {
                         FileUtils.deleteDirectory(repoDir);
                     }
@@ -191,8 +201,17 @@ class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
             add.setUri(new URIish(gitSource.getRemote()));
             add.call();
 
-            FetchCommand fetch = gitClient.fetch();
-            fetch.call();
+            if (GitUtils.isSshUrl(gitSource.getRemote())) {
+                // Get committer info and credentials
+                User user = User.current();
+                if (user == null) {
+                    throw new ServiceException.UnauthorizedException("Not authenticated");
+                }
+                BasicSSHUserPrivateKey privateKey = UserSSHKeyManager.getOrCreate(user);
+
+                // Make sure up-to-date and credentials work
+                GitUtils.fetch(repository, privateKey);
+            }
 
             if (!StringUtils.isEmpty(sourceBranch) && !sourceBranch.equals(branch)) {
                 CheckoutCommand checkout = gitClient.checkout();

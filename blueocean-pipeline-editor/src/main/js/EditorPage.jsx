@@ -410,6 +410,7 @@ class PipelineLoader extends React.Component {
                         onComplete={cred => this.onCredentialSelected(cred)}
                         type={scmSource.id}
                         githubConfig={githubConfig}
+                        pipeline={{ fullName: pipeline.fullName}}
                         dialog
                     />
                 </Dialog>

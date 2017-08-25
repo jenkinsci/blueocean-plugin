@@ -39,7 +39,6 @@ class CredentialsPicker extends React.Component {
     }
 
     render() {
-        const { onStatus, onComplete, dialog } = this.props;
         const type = this.resolveType(this.props);
         const scmSource = this.resolveScmSource(this.props);
 
@@ -71,7 +70,7 @@ class CredentialsPicker extends React.Component {
 
         return (
             <div className="credentials-picker">
-                { React.cloneElement(children, { onStatus, onComplete, dialog }) }
+                { React.cloneElement(children, this.props) }
             </div>
         );
     }
@@ -82,6 +81,8 @@ CredentialsPicker.propTypes = {
     onStatus: PropTypes.func,
     onComplete: PropTypes.func,
     dialog: PropTypes.bool,
+    pipeline: PropTypes.object,
+    repositoryUrl: PropTypes.string,
     scmSource: PropTypes.shape({
         id: PropTypes.string,
         apiUrl: PropTypes.string,

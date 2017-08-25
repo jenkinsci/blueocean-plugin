@@ -19,7 +19,15 @@ import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import java.io.ByteArrayInputStream;
 
-import org.eclipse.jgit.transport.*;
+import org.eclipse.jgit.api.PushCommand;
+import org.eclipse.jgit.api.errors.TransportException;
+import org.eclipse.jgit.transport.JschConfigSessionFactory;
+import org.eclipse.jgit.transport.OpenSshConfig;
+import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.RefSpec;
+import org.eclipse.jgit.transport.SshSessionFactory;
+import org.eclipse.jgit.transport.SshTransport;
+import org.eclipse.jgit.transport.Transport;
 import org.jenkinsci.plugins.gitclient.Git;
 import org.jenkinsci.plugins.gitclient.GitClient;
 import org.slf4j.Logger;
@@ -35,6 +43,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
+import java.util.regex.Pattern;
+
 import jenkins.plugins.git.GitSCMSource;
 import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
@@ -98,6 +108,10 @@ class GitUtils {
                     errors.add(new ErrorMessage.Error("scmConfig.credentialId",
                                     ErrorMessage.Error.ErrorCodes.INVALID.toString(),
                                     "Invalid credentialId: " + credentials.getId()));
+                } else {
+                    errors.add(new ErrorMessage.Error("scmConfig.uri",
+                        ErrorMessage.Error.ErrorCodes.INVALID.toString(),
+                        e.getMessage()));
                 }
             }else if (e.getMessage().contains("Authentication is required") || e.getMessage().contains("connection is not authenticated")) {
                 errors.add(new ErrorMessage.Error("scmConfig.credentialId", ErrorMessage.Error.ErrorCodes.INVALID.toString(),
@@ -108,6 +122,17 @@ class GitUtils {
             }
         }
         return errors;
+    }
+
+    private static final Pattern SSH_URL_PATTERN = Pattern.compile("(\\Qssh://\\E.*|[^@:]@.*)");
+
+    /**
+     * Determines if the Git URL is an ssh-style URL
+     * @param remote remote url
+     * @return true if this is an ssh-style URL
+     */
+    static boolean isSshUrl(@Nullable String remote) {
+        return remote != null && SSH_URL_PATTERN.matcher(remote).matches();
     }
 
     static StandardCredentials getCredentials(ItemGroup owner, String uri, String credentialId){
@@ -323,12 +348,15 @@ class GitUtils {
         return null;
     }
 
-    public static void push(GitSCMSource gitSource, Repository db, BasicSSHUserPrivateKey privateKey, String localBranchRef, String remoteBranchRef) {
+    public static void push(GitSCMSource gitSource, Repository db, StandardCredentials credential, String localBranchRef, String remoteBranchRef) {
         String remote = gitSource.getRemote();
         try (org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(db)) {
             String pushSpec = "+" + localBranchRef + ":" + remoteBranchRef;
-            Iterable<PushResult> resultIterable = git.push()
-                .setTransportConfigCallback(getSSHKeyTransport(privateKey))
+            PushCommand pushCommand = git.push();
+            if (isSshUrl(remote) && credential instanceof BasicSSHUserPrivateKey) {
+                pushCommand.setTransportConfigCallback(getSSHKeyTransport((BasicSSHUserPrivateKey)credential));
+            }
+            Iterable<PushResult> resultIterable = pushCommand
                 .setRefSpecs(new RefSpec(pushSpec))
                 .setRemote(remote)
                 .call();

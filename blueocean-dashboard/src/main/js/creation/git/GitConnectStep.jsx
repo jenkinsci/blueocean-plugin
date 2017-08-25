@@ -20,6 +20,9 @@ function validateUrl(url) {
 }
 
 function isSshRepositoryUrl(url) {
+    if (!AppConfig.isFeatureEnabled('GIT_PIPELINE_EDITOR', false)) {
+        return false;
+    }
     if (!validateUrl(url)) {
         return false;
     }
@@ -36,6 +39,9 @@ function isSshRepositoryUrl(url) {
 }
 
 function isNonSshRepositoryUrl(url) {
+    if (!AppConfig.isFeatureEnabled('GIT_PIPELINE_EDITOR', false)) {
+        return true;
+    }
     if (!validateUrl(url)) {
         return false;
     }
@@ -188,15 +194,16 @@ export default class GitConnectStep extends React.Component {
                                          transitionAppearTimeout={300}
                                          transitionEnterTimeout={300}
                                          transitionLeaveTimeout={300}>
-                {AppConfig.isFeatureEnabled('GIT_PIPELINE_EDITOR', false) && isSshRepositoryUrl(this.state.repositoryUrl) &&
+                {isSshRepositoryUrl(this.state.repositoryUrl) &&
                 <Extensions.Renderer
                     extensionPoint="jenkins.credentials.selection"
                     onComplete={(credential) => this._onCreateCredentialClosed(credential)}
                     type="git"
+                    repositoryUrl={this.state.repositoryUrl}
                 />
                 }
 
-                {!AppConfig.isFeatureEnabled('GIT_PIPELINE_EDITOR', false) || isNonSshRepositoryUrl(this.state.repositoryUrl) &&
+                {isNonSshRepositoryUrl(this.state.repositoryUrl) &&
                 <FormElement title={t('creation.git.step1.credentials')} errorMessage={credentialErrorMsg}>
                     <Dropdown
                         ref={dropdown => this._bindDropdown(dropdown)}
@@ -224,9 +231,15 @@ export default class GitConnectStep extends React.Component {
                     />
                 }
 
+                {isSshRepositoryUrl(this.state.repositoryUrl) && credentialErrorMsg &&
+                <FormElement className="public-key-display" errorMessage={credentialErrorMsg && t('creation.git.step1.credentials_publickey_invalid')}>
+                </FormElement>
+                }
+
                 <button
                   className="button-create-pipeline"
                   onClick={() => this._beginCreation()}
+                  disabled={!validateUrl(this.state.repositoryUrl)}
                 >
                     {createButtonLabel}
                 </button>

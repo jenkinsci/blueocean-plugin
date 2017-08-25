@@ -1,9 +1,10 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 import { FormElement } from '@jenkins-cd/design-language';
-import { Fetch, AppConfig } from '@jenkins-cd/blueocean-core-js';
-
+import { Fetch, AppConfig, getRestUrl } from '@jenkins-cd/blueocean-core-js';
 import { Button } from '../../creation/github/Button';
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+const t = i18nTranslator('blueocean-dashboard');
 
 function copySelectionText() {
     let copysuccess; // var to check whether execCommand successfully executed
@@ -15,11 +16,20 @@ function copySelectionText() {
     return copysuccess;
 }
 
+function clearSelection() {
+    if (window.getSelection) {
+        window.getSelection().removeAllRanges();
+    } else if (document.selection) {
+        document.selection.empty();
+    }
+}
+
 @observer
 class GitCredentialsPicker extends React.Component {
     constructor(props) {
         super(props);
         this.state = {};
+        this.restOrgPrefix = AppConfig.getRestRoot() + '/organizations/' + AppConfig.getOrganizationName();
     }
 
     componentWillMount() {
@@ -27,52 +37,88 @@ class GitCredentialsPicker extends React.Component {
         if (onStatus) {
             onStatus('promptLoading');
         }
-        Fetch.fetchJSON(AppConfig.getRestRoot() + '/organizations/' + AppConfig.getOrganizationName() + '/user/publickey/')
-            .then(credential => {
-                this.setState({ publicKey: credential.publickey });
-                if (onStatus) {
-                    onStatus('promptReady');
-                }
-                if (!dialog) {
-                    onComplete(credential);
+        Fetch.fetchJSON(this.restOrgPrefix + '/user/publickey/')
+        .then(credential => {
+            this.setState({ credential: credential });
+            if (onStatus) {
+                onStatus('promptReady');
+            }
+            if (!dialog) {
+                onComplete(credential);
+            }
+        });
+    }
+
+    copyPublicKeyToClipboard(element) {
+        const textBox = this.refs.publicKey;
+        textBox.select();
+        copySelectionText();
+        clearSelection();
+        textBox.blur();
+    }
+
+    testCredentialAndCloseDialog() {
+        const { onComplete, repositoryUrl, pipeline } = this.props;
+        const fetchOptions = {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                repositoryUrl,
+                pipeline,
+                credentialId: this.state.credential.id,
+            }),
+        };
+        this.setState({ connectStatus: { result: 'running' }});
+        return Fetch.fetchJSON(this.restOrgPrefix + '/scm/git/validate', { fetchOptions })
+        .then(() => {
+            this.setState({
+                credentialError: null,
+                connectStatus: {
+                    result: 'success',
+                    reset: false,
                 }
             });
+            onComplete(this.state.credential);
+        })
+        .catch(error => {
+            const message = error.responseBody ? error.responseBody.message : 'An unknown error occurred';
+            this.setState({
+                credentialError: message && t('creation.git.step1.credentials_publickey_invalid'),
+                connectStatus: {
+                    result: 'error',
+                    reset: true,
+                }
+            });
+        });
     }
 
-    componentWillUpdate() {
-        const textBox = this.refs.publicKey;
-        if (textBox) {
-            textBox.onfocus = function () {
-                textBox.select();
-                copySelectionText();
-
-                // Work around Chrome's little problem
-                textBox.onmouseup = function () {
-                    // Prevent further mouseup intervention
-                    textBox.onmouseup = null;
-                    return false;
-                };
-            };
-        }
+    closeDialog() {
+        this.context.router.goBack();
     }
-
 
     render() {
-        if (!this.state.publicKey) {
+        if (!this.state.credential) {
             return null;
         }
         return (
-            <FormElement title={""} errorMessage={undefined}>
-                <div className="credentials-picker-git">
-                    <p className="instructions">
-                        This is your personal Jenkins key, please
-                        copy and paste it in your git repository's list
-                        of authorized users to continue.
-                    </p>
-                    <textarea className="TextArea-control" ref="publicKey" onChange={e => e} value={this.state.publicKey} />
-                </div>
-                {this.props.dialog && <Button onClick={() => this.closeDialog()}>Ok</Button>}
-            </FormElement>
+            <div className="credentials-picker-git">
+                <p className="instructions">
+                    {t('creation.git.credentials.register_ssh_key_instructions')}{' '}
+                    <a target="jenkins-docs" href="https://jenkins.io/doc/book/blueocean/creating-pipelines/#creating-a-pipeline-for-a-git-repository">learn more</a>.
+                </p>
+                <FormElement>
+                    <textarea className="TextArea-control" ref="publicKey"
+                        readOnly={true}
+                        onChange={e => e} value={this.state.credential.publickey} />
+                </FormElement>
+                <a href="javascript:" className="copy-key-link" onClick={() => this.copyPublicKeyToClipboard()}>
+                    {t('creation.git.credentials.copy_to_clipboard')}
+                </a>
+                {this.props.dialog && <FormElement errorMessage={this.state.credentialError} className="action-buttons">
+                    <Button status={this.state.connectStatus} onClick={() => this.testCredentialAndCloseDialog()}>{t('creation.git.credentials.connect_and_validate')}</Button>
+                    <Button onClick={() => this.closeDialog()} className="btn-secondary">{t('creation.git.create_credential.button_close')}</Button>
+                </FormElement>}
+            </div>
         );
     }
 }
@@ -82,6 +128,12 @@ GitCredentialsPicker.propTypes = {
     onComplete: PropTypes.func,
     scmId: PropTypes.string,
     dialog: PropTypes.bool,
+    repositoryUrl: PropTypes.string,
+    pipeline: PropTypes.object,
+};
+
+GitCredentialsPicker.contextTypes = {
+    router: React.PropTypes.object,
 };
 
 export default GitCredentialsPicker;

@@ -24,12 +24,16 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
 import java.io.IOException;
+import java.util.logging.Logger;
+
 import jenkins.plugins.git.GitSCMSource;
 
 /**
  * @author kzantow
  */
 abstract class GitReadSaveRequest  {
+    final static Logger log = Logger.getLogger(GitReadSaveRequest.class.getName());
+
     final GitSCMSource gitSource;
     final String branch;
     final String commitMessage;
@@ -37,7 +41,7 @@ abstract class GitReadSaveRequest  {
     final String filePath;
     final byte[] contents;
 
-    public GitReadSaveRequest(
+    GitReadSaveRequest(
             GitSCMSource gitSource,
             String branch, String commitMessage,
             String sourceBranch, String filePath,
