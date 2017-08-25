@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 import { FormElement } from '@jenkins-cd/design-language';
-import { Fetch, AppConfig, getRestUrl } from '@jenkins-cd/blueocean-core-js';
+import { Fetch, AppConfig } from '@jenkins-cd/blueocean-core-js';
 import { Button } from '../../creation/github/Button';
 import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 const t = i18nTranslator('blueocean-dashboard');
@@ -39,7 +39,7 @@ class GitCredentialsPicker extends React.Component {
         }
         Fetch.fetchJSON(this.restOrgPrefix + '/user/publickey/')
         .then(credential => {
-            this.setState({ credential: credential });
+            this.setState({ credential });
             if (onStatus) {
                 onStatus('promptReady');
             }
@@ -49,7 +49,7 @@ class GitCredentialsPicker extends React.Component {
         });
     }
 
-    copyPublicKeyToClipboard(element) {
+    copyPublicKeyToClipboard() {
         const textBox = this.refs.publicKey;
         textBox.select();
         copySelectionText();
@@ -68,7 +68,7 @@ class GitCredentialsPicker extends React.Component {
                 credentialId: this.state.credential.id,
             }),
         };
-        this.setState({ connectStatus: { result: 'running' }});
+        this.setState({ connectStatus: { result: 'running' } });
         return Fetch.fetchJSON(this.restOrgPrefix + '/scm/git/validate', { fetchOptions })
         .then(() => {
             this.setState({
@@ -76,7 +76,7 @@ class GitCredentialsPicker extends React.Component {
                 connectStatus: {
                     result: 'success',
                     reset: false,
-                }
+                },
             });
             onComplete(this.state.credential);
         })
@@ -87,7 +87,7 @@ class GitCredentialsPicker extends React.Component {
                 connectStatus: {
                     result: 'error',
                     reset: true,
-                }
+                },
             });
         });
     }
@@ -108,10 +108,10 @@ class GitCredentialsPicker extends React.Component {
                 </p>
                 <FormElement>
                     <textarea className="TextArea-control" ref="publicKey"
-                        readOnly={true}
+                        readOnly
                         onChange={e => e} value={this.state.credential.publickey} />
                 </FormElement>
-                <a href="javascript:" className="copy-key-link" onClick={() => this.copyPublicKeyToClipboard()}>
+                <a href="#" className="copy-key-link" onClick={e => { this.copyPublicKeyToClipboard(); e.preventDefault(); }}>
                     {t('creation.git.credentials.copy_to_clipboard')}
                 </a>
                 {this.props.dialog && <FormElement errorMessage={this.state.credentialError} className="action-buttons">

@@ -232,8 +232,7 @@ export default class GitConnectStep extends React.Component {
                 }
 
                 {isSshRepositoryUrl(this.state.repositoryUrl) && credentialErrorMsg &&
-                <FormElement className="public-key-display" errorMessage={credentialErrorMsg && t('creation.git.step1.credentials_publickey_invalid')}>
-                </FormElement>
+                <FormElement className="public-key-display" errorMessage={t('creation.git.step1.credentials_publickey_invalid')} />
                 }
 
                 <button
