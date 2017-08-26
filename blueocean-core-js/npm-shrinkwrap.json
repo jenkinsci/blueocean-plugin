@@ -2089,11 +2089,6 @@
       "resolved": "https://registry.npmjs.org/es6-map/-/es6-map-0.1.5.tgz",
       "dev": true
     },
-    "es6-promise": {
-      "version": "4.0.5",
-      "from": "es6-promise@4.0.5",
-      "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-4.0.5.tgz"
-    },
     "es6-set": {
       "version": "0.1.5",
       "from": "es6-set@>=0.1.5 <0.2.0",

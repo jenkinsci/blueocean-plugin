@@ -39,7 +39,6 @@
     "@jenkins-cd/sse-gateway": "0.0.21",
     "@jenkins-cd/storage": "0.0.6",
     "bluebird": "3.5.0",
-    "es6-promise": "4.0.5",
     "i18next": "3.5.2",
     "i18next-browser-languagedetector": "1.0.0",
     "i18next-xhr-backend": "1.2.0",
