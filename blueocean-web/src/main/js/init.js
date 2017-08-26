@@ -1,5 +1,11 @@
+// this function is executed before all other code during bundle's onStartup
+// see gulpfile, builder.bundle().onStartup()
+
+import Errors from './Errors';
 
 export function execute(done, bundleConfig) {
+    Errors.initializeErrorHandling();
+
     // Get the extension list metadata from Jenkins.
     // Might want to do some flux fancy-pants stuff for this.
     const appRoot = document.getElementsByTagName("head")[0].getAttribute("data-appurl");
