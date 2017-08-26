@@ -1,17 +1,18 @@
-import es6Promise from 'es6-promise'; es6Promise.polyfill();
-import jwt from './jwt';
+import Promise from 'bluebird';
 import isoFetch from 'isomorphic-fetch';
+
+import jwt from './jwt';
 import utils from './utils';
 import config from './config';
 import dedupe from './utils/dedupe-calls';
 import urlconfig from './urlconfig';
 import { prefetchdata } from './scopes';
 import loadingIndicator from './LoadingIndicator';
-
-const Promise = es6Promise.Promise;
-
 import { capabilityAugmenter } from './capability/index';
+
+
 let refreshToken = null;
+
 export const FetchFunctions = {
     /**
      * Ensures the URL starts with jenkins path if not an absolute URL.
@@ -57,7 +58,8 @@ export const FetchFunctions = {
      */
     checkStatus(response) {
         if (response.status >= 300 || response.status < 200) {
-            const error = new Error(response.statusText);
+            const message = `fetch failed: ${response.status} for ${response.url}`;
+            const error = new Error(message);
             error.response = response;
             throw error;
         }
