@@ -88,7 +88,11 @@ public class GitScm extends AbstractScm {
                 if (item != null) {
                     AbstractGitSCMSource scmSource = (AbstractGitSCMSource) item.getSCMSources().iterator().next();
                     repositoryUrl = scmSource.getRemote();
+                } else {
+                    throw new ServiceException.NotFoundException("No repository found for: " + fullName);
                 }
+            } catch(RuntimeException e) {
+                throw e;
             } catch(Exception e) {
                 throw new RuntimeException(e);
             }
