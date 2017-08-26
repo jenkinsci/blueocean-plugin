@@ -53,7 +53,7 @@ public class GitScm extends AbstractScm {
     @Override
     @Nonnull
     public String getUri() {
-        return null;
+        return "";
     }
 
     @Override
@@ -85,8 +85,10 @@ public class GitScm extends AbstractScm {
             try {
                 String fullName = request.getJSONObject("pipeline").getString("fullName");
                 SCMSourceOwner item = Jenkins.getInstance().getItemByFullName(fullName, SCMSourceOwner.class);
-                AbstractGitSCMSource scmSource = (AbstractGitSCMSource)item.getSCMSources().iterator().next();
-                repositoryUrl = scmSource.getRemote();
+                if (item != null) {
+                    AbstractGitSCMSource scmSource = (AbstractGitSCMSource) item.getSCMSources().iterator().next();
+                    repositoryUrl = scmSource.getRemote();
+                }
             } catch(Exception e) {
                 throw new RuntimeException(e);
             }
