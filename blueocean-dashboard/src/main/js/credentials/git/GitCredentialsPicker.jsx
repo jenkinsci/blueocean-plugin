@@ -85,7 +85,6 @@ class GitCredentialsPicker extends React.Component {
             this.setState({
                 credentialError: message && t('creation.git.step1.credentials_publickey_invalid'),
                 connectStatus: {
-                    result: 'error',
                     reset: true,
                 },
             });

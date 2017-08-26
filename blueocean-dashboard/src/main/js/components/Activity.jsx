@@ -5,7 +5,7 @@ import {
     TableHeader,
     TableCell,
 } from '@jenkins-cd/design-language';
-import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+import { capable, RunButton, ShowMoreButton, AppConfig } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import { ActivityDetailsRow } from './ActivityDetailsRow';
 import { ChangeSetRecord } from './records';
@@ -85,6 +85,12 @@ export class Activity extends Component {
         this.context.router.push(activitiesURL);
     };
 
+    createPipeline() {
+        const { organization, pipeline } = this.context.params;
+        const url = `/organizations/${organization}/pipeline-editor/${pipeline}/`;
+        this.context.router.push(url);
+    }
+
     render() {
         const { pipeline, t, locale } = this.props;
         const { actionExtensionCount } = this.state;
@@ -123,6 +129,15 @@ export class Activity extends Component {
 
         if (!isLoading) {
             if (isMultiBranchPipeline && !hasBranches) {
+                if (AppConfig.isFeatureEnabled('GIT_PIPELINE_EDITOR', false)) {
+                    return (
+                        <NoBranchesPlaceholder t={t} primaryAction={
+                            <button className="btn btn-primary" onClick={() => this.createPipeline()}>
+                                {t('creation.git.step1.create_button')}
+                            </button>
+                        } />
+                    );
+                }
                 return <NoBranchesPlaceholder t={t} />;
             }
             if (!runs || !runs.length) {

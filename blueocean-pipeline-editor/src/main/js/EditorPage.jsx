@@ -3,6 +3,7 @@ import Extensions from '@jenkins-cd/js-extensions';
 import {
         Fetch, getRestUrl, buildPipelineUrl, locationService,
         ContentPageHeader, pipelineService, Paths, RunApi,
+        activityService,
     } from '@jenkins-cd/blueocean-core-js';
 import {
     Dialog,
@@ -267,6 +268,9 @@ class PipelineLoader extends React.Component {
         const { organization, pipeline, branch } = this.props.params;
         this.contentApi.loadContent({ organization, pipeline, branch })
             .then( ({ content }) => {
+                if (!content.base64Data) {
+                    throw { type: LoadError.JENKINSFILE_NOT_FOUND };
+                }
                 const pipelineScript = Base64.decode(content.base64Data);
                 this.setState({sha: content.sha});
                 convertPipelineToJson(pipelineScript, (p, err) => {
@@ -335,6 +339,7 @@ class PipelineLoader extends React.Component {
         const { organization, pipeline, branch } = this.props.params;
         const { router } = this.context;
         const location = buildPipelineUrl(organization, pipeline);
+        activityService.removeItem(activityService.pagerKey(organization, pipeline, branch));
         router.push(location);
     }
 

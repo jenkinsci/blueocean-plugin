@@ -152,7 +152,7 @@ class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
 
     @Nonnull GitSCMFileSystem getFilesystem() throws IOException, InterruptedException {
         try {
-            GitSCMFileSystem fs = (GitSCMFileSystem) SCMFileSystem.of(gitSource, new SCMHead(branch));
+            GitSCMFileSystem fs = (GitSCMFileSystem) SCMFileSystem.of(gitSource, new SCMHead(sourceBranch));
             if (fs == null) {
                 throw new ServiceException.NotFoundException("No file found");
             }

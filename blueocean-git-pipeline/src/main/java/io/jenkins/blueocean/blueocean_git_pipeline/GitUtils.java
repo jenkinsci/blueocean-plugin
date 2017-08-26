@@ -195,6 +195,9 @@ class GitUtils {
                     .setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*"))
                     .call();
         } catch (GitAPIException ex) {
+            if (ex.getMessage().contains("Auth fail")) {
+                throw new ServiceException.UnauthorizedException("Not authorized", ex);
+            }
             throw new RuntimeException(ex);
         }
     }

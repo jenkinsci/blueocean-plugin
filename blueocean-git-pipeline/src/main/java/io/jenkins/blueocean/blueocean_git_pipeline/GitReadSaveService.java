@@ -28,6 +28,7 @@ import java.io.IOException;
 import hudson.model.User;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
 import org.kohsuke.stapler.StaplerRequest;
 
 import hudson.Extension;
@@ -129,10 +130,11 @@ public class GitReadSaveService extends ScmContentProvider {
     }
 
     private GitReadSaveRequest makeSaveRequest(Item item, StaplerRequest req) {
+        String branch = req.getParameter("branch");
         return makeSaveRequest(item,
-            req.getParameter("branch"),
+            branch,
             req.getParameter("commitMessage"),
-            req.getParameter("sourceBranch"),
+            ObjectUtils.defaultIfNull(req.getParameter("sourceBranch"), branch),
             req.getParameter("path"),
             Base64.decode(req.getParameter("contents"))
         );
@@ -140,10 +142,11 @@ public class GitReadSaveService extends ScmContentProvider {
 
     private GitReadSaveRequest makeSaveRequest(Item item, JSONObject json) {
         JSONObject content = json.getJSONObject("content");
+        String branch = content.getString("branch");
         return makeSaveRequest(item,
-            content.getString("branch"),
+            branch,
             content.getString("message"),
-            content.getString("sourceBranch"),
+            content.has("sourceBranch") ? content.getString("sourceBranch") : branch,
             content.getString("path"),
             Base64.decode(content.getString("base64Data"))
         );
