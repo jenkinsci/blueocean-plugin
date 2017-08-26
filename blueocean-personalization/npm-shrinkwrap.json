@@ -3,9 +3,9 @@
   "version": "0.0.2-unpublished",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.153",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.153",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.153.tgz"
+      "version": "0.0.154-SNAPSHOT-1",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.154-SNAPSHOT-1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.154-SNAPSHOT-1.tgz"
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.146",
@@ -1285,6 +1285,11 @@
           "optional": true
         }
       }
+    },
+    "bluebird": {
+      "version": "3.5.0",
+      "from": "bluebird@3.5.0",
+      "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.5.0.tgz"
     },
     "bn.js": {
       "version": "1.3.0",
@@ -2798,11 +2803,6 @@
       "from": "es6-map@>=0.1.3 <0.2.0",
       "resolved": "https://registry.npmjs.org/es6-map/-/es6-map-0.1.5.tgz",
       "dev": true
-    },
-    "es6-promise": {
-      "version": "4.0.5",
-      "from": "es6-promise@4.0.5",
-      "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-4.0.5.tgz"
     },
     "es6-set": {
       "version": "0.1.5",
