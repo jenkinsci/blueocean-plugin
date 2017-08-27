@@ -49,6 +49,7 @@ import org.eclipse.jgit.api.AddCommand;
 import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.CommitCommand;
 import org.eclipse.jgit.api.CreateBranchCommand;
+import org.eclipse.jgit.api.FetchCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.RemoteAddCommand;
 import org.eclipse.jgit.api.RemoteRemoveCommand;
@@ -211,6 +212,9 @@ class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
 
                 // Make sure up-to-date and credentials work
                 GitUtils.fetch(repository, privateKey);
+            } else {
+                FetchCommand fetch = gitClient.fetch();
+                fetch.call();
             }
 
             if (!StringUtils.isEmpty(sourceBranch) && !sourceBranch.equals(branch)) {

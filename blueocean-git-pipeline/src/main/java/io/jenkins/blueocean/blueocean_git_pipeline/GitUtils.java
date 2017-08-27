@@ -19,8 +19,8 @@ import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import java.io.ByteArrayInputStream;
 
+import org.eclipse.jgit.api.FetchCommand;
 import org.eclipse.jgit.api.PushCommand;
-import org.eclipse.jgit.api.errors.TransportException;
 import org.eclipse.jgit.transport.JschConfigSessionFactory;
 import org.eclipse.jgit.transport.OpenSshConfig;
 import org.eclipse.jgit.transport.PushResult;
@@ -135,6 +135,19 @@ class GitUtils {
         return remote != null && SSH_URL_PATTERN.matcher(remote).matches();
     }
 
+    /**
+     * Determines if the repository is using an SSH URL
+     * @param repo repository to
+     * @return true if there appears to be an SSH style remote URL
+     */
+    private static boolean isSshUrl(Repository repo) {
+        try (org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(repo)) {
+            return isSshUrl(git.remoteList().call().get(0).getURIs().get(0).toString());
+        } catch (IndexOutOfBoundsException | GitAPIException e) {
+            return false;
+        }
+    }
+
     static StandardCredentials getCredentials(ItemGroup owner, String uri, String credentialId){
         StandardCredentials standardCredentials =  CredentialsUtils.findCredential(credentialId, StandardCredentials.class, new BlueOceanDomainRequirement());
         if(standardCredentials == null){
@@ -185,12 +198,16 @@ class GitUtils {
         };
     }
 
-    public static void fetch(final Repository repo, final BasicSSHUserPrivateKey privateKey) {
+    public static void fetch(final Repository repo, final StandardCredentials credential) {
         try {
             org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(repo);
-            git.fetch()
-                    .setTransportConfigCallback(getSSHKeyTransport(privateKey))
-                    .setRemote("origin")
+            FetchCommand fetchCommand = git.fetch();
+
+            if (isSshUrl(repo) && credential instanceof BasicSSHUserPrivateKey) {
+                fetchCommand.setTransportConfigCallback(getSSHKeyTransport((BasicSSHUserPrivateKey)credential));
+            }
+
+            fetchCommand.setRemote("origin")
                     .setRemoveDeletedRefs(true)
                     .setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*"))
                     .call();

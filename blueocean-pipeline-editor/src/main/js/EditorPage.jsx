@@ -293,12 +293,12 @@ class PipelineLoader extends React.Component {
             })
             .catch(err => {
                 if (err.type === LoadError.JENKINSFILE_NOT_FOUND) {
-                    onComplete();
+                    if (onComplete) onComplete();
                     this.makeEmptyPipeline();
                 } else if (err.type === LoadError.TOKEN_NOT_FOUND || err.type === LoadError.TOKEN_REVOKED) {
                     this.showCredentialDialog({ loading: true });
                 } else {
-                    onComplete();
+                    if (onComplete) onComplete();
                     this.showLoadingError(err);
                 }
             });
