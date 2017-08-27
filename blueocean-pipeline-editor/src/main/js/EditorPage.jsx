@@ -293,10 +293,12 @@ class PipelineLoader extends React.Component {
             })
             .catch(err => {
                 if (err.type === LoadError.JENKINSFILE_NOT_FOUND) {
+                    onComplete();
                     this.makeEmptyPipeline();
                 } else if (err.type === LoadError.TOKEN_NOT_FOUND || err.type === LoadError.TOKEN_REVOKED) {
                     this.showCredentialDialog({ loading: true });
                 } else {
+                    onComplete();
                     this.showLoadingError(err);
                 }
             });
@@ -457,7 +459,9 @@ class PipelineLoader extends React.Component {
         });
 
         this.loadContent(internal => {
-            pipelineStore.setPipeline(internal);
+            if (internal) { // may be no pipline here
+                pipelineStore.setPipeline(internal);
+            }
             this.setState({dialog: null});
         });
     }
