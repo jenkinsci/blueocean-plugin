@@ -15,7 +15,8 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Iterator;
 
-@Restricted(NoExternalUse.class)
+// TODO: reenable this after refactor
+// @Restricted(NoExternalUse.class)
 public class BlueTrendContainerImpl extends BlueTrendContainer {
 
     private final BluePipeline pipeline;
