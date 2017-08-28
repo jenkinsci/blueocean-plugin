@@ -120,9 +120,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
 
         // we're using this to test push/pull, allow pushes to current branch, we reset it to match
         repoNoJenkinsfile.git("config", "--local", "--add", "receive.denyCurrentBranch", "false");
-    }
 
-    private void startSSH() throws Exception {
         repoForSSH.init();
         repoForSSH.write("Jenkinsfile", masterPipelineScript);
         repoForSSH.git("add", "Jenkinsfile");
@@ -131,19 +129,24 @@ public class GitReadSaveTest extends PipelineBaseTest {
         // we're using this to test push/pull, allow pushes to current branch, we reset it to match
         repoForSSH.git("config", "--local", "--add", "receive.denyCurrentBranch", "false");
 
-        // Set up an SSH server with access to a git repo
-        User user = login();
-        final BasicSSHUserPrivateKey key = UserSSHKeyManager.getOrCreate(user);
-        final JSch jsch = new JSch();
-        final KeyPair pair = KeyPair.load(jsch, key.getPrivateKey().getBytes(), null);
+    }
 
-        File keyFile = new File(System.getProperty("TEST_SSH_SERVER_KEY_FILE", File.createTempFile("hostkey", "ser").getCanonicalPath()));
-        int port = Integer.parseInt(System.getProperty("TEST_SSH_SERVER_PORT", "0"));
-        boolean allowLocalUser = Boolean.getBoolean("TEST_SSH_SERVER_ALLOW_LOCAL");
-        String userPublicKey = Base64.encode(pair.getPublicKeyBlob());
-        sshd = new SSHServer(repoForSSH.getRoot(), keyFile, port, allowLocalUser, ImmutableMap.of("bob", userPublicKey));
-        // Go, go, go
-        sshd.start();
+    private void startSSH() throws Exception {
+        if (sshd == null) {
+            // Set up an SSH server with access to a git repo
+            User user = login();
+            final BasicSSHUserPrivateKey key = UserSSHKeyManager.getOrCreate(user);
+            final JSch jsch = new JSch();
+            final KeyPair pair = KeyPair.load(jsch, key.getPrivateKey().getBytes(), null);
+
+            File keyFile = new File(System.getProperty("TEST_SSH_SERVER_KEY_FILE", File.createTempFile("hostkey", "ser").getCanonicalPath()));
+            int port = Integer.parseInt(System.getProperty("TEST_SSH_SERVER_PORT", "0"));
+            boolean allowLocalUser = Boolean.getBoolean("TEST_SSH_SERVER_ALLOW_LOCAL");
+            String userPublicKey = Base64.encode(pair.getPublicKeyBlob());
+            sshd = new SSHServer(repoForSSH.getRoot(), keyFile, port, allowLocalUser, ImmutableMap.of("bob", userPublicKey));
+            // Go, go, go
+            sshd.start();
+        }
     }
 
     @After
@@ -153,6 +156,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
             String remote = "ssh://bob@127.0.0.1:" + sshd.getPort() + "" + repoForSSH.getRoot().getCanonicalPath();
             logger.fine(ssh + " // remote: " + remote);
             sshd.stop();
+            sshd = null;
         }
     }
 
@@ -172,6 +176,75 @@ public class GitReadSaveTest extends PipelineBaseTest {
     public void testBareRepoReadWrite() throws Exception {
         testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, repoWithJenkinsfiles, masterPipelineScript);
         testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, repoNoJenkinsfile, null);
+    }
+
+    @Test
+    public void testGitScmValidate() throws Exception {
+        if (!OsUtils.isUNIX()) {
+            return; // can't really run this on windows
+        }
+        startSSH();
+        String userHostPort = "bob@127.0.0.1:" + sshd.getPort();
+        String remote = "ssh://" + userHostPort + "" + repoForSSH.getRoot().getCanonicalPath();
+
+        User bob = login();
+
+        // Validate bob via repositoryUrl
+        Map r = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
+            .put("/organizations/" + getOrgName() + "/scm/git/validate/")
+            .data(ImmutableMap.of(
+                "repositoryUrl", remote,
+                "credentialId", UserSSHKeyManager.getOrCreate(bob).getId()
+            )).build(Map.class);
+
+        // Create a job
+        String jobName = "test-token-validation";
+        r = new RequestBuilder(baseUrl)
+            .status(201)
+            .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
+            .post("/organizations/" + getOrgName() + "/pipelines/")
+            .data(ImmutableMap.of(
+                "name", jobName,
+                "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
+                "scmConfig", ImmutableMap.of(
+                    "uri", remote,
+                    "credentialId", UserSSHKeyManager.getOrCreate(bob).getId())
+            )).build(Map.class);
+
+        assertEquals(jobName, r.get("name"));
+
+        // Test for existing pipeline/job
+        r = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
+            .put("/organizations/" + getOrgName() + "/scm/git/validate/")
+            .data(ImmutableMap.of(
+                "pipeline", jobName,
+                "credentialId", UserSSHKeyManager.getOrCreate(bob).getId()
+            )).build(Map.class);
+
+        User alice = login("alice", "Alice Cooper", "alice@jenkins-ci.org");
+
+        // Test alice fails
+        r = new RequestBuilder(baseUrl)
+            .status(428)
+            .jwtToken(getJwtToken(j.jenkins, alice.getId(), alice.getId()))
+            .put("/organizations/" + getOrgName() + "/scm/git/validate/")
+            .data(ImmutableMap.of(
+                "repositoryUrl", remote,
+                "credentialId", UserSSHKeyManager.getOrCreate(alice).getId()
+            )).build(Map.class);
+
+        r = new RequestBuilder(baseUrl)
+            .status(428)
+            .jwtToken(getJwtToken(j.jenkins, alice.getId(), alice.getId()))
+            .put("/organizations/" + getOrgName() + "/scm/git/validate/")
+            .data(ImmutableMap.of(
+                "pipeline", jobName,
+                "credentialId", UserSSHKeyManager.getOrCreate(alice).getId()
+            )).build(Map.class);
     }
 
     @Test

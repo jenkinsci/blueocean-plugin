@@ -20,10 +20,8 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import io.jenkins.blueocean.rest.model.Container;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.AbstractGitSCMSource;
-import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.SCMSourceOwner;
 import net.sf.json.JSONObject;
-import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.json.JsonBody;
 
