@@ -241,9 +241,13 @@ export class PipelineGraph extends Component {
             const stagesForColumn =
                 topStage.children && topStage.children.length ? topStage.children : [topStage];
 
-            nodeColumns.push({
+            const column = {
                 topStage,
-                nodes: stagesForColumn.map(nodeStage => ({
+            };
+
+            column.nodes = stagesForColumn
+                .filter(nodeStage => !!nodeStage)
+                .map(nodeStage => ({
                     x: 0, // Layout is done later
                     y: 0,
                     name: nodeStage.name,
@@ -251,8 +255,9 @@ export class PipelineGraph extends Component {
                     stage: nodeStage,
                     isPlaceholder: false,
                     key: 'n_' + nodeStage.id,
-                })),
-            });
+                }));
+
+            nodeColumns.push(column);
         }
 
         return nodeColumns;
