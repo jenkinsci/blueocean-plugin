@@ -6,7 +6,7 @@
   "custom_commands_path": "src/main/js/custom_commands",
   "custom_assertions_path": "src/main/js/custom_assertions",
   "globals_path": "src/main/js/globals.js",
-  "disable_colors": true,
+  "disable_colors": false,
   "page_objects_path": [
     "src/main/js/page_objects/classic_jenkins",
     "src/main/js/page_objects/blueocean"

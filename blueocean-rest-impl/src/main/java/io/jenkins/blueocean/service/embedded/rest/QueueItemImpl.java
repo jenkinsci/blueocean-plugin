@@ -6,6 +6,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -14,6 +15,7 @@ import io.jenkins.blueocean.rest.model.BlueRun.BlueRunResult;
 import io.jenkins.blueocean.rest.model.BlueRun.BlueRunState;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl.BlueCauseImpl;
 import jenkins.model.Jenkins;
+import org.kohsuke.stapler.export.Exported;
 
 import java.util.Collection;
 import java.util.Date;
@@ -27,15 +29,18 @@ public class QueueItemImpl extends BlueQueueItem {
     private final Link self;
     private final Link parent;
     private final int expectedBuildNumber;
+    private final BlueOrganization organization;
 
-    public QueueItemImpl(Queue.Item item, BluePipeline pipeline, int expectedBuildNumber) {
-        this(item,
+    public QueueItemImpl(BlueOrganization organization, Queue.Item item, BluePipeline pipeline, int expectedBuildNumber) {
+        this(organization,
+            item,
             pipeline.getName(),expectedBuildNumber,
             pipeline.getQueue().getLink().rel(Long.toString(item.getId())),
             pipeline.getLink());
     }
 
-    QueueItemImpl(Queue.Item item, String name, int expectedBuildNumber, Link self, Link parent) {
+    QueueItemImpl(BlueOrganization organization, Queue.Item item, String name, int expectedBuildNumber, Link self, Link parent) {
+        this.organization = organization;
         this.item = item;
         this.pipelineName = name;
         this.expectedBuildNumber = expectedBuildNumber;
@@ -50,12 +55,7 @@ public class QueueItemImpl extends BlueQueueItem {
 
     @Override
     public String getOrganization() {
-        if (item.task instanceof Item) {
-            Item i = (Item) item.task;
-            return OrganizationFactory.getInstance().getContainingOrg(i).getName();
-        } else {
-            return null;
-        }
+        return organization.getName();
     }
 
     @Override
@@ -66,6 +66,11 @@ public class QueueItemImpl extends BlueQueueItem {
     @Override
     public Date getQueuedTime() {
         return new Date(item.getInQueueSince());
+    }
+
+    @Exported(name=QUEUED_TIME)
+    public String getQueuedTimeString(){
+        return AbstractRunImpl.DATE_FORMAT.print(getQueuedTime().getTime());
     }
 
     @Override

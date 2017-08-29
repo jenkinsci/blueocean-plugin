@@ -35,6 +35,7 @@ import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
+import jenkins.model.Jenkins;
 import org.jenkinsci.plugins.pubsub.EventProps;
 import org.jenkinsci.plugins.pubsub.Events;
 import org.jenkinsci.plugins.pubsub.JobChannelMessage;
@@ -71,13 +72,16 @@ public class BlueMessageEnricher extends MessageEnricher {
             if(jobChannelItem == null){
                 return;
             }
+
             Link jobUrl = LinkResolver.resolveLink(jobChannelItem);
+            if (jobUrl == null) {
+                return;
+            }
 
             BlueOrganization org = OrganizationFactory.getInstance().getContainingOrg(jobChannelItem);
             if (org!=null) {
                 message.set(EventProps.Jenkins.jenkins_org, org.getName());
             }
-
             jobChannelMessage.set(BlueEventProps.blueocean_job_rest_url, jobUrl.getHref());
             jobChannelMessage.set(BlueEventProps.blueocean_job_pipeline_name, AbstractPipelineImpl.getFullName(org, jobChannelItem));
             if (jobChannelItem instanceof WorkflowJob) {
@@ -91,9 +95,9 @@ public class BlueMessageEnricher extends MessageEnricher {
 
             if (message.containsKey("job_run_queueId") && jobChannelItem instanceof hudson.model.Job) {
                 final long queueId = Long.parseLong(message.get("job_run_queueId"));
-                Queue.Item queueItem = jenkins.model.Jenkins.getInstance().getQueue().getItem(queueId);
+                Queue.Item queueItem = Jenkins.getInstance().getQueue().getItem(queueId);
                 hudson.model.Job job = (hudson.model.Job) jobChannelItem;
-                BlueQueueItem blueQueueItem = QueueUtil.getQueuedItem(queueItem, job);
+                BlueQueueItem blueQueueItem = QueueUtil.getQueuedItem(null, queueItem, job);
                 if (blueQueueItem != null) {
                     jobChannelMessage.set(BlueEventProps.blueocean_queue_item_expected_build_number, Integer.toString(blueQueueItem.getExpectedBuildNumber()));
                 } else {

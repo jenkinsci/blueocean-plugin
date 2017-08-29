@@ -1,25 +1,45 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import java.util.Collections;
+import java.util.Map;
+
+import javax.annotation.Nonnull;
+
+import org.acegisecurity.Authentication;
+import org.apache.commons.lang.StringUtils;
+
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.google.common.collect.ImmutableMap;
+
 import hudson.model.Item;
 import hudson.model.User;
+import hudson.security.AccessControlled;
 import hudson.tasks.Mailer;
 import hudson.tasks.UserAvatarResolver;
+import hudson.util.HttpResponses;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.ServiceException.ForbiddenException;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueFavoriteContainer;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserPermission;
+import io.jenkins.blueocean.service.embedded.util.UserSSHKeyManager;
+import java.io.IOException;
 import jenkins.model.Jenkins;
-import org.acegisecurity.Authentication;
+import jenkins.model.ModifiableTopLevelItemGroup;
 import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
 import java.util.Map;
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.verb.DELETE;
+import org.kohsuke.stapler.verb.GET;
 
 /**
  * {@link BlueUser} implementation backed by in-memory {@link User}
@@ -36,15 +56,20 @@ public class UserImpl extends BlueUser {
 
     protected final User user;
 
+    private final BlueOrganization organization;
+    private final AccessControlled organizationBase;
+
     private final Reachable parent;
-    public UserImpl(User user, Reachable parent) {
+
+    public UserImpl(@Nonnull BlueOrganization organization, @Nonnull User user, Reachable parent) {
         this.parent = parent;
         this.user = user;
+        this.organization = organization;
+        organizationBase = getAccessControllerOrganization();
     }
 
-    public UserImpl(User user) {
-        this.user = user;
-        this.parent = null;
+    public UserImpl(@Nonnull BlueOrganization organization, @Nonnull User user) {
+        this(organization, user, null);
     }
 
     @Override
@@ -143,31 +168,87 @@ public class UserImpl extends BlueUser {
         return (parent != null)?parent.getLink().rel(getId()): ApiHead.INSTANCE().getLink().rel("users/"+getId());
     }
 
+    /**
+     * Gets or creates the user's private Jenkins-managed key and returns the
+     * public key to the user
+     * @return JSON response
+     * @throws IOException 
+     */
+    @GET
+    @WebMethod(name="publickey")
+    public HttpResponse publicKey() throws IOException {
+        User authenticatedUser =  User.current();
+        if (authenticatedUser == null) {
+            throw new ServiceException.UnauthorizedException("Not authorized");
+        }
+        if (!StringUtils.equals(getId(), authenticatedUser.getId())) {
+            throw new ServiceException.ForbiddenException("Not authorized");
+        }
+        
+        String publicKey = UserSSHKeyManager.getReadablePublicKey(authenticatedUser, 
+            UserSSHKeyManager.getOrCreate(authenticatedUser));
+        
+        return HttpResponses.okJSON(ImmutableMap.of("key", publicKey));
+    }
+
+    /**
+     * Deletes the user's private Jenkins-managed key
+     * @return
+     * @throws IOException 
+     */
+    @DELETE
+    @WebMethod(name="publickey")
+    public HttpResponse resetPublicKey() throws IOException {
+        User authenticatedUser =  User.current();
+        if (authenticatedUser == null) {
+            throw new ServiceException.UnauthorizedException("Not authorized");
+        }
+        if (!StringUtils.equals(getId(), authenticatedUser.getId())) {
+            throw new ServiceException.ForbiddenException("Not authorized");
+        }
+        
+        UserSSHKeyManager.reset(authenticatedUser);
+        return HttpResponses.ok();
+    }
+
     private boolean isAdmin(){
         return Jenkins.getInstance().hasPermission(Jenkins.ADMINISTER);
     }
 
     private Map<String, Boolean> getPipelinePermissions(){
         return ImmutableMap.of(
-                BluePipeline.CREATE_PERMISSION, Jenkins.getInstance().hasPermission(Item.CREATE),
-                BluePipeline.READ_PERMISSION, Jenkins.getInstance().hasPermission(Item.READ),
-                BluePipeline.START_PERMISSION, Jenkins.getInstance().hasPermission(Item.BUILD),
-                BluePipeline.STOP_PERMISSION, Jenkins.getInstance().hasPermission(Item.CANCEL),
-                BluePipeline.CONFIGURE_PERMISSION, Jenkins.getInstance().hasPermission(Item.CONFIGURE)
+                               BluePipeline.CREATE_PERMISSION, organizationBase.hasPermission(Item.CREATE),
+                               BluePipeline.READ_PERMISSION, organizationBase.hasPermission(Item.READ),
+                               BluePipeline.START_PERMISSION, organizationBase.hasPermission(Item.BUILD),
+                               BluePipeline.STOP_PERMISSION, organizationBase.hasPermission(Item.CANCEL),
+                               BluePipeline.CONFIGURE_PERMISSION, organizationBase.hasPermission(Item.CONFIGURE)
         );
     }
 
     private Map<String, Boolean> getCredentialPermissions(){
         return ImmutableMap.of(
-                CREDENTIAL_CREATE_PERMISSION, Jenkins.getInstance().hasPermission(CredentialsProvider.CREATE),
-                CREDENTIAL_VIEW_PERMISSION, Jenkins.getInstance().hasPermission(CredentialsProvider.VIEW),
-                CREDENTIAL_DELETE_PERMISSION, Jenkins.getInstance().hasPermission(CredentialsProvider.DELETE),
-                CREDENTIAL_UPDATE_PERMISSION, Jenkins.getInstance().hasPermission(CredentialsProvider.UPDATE),
-                CREDENTIAL_MANAGE_DOMAINS_PERMISSION, Jenkins.getInstance().hasPermission(CredentialsProvider.MANAGE_DOMAINS)
+                               CREDENTIAL_CREATE_PERMISSION, organizationBase.hasPermission(CredentialsProvider.CREATE),
+                               CREDENTIAL_VIEW_PERMISSION, organizationBase.hasPermission(CredentialsProvider.VIEW),
+                               CREDENTIAL_DELETE_PERMISSION, organizationBase.hasPermission(CredentialsProvider.DELETE),
+                               CREDENTIAL_UPDATE_PERMISSION, organizationBase.hasPermission(CredentialsProvider.UPDATE),
+                               CREDENTIAL_MANAGE_DOMAINS_PERMISSION, organizationBase.hasPermission(CredentialsProvider.MANAGE_DOMAINS)
         );
     }
 
     private boolean isAnonymous(String name){
         return name.equals("anonymous") || user.getId().equals("anonymous");
+    }
+
+    private AccessControlled getAccessControllerOrganization() {
+        AccessControlled orgBase = Jenkins.getInstance();
+
+        if (organization instanceof AbstractOrganization) {
+            ModifiableTopLevelItemGroup group = ((AbstractOrganization) organization).getGroup();
+            if (group instanceof AccessControlled) {
+                orgBase = (AccessControlled) group;
+            }
+        }
+
+        return orgBase;
     }
 }

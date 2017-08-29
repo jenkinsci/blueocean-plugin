@@ -11,8 +11,13 @@
 .u-selection-style {
     border-color: @brand-primary;
     background-color: lighten(@brand-primary, 37.5%);
+    opacity: 1;
 }
 
+.button-hover-style {
+    opacity: 1;
+    background-color: rgba(74,144,226,0.04);
+}
 
 button.u-selection-style {
     border-color: @brand-primary;
@@ -28,19 +33,10 @@ button.u-selection-style {
     }
 }
 
-.github-credentials-step, .github-choose-discover-step, .github-already-discover-step,
+.github-choose-discover-step, .github-already-discover-step,
 .github-confirm-discover-step, .github-repo-list-step, .github-complete-step {
     .instructions {
         margin-top: 0;
-    }
-}
-
-.github-credentials-step {
-    .text-token {
-        width: 100%;
-    }
-    .button-connect {
-        margin-left: 10px;
     }
 }
 
@@ -59,8 +55,16 @@ button.u-selection-style {
             }
         }
 
-        .List-Item.List-Item-selected {
-            .u-selection-style;
+        .List-Item {
+            opacity: 0.75;
+
+            &:hover {
+                .button-hover-style
+            }
+
+            &.List-Item-selected {
+                .u-selection-style;
+            }
         }
     }
 }
@@ -82,9 +86,18 @@ button.u-selection-style {
         .List {
             width: 100%;
             max-height: 210px;
+            background-color: #F7F9FA;
 
-            .List-Item.List-Item-selected {
-                .u-selection-style;
+            .List-Item {
+                opacity: 0.75;
+
+                &:hover {
+                    .button-hover-style
+                }
+
+                &.List-Item-selected {
+                    .u-selection-style;
+                }
             }
         }
     }
@@ -93,6 +106,17 @@ button.u-selection-style {
         margin-top: 10px;
         align-self: flex-end;
     }
+}
+
+.github-choose-discover-step {
+    button {
+        opacity: 0.75;
+
+        &:hover {
+            .button-hover-style
+        }
+    }
+
 }
 
 // TODO: JDL?

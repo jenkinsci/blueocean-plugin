@@ -15,8 +15,28 @@
 
 // NB: Until we can import them, these decls must be manually kept in sync with JDL
 
-@brand-primary:             #4A90E2;
-@brand-primary-dark:        #1C436A;
+//## Brand colors
+@brand-primary:         #4A90E2; // 74,144,226
+@brand-success:         #78b037;
+@brand-success-lite:    #8CC04F;
+@brand-info:            #3a70b0;
+@brand-info-lite:       #4C9BD5;
+@brand-warning:         #F5A623;
+@brand-warning-lite:    #F6B44B;
+@brand-danger:          #d54c53;
+@brand-danger-lite:     #D54C53;
+@brand-paused:          #24B0D5;
+@brand-paused-lite:     #24B0D5;
+@brand-unknown:         #bd0fe1;
+@brand-unknown-lite:    #D54CC4;
+@brand-grey:            #4A4A4A;
+@brand-grey-lite:       #949393;
+@brand-selection:       lighten(@brand-primary, 20%);
+@brand-input-required:  #24B0D5;
+
+//Misc colors
+@brand-active:          darken(@brand-primary, 20%);
+@white-active:          darken(#fff, 20%);
 
 @action-button:             rgba(53,64,82, 0.25);
 @action-button--hover:      @brand-primary;

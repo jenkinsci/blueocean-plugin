@@ -18,6 +18,7 @@ const resultValues = [
     ['Unstable', 'unstable'],
     ['Aborted', 'aborted'],
     ['Not Built', 'not_built', 77],
+    ['Skipped', 'skipped'],
     ['Unknown', 'unknown'],
     ['Paused', 'paused'],
     ['(invalid)', 'invalid_state'],

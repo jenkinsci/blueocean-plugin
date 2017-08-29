@@ -1,0 +1,64 @@
+.pipeline-page {
+    .ContentPageHeader {
+        .btn-primary {
+            color: #4A90E2;
+            background: #fff;
+            &:hover {
+                color: #fff;
+                background: rgba(255, 255, 255, 0.1);
+            }
+        }
+        .btn-link, .btn-link:hover {
+            background: none !important;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+    }
+
+    .Alert .message {
+        padding-top: 8px;
+        padding-bottom: 8px;
+    }
+
+    .ModalContainer {
+        z-index: 99999;
+    }
+
+    .RadioButtonGroup + .indent-form {
+        margin-left: 24px;
+    }
+
+    .Dialog-button-bar {
+        .btn-link, .btn-link:hover {
+            color: #4A90E2;
+            background: none !important;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+        }
+        .btn-link:hover {
+            text-decoration: underline;
+        }
+    }
+
+    .save-pipeline-dialog {
+        textarea, .TextArea {
+            height: 66px !important;
+            margin-bottom: 7px;
+        }
+        .Dialog-button-bar > .btn-link {
+            margin-left: 0;
+        }
+    }
+}
+
+.actions { // for table actions
+    overflow: visible !important;
+    > div > div {
+        display: inline-block;
+    }
+}

@@ -4,12 +4,18 @@ import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import hudson.scm.RepositoryBrowser;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.BlueIssueFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
+import io.jenkins.blueocean.rest.model.BlueIssue;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import org.kohsuke.stapler.export.ExportedBean;
 
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.URL;
 import java.text.SimpleDateFormat;
@@ -29,7 +35,10 @@ public class ChangeSetResource extends BlueChangeSetEntry {
     private final ChangeLogSet.Entry changeSet;
     private final Reachable parent;
 
-    public ChangeSetResource(Entry changeSet, Reachable parent) {
+    private final BlueOrganization organization;
+
+    public ChangeSetResource(@Nonnull BlueOrganization organization, Entry changeSet, Reachable parent) {
+        this.organization = organization;
         this.changeSet = changeSet;
         this.parent = parent;
     }
@@ -37,13 +46,13 @@ public class ChangeSetResource extends BlueChangeSetEntry {
 
     @Override
     public BlueUser getAuthor() {
-        return new UserImpl(changeSet.getAuthor());
+        return new UserImpl(organization, changeSet.getAuthor());
     }
 
     @Override
     public String getTimestamp(){
         if(changeSet.getTimestamp() > 0) {
-            return new SimpleDateFormat(BlueRun.DATE_FORMAT_STRING).format(changeSet.getTimestamp());
+            return AbstractRunImpl.DATE_FORMAT.print(changeSet.getTimestamp());
         }else{
             return null;
         }
@@ -77,6 +86,12 @@ public class ChangeSetResource extends BlueChangeSetEntry {
     @Override
     public Collection<String> getAffectedPaths() {
         return changeSet.getAffectedPaths();
+    }
+
+    @Nullable
+    @Override
+    public Collection<BlueIssue> getIssues() {
+        return BlueIssueFactory.resolve(changeSet);
     }
 
     @Override

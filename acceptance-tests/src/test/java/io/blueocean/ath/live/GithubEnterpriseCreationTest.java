@@ -3,6 +3,7 @@ package io.blueocean.ath.live;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.CustomJenkinsServer;
 import io.blueocean.ath.Login;
+import io.blueocean.ath.Retry;
 import io.blueocean.ath.pages.blue.GithubAddServerDialogPage;
 import io.blueocean.ath.pages.blue.GithubEnterpriseCreationPage;
 import io.blueocean.ath.util.GithubHelper;
@@ -52,6 +53,7 @@ public class GithubEnterpriseCreationTest {
     }
 
 
+    @Retry(3)
     @Test
     public void testGitHubEnterpriseCreation_addNewGitHubServer() throws IOException {
         String serverName = getServerNameUnique("My Server");
@@ -64,15 +66,22 @@ public class GithubEnterpriseCreationTest {
         dialog.clickSaveServerButton();
         dialog.findFormErrorMessage("enter a name");
         dialog.findFormErrorMessage("enter a valid URL");
-        // server-side URL validation
+
         dialog.enterServerName(serverName);
-        dialog.enterServerUrl("foo");
+        // server-side URL validation (non-GitHub server)
+        dialog.enterServerUrl("http://www.google.com");
         dialog.waitForErrorMessagesGone();
         dialog.clickSaveServerButton();
-        dialog.findFormErrorMessage("Could not connect");
-        // valid form data should submit
+        dialog.findFormErrorMessage("Check hostname");
+        // check GitHub server with invalid path
+        dialog.enterServerUrl("https://github.beescloud.com");
+        dialog.waitForErrorMessagesGone();
+        dialog.clickSaveServerButton();
+        dialog.findFormErrorMessage("Check path");
 
+        // valid form data should submit
         dialog.enterServerUrl(serverUrl);
+        dialog.waitForErrorMessagesGone();
         dialog.clickSaveServerButton();
 
         // As currently api.github.com may up in list thank to github branch source, this can mess up this test

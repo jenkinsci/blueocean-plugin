@@ -1,7 +1,7 @@
 /* eslint-disable */
 import React, {Component} from 'react';
 import {storiesOf, action} from '@kadira/storybook';
-import {ColumnFilter} from '../ColumnFilter'
+import {ColumnFilter} from '../ColumnFilter';
 
 storiesOf('ColumnFilter', module)
     .add('Toggle', basic)

@@ -9,6 +9,7 @@ import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import jenkins.model.Jenkins;
 
@@ -18,10 +19,9 @@ import java.util.List;
 
 public class QueueUtil {
 
-    public static BlueQueueItem getQueuedItem(final hudson.model.Queue.Item item, Job job) {
-
-        for(BlueQueueItem qi: getQueuedItems(job)){
-            if(qi.getId().equalsIgnoreCase(Long.toString(item.getId()))){
+    public static BlueQueueItem getQueuedItem(BlueOrganization organization, final hudson.model.Queue.Item item, Job job) {
+        for(BlueQueueItem qi: getQueuedItems(organization, job)){
+            if(qi.getId() != null && qi.getId().equalsIgnoreCase(Long.toString(item.getId()))){
                 return qi;
             }
         }
@@ -54,7 +54,7 @@ public class QueueUtil {
      *
      * @return List of items newest first
      */
-    public static List<BlueQueueItem> getQueuedItems(Job job) {
+    public static List<BlueQueueItem> getQueuedItems(BlueOrganization organization, Job job) {
         Link pipelineLink = LinkResolver.resolveLink(job);
         if(job instanceof BuildableItem) {
             BuildableItem task = (BuildableItem)job;
@@ -63,6 +63,7 @@ public class QueueUtil {
             for (int i = 0; i < items.size(); i++) {
                 Link self = pipelineLink.rel("queue").rel(Long.toString(items.get(i).getId()));
                 items2.add(0, new QueueItemImpl(
+                    organization,
                     items.get(i),
                     job.getName(),
                     (items.size() == 1 ? job.getNextBuildNumber() : job.getNextBuildNumber() + i), self, pipelineLink));

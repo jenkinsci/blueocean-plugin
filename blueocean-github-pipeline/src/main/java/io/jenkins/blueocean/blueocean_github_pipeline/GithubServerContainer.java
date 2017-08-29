@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
@@ -8,48 +9,51 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
 import com.google.common.hash.Hashing;
-import com.google.common.io.BaseEncoding;
 import hudson.security.ACL;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import net.sf.json.JSONObject;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.collections.ComparatorUtils;
+import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
 import org.jenkinsci.plugins.github_branch_source.GitHubConfiguration;
-import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
-import org.kohsuke.stapler.verb.POST;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.StringWriter;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GithubServerContainer extends Container<GithubServer> {
+public class GithubServerContainer extends ScmServerEndpointContainer {
 
     private static final Logger LOGGER = Logger.getLogger(GithubServerContainer.class.getName());
+    static final String ERROR_MESSAGE_INVALID_SERVER = "Specified URL is not a GitHub server; check hostname";
+    static final String ERROR_MESSAGE_INVALID_APIURL = "Specified URL is not a GitHub API endpoint; check path";
 
     private final Link parent;
+
 
     GithubServerContainer(Link parent) {
         this.parent = parent;
     }
 
-    @POST
-    @WebMethod(name="")
-    @TreeResponse
-    public @CheckForNull GithubServer create(@JsonBody JSONObject request) {
+    public @CheckForNull ScmServerEndpoint create(@JsonBody JSONObject request) {
 
         List<ErrorMessage.Error> errors = Lists.newLinkedList();
 
@@ -83,8 +87,35 @@ public class GithubServerContainer extends Container<GithubServer> {
                 connection.setRequestMethod("GET");
                 connection.setRequestProperty("Content-type", "application/json");
                 connection.connect();
+
                 if (connection.getHeaderField("X-GitHub-Request-Id") == null) {
-                    errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Specified URL is not a Github server"));
+                    errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), ERROR_MESSAGE_INVALID_SERVER));
+                } else {
+                    boolean isGithubCloud = false;
+                    boolean isGithubEnterprise = false;
+
+                    try {
+                        InputStream inputStream;
+                        int code = connection.getResponseCode();
+
+                        if (200 <= code && code < 300) {
+                            inputStream = connection.getInputStream();
+                        } else {
+                            inputStream = connection.getErrorStream();
+                        }
+
+                        TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
+                        Map<String, String> responseBody = GithubScm.om.readValue(inputStream, typeRef);
+
+                        isGithubCloud = code == 200 && responseBody.containsKey("current_user_url");
+                        isGithubEnterprise = code == 401 && responseBody.containsKey("message");
+                    } catch (IOException ioe) {
+                        LOGGER.log(Level.INFO, "Could not parse response body from Github");
+                    }
+
+                    if (!isGithubCloud && !isGithubEnterprise) {
+                        errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), ERROR_MESSAGE_INVALID_APIURL));
+                    }
                 }
             } catch (Throwable e) {
                 errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), e.toString()));
@@ -137,16 +168,16 @@ public class GithubServerContainer extends Container<GithubServer> {
     }
 
     @Override
-    public Iterator<GithubServer> iterator() {
+    public Iterator<ScmServerEndpoint> iterator() {
         List<Endpoint> endpoints = Ordering.from(new Comparator<Endpoint>() {
             @Override
             public int compare(Endpoint o1, Endpoint o2) {
                 return ComparatorUtils.NATURAL_COMPARATOR.compare(o1.getName(), o2.getName());
             }
         }).sortedCopy(GitHubConfiguration.get().getEndpoints());
-        return Iterators.transform(endpoints.iterator(), new Function<Endpoint, GithubServer>() {
+        return Iterators.transform(endpoints.iterator(), new Function<Endpoint, ScmServerEndpoint>() {
             @Override
-            public GithubServer apply(Endpoint input) {
+            public ScmServerEndpoint apply(Endpoint input) {
                 return new GithubServer(input, getLink());
             }
         });
@@ -160,9 +191,9 @@ public class GithubServerContainer extends Container<GithubServer> {
     }
 
     private GithubServer findByName(final String name) {
-        return Iterators.find(iterator(), new Predicate<GithubServer>() {
+        return (GithubServer) Iterators.find(iterator(), new Predicate<ScmServerEndpoint>() {
             @Override
-            public boolean apply(GithubServer input) {
+            public boolean apply(ScmServerEndpoint input) {
                 return input.getName().equals(name);
             }
         }, null);
