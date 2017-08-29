@@ -1,6 +1,6 @@
-import React, {Component, PropTypes} from 'react';
+import React from 'react';
 import { storiesOf } from '@kadira/storybook';
-import {PipelineGraph, defaultLayout} from '../components/PipelineGraph';
+import {PipelineGraph} from '../components/pipeline/PipelineGraph';
 
 import { StatusIndicator } from '../components';
 const validResultValues = StatusIndicator.validResultValues;
@@ -12,7 +12,6 @@ storiesOf('PipelineGraph', module)
     .add('Duplicate Names', renderWithDuplicateNames)
     .add('Fat', renderFlatPipelineFat)
     .add('Legend', renderFlatPipeline)
-    .add('Constructor', renderConstructomatic)
     .add('Listeners', renderListenersPipeline)
     .add('Parallel', renderParallelPipeline)
     .add('Parallel (Deep)', renderParallelPipelineDeep);
@@ -94,32 +93,6 @@ function renderFlatPipelineFat() {
             <PipelineGraph stages={stages} layout={layout}/>
         </div>
     );
-}
-
-
-function renderConstructomatic() {
-
-    const stages = [
-        makeNode("Success", [], validResultValues.success),
-        makeNode("Failure", [], validResultValues.failure),
-        makeNode("Running", [
-            makeNode("Job 1", [], validResultValues.running),
-            makeNode("Job 2", [], validResultValues.running),
-            makeNode("Job 3", [], validResultValues.running)
-        ]),
-        makeNode("Skipped", [], validResultValues.skipped),
-        makeNode("Queued", [
-            makeNode("Job 4", [], validResultValues.queued),
-            makeNode("This is Job number 5", [], validResultValues.queued),
-            makeNode("Job 6", [], validResultValues.queued),
-            makeNode("Job 7", [], validResultValues.queued),
-            makeNode("Job 8", [], validResultValues.queued)
-        ]),
-        makeNode("Not Built", [], validResultValues.not_built),
-        makeNode("Bad data", [], "this is not my office")
-    ];
-
-    return <PipelineGraphConstructionKit stages={stages}/>;
 }
 
 function renderListenersPipeline() {
@@ -290,83 +263,3 @@ function makeNode(name, children = [], state = validResultValues.not_built, comp
     return {name, children, state, completePercent, id};
 }
 
-/// Wrap a PipelineGraph with some controls to tweak the layout properties
-class PipelineGraphConstructionKit extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {layout: defaultLayout};
-    }
-
-    control(label, property, min, max) {
-        const value = this.state.layout[property];
-
-        const changed = (e) => {
-            const value = e.target.value;
-
-            const layout = Object.assign({}, this.state.layout);
-            layout[property] = parseInt(value);
-
-            this.setState({layout});
-        };
-
-        return (
-            <tr>
-                <td>{label}</td>
-                <td><input type="range" min={min} max={max} defaultValue={value} onChange={changed}/></td>
-                <td>{value}</td>
-            </tr>
-        );
-    }
-
-    render() {
-
-        const wrapperStyle = {
-            margin: "5px",
-            padding: "10px",
-            border: "dashed 1px #ccc",
-            borderRadius: "10px"
-        };
-
-        const tableStyle = {
-            width: "auto",
-            borderSpacing: "5px",
-            borderCollapse: "separate"
-        };
-
-        const controlDivStyle = {
-            display: "flex",
-            justifyContent: "center"
-        };
-
-        return (
-            <div style={wrapperStyle}>
-                <h1>PipelineGraph Construct-o-matic&trade;</h1>
-                <div style={controlDivStyle}>
-                    <table style={tableStyle}>
-                        <tbody>
-                        {this.control("Line Thickness", "connectorStrokeWidth", 1, 20)}
-                        {this.control("Curve Radius", "curveRadius", 0, 50)}
-                        {this.control("H Spacing", "nodeSpacingH", 10, 200)}
-                        {this.control("V Spacing", "nodeSpacingV", 10, 200)}
-                        </tbody>
-                    </table>
-                    <table style={tableStyle}>
-                        <tbody>
-                        {this.control("Node radius", "nodeRadius", 5, 40)}
-                        {this.control("Big Label offset", "labelOffsetV", 0, 100)}
-                        {this.control("Small Label offset", "smallLabelOffsetV", 0, 100)}
-                        </tbody>
-                    </table>
-                </div>
-                <PipelineGraph stages={this.props.stages}
-                               layout={this.state.layout}
-                               onNodeClick={this.props.onNodeClick}/>
-            </div>
-        );
-    }
-}
-
-PipelineGraphConstructionKit.propTypes = {
-    stages: PropTypes.array,
-    onNodeClick: PropTypes.func
-};
