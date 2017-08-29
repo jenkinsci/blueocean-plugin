@@ -47,7 +47,7 @@ public class BlueJUnitTrend extends BlueTrend {
         return parent.rel(getId());
     }
 
-    public class JUnitHistoryTable extends BlueTable {
+    public static class JUnitHistoryTable extends BlueTable {
 
         private final Iterator<BlueRun> runs;
 
