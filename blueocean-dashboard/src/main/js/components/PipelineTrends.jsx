@@ -11,7 +11,7 @@ export class PipelineTrends extends Component {
 
     componentWillMount() {
         const { pipeline } = this.props;
-        const baseUrl = `${AppConfig.getRestRoot()}/organizations/${AppConfig.getOrganizationName()}/pipelines/${encodeURIComponent(pipeline.fullName)}`;
+        const baseUrl = `${AppConfig.getRestRoot()}/organizations/${AppConfig.getOrganizationName()}/pipelines/${pipeline.fullName}`;
 
         let fullUrl;
 
