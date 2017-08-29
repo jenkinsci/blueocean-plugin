@@ -166,6 +166,18 @@
     <build>
         <plugins>
             <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <configuration>
+                    <excludes>
+                        <!-- temporarily exclude junit trends code -->
+                        <exclude>io/jenkins/blueocean/service/embedded/rest/BlueTrendContainerImpl*</exclude>
+                        <exclude>io/jenkins/blueocean/service/embedded/rest/junit/*</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
                 <version>3.0.2</version>
