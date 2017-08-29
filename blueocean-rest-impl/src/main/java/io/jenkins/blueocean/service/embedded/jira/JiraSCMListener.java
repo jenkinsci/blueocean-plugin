@@ -36,6 +36,9 @@ public class JiraSCMListener extends SCMListener {
         }
         String jql = constructJQLQuery(issueKeys);
         JiraSession session = jiraSite.getSession();
+        if (session == null) {
+            return;
+        }
         // Query for JIRA issues
         Set<JiraIssue> issuesFromJqlSearch = Sets.newHashSet(Iterables.transform(session.getIssuesFromJqlSearch(jql), new Function<Issue, JiraIssue>() {
             @Override

@@ -1,0 +1,3271 @@
+[{
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/13-parallel-synthetic/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/13-parallel-synthetic/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/13-parallel-synthetic/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "Parallel",
+    "durationInMillis": 23050,
+    "id": "13-parallel-synthetic",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T11:19:18.063-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "13"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "14"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "15"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "16"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "17"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "18"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "19"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "20"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "21"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "22"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/13/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/13/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/13/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "0",
+    "durationInMillis": 2312,
+    "id": "13",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:58.876-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "64-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/14/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/14/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/14/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "1",
+    "durationInMillis": 2309,
+    "id": "14",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:58.879-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "64-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/15/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/15/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/15/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "2",
+    "durationInMillis": 2308,
+    "id": "15",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:58.880-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "64-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/16/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/16/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/16/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "3",
+    "durationInMillis": 2306,
+    "id": "16",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:58.882-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "64-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/17/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/17/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/17/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "4",
+    "durationInMillis": 2305,
+    "id": "17",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:58.883-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "64-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/18/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/18/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/18/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "5",
+    "durationInMillis": 2304,
+    "id": "18",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:58.884-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "64-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/19/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/19/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/19/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "6",
+    "durationInMillis": 2303,
+    "id": "19",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:58.885-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "64-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/20/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/20/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/20/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "7",
+    "durationInMillis": 2302,
+    "id": "20",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:58.886-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "64-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/21/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/21/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/21/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "8",
+    "durationInMillis": 2301,
+    "id": "21",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:58.887-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "64-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/22/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/22/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/22/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "9",
+    "durationInMillis": 2300,
+    "id": "22",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:58.888-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "64-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/64-parallel-synthetic/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/64-parallel-synthetic/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/64-parallel-synthetic/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "Parallel",
+    "durationInMillis": 41956,
+    "id": "64-parallel-synthetic",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T11:19:18.056-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "64"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "65"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "74"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "75"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "76"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "77"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "78"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "79"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "80"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "81"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "82"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "83"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "66"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "67"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "68"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "69"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "70"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "71"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "72"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "73"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/64/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/64/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/64/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "0",
+    "durationInMillis": 2108,
+    "id": "64",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.080-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/65/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/65/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/65/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "1",
+    "durationInMillis": 2107,
+    "id": "65",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.081-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/74/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/74/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/74/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "10",
+    "durationInMillis": 2097,
+    "id": "74",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.091-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/75/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/75/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/75/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "11",
+    "durationInMillis": 2096,
+    "id": "75",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.092-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/76/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/76/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/76/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "12",
+    "durationInMillis": 2095,
+    "id": "76",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.093-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/77/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/77/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/77/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "13",
+    "durationInMillis": 2094,
+    "id": "77",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.094-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/78/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/78/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/78/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "14",
+    "durationInMillis": 2093,
+    "id": "78",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.095-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/79/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/79/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/79/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "15",
+    "durationInMillis": 2092,
+    "id": "79",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.096-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/80/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/80/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/80/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "16",
+    "durationInMillis": 2091,
+    "id": "80",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.097-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/81/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/81/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/81/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "17",
+    "durationInMillis": 2090,
+    "id": "81",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.098-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/82/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/82/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/82/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "18",
+    "durationInMillis": 2089,
+    "id": "82",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.099-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/83/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/83/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/83/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "19",
+    "durationInMillis": 2088,
+    "id": "83",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.100-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/66/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/66/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/66/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "2",
+    "durationInMillis": 2106,
+    "id": "66",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.082-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/67/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/67/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/67/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "3",
+    "durationInMillis": 2105,
+    "id": "67",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.083-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/68/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/68/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/68/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "4",
+    "durationInMillis": 2103,
+    "id": "68",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.085-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/69/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/69/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/69/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "5",
+    "durationInMillis": 2103,
+    "id": "69",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.085-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/70/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/70/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/70/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "6",
+    "durationInMillis": 2102,
+    "id": "70",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.086-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/71/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/71/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/71/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "7",
+    "durationInMillis": 2100,
+    "id": "71",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.088-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/72/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/72/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/72/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "8",
+    "durationInMillis": 2099,
+    "id": "72",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.089-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/73/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/73/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/73/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "9",
+    "durationInMillis": 2098,
+    "id": "73",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.090-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/145-parallel-synthetic/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/145-parallel-synthetic/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/145-parallel-synthetic/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "Parallel",
+    "durationInMillis": 35255,
+    "id": "145-parallel-synthetic",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T11:19:18.044-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "145"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "146"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "155"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "156"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "157"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "158"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "159"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "160"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "161"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "162"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "163"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "164"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "147"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "148"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "149"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "150"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "151"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "152"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "153"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "154"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/145/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/145/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/145/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "0",
+    "durationInMillis": 1779,
+    "id": "145",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.409-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/146/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/146/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/146/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "1",
+    "durationInMillis": 1777,
+    "id": "146",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.411-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/155/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/155/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/155/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "10",
+    "durationInMillis": 1762,
+    "id": "155",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.426-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/156/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/156/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/156/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "11",
+    "durationInMillis": 1761,
+    "id": "156",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.427-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/157/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/157/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/157/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "12",
+    "durationInMillis": 1759,
+    "id": "157",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.429-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/158/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/158/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/158/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "13",
+    "durationInMillis": 1757,
+    "id": "158",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.431-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/159/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/159/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/159/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "14",
+    "durationInMillis": 1755,
+    "id": "159",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.433-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/160/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/160/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/160/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "15",
+    "durationInMillis": 1753,
+    "id": "160",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.435-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/161/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/161/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/161/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "16",
+    "durationInMillis": 1751,
+    "id": "161",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.437-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/162/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/162/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/162/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "17",
+    "durationInMillis": 1749,
+    "id": "162",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.439-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/163/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/163/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/163/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "18",
+    "durationInMillis": 1747,
+    "id": "163",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.441-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/164/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/164/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/164/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "19",
+    "durationInMillis": 1746,
+    "id": "164",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.442-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/147/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/147/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/147/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "2",
+    "durationInMillis": 1776,
+    "id": "147",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.412-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/148/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/148/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/148/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "3",
+    "durationInMillis": 1774,
+    "id": "148",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.414-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/149/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/149/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/149/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "4",
+    "durationInMillis": 1773,
+    "id": "149",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.415-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/150/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/150/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/150/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "5",
+    "durationInMillis": 1771,
+    "id": "150",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.417-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/151/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/151/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/151/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "6",
+    "durationInMillis": 1769,
+    "id": "151",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.419-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/152/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/152/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/152/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "7",
+    "durationInMillis": 1767,
+    "id": "152",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.421-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/153/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/153/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/153/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "8",
+    "durationInMillis": 1765,
+    "id": "153",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.423-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/154/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/154/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/154/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "9",
+    "durationInMillis": 1764,
+    "id": "154",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.424-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/226-parallel-synthetic/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/226-parallel-synthetic/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/226-parallel-synthetic/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "Parallel",
+    "durationInMillis": 28382,
+    "id": "226-parallel-synthetic",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T11:19:18.034-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "226"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "227"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "236"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "237"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "238"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "239"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "240"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "241"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "242"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "243"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "244"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "245"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "228"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "229"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "230"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "231"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "232"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "233"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "234"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "235"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/226/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/226/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/226/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "0",
+    "durationInMillis": 1429,
+    "id": "226",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.759-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/227/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/227/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/227/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "1",
+    "durationInMillis": 1427,
+    "id": "227",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.761-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/236/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/236/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/236/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "10",
+    "durationInMillis": 1418,
+    "id": "236",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.770-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/237/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/237/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/237/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "11",
+    "durationInMillis": 1417,
+    "id": "237",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.771-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/238/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/238/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/238/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "12",
+    "durationInMillis": 1417,
+    "id": "238",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.771-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/239/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/239/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/239/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "13",
+    "durationInMillis": 1416,
+    "id": "239",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.772-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/240/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/240/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/240/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "14",
+    "durationInMillis": 1415,
+    "id": "240",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.773-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/241/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/241/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/241/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "15",
+    "durationInMillis": 1414,
+    "id": "241",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.774-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/242/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/242/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/242/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "16",
+    "durationInMillis": 1413,
+    "id": "242",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.775-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/243/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/243/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/243/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "17",
+    "durationInMillis": 1413,
+    "id": "243",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.775-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/244/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/244/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/244/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "18",
+    "durationInMillis": 1412,
+    "id": "244",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.776-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/245/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/245/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/245/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "19",
+    "durationInMillis": 1411,
+    "id": "245",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.777-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/228/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/228/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/228/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "2",
+    "durationInMillis": 1426,
+    "id": "228",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.762-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/229/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/229/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/229/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "3",
+    "durationInMillis": 1425,
+    "id": "229",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.763-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/230/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/230/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/230/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "4",
+    "durationInMillis": 1424,
+    "id": "230",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.764-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/231/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/231/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/231/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "5",
+    "durationInMillis": 1423,
+    "id": "231",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.765-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/232/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/232/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/232/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "6",
+    "durationInMillis": 1422,
+    "id": "232",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.766-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/233/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/233/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/233/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "7",
+    "durationInMillis": 1421,
+    "id": "233",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.767-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/234/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/234/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/234/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "8",
+    "durationInMillis": 1420,
+    "id": "234",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.768-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/235/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/235/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/235/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "9",
+    "durationInMillis": 1419,
+    "id": "235",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:07:59.769-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337-parallel-synthetic"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/337-parallel-synthetic/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/337-parallel-synthetic/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/337-parallel-synthetic/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "Parallel",
+    "durationInMillis": 53258,
+    "id": "337-parallel-synthetic",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T11:19:18.027-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": [{
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "337"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "338"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "347"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "348"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "349"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "350"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "351"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "352"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "353"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "354"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "355"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "356"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "339"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "357"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "358"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "359"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "360"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "361"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "362"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "363"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "364"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "365"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "366"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "340"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "367"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "368"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "369"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "370"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "371"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "372"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "373"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "374"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "375"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "376"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "341"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "377"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "378"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "379"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "380"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "381"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "382"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "383"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "384"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "385"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "386"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "342"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "343"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "344"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "345"
+    }, {
+        "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl$EdgeImpl",
+        "id": "346"
+    }]
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/337/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/337/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/337/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "0",
+    "durationInMillis": 1095,
+    "id": "337",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.093-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/338/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/338/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/338/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "1",
+    "durationInMillis": 1094,
+    "id": "338",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.094-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/347/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/347/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/347/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "10",
+    "durationInMillis": 1081,
+    "id": "347",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.107-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/348/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/348/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/348/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "11",
+    "durationInMillis": 1080,
+    "id": "348",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.108-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/349/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/349/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/349/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "12",
+    "durationInMillis": 1078,
+    "id": "349",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.110-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/350/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/350/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/350/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "13",
+    "durationInMillis": 1077,
+    "id": "350",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.111-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/351/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/351/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/351/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "14",
+    "durationInMillis": 1076,
+    "id": "351",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.112-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/352/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/352/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/352/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "15",
+    "durationInMillis": 1074,
+    "id": "352",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.114-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/353/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/353/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/353/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "16",
+    "durationInMillis": 1073,
+    "id": "353",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.115-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/354/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/354/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/354/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "17",
+    "durationInMillis": 1071,
+    "id": "354",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.117-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/355/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/355/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/355/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "18",
+    "durationInMillis": 1069,
+    "id": "355",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.119-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/356/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/356/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/356/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "19",
+    "durationInMillis": 1068,
+    "id": "356",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.120-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/339/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/339/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/339/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "2",
+    "durationInMillis": 1093,
+    "id": "339",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.095-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/357/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/357/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/357/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "20",
+    "durationInMillis": 1066,
+    "id": "357",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.122-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/358/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/358/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/358/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "21",
+    "durationInMillis": 1065,
+    "id": "358",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.123-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/359/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/359/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/359/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "22",
+    "durationInMillis": 1065,
+    "id": "359",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.123-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/360/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/360/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/360/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "23",
+    "durationInMillis": 1064,
+    "id": "360",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.124-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/361/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/361/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/361/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "24",
+    "durationInMillis": 1063,
+    "id": "361",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.125-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/362/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/362/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/362/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "25",
+    "durationInMillis": 1063,
+    "id": "362",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.125-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/363/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/363/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/363/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "26",
+    "durationInMillis": 1062,
+    "id": "363",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.126-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/364/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/364/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/364/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "27",
+    "durationInMillis": 1061,
+    "id": "364",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.127-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/365/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/365/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/365/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "28",
+    "durationInMillis": 1060,
+    "id": "365",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.128-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/366/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/366/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/366/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "29",
+    "durationInMillis": 1059,
+    "id": "366",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.129-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/340/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/340/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/340/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "3",
+    "durationInMillis": 1091,
+    "id": "340",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.097-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}, {
+    "_class": "io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeImpl",
+    "_links": {
+        "self": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/367/"
+        },
+        "actions": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/367/actions/"
+        },
+        "steps": {
+            "_class": "io.jenkins.blueocean.rest.hal.Link",
+            "href": "/blue/rest/organizations/jenkins/pipelines/bug-repros/branches/JENKINS-46436-parallel-graph-error/runs/1/nodes/367/steps/"
+        }
+    },
+    "actions": [],
+    "displayDescription": null,
+    "displayName": "30",
+    "durationInMillis": 1059,
+    "id": "367",
+    "input": null,
+    "result": "SUCCESS",
+    "startTime": "2017-08-25T10:08:00.129-0400",
+    "state": "FINISHED",
+    "causeOfBlockage": null,
+    "edges": []
+}]
