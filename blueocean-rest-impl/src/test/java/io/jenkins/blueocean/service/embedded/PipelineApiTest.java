@@ -819,7 +819,7 @@ public class PipelineApiTest extends BaseTest {
 
         resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/?tree=*[*]", Map.class);
         actions = (List<Map>) resp.get("actions");
-        Assert.assertEquals(2, actions.size());
+        Assert.assertFalse(actions.isEmpty());
     }
 
     /**
