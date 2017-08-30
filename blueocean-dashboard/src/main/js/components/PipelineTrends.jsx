@@ -10,6 +10,16 @@ import { ColumnFilter } from './ColumnFilter';
 
 export const MULTIBRANCH_PIPELINE = 'io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline';
 
+function formatJunitRows(rawRows) {
+    const rows = (rawRows || []).slice();
+    rows.sort((row1, row2) => parseInt(row1.id) - parseInt(row2.id));
+    return rows.filter(row => !!row.total);
+}
+
+const formatters = {
+    junit: formatJunitRows,
+};
+
 
 @observer
 export class PipelineTrends extends Component {
@@ -102,13 +112,14 @@ export class PipelineTrends extends Component {
 
                 <div className="trends-table">
                 { trends.map(trend => {
-                    const data = trend.rows.sort((row1, row2) => row1.id.localeCompare(row2.id));
+                    const formatter = formatters[trend.id] || function noFormat(row) { return row; };
+                    const rows = formatter(trend.rows);
 
                     return (
                         <div className="trends-chart-container" data-trend-id={trend.id}>
                             <div className="trends-chart-label">{trend.id}</div>
 
-                            <LineChart width={400} height={400} data={data}>
+                            <LineChart width={400} height={400} data={rows}>
                                 <Line type="monotone" dataKey="total" stroke="#8884d8" />
                                 <CartesianGrid stroke="#ccc" />
                                 <XAxis dataKey="id" />
