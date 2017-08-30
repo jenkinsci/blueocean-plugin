@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { action, observable } from 'mobx';
 import { observer } from 'mobx-react';
-import { CartesianGrid, LineChart, Line, XAxis, YAxis } from 'recharts';
+import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
 import { capable, AppConfig, Fetch } from '@jenkins-cd/blueocean-core-js';
 
 import { buildPipelineUrl } from '../util/UrlUtils';
@@ -16,8 +16,21 @@ function formatJunitRows(rawRows) {
     return rows.filter(row => !!row.total);
 }
 
-const formatters = {
+function createJunitSeries() {
+    return [
+        <Line type="monotone" dataKey="total" stroke="#4A90E2" />,
+        <Line type="monotone" dataKey="passed" stroke="#78b037" />,
+        <Line type="monotone" dataKey="failed" stroke="#d54c53" />,
+        <Line type="monotone" dataKey="skipped" stroke="#4A4A4A" />,
+    ];
+}
+
+const formatterFuncs = {
     junit: formatJunitRows,
+};
+
+const seriesFuncs = {
+    junit: createJunitSeries,
 };
 
 
@@ -112,18 +125,23 @@ export class PipelineTrends extends Component {
 
                 <div className="trends-table">
                 { trends.map(trend => {
-                    const formatter = formatters[trend.id] || function noFormat(row) { return row; };
-                    const rows = formatter(trend.rows);
+                    const formatterFunc = formatterFuncs[trend.id] || function noFormat(row) { return row; };
+                    const seriesFunc = seriesFuncs[trend.id] || function empty() { return []; };
+
+                    const rows = formatterFunc(trend.rows);
+                    const series = seriesFunc();
 
                     return (
                         <div className="trends-chart-container" data-trend-id={trend.id}>
                             <div className="trends-chart-label">{trend.id}</div>
 
                             <LineChart width={400} height={400} data={rows}>
-                                <Line type="monotone" dataKey="total" stroke="#8884d8" />
-                                <CartesianGrid stroke="#ccc" />
+                                <CartesianGrid strokeDasharray="3 3" />
                                 <XAxis dataKey="id" />
                                 <YAxis />
+                                {series}
+                                <Legend />
+                                <Tooltip />
                             </LineChart>
                         </div>
                     );
