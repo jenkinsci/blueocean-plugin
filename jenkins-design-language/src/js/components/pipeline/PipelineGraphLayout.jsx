@@ -6,8 +6,10 @@ import type {
     NodeColumn,
     LabelInfo,
     LayoutInfo,
-    StageInfo,
+    StageInfo, NodeInfo,
 } from './PipelineGraphModel';
+
+const SORT_COLUMN_ROWS = false;
 
 // TODO: Docs
 export function layoutGraph(newStages: Array<StageInfo>, layout: LayoutInfo) {
@@ -109,6 +111,20 @@ function createNodeColumns(topLevelStages: Array<StageInfo> = []): Array<NodeCol
                 }
                 column.rows.push(rowNodes);
             }
+        }
+
+        if (SORT_COLUMN_ROWS) {
+            // Sort by row length for visual appeal when connectors don't all line up vertically
+            const originalOrder = column.rows.concat();
+            column.rows.sort((left: Array<NodeInfo>, right: Array<NodeInfo>) => {
+                if (left.length < right.length) {
+                    return -1;
+                }
+                if (left.length > right.length) {
+                    return 1;
+                }
+                return (originalOrder.indexOf(left) < originalOrder.indexOf(right)) ? -1 : 1; // For stability
+            });
         }
 
         nodeColumns.push(column);
@@ -248,13 +264,24 @@ function createConnections(columns: Array<NodeColumn>) {
             continue;
         }
 
-        // TODO: Connections within multi-node rows
+        // Connections to each row in this column
         if (sourceNodes.length) {
             connections.push({
                 sourceNodes,
                 destinationNodes: column.rows.map(row => row[0]), // First node of each row
                 skippedNodes: skippedNodes,
             });
+        }
+
+        // Connections between nodes within each row
+        for (const row of column.rows) {
+            for (let i = 0; i < row.length - 1; i++) {
+                connections.push({
+                    sourceNodes: [row[i]],
+                    destinationNodes: [row[i + 1]],
+                    skippedNodes: [],
+                });
+            }
         }
 
         sourceNodes = column.rows.map(row => row[row.length - 1]); // Last node of each row
