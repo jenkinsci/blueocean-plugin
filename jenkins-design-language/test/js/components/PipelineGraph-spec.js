@@ -25,6 +25,12 @@ function assertNode(node, text, x, y) {
     assert.equal(node.y, y, `node ${text} y`);
 }
 
+function assertSingleNodeRow(row, text, x, y) {
+    assert.ok(row, `row for ${text} exists`);
+    assert.equal(row.length, 1, `row for ${text} is single node`);
+    assertNode(row[0], text, x, y);
+}
+
 function assertLabel(labels, text, x,y) {
     const label = labels.find(label => label.text === text);
     assert.ok(label, `label ${text} exists`);
@@ -100,77 +106,77 @@ describe('PipelineGraph', () => {
             // Start col
             let col = nodeColumns[0];
             assert.equal(undefined, col.topStage, 'topStage');
-            assert.equal(1, col.nodes.length);
-            assertNode(col.nodes[0], 'Start', 60, 55);
+            assert.equal(1, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'Start', 60, 55);
 
             // End col
             col = nodeColumns[9];
             assert.equal(undefined, col.topStage, 'topStage');
-            assert.equal(1, col.nodes.length);
-            assertNode(col.nodes[0], 'End', 1068, 55);
+            assert.equal(1, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'End', 1068, 55);
 
             // Col 1
             col = nodeColumns[1];
             assert.ok(col.topStage, 'topStage');
             assert.equal(col.topStage.name, 'Build', 'top stage name');
-            assert.equal(1, col.nodes.length);
-            assertNode(col.nodes[0], 'Build', 144, 55);
+            assert.equal(1, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'Build', 144, 55);
 
             // Col 2
             col = nodeColumns[2];
             assert.ok(col.topStage, 'topStage');
             assert.equal(col.topStage.name, 'Test', 'top stage name');
-            assert.equal(3, col.nodes.length);
-            assertNode(col.nodes[0], 'JUnit', 264, 55);
-            assertNode(col.nodes[1], 'DBUnit', 264, 125);
-            assertNode(col.nodes[2], 'Jasmine', 264, 195);
+            assert.equal(3, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'JUnit', 264, 55);
+            assertSingleNodeRow(col.rows[1], 'DBUnit', 264, 125);
+            assertSingleNodeRow(col.rows[2], 'Jasmine', 264, 195);
 
             // Col 3
             col = nodeColumns[3];
             assert.ok(col.topStage, 'topStage');
             assert.equal(col.topStage.name, 'Browser Tests', 'top stage name');
-            assert.equal(4, col.nodes.length);
-            assertNode(col.nodes[0], 'Firefox', 384, 55);
-            assertNode(col.nodes[1], 'Edge', 384, 125);
-            assertNode(col.nodes[2], 'Safari', 384, 195);
-            assertNode(col.nodes[3], 'Chrome', 384, 265);
+            assert.equal(4, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'Firefox', 384, 55);
+            assertSingleNodeRow(col.rows[1], 'Edge', 384, 125);
+            assertSingleNodeRow(col.rows[2], 'Safari', 384, 195);
+            assertSingleNodeRow(col.rows[3], 'Chrome', 384, 265);
 
             // Col 4
             col = nodeColumns[4];
             assert.ok(col.topStage, 'topStage');
             assert.equal(col.topStage.name, 'Skizzled', 'top stage name');
-            assert.equal(1, col.nodes.length);
-            assertNode(col.nodes[0], 'Skizzled', 504, 55);
+            assert.equal(1, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'Skizzled', 504, 55);
 
             // Col 5
             col = nodeColumns[5];
             assert.ok(col.topStage, 'topStage');
             assert.equal(col.topStage.name, 'Foshizzle', 'top stage name');
-            assert.equal(1, col.nodes.length);
-            assertNode(col.nodes[0], 'Foshizzle', 624, 55);
+            assert.equal(1, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'Foshizzle', 624, 55);
 
             // Col 6
             col = nodeColumns[6];
             assert.ok(col.topStage, 'topStage');
             assert.equal(col.topStage.name, 'Dev', 'top stage name');
-            assert.equal(3, col.nodes.length);
-            assertNode(col.nodes[0], 'US-East', 744, 55);
-            assertNode(col.nodes[1], 'US-West', 744, 125);
-            assertNode(col.nodes[2], 'APAC', 744, 195);
+            assert.equal(3, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'US-East', 744, 55);
+            assertSingleNodeRow(col.rows[1], 'US-West', 744, 125);
+            assertSingleNodeRow(col.rows[2], 'APAC', 744, 195);
 
             // Col 7
             col = nodeColumns[7];
             assert.ok(col.topStage, 'topStage');
             assert.equal(col.topStage.name, 'Staging', 'top stage name');
-            assert.equal(1, col.nodes.length);
-            assertNode(col.nodes[0], 'Staging', 864, 55);
+            assert.equal(1, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'Staging', 864, 55);
 
             // Col 8
             col = nodeColumns[8];
             assert.ok(col.topStage, 'topStage');
             assert.equal(col.topStage.name, 'Production', 'top stage name');
-            assert.equal(1, col.nodes.length);
-            assertNode(col.nodes[0], 'Production', 984, 55);
+            assert.equal(1, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'Production', 984, 55);
 
             // Big Labels
             assertLabel(bigLabels, 'Start', 60, 55);

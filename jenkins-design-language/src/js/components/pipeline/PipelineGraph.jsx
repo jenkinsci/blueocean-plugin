@@ -566,11 +566,13 @@ export class PipelineGraph extends Component {
         const highlightRadius = nodeRadius + (0.49 * connectorStrokeWidth);
         let selectedNode = null;
 
-        for (const column of this.state.nodeColumns) {
-            for (const node of column.nodes) {
-                if (node.isPlaceholder === false && this.stageIsSelected(node.stage)) {
-                    selectedNode = node;
-                    break;
+        columnLoop: for (const column of this.state.nodeColumns) {
+            for (const row of column.rows) {
+                for (const node of row) {
+                    if (node.isPlaceholder === false && this.stageIsSelected(node.stage)) {
+                        selectedNode = node;
+                        break columnLoop;
+                    }
                 }
             }
         }
@@ -652,11 +654,13 @@ export class PipelineGraph extends Component {
             this.renderCompositeConnection(connection, visualElements);
         });
 
-        nodeColumns.forEach(column => {
-            column.nodes.forEach(node => {
-                this.renderNode(node, visualElements);
-            });
-        });
+        for (const column of nodeColumns) {
+            for (const row of column.rows) {
+                for (const node of row) {
+                    this.renderNode(node, visualElements);
+                }
+            }
+        }
 
         return (
             <div style={outerDivStyle} className="PipelineGraph">
