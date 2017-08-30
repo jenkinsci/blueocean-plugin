@@ -8,6 +8,7 @@ const validResultValues = StatusIndicator.validResultValues;
 storiesOf('PipelineGraph', module)
     .add('Mixed', renderMultiParallelPipeline)
     .add('Edge cases 1', renderEdgeCases1)
+    .add('Multi-stage Parallel', renderMultiStageParallel)
     .add('Long names', renderLongNames)
     .add('Duplicate Names', renderWithDuplicateNames)
     .add('Fat', renderFlatPipelineFat)
@@ -133,12 +134,42 @@ function renderParallelPipeline() {
 
     return (
         <div>
-            <p>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Accusantium
-                consequatur corporis dolores, dolorum eius explicabo hic impedit
-                laborum magni non qui quibusdam sapiente sed sit velit veritatis vero.
-                Error, quibusdam!
-            </p>
+            <PipelineGraph stages={stages}/>
+        </div>
+    );
+}
+
+function renderMultiStageParallel() {
+
+    const stages = [
+        makeNode("Alpha"),
+        makeNode("Bravo", [
+            makeNode("Single 1"),
+            makeNode("Single 2"),
+            makeNode("Single 3"),
+            makeSequence(
+                makeNode("Multi 1 of 3"),
+                makeNode("Multi 2 of 3"),
+                makeNode("Multi 3 of 3"),
+            ),
+            makeSequence(
+                makeNode("Multi 1 of 2"),
+                makeNode("Multi 2 of 2"),
+            ),
+            makeSequence(
+                makeNode("Multi 1 of 4"),
+                makeNode("Multi 2 of 4"),
+                makeNode("Multi 3 of 4"),
+                makeNode("Multi 4 of 4"),
+            ),
+            makeNode("Single 4"),
+        ]),
+        makeNode("Charlie"),
+        makeNode("Delta")
+    ];
+
+    return (
+        <div>
             <PipelineGraph stages={stages}/>
         </div>
     );
@@ -261,5 +292,13 @@ function makeNode(name, children = [], state = validResultValues.not_built, comp
     completePercent = completePercent || ((state == validResultValues.running) ? Math.floor(Math.random() * 60 + 20) : 50);
     const id = __id++;
     return {name, children, state, completePercent, id};
+}
+
+function makeSequence(...stages) {
+    for (let i = 0; i < stages.length - 1; i++) {
+        stages[i].nextSibling = stages[i + 1];
+    }
+
+    return stages[0]; // The model only needs the first in a sequence
 }
 

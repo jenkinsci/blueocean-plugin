@@ -17,13 +17,17 @@ export const defaultLayout = {
 
 // Typedefs
 
+/**
+ * StageInfo is the input, in the form of an Array<StageInfo> of the top-level stages of a pipeline
+ */
 export type StageInfo = {
     name: string,
     title: string,
     state: Result,
     completePercent: number,
     id: number,
-    children: Array<StageInfo>
+    children: Array<StageInfo>, // Used by the top-most stages with parallel branches
+    nextSibling?: StageInfo, // Used within a parallel branch to denote sequential stages
 };
 
 export type StageNodeInfo = {
