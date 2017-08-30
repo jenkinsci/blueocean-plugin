@@ -61,8 +61,9 @@ export type PlaceholderNodeInfo = {
 export type NodeInfo = StageNodeInfo | PlaceholderNodeInfo;
 
 export type NodeColumn = {
-    topStage?: StageInfo,
+    topStage?: StageInfo, // Top-most stage for this column, which will have no rendered nodes if it's parallel
     nodes: Array<NodeInfo>,
+    x: number, // Center X position, for positioning top bigLabel
 }
 
 export type CompositeConnection = {

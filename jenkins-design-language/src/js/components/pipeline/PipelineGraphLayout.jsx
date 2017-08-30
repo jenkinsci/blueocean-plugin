@@ -36,9 +36,9 @@ export function layoutGraph(newStages: Array<StageInfo>, layout: LayoutInfo) {
     };
 
     const allNodeColumns = [
-        { nodes: [startNode] },
+        { nodes: [startNode], x: 0 }, // Column X positons calculated later
         ...stageNodeColumns,
-        { nodes: [endNode] },
+        { nodes: [endNode], x: 0 },
     ];
 
     positionNodes(allNodeColumns, layout);
@@ -84,6 +84,7 @@ function createNodeColumns(topLevelStages: Array<StageInfo> = []): Array<NodeCol
         const column = {
             topStage,
             nodes: [],
+            x: 0, // Layout is done later
         };
 
         column.nodes = stagesForColumn
@@ -128,6 +129,8 @@ function positionNodes(nodeColumns: Array<NodeColumn>, { nodeSpacingH, nodeSpaci
             }
         }
 
+        column.x = xp; // For now, we're still using single-width columns
+
         for (const node of column.nodes) {
             node.x = xp;
             node.y = yp;
@@ -155,7 +158,7 @@ function createBigLabels(columns: Array<NodeColumn>) {
         const key = 'l_b_' + node.key;
 
         labels.push({
-            x: node.x,
+            x: column.x, // bigLabel is located above center of column
             y: node.y,
             node,
             stage,
