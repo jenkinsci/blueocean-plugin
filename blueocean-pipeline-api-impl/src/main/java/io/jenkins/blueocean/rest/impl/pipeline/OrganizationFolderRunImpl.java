@@ -8,6 +8,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
+import io.jenkins.blueocean.rest.model.BlueCoverageSummary;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -185,6 +186,11 @@ public class OrganizationFolderRunImpl extends BlueRun {
 
     @Override
     public BlueTestSummary getTestSummary() {
+        return null;
+    }
+
+    @Override
+    public BlueCoverageSummary getCoverageSummary() {
         return null;
     }
 

@@ -10,9 +10,19 @@ import { ColumnFilter } from './ColumnFilter';
 
 export const MULTIBRANCH_PIPELINE = 'io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline';
 
-function formatJunitRows(rawRows) {
+function sortRowsById(rawRows) {
     const rows = (rawRows || []).slice();
     rows.sort((row1, row2) => parseInt(row1.id) - parseInt(row2.id));
+    return rows;
+}
+
+function formatJunitRows(rawRows) {
+    const rows = sortRowsById(rawRows);
+    return rows.filter(row => !!row.total);
+}
+
+function formatCoverageRows(rawRows) {
+    const rows = sortRowsById(rawRows);
     return rows.filter(row => !!row.total);
 }
 
@@ -25,12 +35,23 @@ function createJunitSeries() {
     ];
 }
 
+function createCoverageSeries() {
+    return [
+        <Line type="monotone" dataKey="branches" stroke="#4A90E2" />,
+        <Line type="monotone" dataKey="lines" stroke="#78b037" />,
+        <Line type="monotone" dataKey="methods" stroke="#F5A623" />,
+        <Line type="monotone" dataKey="classes" stroke="#d54c53" />,
+    ];
+}
+
 const formatterFuncs = {
     junit: formatJunitRows,
+    coverage: sortRowsById,
 };
 
 const seriesFuncs = {
     junit: createJunitSeries,
+    coverage: createCoverageSeries,
 };
 
 
@@ -109,7 +130,7 @@ export class PipelineTrends extends Component {
         }
 
         /*
-        for testing multiple trends
+        for testing layout of many trend charts
         if (this.trends && this.trends.length) {
             for (let index = 0; index < 5; index++) {
                 trends.push(this.trends[0]);
