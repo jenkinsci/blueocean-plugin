@@ -141,10 +141,19 @@ function positionNodes(nodeColumns: Array<NodeColumn>, { nodeSpacingH, nodeSpaci
             }
         }
 
+        let widestRow = 0;
+        for (const row of column.rows) {
+            widestRow = Math.max(widestRow, row.length);
+        }
+
         const xpStart = xp; // Left-most position in this column
         let maxX = xp;
 
         for (const row of column.rows) {
+
+            // Offst the beginning of narrower rows towards column center
+            xp += Math.round((widestRow - row.length) * nodeSpacingH * 0.5);
+
             for (const node of row) {
                 maxX = Math.max(maxX, xp);
                 node.x = xp;
