@@ -1,0 +1,55 @@
+.empty-state {
+  display: flex;
+  justify-content: center;
+
+  @empty-state-primary: #49A3E0;
+  @empty-state-secondary: #4AC2E2;
+
+  .empty-state-container {
+    display: flex;
+    justify-content: center;
+    flex-grow: 1;
+    min-width: 40rem;
+    max-width: 80rem;
+    padding: 4rem 4rem;
+    margin: 4rem 4rem;
+    border-radius: 2px;
+    background-image: linear-gradient(90deg, @empty-state-primary 0%, @empty-state-secondary 100%);
+
+    .empty-state-icon {
+      margin-right: 3rem;
+      display: block;
+      width: 150px;
+      height: 150px;
+      padding-left: 150px;
+
+      .noun-icon(branch);
+      .noun-icon(goat);
+      .noun-icon(shoes);
+    }
+
+    .empty-state-content {
+      color: white;
+      max-width: 40rem;
+
+      h1 {
+        font-size: 2.4rem;
+      }
+
+      button, a {
+        .btn-styles(white, white, @empty-state-primary, white, white);
+      }
+    }
+
+    &.tight-spacing {
+      padding: 0.5rem 0;
+    }
+  }
+}
+
+.noun-icon(@className) {
+  @escapedFilename: escape(@className);
+  &.@{className} {
+    background: url("../icons/nounproject/@{escapedFilename}.svg") no-repeat right center;
+  }
+}

@@ -6,6 +6,7 @@ import hudson.model.Run;
 import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import java.util.List;
@@ -31,7 +32,8 @@ public class ArtifactContainerImplTest extends BaseTest {
         Assert.assertEquals("/job/artifactTest/1/artifact/test/me/out/0.txt", ((Map) artifacts.get(0)).get("url"));
      }
 
-    //@Test TODO needs viveks input
+    // TODO: needs viveks input
+    @Test @Ignore
     public void testArtifact() throws Exception {
         FreeStyleProject p = j.createFreeStyleProject(JOB_NAME);
         p.getBuildersList().add(new Shell("mkdir -p test/me/out; touch test/me/out/{{a..z},{A..Z},{0..99}}.txt"));
@@ -43,5 +45,7 @@ public class ArtifactContainerImplTest extends BaseTest {
         Map artifact = request().get("/organizations/jenkins/pipelines/"+JOB_NAME+"/runs/"+r.getId()+"/artifacts/test%252Fme%252Fout%252F0.txt").build(Map.class);
 
         Assert.assertEquals(100, artifact.size());
-      }
+    }
+
+
 }

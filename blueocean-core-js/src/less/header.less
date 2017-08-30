@@ -123,6 +123,7 @@
     cursor: pointer;
     stroke: none;
     fill: white;
+    vertical-align: bottom;
 
     &:hover {
         stroke: white;
@@ -151,7 +152,8 @@
 
     .clear-icon-container {
         display: none;
-        width: 16px;
+        text-align: center;
+        cursor: pointer;
     }
     .fastsearch-input:not([value=""]) ~ .clear-icon-container {
         display: block;
@@ -159,11 +161,16 @@
 
         .clear {
             width: 16px;
-            cursor: pointer;
             path {
                 fill: rgba(255, 255, 255, 0.5)
             }
         }
+    }
+
+    @supports (-ms-ime-align:auto) {
+        .fastsearch-input ~ div.clear-icon-container.TextInput-icon { 
+            display: none;
+        } 
     }
 
     input.TextInput-control {
@@ -171,9 +178,9 @@
         border: none;
         color: #ffffff;
         font-size: 18px;
-        padding-top: 0px;
+        padding-top: 10px;
         padding-right: 41px;
-        padding-bottom: 0px;
+        padding-bottom: 10px;
         padding-left: 30px;
         cursor: pointer;
 
@@ -185,11 +192,6 @@
         }
         &:-ms-input-placeholder {
             color: transparent;
-        }
-
-        &[value=""] {
-            width: 20px;
-            padding-left: 25px;
         }
 
         &:focus {

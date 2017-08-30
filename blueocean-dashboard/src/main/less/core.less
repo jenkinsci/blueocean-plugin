@@ -21,50 +21,6 @@
     margin: 10px auto;
 }
 
-.activity-table {
-    margin-top: 10px;
-
-    th {
-        width: 75px;
-    }
-
-    .branch {
-        width: 175px;
-    }
-
-    .message {
-        width: 50%;
-    }
-
-    .duration, .completed {
-        width: 125px;
-    }
-
-    .status-link {
-        cursor: pointer;
-    }
-}
-
-.multibranch-table {
-    margin-top: 10px;
-
-    th {
-        width: 100px;
-    }
-
-    .branch {
-        width: 200px;
-    }
-
-    .message {
-        width: 50%;
-    }
-
-    .lastcommit, .completed {
-        width: 125px;
-    }
-}
-
 .pr-table {
     margin-top: 10px;
 
@@ -79,9 +35,7 @@
     .run, .completed {
         width: 125px;
     }
-}
 
-.multibranch-table, .pr-table {
     .actions {
         display: flex;
         align-items: center;
@@ -95,35 +49,12 @@
 }
 
 .changeset-table {
-    th {
-        width: 100px;
-    }
-
-    .author {
-        width: 150px;
-    }
-
-    .message {
-        width: 100%;
-    }
-
-    .date {
-        width: 125px;
-    }
+    margin-left:auto;
+    margin-right:auto;
 }
 
 .artifacts-table {
-    th {
-        width: 100px;
-    }
-
-    .name {
-        width: 100%;
-    }
-
-    .download {
-        text-align: right;
-    }
+    margin: 24px auto 24px auto;
 }
 
 nav.page-title { // so a missing title doesn't destroy the layout
@@ -192,10 +123,13 @@ main {
 
     .result-item-label {
         display: flex;
+        min-width: 0;
 
         .result-item-label-desc {
             max-height: 16px;
             overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
         }
 
         .result-item-label-name {
@@ -228,15 +162,14 @@ code div a.btn-secondary.inverse:hover{
     background-color: @pre-color-hover;
 }
 
-.jdl-table {
-    td.multipleLines {
-        white-space: pre-wrap;
-    }
-}
+.JTable-cell.multipleLines {
 
-.changeset-table {
-    td {
-        vertical-align: top;
+    height:auto;
+    padding-top: 16px;
+    padding-bottom: 16px;
+
+    .JTable-cell-contents {
+        white-space: pre-wrap;
     }
 }
 
@@ -323,20 +256,6 @@ code div a.btn-secondary.inverse:hover{
     }
 }
 
-// FIXME: Remove this once all <table> usages are converted
-.u-table-lr-indents {
-    .cell-link, 
-    td, th {
-        &:first-child {
-            padding-left: 1rem;
-        }
-
-        &:last-child {
-            padding-right: 1rem;
-        }
-    }
-}
-
 a.pipelineRedirectLink svg {
     vertical-align: middle;
     fill: @gray-light;
@@ -406,4 +325,8 @@ a.pipelineRedirectLink svg {
     label {
         font-weight: bold;
     }
+}
+
+.activity .run-button-component {
+    margin-bottom: 16px;
 }

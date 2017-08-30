@@ -2,6 +2,10 @@
 
     display: inline-block;
 
+    .JTable & {
+        height: 24px;
+    }
+
     .replay-button {
         display: inline-block;
         cursor: pointer;
@@ -36,29 +40,5 @@
         }
     }
 
-    // default (light) themeing
-    .svg-icon {
-        fill: @brand-primary;
-
-        &:hover {
-            fill: @brand-primary-dark;
-        }
-    }
-
-    // dark themeing
-    &.dark {
-        .btn {
-            background: transparent;
-            color: white;
-            border-color: white;
-        }
-
-        .svg-icon {
-            fill: white;
-
-            &:hover {
-                fill: #CCC;
-            }
-        }
-    }
+    .action-button-colors;
 }

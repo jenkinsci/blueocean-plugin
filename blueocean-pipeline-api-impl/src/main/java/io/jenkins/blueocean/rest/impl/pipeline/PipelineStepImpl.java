@@ -8,12 +8,14 @@ import hudson.model.Action;
 import hudson.model.FileParameterValue;
 import hudson.model.ParameterDefinition;
 import hudson.model.ParameterValue;
+import io.jenkins.blueocean.commons.JSON;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueInputStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
 import io.jenkins.blueocean.service.embedded.rest.LogAppender;
 import io.jenkins.blueocean.service.embedded.rest.LogResource;
@@ -74,7 +76,12 @@ public class PipelineStepImpl extends BluePipelineStep {
 
     @Override
     public String getDisplayDescription() {
-        return ArgumentsAction.getStepArgumentsAsString(node.getNode());
+        String displayDescription = ArgumentsAction.getStepArgumentsAsString(node.getNode());
+        if (displayDescription != null) {
+            // JENKINS-45099 Remove any control characters that may have found their way out of a script
+            displayDescription = JSON.sanitizeString(displayDescription);
+        }
+        return displayDescription;
     }
 
     @Override
@@ -95,6 +102,11 @@ public class PipelineStepImpl extends BluePipelineStep {
     @Override
     public Long getDurationInMillis() {
         return node.getTiming().getTotalDurationMillis();
+    }
+
+    @Override
+    public String getStartTimeString(){
+        return AbstractRunImpl.DATE_FORMAT.print(getStartTime().getTime());
     }
 
     @Override
@@ -200,7 +212,7 @@ public class PipelineStepImpl extends BluePipelineStep {
             }
 
             //XXX: execution.doProceed(request) expects submitted form, otherwise we could have simply used it
-            preSubmissionCheck(execution);
+            execution.preSubmissionCheck();
 
             Object o = parseValue(execution, JSONArray.fromObject(body.get(PARAMETERS_ELEMENT)), request);
 
@@ -211,17 +223,6 @@ public class PipelineStepImpl extends BluePipelineStep {
             return response;
         } catch (IOException | InterruptedException | TimeoutException e) {
             throw new ServiceException.UnexpectedErrorException("Error processing Input Submit request."+e.getMessage());
-        }
-    }
-
-    //TODO: InputStepException.preSubmissionCheck() is private, remove it after its made public
-    private void preSubmissionCheck(InputStepExecution execution){
-        if (execution.isSettled()) {
-            throw new ServiceException.BadRequestException("This input has been already given");
-        }
-
-        if(!canSubmit(execution.getInput())){
-            throw new ServiceException.BadRequestException("You need to be "+ execution.getInput().getSubmitter() +" to submit this");
         }
     }
 
@@ -277,9 +278,6 @@ public class PipelineStepImpl extends BluePipelineStep {
         } else {
             return v.getValue();
         }
-    }
-    private boolean canSubmit(InputStep inputStep){
-        return inputStep.canSubmit();
     }
 
     @Override

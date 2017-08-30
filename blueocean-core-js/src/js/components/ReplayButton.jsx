@@ -3,7 +3,7 @@
  */
 
 import React, { Component, PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '@jenkins-cd/design-language';
 
 import { RunApi as runApi, ToastUtils } from '../index';
 import Security from '../security';
@@ -83,7 +83,7 @@ export class ReplayButton extends Component {
         return (
             <div className={`replay-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
                 <a className={`replay-button ${innerButtonClass}`} title={replayLabel} onClick={() => this._onReplayClick()}>
-                    <Icon size={24} icon="replay" />
+                    <Icon size={24} icon="AvReplay" />
                     <span className="button-label">{replayLabel}</span>
                 </a>
             </div>

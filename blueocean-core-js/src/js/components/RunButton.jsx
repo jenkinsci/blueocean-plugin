@@ -2,7 +2,7 @@
  * Created by cmeyers on 8/26/16.
  */
 import React, { Component, PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '@jenkins-cd/design-language';
 import { RunApi as runApi, ToastService as toastService, ToastUtils } from '../';
 import Security from '../security';
 import { stopProp } from '../utils';
@@ -104,11 +104,12 @@ export class RunButton extends Component {
         }
 
         const { onClick = () => this._onRunClick() } = this.props;
+
         return (
             <div className={`run-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
                 { showRunButton &&
                 <a className={`run-button ${innerButtonClass}`} title={runLabel} onClick={onClick}>
-                    <Icon size={24} icon="play_circle_outline" />
+                    <Icon size={24} color={this.props.iconColor} hoverColor={this.props.hoverIconColor} icon="AvPlayCircleOutline" style={{ marginRight: '5px' }} />
                     <span className="button-label">{runLabel}</span>
                 </a>
                 }
@@ -119,7 +120,7 @@ export class RunButton extends Component {
                     <svg className="svg-icon" width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
                         <g fill="none" fill-rule="evenodd">
                             <path d="M-2-2h24v24H-2z" />
-                            <path className="svg-icon-inner" d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zM7 7h6v6H7V7zm3 11c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" fill="#4A90E2" />
+                            <path className="svg-icon-inner action-button-fill" d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zM7 7h6v6H7V7zm3 11c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
                         </g>
                     </svg>
                     { /* eslint-enable max-len */ }
@@ -140,9 +141,13 @@ RunButton.propTypes = {
     onClick: PropTypes.func,
     runText: PropTypes.string,
     innerButtonClasses: PropTypes.string,
+    iconColor: PropTypes.string,
+    hoverIconColor: PropTypes.string,
 };
 
 RunButton.defaultProps = {
     buttonType: 'toggle',
     innerButtonClasses: 'btn inverse',
+    iconColor: '#ffffff',
+    hoverIconColor: '',
 };

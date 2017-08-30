@@ -15,11 +15,16 @@ import org.eclipse.jgit.junit.JGitTestUtil;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.openqa.selenium.WebElement;
 
 import javax.inject.Inject;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.List;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
 
 @RunWith(ATHJUnitRunner.class)
 public class CommitMessagesTest extends BaseTest{
@@ -41,7 +46,8 @@ public class CommitMessagesTest extends BaseTest{
      */
     @Test
     public void commitMessagesTest() throws IOException, GitAPIException {
-        String pipelineName = "CommitMessagesTest_commitMessagesTest";
+        final String pipelineName = "CommitMessagesTest_commitMessagesTest";
+        final String branchName = "master";
 
         URL jenkinsFile = getResourceURL("Jenkinsfile");
         Files.copy(new File(jenkinsFile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
@@ -59,10 +65,19 @@ public class CommitMessagesTest extends BaseTest{
 
         logger.info("Commited a second time");
 
-        pipeline.buildBranch("master");
+        pipeline.buildBranch(branchName);
         sseClientRule.untilEvents(pipeline.buildsFinished);
 
         ActivityPage activityPage = pipeline.getActivityPage().open();
         activityPage.checkForCommitMesssage("2nd commit");
+
+        // Do some assertions on the run data
+
+        WebElement row = activityPage.getRunRowForBranch(branchName);
+        List<WebElement> cells = row.findElements(activityPage.getSelectorForRowCells());
+        assertEquals("Number of cells in row",8, cells.size());
+        assertEquals("Branch label cell text", branchName, cells.get(3).getText());
+        assertNotEquals("Run duration cell text", "-", cells.get(5).getText().trim());
+        activityPage.assertIsDuration(cells.get(5).getText());
     }
 }

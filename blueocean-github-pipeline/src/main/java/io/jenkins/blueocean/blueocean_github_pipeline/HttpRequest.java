@@ -51,8 +51,8 @@ class HttpRequest {
         return this;
     }
 
-    public HttpRequest withAuthorization(String authorization){
-        this.authorization = authorization;
+    public HttpRequest withAuthorizationToken(String accessToken){
+        this.authorization = "token " + accessToken;
         return this;
     }
 
@@ -85,7 +85,7 @@ class HttpRequest {
                 throw new ServiceException.ForbiddenException("Invalid accessToken");
             }
             if(status == 404){
-                throw new ServiceException.NotFoundException("Not Found: "+getErrorResponse(connection));
+                throw new ServiceException.NotFoundException("Not Found. Remote server sent code " + getErrorResponse(connection));
             }
             if(status > 399) {
                 throw new ServiceException.BadRequestException(String.format("%s %s returned error: %s. Error message: %s.", method, url ,status, getErrorResponse(connection)));

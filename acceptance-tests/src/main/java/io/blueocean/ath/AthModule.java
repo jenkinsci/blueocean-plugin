@@ -2,8 +2,8 @@ package io.blueocean.ath;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
+import com.google.inject.name.Names;
 import com.offbytwo.jenkins.JenkinsServer;
-import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.factory.ActivityPageFactory;
 import io.blueocean.ath.factory.BranchPageFactory;
 import io.blueocean.ath.factory.FreestyleJobFactory;
@@ -13,25 +13,20 @@ import io.blueocean.ath.model.FreestyleJob;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.pages.blue.ActivityPage;
 import io.blueocean.ath.pages.blue.BranchPage;
-import io.blueocean.ath.pages.blue.DashboardPage;
-import io.blueocean.ath.pages.blue.EditorPage;
-import io.blueocean.ath.pages.blue.GithubCreationPage;
 import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
-import io.blueocean.ath.pages.classic.ClassicFreestyleCreationPage;
-import io.blueocean.ath.pages.classic.LoginPage;
-import io.blueocean.ath.sse.SSEClientRule;
-import org.apache.log4j.Logger;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.remote.Augmenter;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Properties;
 
 public class AthModule extends AbstractModule {
     @Override
@@ -41,6 +36,7 @@ public class AthModule extends AbstractModule {
 
         try {
             WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capability);
+            driver = new Augmenter().augment(driver);
             driver.manage().window().maximize();
             driver.manage().deleteAllCookies();
             bind(WebDriver.class).toInstance(driver);
@@ -48,17 +44,21 @@ public class AthModule extends AbstractModule {
             String launchUrl = new String(Files.readAllBytes(Paths.get("runner/.blueocean-ath-jenkins-url")));
             bindConstant().annotatedWith(BaseUrl.class).to(launchUrl);
 
-            JenkinsServer server = new JenkinsServer(new URI(launchUrl));
+            CustomJenkinsServer server = new CustomJenkinsServer(new URI(launchUrl));
             bind(JenkinsServer.class).toInstance(server);
+            bind(CustomJenkinsServer.class).toInstance(server);
             if(server.getComputerSet().getTotalExecutors() < 10) {
                 server.runScript(
                     "jenkins.model.Jenkins.getInstance().setNumExecutors(10);\n" +
                         "jenkins.model.Jenkins.getInstance().save();\n");
             }
+
+            Properties properties = new Properties();
+            properties.load(new FileInputStream("live.properties"));
+            bind(Properties.class).annotatedWith(Names.named("live")).toInstance(properties);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
-
 
 
         install(new FactoryModuleBuilder()

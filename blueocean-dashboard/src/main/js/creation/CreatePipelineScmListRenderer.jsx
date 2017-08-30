@@ -5,6 +5,7 @@ import React, { PropTypes } from 'react';
 import Extensions from '@jenkins-cd/js-extensions';
 
 const Sandbox = Extensions.SandboxedComponent;
+const { sortByOrdinal } = Extensions.Utils;
 
 /**
  * Displays the initial set of options to begin a creation flow from a SCM Provider.
@@ -25,7 +26,7 @@ export class CreatePipelineScmListRenderer extends React.Component {
 
     _initialize() {
         // load and store the SCM providers that contributed the specified extension point
-        Extensions.store.getExtensions(this.props.extensionPoint, (extensions) => {
+        Extensions.store.getExtensions(this.props.extensionPoint, sortByOrdinal, (extensions) => {
             let providers = extensions.map(Provider => {
                 try {
                     return new Provider();
@@ -82,4 +83,8 @@ CreatePipelineScmListRenderer.propTypes = {
     extensionPoint: PropTypes.string,
     onSelection: PropTypes.func,
     selectedProvider: PropTypes.object,
+};
+
+CreatePipelineScmListRenderer.contextTypes = {
+    location: PropTypes.object,
 };

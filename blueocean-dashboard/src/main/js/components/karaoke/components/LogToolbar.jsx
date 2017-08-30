@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '@jenkins-cd/design-language';
 import { fetchAllSuffix as suffix } from '../../../util/UrlUtils';
 
 const { string } = PropTypes;
@@ -12,7 +12,7 @@ export default class LogToolbar extends Component {
             return null;
         }
         const logUrl = url.includes(suffix) ? url : `${url}${suffix}`;
-        const style = { fill: '#4a4a4a' };
+        
         return (<div className="log-header">
             <div className="log-header__section selected">
                 {title}
@@ -24,7 +24,7 @@ export default class LogToolbar extends Component {
                     href: logUrl,
                 }}
                 >
-                    <Icon size={24} {...{ style, icon: 'launch' }} />
+                    <Icon size={24} {...{ color: '#4a4a4a', icon: 'ActionLaunch' }} />
                 </a>
                 <a
                 {...{
@@ -32,7 +32,7 @@ export default class LogToolbar extends Component {
                     href: `${logUrl}&download=true`,
                 }}
                 >
-                    <Icon size={24} {...{ style, icon: 'file_download' }} />
+                    <Icon size={24} {...{ color: '#4a4a4a', icon: 'FileFileDownload' }} />
                 </a>
             </div>
         </div>);

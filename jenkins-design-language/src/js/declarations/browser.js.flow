@@ -1,0 +1,9 @@
+// Browser functions missing from built-ins
+
+declare var performance: {
+    now: () => number
+};
+
+// Helpful react stuff
+
+type ReactChildren = string | Array<React$Element<any>> | React$Element<any>;

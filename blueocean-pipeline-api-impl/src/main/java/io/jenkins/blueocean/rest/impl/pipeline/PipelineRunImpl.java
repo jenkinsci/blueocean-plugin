@@ -13,6 +13,8 @@ import io.jenkins.blueocean.rest.factory.BlueRunFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.Branch;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.PullRequest;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
+import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
@@ -27,6 +29,7 @@ import jenkins.model.Jenkins;
 import jenkins.scm.api.SCMRevisionAction;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayAction;
 import org.jenkinsci.plugins.workflow.cps.replay.ReplayCause;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStepExecution;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
@@ -36,6 +39,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeoutException;
@@ -50,8 +55,8 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW
 @Capability(JENKINS_WORKFLOW_RUN)
 public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     private static final Logger logger = LoggerFactory.getLogger(PipelineRunImpl.class);
-    public PipelineRunImpl(WorkflowRun run, Reachable parent) {
-        super(run, parent);
+    public PipelineRunImpl(WorkflowRun run, Reachable parent, BlueOrganization organization) {
+        super(run, parent, organization);
     }
 
     @Exported(name = "description")
@@ -78,9 +83,12 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
             Run run = this.run.getParent().getBuildByNumber(replayCause.getOriginalNumber());
             if (run == null) {
                 return Containers.empty(getLink());
-            } else {
-                return AbstractRunImpl.getBlueRun(run, parent).getChangeSet();
             }
+            BlueRun blueRun = BlueRunFactory.getRun(run, parent);
+            if (blueRun == null) {
+                return Containers.empty(getLink());
+            }
+            return blueRun.getChangeSet();
         } else {
             Map<String, BlueChangeSetEntry> m = new LinkedHashMap<>();
             int cnt = 0;
@@ -89,7 +97,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
                     cnt++;
                     String id = e.getCommitId();
                     if (id == null) id = String.valueOf(cnt);
-                    m.put(id, new ChangeSetResource(e, this));
+                    m.put(id, new ChangeSetResource(organization, e, this));
                 }
             }
             return Containers.fromResourceMap(getLink(), m);
@@ -106,6 +114,35 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         } catch (InterruptedException | TimeoutException e) {
             logger.error("Error getting StateObject from execution context: "+e.getMessage(), e);
         }
+
+        // TODO: Probably move this elsewhere - maybe into PipelineNodeContainerImpl?
+        boolean isQueued = false;
+        boolean isRunning = false;
+
+        String causeOfBlockage = getCauseOfBlockage();
+        for (BluePipelineNode n : getNodes()) {
+            BlueRunState nodeState = n.getStateObj();
+            // Handle cases where there is a previous successful run - PipelineNodeGraphVisitor.union results in a null
+            // getStateObj().
+            if (nodeState == null) {
+                if (causeOfBlockage != null) {
+                    isQueued = true;
+                } else {
+                    isRunning = true;
+                }
+            } else if (nodeState.equals(BlueRunState.QUEUED)) {
+                isQueued = true;
+            } else if (nodeState.equals(BlueRunState.RUNNING)) {
+                isRunning = true;
+            }
+        }
+
+        if (!isRunning && (isQueued || causeOfBlockage != null)) {
+            // This would mean we're explicitly queued or we have no running nodes but do have a cause of blockage,
+            // which works out the same..
+            return BlueRunState.QUEUED;
+        }
+
         return super.getStateObj();
     }
 
@@ -122,12 +159,12 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
             throw new ServiceException.UnexpectedErrorException("Run was not added to queue.");
         }
 
-        BlueQueueItem queueItem = QueueUtil.getQueuedItem(item, run.getParent());
+        BlueQueueItem queueItem = QueueUtil.getQueuedItem(this.organization, item, run.getParent());
         WorkflowRun replayedRun = QueueUtil.getRun(run.getParent(), item.getId());
         if (queueItem != null) { // If the item is still queued
             return queueItem.toRun();
         } else if (replayedRun != null) { // If the item has left the queue and is running
-                return new PipelineRunImpl(replayedRun, parent);
+            return new PipelineRunImpl(replayedRun, parent, organization);
         } else { // For some reason could not be added to the queue
             throw new ServiceException.UnexpectedErrorException("Run was not added to queue.");
         }
@@ -178,6 +215,33 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         return null;
     }
 
+    @Exported(name = "commitUrl")
+    public String getCommitUrl() {
+        String commitId = getCommitId();
+        if (commitId != null) {
+            Container<BlueChangeSetEntry> changeSets = getChangeSet();
+            int buildNumber = this.run.number;
+            WorkflowJob job = this.run.getParent();
+            while (buildNumber > 0) {
+                BlueChangeSetEntry entry = changeSets.get(commitId);
+                if (entry != null) {
+                    return entry.getUrl();
+                }
+                buildNumber--;
+                Run<?,?> run = job.getBuildByNumber(buildNumber);
+                if (run == null) {
+                    continue;
+                }
+                BlueRun blueRun = BlueRunFactory.getRun(run, parent);
+                if (blueRun == null) {
+                    continue;
+                }
+                changeSets = blueRun.getChangeSet();
+            }
+        }
+        return null;
+    }
+
     @Override
     public String getCauseOfBlockage() {
         for(Queue.Item i: Jenkins.getInstance().getQueue().getItems()) {
@@ -200,12 +264,21 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     public static class FactoryImpl extends BlueRunFactory {
 
         @Override
-        public BlueRun getRun(Run run, Reachable parent) {
+        public BlueRun getRun(Run run, Reachable parent, BlueOrganization organization) {
             if(run instanceof WorkflowRun) {
-                return new PipelineRunImpl((WorkflowRun) run, parent);
+                return new PipelineRunImpl((WorkflowRun) run, parent, organization);
             }
             return null;
         }
     }
+
+    static final Comparator<BlueRun> LATEST_RUN_START_TIME_COMPARATOR = new Comparator<BlueRun>() {
+        @Override
+        public int compare(BlueRun o1, BlueRun o2) {
+            Long t1 = (o1 != null  && o1.getStartTime() != null) ? o1.getStartTime().getTime() : 0;
+            Long t2 = (o2 != null  && o2.getStartTime() != null) ? o2.getStartTime().getTime() : 0;
+            return t2.compareTo(t1);
+        }
+    };
 
 }

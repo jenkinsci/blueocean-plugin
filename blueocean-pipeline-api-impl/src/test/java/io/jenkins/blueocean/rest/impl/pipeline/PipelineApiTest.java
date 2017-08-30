@@ -14,6 +14,7 @@ import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.kohsuke.stapler.AcceptHeader;
 import org.kohsuke.stapler.export.Exported;
@@ -73,7 +74,7 @@ public class PipelineApiTest extends PipelineBaseTest {
     }
 
     //TODO: Fix test - see JENKINS-38319
-    //@Test
+    @Test @Ignore
     public void getPipelineRunblockingStopTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
 

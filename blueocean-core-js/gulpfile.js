@@ -13,7 +13,6 @@ const copy = require('gulp-copy');
 const del = require('del');
 const runSequence = require('run-sequence');
 const lint = require('gulp-eslint');
-const Karma = require('karma').Server;
 const jest = require('gulp-jest').default;
 const fs = require('fs');
 const minimist = require('minimist');
@@ -21,7 +20,7 @@ const minimist = require('minimist');
 // Options, src/dest folders, etc
 
 const config = {
-    clean: ["coverage", "dist", "licenses", "reports"],
+    clean: ["dist", "licenses", "target"],
     react: {
         sources: "src/**/*.{js,jsx}",
         dest: "dist"
@@ -40,7 +39,8 @@ const config = {
     test: {
         sources: '.',
         match: ['**/?(*-)(spec|test).js?(x)'],
-        output: 'reports/junit.xml',
+        reports: 'target/jest-reports/junit.xml',
+        coverage: 'target/jest-coverage',
     },
 };
 
@@ -82,22 +82,6 @@ gulp.task("test-debug", ['test-jest-debug']);
 
 gulp.task("test-fast", ['test-jest-fast']);
 
-gulp.task("test-karma", (done) => {
-    new Karma({
-        configFile: __dirname + '/karma.conf.js',
-    }, done).start();
-});
-
-gulp.task("test-karma-debug", (done) => {
-    new Karma({
-        configFile: __dirname + '/karma.conf.js',
-        colors: true,
-        autoWatch: true,
-        singleRun: false,
-        browsers: ['Chrome'],
-    }, done).start();
-});
-
 function runJest(options) {
     const argv = minimist(process.argv.slice(2));
     options.testPathPattern = argv.test || null;
@@ -111,12 +95,13 @@ function runJest(options) {
 
 gulp.task('test-jest', () => {
     if (!process.env.JEST_JUNIT_OUTPUT) {
-        process.env.JEST_JUNIT_OUTPUT = config.test.output;
+        process.env.JEST_JUNIT_OUTPUT = config.test.reports;
     }
 
-    runJest({
+    return runJest({
         config: {
             collectCoverage: true,
+            coverageDirectory: config.test.coverage,
             testMatch: config.test.match,
             testResultsProcessor: 'jest-junit',
         },

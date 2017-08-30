@@ -7,12 +7,14 @@ properties([
 ])
 
 node('docker') {
-  stage('Checkout') {
-    deleteDir()
-    checkout scm
-  }
+    stage('Checkout') {
+        deleteDir()
+        checkout scm
+    }
 
-  stage('Build and publish container') {
-      sh 'docker/official/build.sh'
-  }
+    stage('Build and publish container') {
+        infra.withDockerCredentials {
+            sh 'docker/official/build.sh'
+        }
+    }
 }

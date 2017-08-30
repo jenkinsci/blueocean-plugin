@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
-import { List } from '@jenkins-cd/design-language';
+import { List, Icon } from '@jenkins-cd/design-language';
 
 import FlowStep from '../../flow2/FlowStep';
 
@@ -11,7 +11,8 @@ function OrgRenderer(props) {
 
     return (
         <div className="org-list-item">
-            <img className="avatar" width="30" height="30" src={`${avatar}&s=50`} />
+            { avatar && <img className="avatar" width="30" height="30" src={`${avatar}&s=50`} /> }
+            { !avatar && <Icon className="avatar" icon="ActionGroupWork" size={30} color="#4a4a4a" /> }
             <span>{name}</span>
         </div>
     );

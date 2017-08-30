@@ -13,6 +13,82 @@
 
 @errorscreen-bg-color: #949393;
 
+// NB: Until we can import them, these decls must be manually kept in sync with JDL
 
-@brand-primary:         #4A90E2;
-@brand-primary-dark:    #1C436A;
+//## Brand colors
+@brand-primary:         #4A90E2; // 74,144,226
+@brand-success:         #78b037;
+@brand-success-lite:    #8CC04F;
+@brand-info:            #3a70b0;
+@brand-info-lite:       #4C9BD5;
+@brand-warning:         #F5A623;
+@brand-warning-lite:    #F6B44B;
+@brand-danger:          #d54c53;
+@brand-danger-lite:     #D54C53;
+@brand-paused:          #24B0D5;
+@brand-paused-lite:     #24B0D5;
+@brand-unknown:         #bd0fe1;
+@brand-unknown-lite:    #D54CC4;
+@brand-grey:            #4A4A4A;
+@brand-grey-lite:       #949393;
+@brand-selection:       lighten(@brand-primary, 20%);
+@brand-input-required:  #24B0D5;
+
+//Misc colors
+@brand-active:          darken(@brand-primary, 20%);
+@white-active:          darken(#fff, 20%);
+
+@action-button:             rgba(53,64,82, 0.25);
+@action-button--hover:      @brand-primary;
+
+@action-button-dark:        white;
+@action-button-dark--hover: white;
+
+.action-button-colors {
+
+    // default (light) themeing
+
+    .svg-icon {
+        // Default fill for basic shapes, can be undone with a <g fill="none">
+        fill: @action-button;
+
+        .action-button-fill {
+            // Named style to re-apply correct fill in more complex shapes
+            fill: @action-button;
+        }
+
+        &:hover {
+            fill: @action-button--hover; // Default
+
+            .action-button-fill {
+                fill: @action-button--hover; // Named
+            }
+        }
+    }
+
+    // dark themeing
+
+    &.dark {
+        .btn {
+            background: transparent;
+            color: @action-button-dark;
+            border-color: @action-button-dark;
+        }
+
+        .svg-icon {
+            fill: @action-button-dark; // Default
+
+            .action-button-fill {
+                fill: @action-button-dark; // Named
+            }
+
+            &:hover {
+                fill: @action-button-dark--hover; // Default
+
+                .action-button-fill {
+                    fill: @action-button-dark--hover; // Named
+                }
+            }
+        }
+    }
+}

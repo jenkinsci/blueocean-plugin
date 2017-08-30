@@ -5,7 +5,7 @@ import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { logging, capable, UrlBuilder, AppConfig, RunButton, ReplayButton, LiveStatusIndicator } from '@jenkins-cd/blueocean-core-js';
 import { ExpandablePath, Favorite, ReadableDate } from '@jenkins-cd/design-language';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '@jenkins-cd/design-language';
 import moment from 'moment';
 
 const stopProp = (event) => {
@@ -290,7 +290,7 @@ export function PipelineCardRenderer(props) {
             { branchText ?
                 <span className="branch">
                     <span className="octicon octicon-git-branch"></span>
-                    <span className="branchText">{branchText}</span>
+                    <span className="branchText" title={branchText}>{branchText}</span>
                 </span>
                 :
                 <span className="branch"></span>
@@ -307,7 +307,7 @@ export function PipelineCardRenderer(props) {
 
             { timeText ?
                 <span className="time">
-                    <Icon size={ 16 } icon="access_time" style={ { fill: '#fff' } } />
+                    <Icon size={ 16 } icon="DeviceAccessTime" />
                     <span className="timeText">{timeText}</span>
                 </span>
                 :
@@ -328,7 +328,7 @@ export function PipelineCardRenderer(props) {
                 />
 
                 <Favorite checked={favoriteChecked}
-                          className="dark-white"
+                          className="dark"
                           onToggle={onFavoriteToggle}
                 />
             </span>

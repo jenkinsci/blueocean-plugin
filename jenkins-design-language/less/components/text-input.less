@@ -1,0 +1,128 @@
+input[type="text"] {
+    // remove "x" from IE11
+    &::-ms-clear {
+        display: none;
+    }
+}
+
+.TextInput, .PasswordInput {
+    .TextInput-medium;
+    display: inline-block;
+    position: relative;
+    background-color: #fff;
+
+    .TextInput-control {
+        width: 100%;
+        color: @text-color;
+        background-color: transparent;
+        .control-border;
+
+        &:focus {
+            border-color: @brand-primary;
+            outline: 0;
+        }
+
+        &[disabled],
+        fieldset[disabled] & {
+            .u-disabled;
+        }
+    }
+
+    .TextInput-icon {
+        position: absolute;
+        top: 50%;
+        fill: #999;
+        cursor: default;
+    }
+}
+
+
+.icon-rules(@icon-size, @icon-padding, @input-padding) {
+    .TextInput-icon {
+        width: @icon-size;
+        height: @icon-size;
+        margin-top: -(@icon-size / 2);
+
+        .svg-icon {
+            width: @icon-size;
+            height: @icon-size;
+        }
+    }
+
+    &.u-icon-left {
+        .TextInput-icon.u-icon-left {
+            left: @icon-padding;
+        }
+
+        .TextInput-control {
+            padding-left: @icon-size + @icon-padding;
+            margin-right: -(@icon-size + @icon-padding) + @input-padding;
+        }
+    }
+
+    &.u-icon-right {
+        .TextInput-icon.u-icon-right {
+            right: @icon-padding;
+        }
+
+        .TextInput-control {
+            padding-right: @icon-size + @icon-padding;
+            margin-right: -(@icon-size + @icon-padding) + @input-padding;
+        }
+    }
+
+    &.u-icon-left.u-icon-right {
+        .TextInput-control {
+            margin-right: 2 * (-(@icon-size + @icon-padding) + @input-padding);
+        }
+    }
+}
+
+
+// sizing
+
+.TextInput-small {
+    .icon-rules(20px, 4px, 8px);
+
+    .TextInput-control {
+        padding: 5px 8px;
+    }
+}
+
+.TextInput-medium {
+    .icon-rules(24px, 4px, 10px);
+
+    .TextInput-control {
+        padding: 6px 10px;
+    }
+}
+
+.TextInput-large {
+    .icon-rules(28px, 6px, 12px);
+
+    .TextInput-control {
+        padding: 8px 12px;
+    }
+}
+
+.TextInput {
+    .layout-small & {
+        .TextInput-small;
+    }
+
+    .layout-large & {
+        .TextInput-large;
+    }
+}
+
+// errors
+
+.FormElement.u-error-state {
+    > .FormElement-children {
+        > .TextInput, > .PasswordInput {
+            .TextInput-control {
+                .u-error-border;
+            }
+        }
+    }
+}
