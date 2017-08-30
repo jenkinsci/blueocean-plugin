@@ -20,7 +20,7 @@ const exec = require('child_process').exec;
 const prompt = require('prompt');
 
 const start = new Date().getTime();
-const directories = ['../blueocean-dashboard', '../blueocean-personalization', '../blueocean-web'];
+const directories = ['../blueocean-dashboard', '../blueocean-personalization', '../blueocean-web', '../blueocean-pipeline-editor'];
 
 var isDevDependency = false; // Set via command line
 var shouldRunMaven = false; // Set via command line
