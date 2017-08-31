@@ -103,7 +103,7 @@ public class DashboardPage {
             ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".search-pipelines-input input"))
         );
         element.sendKeys(searchText);
-        logger.info("entered search text =" + searchText);
+        logger.info("entered search text = " + searchText);
     }
 
     public void clearSearchText() {
@@ -115,5 +115,12 @@ public class DashboardPage {
 
     public void clickPipeline(String pipelineName){
         wait.until(By.xpath("//*/div[@data-pipeline='" + pipelineName + "']/a[1]")).click();
+    }
+
+    public void clickNewPipelineBtn() {
+        open();
+        wait.until(newPipelineButton).click();
+        wait.until(ExpectedConditions.urlContains("create-pipeline"));
+        logger.info("Clicked new pipeline");
     }
 }

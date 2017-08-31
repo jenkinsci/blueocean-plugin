@@ -1,8 +1,9 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
+import com.fasterxml.jackson.databind.type.CollectionType;
 import com.google.common.base.Function;
-import com.google.common.collect.Lists;
+import com.google.common.collect.Iterables;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepositories;
@@ -15,15 +16,17 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
+import java.util.List;
 
 /**
  * @author Vivek Pandey
  */
 public class GithubRepositories extends ScmRepositories {
 
+    private static final CollectionType GH_REPO_EX_LIST_TYPE = GithubScm.om.getTypeFactory().constructCollectionType(List.class, GHRepoEx.class);
+
     private final Link self;
-    private final GHRepoEx[] repositories;
+    private final List<GHRepoEx> repositories;
     private final String accessToken;
     private final Integer nextPage;
     private final Integer lastPage;
@@ -61,7 +64,7 @@ public class GithubRepositories extends ScmRepositories {
                     parent.getRepoType(),
                     pageSize, pageNumber), accessToken);
 
-            this.repositories = GithubScm.om.readValue(connection.getInputStream(), GHRepoEx[].class);
+            this.repositories = GithubScm.om.readValue(connection.getInputStream(), GH_REPO_EX_LIST_TYPE);
 
             String link = connection.getHeaderField("Link");
 
@@ -108,7 +111,7 @@ public class GithubRepositories extends ScmRepositories {
 
     @Override
     public Iterable<ScmRepository> getItems() {
-        return Lists.transform(Arrays.asList(repositories), new Function<GHRepoEx, ScmRepository>() {
+        return Iterables.transform(repositories, new Function<GHRepoEx, ScmRepository>() {
             @Override
             public ScmRepository apply(@Nullable GHRepoEx input) {
                 if(input == null){

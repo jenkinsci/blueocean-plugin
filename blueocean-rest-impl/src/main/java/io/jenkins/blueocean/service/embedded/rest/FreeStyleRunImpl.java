@@ -7,10 +7,13 @@ import hudson.scm.ChangeLogSet;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
+
 import org.kohsuke.stapler.QueryParameter;
 
 import javax.annotation.Nonnull;
@@ -26,8 +29,8 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_FREE_STY
  */
 @Capability(JENKINS_FREE_STYLE_BUILD)
 public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
-    public FreeStyleRunImpl(FreeStyleBuild run, Reachable parent) {
-        super(run, parent);
+    public FreeStyleRunImpl(FreeStyleBuild run, Reachable parent, BlueOrganization organization) {
+        super(run, parent, organization);
     }
 
     @Override
@@ -40,7 +43,7 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
             cnt++;
             String id = e.getCommitId();
             if (id==null)   id = String.valueOf(cnt);
-            m.put(id,new ChangeSetResource(e, this));
+            m.put(id, new ChangeSetResource(organization, e, this));
         }
         return Containers.fromResourceMap(this.getLink(),m);
     }
@@ -59,9 +62,9 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
     @Extension
     public static class FactoryImpl extends BlueRunFactory {
         @Override
-        public BlueRun getRun(Run run, Reachable parent) {
+        public BlueRun getRun(Run run, Reachable parent, BlueOrganization organization) {
             if (run instanceof FreeStyleBuild) {
-                return new FreeStyleRunImpl((FreeStyleBuild)run, parent);
+                return new FreeStyleRunImpl((FreeStyleBuild)run, parent, organization);
             }
             return null;
         }

@@ -9,7 +9,6 @@ import hudson.model.ItemGroup;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
@@ -24,6 +23,7 @@ import io.jenkins.blueocean.rest.model.BlueTrendContainer;
 import io.jenkins.blueocean.rest.model.Resource;
 import org.kohsuke.stapler.json.JsonBody;
 
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,19 +34,25 @@ import java.util.Map;
  * @author Vivek Pandey
  */
 public class PipelineFolderImpl extends BluePipelineFolder {
-    protected final BlueOrganization org;
+    protected final BlueOrganization organization;
     private final ItemGroup folder;
     protected final Link parent;
 
-    public PipelineFolderImpl(ItemGroup folder, Link parent) {
-        this.org = OrganizationFactory.getInstance().getContainingOrg(folder);
+    public PipelineFolderImpl(BlueOrganization organization, ItemGroup folder, Link parent) {
+        this.organization = organization;
         this.folder = folder;
         this.parent = parent;
     }
 
     @Override
-    public String getOrganization() {
-        return org.getName();
+    public String getOrganizationName() {
+        return organization.getName();
+    }
+
+    @Nonnull
+    @Override
+    public BlueOrganization getOrganization() {
+        return organization;
     }
 
     @Override
@@ -65,7 +71,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     @Override
     public String getFullName() {
         if (folder instanceof Item) {
-            return AbstractPipelineImpl.getFullName(org, (Item) folder);
+            return AbstractPipelineImpl.getFullName(organization, (Item) folder);
         } else {
             return null;
         }
@@ -74,7 +80,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     @Override
     public String getFullDisplayName() {
         if (folder instanceof Item) {
-            return AbstractPipelineImpl.getFullDisplayName(org, (Item) folder);
+            return AbstractPipelineImpl.getFullDisplayName(organization, (Item) folder);
         } else {
             return folder.getDisplayName();
         }
@@ -92,7 +98,7 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public BluePipelineContainer getPipelines() {
-        return new PipelineContainerImpl(folder, this);
+        return new PipelineContainerImpl(organization, folder, this);
     }
 
     @Override
@@ -141,30 +147,30 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public Link getLink() {
-        return org.getLink().rel("pipelines").rel(AbstractPipelineImpl.getRecursivePathFromFullName(this));
+        return organization.getLink().rel("pipelines").rel(AbstractPipelineImpl.getRecursivePathFromFullName(this));
     }
 
     @Extension(ordinal = -10)
     public static class PipelineFactoryImpl extends BluePipelineFactory {
 
         @Override
-        public PipelineFolderImpl getPipeline(Item item, Reachable parent) {
+        public PipelineFolderImpl getPipeline(Item item, Reachable parent, BlueOrganization organization) {
             if (item instanceof ItemGroup) {
-                return new PipelineFolderImpl((ItemGroup) item, parent.getLink());
+                return new PipelineFolderImpl(organization, (ItemGroup) item, parent.getLink());
             }
             return null;
         }
 
         @Override
-        public Resource resolve(Item context, Reachable parent, Item target) {
-            PipelineFolderImpl folder = getPipeline(context, parent);
+        public Resource resolve(Item context, Reachable parent, Item target, BlueOrganization organization) {
+            PipelineFolderImpl folder = getPipeline(context, parent, organization);
             if (folder!=null) {
                 if(context == target){
                     return folder;
                 }
                 Item nextChild = findNextStep(folder.folder,target);
                 for (BluePipelineFactory f : all()) {
-                    Resource answer = f.resolve(nextChild, folder, target);
+                    Resource answer = f.resolve(nextChild, folder, target, organization);
                     if (answer!=null)
                         return answer;
                 }

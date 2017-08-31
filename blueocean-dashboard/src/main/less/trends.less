@@ -1,16 +1,43 @@
-.trends-table {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
+.trends-view {
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 1em;
+
+    .trends-branch-filter {
+        max-width: 300px;
+        margin-bottom: 2em;
+    }
+
+    .trends-table {
+        display: flex;
+        flex-wrap: wrap;
+    }
+
+    .trends-chart-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .trends-chart-label {
+        margin-bottom: 0.5em;
+    }
+
+    .recharts-legend-item-text {
+        text-transform: lowercase;
+    }
 }
 
-.trends-chart-container {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+// layout kludges
+// need to address weird empty space on left side of recharts
+
+.trends-view {
+    .trends-chart-label {
+        margin-left: 40px; // center label
+    }
+
+    .recharts-legend-wrapper {
+        left: 45px !important; // center legend, default is 5, add 40
+    }
 }
 
-.trends-chart-label {
-
-}

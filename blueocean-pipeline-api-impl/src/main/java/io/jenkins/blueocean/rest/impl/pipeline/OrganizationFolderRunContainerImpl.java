@@ -1,12 +1,18 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.collect.ImmutableList;
+import hudson.model.Cause;
+import hudson.model.CauseAction;
+import hudson.model.Item;
+import hudson.model.Queue;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
+import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
 import org.kohsuke.stapler.StaplerRequest;
 
+import javax.annotation.Nonnull;
 import java.util.Iterator;
 
 /**
@@ -32,8 +38,17 @@ public class OrganizationFolderRunContainerImpl extends BlueRunContainer {
 
     @Override
     public BlueRun create(StaplerRequest request) {
-        return null; //OrganizationFolder can be only replayed once created.
-//        return new QueueItemImpl(pipeline.folder.scheduleBuild2(0, new CauseAction(new Cause.UserIdCause())), pipeline, 1);
+        pipeline.folder.checkPermission(Item.BUILD);
+        Queue.Item queueItem = pipeline.folder.scheduleBuild2(0, new CauseAction(new Cause.UserIdCause()));
+        if(queueItem == null){ // possible folder.isBuildable() was false due to no repo fetched yet
+            return null;
+        }
+        return new QueueItemImpl(
+                pipeline.getOrganization(),
+                queueItem,
+                pipeline,
+                1
+        ).toRun();
     }
 
     @Override
@@ -45,6 +60,7 @@ public class OrganizationFolderRunContainerImpl extends BlueRunContainer {
     }
 
     @Override
+    @Nonnull
     public Iterator<BlueRun> iterator() {
         return ImmutableList.of((BlueRun)run).iterator();
     }

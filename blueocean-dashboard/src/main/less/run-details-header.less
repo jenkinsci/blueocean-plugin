@@ -4,7 +4,16 @@
 .RunDetailsHeader-times {
     a {
         cursor: pointer;
+        text-decoration: none;
+
+        &:hover {
+            text-decoration: underline;
+        }
     }
+}
+
+.RunDetailsHeader-title > span {
+    vertical-align: middle;
 }
 
 .RunDetailsHeader-sources,

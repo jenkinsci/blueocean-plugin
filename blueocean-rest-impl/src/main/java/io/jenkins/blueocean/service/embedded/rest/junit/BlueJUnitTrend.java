@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest.junit;
 
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
@@ -17,11 +18,18 @@ import org.kohsuke.stapler.export.Exported;
 
 import java.util.Iterator;
 import java.util.List;
-
-import static io.jenkins.blueocean.rest.model.BlueTestSummary.*;
+import java.util.Map;
 
 @Restricted(NoExternalUse.class)
 public class BlueJUnitTrend extends BlueTrend {
+    private static final String TOTAL = "total";
+    private static final String PASSED = "passed";
+    private static final String FIXED = "fixed";
+    private static final String FAILED = "failed";
+    private static final String EXISTING_FAILED = "existingFailed";
+    private static final String REGRESSIONS = "regressions";
+    private static final String SKIPPED = "skipped";
+
     private final BluePipeline pipeline;
     private final Link parent;
 
@@ -47,12 +55,27 @@ public class BlueJUnitTrend extends BlueTrend {
         return parent.rel(getId());
     }
 
-    public class JUnitHistoryTable extends BlueTable {
+    public static class JUnitHistoryTable extends BlueTable {
+
+        private static final Map<String, String> COLUMNS = ImmutableMap.<String, String> builder()
+            .put(TOTAL, "Total")
+            .put(PASSED, "Passed")
+            .put(FIXED, "Fixed")
+            .put(FAILED, "Failed")
+            .put(EXISTING_FAILED, "Existing Failed")
+            .put(REGRESSIONS, "Regressions")
+            .put(SKIPPED, "Skipped")
+            .build();
 
         private final Iterator<BlueRun> runs;
 
         public JUnitHistoryTable(Iterator<BlueRun> runs) {
             this.runs = runs;
+        }
+
+        @Override
+        public Map<String, String> getColumns() {
+            return COLUMNS;
         }
 
         @Override
@@ -67,12 +90,12 @@ public class BlueJUnitTrend extends BlueTrend {
     }
 
     public static class RowImpl extends BlueTable.Row {
-        private final BlueTestSummary summary;
         private final String id;
+        private final BlueTestSummary summary;
 
         RowImpl(BlueTestSummary summary, String id) {
-            this.summary = summary;
             this.id = id;
+            this.summary = summary;
         }
 
         @Override
@@ -80,39 +103,39 @@ public class BlueJUnitTrend extends BlueTrend {
             return id;
         }
 
+        @Exported(name = TOTAL)
+        public long getTotal() {
+            return summary.getTotal();
+        }
+
         @Exported(name = PASSED)
-        public long getPassedTotal() {
+        public long getPassed() {
             return summary.getPassedTotal();
         }
 
-        @Exported(name = FAILED)
-        public long getFailedTotal() {
-            return summary.getFailedTotal();
-        }
-
-        @Exported(name = SKIPPED)
-        public long getSkippedTotal() {
-            return summary.getSkippedTotal();
-        }
-
         @Exported(name = FIXED)
-        public long getFixedTotal() {
+        public long getFixed() {
             return summary.getFixedTotal();
         }
 
+        @Exported(name = FAILED)
+        public long getFailed() {
+            return summary.getFailedTotal();
+        }
+
         @Exported(name = EXISTING_FAILED)
-        public long getExistingFailedTotal() {
+        public long getExistingFailed() {
             return summary.getExistingFailedTotal();
         }
 
         @Exported(name = REGRESSIONS)
-        public long getRegressionsTotal() {
+        public long getRegressions() {
             return summary.getRegressionsTotal();
         }
 
-        @Exported(name = TOTAL)
-        public long getTotal() {
-            return summary.getTotal();
+        @Exported(name = SKIPPED)
+        public long getSkipped() {
+            return summary.getSkippedTotal();
         }
     }
 

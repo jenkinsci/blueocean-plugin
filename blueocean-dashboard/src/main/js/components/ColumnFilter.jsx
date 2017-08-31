@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '@jenkins-cd/design-language';
 import Autocomplete from 'react-autocomplete';
 
 /**
@@ -10,7 +10,7 @@ import Autocomplete from 'react-autocomplete';
 export class ColumnFilter extends Component {
     constructor(props) {
         super(props);
-        this.state = { value: props.value, visible: false };
+        this.state = { value: props.value, originalValue: props.value ? props.value : '', visible: false };
     }
 
     componentWillReceiveProps(newProps) {
@@ -26,7 +26,11 @@ export class ColumnFilter extends Component {
         if (event.type === 'select'
             || event.type === 'blur'
             || (event.type === 'keypress' && event.key === 'Enter')) {
+            this.setState({ originalValue: value });
             onChange(value);
+            setTimeout(() => {
+                this.refs.autocomplete.refs.input.blur();
+            }, 0);
         }
     }
 
@@ -39,8 +43,15 @@ export class ColumnFilter extends Component {
         e.target.select();
     }
 
-    blur() {
+    blur = e => {
+        const targetElem = e.target;
+        const hoveredElemArray = document.querySelectorAll(':hover');
+        const hoveredElem = hoveredElemArray[hoveredElemArray.length - 1];
+
         this.setState({ focused: false });
+        if (targetElem.value === '' && hoveredElem && hoveredElem.className !== 'item selected') {
+            this.setState({ value: this.state.originalValue });
+        }
     }
 
     // hack due to strange behavior of triggering onChange from autocomplete when
@@ -95,10 +106,10 @@ export class ColumnFilter extends Component {
                 )}
             />
             <span className="Icon-filter">
-                <Icon icon="filter_list" size={15} />
+                <Icon icon="ContentFilterList" size={15} color="#bbcdd5" style={{ verticalAlign: 'top' }} />
             </span>
             <span className="Icon-clear" onClick={() => this.clearInput()}>
-                <Icon icon="clear" size={15} />
+                <Icon icon="ContentClear" size={15} color="#bbcdd5" style={{ verticalAlign: 'top' }} />
             </span>
           </div>);
     }

@@ -6,6 +6,7 @@ import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
+import io.jenkins.blueocean.rest.model.BlueCoverageSummary;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -123,6 +124,21 @@ public class QueuedBlueRun extends BlueRun {
     }
 
     @Override
+    public String getStartTimeString() {
+        return null;
+    }
+
+    @Override
+    public String getEnQueueTimeString() {
+        return null;
+    }
+
+    @Override
+    public String getEndTimeString() {
+        return null;
+    }
+
+    @Override
     public String getArtifactsZipFile() {
         return null;
     }
@@ -169,6 +185,11 @@ public class QueuedBlueRun extends BlueRun {
 
     @Override
     public BlueTestSummary getTestSummary() {
+        return null;
+    }
+
+    @Override
+    public BlueCoverageSummary getCoverageSummary() {
         return null;
     }
 

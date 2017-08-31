@@ -2,7 +2,7 @@
  * Created by cmeyers on 10/4/16.
  */
 import React, { Component, PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from './Icon';
 
 const SHOW_LABEL_CLASS = 'show-label';
 const SHOW_FOLDER_CLASS = 'show-folder';
@@ -59,7 +59,9 @@ export class ExpandablePath extends Component {
 
                         return (
                             <li key={index} className={`path-item ${displayClass}`}>
-                                <Icon size={this.props.iconSize} icon="folder" />
+                                {this.props.showIcon &&
+                                    <Icon size={this.props.iconSize} icon="FileFolder" color="rgba(255, 255, 255, 0.5)" style={{marginRight: '5px'}} />
+                                }
                                 <span className="path-text">{label.trim()}</span>
                                 <span className="separator">&nbsp;/&nbsp;</span>
                             </li>
@@ -74,6 +76,7 @@ export class ExpandablePath extends Component {
 ExpandablePath.propTypes = {
     className: PropTypes.string,
     iconSize: PropTypes.number,
+    showIcon: PropTypes.bool,
     path: PropTypes.string,
     hideFirst: PropTypes.bool,
     uriDecode: PropTypes.bool,
@@ -81,6 +84,7 @@ ExpandablePath.propTypes = {
 
 ExpandablePath.defaultProps = {
     iconSize: 16,
+    showIcon: true,
     hideFirst: false,
     uriDecode: true,
 };

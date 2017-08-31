@@ -19,7 +19,7 @@
 
 const fs = require('fs');
 // match "1.2.3" or "1.2.3-beta5"
-const PRECISE_VERSION_CHARS_PATTERN = /^\d+\.\d+\.\d+(-[A-Za-z0-9]+)*$/;
+const PRECISE_VERSION_CHARS_PATTERN = /^\d+\.\d+\.\d+(-[A-Za-z0-9.]+)*$/;
 
 const start = new Date().getTime();
 
@@ -28,6 +28,7 @@ checkProject('../blueocean-personalization');
 checkProject('../blueocean-web');
 checkProject('../blueocean-config');
 checkProject('../blueocean-core-js');
+checkProject('../jenkins-design-language');
 
 const ellapsed = new Date().getTime() - start;
 console.log(`all dependencies look good! took ${ellapsed}ms`);

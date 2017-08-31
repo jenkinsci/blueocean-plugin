@@ -30,4 +30,7 @@ public class KnownCapabilities {
     public static final String JENKINS_MULTI_BRANCH_PROJECT="jenkins.branch.MultiBranchProject";
     public static final String JENKINS_FREE_STYLE_BUILD="hudson.model.FreeStyleBuild";
     public static final String JENKINS_ORGANIZATION_FOLDER = "jenkins.branch.OrganizationFolder";
+
+    /** Scm Content edit/save capability **/
+    public static final String BLUE_SCM="io.jenkins.blueocean.rest.model.BluePipelineScm";
 }
