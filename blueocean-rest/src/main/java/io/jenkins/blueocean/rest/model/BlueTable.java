@@ -19,6 +19,18 @@ public abstract class BlueTable {
     public abstract static class Row {
         @Exported(name = "id")
         public abstract String getId();
+
+        @Exported(name = "columns")
+        public abstract List<Column> getColumns();
+    }
+
+    @ExportedBean(defaultVisibility = 3)
+    public abstract static class Column {
+        @Exported(name = "name")
+        public abstract String getName();
+
+        @Exported(name = "value")
+        public abstract Object getValue();
     }
 
     @Exported(name = ROWS)

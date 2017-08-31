@@ -10,49 +10,52 @@ import { ColumnFilter } from './ColumnFilter';
 
 export const MULTIBRANCH_PIPELINE = 'io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline';
 
-function sortRowsById(rawRows) {
-    const rows = (rawRows || []).slice();
-    rows.sort((row1, row2) => parseInt(row1.id) - parseInt(row2.id));
-    return rows;
+const seriesColors = [
+    '#4A90E2',
+    '#d54c53',
+    '#78b037',
+    '#F5A623',
+    '#bd0fe1',
+    '#4A4A4A',
+];
+
+function sortRowsById(row1, row2) {
+    return parseInt(row1.id) - parseInt(row2.id);
 }
 
-function formatJunitRows(rawRows) {
-    const rows = sortRowsById(rawRows);
-    return rows.filter(row => !!row.total);
+function createChartData(rows) {
+    if (!rows) {
+        return [];
+    }
+
+    return rows
+        .map(row => {
+            const newRow = {
+                id: row.id,
+            };
+
+            if (!row.columns) {
+                return newRow;
+            }
+
+            row.columns.forEach(column => {
+                newRow[column.name] = column.value;
+            });
+
+            return newRow;
+        })
+        .sort(sortRowsById);
 }
 
-function formatCoverageRows(rawRows) {
-    const rows = sortRowsById(rawRows);
-    return rows.filter(row => !!row.total);
+function createChartSeries(row) {
+    if (!row || !row.columns) {
+        return [];
+    }
+
+    return row.columns.map((column, index) => (
+        <Line type="monotone" dataKey={column.name} stroke={seriesColors[index]} />
+    ));
 }
-
-function createJunitSeries() {
-    return [
-        <Line type="monotone" dataKey="total" stroke="#4A90E2" />,
-        <Line type="monotone" dataKey="passed" stroke="#78b037" />,
-        <Line type="monotone" dataKey="failed" stroke="#d54c53" />,
-        <Line type="monotone" dataKey="skipped" stroke="#4A4A4A" />,
-    ];
-}
-
-function createCoverageSeries() {
-    return [
-        <Line type="monotone" dataKey="branches" stroke="#4A90E2" />,
-        <Line type="monotone" dataKey="lines" stroke="#78b037" />,
-        <Line type="monotone" dataKey="methods" stroke="#F5A623" />,
-        <Line type="monotone" dataKey="classes" stroke="#d54c53" />,
-    ];
-}
-
-const formatterFuncs = {
-    junit: formatJunitRows,
-    coverage: sortRowsById,
-};
-
-const seriesFuncs = {
-    junit: createJunitSeries,
-    coverage: createCoverageSeries,
-};
 
 
 @observer
@@ -146,11 +149,8 @@ export class PipelineTrends extends Component {
 
                 <div className="trends-table">
                 { trends.map(trend => {
-                    const formatterFunc = formatterFuncs[trend.id] || function noFormat(row) { return row; };
-                    const seriesFunc = seriesFuncs[trend.id] || function empty() { return []; };
-
-                    const rows = formatterFunc(trend.rows);
-                    const series = seriesFunc();
+                    const rows = createChartData(trend.rows);
+                    const series = createChartSeries(trend.rows[0]);
 
                     return (
                         <div className="trends-chart-container" data-trend-id={trend.id}>

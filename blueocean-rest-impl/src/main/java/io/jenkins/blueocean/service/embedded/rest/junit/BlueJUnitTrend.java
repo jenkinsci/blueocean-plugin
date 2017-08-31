@@ -13,12 +13,10 @@ import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.BlueTrend;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
-import org.kohsuke.stapler.export.Exported;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
-import static io.jenkins.blueocean.rest.model.BlueTestSummary.*;
 
 @Restricted(NoExternalUse.class)
 public class BlueJUnitTrend extends BlueTrend {
@@ -66,13 +64,24 @@ public class BlueJUnitTrend extends BlueTrend {
         }
     }
 
+    public enum TestCategory {
+        TOTAL, PASSED, FIXED, FAILED, EXISITING_FAILED, REGRESSIONS, SKIPPED
+    }
+
     public static class RowImpl extends BlueTable.Row {
-        private final BlueTestSummary summary;
+        private final List<BlueTable.Column> columns;
         private final String id;
 
         RowImpl(BlueTestSummary summary, String id) {
-            this.summary = summary;
             this.id = id;
+            columns = new ArrayList<>();
+            columns.add(new TestCount(TestCategory.TOTAL, summary.getTotal()));
+            columns.add(new TestCount(TestCategory.PASSED, summary.getPassedTotal()));
+            columns.add(new TestCount(TestCategory.FIXED, summary.getFixedTotal()));
+            columns.add(new TestCount(TestCategory.FAILED, summary.getFailedTotal()));
+            columns.add(new TestCount(TestCategory.EXISITING_FAILED, summary.getExistingFailedTotal()));
+            columns.add(new TestCount(TestCategory.REGRESSIONS, summary.getRegressionsTotal()));
+            columns.add(new TestCount(TestCategory.SKIPPED, summary.getSkippedTotal()));
         }
 
         @Override
@@ -80,39 +89,30 @@ public class BlueJUnitTrend extends BlueTrend {
             return id;
         }
 
-        @Exported(name = PASSED)
-        public long getPassedTotal() {
-            return summary.getPassedTotal();
+        @Override
+        public List<BlueTable.Column> getColumns() {
+            return columns;
+        }
+    }
+
+    public static class TestCount extends BlueTable.Column {
+
+        private final TestCategory category;
+        private final long count;
+
+        public TestCount(TestCategory category, long count) {
+            this.category = category;
+            this.count = count;
         }
 
-        @Exported(name = FAILED)
-        public long getFailedTotal() {
-            return summary.getFailedTotal();
+        @Override
+        public String getName() {
+            return category.toString();
         }
 
-        @Exported(name = SKIPPED)
-        public long getSkippedTotal() {
-            return summary.getSkippedTotal();
-        }
-
-        @Exported(name = FIXED)
-        public long getFixedTotal() {
-            return summary.getFixedTotal();
-        }
-
-        @Exported(name = EXISTING_FAILED)
-        public long getExistingFailedTotal() {
-            return summary.getExistingFailedTotal();
-        }
-
-        @Exported(name = REGRESSIONS)
-        public long getRegressionsTotal() {
-            return summary.getRegressionsTotal();
-        }
-
-        @Exported(name = TOTAL)
-        public long getTotal() {
-            return summary.getTotal();
+        @Override
+        public Object getValue() {
+            return count;
         }
     }
 

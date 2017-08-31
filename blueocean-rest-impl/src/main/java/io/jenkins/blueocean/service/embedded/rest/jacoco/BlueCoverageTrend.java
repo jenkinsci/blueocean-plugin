@@ -11,8 +11,8 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTable;
 import io.jenkins.blueocean.rest.model.BlueTrend;
-import org.kohsuke.stapler.export.Exported;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -46,6 +46,10 @@ public class BlueCoverageTrend extends BlueTrend {
         return parent.rel(getId());
     }
 
+    public enum CoverageCategory {
+        CLASSES, METHODS, LINES, BRANCHES, INSTRUCTIONS
+    }
+
     public static class CoverageHistoryTable extends BlueTable {
         private final Iterator<BlueRun> runs;
 
@@ -65,12 +69,17 @@ public class BlueCoverageTrend extends BlueTrend {
     }
 
     public static class RowImpl extends BlueTable.Row {
-        private final BlueCoverageSummary summary;
         private final String id;
+        private final List<BlueTable.Column> totals;
 
         RowImpl(BlueCoverageSummary summary, String id) {
-            this.summary = summary;
             this.id = id;
+            totals = new ArrayList<>();
+            totals.add(new CoverageTotal(CoverageCategory.CLASSES, summary.getClasses().getPercent()));
+            totals.add(new CoverageTotal(CoverageCategory.METHODS, summary.getMethods().getPercent()));
+            totals.add(new CoverageTotal(CoverageCategory.LINES, summary.getLines().getPercent()));
+            totals.add(new CoverageTotal(CoverageCategory.BRANCHES, summary.getBranches().getPercent()));
+            totals.add(new CoverageTotal(CoverageCategory.INSTRUCTIONS, summary.getInstructions().getPercent()));
         }
 
         @Override
@@ -78,29 +87,30 @@ public class BlueCoverageTrend extends BlueTrend {
             return id;
         }
 
-        @Exported(name = BlueCoverageSummary.CLASSES)
-        public int getClasses() {
-            return summary.getClasses().getPercent();
+        @Override
+        public List<BlueTable.Column> getColumns() {
+            return totals;
+        }
+    }
+
+    public static class CoverageTotal extends BlueTable.Column {
+
+        private final CoverageCategory category;
+        private final int percent;
+
+        public CoverageTotal(CoverageCategory category, int percent) {
+            this.category = category;
+            this.percent = percent;
         }
 
-        @Exported(name = BlueCoverageSummary.METHODS)
-        public int getMethods() {
-            return summary.getMethods().getPercent();
+        @Override
+        public String getName() {
+            return category.toString();
         }
 
-        @Exported(name = BlueCoverageSummary.LINES)
-        public int getLines() {
-            return summary.getLines().getPercent();
-        }
-
-        @Exported(name = BlueCoverageSummary.BRANCHES)
-        public int getBranches() {
-            return summary.getBranches().getPercent();
-        }
-
-        @Exported(name = BlueCoverageSummary.INSTRUCTIONS)
-        public int getInstructions() {
-            return summary.getInstructions().getPercent();
+        @Override
+        public Object getValue() {
+            return percent;
         }
     }
 
