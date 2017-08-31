@@ -14,12 +14,11 @@ import java.util.Map;
 @Beta
 public abstract class BlueTable {
 
-    public static final String LABELS = "labels";
     public static final String COLUMNS = "columns";
     public static final String ROWS = "rows";
 
-    @Exported(name = LABELS, inline = true)
-    public abstract Map<String, String> getLabels();
+    @Exported(name = COLUMNS, inline = true)
+    public abstract Map<String, String> getColumns();
 
     @Exported(name = ROWS)
     public abstract List<Row> getRows();
@@ -28,9 +27,6 @@ public abstract class BlueTable {
     public abstract static class Row {
         @Exported(name = "id")
         public abstract String getId();
-
-        @Exported(name = COLUMNS, inline = true)
-        public abstract Map<String, ?> getColumns();
     }
 
 }

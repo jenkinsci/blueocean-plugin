@@ -27,19 +27,11 @@ function createChartData(rows) {
         return [];
     }
 
-    // flatten "id" and "columns" props together then sort by id ASC
-    return rows
-        .map(row => (
-            {
-                id: row.id,
-                ...row.columns,
-            }
-        ))
-        .sort(sortRowsById);
+    return rows.sort(sortRowsById);
 }
 
 function createChartSeries(trend) {
-    if (!trend || !trend.labels) {
+    if (!trend || !trend.columns) {
         return [];
     }
 
@@ -47,7 +39,7 @@ function createChartSeries(trend) {
     const colors = seriesColors.slice();
 
     // create Line for each element using color from list
-    for (const prop of Object.keys(trend.labels)) {
+    for (const prop of Object.keys(trend.columns)) {
         if (prop !== 'id') {
             const color = colors.shift() || '#4A4A4A';
             series.push(

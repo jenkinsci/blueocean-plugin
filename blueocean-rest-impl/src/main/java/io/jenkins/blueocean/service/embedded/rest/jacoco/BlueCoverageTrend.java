@@ -12,24 +12,23 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTable;
 import io.jenkins.blueocean.rest.model.BlueTrend;
+import org.kohsuke.stapler.export.Exported;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import static io.jenkins.blueocean.service.embedded.rest.jacoco.BlueCoverageTrend.CoverageCategory.BRANCHES;
-import static io.jenkins.blueocean.service.embedded.rest.jacoco.BlueCoverageTrend.CoverageCategory.CLASSES;
-import static io.jenkins.blueocean.service.embedded.rest.jacoco.BlueCoverageTrend.CoverageCategory.INSTRUCTIONS;
-import static io.jenkins.blueocean.service.embedded.rest.jacoco.BlueCoverageTrend.CoverageCategory.LINES;
-import static io.jenkins.blueocean.service.embedded.rest.jacoco.BlueCoverageTrend.CoverageCategory.METHODS;
 
 
 /**
  * @author cliffmeyers
  */
 public class BlueCoverageTrend extends BlueTrend {
+    private static final String CLASSES = "classes";
+    private static final String METHODS = "methods";
+    private static final String LINES = "lines";
+    private static final String BRANCHES = "branches";
+    private static final String INSTRUCTIONS = "instructions";
+
     private final BluePipeline pipeline;
     private final Link parent;
 
@@ -55,17 +54,13 @@ public class BlueCoverageTrend extends BlueTrend {
         return parent.rel(getId());
     }
 
-    enum CoverageCategory {
-        CLASSES, METHODS, LINES, BRANCHES, INSTRUCTIONS
-    }
-
     public static class CoverageHistoryTable extends BlueTable {
         private static final Map<String, String> LABELS = ImmutableMap.<String, String> builder()
-            .put(CLASSES.toString(), "Classes")
-            .put(METHODS.toString(), "Methods")
-            .put(LINES.toString(), "Lines")
-            .put(BRANCHES.toString(), "Branches")
-            .put(INSTRUCTIONS.toString(), "Instructions")
+            .put(CLASSES, "Classes")
+            .put(METHODS, "Methods")
+            .put(LINES, "Lines")
+            .put(BRANCHES, "Branches")
+            .put(INSTRUCTIONS, "Instructions")
             .build();
 
         private final Iterator<BlueRun> runs;
@@ -75,7 +70,7 @@ public class BlueCoverageTrend extends BlueTrend {
         }
 
         @Override
-        public Map<String, String> getLabels() {
+        public Map<String, String> getColumns() {
             return LABELS;
         }
 
@@ -92,16 +87,11 @@ public class BlueCoverageTrend extends BlueTrend {
 
     public static class RowImpl extends BlueTable.Row {
         private final String id;
-        private final Map<String, Integer> totals;
+        private final BlueCoverageSummary summary;
 
         RowImpl(BlueCoverageSummary summary, String id) {
             this.id = id;
-            totals = new HashMap<>();
-            totals.put(CLASSES.toString(), summary.getClasses().getPercent());
-            totals.put(METHODS.toString(), summary.getMethods().getPercent());
-            totals.put(LINES.toString(), summary.getLines().getPercent());
-            totals.put(BRANCHES.toString(), summary.getBranches().getPercent());
-            totals.put(INSTRUCTIONS.toString(), summary.getInstructions().getPercent());
+            this.summary = summary;
         }
 
         @Override
@@ -109,9 +99,29 @@ public class BlueCoverageTrend extends BlueTrend {
             return id;
         }
 
-        @Override
-        public Map<String, ?> getColumns() {
-            return totals;
+        @Exported(name = CLASSES)
+        public int getClasses() {
+            return summary.getClasses().getPercent();
+        }
+
+        @Exported(name = METHODS)
+        public int getMethods() {
+            return summary.getMethods().getPercent();
+        }
+
+        @Exported(name = LINES)
+        public int getLines() {
+            return summary.getLines().getPercent();
+        }
+
+        @Exported(name = BRANCHES)
+        public int getBranches() {
+            return summary.getBranches().getPercent();
+        }
+
+        @Exported(name = INSTRUCTIONS)
+        public int getInstructions() {
+            return summary.getInstructions().getPercent();
         }
     }
 
