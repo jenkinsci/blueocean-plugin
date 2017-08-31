@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest.jacoco;
 
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
@@ -13,8 +14,16 @@ import io.jenkins.blueocean.rest.model.BlueTable;
 import io.jenkins.blueocean.rest.model.BlueTrend;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import static io.jenkins.blueocean.service.embedded.rest.jacoco.BlueCoverageTrend.CoverageCategory.BRANCHES;
+import static io.jenkins.blueocean.service.embedded.rest.jacoco.BlueCoverageTrend.CoverageCategory.CLASSES;
+import static io.jenkins.blueocean.service.embedded.rest.jacoco.BlueCoverageTrend.CoverageCategory.INSTRUCTIONS;
+import static io.jenkins.blueocean.service.embedded.rest.jacoco.BlueCoverageTrend.CoverageCategory.LINES;
+import static io.jenkins.blueocean.service.embedded.rest.jacoco.BlueCoverageTrend.CoverageCategory.METHODS;
 
 
 /**
@@ -46,15 +55,28 @@ public class BlueCoverageTrend extends BlueTrend {
         return parent.rel(getId());
     }
 
-    public enum CoverageCategory {
+    enum CoverageCategory {
         CLASSES, METHODS, LINES, BRANCHES, INSTRUCTIONS
     }
 
     public static class CoverageHistoryTable extends BlueTable {
+        private static final Map<String, String> LABELS = ImmutableMap.<String, String> builder()
+            .put(CLASSES.toString(), "Total")
+            .put(METHODS.toString(), "Passed")
+            .put(LINES.toString(), "Fixed")
+            .put(BRANCHES.toString(), "Failed")
+            .put(INSTRUCTIONS.toString(), "Existing Failed")
+            .build();
+
         private final Iterator<BlueRun> runs;
 
         public CoverageHistoryTable(Iterator<BlueRun> runs) {
             this.runs = runs;
+        }
+
+        @Override
+        public Map<String, String> getLabels() {
+            return LABELS;
         }
 
         @Override
@@ -70,16 +92,16 @@ public class BlueCoverageTrend extends BlueTrend {
 
     public static class RowImpl extends BlueTable.Row {
         private final String id;
-        private final List<BlueTable.Column> totals;
+        private final Map<String, Integer> totals;
 
         RowImpl(BlueCoverageSummary summary, String id) {
             this.id = id;
-            totals = new ArrayList<>();
-            totals.add(new CoverageTotal(CoverageCategory.CLASSES, summary.getClasses().getPercent()));
-            totals.add(new CoverageTotal(CoverageCategory.METHODS, summary.getMethods().getPercent()));
-            totals.add(new CoverageTotal(CoverageCategory.LINES, summary.getLines().getPercent()));
-            totals.add(new CoverageTotal(CoverageCategory.BRANCHES, summary.getBranches().getPercent()));
-            totals.add(new CoverageTotal(CoverageCategory.INSTRUCTIONS, summary.getInstructions().getPercent()));
+            totals = new HashMap<>();
+            totals.put(CLASSES.toString(), summary.getClasses().getPercent());
+            totals.put(METHODS.toString(), summary.getMethods().getPercent());
+            totals.put(LINES.toString(), summary.getLines().getPercent());
+            totals.put(BRANCHES.toString(), summary.getBranches().getPercent());
+            totals.put(INSTRUCTIONS.toString(), summary.getInstructions().getPercent());
         }
 
         @Override
@@ -88,29 +110,8 @@ public class BlueCoverageTrend extends BlueTrend {
         }
 
         @Override
-        public List<BlueTable.Column> getColumns() {
+        public Map<String, ?> getColumns() {
             return totals;
-        }
-    }
-
-    public static class CoverageTotal extends BlueTable.Column {
-
-        private final CoverageCategory category;
-        private final int percent;
-
-        public CoverageTotal(CoverageCategory category, int percent) {
-            this.category = category;
-            this.percent = percent;
-        }
-
-        @Override
-        public String getName() {
-            return category.toString();
-        }
-
-        @Override
-        public Object getValue() {
-            return percent;
         }
     }
 

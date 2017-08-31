@@ -5,6 +5,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * A Table-like data structure for serving tabular data
@@ -13,26 +14,23 @@ import java.util.List;
 @Beta
 public abstract class BlueTable {
 
+    public static final String LABELS = "labels";
+    public static final String COLUMNS = "columns";
     public static final String ROWS = "rows";
+
+    @Exported(name = LABELS, inline = true)
+    public abstract Map<String, String> getLabels();
+
+    @Exported(name = ROWS)
+    public abstract List<Row> getRows();
 
     @ExportedBean(defaultVisibility = 2)
     public abstract static class Row {
         @Exported(name = "id")
         public abstract String getId();
 
-        @Exported(name = "columns")
-        public abstract List<Column> getColumns();
+        @Exported(name = COLUMNS, inline = true)
+        public abstract Map<String, ?> getColumns();
     }
 
-    @ExportedBean(defaultVisibility = 3)
-    public abstract static class Column {
-        @Exported(name = "name")
-        public abstract String getName();
-
-        @Exported(name = "value")
-        public abstract Object getValue();
-    }
-
-    @Exported(name = ROWS)
-    public abstract List<Row> getRows();
 }

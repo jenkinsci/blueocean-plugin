@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest.junit;
 
 import com.google.common.base.Function;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.Extension;
@@ -14,9 +15,18 @@ import io.jenkins.blueocean.rest.model.BlueTrend;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
+
+import static io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTrend.TestCategory.EXISITING_FAILED;
+import static io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTrend.TestCategory.FAILED;
+import static io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTrend.TestCategory.FIXED;
+import static io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTrend.TestCategory.PASSED;
+import static io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTrend.TestCategory.REGRESSIONS;
+import static io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTrend.TestCategory.SKIPPED;
+import static io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTrend.TestCategory.TOTAL;
 
 @Restricted(NoExternalUse.class)
 public class BlueJUnitTrend extends BlueTrend {
@@ -47,10 +57,24 @@ public class BlueJUnitTrend extends BlueTrend {
 
     public static class JUnitHistoryTable extends BlueTable {
 
+        private static final Map<String, String> LABELS = ImmutableMap.<String, String> builder()
+            .put(TOTAL.toString(), "Total")
+            .put(PASSED.toString(), "Passed")
+            .put(FIXED.toString(), "Fixed")
+            .put(FAILED.toString(), "Failed")
+            .put(EXISITING_FAILED.toString(), "Existing Failed")
+            .put(REGRESSIONS.toString(), "Regressions")
+            .put(SKIPPED.toString(), "Skipped")
+            .build();
         private final Iterator<BlueRun> runs;
 
         public JUnitHistoryTable(Iterator<BlueRun> runs) {
             this.runs = runs;
+        }
+
+        @Override
+        public Map<String, String> getLabels() {
+            return LABELS;
         }
 
         @Override
@@ -64,24 +88,24 @@ public class BlueJUnitTrend extends BlueTrend {
         }
     }
 
-    public enum TestCategory {
+    enum TestCategory {
         TOTAL, PASSED, FIXED, FAILED, EXISITING_FAILED, REGRESSIONS, SKIPPED
     }
 
     public static class RowImpl extends BlueTable.Row {
-        private final List<BlueTable.Column> columns;
         private final String id;
+        private final Map<String, Long> totals;
 
         RowImpl(BlueTestSummary summary, String id) {
             this.id = id;
-            columns = new ArrayList<>();
-            columns.add(new TestCount(TestCategory.TOTAL, summary.getTotal()));
-            columns.add(new TestCount(TestCategory.PASSED, summary.getPassedTotal()));
-            columns.add(new TestCount(TestCategory.FIXED, summary.getFixedTotal()));
-            columns.add(new TestCount(TestCategory.FAILED, summary.getFailedTotal()));
-            columns.add(new TestCount(TestCategory.EXISITING_FAILED, summary.getExistingFailedTotal()));
-            columns.add(new TestCount(TestCategory.REGRESSIONS, summary.getRegressionsTotal()));
-            columns.add(new TestCount(TestCategory.SKIPPED, summary.getSkippedTotal()));
+            totals = new HashMap<>();
+            totals.put(TOTAL.toString(), summary.getTotal());
+            totals.put(PASSED.toString(), summary.getPassedTotal());
+            totals.put(FIXED.toString(), summary.getFixedTotal());
+            totals.put(FAILED.toString(), summary.getFailedTotal());
+            totals.put(EXISITING_FAILED.toString(), summary.getExistingFailedTotal());
+            totals.put(REGRESSIONS.toString(), summary.getRegressionsTotal());
+            totals.put(SKIPPED.toString(), summary.getSkippedTotal());
         }
 
         @Override
@@ -90,29 +114,8 @@ public class BlueJUnitTrend extends BlueTrend {
         }
 
         @Override
-        public List<BlueTable.Column> getColumns() {
-            return columns;
-        }
-    }
-
-    public static class TestCount extends BlueTable.Column {
-
-        private final TestCategory category;
-        private final long count;
-
-        public TestCount(TestCategory category, long count) {
-            this.category = category;
-            this.count = count;
-        }
-
-        @Override
-        public String getName() {
-            return category.toString();
-        }
-
-        @Override
-        public Object getValue() {
-            return count;
+        public Map<String, Long> getColumns() {
+            return totals;
         }
     }
 
