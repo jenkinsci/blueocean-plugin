@@ -61,11 +61,11 @@ public class BlueCoverageTrend extends BlueTrend {
 
     public static class CoverageHistoryTable extends BlueTable {
         private static final Map<String, String> LABELS = ImmutableMap.<String, String> builder()
-            .put(CLASSES.toString(), "Total")
-            .put(METHODS.toString(), "Passed")
-            .put(LINES.toString(), "Fixed")
-            .put(BRANCHES.toString(), "Failed")
-            .put(INSTRUCTIONS.toString(), "Existing Failed")
+            .put(CLASSES.toString(), "Classes")
+            .put(METHODS.toString(), "Methods")
+            .put(LINES.toString(), "Lines")
+            .put(BRANCHES.toString(), "Branches")
+            .put(INSTRUCTIONS.toString(), "Instructions")
             .build();
 
         private final Iterator<BlueRun> runs;
