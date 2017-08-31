@@ -178,6 +178,7 @@
                     <excludes>
                         <!-- temporarily exclude junit trends code -->
                         <exclude>io/jenkins/blueocean/service/embedded/rest/BlueTrendContainerImpl*</exclude>
+                        <exclude>io/jenkins/blueocean/service/embedded/rest/jacoco/*</exclude>
                         <exclude>io/jenkins/blueocean/service/embedded/rest/junit/*</exclude>
                     </excludes>
                 </configuration>
