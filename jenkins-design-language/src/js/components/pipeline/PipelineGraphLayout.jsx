@@ -11,7 +11,15 @@ import type {
 
 const SORT_COLUMN_ROWS = false;
 
-// TODO: Docs
+/**
+ * Main process for laying out the graph. Creates and positions markers for each component, but creates no components.
+ *
+ *  1. Creates nodes for each stage in the pipeline
+ *  2. Position the nodes in columns for each top stage, and in rows within each column based on execution order
+ *  3. Create all the connections between nodes that need to be rendered
+ *  4. Create a bigLabel per column, and a smallLabel for any child nodes
+ *  5. Measure the extents of the graph
+ */
 export function layoutGraph(newStages: Array<StageInfo>, layout: LayoutInfo) {
 
     const stageNodeColumns = createNodeColumns(newStages);

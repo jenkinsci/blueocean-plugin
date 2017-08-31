@@ -203,11 +203,63 @@ function renderEdgeCases1() {
         makeNode("Charlie", [], validResultValues.skipped),
     ];
 
+    const stages4 = [
+        makeNode("Alpha", [
+            makeNode("Single 1"),
+            makeSequence(
+                makeNode("Multi 1 of 3"),
+                makeNode("Multi 2 of 3"),
+                makeNode("Multi 3 of 3"),
+            ),
+            makeSequence(
+                makeNode("Multi 1 of 2"),
+                makeNode("Multi 2 of 2"),
+            ),
+            makeNode("Single 2"),
+        ]),
+        makeNode("Bravo", [], validResultValues.skipped),
+        makeNode("Charlie", [
+            makeNode("Single 1"),
+            makeSequence(
+                makeNode("Multi 1 of 2"),
+                makeNode("Multi 2 of 2"),
+            ),
+            makeNode("Single 2"),
+        ]),
+    ];
+
+    const stages5 = [
+        makeNode("Alpha", [
+            makeNode("Single 1"),
+            makeSequence(
+                makeNode("Multi 1 of 3"),
+                makeNode("Multi 2 of 3"),
+                makeNode("Multi 3 of 3"),
+            ),
+            makeSequence(
+                makeNode("Multi 1 of 2"),
+                makeNode("Multi 2 of 2"),
+            ),
+            makeNode("Single 2"),
+        ]),
+        makeNode("Bravo"),
+        makeNode("Charlie", [
+            makeNode("Single 1"),
+            makeSequence(
+                makeNode("Multi 1 of 2"),
+                makeNode("Multi 2 of 2"),
+            ),
+            makeNode("Single 2"),
+        ]),
+    ];
+
     return (
         <div>
             <PipelineGraph stages={stages1} selectedStage={stages1[1]}/>
             <PipelineGraph stages={stages2} selectedStage={stages2[1]}/>
             <PipelineGraph stages={stages3} selectedStage={stages3[0]}/>
+            <PipelineGraph stages={stages4} selectedStage={stages4[0]}/>
+            <PipelineGraph stages={stages5} selectedStage={stages4[5]}/>
         </div>
     );
 }

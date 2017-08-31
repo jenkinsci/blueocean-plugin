@@ -18,6 +18,8 @@ import type {
     CompositeConnection,
 } from './PipelineGraphModel';
 
+const ALIGN_CONNECTOR_VERTICALS = true;
+
 type SVGChildren = Array<any>; // Fixme: Maybe refine this?
 
 type Props = {
@@ -98,7 +100,7 @@ export class PipelineGraph extends Component {
     }
 
     /**
-     * Main process for laying out the graph. Calls a bunch of individual methods on self that do each task.
+     * Main process for laying out the graph. Calls out to PipelineGraphLayout module.
      */
     stagesUpdated(newStages: Array<StageInfo> = []) {
         this.setState(layoutGraph(newStages, this.state.layout));
@@ -217,7 +219,8 @@ export class PipelineGraph extends Component {
      */
     renderBasicConnections(sourceNodes: Array<NodeInfo>, destinationNodes: Array<NodeInfo>, elements: SVGChildren) {
 
-        const { connectorStrokeWidth } = this.state.layout;
+        const { connectorStrokeWidth, nodeSpacingH } = this.state.layout;
+        const halfSpacingH = nodeSpacingH / 2;
 
         // Stroke props common to straight / curved connections
         const connectorStroke = {
@@ -227,14 +230,40 @@ export class PipelineGraph extends Component {
 
         this.renderHorizontalConnection(sourceNodes[0], destinationNodes[0], connectorStroke, elements);
 
+        if (sourceNodes.length === 1 && destinationNodes.length === 1) {
+            return; // No curves needed.
+        }
+
+        // Work out the extents of source and dest space
+        let rightmostSource = sourceNodes[0].x;
+        let leftmostDestination = destinationNodes[0].x;
+
+        for (let i = 1; i < sourceNodes.length; i++) {
+            rightmostSource = Math.max(rightmostSource, sourceNodes[i].x);
+        }
+
+        for (let i = 1; i < destinationNodes.length; i++) {
+            leftmostDestination = Math.min(leftmostDestination, destinationNodes[i].x);
+        }
+
+        // console.log(''); // TODO: RM
+        // console.log('sourceNodes', sourceNodes.map(node => `${node.name} (${node.x})`).join(', ')); // TODO: RM
+        // console.log('rightmostSource',rightmostSource); // TODO: RM
+        // console.log('destNodes', destinationNodes.map(node => `${node.name} (${node.x})`).join(', ')); // TODO: RM
+        // console.log('leftmostDestination',leftmostDestination); // TODO: RM
+
         // Collapse from previous node(s) to top column node
         for (const previousNode of sourceNodes.slice(1)) {
-            this.renderBasicCurvedConnection(previousNode, destinationNodes[0], elements);
+            const midPointX = Math.round((ALIGN_CONNECTOR_VERTICALS ? rightmostSource : previousNode.x) + halfSpacingH);
+            // console.log('collapse from',previousNode.name,'to',destinationNodes[0].name, 'mpx', midPointX); // TODO: RM
+            this.renderBasicCurvedConnection(previousNode, destinationNodes[0], midPointX, elements);
         }
 
         // Expand from top previous node to column node(s)
         for (const destNode of destinationNodes.slice(1)) {
-            this.renderBasicCurvedConnection(sourceNodes[0], destNode, elements);
+            const midPointX = Math.round((ALIGN_CONNECTOR_VERTICALS ? leftmostDestination : destNode.x) - halfSpacingH);
+            // console.log('expand from',sourceNodes[0].name,'to',destNode.name, 'mpx', midPointX); // TODO: RM
+            this.renderBasicCurvedConnection(sourceNodes[0], destNode, midPointX, elements);
         }
     }
 
@@ -442,11 +471,10 @@ export class PipelineGraph extends Component {
      *
      * Adds all the SVG components to the elements list.
      */
-    renderBasicCurvedConnection(leftNode: NodeInfo, rightNode: NodeInfo, elements: SVGChildren) {
+    renderBasicCurvedConnection(leftNode: NodeInfo, rightNode: NodeInfo, midPointX: number, elements: SVGChildren) {
         const { nodeRadius, terminalRadius, curveRadius, connectorStrokeWidth, nodeSpacingH } = this.state.layout;
         const leftNodeRadius = leftNode.isPlaceholder ? terminalRadius : nodeRadius;
         const rightNodeRadius = rightNode.isPlaceholder ? terminalRadius : nodeRadius;
-        const halfSpacingH = nodeSpacingH / 2;
 
         const key = connectorKey(leftNode, rightNode);
 
@@ -465,10 +493,6 @@ export class PipelineGraph extends Component {
             className: 'pipeline-connector',
             strokeWidth: connectorStrokeWidth,
         };
-
-        const midPointX = leftNode.y > rightNode.y
-            ? Math.round(leftNode.x + halfSpacingH)
-            : Math.round(rightNode.x - halfSpacingH);
 
         const pathData = `M ${leftPos.x} ${leftPos.y}` +
             this.svgCurve(leftPos.x, leftPos.y, rightPos.x, rightPos.y, midPointX, curveRadius);
