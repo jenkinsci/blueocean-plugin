@@ -55,7 +55,6 @@ class SvgIcon extends Component {
     const {
       children,
       color,
-      hoverColor,
       onMouseEnter, // eslint-disable-line no-unused-vars
       onMouseLeave, // eslint-disable-line no-unused-vars
       size,
