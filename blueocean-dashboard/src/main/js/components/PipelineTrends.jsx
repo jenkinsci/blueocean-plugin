@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import { action, observable } from 'mobx';
+import { action, asFlat, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
 import { capable, AppConfig, Fetch } from '@jenkins-cd/blueocean-core-js';
+import Extensions from '@jenkins-cd/js-extensions';
 
 import { buildPipelineUrl } from '../util/UrlUtils';
 import { ColumnFilter } from './ColumnFilter';
@@ -38,7 +39,7 @@ function createChartSeries(trend) {
     let columns = [];
 
     if (trend.columns) {
-        columns = Object.keys(trend.columns)
+        columns = Object.keys(trend.columns);
     }
 
     if (!columns.length && trend.rows) {
@@ -67,6 +68,31 @@ function createChartSeries(trend) {
     return series;
 }
 
+function DefaultChart(props) {
+    const { trend } = props;
+    const series = createChartSeries(trend);
+    const rows = createChartData(trend);
+
+    return (
+        <div className="trends-chart-container" data-trend-id={trend.id}>
+            <div className="trends-chart-label">{trend.id}</div>
+
+            <LineChart width={400} height={400} data={rows}>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="id" />
+                <YAxis />
+                {series}
+                <Legend />
+                <Tooltip />
+            </LineChart>
+        </div>
+    );
+}
+
+DefaultChart.propTypes = {
+    trend: PropTypes.object,
+};
+
 
 @observer
 export class PipelineTrends extends Component {
@@ -81,6 +107,7 @@ export class PipelineTrends extends Component {
         }
     }
 
+    @observable extensions = asFlat({});
     @observable trends = [];
 
     fetchTrendsData(theProps) {
@@ -97,12 +124,20 @@ export class PipelineTrends extends Component {
         }
 
         Fetch.fetchJSON(fullUrl)
-            .then(data => this._updateTrends(data));
+            .then(data => this._loadTrendsSuccess(data));
+    }
+
+    _loadTrendsSuccess(trends) {
+        Extensions.store.getExtensions('jenkins.pipeline.trends', extensions => this.updateTrends(trends, extensions));
     }
 
     @action
-    _updateTrends(data) {
-        this.trends = data;
+    updateTrends(trends, extensions) {
+        extensions.forEach(trendExt => {
+            this.extensions[trendExt.trendId] = trendExt.componentClass;
+        });
+
+        this.trends = trends;
     }
 
     _branchFromProps(props) {
@@ -159,23 +194,17 @@ export class PipelineTrends extends Component {
 
                 <div className="trends-table">
                 { trends.map(trend => {
-                    const series = createChartSeries(trend);
-                    const rows = createChartData(trend);
+                    const CustomComponent = this.extensions[trend.id];
 
-                    return (
-                        <div className="trends-chart-container" data-trend-id={trend.id}>
-                            <div className="trends-chart-label">{trend.id}</div>
+                    if (CustomComponent) {
+                        return (
+                            <Extensions.SandboxedComponent>
+                                <CustomComponent trend={trend} />
+                            </Extensions.SandboxedComponent>
+                        );
+                    }
 
-                            <LineChart width={400} height={400} data={rows}>
-                                <CartesianGrid strokeDasharray="3 3" />
-                                <XAxis dataKey="id" />
-                                <YAxis />
-                                {series}
-                                <Legend />
-                                <Tooltip />
-                            </LineChart>
-                        </div>
-                    );
+                    return <DefaultChart trend={trend} />;
                 })}
                 </div>
             </div>
