@@ -309,7 +309,7 @@ export class Dropdown extends React.Component {
                    className="Dropdown-thumb"
                    onClick={this._onDropdownMouseEvent}
                 >
-                    <Icon icon="HardwareKeyboardArrowDown" size={16} color="#949494" />
+                    <Icon icon="HardwareKeyboardArrowDown" size={16} />
                 </a>
 
                 { this.state.menuOpen &&
