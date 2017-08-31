@@ -15,6 +15,7 @@ import io.jenkins.blueocean.rest.model.BlueTrend;
 import org.kohsuke.stapler.export.CustomExportedBean;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Trend for Stage durations
@@ -45,11 +46,15 @@ public class StageRuntimeTrend extends BlueTrend {
     }
 
     public static class StageRuntimeTable extends BlueTable {
-
         private final BranchImpl branch;
 
         public StageRuntimeTable(BranchImpl branch) {
             this.branch = branch;
+        }
+
+        @Override
+        public Map<String, String> getColumns() {
+            return ImmutableMap.of();
         }
 
         @Override
