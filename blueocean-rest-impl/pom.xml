@@ -176,7 +176,8 @@
                 <version>${jacoco.version}</version>
                 <configuration>
                     <excludes>
-                        <!-- temporarily exclude junit trends code -->
+                        <!-- temporarily exclude trends code -->
+                        <exclude>io/jenkins/blueocean/service/embedded/rest/BlueTrendContainerImpl*</exclude>
                         <exclude>io/jenkins/blueocean/service/embedded/rest/coverage/**/*</exclude>
                         <exclude>io/jenkins/blueocean/service/embedded/rest/junit/*</exclude>
                     </excludes>
