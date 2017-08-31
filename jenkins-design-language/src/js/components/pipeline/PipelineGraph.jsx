@@ -630,9 +630,13 @@ export class PipelineGraph extends Component {
             const { selectedStage } = this.state;
 
             if (children && selectedStage) {
-                for (const child of children) {
-                    if (child === selectedStage) {
-                        return true;
+                for (const childStage of children) {
+                    let testee = childStage;
+                    while (testee) {
+                        if (testee === selectedStage) {
+                            return true;
+                        }
+                        testee = testee.nextSibling;
                     }
                 }
             }
