@@ -22,28 +22,44 @@ function sortRowsById(row1, row2) {
     return parseInt(row1.id) - parseInt(row2.id);
 }
 
-function createChartData(rows) {
-    if (!rows) {
+function createChartData(trend) {
+    if (!trend || !trend.rows) {
         return [];
     }
 
-    return rows.sort(sortRowsById);
+    return trend.rows.sort(sortRowsById);
 }
 
 function createChartSeries(trend) {
-    if (!trend || !trend.columns) {
+    if (!trend) {
         return [];
+    }
+
+    let columns = [];
+
+    if (trend.columns) {
+        columns = Object.keys(trend.columns)
+    }
+
+    if (!columns.length && trend.rows) {
+        trend.rows.forEach(row => {
+            for (const prop of Object.keys(row)) {
+                if (prop !== 'id' && columns.indexOf(prop) === -1) {
+                    columns.push(prop);
+                }
+            }
+        });
     }
 
     const series = [];
     const colors = seriesColors.slice();
 
     // create Line for each element using color from list
-    for (const prop of Object.keys(trend.columns)) {
-        if (prop !== 'id') {
+    for (const col of columns) {
+        if (col !== 'id') {
             const color = colors.shift() || '#4A4A4A';
             series.push(
-                <Line type="monotone" dataKey={prop} stroke={color} />
+                <Line type="monotone" dataKey={col} stroke={color} />
             );
         }
     }
@@ -144,7 +160,7 @@ export class PipelineTrends extends Component {
                 <div className="trends-table">
                 { trends.map(trend => {
                     const series = createChartSeries(trend);
-                    const rows = createChartData(trend.rows);
+                    const rows = createChartData(trend);
 
                     return (
                         <div className="trends-chart-container" data-trend-id={trend.id}>
