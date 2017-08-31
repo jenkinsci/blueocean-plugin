@@ -186,11 +186,16 @@ public abstract class BlueRun extends Resource {
 
     /**
      *
-     * @return Gives Actions associated with this Run
+     * @return Gives Actions associated with this Run, if requested via tree
      */
     @Navigable
     @Exported(name = ACTIONS, inline = true)
     public abstract Collection<BlueActionProxy> getActions();
+
+    /**
+     * @return All Actions for this Run
+     */
+    public abstract Collection<BlueActionProxy> getAllActions();
 
     /**
      * @return Gives steps from pipeline. The list of steps must not include stages, this is because stage could be
@@ -209,11 +214,6 @@ public abstract class BlueRun extends Resource {
      */
     @Exported(name = TEST_SUMMARY, inline = true, skipNull = true)
     public abstract BlueTestSummary getTestSummary();
-
-    /**
-     * @return The coverage summary for this run
-     */
-    public abstract BlueCoverageSummary getCoverageSummary();
 
     /**
      * @return Instance of stapler aware instance that can do the following:

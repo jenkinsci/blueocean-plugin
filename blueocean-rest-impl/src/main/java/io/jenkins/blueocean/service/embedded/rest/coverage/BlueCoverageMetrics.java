@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.rest.model;
+package io.jenkins.blueocean.service.embedded.rest.coverage;
 
 /**
  * @author cliffmeyers

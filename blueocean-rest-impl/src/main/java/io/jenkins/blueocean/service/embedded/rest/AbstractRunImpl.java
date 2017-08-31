@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
+import com.google.common.base.Predicate;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Collections2;
@@ -11,14 +12,12 @@ import hudson.model.Result;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
-import io.jenkins.blueocean.rest.factory.BlueCoverageSummaryFactory;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
-import io.jenkins.blueocean.rest.model.BlueCoverageSummary;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
@@ -31,7 +30,6 @@ import io.jenkins.blueocean.rest.model.GenericResource;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.export.Exported;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -247,13 +245,17 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
         }
     }
 
-    @Override
-    public BlueCoverageSummary getCoverageSummary() {
-        return BlueCoverageSummaryFactory.resolve(run, this);
-    }
-
     public Collection<BlueActionProxy> getActions() {
         return ActionProxiesImpl.getActionProxies(run.getAllActions(), this);
+    }
+
+    public Collection<BlueActionProxy> getAllActions() {
+        return ActionProxiesImpl.getActionProxies(run.getAllActions(), new Predicate<Action>() {
+            @Override
+            public boolean apply(@Nullable Action input) {
+                return true;
+            }
+        }, this);
     }
 
     @Override
