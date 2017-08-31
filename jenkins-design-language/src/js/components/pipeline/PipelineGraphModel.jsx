@@ -2,6 +2,8 @@
 
 import type { Result } from '../status/StatusIndicator';
 
+export const MATRIOSKA_PATHS = false;
+
 // Dimensions used for layout, px
 export const defaultLayout = {
     nodeSpacingH: 120,

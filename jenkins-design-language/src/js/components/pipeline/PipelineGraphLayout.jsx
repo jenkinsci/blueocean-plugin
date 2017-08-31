@@ -2,14 +2,14 @@
 
 import React from 'react';
 
+import {MATRIOSKA_PATHS} from './PipelineGraphModel'
+
 import type {
     NodeColumn,
     LabelInfo,
     LayoutInfo,
     StageInfo, NodeInfo,
 } from './PipelineGraphModel';
-
-const SORT_COLUMN_ROWS = false;
 
 /**
  * Main process for laying out the graph. Creates and positions markers for each component, but creates no components.
@@ -121,7 +121,7 @@ function createNodeColumns(topLevelStages: Array<StageInfo> = []): Array<NodeCol
             }
         }
 
-        if (SORT_COLUMN_ROWS) {
+        if (MATRIOSKA_PATHS) {
             // Sort by row length for visual appeal when connectors don't all line up vertically
             const originalOrder = column.rows.concat();
             column.rows.sort((left: Array<NodeInfo>, right: Array<NodeInfo>) => {

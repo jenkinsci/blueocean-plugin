@@ -258,8 +258,8 @@ function renderEdgeCases1() {
             <PipelineGraph stages={stages1} selectedStage={stages1[1]}/>
             <PipelineGraph stages={stages2} selectedStage={stages2[1]}/>
             <PipelineGraph stages={stages3} selectedStage={stages3[0]}/>
-            <PipelineGraph stages={stages4} selectedStage={stages4[0]}/>
-            <PipelineGraph stages={stages5} selectedStage={stages4[5]}/>
+            <PipelineGraph stages={stages4} selectedStage={stages4[0].children[1].nextSibling.nextSibling}/>
+            <PipelineGraph stages={stages5} selectedStage={stages5[0].children[2]}/>
         </div>
     );
 }

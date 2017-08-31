@@ -9,6 +9,8 @@ import { defaultLayout } from './PipelineGraphModel';
 
 import { layoutGraph } from './PipelineGraphLayout';
 
+import { MATRIOSKA_PATHS } from './PipelineGraphModel';
+
 import type {
     NodeColumn,
     NodeInfo,
@@ -17,8 +19,6 @@ import type {
     StageInfo,
     CompositeConnection,
 } from './PipelineGraphModel';
-
-const ALIGN_CONNECTOR_VERTICALS = true;
 
 type SVGChildren = Array<any>; // Fixme: Maybe refine this?
 
@@ -254,14 +254,14 @@ export class PipelineGraph extends Component {
 
         // Collapse from previous node(s) to top column node
         for (const previousNode of sourceNodes.slice(1)) {
-            const midPointX = Math.round((ALIGN_CONNECTOR_VERTICALS ? rightmostSource : previousNode.x) + halfSpacingH);
+            const midPointX = Math.round((MATRIOSKA_PATHS ? previousNode.x : rightmostSource ) + halfSpacingH);
             // console.log('collapse from',previousNode.name,'to',destinationNodes[0].name, 'mpx', midPointX); // TODO: RM
             this.renderBasicCurvedConnection(previousNode, destinationNodes[0], midPointX, elements);
         }
 
         // Expand from top previous node to column node(s)
         for (const destNode of destinationNodes.slice(1)) {
-            const midPointX = Math.round((ALIGN_CONNECTOR_VERTICALS ? leftmostDestination : destNode.x) - halfSpacingH);
+            const midPointX = Math.round((MATRIOSKA_PATHS ? destNode.x : leftmostDestination) - halfSpacingH);
             // console.log('expand from',sourceNodes[0].name,'to',destNode.name, 'mpx', midPointX); // TODO: RM
             this.renderBasicCurvedConnection(sourceNodes[0], destNode, midPointX, elements);
         }
@@ -313,14 +313,27 @@ export class PipelineGraph extends Component {
         this.renderHorizontalConnection(leftNode, destinationNodes[0], skipConnectorStroke, elements);
 
         //--------------------------------------------------------------------------
+        //  Work out the extents of source and dest space
+
+        let rightmostSource = sourceNodes[0].x;
+        let leftmostDestination = destinationNodes[0].x;
+
+        for (let i = 1; i < sourceNodes.length; i++) {
+            rightmostSource = Math.max(rightmostSource, sourceNodes[i].x);
+        }
+
+        for (let i = 1; i < destinationNodes.length; i++) {
+            leftmostDestination = Math.min(leftmostDestination, destinationNodes[i].x);
+        }
+
+        //--------------------------------------------------------------------------
         //  "Collapse" from the source node(s) down toward the first skipped
 
         leftNode = sourceNodes[0];
         rightNode = skippedNodes[0];
 
-        let midPointX = Math.round(rightNode.x - halfSpacingH);
-
         for (leftNode of sourceNodes.slice(1)) {
+            const midPointX = Math.round((MATRIOSKA_PATHS ? leftNode.x : rightmostSource ) + halfSpacingH);
             const leftNodeRadius = leftNode.isPlaceholder ? terminalRadius : nodeRadius;
             const key = connectorKey(leftNode, rightNode);
 
@@ -342,9 +355,8 @@ export class PipelineGraph extends Component {
         leftNode = lastSkippedNode;
         rightNode = destinationNodes[0];
 
-        midPointX = Math.round(leftNode.x + halfSpacingH);
-
         for (rightNode of destinationNodes.slice(1)) {
+            const midPointX = Math.round((MATRIOSKA_PATHS ? rightNode.x : leftmostDestination ) - halfSpacingH);
             const rightNodeRadius = rightNode.isPlaceholder ? terminalRadius : nodeRadius;
             const key = connectorKey(leftNode, rightNode);
 
