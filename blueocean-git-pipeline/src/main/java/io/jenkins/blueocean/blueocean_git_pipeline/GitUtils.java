@@ -17,35 +17,11 @@ import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
-import java.io.ByteArrayInputStream;
-
+import org.eclipse.jgit.api.CheckoutCommand;
 import org.eclipse.jgit.api.FetchCommand;
+import org.eclipse.jgit.api.MergeCommand;
+import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.PushCommand;
-import org.eclipse.jgit.transport.JschConfigSessionFactory;
-import org.eclipse.jgit.transport.OpenSshConfig;
-import org.eclipse.jgit.transport.PushResult;
-import org.eclipse.jgit.transport.RefSpec;
-import org.eclipse.jgit.transport.SshSessionFactory;
-import org.eclipse.jgit.transport.SshTransport;
-import org.eclipse.jgit.transport.Transport;
-import org.jenkinsci.plugins.gitclient.Git;
-import org.jenkinsci.plugins.gitclient.GitClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.text.MessageFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.TimeZone;
-import java.util.regex.Pattern;
-
-import jenkins.plugins.git.GitSCMSource;
 import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -62,14 +38,39 @@ import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.ObjectInserter;
 import org.eclipse.jgit.lib.ObjectReader;
 import org.eclipse.jgit.lib.PersonIdent;
+import org.eclipse.jgit.lib.Ref;
 import org.eclipse.jgit.lib.RefUpdate;
 import org.eclipse.jgit.lib.Repository;
 import org.eclipse.jgit.revwalk.RevCommit;
 import org.eclipse.jgit.revwalk.RevTree;
 import org.eclipse.jgit.revwalk.RevWalk;
+import org.eclipse.jgit.transport.JschConfigSessionFactory;
+import org.eclipse.jgit.transport.OpenSshConfig;
+import org.eclipse.jgit.transport.PushResult;
+import org.eclipse.jgit.transport.RefSpec;
+import org.eclipse.jgit.transport.SshSessionFactory;
+import org.eclipse.jgit.transport.SshTransport;
+import org.eclipse.jgit.transport.Transport;
 import org.eclipse.jgit.treewalk.CanonicalTreeParser;
 import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.util.FS;
+import org.jenkinsci.plugins.gitclient.Git;
+import org.jenkinsci.plugins.gitclient.GitClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.text.MessageFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.TimeZone;
+import java.util.regex.Pattern;
 
 /**
  * @author Vivek Pandey
@@ -199,8 +200,7 @@ class GitUtils {
     }
 
     public static void fetch(final Repository repo, final StandardCredentials credential) {
-        try {
-            org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(repo);
+        try (org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(repo)) {
             FetchCommand fetchCommand = git.fetch();
 
             if (isSshUrl(repo) && credential instanceof BasicSSHUserPrivateKey) {
@@ -208,14 +208,38 @@ class GitUtils {
             }
 
             fetchCommand.setRemote("origin")
-                    .setRemoveDeletedRefs(true)
-                    .setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*"))
-                    .call();
+                .setRemoveDeletedRefs(true)
+                .setRefSpecs(new RefSpec("+refs/heads/*:refs/remotes/origin/*"))
+                .call();
         } catch (GitAPIException ex) {
             if (ex.getMessage().contains("Auth fail")) {
                 throw new ServiceException.UnauthorizedException("Not authorized", ex);
             }
             throw new RuntimeException(ex);
+        }
+    }
+
+    public static void merge(final Repository repo, final String localRef, final String remoteRef) {
+        try (org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(repo)) {
+            Ref startRef = repo.exactRef(localRef);
+
+            CheckoutCommand checkoutCommand = git.checkout();
+            checkoutCommand.setCreateBranch(false);
+            checkoutCommand.setName(localRef);
+            checkoutCommand.call();
+
+            Ref mergeBranchRef = repo.exactRef(remoteRef);
+            ObjectId mergeBranchObjectId = repo.resolve(remoteRef);
+
+            MergeResult merge = git.merge()
+                .include(mergeBranchRef)
+                .setFastForward(MergeCommand.FastForwardMode.FF_ONLY)
+                .call();
+            if (merge.getConflicts() != null) {
+                throw new RuntimeException("Merge has conflicts");
+            }
+        } catch (Exception e) {
+            throw new ServiceException.UnexpectedErrorException("Unable to merge: " + remoteRef + " to: " + localRef, e);
         }
     }
 
@@ -368,24 +392,23 @@ class GitUtils {
         return null;
     }
 
-    public static void push(GitSCMSource gitSource, Repository db, StandardCredentials credential, String localBranchRef, String remoteBranchRef) {
-        String remote = gitSource.getRemote();
-        try (org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(db)) {
+    public static void push(String remoteUrl, Repository repo, StandardCredentials credential, String localBranchRef, String remoteBranchRef) {
+        try (org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(repo)) {
             String pushSpec = "+" + localBranchRef + ":" + remoteBranchRef;
             PushCommand pushCommand = git.push();
-            if (isSshUrl(remote) && credential instanceof BasicSSHUserPrivateKey) {
+            if (isSshUrl(remoteUrl) && credential instanceof BasicSSHUserPrivateKey) {
                 pushCommand.setTransportConfigCallback(getSSHKeyTransport((BasicSSHUserPrivateKey)credential));
             }
             Iterable<PushResult> resultIterable = pushCommand
                 .setRefSpecs(new RefSpec(pushSpec))
-                .setRemote(remote)
+                .setRemote(remoteUrl)
                 .call();
             PushResult result = resultIterable.iterator().next();
             if (result.getRemoteUpdates().isEmpty()) {
                 throw new RuntimeException("No remote updates occurred");
             }
         } catch (GitAPIException ex) {
-            throw new ServiceException.UnexpectedErrorException("Unable to save and push to: " + remote + " - " + ex.getMessage(), ex);
+            throw new ServiceException.UnexpectedErrorException("Unable to save and push to: " + remoteUrl + " - " + ex.getMessage(), ex);
         }
     }
 }
