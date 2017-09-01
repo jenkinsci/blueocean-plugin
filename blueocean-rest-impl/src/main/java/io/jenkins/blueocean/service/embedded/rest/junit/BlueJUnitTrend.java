@@ -83,8 +83,8 @@ public class BlueJUnitTrend extends BlueTrend {
         public List<Row> getRows() {
             return Lists.newArrayList(Iterators.transform(runs, new Function<BlueRun, Row>() {
                 @Override
-                public Row apply(BlueRun input) {
-                    return new RowImpl(input.getTestSummary(), input.getId());
+                public Row apply(BlueRun run) {
+                    return new RowImpl(run.getTestSummary(), run.getId());
                 }
             }));
         }
