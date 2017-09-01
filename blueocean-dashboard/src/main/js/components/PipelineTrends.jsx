@@ -74,18 +74,14 @@ function DefaultChart(props) {
     const rows = createChartData(trend);
 
     return (
-        <div className="trends-chart-container" data-trend-id={trend.id}>
-            <div className="trends-chart-label">{trend.id}</div>
-
-            <LineChart width={400} height={400} data={rows}>
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="id" />
-                <YAxis />
-                {series}
-                <Legend />
-                <Tooltip />
-            </LineChart>
-        </div>
+        <LineChart width={400} height={400} data={rows}>
+            <CartesianGrid strokeDasharray="3 3" />
+            <XAxis dataKey="id" />
+            <YAxis />
+            {series}
+            <Legend />
+            <Tooltip />
+        </LineChart>
     );
 }
 
@@ -196,15 +192,25 @@ export class PipelineTrends extends Component {
                 { trends.map(trend => {
                     const CustomComponent = this.extensions[trend.id];
 
+                    let chart = null;
+
                     if (CustomComponent) {
-                        return (
+                        chart = (
                             <Extensions.SandboxedComponent>
                                 <CustomComponent trend={trend} />
                             </Extensions.SandboxedComponent>
                         );
+                    } else {
+                        chart = <DefaultChart trend={trend} />;
                     }
 
-                    return <DefaultChart trend={trend} />;
+                    return (
+                        <div className="trends-chart-container" data-trend-id={trend.id}>
+                            <div className="trends-chart-label">{trend.id}</div>
+
+                            {chart}
+                        </div>
+                    );
                 })}
                 </div>
             </div>
