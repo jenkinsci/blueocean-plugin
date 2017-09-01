@@ -79,7 +79,7 @@ class StageDurationChart extends React.Component {
         const series = createChartSeries(trend);
 
         return (
-            <AreaChart width={400} height={400} data={rows}>
+            <AreaChart width={375} height={375} data={rows}>
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis dataKey="id" />
                 <YAxis />

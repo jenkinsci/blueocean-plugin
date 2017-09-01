@@ -74,7 +74,7 @@ function DefaultChart(props) {
     const rows = createChartData(trend);
 
     return (
-        <LineChart width={400} height={400} data={rows}>
+        <LineChart width={375} height={375} data={rows}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="id" />
             <YAxis />
