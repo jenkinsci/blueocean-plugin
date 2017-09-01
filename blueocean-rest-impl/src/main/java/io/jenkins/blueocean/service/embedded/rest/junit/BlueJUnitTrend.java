@@ -22,6 +22,7 @@ import java.util.Map;
 
 @Restricted(NoExternalUse.class)
 public class BlueJUnitTrend extends BlueTrend {
+
     private static final String TOTAL = "total";
     private static final String PASSED = "passed";
     private static final String FIXED = "fixed";

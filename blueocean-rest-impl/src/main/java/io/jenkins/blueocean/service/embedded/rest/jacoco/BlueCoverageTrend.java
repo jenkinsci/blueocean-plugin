@@ -23,6 +23,7 @@ import java.util.Map;
  * @author cliffmeyers
  */
 public class BlueCoverageTrend extends BlueTrend {
+
     private static final String CLASSES = "classes";
     private static final String METHODS = "methods";
     private static final String LINES = "lines";

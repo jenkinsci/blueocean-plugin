@@ -40,3 +40,6 @@ extensions:
 # Credentials Picker
   - component: credentials/CredentialsPicker
     extensionPoint: jenkins.credentials.selection
+# Trends
+#  - component: components/trends/StageDurationChart
+#    extensionPoint: jenkins.pipeline.trends
