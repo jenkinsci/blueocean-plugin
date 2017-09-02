@@ -221,15 +221,12 @@ class GitUtils {
 
     public static void merge(final Repository repo, final String localRef, final String remoteRef) {
         try (org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(repo)) {
-            Ref startRef = repo.exactRef(localRef);
-
             CheckoutCommand checkoutCommand = git.checkout();
             checkoutCommand.setCreateBranch(false);
             checkoutCommand.setName(localRef);
             checkoutCommand.call();
 
             Ref mergeBranchRef = repo.exactRef(remoteRef);
-            ObjectId mergeBranchObjectId = repo.resolve(remoteRef);
 
             MergeResult merge = git.merge()
                 .include(mergeBranchRef)
