@@ -516,11 +516,6 @@
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>metrics</artifactId>
-            <version>3.1.2.10</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>variant</artifactId>
             <version>1.1</version>
         </dependency>
