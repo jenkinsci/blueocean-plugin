@@ -36,8 +36,9 @@ public class GithubOrganizationFolder  extends OrganizationFolderPipelineImpl {
             if(scmNavigator instanceof GitHubSCMNavigator){
                 GitHubSCMNavigator gitHubSCMNavigator = (GitHubSCMNavigator) scmNavigator;
                 WildcardSCMHeadFilterTrait wildcardTraits = SCMTrait.find(gitHubSCMNavigator.getTraits(), WildcardSCMHeadFilterTrait.class);
-                return (StringUtils.isBlank(wildcardTraits.getIncludes()) || wildcardTraits.getIncludes().equals("*"))
-                        && StringUtils.isBlank(wildcardTraits.getExcludes());
+                return wildcardTraits == null
+                        || ((StringUtils.isBlank(wildcardTraits.getIncludes()) || wildcardTraits.getIncludes().equals("*"))
+                        && StringUtils.isBlank(wildcardTraits.getExcludes()));
             }
         }
         return super.isScanAllRepos();
