@@ -29,25 +29,33 @@ import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.KeyPair;
 import hudson.model.User;
 import hudson.remoting.Base64;
-import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.service.embedded.util.UserSSHKeyManager;
+import io.jenkins.blueocean.test.ssh.SSHServer;
 import jenkins.plugins.git.GitSampleRepoRule;
+import jenkins.scm.impl.mock.AbstractSampleDVCSRepoRule;
+import jenkins.scm.impl.mock.AbstractSampleRepoRule;
 import org.apache.commons.io.FileUtils;
 import org.apache.sshd.common.util.OsUtils;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
-import org.junit.*;
-import org.junit.runners.Parameterized;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Logger;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 /**
  * Testing the git load/save backend
@@ -67,17 +75,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
 
     private SSHServer sshd;
 
-    @Parameterized.Parameters
-    public static Object[] data() {
-        return new Object[] { null, "TestOrg" };
-    }
-
     public GitReadSaveTest() {
-        this("jenkins");
-    }
-
-    private GitReadSaveTest(String blueOrganisation) {
-        GitScmTest.TestOrganizationFactoryImpl.orgRoot = blueOrganisation;
     }
 
     @Before
@@ -88,7 +86,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
     }
 
     private String getOrgName() {
-        return OrganizationFactory.getInstance().list().iterator().next().getName();
+        return "jenkins";
     }
 
     private static final String masterPipelineScript = "pipeline { stage('Build 1') { steps { echo 'build' } } }";
@@ -121,14 +119,35 @@ public class GitReadSaveTest extends PipelineBaseTest {
         // we're using this to test push/pull, allow pushes to current branch, we reset it to match
         repoNoJenkinsfile.git("config", "--local", "--add", "receive.denyCurrentBranch", "false");
 
-        repoForSSH.init();
-        repoForSSH.write("Jenkinsfile", masterPipelineScript);
-        repoForSSH.git("add", "Jenkinsfile");
-        repoForSSH.git("commit", "--all", "--message=initilaize the repo");
+        String gitRoot = System.getProperty("TEST_SSH_SERVER_GIT_ROOT", null);
+        boolean createRepoForSSH = true;
+        if (gitRoot != null) {
+            Field f = AbstractSampleRepoRule.class.getDeclaredField("tmp");
+            f.setAccessible(true);
+            Object tmpFolder = f.get(repoForSSH);
+            f = TemporaryFolder.class.getDeclaredField("folder");
+            f.setAccessible(true);
+            File dir = new File(gitRoot);
+            if (!dir.exists()) {
+                dir.mkdirs();
+            } else {
+                createRepoForSSH = false;
+            }
+            f.set(tmpFolder, dir);
+            f = AbstractSampleDVCSRepoRule.class.getDeclaredField("sampleRepo");
+            f.setAccessible(true);
+            f.set(repoForSSH, dir);
+        }
 
-        // we're using this to test push/pull, allow pushes to current branch, we reset it to match
-        repoForSSH.git("config", "--local", "--add", "receive.denyCurrentBranch", "false");
+        if (createRepoForSSH) {
+            repoForSSH.init();
+            repoForSSH.write("Jenkinsfile", masterPipelineScript);
+            repoForSSH.git("add", "Jenkinsfile");
+            repoForSSH.git("commit", "--all", "--message=initilaize the repo");
 
+            // we're using this to test push/pull, allow pushes to current branch, we reset it to match
+            repoForSSH.git("config", "--local", "--add", "receive.denyCurrentBranch", "false");
+        }
     }
 
     private void startSSH() throws Exception {
@@ -143,7 +162,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
             int port = Integer.parseInt(System.getProperty("TEST_SSH_SERVER_PORT", "0"));
             boolean allowLocalUser = Boolean.getBoolean("TEST_SSH_SERVER_ALLOW_LOCAL");
             String userPublicKey = Base64.encode(pair.getPublicKeyBlob());
-            sshd = new SSHServer(repoForSSH.getRoot(), keyFile, port, allowLocalUser, ImmutableMap.of("bob", userPublicKey));
+            sshd = new SSHServer(repoForSSH.getRoot(), keyFile, port, allowLocalUser, ImmutableMap.of("bob", userPublicKey), true);
             // Go, go, go
             sshd.start();
         }
@@ -199,6 +218,8 @@ public class GitReadSaveTest extends PipelineBaseTest {
                 "credentialId", UserSSHKeyManager.getOrCreate(bob).getId()
             )).build(Map.class);
 
+        assertTrue(r.get("error") == null);
+
         // Create a job
         String jobName = "test-token-validation";
         r = new RequestBuilder(baseUrl)
@@ -221,7 +242,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
             .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
             .put("/organizations/" + getOrgName() + "/scm/git/validate/")
             .data(ImmutableMap.of(
-                "pipeline", jobName,
+                "pipeline", ImmutableMap.of("fullName", jobName),
                 "credentialId", UserSSHKeyManager.getOrCreate(bob).getId()
             )).build(Map.class);
 
@@ -242,7 +263,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
             .jwtToken(getJwtToken(j.jenkins, alice.getId(), alice.getId()))
             .put("/organizations/" + getOrgName() + "/scm/git/validate/")
             .data(ImmutableMap.of(
-                "pipeline", jobName,
+                "pipeline", ImmutableMap.of("fullName", jobName),
                 "credentialId", UserSSHKeyManager.getOrCreate(alice).getId()
             )).build(Map.class);
     }
@@ -254,7 +275,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         }
         startSSH();
         String userHostPort = "bob@127.0.0.1:" + sshd.getPort();
-        String remote = "ssh://" + userHostPort + "" + repoForSSH.getRoot().getCanonicalPath();
+        String remote = "ssh://" + userHostPort + "" + repoForSSH.getRoot().getCanonicalPath() + "/.git";
         testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, remote, repoForSSH, masterPipelineScript);
     }
 

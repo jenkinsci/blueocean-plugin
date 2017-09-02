@@ -5,7 +5,6 @@ import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import hudson.Extension;
-import hudson.model.Item;
 import hudson.model.User;
 import hudson.util.HttpResponses;
 import io.jenkins.blueocean.commons.ErrorMessage;
@@ -21,6 +20,7 @@ import io.jenkins.blueocean.rest.model.Container;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.AbstractGitSCMSource;
 import jenkins.scm.api.SCMSourceOwner;
+import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.json.JsonBody;
@@ -87,36 +87,40 @@ public class GitScm extends AbstractScm {
                     AbstractGitSCMSource scmSource = (AbstractGitSCMSource) item.getSCMSources().iterator().next();
                     repositoryUrl = scmSource.getRemote();
                 } else {
-                    throw new ServiceException.NotFoundException("No repository found for: " + fullName);
+                    return HttpResponses.errorJSON("No repository found for: " + fullName);
                 }
+            } catch(JSONException e) {
+                return HttpResponses.errorJSON("No repositoryUrl or pipeline.fullName specified in request.");
             } catch(RuntimeException e) {
-                throw e;
-            } catch(Exception e) {
-                throw new RuntimeException(e);
+                return HttpResponses.errorWithoutStack(ServiceException.INTERNAL_SERVER_ERROR, e.getMessage());
             }
         }
 
-        String credentialId = request.getString("credentialId");
-        User user = User.current();
-        if (user == null) {
-            throw new ServiceException.UnauthorizedException("Not authenticated");
-        }
-        StandardCredentials creds = CredentialsMatchers.firstOrNull(
-            CredentialsProvider.lookupCredentials(
-                StandardCredentials.class,
-                Jenkins.getInstance(),
-                Jenkins.getAuthentication(),
-                (List<DomainRequirement>)null),
-            CredentialsMatchers.allOf(CredentialsMatchers.withId(credentialId))
-        );
+        try {
+            String credentialId = request.getString("credentialId");
+            User user = User.current();
+            if (user == null) {
+                throw new ServiceException.UnauthorizedException("Not authenticated");
+            }
+            StandardCredentials creds = CredentialsMatchers.firstOrNull(
+                CredentialsProvider.lookupCredentials(
+                    StandardCredentials.class,
+                    Jenkins.getInstance(),
+                    Jenkins.getAuthentication(),
+                    (List<DomainRequirement>) null),
+                CredentialsMatchers.allOf(CredentialsMatchers.withId(credentialId))
+            );
 
-        if (creds == null) {
-            throw new ServiceException.NotFoundException("No credentials found for: " + credentialId);
-        }
+            if (creds == null) {
+                throw new ServiceException.NotFoundException("No credentials found for: " + credentialId);
+            }
 
-        List<ErrorMessage.Error> errors = GitUtils.validateCredentials(repositoryUrl, creds);
-        if (!errors.isEmpty()) {
-            throw new ServiceException.UnauthorizedException(errors.get(0).getMessage());
+            List<ErrorMessage.Error> errors = GitUtils.validateCredentials(repositoryUrl, creds);
+            if (!errors.isEmpty()) {
+                throw new ServiceException.UnauthorizedException(errors.get(0).getMessage());
+            }
+        } catch(Exception e) {
+            return HttpResponses.errorWithoutStack(ServiceException.PRECONDITION_REQUIRED, e.getMessage());
         }
 
         return HttpResponses.okJSON();

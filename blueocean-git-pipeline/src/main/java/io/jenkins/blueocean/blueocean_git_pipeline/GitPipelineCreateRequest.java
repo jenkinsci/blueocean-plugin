@@ -28,7 +28,10 @@ public class GitPipelineCreateRequest extends AbstractMultiBranchCreateRequest {
 
     @Override
     protected SCMSource createSource(@Nonnull MultiBranchProject project, @Nonnull BlueScmConfig scmConfig) {
-        return new GitSCMSource(null, StringUtils.defaultString(scmConfig.getUri()), computeCredentialId(scmConfig), "*", "", false);
+        GitSCMSource gitSource = new GitSCMSource(StringUtils.defaultString(scmConfig.getUri()));
+        gitSource.setCredentialsId(computeCredentialId(scmConfig));
+        //gitSource.set, "*", "", false);
+        return gitSource;
     }
 
     @Override

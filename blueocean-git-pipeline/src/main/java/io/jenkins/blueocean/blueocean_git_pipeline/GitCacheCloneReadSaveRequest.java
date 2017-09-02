@@ -133,7 +133,7 @@ class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
                                 }
 
                                 // Push the changes
-                                GitUtils.push(gitSource, repo, credential, LOCAL_REF_BASE + sourceBranch, REMOTE_REF_BASE + branch);
+                                GitUtils.push(gitSource.getRemote(), repo, credential, LOCAL_REF_BASE + sourceBranch, REMOTE_REF_BASE + branch);
                             } catch (GitAPIException ex) {
                                 throw new ServiceException.UnexpectedErrorException(ex.getMessage(), ex);
                             }

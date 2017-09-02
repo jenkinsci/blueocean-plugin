@@ -61,9 +61,9 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.apache.sshd</groupId>
-      <artifactId>sshd-core</artifactId>
-      <version>1.6.0</version>
+      <groupId>io.jenkins.blueocean</groupId>
+      <artifactId>blueocean-test-ssh-server</artifactId>
+      <version>0.0.2</version>
       <scope>test</scope>
     </dependency>
 

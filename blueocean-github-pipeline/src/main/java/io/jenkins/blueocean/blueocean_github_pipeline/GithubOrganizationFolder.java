@@ -8,6 +8,8 @@ import io.jenkins.blueocean.rest.impl.pipeline.OrganizationFolderPipelineImpl;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import jenkins.branch.OrganizationFolder;
 import jenkins.scm.api.SCMNavigator;
+import jenkins.scm.api.trait.SCMTrait;
+import jenkins.scm.impl.trait.WildcardSCMHeadFilterTrait;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.kohsuke.stapler.export.Exported;
@@ -33,11 +35,9 @@ public class GithubOrganizationFolder  extends OrganizationFolderPipelineImpl {
             SCMNavigator scmNavigator = getFolder().getSCMNavigators().get(0);
             if(scmNavigator instanceof GitHubSCMNavigator){
                 GitHubSCMNavigator gitHubSCMNavigator = (GitHubSCMNavigator) scmNavigator;
-                return (StringUtils.isBlank(gitHubSCMNavigator.getIncludes()) || gitHubSCMNavigator.getIncludes().equals("*"))
-                        && StringUtils.isBlank(gitHubSCMNavigator.getExcludes())
-                        && (StringUtils.isBlank(gitHubSCMNavigator.getPattern())
-                        || gitHubSCMNavigator.getPattern().equals(".*"));
-
+                WildcardSCMHeadFilterTrait wildcardTraits = SCMTrait.find(gitHubSCMNavigator.getTraits(), WildcardSCMHeadFilterTrait.class);
+                return (StringUtils.isBlank(wildcardTraits.getIncludes()) || wildcardTraits.getIncludes().equals("*"))
+                        && StringUtils.isBlank(wildcardTraits.getExcludes());
             }
         }
         return super.isScanAllRepos();

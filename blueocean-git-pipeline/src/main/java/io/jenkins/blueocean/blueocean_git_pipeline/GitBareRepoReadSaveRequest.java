@@ -102,7 +102,7 @@ class GitBareRepoReadSaveRequest extends GitCacheCloneReadSaveRequest {
 
                         GitUtils.commit(repo, localBranchRef, filePath, contents, user.getId(), mailAddress, commitMessage, TimeZone.getDefault(), new Date());
 
-                        GitUtils.push(gitSource, repo, privateKey, localBranchRef, REMOTE_REF_BASE + branch);
+                        GitUtils.push(gitSource.getRemote(), repo, privateKey, localBranchRef, REMOTE_REF_BASE + branch);
                         return null;
                     } catch (RuntimeException e) {
                         // if anything bad happened, roll back
