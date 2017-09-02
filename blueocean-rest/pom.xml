@@ -23,6 +23,10 @@
           <groupId>io.jenkins.blueocean.rest.annotation</groupId>
           <artifactId>capability-annotation</artifactId>
       </dependency>
+      <dependency>
+          <groupId>com.graphql-java</groupId>
+          <artifactId>graphql-java</artifactId>
+      </dependency>
   </dependencies>
 
     <build>

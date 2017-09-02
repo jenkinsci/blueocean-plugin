@@ -1,5 +1,7 @@
 package io.jenkins.blueocean.rest.factory;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
@@ -12,6 +14,10 @@ import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
 import jenkins.model.Jenkins;
+
+import javax.annotation.Nullable;
+import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 /**
  * Factory that gives instance of {@link BluePipeline}
@@ -76,6 +82,17 @@ public abstract class BluePipelineFactory implements ExtensionPoint {
             if (r!=null)    return r;
         }
         return null;
+    }
+
+    /**
+     * Resolves a BluePipeline by fullName
+     * @param organization to search
+     * @param fullName to find
+     * @return optional
+     */
+    public static Optional<BluePipeline> resolve(BlueOrganization organization, String fullName) {
+        return StreamSupport.stream(organization.getPipelines().spliterator(), false)
+            .filter(input -> input.getFullName().equals(fullName)).findFirst();
     }
 
     /**

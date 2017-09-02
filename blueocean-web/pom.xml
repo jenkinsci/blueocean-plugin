@@ -29,6 +29,11 @@
             <artifactId>variant</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>com.graphql-java</groupId>
+            <artifactId>graphql-java-servlet</artifactId>
+        </dependency>
+
         <!-- test scope deps -->
         <dependency>
             <groupId>org.mockito</groupId>
