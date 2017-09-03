@@ -5,7 +5,7 @@ import { buildPipelineUrl } from '../util/UrlUtils';
 import { Link } from 'react-router';
 
 const RunHistoryButton = (props) => {
-    const { pipeline, branchName, t, iconColor, hoverIconColor } = props;
+    const { pipeline, branchName, t } = props;
     const historyButtonUrl = `${buildPipelineUrl(pipeline.organization, pipeline.fullName)}/activity?branch=${encodeURIComponent(branchName)}`;
 
     return (<div className="history-button-component">
