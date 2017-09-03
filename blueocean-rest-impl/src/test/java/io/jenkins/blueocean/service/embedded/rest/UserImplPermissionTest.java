@@ -38,6 +38,7 @@ import java.util.Map;
 import javax.annotation.Nonnull;
 import javax.servlet.ServletException;
 
+import io.jenkins.blueocean.rest.model.BluePluginContainer;
 import org.acegisecurity.AccessDeniedException;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.GrantedAuthority;
@@ -99,7 +100,7 @@ public class UserImplPermissionTest {
             public boolean isAuthenticated() { return false; }
             public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {}
         };
-        
+
         jenkins = mock(Jenkins.class);
         when(jenkins.getACL()).thenReturn(new ACL() {
             public boolean hasPermission(Authentication a, Permission permission) {
@@ -304,6 +305,11 @@ public class UserImplPermissionTest {
         @Override
         public boolean hasPermission(Permission permission) {
             return true;
+        }
+
+        @Override
+        public BluePluginContainer getPlugins() {
+            return null;
         }
     }
 }

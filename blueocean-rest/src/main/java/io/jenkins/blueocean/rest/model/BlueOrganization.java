@@ -49,5 +49,7 @@ public abstract class BlueOrganization extends Resource implements Routable{
     @Navigable
     public abstract BlueUser getUser();
 
+    @Navigable
+    public abstract BluePluginContainer getPlugins();
 }
 

@@ -12,6 +12,7 @@ import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
+import io.jenkins.blueocean.rest.model.BluePluginContainer;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserContainer;
 import io.jenkins.blueocean.rest.model.GenericResource;
@@ -101,6 +102,11 @@ public class OrganizationImpl extends AbstractOrganization{
             throw new ServiceException.NotFoundException("No authenticated user found");
         }
         return new UserImpl(this, user, new UserContainerImpl(this, this));
+    }
+
+    @Override
+    public BluePluginContainer getPlugins() {
+        return new BluePluginContainerImpl(this);
     }
 
     @Override
