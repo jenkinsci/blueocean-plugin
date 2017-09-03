@@ -9,6 +9,7 @@ import io.jenkins.blueocean.scm.api.AbstractMultiBranchCreateRequest;
 import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
+import jenkins.plugins.git.traits.BranchDiscoveryTrait;
 import jenkins.scm.api.SCMSource;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -30,7 +31,7 @@ public class GitPipelineCreateRequest extends AbstractMultiBranchCreateRequest {
     protected SCMSource createSource(@Nonnull MultiBranchProject project, @Nonnull BlueScmConfig scmConfig) {
         GitSCMSource gitSource = new GitSCMSource(StringUtils.defaultString(scmConfig.getUri()));
         gitSource.setCredentialsId(computeCredentialId(scmConfig));
-        //gitSource.set, "*", "", false);
+        gitSource.getTraits().add(new BranchDiscoveryTrait());
         return gitSource;
     }
 

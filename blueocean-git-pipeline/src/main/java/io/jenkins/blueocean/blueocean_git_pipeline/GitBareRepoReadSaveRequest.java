@@ -32,7 +32,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.TimeZone;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import jenkins.plugins.git.GitSCMFileSystem;
 import jenkins.plugins.git.GitSCMSource;
@@ -88,6 +87,10 @@ class GitBareRepoReadSaveRequest extends GitCacheCloneReadSaveRequest {
 
                     ObjectId branchHead = repo.resolve(localBranchRef);
 
+                    if (branchHead == null) {
+                        throw new ServiceException.BadRequestException("Invalid branch source branch: " + sourceBranch);
+                    }
+
                     try {
                         // Get committer info and credentials
                         User user = User.current();
@@ -111,8 +114,7 @@ class GitBareRepoReadSaveRequest extends GitCacheCloneReadSaveRequest {
                             rollback.setNewObjectId(branchHead);
                             rollback.forceUpdate();
                         } catch(Exception ex) {
-                            Logger.getLogger(getClass().getName()).log(Level.SEVERE, "Unable to roll back repo after save failure", ex);
-                            throw new ServiceException.UnexpectedErrorException("Unable to roll back repo after save failure", e);
+                            log.log(Level.SEVERE, "Unable to roll back repo after save failure", ex);
                         }
                         throw e;
                     }
