@@ -2,7 +2,7 @@
 
 import React from 'react';
 
-import {MATRIOSKA_PATHS} from './PipelineGraphModel'
+import { MATRIOSKA_PATHS } from './PipelineGraphModel';
 
 import type {
     NodeColumn,

@@ -484,7 +484,7 @@ export class PipelineGraph extends Component {
      * Adds all the SVG components to the elements list.
      */
     renderBasicCurvedConnection(leftNode: NodeInfo, rightNode: NodeInfo, midPointX: number, elements: SVGChildren) {
-        const { nodeRadius, terminalRadius, curveRadius, connectorStrokeWidth, nodeSpacingH } = this.state.layout;
+        const { nodeRadius, terminalRadius, curveRadius, connectorStrokeWidth } = this.state.layout;
         const leftNodeRadius = leftNode.isPlaceholder ? terminalRadius : nodeRadius;
         const rightNodeRadius = rightNode.isPlaceholder ? terminalRadius : nodeRadius;
 
