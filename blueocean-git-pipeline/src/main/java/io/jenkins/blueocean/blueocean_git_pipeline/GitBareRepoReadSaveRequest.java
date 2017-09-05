@@ -100,8 +100,8 @@ class GitBareRepoReadSaveRequest extends GitCacheCloneReadSaveRequest {
 
                         GitUtils.push(gitSource.getRemote(), repo, credential, localBranchRef, REMOTE_REF_BASE + branch);
                         return null;
-                    } catch (RuntimeException e) {
-                        // if anything bad happened, roll back
+                    } finally {
+                        // always roll back to undo our local changes
                         try {
                             RefUpdate rollback = repo.updateRef(localBranchRef);
                             rollback.setNewObjectId(branchHead);
@@ -109,7 +109,6 @@ class GitBareRepoReadSaveRequest extends GitCacheCloneReadSaveRequest {
                         } catch(Exception ex) {
                             log.log(Level.SEVERE, "Unable to roll back repo after save failure", ex);
                         }
-                        throw e;
                     }
                 }
             });
