@@ -8,11 +8,15 @@ import io.blueocean.ath.factory.ActivityPageFactory;
 import io.blueocean.ath.factory.BranchPageFactory;
 import io.blueocean.ath.factory.FreestyleJobFactory;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
+import io.blueocean.ath.factory.PipelineFactory;
+import io.blueocean.ath.factory.RunDetailsArtifactsPageFactory;
 import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
 import io.blueocean.ath.model.FreestyleJob;
 import io.blueocean.ath.model.MultiBranchPipeline;
+import io.blueocean.ath.model.Pipeline;
 import io.blueocean.ath.pages.blue.ActivityPage;
 import io.blueocean.ath.pages.blue.BranchPage;
+import io.blueocean.ath.pages.blue.RunDetailsArtifactsPage;
 import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.Augmenter;
@@ -20,8 +24,6 @@ import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 import java.io.FileInputStream;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Files;
@@ -74,8 +76,18 @@ public class AthModule extends AbstractModule {
             .build(FreestyleJobFactory.class));
 
         install(new FactoryModuleBuilder()
+            .implement(Pipeline.class, Pipeline.class)
+            .build(PipelineFactory.class));
+
+        install(new FactoryModuleBuilder()
             .implement(RunDetailsPipelinePage.class, RunDetailsPipelinePage.class)
             .build(RunDetailsPipelinePageFactory.class));
+
+        install(new FactoryModuleBuilder()
+            .implement(RunDetailsArtifactsPage.class, RunDetailsArtifactsPage.class)
+            .build(RunDetailsArtifactsPageFactory.class));
+
+
         install(new FactoryModuleBuilder()
             .implement(BranchPage.class, BranchPage.class)
             .build(BranchPageFactory.class));

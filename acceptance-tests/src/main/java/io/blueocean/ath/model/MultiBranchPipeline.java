@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.List;
 
-public class MultiBranchPipeline extends Pipeline{
+public class MultiBranchPipeline extends AbstractPipeline {
 
     @Inject
     ClassicJobApi jobApi;

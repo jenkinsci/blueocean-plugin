@@ -13,8 +13,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import javax.inject.Inject;
 
-public class RunDetailsPipelinePage {
-    private Logger logger = Logger.getLogger(RunDetailsPipelinePage.class);
+public class  RunDetailsArtifactsPage {
+    private Logger logger = Logger.getLogger(RunDetailsArtifactsPage.class);
 
     private WebDriver driver;
 
@@ -28,14 +28,14 @@ public class RunDetailsPipelinePage {
     WaitUtil wait;
 
     @Inject
-    public RunDetailsPipelinePage(WebDriver driver, @Assisted AbstractPipeline pipeline) {
+    public RunDetailsArtifactsPage(WebDriver driver, @Assisted AbstractPipeline pipeline) {
         this.driver = driver;
         this.pipeline = pipeline;
         PageFactory.initElements(driver, this);
     }
 
     public void open(String pipeline, Integer runNumber) {
-        driver.get(base+"/blue/organizations/jenkins/"+ pipeline + "/detail/master/" + runNumber +"/pipeline");
+        driver.get(base+"/blue/organizations/jenkins/"+ pipeline + "/detail/master/" + runNumber +"/artifacts");
         logger.info("Opened result page for " + pipeline);
     }
     public void checkPipeline() {
@@ -55,22 +55,21 @@ public class RunDetailsPipelinePage {
     public String getUrl(String branch, int runNumber) {
         if(pipeline.isMultiBranch()) {
             String tempBranch = branch == null ? "master" : branch;
-            return pipeline.getUrl() + "/detail/" + tempBranch + "/" + runNumber +"/pipeline";
+            return pipeline.getUrl() + "/detail/" + tempBranch + "/" + runNumber +"/artifacts";
         }
 
-        return pipeline.getUrl() + "/detail/master/" + runNumber +"/pipeline";
+        return pipeline.getUrl() + "/detail/master/" + runNumber +"/artifacts";
     }
 
-    public RunDetailsPipelinePage open(String branch, int runNumber) {
+    public RunDetailsArtifactsPage open(String branch, int runNumber) {
         checkPipeline();
         driver.get(getUrl(branch, runNumber));
         checkUrl(branch, runNumber);
-        logger.info("Opened RunDetailsPipeline page for " + pipeline.getName());
+        logger.info("Opened RunDetailsArtifacts page for " + pipeline.getName());
         return this;
     }
 
-    public RunDetailsPipelinePage open(int runNumber) {
+    public RunDetailsArtifactsPage open(int runNumber) {
         return open(null, runNumber);
     }
-
 }

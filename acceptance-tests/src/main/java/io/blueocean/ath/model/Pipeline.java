@@ -1,81 +1,44 @@
 package io.blueocean.ath.model;
 
-import com.google.common.base.Joiner;
-import com.google.common.net.UrlEscapers;
+
 import com.google.inject.Inject;
-import io.blueocean.ath.BaseUrl;
-import io.blueocean.ath.factory.ActivityPageFactory;
-import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
-import io.blueocean.ath.pages.blue.ActivityPage;
-import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
+import com.google.inject.assistedinject.Assisted;
+import com.google.inject.assistedinject.AssistedInject;
+import io.blueocean.ath.api.classic.ClassicJobApi;
+import org.apache.commons.io.FileUtils;
 
-public abstract class Pipeline {
-    private Folder folder;
-    private String name;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.nio.file.Files;
 
-    @BaseUrl @Inject
-    String baseUrl;
+public class Pipeline extends AbstractPipeline {
+    @AssistedInject
+    public Pipeline(@Assisted String name) {
+        super(name);
+    }
+
+    @AssistedInject
+    public Pipeline(@Assisted Folder folder, @Assisted String name) {
+        super(folder, name);
+    }
 
     @Inject
-    ActivityPageFactory activityPageFactory;
+    ClassicJobApi jobApi;
 
-    @Inject
-    RunDetailsPipelinePageFactory runDetailsPipelinePageFactory;
-
-    public Pipeline(String name) {
-        this(null, name);
+    public Pipeline createPipeline(String script) throws IOException {
+        jobApi.createPipeline(jobApi.getFolder(getFolder(), true), getName(), script);
+        return this;
     }
 
-    public Pipeline(Folder folder, String name) {
-        if(folder == null) {
-            this.folder = Folder.folders();
-        } else {
-            this.folder = folder;
-        }
-        this.name = name;
+    public Pipeline createPipeline(File script) throws IOException {
+        return createPipeline(FileUtils.readFileToString(script));
     }
 
-    public boolean isMultiBranch() {
-        return false;
+    public Pipeline build() throws IOException {
+        jobApi.build(getFolder(), getName());
+        return this;
     }
-
-    public Folder getFolder() {
-        return folder;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getUrlPart() {
-        String part = "";
-
-        if(folder != null) {
-            part += folder.getPath();
-        }
-        if(part.length() != 0) {
-            part += "/";
-        }
-        return part + name;
-    }
-
-    public String getUrl() {
-        return Joiner.on("").join(
-            baseUrl,
-            "/blue/organizations/jenkins/",
-            UrlEscapers.urlFragmentEscaper().escape(getUrlPart()).replaceAll("/", "%2F")
-        );
-    }
-
-
-
-
-    public ActivityPage getActivityPage() {
-        return activityPageFactory.withPipeline(this);
-    }
-
-    public RunDetailsPipelinePage getRunDetailsPipelinePage() {
-        return runDetailsPipelinePageFactory.withPipeline(this);
-    }
-
 }
