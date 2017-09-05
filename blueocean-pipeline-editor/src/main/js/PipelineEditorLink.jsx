@@ -3,7 +3,7 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Icon } from '@jenkins-cd/design-language';
-import { Paths, pipelineService, AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { Paths, pipelineService } from '@jenkins-cd/blueocean-core-js';
 import Security from './services/Security';
 
 class PipelineEditorLink extends React.Component {
@@ -52,14 +52,10 @@ class PipelineEditorLink extends React.Component {
                 }
             });
     }
-    
+
     _canSavePipeline(pipeline) {
         if (pipeline.scmSource && pipeline.scmSource.id === 'git') {
-            if (AppConfig.isFeatureEnabled('GIT_PIPELINE_EDITOR', false)) {
-                return true;
-            } else {
-                return false;
-            }
+            return true;
         }
         if (pipeline._capabilities && pipeline._capabilities
                 .find(capability => capability === 'io.jenkins.blueocean.rest.model.BluePipelineScm')) {

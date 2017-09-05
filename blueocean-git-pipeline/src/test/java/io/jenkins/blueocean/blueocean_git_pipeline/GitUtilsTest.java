@@ -35,6 +35,25 @@ public class GitUtilsTest extends PipelineBaseTest {
     }
 
     @Test
+    public void testSshUrlChecker() {
+        Assert.assertTrue(GitUtils.isSshUrl("ssh://some-host/some-path"));
+        Assert.assertTrue(GitUtils.isSshUrl("ssh://some-host/some-path/more"));
+        Assert.assertTrue(GitUtils.isSshUrl("ssh://some-host:port/some-path/more"));
+        Assert.assertTrue(GitUtils.isSshUrl("ssh://user@some-host/some-path/more"));
+        Assert.assertTrue(GitUtils.isSshUrl("ssh://user@some-host:port/some-path/more"));
+        Assert.assertTrue(GitUtils.isSshUrl("user@some-host:some-path"));
+        Assert.assertTrue(GitUtils.isSshUrl("user@some-host:some-path/more"));
+        Assert.assertTrue(!GitUtils.isSshUrl("proto://user@some-host/some-path"));
+        Assert.assertTrue(!GitUtils.isSshUrl("proto://user@some-host:port/some-path"));
+        Assert.assertTrue(!GitUtils.isSshUrl("proto://user@some-host/some-path/more"));
+        Assert.assertTrue(!GitUtils.isSshUrl("proto://user@some-host:port/some-path/more"));
+        Assert.assertTrue(!GitUtils.isSshUrl("https://user@some-host/some-path"));
+        Assert.assertTrue(!GitUtils.isSshUrl("https://user@some-host:port/some-path"));
+        Assert.assertTrue(!GitUtils.isSshUrl("https://user@some-host/some-path/more"));
+        Assert.assertTrue(!GitUtils.isSshUrl("https://user@some-host:port/some-path/more"));
+    }
+
+    @Test
     public void testOperations() throws Exception {
         String repoUrl = repo.getRoot().getCanonicalPath();
         File cloneDir = Files.createTempDir();

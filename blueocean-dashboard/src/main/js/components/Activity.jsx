@@ -5,7 +5,7 @@ import {
     TableHeader,
     TableCell,
 } from '@jenkins-cd/design-language';
-import { capable, RunButton, ShowMoreButton, AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import { ActivityDetailsRow } from './ActivityDetailsRow';
 import { ChangeSetRecord } from './records';
@@ -129,16 +129,13 @@ export class Activity extends Component {
 
         if (!isLoading) {
             if (isMultiBranchPipeline && !hasBranches) {
-                if (AppConfig.isFeatureEnabled('GIT_PIPELINE_EDITOR', false)) {
-                    return (
-                        <NoBranchesPlaceholder t={t} primaryAction={
-                            <button className="btn btn-primary" onClick={() => this.createPipeline()}>
-                                {t('creation.git.step1.create_button')}
-                            </button>
-                        } />
-                    );
-                }
-                return <NoBranchesPlaceholder t={t} />;
+                return (
+                    <NoBranchesPlaceholder t={t} primaryAction={
+                        <button className="btn btn-primary" onClick={() => this.createPipeline()}>
+                            {t('creation.git.step1.create_button')}
+                        </button>
+                    } />
+                );
             }
             if (!runs || !runs.length) {
                 if (!isMultiBranchPipeline) {

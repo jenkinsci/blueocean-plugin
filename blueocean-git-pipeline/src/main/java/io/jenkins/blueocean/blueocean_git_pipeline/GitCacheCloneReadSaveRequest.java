@@ -24,7 +24,6 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
 import com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey;
-import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import hudson.model.User;
 import hudson.plugins.git.GitException;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -122,18 +121,8 @@ class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
                                 commit.setMessage(commitMessage);
                                 commit.call();
 
-                                StandardCredentials credential = null;
-                                if (GitUtils.isSshUrl(gitSource.getRemote())) {
-                                    // Get committer info and credentials
-                                    User user = User.current();
-                                    if (user == null) {
-                                        throw new ServiceException.UnauthorizedException("Not authenticated");
-                                    }
-                                    credential = UserSSHKeyManager.getOrCreate(user);
-                                }
-
                                 // Push the changes
-                                GitUtils.push(gitSource.getRemote(), repo, credential, LOCAL_REF_BASE + sourceBranch, REMOTE_REF_BASE + branch);
+                                GitUtils.push(gitSource.getRemote(), repo, getCredential(), LOCAL_REF_BASE + sourceBranch, REMOTE_REF_BASE + branch);
                             } catch (GitAPIException ex) {
                                 throw new ServiceException.UnexpectedErrorException(ex.getMessage(), ex);
                             }

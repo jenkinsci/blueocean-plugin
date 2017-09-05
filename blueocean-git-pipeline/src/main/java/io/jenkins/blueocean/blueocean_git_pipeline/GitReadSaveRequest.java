@@ -26,6 +26,10 @@ package io.jenkins.blueocean.blueocean_git_pipeline;
 import java.io.IOException;
 import java.util.logging.Logger;
 
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
+import hudson.model.User;
+import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.service.embedded.util.UserSSHKeyManager;
 import jenkins.plugins.git.GitSCMSource;
 
 /**
@@ -52,6 +56,19 @@ abstract class GitReadSaveRequest  {
         this.sourceBranch = sourceBranch;
         this.filePath = filePath;
         this.contents = contents == null ? null : contents.clone(); // grr findbugs
+    }
+
+    StandardCredentials getCredential() {
+        StandardCredentials credential = null;
+        if (GitUtils.isSshUrl(gitSource.getRemote())) {
+            // Get committer info and credentials
+            User user = User.current();
+            if (user == null) {
+                throw new ServiceException.UnauthorizedException("Not authenticated");
+            }
+            credential = UserSSHKeyManager.getOrCreate(user);
+        }
+        return credential;
     }
 
     /**

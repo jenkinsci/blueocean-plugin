@@ -4,7 +4,6 @@ import debounce from 'lodash.debounce';
 import Extensions from '@jenkins-cd/js-extensions';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Dropdown, FormElement, TextInput } from '@jenkins-cd/design-language';
-import { AppConfig } from '@jenkins-cd/blueocean-core-js';
 
 import FlowStep from '../flow2/FlowStep';
 
@@ -20,9 +19,6 @@ function validateUrl(url) {
 }
 
 function isSshRepositoryUrl(url) {
-    if (!AppConfig.isFeatureEnabled('GIT_PIPELINE_EDITOR', false)) {
-        return false;
-    }
     if (!validateUrl(url)) {
         return false;
     }
@@ -39,9 +35,6 @@ function isSshRepositoryUrl(url) {
 }
 
 function isNonSshRepositoryUrl(url) {
-    if (!AppConfig.isFeatureEnabled('GIT_PIPELINE_EDITOR', false)) {
-        return true;
-    }
     if (!validateUrl(url)) {
         return false;
     }

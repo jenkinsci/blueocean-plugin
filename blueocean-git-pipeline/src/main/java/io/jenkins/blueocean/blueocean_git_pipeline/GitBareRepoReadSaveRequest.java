@@ -23,11 +23,11 @@
  */
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
-import com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import hudson.model.User;
 import hudson.tasks.MailAddressResolver;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.service.embedded.util.UserSSHKeyManager;
+
 import java.io.IOException;
 import java.util.Date;
 import java.util.TimeZone;
@@ -59,15 +59,8 @@ class GitBareRepoReadSaveRequest extends GitCacheCloneReadSaveRequest {
             return fs.invoke(new GitSCMFileSystem.FSFunction<byte[]>() {
                 @Override
                 public byte[] invoke(Repository repo) throws IOException, InterruptedException {
-                    // Get committer info and credentials
-                    User user = User.current();
-                    if (user == null) {
-                        throw new ServiceException.UnauthorizedException("Not authenticated");
-                    }
-                    BasicSSHUserPrivateKey privateKey = UserSSHKeyManager.getOrCreate(user);
-
                     // Make sure up-to-date and credentials work
-                    GitUtils.fetch(repo, privateKey);
+                    GitUtils.fetch(repo, getCredential());
                     return GitUtils.readFile(repo, LOCAL_REF_BASE + branch, filePath);
                 }
             });
@@ -92,20 +85,20 @@ class GitBareRepoReadSaveRequest extends GitCacheCloneReadSaveRequest {
                     }
 
                     try {
-                        // Get committer info and credentials
+                        // Get committer info
                         User user = User.current();
                         if (user == null) {
                             throw new ServiceException.UnauthorizedException("Not authenticated");
                         }
                         String mailAddress = MailAddressResolver.resolve(user);
-                        BasicSSHUserPrivateKey privateKey = UserSSHKeyManager.getOrCreate(user);
+                        StandardCredentials credential = getCredential();
 
                         // Make sure up-to-date and credentials work
-                        GitUtils.fetch(repo, privateKey);
+                        GitUtils.fetch(repo, credential);
 
                         GitUtils.commit(repo, localBranchRef, filePath, contents, user.getId(), mailAddress, commitMessage, TimeZone.getDefault(), new Date());
 
-                        GitUtils.push(gitSource.getRemote(), repo, privateKey, localBranchRef, REMOTE_REF_BASE + branch);
+                        GitUtils.push(gitSource.getRemote(), repo, credential, localBranchRef, REMOTE_REF_BASE + branch);
                         return null;
                     } catch (RuntimeException e) {
                         // if anything bad happened, roll back

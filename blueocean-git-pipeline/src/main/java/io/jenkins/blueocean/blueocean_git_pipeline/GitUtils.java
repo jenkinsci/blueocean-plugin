@@ -125,7 +125,7 @@ class GitUtils {
         return errors;
     }
 
-    private static final Pattern SSH_URL_PATTERN = Pattern.compile("(\\Qssh://\\E.*|[^@:]@.*)");
+    private static final Pattern SSH_URL_PATTERN = Pattern.compile("(\\Qssh://\\E.*|[^@:]+@.*)");
 
     /**
      * Determines if the Git URL is an ssh-style URL
