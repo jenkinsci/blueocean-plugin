@@ -51,9 +51,8 @@ import org.jenkinsci.plugins.gitclient.GitClient;
  * @author kzantow
  */
 class GitCloneReadSaveRequest extends GitReadSaveRequest {
+    private final File repositoryPath;
     private final GitTool gitTool;
-
-    private File repositoryPath;
 
     public GitCloneReadSaveRequest(GitSCMSource gitSource, String branch, String commitMessage, String sourceBranch, String filePath, byte[] contents) {
         super(gitSource, branch, commitMessage, sourceBranch, filePath, contents);
@@ -71,11 +70,14 @@ class GitCloneReadSaveRequest extends GitReadSaveRequest {
         }
 
         this.gitTool = foundGitTool;
+        try {
+            repositoryPath = Files.createTempDirectory("git").toFile();
+        } catch (IOException e) {
+            throw new ServiceException.UnexpectedErrorException("Unable to create working directory for repository clone");
+        }
     }
 
     private GitClient cloneRepo() throws InterruptedException, IOException {
-        repositoryPath = Files.createTempDirectory("git").toFile();
-
         EnvVars environment = new EnvVars();
         TaskListener taskListener = new LogTaskListener(Logger.getAnonymousLogger(), Level.ALL);
         String gitExe = gitTool.getGitExe();

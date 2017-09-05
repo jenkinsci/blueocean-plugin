@@ -147,6 +147,10 @@ class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
                 throw new ServiceException.NotFoundException("No file found");
             }
             return fs;
+        } catch(NullPointerException e) {
+            // If the repository is totally empty with no commits, it
+            // results in a NPE during the SCMFileSystem.of call
+            throw new ServiceException.NotFoundException("There was an error accessing the repository; make sure there is at least one commit", e);
         } catch(GitException e) {
             // TODO localization?
             if (e.getMessage().contains("Permission denied")) {
