@@ -1,0 +1,64 @@
+{
+  "size": 1,
+  "limit": 100,
+  "isLastPage": true,
+  "values": [
+    {
+      "slug": "personalrepo1",
+      "id": 23,
+      "name": "personalrepo1",
+      "scmId": "git",
+      "state": "AVAILABLE",
+      "statusMessage": "Available",
+      "forkable": true,
+      "project": {
+        "key": "~VIVEK",
+        "id": 44,
+        "name": "vivek pandey",
+        "type": "PERSONAL",
+        "owner": {
+          "name": "VIVEK",
+          "emailAddress": "vivek@xx.com",
+          "id": 52,
+          "displayName": "vivek pandey",
+          "active": true,
+          "slug": "vivek",
+          "type": "NORMAL",
+          "links": {
+            "self": [
+              {
+                "href": "http://localhost:7990/bitbucket/users/vivek"
+              }
+            ]
+          }
+        },
+        "links": {
+          "self": [
+            {
+              "href": "http://localhost:7990/bitbucket/users/vivek"
+            }
+          ]
+        }
+      },
+      "public": false,
+      "links": {
+        "clone": [
+          {
+            "href": "http://VIVEK@localhost:7990/bitbucket/scm/~vivek/personalrepo1.git",
+            "name": "http"
+          },
+          {
+            "href": "ssh://git@localhost:7999/~vivek/personalrepo1.git",
+            "name": "ssh"
+          }
+        ],
+        "self": [
+          {
+            "href": "http://localhost:7990/bitbucket/users/vivek/repos/personalrepo1/browse"
+          }
+        ]
+      }
+    }
+  ],
+  "start": 0
+}

@@ -1,96 +1,25 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import { getGroupForResult, decodeResultValue } from './status/StatusIndicator';
-import { strokeWidth as nodeStrokeWidth } from './status/SvgSpinner';
-import { TruncatingLabel } from './TruncatingLabel';
+import { getGroupForResult, decodeResultValue } from '../status/StatusIndicator';
+import { strokeWidth as nodeStrokeWidth } from '../status/SvgSpinner';
+import { TruncatingLabel } from '../TruncatingLabel';
 
-import type { Result } from './status/StatusIndicator';
+import { defaultLayout } from './PipelineGraphModel';
 
-const ypStart = 55;
+import { layoutGraph } from './PipelineGraphLayout';
 
-// Dimensions used for layout, px
-export const defaultLayout = {
-    nodeSpacingH: 120,
-    nodeSpacingV: 70,
-    nodeRadius: 12,
-    terminalRadius: 7,
-    curveRadius: 12,
-    connectorStrokeWidth: 3.5,
-    labelOffsetV: 20,
-    smallLabelOffsetV: 15,
-};
-
-// Typedefs
-
-type StageInfo = {
-    name: string,
-    title: string,
-    state: Result,
-    completePercent: number,
-    id: number,
-    children: Array<StageInfo>
-};
-
-type StageNodeInfo = {
-    // -- Shared with PlaceholderNodeInfo
-    key: string,
-    x: number,
-    y: number,
-    id: number,
-    name: string,
-
-    // -- Marker
-    isPlaceholder: false,
-
-    // -- Unique
-    stage: StageInfo
-};
-
-type PlaceholderNodeInfo = {
-    // -- Shared with StageNodeInfo
-    key: string,
-    x: number,
-    y: number,
-    id: number,
-    name: string,
-
-    // -- Marker
-    isPlaceholder: true,
-
-    // -- Unique
-    type: 'start' | 'end'
-}
-
-// TODO: Attempt to extract a "common" node type with intersection operator to remove duplication
-
-type NodeInfo = StageNodeInfo | PlaceholderNodeInfo;
-
-type NodeColumn = {
-    topStage?: StageInfo,
-    nodes: Array<NodeInfo>,
-}
-
-type CompositeConnection = {
-    sourceNodes: Array<NodeInfo>,
-    destinationNodes: Array<NodeInfo>,
-    skippedNodes: Array<NodeInfo>
-};
-
-type LabelInfo = {
-    x: number,
-    y: number,
-    text: string,
-    key: string,
-    stage?: StageInfo
-};
-
-type LayoutInfo = typeof defaultLayout;
+import type {
+    NodeColumn,
+    NodeInfo,
+    LabelInfo,
+    LayoutInfo,
+    StageInfo,
+    CompositeConnection,
+} from './PipelineGraphModel';
 
 type SVGChildren = Array<any>; // Fixme: Maybe refine this?
 
-// FIXME-FLOW: Currently need to duplicate react's propTypes obj in Flow.
-// See: https://github.com/facebook/flow/issues/1770
 type Props = {
     stages: Array<StageInfo>,
     layout: LayoutInfo,
@@ -172,214 +101,7 @@ export class PipelineGraph extends Component {
      * Main process for laying out the graph. Calls a bunch of individual methods on self that do each task.
      */
     stagesUpdated(newStages: Array<StageInfo> = []) {
-
-        const stageNodeColumns = this.createNodeColumns(newStages);
-        const { nodeSpacingH } = this.state.layout;
-
-        const startNode = {
-            x: 0,
-            y: 0,
-            name: 'Start',
-            id: -1,
-            isPlaceholder: true,
-            key: 'start-node',
-            type: 'start',
-        };
-
-        const endNode = {
-            x: 0,
-            y: 0,
-            name: 'End',
-            id: -2,
-            isPlaceholder: true,
-            key: 'end-node',
-            type: 'end',
-        };
-
-        const allNodeColumns = [
-            { nodes: [startNode] },
-            ...stageNodeColumns,
-            { nodes: [endNode] },
-        ];
-
-        this.positionNodes(allNodeColumns);
-
-        const bigLabels = this.createBigLabels(allNodeColumns);
-        const smallLabels = this.createSmallLabels(allNodeColumns);
-        const connections = this.createConnections(allNodeColumns);
-
-        // Calculate the size of the graph
-        let measuredWidth = 0;
-        let measuredHeight = 200;
-
-        for (const column of allNodeColumns) {
-            for (const node of column.nodes) {
-                measuredWidth = Math.max(measuredWidth, node.x + nodeSpacingH / 2);
-                measuredHeight = Math.max(measuredHeight, node.y + ypStart);
-            }
-        }
-
-        this.setState({
-            nodeColumns: allNodeColumns,
-            connections,
-            bigLabels,
-            smallLabels,
-            measuredWidth,
-            measuredHeight,
-        });
-    }
-
-    /**
-     * Generate an array of columns, based on the top-level stages
-     */
-    createNodeColumns(topLevelStages: Array<StageInfo> = []): Array<NodeColumn> {
-
-        const nodeColumns = [];
-
-        for (const topStage of topLevelStages) {
-            // If stage has children, we don't draw a node for it, just its children
-            const stagesForColumn =
-                topStage.children && topStage.children.length ? topStage.children : [topStage];
-
-            nodeColumns.push({
-                topStage,
-                nodes: stagesForColumn.map(nodeStage => ({
-                    x: 0, // Layout is done later
-                    y: 0,
-                    name: nodeStage.name,
-                    id: nodeStage.id,
-                    stage: nodeStage,
-                    isPlaceholder: false,
-                    key: 'n_' + nodeStage.id,
-                })),
-            });
-        }
-
-        return nodeColumns;
-    }
-
-    /**
-     * Walks the columns of nodes giving them x and y positions. Mutates the node objects in place for now.
-     */
-    positionNodes(nodeColumns: Array<NodeColumn>) {
-
-        const { nodeSpacingH, nodeSpacingV } = this.state.layout;
-
-        let xp = nodeSpacingH / 2;
-        let previousTopNode = null;
-
-        for (const column of nodeColumns) {
-            const topNode = column.nodes[0];
-
-            let yp = ypStart; // Reset Y to top for each column
-
-            if (previousTopNode) {
-                // Advance X position
-                if (previousTopNode.isPlaceholder || topNode.isPlaceholder) {
-                    // Don't space placeholder nodes (start/end) as wide as normal.
-                    xp += Math.floor(nodeSpacingH * 0.7);
-                } else {
-                    xp += nodeSpacingH;
-                }
-            }
-
-            for (const node of column.nodes) {
-                node.x = xp;
-                node.y = yp;
-
-                yp += nodeSpacingV;
-            }
-
-            previousTopNode = topNode;
-        }
-    }
-
-    /**
-     * Generate label descriptions for big labels at the top of each column
-     */
-    createBigLabels(columns: Array<NodeColumn>) {
-
-        const labels = [];
-
-        for (const column of columns) {
-
-            const node = column.nodes[0];
-            const stage = column.topStage;
-            const text = stage ? stage.name : node.name;
-            const key = 'l_b_' + node.key;
-
-            labels.push({
-                x: node.x,
-                y: node.y,
-                node,
-                stage,
-                text,
-                key
-            });
-        }
-
-        return labels;
-    }
-
-    /**
-     * Generate label descriptions for small labels under the nodes
-     */
-    createSmallLabels(columns: Array<NodeColumn>) {
-
-        const labels = [];
-
-        for (const column of columns) {
-            if (column.nodes.length === 1) {
-                continue; // No small labels for single-node columns
-            }
-            for (const node of column.nodes) {
-                const label:LabelInfo = {
-                    x: node.x,
-                    y: node.y,
-                    text: node.name,
-                    key: 'l_s_' + node.key,
-                };
-
-                if (node.isPlaceholder === false) {
-                    label.stage = node.stage;
-                }
-
-                labels.push(label);
-            }
-        }
-
-        return labels;
-    }
-
-    /**
-     * Generate connection information from column to column
-     */
-    createConnections(columns: Array<NodeColumn>) {
-
-        const connections = [];
-
-        let sourceNodes = [];
-        let skippedNodes = [];
-
-        for (const column of columns) {
-            if (column.topStage && column.topStage.state === 'skipped') {
-                skippedNodes.push(column.nodes[0]);
-                continue;
-            }
-
-            if (sourceNodes.length) {
-                connections.push({
-                    sourceNodes,
-                    destinationNodes: column.nodes,
-                    skippedNodes: skippedNodes
-                });
-            }
-
-            sourceNodes = column.nodes;
-            skippedNodes = [];
-        }
-
-        return connections;
+        this.setState(layoutGraph(newStages, this.state.layout));
     }
 
     /**
@@ -391,6 +113,7 @@ export class PipelineGraph extends Component {
             nodeSpacingH,
             labelOffsetV,
             connectorStrokeWidth,
+            ypStart,
         } = this.state.layout;
 
         const labelWidth = nodeSpacingH - connectorStrokeWidth * 2;
@@ -531,7 +254,8 @@ export class PipelineGraph extends Component {
             terminalRadius,
             curveRadius,
             nodeSpacingV,
-            nodeSpacingH } = this.state.layout;
+            nodeSpacingH,
+        } = this.state.layout;
 
         const halfSpacingH = nodeSpacingH / 2;
 
@@ -788,7 +512,7 @@ export class PipelineGraph extends Component {
 
         if (node.isPlaceholder === true) {
             groupChildren.push(
-                <circle r={terminalRadius} className="pipeline-node-terminal"/>
+                <circle r={terminalRadius} className="pipeline-node-terminal" />,
             );
         } else {
             const { completePercent = 0, title, state } = node.stage;
@@ -797,7 +521,7 @@ export class PipelineGraph extends Component {
             groupChildren.push(getGroupForResult(resultClean, completePercent, nodeRadius));
 
             if (title) {
-                groupChildren.push(<title>{ title }</title>);
+                groupChildren.push(<title>{title}</title>);
             }
 
             nodeIsSelected = this.stageIsSelected(node.stage);
@@ -807,7 +531,7 @@ export class PipelineGraph extends Component {
         const clickableProps = {};
 
         if (node.isPlaceholder === false && node.stage.state !== 'skipped') {
-            clickableProps.cursor = "pointer";
+            clickableProps.cursor = 'pointer';
             clickableProps.onClick = () => this.nodeClicked(node);
         }
 

@@ -8,6 +8,7 @@ import {StatusIndicator} from '@jenkins-cd/design-language';
 
 import { mockExtensionsForI18n } from './mock-extensions-i18n';
 
+/* eslint-disable quotes */
 
 const validResultValues = StatusIndicator.validResultValues;
 
@@ -320,5 +321,18 @@ describe("pipeline graph data converter /", () => {
                 assert.equal(result[8].children.length, 0, "result[8] should have no children");
             });
         }
+    });
+
+    describe("exceeded node limit", () => {
+        it("filters out edges that cannot be resolved to another node", () => {
+            const missingNodes = require("../json/pipeline-graph-converter/missing-nodes.json");
+            const output = convertJenkinsNodeGraph(missingNodes);
+
+            for (const stages of output) {
+                for (const child of stages.children) {
+                    assert.isOk(child);
+                }
+            }
+        });
     });
 });

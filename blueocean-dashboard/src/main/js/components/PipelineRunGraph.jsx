@@ -127,7 +127,9 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
             nextNode = convertedNodeForId[edges[0].id];
         } else if (edges.length > 1) {
             // Multiple following nodes are child nodes not siblings
-            currentNode.children = edges.map(edge => convertedNodeForId[edge.id]);
+            currentNode.children = edges
+                .map(edge => convertedNodeForId[edge.id])
+                .filter(node => !!node);
 
             // We need to look at the child node's edges to figure out what the next sibling node is
             const childEdges = originalNodeForId[edges[0].id].edges || [];
