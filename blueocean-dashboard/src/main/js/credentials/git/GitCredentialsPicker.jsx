@@ -1,5 +1,4 @@
 import React, { PropTypes } from 'react';
-import { observer } from 'mobx-react';
 import { FormElement } from '@jenkins-cd/design-language';
 import { Fetch, AppConfig } from '@jenkins-cd/blueocean-core-js';
 import { Button } from '../../creation/github/Button';
@@ -24,7 +23,6 @@ function clearSelection() {
     }
 }
 
-@observer
 class GitCredentialsPicker extends React.Component {
     constructor(props) {
         super(props);
