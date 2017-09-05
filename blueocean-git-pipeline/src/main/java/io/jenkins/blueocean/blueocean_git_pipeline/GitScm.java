@@ -60,11 +60,6 @@ public class GitScm extends AbstractScm {
     }
 
     @Override
-    public Object getState() {
-        return super.getState();
-    }
-
-    @Override
     public Container<ScmOrganization> getOrganizations() {
         return null;
     }

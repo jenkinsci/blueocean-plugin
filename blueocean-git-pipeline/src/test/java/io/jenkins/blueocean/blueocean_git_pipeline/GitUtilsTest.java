@@ -1,13 +1,10 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
 import com.google.common.io.Files;
-import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import jenkins.plugins.git.GitSampleRepoRule;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
-import org.eclipse.jgit.internal.storage.file.FileRepository;
 import org.eclipse.jgit.lib.Repository;
 import org.junit.Assert;
 import org.junit.Before;
@@ -15,7 +12,6 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.File;
-import java.io.IOException;
 
 public class GitUtilsTest extends PipelineBaseTest {
     @Rule
