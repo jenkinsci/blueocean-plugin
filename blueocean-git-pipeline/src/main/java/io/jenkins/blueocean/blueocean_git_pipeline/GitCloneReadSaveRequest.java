@@ -56,7 +56,6 @@ import org.jenkinsci.plugins.gitclient.GitClient;
 class GitCloneReadSaveRequest extends GitReadSaveRequest {
     private final GitTool gitTool;
 
-    private GitClient git;
     private File repositoryPath;
 
     public GitCloneReadSaveRequest(GitSCMSource gitSource, String branch, String commitMessage, String sourceBranch, String filePath, byte[] contents) {
@@ -77,13 +76,13 @@ class GitCloneReadSaveRequest extends GitReadSaveRequest {
         this.gitTool = foundGitTool;
     }
 
-    private void cloneRepo() throws InterruptedException, IOException {
+    private GitClient cloneRepo() throws InterruptedException, IOException {
         repositoryPath = Files.createTempDirectory("git").toFile();
 
         EnvVars environment = new EnvVars();
         TaskListener taskListener = new LogTaskListener(Logger.getAnonymousLogger(), Level.ALL);
         String gitExe = gitTool.getGitExe();
-        git = Git.with(taskListener, environment)
+        GitClient git = Git.with(taskListener, environment)
                 .in(repositoryPath)
                 .using(gitExe)
                 .getClient();
@@ -101,12 +100,14 @@ class GitCloneReadSaveRequest extends GitReadSaveRequest {
         git.clone(gitSource.getRemote(), "origin", true, null);
 
         log.fine("Repository; " + gitSource.getRemote() + " cloned to: " + repositoryPath.getCanonicalPath());
+
+        return git;
     }
 
     @Override
     byte[] read() throws IOException {
         try {
-            cloneRepo();
+            GitClient git = cloneRepo();
             try {
                 // thank you test for how to use something...
                 // https://github.com/jenkinsci/git-client-plugin/blob/master/src/test/java/org/jenkinsci/plugins/gitclient/GitClientTest.java#L1108
@@ -129,7 +130,7 @@ class GitCloneReadSaveRequest extends GitReadSaveRequest {
     @Override
     void save() throws IOException {
         try {
-            cloneRepo();
+            GitClient git = cloneRepo();
             try {
                 git.checkoutBranch(sourceBranch, "origin/" + sourceBranch);
             } catch(Exception e) {
