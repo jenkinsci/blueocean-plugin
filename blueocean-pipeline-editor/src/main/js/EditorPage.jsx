@@ -477,7 +477,7 @@ class PipelineLoader extends React.Component {
     }
 
     save(saveToBranch, commitMessage, errorHandler) {
-        const { organization, pipeline, branch } = this.props.params;
+        const { organization, pipeline, branch = this.defaultBranch } = this.props.params;
         const pipelineJson = convertInternalModelToJson(pipelineStore.pipeline);
         const split = pipeline.split('/');
         const team = split[0];

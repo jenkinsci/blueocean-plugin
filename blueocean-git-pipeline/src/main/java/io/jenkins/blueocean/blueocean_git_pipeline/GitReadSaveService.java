@@ -199,7 +199,7 @@ public class GitReadSaveService extends ScmContentProvider {
     public boolean support(@Nonnull Item item) {
         if (item instanceof org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject) {
             MultiBranchProject<?,?> mbp = (MultiBranchProject<?,?>)item;
-            SCMSource s = mbp.getSCMSources().get(0);
+            SCMSource s = mbp.getSCMSources().iterator().next();
             if (s instanceof GitSCMSource) {
                 return true;
             }
