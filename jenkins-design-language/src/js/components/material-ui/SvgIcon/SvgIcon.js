@@ -7,12 +7,6 @@ class SvgIcon extends Component {
      * Elements passed into the SVG Icon.
      */
     children: PropTypes.node,
-    /**
-     * This is the fill color of the svg icon.
-     * If not specified, this component will default
-     * to white.
-     */
-    color: PropTypes.string,
     /** @ignore */
     onMouseEnter: PropTypes.func,
     /** @ignore */
@@ -54,7 +48,6 @@ class SvgIcon extends Component {
   render() {
     const {
       children,
-      color,
       onMouseEnter, // eslint-disable-line no-unused-vars
       onMouseLeave, // eslint-disable-line no-unused-vars
       size,
@@ -64,11 +57,9 @@ class SvgIcon extends Component {
     } = this.props;
 
     const mergedStyles = Object.assign({
-      display: 'inline-block',
       height: size ? size : 24,
       width: size ? size : 24,
       verticalAlign: 'middle',
-      userSelect: 'none',
     }, style);
 
     delete other.iconName;
@@ -76,9 +67,9 @@ class SvgIcon extends Component {
     return (
       <svg
         {...other}
+        className="material-icon"
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
-        fill={color ? color : 'white'}
         style={mergedStyles}
         viewBox={viewBox}
       >
