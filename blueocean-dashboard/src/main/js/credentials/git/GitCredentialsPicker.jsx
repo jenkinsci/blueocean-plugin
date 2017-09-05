@@ -28,7 +28,10 @@ function clearSelection() {
 class GitCredentialsPicker extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {};
+        this.state = {
+            credential: null,
+            credentialError: null,
+        };
         this.restOrgPrefix = AppConfig.getRestRoot() + '/organizations/' + AppConfig.getOrganizationName();
     }
 
