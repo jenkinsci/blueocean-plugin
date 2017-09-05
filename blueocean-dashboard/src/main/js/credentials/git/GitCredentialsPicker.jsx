@@ -1,8 +1,7 @@
 import React, { PropTypes } from 'react';
 import { FormElement } from '@jenkins-cd/design-language';
-import { Fetch, AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { Fetch, AppConfig, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 import { Button } from '../../creation/github/Button';
-import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 const t = i18nTranslator('blueocean-dashboard');
 
 function copySelectionText() {
@@ -51,7 +50,7 @@ class GitCredentialsPicker extends React.Component {
     }
 
     copyPublicKeyToClipboard() {
-        const textBox = this.refs.publicKey;
+        const textBox = this.publicKeyElement;
         textBox.select();
         copySelectionText();
         clearSelection();
@@ -107,7 +106,7 @@ class GitCredentialsPicker extends React.Component {
                     <a target="jenkins-docs" href="https://jenkins.io/doc/book/blueocean/creating-pipelines/#creating-a-pipeline-for-a-git-repository">learn more</a>.
                 </p>
                 <FormElement>
-                    <textarea className="TextArea-control" ref="publicKey"
+                    <textarea className="TextArea-control" ref={e => { this.publicKeyElement = e; }}
                         readOnly
                         onChange={e => e} value={this.state.credential.publickey} />
                 </FormElement>
