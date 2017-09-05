@@ -14,22 +14,23 @@ import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.BlueTrend;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
+import org.kohsuke.stapler.export.Exported;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import static io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTrend.TestCategory.EXISITING_FAILED;
-import static io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTrend.TestCategory.FAILED;
-import static io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTrend.TestCategory.FIXED;
-import static io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTrend.TestCategory.PASSED;
-import static io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTrend.TestCategory.REGRESSIONS;
-import static io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTrend.TestCategory.SKIPPED;
-import static io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTrend.TestCategory.TOTAL;
-
 @Restricted(NoExternalUse.class)
 public class BlueJUnitTrend extends BlueTrend {
+
+    private static final String TOTAL = "total";
+    private static final String PASSED = "passed";
+    private static final String FIXED = "fixed";
+    private static final String FAILED = "failed";
+    private static final String EXISTING_FAILED = "existingFailed";
+    private static final String REGRESSIONS = "regressions";
+    private static final String SKIPPED = "skipped";
+
     private final BluePipeline pipeline;
     private final Link parent;
 
@@ -57,15 +58,16 @@ public class BlueJUnitTrend extends BlueTrend {
 
     public static class JUnitHistoryTable extends BlueTable {
 
-        private static final Map<String, String> LABELS = ImmutableMap.<String, String> builder()
-            .put(TOTAL.toString(), "Total")
-            .put(PASSED.toString(), "Passed")
-            .put(FIXED.toString(), "Fixed")
-            .put(FAILED.toString(), "Failed")
-            .put(EXISITING_FAILED.toString(), "Existing Failed")
-            .put(REGRESSIONS.toString(), "Regressions")
-            .put(SKIPPED.toString(), "Skipped")
+        private static final Map<String, String> COLUMNS = ImmutableMap.<String, String> builder()
+            .put(TOTAL, "Total")
+            .put(PASSED, "Passed")
+            .put(FIXED, "Fixed")
+            .put(FAILED, "Failed")
+            .put(EXISTING_FAILED, "Existing Failed")
+            .put(REGRESSIONS, "Regressions")
+            .put(SKIPPED, "Skipped")
             .build();
+
         private final Iterator<BlueRun> runs;
 
         public JUnitHistoryTable(Iterator<BlueRun> runs) {
@@ -73,39 +75,28 @@ public class BlueJUnitTrend extends BlueTrend {
         }
 
         @Override
-        public Map<String, String> getLabels() {
-            return LABELS;
+        public Map<String, String> getColumns() {
+            return COLUMNS;
         }
 
         @Override
         public List<Row> getRows() {
             return Lists.newArrayList(Iterators.transform(runs, new Function<BlueRun, Row>() {
                 @Override
-                public Row apply(BlueRun input) {
-                    return new RowImpl(input.getTestSummary(), input.getId());
+                public Row apply(BlueRun run) {
+                    return new RowImpl(run.getTestSummary(), run.getId());
                 }
             }));
         }
     }
 
-    enum TestCategory {
-        TOTAL, PASSED, FIXED, FAILED, EXISITING_FAILED, REGRESSIONS, SKIPPED
-    }
-
     public static class RowImpl extends BlueTable.Row {
         private final String id;
-        private final Map<String, Long> totals;
+        private final BlueTestSummary summary;
 
         RowImpl(BlueTestSummary summary, String id) {
             this.id = id;
-            totals = new HashMap<>();
-            totals.put(TOTAL.toString(), summary.getTotal());
-            totals.put(PASSED.toString(), summary.getPassedTotal());
-            totals.put(FIXED.toString(), summary.getFixedTotal());
-            totals.put(FAILED.toString(), summary.getFailedTotal());
-            totals.put(EXISITING_FAILED.toString(), summary.getExistingFailedTotal());
-            totals.put(REGRESSIONS.toString(), summary.getRegressionsTotal());
-            totals.put(SKIPPED.toString(), summary.getSkippedTotal());
+            this.summary = summary;
         }
 
         @Override
@@ -113,9 +104,39 @@ public class BlueJUnitTrend extends BlueTrend {
             return id;
         }
 
-        @Override
-        public Map<String, Long> getColumns() {
-            return totals;
+        @Exported(name = TOTAL)
+        public long getTotal() {
+            return summary.getTotal();
+        }
+
+        @Exported(name = PASSED)
+        public long getPassed() {
+            return summary.getPassedTotal();
+        }
+
+        @Exported(name = FIXED)
+        public long getFixed() {
+            return summary.getFixedTotal();
+        }
+
+        @Exported(name = FAILED)
+        public long getFailed() {
+            return summary.getFailedTotal();
+        }
+
+        @Exported(name = EXISTING_FAILED)
+        public long getExistingFailed() {
+            return summary.getExistingFailedTotal();
+        }
+
+        @Exported(name = REGRESSIONS)
+        public long getRegressions() {
+            return summary.getRegressionsTotal();
+        }
+
+        @Exported(name = SKIPPED)
+        public long getSkipped() {
+            return summary.getSkippedTotal();
         }
     }
 

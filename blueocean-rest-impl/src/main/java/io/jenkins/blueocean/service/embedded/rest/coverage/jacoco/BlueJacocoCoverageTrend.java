@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.rest.coverage.jacoco;
 
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
@@ -22,6 +23,7 @@ import io.jenkins.blueocean.service.embedded.rest.coverage.BlueCoverageTrend;
 import javax.annotation.Nullable;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 /**
  * @author cliffmeyers

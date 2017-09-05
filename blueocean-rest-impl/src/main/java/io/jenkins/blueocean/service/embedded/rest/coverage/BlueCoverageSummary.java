@@ -1,17 +1,9 @@
 package io.jenkins.blueocean.service.embedded.rest.coverage;
 
-import org.kohsuke.stapler.export.Exported;
-
 /**
  * @author cliffmeyers
  */
 public final class BlueCoverageSummary {
-
-    public static final String CLASSES = "classes";
-    public static final String METHODS = "methods";
-    public static final String LINES = "lines";
-    public static final String BRANCHES = "branches";
-    public static final String INSTRUCTIONS = "instructions";
 
     private final BlueCoverageMetrics classes;
     private final BlueCoverageMetrics methods;
@@ -37,27 +29,22 @@ public final class BlueCoverageSummary {
         );
     }
 
-    @Exported(name = CLASSES)
     public BlueCoverageMetrics getClasses() {
         return classes;
     }
 
-    @Exported(name = METHODS)
     public BlueCoverageMetrics getMethods() {
         return methods;
     }
 
-    @Exported(name = LINES)
     public BlueCoverageMetrics getLines() {
         return lines;
     }
 
-    @Exported(name = BRANCHES)
     public BlueCoverageMetrics getBranches() {
         return branches;
     }
 
-    @Exported(name = INSTRUCTIONS)
     public BlueCoverageMetrics getInstructions() {
         return instructions;
     }
