@@ -1,10 +1,10 @@
 // this function is executed before all other code during bundle's onStartup
 // see gulpfile, builder.bundle().onStartup()
 
-import Errors from './Errors';
+import ErrorUtils from './ErrorUtils';
 
 export function execute(done, bundleConfig) {
-    Errors.initializeErrorHandling();
+    ErrorUtils.initializeErrorHandling();
 
     // Get the extension list metadata from Jenkins.
     // Might want to do some flux fancy-pants stuff for this.
