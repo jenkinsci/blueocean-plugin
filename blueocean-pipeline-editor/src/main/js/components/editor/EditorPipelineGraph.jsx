@@ -404,12 +404,14 @@ needsLayout = true;
 
         // add a top-level parallel config icon
         if (isTopLevelParallel) {
-            label = <div className={classNames.join(" ")} style={style} key={key}
-                         onClick={e => this.nodeClicked({ isPlaceholder: false, stage: details.node.parentStage }, e)}>
-                {details.text}
-                <Icon icon="NavigationMoreHoriz" size={24}
-                      className="stage-parallel-edit" />
-            </div>;
+            label = (
+                <div className={classNames.join(" ")} style={style} key={key}
+                     onClick={e => this.nodeClicked({ isPlaceholder: false, stage: details.node.parentStage }, e)}>
+                    {details.text}
+                    <Icon icon="NavigationMoreHoriz" size={24}
+                          className="stage-parallel-edit" />
+                </div>
+            );
         }
 
         return label;
