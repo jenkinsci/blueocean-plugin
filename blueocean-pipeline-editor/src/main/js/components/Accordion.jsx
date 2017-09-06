@@ -10,7 +10,7 @@ export class Accordion extends React.Component {
         this.state = { selected: undefined };
     }
     render() {
-        const { children } = this.props;
+        const children = React.Children.toArray(this.props.children);
         const { selected = children[0].key } = this.state;
         return (<div className="Accordion">
              {children.map(child => [

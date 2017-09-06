@@ -178,7 +178,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
 
         const sheets = [];
         const steps = selectedStage ? selectedStage.steps : [];
-
+        const hasChildStages = selectedStage && selectedStage.children && selectedStage.children.length;
         const title = selectedStage ? selectedStage.name : 'Select or create a pipeline stage';
         const disableIfNoSelection = selectedStage ? {} : {disabled: 'disabled'}; // TODO: Delete if we don't use this any more
 
@@ -207,13 +207,15 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                 </div>
             }>
             <Accordion>
+                {!hasChildStages &&
                 <div title="Steps" key="steps">
-                    <ValidationMessageList node={selectedStage} />
+                    <ValidationMessageList node={selectedStage}/>
                     <EditorStepList steps={steps}
-                                onAddStepClick={() => this.openSelectStepDialog()}
-                                onAddChildStepClick={parent => this.openSelectStepDialog(parent)}
-                                onStepSelected={(step) => this.selectedStepChanged(step)} />
+                                    onAddStepClick={() => this.openSelectStepDialog()}
+                                    onAddChildStepClick={parent => this.openSelectStepDialog(parent)}
+                                    onStepSelected={(step) => this.selectedStepChanged(step)}/>
                 </div>
+                }
                 <div title="Settings" className="editor-stage-settings" key="settings">
                     <AgentConfiguration node={selectedStage} onChange={agent => (selectedStage && agent.type == 'none' ? delete selectedStage.agent : selectedStage.agent = agent) && this.pipelineUpdated()} />
                     <EnvironmentConfiguration node={selectedStage} onChange={e => this.pipelineUpdated()} />
