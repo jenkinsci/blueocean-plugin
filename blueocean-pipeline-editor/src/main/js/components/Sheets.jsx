@@ -13,7 +13,7 @@ export class Sheet extends React.Component {
             <div className="sheet-header">
                 {child.props.onClose &&
                     <span className="back-from-sheet" onClick={e => this.onClose()}>
-                        <Icon icon="NavigationArrowBack" color="#c3cfd7" hoverColor="#4a4a4a" />
+                        <Icon icon="NavigationArrowBack" />
                     </span>
                 }
                 {child.getTitle && child.getTitle() || child.props.title}

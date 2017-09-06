@@ -85,6 +85,12 @@ export class Activity extends Component {
         this.context.router.push(activitiesURL);
     };
 
+    createPipeline() {
+        const { organization, pipeline } = this.context.params;
+        const url = `/organizations/${organization}/pipeline-editor/${pipeline}/`;
+        this.context.router.push(url);
+    }
+
     render() {
         const { pipeline, t, locale } = this.props;
         const { actionExtensionCount } = this.state;
@@ -117,13 +123,18 @@ export class Activity extends Component {
                            runnable={pipeline}
                            latestRun={latestRun}
                            onNavigation={onNavigation}
-                           iconColor="#4A90E2"
                 />
             );
 
         if (!isLoading) {
             if (isMultiBranchPipeline && !hasBranches) {
-                return <NoBranchesPlaceholder t={t} />;
+                return (
+                    <NoBranchesPlaceholder t={t} primaryAction={
+                        <button className="btn btn-primary" onClick={() => this.createPipeline()}>
+                            {t('creation.git.step1.create_button')}
+                        </button>
+                    } />
+                );
             }
             if (!runs || !runs.length) {
                 if (!isMultiBranchPipeline) {

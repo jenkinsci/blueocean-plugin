@@ -134,7 +134,7 @@ class RunDetailsHeader extends Component {
 
         const durationDetails = (
             <div>
-                <Icon size={ 16 } icon="ImageTimelapse" style={ { fill: '#fff' } } />
+                <Icon size={ 16 } icon="ImageTimelapse" />
                 <TimeDuration
                     millis={ isRunning() ? this.durationInMillis : durationInMillis }
                     liveUpdate={ isRunning() }
@@ -149,7 +149,7 @@ class RunDetailsHeader extends Component {
 
         const endTimeDetails = (
             <div>
-                <Icon size={ 16 } icon="DeviceAccessTime" style={ { fill: '#fff' } } />
+                <Icon size={ 16 } icon="DeviceAccessTime" />
                 <ReadableDate
                     date={ endTime }
                     liveUpdate

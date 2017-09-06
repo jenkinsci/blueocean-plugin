@@ -8,6 +8,7 @@ npm-debug.log
 .idea/
 .idea.*/
 *.iml
+nbactions.xml
 *.ipr
 *.iws
 **/target/

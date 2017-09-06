@@ -21,7 +21,7 @@ const RestPaths = Paths.rest;
 const classicConfigLink = (pipeline) => {
     let link = null;
     if (Security.permit(pipeline).configure()) {
-        link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="ActionSettings" style={{ fill: '#fff', verticalAlign: 'baseline' }} /></a>;
+        link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="ActionSettings" style={{ verticalAlign: 'baseline' }} /></a>;
     }
     return link;
 };

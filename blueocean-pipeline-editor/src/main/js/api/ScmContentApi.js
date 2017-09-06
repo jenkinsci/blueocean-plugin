@@ -39,7 +39,7 @@ class ScmContentApi {
             throw new TypedError(LoadError.JENKINSFILE_NOT_FOUND, responseBody);
         } else if (status === 428) {
             throw new TypedError(LoadError.TOKEN_NOT_FOUND, responseBody);
-        } else if (message.indexOf('Invalid accessToken') !== -1) {
+        } else if (message && message.indexOf('Invalid accessToken') !== -1) {
             throw new TypedError(LoadError.TOKEN_REVOKED, responseBody);
         }
 

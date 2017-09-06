@@ -31,20 +31,12 @@ import com.cloudbees.plugins.credentials.CredentialsStore;
 import com.cloudbees.plugins.credentials.domains.Domain;
 import com.google.common.base.Preconditions;
 import hudson.model.User;
-import hudson.remoting.Base64;
 import io.jenkins.blueocean.commons.ServiceException;
 import java.io.IOException;
-import java.security.KeyFactory;
-import java.security.KeyPair;
-import java.security.NoSuchAlgorithmException;
-import java.security.interfaces.RSAPrivateCrtKey;
-import java.security.interfaces.RSAPrivateKey;
-import java.security.interfaces.RSAPublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.RSAPublicKeySpec;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+
+import io.jenkins.blueocean.service.embedded.rest.UserKey;
 import jenkins.model.Jenkins;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -84,10 +76,8 @@ public class UserSSHKeyManager {
         // if none found, create one
         try {
             // create one!
-            KeyPair keyPair = SSHKeyUtils.generateRSAKey(KEY_SIZE);
-            RSAPrivateKey privateKey = (RSAPrivateKey)keyPair.getPrivate();
-            String id_rsa = Base64.encode(privateKey.getEncoded());
-            BasicSSHUserPrivateKey.DirectEntryPrivateKeySource keySource = new BasicSSHUserPrivateKey.DirectEntryPrivateKeySource(id_rsa);
+            String privateKey = SSHKeyUtils.generateKey(KEY_SIZE).trim();
+            BasicSSHUserPrivateKey.DirectEntryPrivateKeySource keySource = new BasicSSHUserPrivateKey.DirectEntryPrivateKeySource(privateKey);
             BasicSSHUserPrivateKey key = new BasicSSHUserPrivateKey(CredentialsScope.USER, BLUEOCEAN_GENERATED_SSH_KEY_ID, user.getId(), keySource, null, BLUEOCEAN_GENERATED_SSH_KEY_ID);
             store.addCredentials(getDomain(store), key);
             store.save();
@@ -99,31 +89,21 @@ public class UserSSHKeyManager {
 
     /**
      * Gets a readable SSH-compatible public key a user could paste somewhere
-     * @param user
-     * @param key
-     * @return
+     * @param user the user which will be used to build a useful description
+     * @param key the private key to use
+     * @return a public ssh key
      */
-    public static @Nonnull String getReadablePublicKey(@Nonnull User user, @Nonnull BasicSSHUserPrivateKey key) {
+    public static @Nonnull UserKey getPublicKey(@Nonnull User user, @Nonnull BasicSSHUserPrivateKey key) {
         Preconditions.checkNotNull(user);
         Preconditions.checkNotNull(key);
 
-        try {
-            PKCS8EncodedKeySpec keySpec =
-                new PKCS8EncodedKeySpec(Base64.decode(key.getPrivateKey()));
-            KeyFactory keyFactory = KeyFactory.getInstance("RSA");
-            RSAPrivateCrtKey privateKey = (RSAPrivateCrtKey)keyFactory.generatePrivate(keySpec);
-            RSAPublicKeySpec publicKeySpec = new java.security.spec.RSAPublicKeySpec(privateKey.getModulus(), privateKey.getPublicExponent());
-            RSAPublicKey publicKey = (RSAPublicKey)keyFactory.generatePublic(publicKeySpec);
-            String id_rsa_pub = getSSHPublicKey(publicKey, user);
-            return id_rsa_pub;
-        } catch (NullPointerException | InvalidKeySpecException | NoSuchAlgorithmException | IOException ex) {
-            throw new ServiceException.UnexpectedErrorException("Unable to get a readable public key", ex);
-        }
+        String publicKey = SSHKeyUtils.getPublicKey(key.getPrivateKey(), getKeyComment(user.getId())).trim();
+        return new UserKey(key.getId(), publicKey);
     }
 
     /**
      * Resets the user's generated key by deleting it and creating a new one
-     * @param user
+     * @param user user to reset a key for
      */
     public static void reset(@Nonnull User user) {
         Preconditions.checkNotNull(user);
@@ -167,13 +147,6 @@ public class UserSSHKeyManager {
             }
         }
         return null;
-    }
-
-    /**
-     * Gets an "ssh-rsa"-style formatted public key with useful identifier
-     */
-    private static String getSSHPublicKey(RSAPublicKey key, User user) throws IOException {
-        return "ssh-rsa " + Base64.encode(SSHKeyUtils.encodePublicKey(key)) + " " + getKeyComment(user.getId());
     }
 
     /**

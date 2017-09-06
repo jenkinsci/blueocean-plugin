@@ -26,7 +26,7 @@ export { CommitId } from './CommitId';
 export { DownloadLink } from './DownloadLink';
 export { EmptyStateView } from './EmptyStateView';
 export { EmptyStateIcon } from './EmptyStateIcon';
-export { PipelineGraph } from './PipelineGraph';
+export { PipelineGraph } from './pipeline/PipelineGraph';
 export { FileSize } from './FileSize';
 export { Toast } from './Toast';
 export { Toaster } from './Toaster';
