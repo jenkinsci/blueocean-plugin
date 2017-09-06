@@ -217,6 +217,25 @@
         color: @error-highlight;
     }
 
+    .pipeline-big-label {
+        position: relative;
+        &.top-level-parallel {
+            cursor: pointer;
+        }
+    }
+
+    .stage-parallel-edit {
+        fill: #4a90e2 !important;
+        position: absolute;
+        top: -24px;
+        left: 50%;
+        margin-left: -12px;
+
+        &:hover {
+            fill: #444 !important;
+        }
+    }
+
     .result-status-glyph polygon {
         fill: #cbcbcb;
     }

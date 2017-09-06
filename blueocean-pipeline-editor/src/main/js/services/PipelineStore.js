@@ -154,18 +154,16 @@ const findParentStepByChild = function (steps, childStep) {
     }
 };
 
-const DEFAULT_STAGE_NO_COPY_KEYS = ['name'];
+const STAGE_NO_COPY_KEYS = ['id', 'name'];
 
 /**
  * Copies properties from one stage to another
  * @param fromStage
  * @param toStage
- * @param dontCopy
  */
-const copyStageProperties = function (fromStage, toStage, ...dontCopy) {
-    const dontCopyKeys = DEFAULT_STAGE_NO_COPY_KEYS.concat(dontCopy);
+const copyStageProperties = function (fromStage, toStage) {
     for (const key of Object.keys(fromStage)) {
-        if (dontCopyKeys.indexOf(key) === -1) {
+        if (STAGE_NO_COPY_KEYS.indexOf(key) === -1) {
             toStage[key] = fromStage[key];
         }
     }

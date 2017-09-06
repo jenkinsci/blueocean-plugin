@@ -5,6 +5,7 @@ import React, { Component, PropTypes } from 'react';
 import {getAddIconGroup} from './common';
 import type { StageInfo } from '../../services/PipelineStore';
 import pipelineValidator from '../../services/PipelineValidator';
+import { Icon } from '@jenkins-cd/design-language';
 
 // Dimensions used for layout, px
 export const defaultLayout = {
@@ -362,9 +363,8 @@ needsLayout = true;
     }
 
     renderBigLabel(details:LabelInfo) {
-
         const { nodeSpacingH, labelOffsetV } = this.state.layout;
-
+        const isTopLevelParallel = details.stage && details.stage.children && details.stage.children.length > 0;
         const labelWidth = nodeSpacingH;
         const labelOffsetH = Math.floor(labelWidth * -0.5);
 
@@ -393,11 +393,26 @@ needsLayout = true;
             || (stage && this.stageChildIsSelected(stage))) {
             classNames.push("selected");
         }
+        if (isTopLevelParallel) {
+            classNames.push('top-level-parallel');
+        }
         if (nodeHasErrors(details.node)) {
             classNames.push("errors");
         }
 
-        return <div className={classNames.join(" ")} style={style} key={key}>{details.text}</div>;
+        let label = <div className={classNames.join(" ")} style={style} key={key}>{details.text}</div>;
+
+        // add a top-level parallel config icon
+        if (isTopLevelParallel) {
+            label = <div className={classNames.join(" ")} style={style} key={key}
+                         onClick={e => this.nodeClicked({ isPlaceholder: false, stage: details.node.parentStage }, e)}>
+                {details.text}
+                <Icon icon="NavigationMoreHoriz" size={24}
+                      className="stage-parallel-edit" />
+            </div>;
+        }
+
+        return label;
     }
 
     renderSmallLabel(details:LabelInfo) {
@@ -520,7 +535,6 @@ needsLayout = true;
     }
 
     renderNode(node:NodeInfo) {
-
         const nodeIsSelected = this.nodeIsSelected(node);
         const { nodeRadius, connectorStrokeWidth } = this.state.layout;
 
