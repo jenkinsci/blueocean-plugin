@@ -19,7 +19,9 @@ import hudson.tasks.UserAvatarResolver;
 import hudson.util.HttpResponses;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.ServiceException.ForbiddenException;
+import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.ApiHead;
+import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -36,7 +38,6 @@ import org.apache.commons.lang.StringUtils;
 
 import java.util.Collections;
 import java.util.Map;
-import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
 import org.kohsuke.stapler.verb.GET;
@@ -172,11 +173,12 @@ public class UserImpl extends BlueUser {
      * Gets or creates the user's private Jenkins-managed key and returns the
      * public key to the user
      * @return JSON response
-     * @throws IOException 
+     * @throws IOException
      */
     @GET
     @WebMethod(name="publickey")
-    public HttpResponse publicKey() throws IOException {
+    @TreeResponse
+    public UserKey getPublickey() {
         User authenticatedUser =  User.current();
         if (authenticatedUser == null) {
             throw new ServiceException.UnauthorizedException("Not authorized");
@@ -184,21 +186,22 @@ public class UserImpl extends BlueUser {
         if (!StringUtils.equals(getId(), authenticatedUser.getId())) {
             throw new ServiceException.ForbiddenException("Not authorized");
         }
-        
-        String publicKey = UserSSHKeyManager.getReadablePublicKey(authenticatedUser, 
+
+        UserKey publicKey = UserSSHKeyManager.getPublicKey(authenticatedUser,
             UserSSHKeyManager.getOrCreate(authenticatedUser));
-        
-        return HttpResponses.okJSON(ImmutableMap.of("key", publicKey));
+
+        return publicKey;
     }
 
     /**
      * Deletes the user's private Jenkins-managed key
      * @return
-     * @throws IOException 
+     * @throws IOException
      */
     @DELETE
     @WebMethod(name="publickey")
-    public HttpResponse resetPublicKey() throws IOException {
+    @TreeResponse
+    public UserKey resetPublicKey() {
         User authenticatedUser =  User.current();
         if (authenticatedUser == null) {
             throw new ServiceException.UnauthorizedException("Not authorized");
@@ -206,9 +209,9 @@ public class UserImpl extends BlueUser {
         if (!StringUtils.equals(getId(), authenticatedUser.getId())) {
             throw new ServiceException.ForbiddenException("Not authorized");
         }
-        
+
         UserSSHKeyManager.reset(authenticatedUser);
-        return HttpResponses.ok();
+        return getPublickey();
     }
 
     private boolean isAdmin(){

@@ -18,10 +18,6 @@
     <packaging>hpi</packaging>
 
     <properties>
-        <java.level>7</java.level>
-        <jenkins.version>2.7.1</jenkins.version>
-        <node.version>6.2.1</node.version>
-        <npm.version>3.9.3</npm.version>
         <declarative.version>1.0</declarative.version>
     </properties>
 

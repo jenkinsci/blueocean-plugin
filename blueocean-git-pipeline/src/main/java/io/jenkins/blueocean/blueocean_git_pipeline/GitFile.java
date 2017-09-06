@@ -21,28 +21,26 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.jenkins.blueocean.service.embedded;
+package io.jenkins.blueocean.blueocean_git_pipeline;
 
-import com.jcraft.jsch.JSch;
-import com.jcraft.jsch.JSchException;
-import com.jcraft.jsch.KeyPair;
-import io.jenkins.blueocean.service.embedded.util.SSHKeyUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFile;
+import org.kohsuke.stapler.DataBoundConstructor;
 
 /**
- * Simple tests for RSA key generation
- * @author kzantow
+ * @author Vivek Pandey
  */
-public class SSHKeyUtilTest {
-    @Test
-    public void sshKeyUtils() throws JSchException {
-        String privateKey = SSHKeyUtils.generateKey(1024);
-        Assert.assertNotNull(privateKey);
+public class GitFile extends ScmFile<GitContent> {
+    private final GitContent content;
 
-        JSch jsch = new JSch();
-        KeyPair.load(jsch, privateKey.getBytes(), null );
-
-        // can only really verify the key can be loaded
+    @DataBoundConstructor
+    public GitFile(GitContent content) {
+        this.content = content;
     }
+
+    @Override
+    public GitContent getContent() {
+        return content;
+    }
+
 }

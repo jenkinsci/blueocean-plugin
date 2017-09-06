@@ -3,6 +3,7 @@ import Extensions from '@jenkins-cd/js-extensions';
 import {
         Fetch, getRestUrl, buildPipelineUrl, locationService,
         ContentPageHeader, pipelineService, Paths, RunApi,
+        activityService,
     } from '@jenkins-cd/blueocean-core-js';
 import {
     Dialog,
@@ -36,20 +37,20 @@ class SaveDialog extends React.Component {
            { branch: '', toString: () => `Commit to new branch`},
        ];
     }
-    
+
     save() {
         const { functions } = this.props;
         this.setState({ errorMessage: null, branchError: false });
         this.setState({ saving: true });
         functions.save(this.state.branch, this.state.commitMessage, (...args) => this.showError(...args));
     }
-    
+
     cancel() {
         if (!this.state.saving) {
             this.props.cancel();
         }
     }
-    
+
     showError(err, saveRequest) {
         const { functions } = this.props;
         let errorMessage = err.message ? err.message : (err.errors ? err.errors.map(e => <div>{e.error}</div>) : err);
@@ -79,12 +80,12 @@ class SaveDialog extends React.Component {
     render() {
         const { branch } = this.props;
         const { errorMessage } = this.state;
-        
+
         const buttons = [
             <button className="btn-primary" onClick={() => this.save()} disabled={this.state.saving}>Save & run</button>,
             <button className="btn-link btn-secondary" disabled={this.state.saving} onClick={() => this.cancel()}>Cancel</button>,
         ];
-        
+
         return (
             <Dialog onDismiss={() => this.cancel()} title="Save Pipeline" buttons={buttons} className="save-pipeline-dialog">
                 {errorMessage && <div style={{marginBottom: '10px'}}><Alerts type="Error" title="Error" message={errorMessage} /></div>}
@@ -134,7 +135,7 @@ class PipelineLoader extends React.Component {
         pipelineStore.setPipeline(null); // reset any previous loaded pipeline
         this.loadPipeline();
     }
-    
+
     componentDidMount() {
         this.context.router.setRouteLeaveHook(this.props.route, e => this.routerWillLeave(e));
         this.priorUnload = window.onbeforeunload;
@@ -267,6 +268,9 @@ class PipelineLoader extends React.Component {
         const { organization, pipeline, branch } = this.props.params;
         this.contentApi.loadContent({ organization, pipeline, branch })
             .then( ({ content }) => {
+                if (!content.base64Data) {
+                    throw { type: LoadError.JENKINSFILE_NOT_FOUND };
+                }
                 const pipelineScript = Base64.decode(content.base64Data);
                 this.setState({sha: content.sha});
                 convertPipelineToJson(pipelineScript, (p, err) => {
@@ -289,10 +293,12 @@ class PipelineLoader extends React.Component {
             })
             .catch(err => {
                 if (err.type === LoadError.JENKINSFILE_NOT_FOUND) {
+                    if (onComplete) onComplete();
                     this.makeEmptyPipeline();
                 } else if (err.type === LoadError.TOKEN_NOT_FOUND || err.type === LoadError.TOKEN_REVOKED) {
                     this.showCredentialDialog({ loading: true });
                 } else {
+                    if (onComplete) onComplete();
                     this.showLoadingError(err);
                 }
             });
@@ -323,25 +329,26 @@ class PipelineLoader extends React.Component {
         const location = {};
         location.pathname = branch == null ? '/' : buildPipelineUrl(organization, pipeline);
         location.query = null;
-        
+
         if (this.opener) {
             router.goBack();
         } else {
             router.push(location);
         }
     }
-    
+
     goToActivity() {
         const { organization, pipeline, branch } = this.props.params;
         const { router } = this.context;
         const location = buildPipelineUrl(organization, pipeline);
+        activityService.removeItem(activityService.pagerKey(organization, pipeline, branch));
         router.push(location);
     }
-    
+
     closeDialog() {
         this.setState({ dialog: null });
     }
-    
+
     extractErrorMessage(err) {
         let errorMessage = err;
         if (err instanceof String || typeof err === 'string') {
@@ -368,12 +375,12 @@ class PipelineLoader extends React.Component {
         }
         return errorMessage;
     }
-    
+
     showErrorDialog(err, { saveRequest, buttonRow, onClose, title } = {}) {
         const buttons = buttonRow || [
             <button className="btn-primary" onClick={() => this.closeDialog()}>Ok</button>,
         ];
-        
+
         this.setState({
             showSaveDialog: false,
             dialog: (
@@ -410,6 +417,8 @@ class PipelineLoader extends React.Component {
                         onComplete={cred => this.onCredentialSelected(cred)}
                         type={scmSource.id}
                         githubConfig={githubConfig}
+                        pipeline={{ fullName: pipeline.fullName}}
+                        dialog
                     />
                 </Dialog>
             )
@@ -450,7 +459,9 @@ class PipelineLoader extends React.Component {
         });
 
         this.loadContent(internal => {
-            pipelineStore.setPipeline(internal);
+            if (internal) { // may be no pipline here
+                pipelineStore.setPipeline(internal);
+            }
             this.setState({dialog: null});
         });
     }
@@ -464,9 +475,9 @@ class PipelineLoader extends React.Component {
             }
         });
     }
-    
+
     save(saveToBranch, commitMessage, errorHandler) {
-        const { organization, pipeline, branch } = this.props.params;
+        const { organization, pipeline, branch = this.defaultBranch } = this.props.params;
         const pipelineJson = convertInternalModelToJson(pipelineStore.pipeline);
         const split = pipeline.split('/');
         const team = split[0];
