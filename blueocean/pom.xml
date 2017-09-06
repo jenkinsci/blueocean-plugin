@@ -157,24 +157,27 @@
                             if (theHpl.file) {
                                 workPluginsDir.mkdirs();
                                 ant.copy(file: theHpl, tofile: new File(workPluginsDir, pluginId + '.hpl'), overwrite: true, verbose: true);
-                                println('Automatically linking ' + pluginId)
                             } else {
                                 println('Warning: no such file ' + theHpl);
                             }
-                        }
+                        };
 
-                        println('Automatically linking HPIs for submodules...')
-
-                        // modules to be excluded from hpi linking below
-                        def hpiExcludes = ['blueocean']
-
-                        project.parent.modules.each { module ->
-                            def moduleName = module.toString()
-
-                            if (!hpiExcludes.contains(moduleName)) {
-                                linkHPI(moduleName)
-                            }
-                        }
+                        //
+                        // Link in other sub-modules. Add as needed.
+                        //
+                        linkHPI('blueocean-web');
+                        linkHPI('blueocean-dashboard');
+                        linkHPI('blueocean-personalization');
+                        linkHPI('blueocean-rest');
+                        linkHPI('blueocean-commons');
+                        linkHPI('blueocean-i18n');
+                        linkHPI('blueocean-jwt');
+                        linkHPI('blueocean-rest-impl');
+                        linkHPI('blueocean-pipeline-api-impl')
+                        linkHPI('blueocean-config')
+                        linkHPI('blueocean-github-pipeline')
+                        linkHPI('blueocean-git-pipeline')
+                        linkHPI('blueocean-pipeline-editor')
                     </source>
                 </configuration>
             </plugin>
