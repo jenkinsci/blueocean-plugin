@@ -211,6 +211,11 @@ public abstract class BlueRun extends Resource {
     public abstract BlueTestSummary getTestSummary();
 
     /**
+     * @return The coverage summary for this run
+     */
+    public abstract BlueCoverageSummary getCoverageSummary();
+
+    /**
      * @return Instance of stapler aware instance that can do the following:
      * <p></p><ul>
      *  <li>Must be able to process start query parameter. 'start' parameter is the byte offset in the actual log file</li>

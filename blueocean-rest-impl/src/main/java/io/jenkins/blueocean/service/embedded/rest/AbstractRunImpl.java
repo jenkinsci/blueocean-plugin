@@ -11,12 +11,14 @@ import hudson.model.Result;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.factory.BlueCoverageSummaryFactory;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
 import io.jenkins.blueocean.rest.model.BlueChangeSetEntry;
+import io.jenkins.blueocean.rest.model.BlueCoverageSummary;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipelineNodeContainer;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
@@ -243,6 +245,11 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
         } else {
             return BlueTestResultFactory.resolve(run, this).summary;
         }
+    }
+
+    @Override
+    public BlueCoverageSummary getCoverageSummary() {
+        return BlueCoverageSummaryFactory.resolve(run, this);
     }
 
     public Collection<BlueActionProxy> getActions() {

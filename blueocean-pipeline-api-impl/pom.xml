@@ -176,6 +176,8 @@
                              These should move over to blueocean-rest module
                         -->
                         <exclude>io/jenkins/blueocean/rest/impl/pipeline/scm/**/*</exclude>
+                        <!-- Exclude StageRuntime temporarily -->
+                        <exclude>io/jenkins/blueocean/rest/impl/pipeline/StageRuntimeTrend*</exclude>
                     </excludes>
                 </configuration>
             </plugin>
