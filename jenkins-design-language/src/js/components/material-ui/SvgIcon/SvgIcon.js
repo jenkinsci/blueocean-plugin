@@ -59,7 +59,6 @@ class SvgIcon extends Component {
     const mergedStyles = Object.assign({
       height: size ? size : 24,
       width: size ? size : 24,
-      verticalAlign: 'middle',
     }, style);
 
     delete other.iconName;
