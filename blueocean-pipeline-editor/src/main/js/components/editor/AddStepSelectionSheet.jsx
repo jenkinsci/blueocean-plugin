@@ -101,7 +101,7 @@ export class AddStepSelectionSheet extends Component<DefaultProps, Props, State>
         return (
             <div className="editor-step-selection-dialog">
                 <div className="editor-step-search">
-                    <Icon icon="ActionSearch" color="#dddddd" size={22} />
+                    <Icon icon="ActionSearch" size={22} />
                     <input ref="searchInput" type="text" className="editor-step-search-input" onChange={e => this.filterSteps(e.target.value)}
                         placeholder="Find steps by name" />
                 </div>

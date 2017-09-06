@@ -7,16 +7,6 @@ class SvgIcon extends Component {
      * Elements passed into the SVG Icon.
      */
     children: PropTypes.node,
-    /**
-     * This is the fill color of the svg icon.
-     * If not specified, this component will default
-     * to muiTheme.palette.textColor.
-     */
-    color: PropTypes.string,
-    /**
-     * This is the icon color when the mouse hovers over the icon.
-     */
-    hoverColor: PropTypes.string,
     /** @ignore */
     onMouseEnter: PropTypes.func,
     /** @ignore */
@@ -48,20 +38,16 @@ class SvgIcon extends Component {
   };
 
   handleMouseLeave = (event) => {
-    this.setState({hovered: false});
     this.props.onMouseLeave(event);
   };
 
   handleMouseEnter = (event) => {
-    this.setState({hovered: true});
     this.props.onMouseEnter(event);
   };
 
   render() {
     const {
       children,
-      color,
-      hoverColor,
       onMouseEnter, // eslint-disable-line no-unused-vars
       onMouseLeave, // eslint-disable-line no-unused-vars
       size,
@@ -70,17 +56,9 @@ class SvgIcon extends Component {
       ...other
     } = this.props;
 
-    const offColor = color ? color : 'white';
-    const onColor = hoverColor ? hoverColor : offColor;
-
     const mergedStyles = Object.assign({
-      display: 'inline-block',
-      fill: this.state.hovered ? onColor : offColor,
       height: size ? size : 24,
       width: size ? size : 24,
-      verticalAlign: 'middle',
-      userSelect: 'none',
-      transition: 'all 450ms cubic-bezier(0.23, 1, 0.32, 1) 0ms', 
     }, style);
 
     delete other.iconName;
@@ -88,6 +66,7 @@ class SvgIcon extends Component {
     return (
       <svg
         {...other}
+        className="material-icon"
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
         style={mergedStyles}
