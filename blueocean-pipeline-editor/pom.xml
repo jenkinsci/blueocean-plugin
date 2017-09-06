@@ -17,10 +17,6 @@
     <artifactId>blueocean-pipeline-editor</artifactId>
     <packaging>hpi</packaging>
 
-    <properties>
-        <declarative.version>1.0</declarative.version>
-    </properties>
-
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
 
     <licenses>
@@ -47,7 +43,7 @@
 
     <dependencies>
         <dependency>
-            <groupId>io.jenkins.blueocean</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-rest</artifactId>
         </dependency>
         <dependency>
@@ -55,17 +51,16 @@
             <artifactId>blueocean-web</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.jenkins.blueocean</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-commons</artifactId>
         </dependency>
         <dependency>
-            <groupId>io.jenkins.blueocean</groupId>
+            <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-pipeline-api-impl</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-model-definition</artifactId>
-            <version>${declarative.version}</version>
         </dependency>
     </dependencies>
 
