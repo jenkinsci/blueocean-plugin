@@ -1,0 +1,102 @@
+.sheet-body .Accordion {
+  position: absolute;
+  top: -20px;
+  right: -32px;
+  bottom: -32px;
+  left: -32px;
+  background: #eef1f3;
+
+  > .Label {
+    background: #f8f8f8;
+    padding: 0 32px;
+  }
+
+  > .Content {
+    padding: 0 32px;
+
+    > *:first-child {
+      margin-top: 32px;
+    }
+
+    > *:last-child {
+      margin-bottom: 32px;
+    }
+  }
+}
+
+.Accordion {
+  @transition-time: 0.3s;
+
+  display: flex;
+  -webkit-flex-direction: column;
+  -moz-flex-direction: column;
+  -ms-flex-direction: column;
+  flex-direction: column;
+  -webkit-flex-flow: column;
+  -moz-flex-flow: column;
+  -ms-flex-flow: column;
+  flex-flow: column;
+
+  .Label {
+    display: block;
+    position: relative;
+    height: 50px;
+    line-height: 50px;
+    border-top: 1px solid #dde3e6;
+    border-bottom: 1px solid #dde3e6;
+    margin-top: -1px;
+    cursor: pointer;
+
+    &:hover {
+      color: #000;
+      svg {
+        fill: #000 !important;
+      }
+    }
+
+    &:first-child {
+      border-top: none;
+    }
+
+    svg {
+      position: absolute;
+      right: 32px;
+      top: 50%;
+      margin-top: -12px;
+      fill: #4a4a4a !important;
+      transform: rotate(-90deg);
+      transition: transform 0.3s ease-in-out;
+    }
+
+    &.active svg {
+      transform: rotate(0deg);
+    }
+  }
+
+  .Content {
+    position: relative;
+    -webkit-flex: 0;
+    -moz-flex: 0;
+    -ms-flex: 0;
+    flex: 0;
+    -webkit-transition: @transition-time;
+    -moz-transition: @transition-time;
+    -ms-transition: @transition-time;
+    -o-transition: @transition-time;
+    transition: @transition-time;
+    height: 0;
+    width: 100%;
+    max-height: 0;
+    overflow: hidden;
+  }
+
+  .Label.active + .Content {
+    -webkit-flex: 1;
+    -moz-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    height: auto;
+    max-height: 100%;
+    overflow: auto;
+  }
+}

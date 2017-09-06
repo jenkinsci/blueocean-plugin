@@ -385,20 +385,18 @@
     }
 
     // sheets
-    .editor-config-panel.global {
-        width: 296px;
+    .editor-config-panel {
+        height: 100%;
 
-        > div {
-            margin-top: 20px;
+        &.global, &.stage, &.step {
+            width: 296px;
         }
     }
 
-    .editor-config-panel.stage {
-        width: 296px;
-    }
-
-    .editor-config-panel.step {
-        width: 296px;
+    .editor-stage-settings {
+        > div {
+            margin-top: 20px;
+        }
     }
 
     .editor-step-child-icon {
@@ -406,7 +404,7 @@
         left: -20px;
         top: 50%;
         margin-top: -7px;
-        
+
         svg {
             fill: #fff;
         }
@@ -425,6 +423,8 @@
             background: #f8f8f8;
             padding: 32px;
             overflow: auto;
+            display: flex;
+            flex-flow: column;
 
             + .sheet {
                 box-shadow: -2px 0px 8px rgba(0, 0, 0, 0.20);
@@ -462,6 +462,10 @@
                     border-color: @hr-color;
                 }
             }
+            .sheet-body {
+                flex: 1;
+                position: relative;
+            }
             .back-from-sheet {
                 position: absolute;
                 left: 0;
@@ -477,7 +481,7 @@
                     fill: #4a4a4a;
                 }
             }
-            
+
             &-enter {
                 right: -60px;
                 opacity: 0;
@@ -588,7 +592,7 @@
             background: transparent;
             border: 0;
             font-size: 1.2em;
-            
+
             .placeholder({
                 color: #888;
                 font-style: italic;
@@ -615,7 +619,7 @@
             @rules();
         }
 
-        &:-ms-input-placeholder {  
+        &:-ms-input-placeholder {
             @rules();
         }
     }

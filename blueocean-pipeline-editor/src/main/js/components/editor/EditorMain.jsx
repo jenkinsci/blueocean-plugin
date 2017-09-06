@@ -6,12 +6,12 @@ import { EditorStepList } from './EditorStepList';
 import { EditorStepDetails } from './EditorStepDetails';
 import { AgentConfiguration } from './AgentConfiguration';
 import { EnvironmentConfiguration } from './EnvironmentConfiguration';
-import { EmptyStateView } from '@jenkins-cd/design-language';
 import { AddStepSelectionSheet } from './AddStepSelectionSheet';
 import pipelineStore from '../../services/PipelineStore';
 import type { StageInfo, StepInfo } from '../../services/PipelineStore';
 import pipelineMetadataService from '../../services/PipelineMetadataService';
 import { Sheets } from '../Sheets';
+import { Accordion } from '../Accordion';
 import { MoreMenu } from '../MoreMenu';
 import pipelineValidator from '../../services/PipelineValidator';
 import { ValidationMessageList } from './ValidationMessageList';
@@ -182,19 +182,15 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         const title = selectedStage ? selectedStage.name : 'Select or create a pipeline stage';
         const disableIfNoSelection = selectedStage ? {} : {disabled: 'disabled'}; // TODO: Delete if we don't use this any more
 
-        // FIXME - agents are defined at the top stage level, this will change
-        let configurationStage = selectedStage && (pipelineStore.findParentStage(selectedStage) || selectedStage);
-        if (pipelineStore.pipeline === configurationStage) {
-            configurationStage = selectedStage;
-        }
-
         const globalConfigPanel = pipelineStore.pipeline && (<ConfigPanel className="editor-config-panel global"
             key={'globalConfig'+pipelineStore.pipeline.id}
             title={<h4>
                     Pipeline Settings
                 </h4>}>
-            <AgentConfiguration key={'agent'+pipelineStore.pipeline.id} node={pipelineStore.pipeline} onChange={agent => (selectedStage && agent.type == 'none' ? delete pipelineStore.pipeline.agent : pipelineStore.pipeline.agent = agent) && this.pipelineUpdated()} />
-            <EnvironmentConfiguration key={'env'+pipelineStore.pipeline.id} node={pipelineStore.pipeline} onChange={e => this.pipelineUpdated()} />
+            <div className="editor-stage-settings" key="settings">
+                <AgentConfiguration key={'agent'+pipelineStore.pipeline.id} node={pipelineStore.pipeline} onChange={agent => (selectedStage && agent.type == 'none' ? delete pipelineStore.pipeline.agent : pipelineStore.pipeline.agent = agent) && this.pipelineUpdated()} />
+                <EnvironmentConfiguration key={'env'+pipelineStore.pipeline.id} node={pipelineStore.pipeline} onChange={e => this.pipelineUpdated()} />
+            </div>
         </ConfigPanel>);
 
         if (globalConfigPanel) sheets.push(globalConfigPanel);
@@ -210,15 +206,19 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                     </MoreMenu>
                 </div>
             }>
-            <ValidationMessageList node={selectedStage} />
-            <EditorStepList steps={steps}
-                        onAddStepClick={() => this.openSelectStepDialog()}
-                        onAddChildStepClick={parent => this.openSelectStepDialog(parent)}
-                        onStepSelected={(step) => this.selectedStepChanged(step)} />
-            {/*
-            <AgentConfiguration key={'agent'+configurationStage.id} node={configurationStage} onChange={agent => (selectedStage && agent.type == 'none' ? delete configurationStage.agent : configurationStage.agent = agent) && this.pipelineUpdated()} />
-            <EnvironmentConfiguration key={'env'+configurationStage.id} node={configurationStage} onChange={e => this.pipelineUpdated()} />
-            */}
+            <Accordion>
+                <div title="Steps" key="steps">
+                    <ValidationMessageList node={selectedStage} />
+                    <EditorStepList steps={steps}
+                                onAddStepClick={() => this.openSelectStepDialog()}
+                                onAddChildStepClick={parent => this.openSelectStepDialog(parent)}
+                                onStepSelected={(step) => this.selectedStepChanged(step)} />
+                </div>
+                <div title="Settings" className="editor-stage-settings" key="settings">
+                    <AgentConfiguration node={selectedStage} onChange={agent => (selectedStage && agent.type == 'none' ? delete selectedStage.agent : selectedStage.agent = agent) && this.pipelineUpdated()} />
+                    <EnvironmentConfiguration node={selectedStage} onChange={e => this.pipelineUpdated()} />
+                </div>
+            </Accordion>
         </ConfigPanel>);
 
         if (stageConfigPanel) sheets.push(stageConfigPanel);
