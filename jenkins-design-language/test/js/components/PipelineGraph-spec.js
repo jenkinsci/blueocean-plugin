@@ -34,9 +34,20 @@ function assertNode(node, text, x, y) {
 }
 
 function assertSingleNodeRow(row, text, x, y) {
-    assert.ok(row, `row for ${text} exists`);
-    assert.equal(row.length, 1, `row for ${text} is single node`);
-    assertNode(row[0], text, x, y);
+    // assert.ok(row, `row for ${text} exists`);
+    // assert.equal(row.length, 1, `row for ${text} is single node`);
+    // assertNode(row[0], text, x, y);
+    assertRow(row, [text, x, y]);
+}
+
+function assertRow(row, ...nodesParams) {
+    assert.ok(row, `row exists`);
+    assert.equal(row.length, nodesParams.length, `row has ${nodesParams.length} nodes`);
+    for (let i = 0; i < nodesParams.length; i++) {
+        const node = row[i];
+        const [text, x, y] = nodesParams[i];
+        assertNode(node, text, x, y);
+    }
 }
 
 function assertLabel(labels, text, x,y) {
@@ -56,7 +67,7 @@ function assertConnection(connections, sourceName, destinationName) {
         }
     }
 
-    assert.fail(`could not find ${leftText} --> ${rightText} connection`);
+    assert.fail(0,1,`could not find ${sourceName} --> ${destinationName} connection`);
 }
 
 describe('PipelineGraph', () => {
@@ -302,6 +313,69 @@ describe('PipelineGraph', () => {
             assert.equal(undefined, col.topStage, 'topStage');
             assert.equal(1, col.rows.length);
             assertSingleNodeRow(col.rows[0], 'End', 708, 55);
+
+            // Col 1
+            col = nodeColumns[1];
+            assert.ok(col.topStage, 'topStage');
+            assert.equal(col.topStage.name, 'Alpha', 'top stage name');
+            assert.equal(1, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'Alpha', 144, 55);
+
+            // Col 2
+            col = nodeColumns[2];
+            assert.ok(col.topStage, 'topStage');
+            assert.equal(col.topStage.name, 'Bravo', 'top stage name');
+            assert.equal(3, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'Echo', 384, 55);
+            assertRow(col.rows[1],
+                ['Foxtrot', 264, 125],
+                ['Golf', 384, 125],
+                ['Hotel', 504, 125],
+            );
+            assertRow(col.rows[2],
+                ['India', 324, 195],
+                ['Juliet', 444, 195],
+            );
+
+            // Col 3
+            col = nodeColumns[3];
+            assert.ok(col.topStage, 'topStage');
+            assert.equal(col.topStage.name, 'Charlie', 'top stage name');
+            assert.equal(1, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'Charlie', 624, 55);
+
+            // Big Labels
+            assertLabel(bigLabels, 'Start', 60, 55);
+            assertLabel(bigLabels, 'Alpha', 144, 55);
+            assertLabel(bigLabels, 'Bravo', 384, 55);
+            assertLabel(bigLabels, 'Charlie', 624, 55);
+            assertLabel(bigLabels, 'End', 708, 55);
+
+            // Small Labels
+            assertLabel(smallLabels, 'Echo', 384, 55);
+            assertLabel(smallLabels, 'Foxtrot', 264, 125);
+            assertLabel(smallLabels, 'Golf', 384, 125);
+            assertLabel(smallLabels, 'Hotel', 504, 125);
+            assertLabel(smallLabels, 'India', 324, 195);
+            assertLabel(smallLabels, 'Juliet', 444, 195);
+
+            // Connections
+            assertConnection(connections, 'Start', 'Alpha');
+
+            assertConnection(connections, 'Alpha', 'Echo');
+            assertConnection(connections, 'Alpha', 'Foxtrot');
+            assertConnection(connections, 'Alpha', 'India');
+
+            assertConnection(connections, 'Echo', 'Charlie');
+
+            assertConnection(connections, 'Foxtrot', 'Golf');
+            assertConnection(connections, 'Golf', 'Hotel');
+            assertConnection(connections, 'Hotel', 'Charlie');
+
+            assertConnection(connections, 'India', 'Juliet');
+            assertConnection(connections, 'Juliet', 'Charlie');
+
+            assertConnection(connections, 'Charlie', 'End');
         })
     });
 });
