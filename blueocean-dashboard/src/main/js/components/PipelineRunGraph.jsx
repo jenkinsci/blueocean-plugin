@@ -21,12 +21,12 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
     logger.debug('jenkinsNode', jenkinsNode);
     const isRunning = () => {
         switch (jenkinsNode.state) {
-            case 'RUNNING':
-            case 'PAUSED':
-            case 'QUEUED':
-                return true;
-            default:
-                return false;
+        case 'RUNNING':
+        case 'PAUSED':
+        case 'QUEUED':
+            return true;
+        default:
+            return false;
         }
     };
 
@@ -127,9 +127,8 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
 
     // Cound edges going to/from each node.
     for (const edgePair of allEdges) {
-        const [src, dest] = edgePair;
+        const dest = edgePair[1];
         edgeCountToNode[dest] = edgeCountToNode[dest] + 1;
-        // edgeCountFromNode[src] = edgeCountFromNode[src] +1;
     }
 
     // Follow the graph and build our results
@@ -156,18 +155,18 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
             let branchNodes = currentNode.children;
 
             while (branchNodes && branchNodes.length > 0) {
-                let nextBranchNodes = [];
+                const nextBranchNodes = [];
 
                 for (const branchNode of branchNodes) {
-                    const edges = originalNodeForId[branchNode.id].edges || [];
-                    if (edges.length > 0) { // Should only be 0 at end of pipeline or bad input data
-                        const followingNode = convertedNodeForId[edges[0].id];
+                    const branchNodeEdges = originalNodeForId[branchNode.id].edges || [];
+                    if (branchNodeEdges.length > 0) { // Should only be 0 at end of pipeline or bad input data
+                        const followingNode = convertedNodeForId[branchNodeEdges[0].id];
 
                         // If followingNode has several edges pointing to it....
 
                         if (edgeCountToNode[followingNode.id] > 1) {
                             // ... then it's the next top-level stage so we're done following this parallel branch...
-                            nextNode= followingNode;
+                            nextNode = followingNode;
                         } else {
                             // ... otherwise it's the next sibling stage within this parallel branch.
                             branchNode.nextSibling = followingNode;
