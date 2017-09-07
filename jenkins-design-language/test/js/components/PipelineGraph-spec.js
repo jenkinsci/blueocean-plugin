@@ -8,13 +8,21 @@ import { StatusIndicator } from '../../../src/js/components/status/StatusIndicat
 
 const validResultValues = StatusIndicator.validResultValues;
 
-// Data creation helper Lifted from stories
+// Data creation helpers Lifted from stories
 let __id = 1111;
 
 function makeNode(name, children = [], state = validResultValues.not_built, completePercent) {
     completePercent = completePercent || ((state == validResultValues.running) ? Math.floor(Math.random() * 60 + 20) : 50);
     const id = __id++;
-    return { name, children, state, completePercent, id };
+    return {name, children, state, completePercent, id};
+}
+
+function makeSequence(...stages) {
+    for (let i = 0; i < stages.length - 1; i++) {
+        stages[i].nextSibling = stages[i + 1];
+    }
+
+    return stages[0]; // The model only needs the first in a sequence
 }
 
 // Assertion helpers
@@ -247,5 +255,53 @@ describe('PipelineGraph', () => {
 
             assert.equal(connections.length, 6, 'Total composite connections');
         });
+
+        it('lays out a multi-stage parallel graph', () => {
+            const stages = [
+                makeNode("Alpha"),
+                makeNode("Bravo", [
+                    makeNode("Echo"),
+                    makeSequence(
+                        makeNode("Foxtrot"),
+                        makeNode("Golf"),
+                        makeNode("Hotel"),
+                    ),
+                    makeSequence(
+                        makeNode("India"),
+                        makeNode("Juliet"),
+                    )
+                ]),
+                makeNode("Charlie"),
+            ];
+
+            const {
+                nodeColumns,
+                connections,
+                bigLabels,
+                smallLabels,
+                measuredWidth,
+                measuredHeight,
+            } = layoutGraph(stages, defaultLayout);
+
+            // Basic stuff
+
+            assert.equal(nodeColumns.length, 5, 'column count');
+            assert.equal(measuredWidth, 768, 'measuredWidth');
+            assert.equal(measuredHeight, 250, 'measuredHeight');
+            assert.equal(smallLabels.length, 6, 'small label count');
+            assert.equal(bigLabels.length, 5, 'big label count');
+
+            // Start col
+            let col = nodeColumns[0];
+            assert.equal(undefined, col.topStage, 'topStage');
+            assert.equal(1, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'Start', 60, 55);
+
+            // End col
+            col = nodeColumns[4];
+            assert.equal(undefined, col.topStage, 'topStage');
+            assert.equal(1, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'End', 708, 55);
+        })
     });
 });
