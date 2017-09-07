@@ -38,19 +38,22 @@ public class BlueTrendsApiTest extends BaseTest {
     public void getJUnitTrends() throws Exception {
         URL resource = Resources.getResource(getClass(), "BlueJUnitTestResultTest.jenkinsfile");
         String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
-
         WorkflowJob p = j.createProject(WorkflowJob.class, "project");
         p.setDefinition(new CpsFlowDefinition(jenkinsFile, false));
         p.save();
 
-        p.scheduleBuild2(0).waitForStart();
-        j.waitUntilNoActivity();
+        Run r = p.scheduleBuild2(0).waitForStart();
+        j.waitForCompletion(r);
 
         Map response = new RequestBuilder(baseUrl)
             .get("/organizations/jenkins/pipelines/"+p.getName()+"/trends/junit/")
             .build(Map.class);
 
         Assert.assertNotNull(response);
+        Map columns = (Map) response.get("columns");
+        Assert.assertNotNull(columns);
+        Assert.assertEquals(7, columns.keySet().size());
+
         List rows = (List) response.get("rows");
         Assert.assertNotNull(rows);
         Assert.assertEquals(1, rows.size());
