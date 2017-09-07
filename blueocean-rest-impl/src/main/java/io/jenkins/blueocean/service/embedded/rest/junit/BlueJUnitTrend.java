@@ -10,6 +10,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTable;
+import io.jenkins.blueocean.rest.model.BlueTableRow;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.BlueTrend;
 import org.kohsuke.accmod.Restricted;
@@ -80,17 +81,17 @@ public class BlueJUnitTrend extends BlueTrend {
         }
 
         @Override
-        public List<Row> getRows() {
-            return Lists.newArrayList(Iterators.transform(runs, new Function<BlueRun, Row>() {
+        public List<BlueTableRow> getRows() {
+            return Lists.newArrayList(Iterators.transform(runs, new Function<BlueRun, BlueTableRow>() {
                 @Override
-                public Row apply(BlueRun run) {
+                public BlueTableRow apply(BlueRun run) {
                     return new RowImpl(run.getTestSummary(), run.getId());
                 }
             }));
         }
     }
 
-    public static class RowImpl extends BlueTable.Row {
+    public static class RowImpl extends BlueTableRow {
         private final String id;
         private final BlueTestSummary summary;
 

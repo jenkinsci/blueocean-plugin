@@ -11,6 +11,12 @@ import io.jenkins.blueocean.rest.model.BlueTrend;
 
 import javax.annotation.Nullable;
 
+/**
+ * Allows extensions to attach {@link BlueTrend} data to a {@link BluePipeline} for reports and visualization.
+ *
+ * @see BlueTrend
+ * @author cliffmeyers
+ */
 public abstract class BlueTrendFactory implements ExtensionPoint {
 
     public abstract BlueTrend getTrend(BluePipeline pipeline, Link parent);

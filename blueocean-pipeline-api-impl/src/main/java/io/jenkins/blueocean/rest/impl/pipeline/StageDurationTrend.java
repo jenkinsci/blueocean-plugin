@@ -11,8 +11,8 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTable;
+import io.jenkins.blueocean.rest.model.BlueTableRow;
 import io.jenkins.blueocean.rest.model.BlueTrend;
-import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.stapler.export.CustomExportedBean;
 
 import java.util.List;
@@ -59,17 +59,17 @@ public class StageDurationTrend extends BlueTrend {
         }
 
         @Override
-        public List<Row> getRows() {
-            return Lists.newArrayList(Iterators.transform(pipeline.getRuns().iterator(0, 100), new Function<BlueRun, Row>() {
+        public List<BlueTableRow> getRows() {
+            return Lists.newArrayList(Iterators.transform(pipeline.getRuns().iterator(0, 100), new Function<BlueRun, BlueTableRow>() {
                 @Override
-                public Row apply(BlueRun input) {
+                public BlueTableRow apply(BlueRun input) {
                     return new RowImpl(input);
                 }
             }));
         }
     }
 
-    public static class RowImpl extends BlueTable.Row implements CustomExportedBean {
+    public static class RowImpl extends BlueTableRow implements CustomExportedBean {
 
         private final BlueRun run;
 
