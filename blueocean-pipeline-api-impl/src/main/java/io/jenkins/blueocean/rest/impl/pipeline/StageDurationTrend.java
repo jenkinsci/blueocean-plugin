@@ -12,6 +12,7 @@ import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTable;
 import io.jenkins.blueocean.rest.model.BlueTrend;
+import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.stapler.export.CustomExportedBean;
 
 import java.util.List;
@@ -20,13 +21,13 @@ import java.util.Map;
 /**
  * Trend for Stage durations
  */
-public class StageRuntimeTrend extends BlueTrend {
+public class StageDurationTrend extends BlueTrend {
 
-    private final BranchImpl branch;
+    private final PipelineImpl pipeline;
     private final Link parent;
 
-    public StageRuntimeTrend(BranchImpl branch, Link parent) {
-        this.branch = branch;
+    public StageDurationTrend(PipelineImpl pipeline, Link parent) {
+        this.pipeline = pipeline;
         this.parent = parent;
     }
 
@@ -37,7 +38,7 @@ public class StageRuntimeTrend extends BlueTrend {
 
     @Override
     public BlueTable getTable() {
-        return new StageRuntimeTable(branch);
+        return new StageRuntimeTable(pipeline);
     }
 
     @Override
@@ -46,10 +47,10 @@ public class StageRuntimeTrend extends BlueTrend {
     }
 
     public static class StageRuntimeTable extends BlueTable {
-        private final BranchImpl branch;
+        private final PipelineImpl pipeline;
 
-        public StageRuntimeTable(BranchImpl branch) {
-            this.branch = branch;
+        public StageRuntimeTable(PipelineImpl pipeline) {
+            this.pipeline = pipeline;
         }
 
         @Override
@@ -59,7 +60,7 @@ public class StageRuntimeTrend extends BlueTrend {
 
         @Override
         public List<Row> getRows() {
-            return Lists.newArrayList(Iterators.transform(branch.getRuns().iterator(0, 100), new Function<BlueRun, Row>() {
+            return Lists.newArrayList(Iterators.transform(pipeline.getRuns().iterator(0, 100), new Function<BlueRun, Row>() {
                 @Override
                 public Row apply(BlueRun input) {
                     return new RowImpl(input);
@@ -96,11 +97,11 @@ public class StageRuntimeTrend extends BlueTrend {
     public static class FactoryImpl extends BlueTrendFactory {
         @Override
         public BlueTrend getTrend(BluePipeline pipeline, Link parent) {
-            if (!(pipeline instanceof BranchImpl)) {
+            if (!(pipeline instanceof PipelineImpl)) {
                 return null;
             }
-            BranchImpl branch = (BranchImpl)pipeline;
-            return new StageRuntimeTrend(branch, parent);
+            PipelineImpl pipelineImpl = (PipelineImpl)pipeline;
+            return new StageDurationTrend(pipelineImpl, parent);
         }
     }
 }
