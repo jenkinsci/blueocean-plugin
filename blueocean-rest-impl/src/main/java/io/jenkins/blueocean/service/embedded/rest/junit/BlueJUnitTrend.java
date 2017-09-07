@@ -23,13 +23,13 @@ import java.util.Map;
 @Restricted(NoExternalUse.class)
 public class BlueJUnitTrend extends BlueTrend {
 
-    private static final String TOTAL = "total";
-    private static final String PASSED = "passed";
-    private static final String FIXED = "fixed";
-    private static final String FAILED = "failed";
-    private static final String EXISTING_FAILED = "existingFailed";
-    private static final String REGRESSIONS = "regressions";
-    private static final String SKIPPED = "skipped";
+    public static final String TOTAL = "total";
+    public static final String PASSED = "passed";
+    public static final String FIXED = "fixed";
+    public static final String FAILED = "failed";
+    public static final String EXISTING_FAILED = "existingFailed";
+    public static final String REGRESSIONS = "regressions";
+    public static final String SKIPPED = "skipped";
 
     private final BluePipeline pipeline;
     private final Link parent;

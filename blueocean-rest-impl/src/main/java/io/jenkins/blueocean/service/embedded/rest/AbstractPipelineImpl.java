@@ -286,7 +286,7 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     @Override
     public BlueTrendContainer getTrends() {
-        return null;
+        return new BlueTrendContainerImpl(this);
     }
 
     public static Map<String, Boolean> getPermissions(AbstractItem item){
