@@ -193,11 +193,6 @@ public abstract class BlueRun extends Resource {
     public abstract Collection<BlueActionProxy> getActions();
 
     /**
-     * @return All Actions for this Run
-     */
-    public abstract Collection<BlueActionProxy> getAllActions();
-
-    /**
      * @return Gives steps from pipeline. The list of steps must not include stages, this is because stage could be
      * interpreted as step as its StepAtomNode and implementation of this API must ensure not to include it.
      */

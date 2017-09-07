@@ -158,11 +158,6 @@ public class QueuedBlueRun extends BlueRun {
     }
 
     @Override
-    public Collection<BlueActionProxy> getAllActions() {
-        return ImmutableList.of();
-    }
-
-    @Override
     public BluePipelineStepContainer getSteps() {
         return null;
     }

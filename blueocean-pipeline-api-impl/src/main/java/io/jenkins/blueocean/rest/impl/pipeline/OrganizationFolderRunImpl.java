@@ -174,11 +174,6 @@ public class OrganizationFolderRunImpl extends BlueRun {
     }
 
     @Override
-    public Collection<BlueActionProxy> getAllActions() {
-        return null;
-    }
-
-    @Override
     public BluePipelineStepContainer getSteps() {
         return null;
     }

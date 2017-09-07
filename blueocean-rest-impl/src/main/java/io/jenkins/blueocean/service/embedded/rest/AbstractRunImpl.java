@@ -2,7 +2,6 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Function;
 import com.google.common.base.Optional;
-import com.google.common.base.Predicate;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Collections2;
@@ -247,15 +246,6 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     public Collection<BlueActionProxy> getActions() {
         return ActionProxiesImpl.getActionProxies(run.getAllActions(), this);
-    }
-
-    public Collection<BlueActionProxy> getAllActions() {
-        return ActionProxiesImpl.getActionProxies(run.getAllActions(), new Predicate<Action>() {
-            @Override
-            public boolean apply(@Nullable Action input) {
-                return true;
-            }
-        }, this);
     }
 
     @Override
