@@ -3,14 +3,14 @@
   "version": "0.0.2-unpublished",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.154",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.154",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.154.tgz"
+      "version": "0.0.155-SNAPSHOT-nicu",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.155-SNAPSHOT-nicu",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.155-SNAPSHOT-nicu.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.147",
-      "from": "@jenkins-cd/design-language@0.0.147",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.147.tgz"
+      "version": "0.0.148-SNAPSHOT-nicu",
+      "from": "@jenkins-cd/design-language@0.0.148-SNAPSHOT-nicu",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.148-SNAPSHOT-nicu.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
