@@ -67,33 +67,6 @@ function _getStageErrors(stage, ...excludeProps) {
     return pipelineValidator.getAllValidationErrors(stage, excludedNodes);
 }
 
-function _findParentComponent(component) {
-    return component._reactInternalInstance._currentElement._owner._instance;
-}
-
-function _findReactComponent(domElement) {
-    if (domElement) {
-        for (var key in domElement) {
-            if (key.startsWith("__reactInternalInstance$")) {
-                var compInternals = domElement[key]._currentElement;
-                if (compInternals) {
-                    var compWrapper = compInternals._owner;
-                    if (compWrapper) {
-                        var comp = compWrapper._instance;
-                        if (comp) {
-                            return comp;
-                        }
-                    }
-                }
-            }
-        }
-        if (domElement != document && domElement.parentElement) {
-            return _findReactComponent(domElement.parentElement);
-        }
-    }
-    return null;
-}
-
 export class EditorMain extends Component<DefaultProps, Props, State> {
 
     static defaultProps = {};
@@ -119,7 +92,6 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
 
     componentDidMount() {
         document.addEventListener('keydown', this.validateAfterTyping = debounce(e => {
-            const component = _findReactComponent(e.target);
             if (!e.target.classList.contains('stage-name-edit')) {
                 pipelineValidator.validate();
             }
