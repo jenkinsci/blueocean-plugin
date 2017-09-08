@@ -22,7 +22,7 @@ export class MoreMenu extends React.Component {
         document.addEventListener('mousedown', this.clickListener = e => {
             if (this.state.showDropdown) {
                 e = e || window.event;
-                const parent = this.refs.dropdown;
+                const parent = this.container;
                 let elem = e.target;
                 while (elem) {
                     if (elem === parent) {
@@ -47,17 +47,17 @@ export class MoreMenu extends React.Component {
     render() {
         const children = [];
         if (this.state.showDropdown) {
-            children.push(<div className="menu-dropdown" ref="dropdown">
+            children.push(<div className="menu-dropdown" key="dropdown">
                 {this.props.children}
             </div>);
         }
         return (
-            <div className="more-menu">
+            <div className="more-menu" ref={container => { this.container = container; }}>
                 <span onClick={e => this.state.showDropDown ? this.closePopover() : this.openPopover()}>
                     <Icon icon="NavigationMoreHoriz" size={22} color="#4A90E2" />
                 </span>
                 <ReactCSSTransitionGroup
-                    transitionName="more-menu"
+                    transitionName="menu-dropdown"
                     transitionAppear
                     transitionAppearTimeout={transitionDuration}
                     transitionEnterTimeout={transitionDuration}

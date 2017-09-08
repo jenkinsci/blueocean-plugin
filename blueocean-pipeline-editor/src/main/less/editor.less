@@ -103,6 +103,22 @@
         border-bottom: solid 1px @hr-color;
         align-items: flex-start;
         overflow:auto;
+        position: relative;
+
+        .pipeline-validation-errors {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+            display: -webkit-box;
+            display: -moz-box;
+            display: -ms-flexbox;
+            display: -webkit-flex;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            bottom: 0;
+        }
     }
 
     .editor-main-selection-title {
@@ -218,21 +234,49 @@
     }
 
     .pipeline-big-label {
-        position: relative;
-        &.top-level-parallel {
-            cursor: pointer;
-        }
-    }
-
-    .stage-parallel-edit {
-        fill: #4a90e2 !important;
         position: absolute;
-        top: -24px;
-        left: 50%;
-        margin-left: -12px;
+        display: block;
+        width: 120px;
+        text-align: center;
+        margin-left: -60px;
+        margin-bottom: 21px;
+        padding-bottom: 4px;
+        text-overflow: ellipsis;
+        max-width: 120px;
+        white-space: nowrap;
+        overflow: hidden;
+        padding-top: 27px;
+        cursor: pointer;
 
-        &:hover {
-            fill: #444 !important;
+        &.top-level-parallel {
+            svg.stage-parallel-edit {
+                fill: #4a90e2 !important;
+                position: absolute;
+                top: 0;
+                left: 50%;
+                margin-left: -12px;
+
+                + svg.stage-parallel-edit {
+                    top: 6px;
+                }
+            }
+            &:hover {
+                color: #000;
+
+                svg.stage-parallel-edit {
+                    fill: darken(#4a90e2, 20%) !important;
+                }
+            }
+            &.errors {
+                .alerticon {
+                    fill: @error-highlight !important;
+                    position: absolute;
+                    right: 0;
+                    top: 9px;
+                    left: 50%;
+                    margin-left: 1px;
+                }
+            }
         }
     }
 
@@ -405,10 +449,25 @@
 
     // sheets
     .editor-config-panel {
-        height: 100%;
-
         &.global, &.stage, &.step {
             width: 296px;
+        }
+    }
+
+    .sheet-header {
+        .more-menu {
+            position: absolute;
+            top: 8px;
+            right: 0;
+            cursor: pointer;
+
+            svg {
+                fill: @brand-color;
+            }
+        }
+
+        .pipeline-validation-errors {
+            margin: 20px 0 0 0;
         }
     }
 
@@ -433,142 +492,6 @@
         margin-top: -8px;
     }
 
-    .sheet-container {
-        .sheet {
-            position: absolute;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            background: #f8f8f8;
-            padding: 32px;
-            overflow: auto;
-            display: flex;
-            flex-flow: column;
-
-            + .sheet {
-                box-shadow: -2px 0px 8px rgba(0, 0, 0, 0.20);
-            }
-            .sheet-header {
-                position: relative;
-                margin-bottom: 22px;
-
-                h4, input {
-                    border-bottom: 1px solid #cdd7e3;
-                    padding: 8px 30px 8px 1px;
-                }
-
-                .back-from-sheet {
-                    + h4, + div > input {
-                        padding: 8px 30px 8px 31px;
-                    }
-                }
-
-                input {
-                    font-size: 18px;
-                    background: transparent;
-                    border: 0;
-                    border-bottom: 1px solid #cdd7e3;
-                    color: #4a4a4a;
-                    width: 100%;
-
-                    &:focus {
-                        outline: none;
-                        border-bottom-color: @brand-color;
-                    }
-                }
-
-                input[type=text], .Dropdown-button {
-                    border-color: @hr-color;
-                }
-            }
-            .sheet-body {
-                flex: 1;
-                position: relative;
-            }
-            .back-from-sheet {
-                position: absolute;
-                left: 0;
-                top: 50%;
-                margin-top: -13px;
-                cursor: pointer;
-
-                svg {
-                    fill: #c3cfd7;
-                }
-
-                &:hover svg {
-                    fill: #4a4a4a;
-                }
-            }
-
-            &-enter {
-                right: -60px;
-                opacity: 0;
-                z-index: 2;
-                &-active {
-                    transition: all 500ms;
-                    transition-timing-function: cubic-bezier(0.025, 1.125, 0.100, 0.970);
-                    right: 0;
-                    opacity: 1;
-                }
-                // when another entering sheet is present, don't scroll it
-                + .sheet-leave-active {
-                    margin-left: 0;
-                    left: auto;
-                    opacity: 1;
-                    box-shadow: -0 0px 0 rgba(0, 0, 0, 0.00);
-                }
-            }
-            &-leave {
-                right: 0;
-                opacity: 1;
-                z-index: 1;
-                &-active {
-                    transition: all 200ms;
-                    transition-timing-function: cubic-bezier(0.805, 0.050, 0.955, 0.290); // very slow leaving
-                    right: -32px;
-                    opacity: 0;
-                }
-            }
-        }
-    }
-
-    .more-menu {
-        position: absolute;
-        top: 50%;
-        right: 0;
-        margin-top: -11px;
-        cursor: pointer;
-
-        svg {
-            fill: @brand-color;
-        }
-
-        .menu-dropdown {
-            position: absolute;
-            right: 0;
-            top: 100%;
-            margin-top: 7px;
-            background: #fff;
-            display: inline-block;
-            padding: 4px 0;
-            border-radius: 3px;
-            box-shadow: 0 0 6px rgba(0,0,0,0.25);
-            font-size: 14px;
-            z-index: 2;
-
-            > a {
-                display: block;
-                padding: 5px 18px;
-                color: #444;
-
-                &:hover, &:focus, &:active {
-                    background: @light-blue-bg;
-                    text-decoration: none;
-                }
-            }
-        }
-    }
 
     //--[ Step Select Dialog ]----------------------------------------------------------------------------------------------------
 
@@ -683,7 +606,8 @@
         }
     }
 
-    ul.pipeline-validation-errors {
+    .pipeline-validation-errors .error-list {
+        display: block;
         margin: -1em 0 1.2em 0;
         color: @error-highlight;
         background: #fff4f4;
@@ -791,6 +715,33 @@
         line-height: 17px;
         font-weight: bold;
     }
+
+    // collapse-height-enter collapse-height-enter-active
+    .collapse-height(@max-height: 300px) {
+        overflow: hidden;
+        &-enter {
+            opacity: 0;
+            max-height: 0;
+            &-active {
+                transition: all 250ms ease-in;
+                opacity: 1;
+                max-height: @max-height;
+            }
+        }
+        &-leave {
+            opacity: 1;
+            max-height: @max-height;
+            &-active {
+                transition: all 400ms ease-in-out;
+                opacity: 0;
+                max-height: 0;
+            }
+        }
+    }
+
+    .collapse-height {
+        .collapse-height() !important;
+    }
 }
 
 .jenkins-blueocean-rundetails-top-widgets .pipeline-editor-link .svg-icon {
@@ -804,7 +755,6 @@
         fill: @brand-color;
     }
 }
-
 
 .pipeline-page {
     .editor-pipeline-dialog {

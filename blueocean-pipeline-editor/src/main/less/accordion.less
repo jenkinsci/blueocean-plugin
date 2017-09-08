@@ -25,7 +25,7 @@
 }
 
 .Accordion {
-  @transition-time: 0.3s;
+  @transition-time: 0.4s;
 
   display: flex;
   -webkit-flex-direction: column;
@@ -65,7 +65,7 @@
       margin-top: -12px;
       fill: #4a4a4a !important;
       transform: rotate(-90deg);
-      transition: transform 0.3s ease-in-out;
+      transition: transform @transition-time ease-in-out;
     }
 
     &.active svg {
@@ -79,11 +79,11 @@
     -moz-flex: 0;
     -ms-flex: 0;
     flex: 0;
-    -webkit-transition: @transition-time;
-    -moz-transition: @transition-time;
-    -ms-transition: @transition-time;
-    -o-transition: @transition-time;
-    transition: @transition-time;
+    -webkit-transition: all @transition-time ease-in-out;
+    -moz-transition: all @transition-time ease-in-out;
+    -ms-transition: all @transition-time ease-in-out;
+    -o-transition: all @transition-time ease-in-out;
+    transition: all @transition-time ease-in-out;
     height: 0;
     width: 100%;
     max-height: 0;

@@ -32,6 +32,8 @@ function agentConfigParamFilter(agent) {
                 return ['filename'].indexOf(param.name) >= 0;
             case 'label':
                 return ['label'].indexOf(param.name) >= 0;
+            case 'node':
+                return ['label'].indexOf(param.name) >= 0;
             default:
                 return false;
         }

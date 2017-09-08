@@ -161,10 +161,11 @@ const STAGE_NO_COPY_KEYS = ['id', 'name'];
  * @param fromStage
  * @param toStage
  */
-const copyStageProperties = function (fromStage, toStage) {
+const moveStageProperties = function (fromStage, toStage) {
     for (const key of Object.keys(fromStage)) {
         if (STAGE_NO_COPY_KEYS.indexOf(key) === -1) {
             toStage[key] = fromStage[key];
+            delete fromStage[key];
         }
     }
 };
@@ -195,7 +196,7 @@ class PipelineStore {
             let zerothStage = createStage(parentStage.name);
 
             // Move all properties steps from the parent stage into the new zeroth stage
-            copyStageProperties(parentStage, zerothStage);
+            moveStageProperties(parentStage, zerothStage);
             parentStage.steps = []; // Stages with children can't have steps
 
             updatedChildren.push(zerothStage);
@@ -249,7 +250,7 @@ class PipelineStore {
         if (parentStage != this.pipeline && newChildren.length === 1) {
             let onlyChild = newChildren[0];
             newChildren = [];
-            copyStageProperties(onlyChild, parentStage);
+            moveStageProperties(onlyChild, parentStage);
         }
 
         // Update the parent with new children list

@@ -11,7 +11,7 @@ export class Accordion extends React.Component {
     }
     render() {
         const children = React.Children.toArray(this.props.children);
-        const { selected = children[0].key } = this.state;
+        const { selected = (this.props.show && '.$' + this.props.show)|| children[0].key } = this.state;
         return (<div className="Accordion">
              {children.map(child => [
                 <h4 className={`Label ${selected === child.key && 'active'}`}

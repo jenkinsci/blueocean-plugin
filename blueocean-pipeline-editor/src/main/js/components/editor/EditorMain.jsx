@@ -16,6 +16,7 @@ import { MoreMenu } from '../MoreMenu';
 import pipelineValidator from '../../services/PipelineValidator';
 import { ValidationMessageList } from './ValidationMessageList';
 import focusOnElement from './focusOnElement';
+import debounce from 'lodash.debounce';
 
 type Props = {
 };
@@ -52,6 +53,45 @@ function cleanPristine(node, visited = []) {
     }
 }
 
+function _getStageErrors(stage, ...excludeProps) {
+    if (!stage) {
+        return null;
+    }
+    // return pipelineValidator.getNodeValidationErrors(stage);
+    const excludedNodes = [];
+    for (const prop of excludeProps) {
+        excludedNodes.push(stage[prop]);
+    }
+    return pipelineValidator.getAllValidationErrors(stage, excludedNodes);
+}
+
+function _findParentComponent(component) {
+    return component._reactInternalInstance._currentElement._owner._instance;
+}
+
+function _findReactComponent(domElement) {
+    if (domElement) {
+        for (var key in domElement) {
+            if (key.startsWith("__reactInternalInstance$")) {
+                var compInternals = domElement[key]._currentElement;
+                if (compInternals) {
+                    var compWrapper = compInternals._owner;
+                    if (compWrapper) {
+                        var comp = compWrapper._instance;
+                        if (comp) {
+                            return comp;
+                        }
+                    }
+                }
+            }
+        }
+        if (domElement != document && domElement.parentElement) {
+            return _findReactComponent(domElement.parentElement);
+        }
+    }
+    return null;
+}
+
 export class EditorMain extends Component<DefaultProps, Props, State> {
 
     static defaultProps = {};
@@ -75,8 +115,18 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         });
     }
 
+    componentDidMount() {
+        document.addEventListener('keydown', this.validateAfterTyping = debounce(e => {
+            const component = _findReactComponent(e.target);
+            if (!e.target.classList.contains('stage-name-edit')) {
+                pipelineValidator.validate();
+            }
+        }, 1000));
+    }
+
     componentWillUnmount() {
         pipelineStore.removeListener(this.pipelineUpdated);
+        document.removeEventListener('keydown', this.validateAfterTyping);
     }
 
     doUpdate() {
@@ -170,7 +220,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
     }
 
     render() {
-        const {selectedStage, selectedSteps, stepMetadata} = this.state;
+        const { selectedStage, selectedSteps, stepMetadata } = this.state;
 
         if (!stepMetadata) {
             return null;
@@ -180,50 +230,67 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         const steps = selectedStage ? selectedStage.steps : [];
         const hasChildStages = selectedStage && selectedStage.children && selectedStage.children.length;
         const title = selectedStage ? selectedStage.name : 'Select or create a pipeline stage';
-        const disableIfNoSelection = selectedStage ? {} : {disabled: 'disabled'}; // TODO: Delete if we don't use this any more
 
-        const globalConfigPanel = pipelineStore.pipeline && (<ConfigPanel className="editor-config-panel global"
-            key={'globalConfig'+pipelineStore.pipeline.id}
-            title={<h4>
-                    Pipeline Settings
-                </h4>}>
-            <div className="editor-stage-settings" key="settings">
-                <AgentConfiguration key={'agent'+pipelineStore.pipeline.id} node={pipelineStore.pipeline} onChange={agent => (selectedStage && agent.type == 'none' ? delete pipelineStore.pipeline.agent : pipelineStore.pipeline.agent = agent) && this.pipelineUpdated()} />
-                <EnvironmentConfiguration key={'env'+pipelineStore.pipeline.id} node={pipelineStore.pipeline} onChange={e => this.pipelineUpdated()} />
-            </div>
-        </ConfigPanel>);
+        // Global config panel
+        if (pipelineStore.pipeline) {
+            sheets.push(
+                <ConfigPanel className="editor-config-panel global"
+                          key={'globalConfig'+pipelineStore.pipeline.id}
+                          title={<h4>
+                              Pipeline Settings
+                          </h4>}>
+                    <div className="editor-stage-settings" key="settings">
+                        <AgentConfiguration key={'agent'+pipelineStore.pipeline.id} node={pipelineStore.pipeline} onChange={agent => (selectedStage && agent.type == 'none' ? delete pipelineStore.pipeline.agent : pipelineStore.pipeline.agent = agent) && this.pipelineUpdated()} />
+                        <EnvironmentConfiguration key={'env'+pipelineStore.pipeline.id} node={pipelineStore.pipeline} onChange={e => this.pipelineUpdated()} />
+                    </div>
+                </ConfigPanel>
+            );
+        }
 
-        if (globalConfigPanel) sheets.push(globalConfigPanel);
+        // Stage config panel
+        if (selectedStage) {
+            // Determine if we need to show a particular configuration page
+            // and what errors to display
+            const sectionErrors = {};
+            sectionErrors.stage = _getStageErrors(selectedStage, 'children', 'steps', 'agent', 'environment', 'when', 'post');
+            sectionErrors.steps = _getStageErrors(selectedStage.steps);
+            sectionErrors.settings = _getStageErrors(selectedStage.agent) || _getStageErrors(selectedStage.environment);
+            sectionErrors.show = sectionErrors.steps ? 'steps' : (sectionErrors.settings ? 'settings' : null);
 
-        const stageConfigPanel = selectedStage && (<ConfigPanel className="editor-config-panel stage" key={'stageConfig'+selectedStage.id}
-            onClose={e => cleanPristine(selectedStage) || pipelineValidator.validate() || this.graphSelectedStageChanged(null)}
-            title={
-                <div>
-                    <input className="stage-name-edit" placeholder="Name your stage" defaultValue={title}
-                        onChange={e => (selectedStage.name = e.target.value) && this.pipelineUpdated()} />
-                    <MoreMenu>
-                        <a onClick={e => this.deleteStageClicked(e)}>Delete</a>
-                    </MoreMenu>
-                </div>
-            }>
-            <Accordion>
-                {!hasChildStages &&
-                <div title="Steps" key="steps">
-                    <ValidationMessageList node={selectedStage}/>
-                    <EditorStepList steps={steps}
-                                    onAddStepClick={() => this.openSelectStepDialog()}
-                                    onAddChildStepClick={parent => this.openSelectStepDialog(parent)}
-                                    onStepSelected={(step) => this.selectedStepChanged(step)}/>
-                </div>
-                }
-                <div title="Settings" className="editor-stage-settings" key="settings">
-                    <AgentConfiguration node={selectedStage} onChange={agent => (selectedStage && agent.type == 'none' ? delete selectedStage.agent : selectedStage.agent = agent) && this.pipelineUpdated()} />
-                    <EnvironmentConfiguration node={selectedStage} onChange={e => this.pipelineUpdated()} />
-                </div>
-            </Accordion>
-        </ConfigPanel>);
-
-        if (stageConfigPanel) sheets.push(stageConfigPanel);
+            sheets.push(
+                <ConfigPanel className="editor-config-panel stage" key={'stageConfig' + selectedStage.id}
+                             onClose={e => cleanPristine(selectedStage) || pipelineValidator.validate() || this.graphSelectedStageChanged(null)}
+                             title={
+                                 <div>
+                                     <input className="stage-name-edit" placeholder="Name your stage"
+                                            defaultValue={title}
+                                            onChange={e => (selectedStage.name = e.target.value) && this.pipelineUpdated()}/>
+                                     <MoreMenu>
+                                         <a onClick={e => this.deleteStageClicked(e)}>Delete</a>
+                                     </MoreMenu>
+                                     <ValidationMessageList errors={sectionErrors.stage}/>
+                                 </div>
+                             }>
+                    <Accordion show={sectionErrors.show}>
+                        {!hasChildStages &&
+                        <div title="Steps" key="steps">
+                            <EditorStepList steps={steps}
+                                            onAddStepClick={() => this.openSelectStepDialog()}
+                                            onAddChildStepClick={parent => this.openSelectStepDialog(parent)}
+                                            onStepSelected={(step) => this.selectedStepChanged(step)}/>
+                        </div>
+                        }
+                        <div title="Settings" className="editor-stage-settings" key="settings">
+                            {!hasChildStages &&
+                            <AgentConfiguration node={selectedStage}
+                                                onChange={agent => (selectedStage && agent.type == 'none' ? delete selectedStage.agent : selectedStage.agent = agent) && this.pipelineUpdated()}/>
+                            }
+                            <EnvironmentConfiguration node={selectedStage} onChange={e => this.pipelineUpdated()}/>
+                        </div>
+                    </Accordion>
+                </ConfigPanel>
+            );
+        }
 
         let parentStep = null;
         for (const step of selectedSteps) {
@@ -254,6 +321,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         return (
             <div className="editor-main" key={pipelineStore.pipeline && pipelineStore.pipeline.id}>
                 <div className="editor-main-graph" onClick={e => cleanPristine(pipelineStore.pipeline) || pipelineValidator.validate() || this.setState({selectedStage: null, selectedSteps: []})}>
+                    <ValidationMessageList errors={_getStageErrors(pipelineStore.pipeline, 'children')} />
                     {pipelineStore.pipeline &&
                     <EditorPipelineGraph stages={pipelineStore.pipeline.children}
                                          selectedStage={selectedStage}

@@ -1,0 +1,49 @@
+.more-menu {
+  .menu-dropdown {
+    position: absolute;
+    right: 0;
+    top: 100%;
+    margin-top: 7px;
+    background: #fff;
+    display: inline-block;
+    padding: 4px 0;
+    border-radius: 3px;
+    box-shadow: 0 0 6px rgba(0, 0, 0, 0.25);
+    font-size: 14px;
+    z-index: 2;
+
+    > a {
+      display: block;
+      padding: 5px 18px;
+      color: #444;
+
+      &:hover, &:focus, &:active {
+        background: @light-blue-bg;
+        text-decoration: none;
+      }
+    }
+
+    &-enter {
+      margin-top: -7px;
+      transform: scale(0);
+      opacity: 0;
+      &-active {
+        transition: all 250ms ease-in-out;
+        margin-top: 7px;
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+    &-leave {
+      margin-top: 7px;
+      opacity: 1;
+      transform: scale(1);
+      &-active {
+        transition: all 250ms ease-in-out;
+        margin-top: -7px;
+        transform: scale(0);
+        opacity: 0;
+      }
+    }
+  }
+}
