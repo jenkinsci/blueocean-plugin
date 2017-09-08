@@ -105,7 +105,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
             }, 200);
         });
     }
-    
+
     graphSelectedStageChanged(newSelectedStage:?StageInfo) {
         this.setState({
             selectedStage: newSelectedStage,
@@ -171,11 +171,11 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
 
     render() {
         const {selectedStage, selectedSteps, stepMetadata} = this.state;
-        
+
         if (!stepMetadata) {
             return null;
         }
-        
+
         const sheets = [];
         const steps = selectedStage ? selectedStage.steps : [];
 
@@ -200,10 +200,10 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         if (globalConfigPanel) sheets.push(globalConfigPanel);
 
         const stageConfigPanel = selectedStage && (<ConfigPanel className="editor-config-panel stage" key={'stageConfig'+selectedStage.id}
-            onClose={e => pipelineValidator.validate() || this.graphSelectedStageChanged(null)}
+            onClose={e => cleanPristine(selectedStage) || pipelineValidator.validate() || this.graphSelectedStageChanged(null)}
             title={
                 <div>
-                    <input className="stage-name-edit" placeholder="Name your stage" defaultValue={title} 
+                    <input className="stage-name-edit" placeholder="Name your stage" defaultValue={title}
                         onChange={e => (selectedStage.name = e.target.value) && this.pipelineUpdated()} />
                     <MoreMenu>
                         <a onClick={e => this.deleteStageClicked(e)}>Delete</a>
@@ -251,7 +251,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
 
         return (
             <div className="editor-main" key={pipelineStore.pipeline && pipelineStore.pipeline.id}>
-                <div className="editor-main-graph" onClick={e => pipelineValidator.validate() || this.setState({selectedStage: null, selectedSteps: []})}>
+                <div className="editor-main-graph" onClick={e => cleanPristine(pipelineStore.pipeline) || pipelineValidator.validate() || this.setState({selectedStage: null, selectedSteps: []})}>
                     {pipelineStore.pipeline &&
                     <EditorPipelineGraph stages={pipelineStore.pipeline.children}
                                          selectedStage={selectedStage}

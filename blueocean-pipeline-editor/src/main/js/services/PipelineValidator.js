@@ -72,7 +72,7 @@ export class PipelineValidator {
      */
     getNodeValidationErrors(node: Object, visited: any[] = []): Object[] {
         const validationErrors = node.validationErrors ? [ ...node.validationErrors ] : [];
-        
+
         // if this is a parallel, check the parent stage for errors
         const parent = pipelineStore.findParentStage(node);
         if (parent && pipelineStore.pipeline !== parent && parent.validationErrors) {
@@ -132,6 +132,11 @@ export class PipelineValidator {
                     }
                     break;
                 }
+                case 'parallel': {
+                    const idx = parseInt(path[++i]);
+                    node = node.children[idx];
+                    break;
+                }
                 case 'steps': {
                     const idx = parseInt(path[++i]);
                     if (!isNaN(idx)) { // it is actually the steps array, so just target the node
@@ -157,6 +162,7 @@ export class PipelineValidator {
         }
         if (!node) {
             if (window.isDevelopmentMode) console.error('unable to find node for', path, 'in', pipeline);
+            return pipeline;
         }
         return node;
     }
