@@ -145,7 +145,7 @@ function createNodeColumns(topLevelStages: Array<StageInfo> = []): Array<NodeCol
 /**
  * Walks the columns of nodes giving them x and y positions. Mutates the node objects in place for now.
  */
-function positionNodes(nodeColumns: Array<NodeColumn>, { nodeSpacingH, nodeSpacingV, ypStart }) {
+function positionNodes(nodeColumns: Array<NodeColumn>, { nodeSpacingH, parallelSpacingH, nodeSpacingV, ypStart }) {
 
     let xp = nodeSpacingH / 2;
     let previousTopNode = null;
@@ -176,13 +176,13 @@ function positionNodes(nodeColumns: Array<NodeColumn>, { nodeSpacingH, nodeSpaci
         for (const row of column.rows) {
 
             // Offst the beginning of narrower rows towards column center
-            xp += Math.round((widestRow - row.length) * nodeSpacingH * 0.5);
+            xp += Math.round((widestRow - row.length) * parallelSpacingH * 0.5);
 
             for (const node of row) {
                 maxX = Math.max(maxX, xp);
                 node.x = xp;
                 node.y = yp;
-                xp += nodeSpacingH; // Space out nodes in each row
+                xp += parallelSpacingH; // Space out nodes in each row
             }
             xp = xpStart; // CR
             yp += nodeSpacingV; // LF

@@ -7,6 +7,7 @@ export const MATRIOSKA_PATHS = false;
 // Dimensions used for layout, px
 export const defaultLayout = {
     nodeSpacingH: 120,
+    parallelSpacingH: 120,
     nodeSpacingV: 70,
     nodeRadius: 12,
     terminalRadius: 7,
