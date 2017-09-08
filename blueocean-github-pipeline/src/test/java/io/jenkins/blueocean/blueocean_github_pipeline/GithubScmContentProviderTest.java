@@ -377,6 +377,40 @@ public class GithubScmContentProviderTest extends GithubMockBase{
     }
 
     @Test
+    public void saveContentNewBranchToMbp() throws UnirestException, IOException {
+        String credentialId = createGithubCredential(user);
+
+        StaplerRequest staplerRequest = mockStapler();
+
+        GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n")
+                .branch("test2").message("another commit").sourceBranch("master").owner("cloudbeers").path("Jankinsfile").repo("PR-demo").sha("e23b8ef5c2c4244889bf94db6c05cc08ea138aef").build();
+
+        when(staplerRequest.bindJSON(Mockito.eq(GithubScmSaveFileRequest.class), Mockito.any(JSONObject.class))).thenReturn(new GithubScmSaveFileRequest(content));
+
+        MultiBranchProject mbp = mockMbp(credentialId, user, GithubScm.DOMAIN_NAME);
+
+        String request = "{\n" +
+                "  \"content\" : {\n" +
+                "    \"message\" : \"first commit\",\n" +
+                "    \"path\" : \"Jenkinsfile\",\n" +
+                "    \"branch\" : \"test2\",\n" +
+                "    \"sourceBranch\" : \"master\",\n" +
+                "    \"repo\" : \"PR-demo\",\n" +
+                "    \"sha\" : \"e23b8ef5c2c4244889bf94db6c05cc08ea138aef\",\n" +
+                "    \"base64Data\" : "+"\"c2xlZXAgMTUKbm9kZSB7CiAgY2hlY2tvdXQgc2NtCiAgc2ggJ2xzIC1sJwp9\\nCnNsZWVwIDE1Cg==\\n\""+
+                "  }\n" +
+                "}";
+
+        when(staplerRequest.getReader()).thenReturn(new BufferedReader(new StringReader(request), request.length()));
+
+        GithubFile file = (GithubFile) new GithubScmContentProvider().saveContent(staplerRequest, mbp);
+        assertEquals("Jenkinsfile", file.getContent().getName());
+        assertEquals("e23b8ef5c2c4244889bf94db6c05cc08ea138aef", file.getContent().getSha());
+        assertEquals("PR-demo", file.getContent().getRepo());
+        assertEquals("cloudbeers", file.getContent().getOwner());
+    }
+
+    @Test
     public void saveContentToMbpGHE() throws UnirestException, IOException {
         String credentialId = createGithubEnterpriseCredential();
 
