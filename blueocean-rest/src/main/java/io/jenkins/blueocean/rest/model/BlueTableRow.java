@@ -4,13 +4,16 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 /**
- * A row of data which adds one or more data properties.
+ * @author cliffmeyers
  */
 @ExportedBean(defaultVisibility = 2)
 public abstract class BlueTableRow {
+
+    public static final String ID = "id";
+
     /**
      * @return unique identifier for the row, frequently a run's ID.
      */
-    @Exported(name = "id")
+    @Exported(name = ID)
     public abstract String getId();
 }

@@ -34,7 +34,11 @@ public class StageDurationTrendApiTest extends PipelineBaseTest {
             .build(Map.class);
 
         Assert.assertNotNull(response);
-        List rows = (List) response.get("rows");
+
+        List rows = new RequestBuilder(baseUrl)
+            .get("/organizations/jenkins/pipelines/"+p.getName()+"/trends/stageDuration/rows/")
+            .build(List.class);
+
         Assert.assertNotNull(rows);
         Assert.assertEquals(1, rows.size());
         Map stagesRow = (Map) rows.get(0);

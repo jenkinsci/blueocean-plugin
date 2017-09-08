@@ -1,6 +1,10 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.rest.Navigable;
+import io.jenkins.blueocean.rest.pageable.Pageable;
 import org.kohsuke.stapler.export.Exported;
+
+import java.util.Map;
 
 /**
  * A category of tabular data, typically one that changes over time (e.g. across successive runs)
@@ -11,7 +15,7 @@ import org.kohsuke.stapler.export.Exported;
  *
  * @author cliffmeyers
  */
-public abstract class BlueTrend extends Resource {
+public abstract class BlueTrend extends Resource implements BlueTable {
 
     public static final String ID = "id";
 
@@ -21,9 +25,10 @@ public abstract class BlueTrend extends Resource {
     @Exported(name = ID)
     public abstract String getId();
 
-    /**
-     * @return raw data in "table" format
-     */
-    @Exported(merge = true)
-    public abstract BlueTable getTable();
+    @Exported(name = COLUMNS, inline = true)
+    public abstract Map<String, String> getColumns();
+
+    @Navigable
+    public abstract Pageable<BlueTableRow> getRows();
+
 }

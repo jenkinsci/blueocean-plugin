@@ -3,19 +3,21 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import hudson.Extension;
 import io.jenkins.blueocean.rest.factory.BlueTrendFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BlueRun;
-import io.jenkins.blueocean.rest.model.BlueTable;
 import io.jenkins.blueocean.rest.model.BlueTableRow;
 import io.jenkins.blueocean.rest.model.BlueTrend;
+import io.jenkins.blueocean.rest.model.Container;
 import org.kohsuke.stapler.export.CustomExportedBean;
+import org.kohsuke.stapler.export.Exported;
+import org.kohsuke.stapler.export.ExportedBean;
 
-import java.util.List;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 /**
@@ -37,8 +39,8 @@ public class StageDurationTrend extends BlueTrend {
     }
 
     @Override
-    public BlueTable getTable() {
-        return new StageRuntimeTable(pipeline);
+    public Map<String, String> getColumns() {
+        return ImmutableMap.of();
     }
 
     @Override
@@ -46,34 +48,39 @@ public class StageDurationTrend extends BlueTrend {
         return parent.rel(getId());
     }
 
-    public static class StageRuntimeTable extends BlueTable {
-        private final PipelineImpl pipeline;
+    @Override
+    public Container<BlueTableRow> getRows() {
+        final Iterator<BlueRun> runs = pipeline.getRuns().iterator();
 
-        public StageRuntimeTable(PipelineImpl pipeline) {
-            this.pipeline = pipeline;
-        }
+        return new Container<BlueTableRow>() {
+            @Override
+            public Link getLink() {
+                return parent.rel("rows");
+            }
 
-        @Override
-        public Map<String, String> getColumns() {
-            return ImmutableMap.of();
-        }
+            @Override
+            public BlueTableRow get(String name) {
+                return null;
+            }
 
-        @Override
-        public List<BlueTableRow> getRows() {
-            return Lists.newArrayList(Iterators.transform(pipeline.getRuns().iterator(0, 100), new Function<BlueRun, BlueTableRow>() {
-                @Override
-                public BlueTableRow apply(BlueRun input) {
-                    return new RowImpl(input);
-                }
-            }));
-        }
+            @Override
+            public Iterator<BlueTableRow> iterator() {
+                return Iterators.transform(runs, new Function<BlueRun, BlueTableRow>() {
+                    @Override
+                    public BlueTableRow apply(BlueRun run) {
+                        return new StageDurationTrendRow(run);
+                    }
+                });
+            }
+        };
     }
 
-    public static class RowImpl extends BlueTableRow implements CustomExportedBean {
+    @ExportedBean(defaultVisibility = 1000)
+    public static class StageDurationTrendRow extends BlueTableRow {
 
         private final BlueRun run;
 
-        public RowImpl(BlueRun run) {
+        public StageDurationTrendRow(BlueRun run) {
             this.run = run;
         }
 
@@ -82,10 +89,36 @@ public class StageDurationTrend extends BlueTrend {
             return run.getId();
         }
 
+        @Exported
+        public NodeMap getNodes() {
+            return new NodeMap(run);
+        }
+
+        /*
         @Override
         public Object toExportedObject() {
             ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
             builder.put("id", getId());
+            for (BluePipelineNode node : run.getNodes()) {
+                builder.put(node.getDisplayName(), node.getDurationInMillis());
+            }
+            return builder.build();
+        }
+        */
+    }
+
+    @ExportedBean(defaultVisibility = 1000)
+    public static class NodeMap implements CustomExportedBean {
+
+        private final BlueRun run;
+
+        public NodeMap(BlueRun run) {
+            this.run = run;
+        }
+
+        @Override
+        public Object toExportedObject() {
+            ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
             for (BluePipelineNode node : run.getNodes()) {
                 builder.put(node.getDisplayName(), node.getDurationInMillis());
             }

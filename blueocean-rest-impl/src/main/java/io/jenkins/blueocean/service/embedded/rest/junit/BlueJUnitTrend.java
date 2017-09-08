@@ -3,22 +3,20 @@ package io.jenkins.blueocean.service.embedded.rest.junit;
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Iterators;
-import com.google.common.collect.Lists;
 import hudson.Extension;
 import io.jenkins.blueocean.rest.factory.BlueTrendFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueRun;
-import io.jenkins.blueocean.rest.model.BlueTable;
 import io.jenkins.blueocean.rest.model.BlueTableRow;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.BlueTrend;
+import io.jenkins.blueocean.rest.model.Container;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.export.Exported;
 
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
 @Restricted(NoExternalUse.class)
@@ -35,6 +33,16 @@ public class BlueJUnitTrend extends BlueTrend {
     private final BluePipeline pipeline;
     private final Link parent;
 
+    private static final Map<String, String> COLUMNS = ImmutableMap.<String, String> builder()
+        .put(TOTAL, "Total")
+        .put(PASSED, "Passed")
+        .put(FIXED, "Fixed")
+        .put(FAILED, "Failed")
+        .put(EXISTING_FAILED, "Existing Failed")
+        .put(REGRESSIONS, "Regressions")
+        .put(SKIPPED, "Skipped")
+        .build();
+
     public BlueJUnitTrend(BluePipeline pipeline, Link parent) {
         this.pipeline = pipeline;
         this.parent = parent;
@@ -46,10 +54,48 @@ public class BlueJUnitTrend extends BlueTrend {
     }
 
     @Override
-    public BlueTable getTable() {
-        // TODO: make this understand query params for paging, date ranges, etc
-        Iterator<BlueRun> iterator = pipeline.getRuns().iterator(0, 101);
-        return new JUnitHistoryTable(iterator);
+    @Exported
+    public Map<String, String> getColumns() {
+        return COLUMNS;
+    }
+
+    @Override
+    public Container<BlueTableRow> getRows() {
+        final Iterator<BlueRun> runs = pipeline.getRuns().iterator();
+
+        return new Container<BlueTableRow>() {
+            @Override
+            public Link getLink() {
+                return parent.rel("rows");
+            }
+
+            @Override
+            public BlueTableRow get(String name) {
+                return null;
+            }
+
+            @Override
+            public Iterator<BlueTableRow> iterator(int start, int limit) {
+                Iterators.skip(runs, start);
+                Iterator<BlueRun> iterator = Iterators.limit(runs, limit);
+                return Iterators.transform(iterator, new Function<BlueRun, BlueTableRow>() {
+                    @Override
+                    public BlueTableRow apply(BlueRun run) {
+                        return new BlueJUnitTrendRow(run.getTestSummary(), run.getId());
+                    }
+                });
+            }
+
+            @Override
+            public Iterator<BlueTableRow> iterator() {
+                return Iterators.transform(runs, new Function<BlueRun, BlueTableRow>() {
+                    @Override
+                    public BlueTableRow apply(BlueRun run) {
+                        return new BlueJUnitTrendRow(run.getTestSummary(), run.getId());
+                    }
+                });
+            }
+        };
     }
 
     @Override
@@ -57,45 +103,12 @@ public class BlueJUnitTrend extends BlueTrend {
         return parent.rel(getId());
     }
 
-    public static class JUnitHistoryTable extends BlueTable {
 
-        private static final Map<String, String> COLUMNS = ImmutableMap.<String, String> builder()
-            .put(TOTAL, "Total")
-            .put(PASSED, "Passed")
-            .put(FIXED, "Fixed")
-            .put(FAILED, "Failed")
-            .put(EXISTING_FAILED, "Existing Failed")
-            .put(REGRESSIONS, "Regressions")
-            .put(SKIPPED, "Skipped")
-            .build();
-
-        private final Iterator<BlueRun> runs;
-
-        public JUnitHistoryTable(Iterator<BlueRun> runs) {
-            this.runs = runs;
-        }
-
-        @Override
-        public Map<String, String> getColumns() {
-            return COLUMNS;
-        }
-
-        @Override
-        public List<BlueTableRow> getRows() {
-            return Lists.newArrayList(Iterators.transform(runs, new Function<BlueRun, BlueTableRow>() {
-                @Override
-                public BlueTableRow apply(BlueRun run) {
-                    return new RowImpl(run.getTestSummary(), run.getId());
-                }
-            }));
-        }
-    }
-
-    public static class RowImpl extends BlueTableRow {
+    public static class BlueJUnitTrendRow extends BlueTableRow {
         private final String id;
         private final BlueTestSummary summary;
 
-        RowImpl(BlueTestSummary summary, String id) {
+        BlueJUnitTrendRow(BlueTestSummary summary, String id) {
             this.id = id;
             this.summary = summary;
         }
