@@ -387,7 +387,9 @@ public class GithubScmContentProviderTest extends GithubMockBase{
 
         when(staplerRequest.bindJSON(Mockito.eq(GithubScmSaveFileRequest.class), Mockito.any(JSONObject.class))).thenReturn(new GithubScmSaveFileRequest(content));
 
-        MultiBranchProject mbp = mockMbp(credentialId, user, GithubScm.DOMAIN_NAME);
+        OrganizationFolder orgFolder = mockOrgFolder(user, credentialId);
+
+        MultiBranchProject mbp = mockMbp(orgFolder, credentialId);
 
         String request = "{\n" +
                 "  \"content\" : {\n" +
