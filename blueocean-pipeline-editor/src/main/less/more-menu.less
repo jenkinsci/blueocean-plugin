@@ -3,7 +3,7 @@
     position: absolute;
     right: 0;
     top: 100%;
-    margin-top: 7px;
+    margin-top: 0;
     background: #fff;
     display: inline-block;
     padding: 4px 0;
@@ -24,23 +24,23 @@
     }
 
     &-enter {
-      margin-top: -7px;
+      margin-top: -14px;
       transform: scale(0);
       opacity: 0;
       &-active {
-        transition: all 250ms ease-in-out;
-        margin-top: 7px;
+        transition: all 100ms ease-in-out;
+        margin-top: 0;
         transform: scale(1);
         opacity: 1;
       }
     }
     &-leave {
-      margin-top: 7px;
+      margin-top: 0;
       opacity: 1;
       transform: scale(1);
       &-active {
-        transition: all 250ms ease-in-out;
-        margin-top: -7px;
+        transition: all 100ms ease-in-out;
+        margin-top: -14px;
         transform: scale(0);
         opacity: 0;
       }

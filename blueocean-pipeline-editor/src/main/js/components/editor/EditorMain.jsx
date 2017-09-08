@@ -1,6 +1,6 @@
 // @flow
 
-import React, { Component, PropTypes } from 'react';
+import React, { Component } from 'react';
 import { EditorPipelineGraph } from './EditorPipelineGraph';
 import { EditorStepList } from './EditorStepList';
 import { EditorStepDetails } from './EditorStepDetails';
@@ -17,6 +17,7 @@ import pipelineValidator from '../../services/PipelineValidator';
 import { ValidationMessageList } from './ValidationMessageList';
 import focusOnElement from './focusOnElement';
 import debounce from 'lodash.debounce';
+import { Dialog, TextInput, FormElement } from '@jenkins-cd/design-language';
 
 type Props = {
 };
@@ -27,6 +28,7 @@ type State = {
     showSelectStep: ?boolean,
     parentStep: ?StepInfo,
     stepMetadata: ?Object,
+    dialog: any,
 };
 
 type DefaultProps = typeof EditorMain.defaultProps;
@@ -142,10 +144,40 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         }
     }
 
-    createStage(parentStage:StageInfo) {
+    promptForParallelName(parentStage:StageInfo) {
+        let val = '';
+        const createStage = () => {
+            this.setState({ dialog: null }, () => this.createStage(parentStage, val));
+        };
+        this.setState({ dialog: (
+            <Dialog className="name-new-parallel" onDismiss={() => this.setState({dialog: null})}
+                    title="Name Parallel Group"
+                    buttons={<div><button onClick={() => createStage()}>Create</button></div>}>
+                <FormElement title="Group Name">
+                    <TextInput isRequired={true}
+                               defaultValue={val}
+                               onChange={v => val = v}
+                               onEnterPressed={() => createStage()}/>
+                </FormElement>
+            </Dialog>
+        )}, () => document.querySelector('.name-new-parallel input').focus());
+    }
+
+    createStage(parentStage:StageInfo, parallelGroupName:string) {
+        if (parentStage && !parallelGroupName) {
+            if (!parentStage.children || !parentStage.children.length) {
+                this.promptForParallelName(parentStage);
+                return;
+            }
+        }
         const newStage = parentStage
             ? pipelineStore.createParallelStage('', parentStage)
             : pipelineStore.createSequentialStage('');
+
+        if (parallelGroupName) {
+            parentStage.name = parallelGroupName;
+        }
+
         this.setState({
             selectedStage: newStage,
             selectedSteps: [],
@@ -332,6 +364,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                 <Sheets>
                 {sheets}
                 </Sheets>
+                {this.state.dialog}
             </div>
         );
     }

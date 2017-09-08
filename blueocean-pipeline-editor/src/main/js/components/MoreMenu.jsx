@@ -2,8 +2,6 @@ import React from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Icon } from '@jenkins-cd/design-language';
 
-const transitionDuration = 100;
-
 export class MoreMenu extends React.Component {
     constructor() {
         super();
@@ -58,10 +56,10 @@ export class MoreMenu extends React.Component {
                 </span>
                 <ReactCSSTransitionGroup
                     transitionName="menu-dropdown"
-                    transitionAppear
-                    transitionAppearTimeout={transitionDuration}
-                    transitionEnterTimeout={transitionDuration}
-                    transitionLeaveTimeout={transitionDuration}
+                    transitionEnter
+                    transitionLeave
+                    transitionEnterTimeout={100}
+                    transitionLeaveTimeout={100}
                 >
                     {children}
                 </ReactCSSTransitionGroup>

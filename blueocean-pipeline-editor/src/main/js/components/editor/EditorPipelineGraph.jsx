@@ -396,8 +396,8 @@ needsLayout = true;
         if (isTopLevelParallel) {
             classNames.push('top-level-parallel');
             // add a top-level parallel config icon
-            inner.push(<Icon icon="NavigationMoreHoriz" size={24} className="stage-parallel-edit" />);
-            inner.push(<Icon icon="NavigationMoreHoriz" size={24} className="stage-parallel-edit" />);
+            inner.push(<Icon icon="NavigationMoreHoriz" size={24} />);
+            inner.push(<Icon icon="NavigationMoreHoriz" size={24} />);
         }
         // add an alert if the stage has errors
         if (stageHasDirectErrors(stage)) {

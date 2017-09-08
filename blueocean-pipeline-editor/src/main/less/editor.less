@@ -229,10 +229,6 @@
         stroke: #eae9e9;
     }
 
-    .pipeline-big-label.errors, .pipeline-small-label.errors {
-        color: @error-highlight;
-    }
-
     .pipeline-big-label {
         position: absolute;
         display: block;
@@ -249,21 +245,21 @@
         cursor: pointer;
 
         &.top-level-parallel {
-            svg.stage-parallel-edit {
+            svg {
                 fill: #4a90e2 !important;
                 position: absolute;
                 top: 0;
                 left: 50%;
                 margin-left: -12px;
 
-                + svg.stage-parallel-edit {
+                + svg {
                     top: 6px;
                 }
             }
             &:hover {
                 color: #000;
 
-                svg.stage-parallel-edit {
+                svg {
                     fill: darken(#4a90e2, 20%) !important;
                 }
             }
@@ -715,6 +711,13 @@
         vertical-align: middle;
         line-height: 17px;
         font-weight: bold;
+    }
+
+    .name-new-parallel.Dialog {
+        .TextInput {
+            display: block;
+            width: 100%;
+        }
     }
 
     // collapse-height-enter collapse-height-enter-active

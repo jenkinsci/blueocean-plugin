@@ -93,6 +93,10 @@ function _addClientSideErrors(metadata, node) {
             //node.steps.validationErrors = [ 'At least one step is required' ];
             node.validationErrors = [ 'At least one step is required' ];
         }
+        if (node === pipelineStore.pipeline) {
+            // override default message
+            node.validationErrors = [ 'A stage is required' ];
+        }
     } else {
         node.children.map(child => _addClientSideErrors(metadata, child));
     }
