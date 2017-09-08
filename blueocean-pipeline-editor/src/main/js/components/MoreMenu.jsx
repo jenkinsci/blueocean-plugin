@@ -54,7 +54,7 @@ export class MoreMenu extends React.Component {
         return (
             <div className="more-menu" ref={container => { this.container = container; }}>
                 <span onClick={e => this.state.showDropDown ? this.closePopover() : this.openPopover()}>
-                    <Icon icon="NavigationMoreHoriz" size={22} color="#4A90E2" />
+                    <Icon icon="NavigationMoreHoriz" size={22} />
                 </span>
                 <ReactCSSTransitionGroup
                     transitionName="menu-dropdown"

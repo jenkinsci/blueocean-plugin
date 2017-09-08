@@ -160,7 +160,7 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
             {this.renderSteps(steps, parent)}
             <div className="editor-button-bar">
                 <button className="btn-primary add" onClick={(e) => this.addStepClicked(e)}>
-                    <Icon icon="ContentAdd" color="#ffffff" size={20} />
+                    <Icon icon="ContentAdd" size={20} />
                     Add step
                 </button>
             </div>
