@@ -154,7 +154,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                     title="Name Parallel Group"
                     buttons={<div><button onClick={() => createStage()}>Create</button></div>}>
                 <FormElement title="Group Name">
-                    <TextInput isRequired={true}
+                    <TextInput isRequired
                                defaultValue={val}
                                onChange={v => val = v}
                                onEnterPressed={() => createStage()}/>
