@@ -7,11 +7,12 @@ export class Accordion extends React.Component {
     };
     constructor(props) {
         super(props);
-        this.state = { selected: undefined };
+        this.state = { selected: props.show && '.$' + props.show };
     }
     render() {
         const children = React.Children.toArray(this.props.children);
-        const { selected = (this.props.show && '.$' + this.props.show)|| children[0].key } = this.state;
+        let { selected } = this.state;
+        if (!selected) selected = children && children[0].key;
         return (<div className="Accordion">
              {children.map(child => [
                 <h4 className={`Label ${selected === child.key && 'active'}`}

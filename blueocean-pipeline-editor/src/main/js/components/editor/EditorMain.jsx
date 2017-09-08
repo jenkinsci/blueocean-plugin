@@ -303,7 +303,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                                      <ValidationMessageList errors={sectionErrors.stage}/>
                                  </div>
                              }>
-                    <Accordion show={sectionErrors.show}>
+                    <Accordion show={sectionErrors.show} key={'stageSections' + selectedStage.id}>
                         {!hasChildStages &&
                         <div title="Steps" key="steps">
                             <EditorStepList steps={steps}
