@@ -78,5 +78,14 @@
   "_links": {
     "self": "https://api.github.com/repos/cloudbeers/PR-demo/branches/master",
     "html": "https://github.com/cloudbeers/PR-demo/tree/master"
-  }
+  },
+  "protected": false,
+  "protection": {
+    "enabled": false,
+    "required_status_checks": {
+      "enforcement_level": "off",
+      "contexts": []
+    }
+  },
+  "protection_url": "https://api.github.com/repos/cloudbeers/PR-demo/branches/master/protection"
 }
