@@ -18,37 +18,37 @@ function sortRowsById(row1, row2) {
     return parseInt(row1.id) - parseInt(row2.id);
 }
 
-function createChartData(trend) {
-    if (!trend || !trend.rows) {
+function createChartData(rows) {
+    if (!rows) {
         return [];
     }
 
-    const rows = trend.rows.map(row => {
+    const mappedRows = rows.map(row => {
         const transformed = {
             id: row.id,
         };
 
-        for (const prop of Object.keys(row)) {
+        for (const prop of Object.keys(row.nodes)) {
             if (prop !== 'id') {
-                transformed[prop] = Math.round(parseInt(row[prop]) / 1000);
+                transformed[prop] = Math.round(parseInt(row.nodes[prop]) / 1000);
             }
         }
 
         return transformed;
     });
 
-    return rows.sort(sortRowsById);
+    return mappedRows.sort(sortRowsById);
 }
 
-function createChartSeries(trend) {
-    if (!trend || !trend.rows) {
+function createChartSeries(trend, rows) {
+    if (!trend || !rows) {
         return [];
     }
 
     const columns = [];
 
-    trend.rows.forEach(row => {
-        for (const prop of Object.keys(row)) {
+    rows.forEach(row => {
+        for (const prop of Object.keys(row.nodes)) {
             if (prop !== 'id' && columns.indexOf(prop) === -1) {
                 columns.push(prop);
             }
@@ -74,9 +74,8 @@ function createChartSeries(trend) {
 
 class StageDurationChart extends React.Component {
     render() {
-        const { trend } = this.props;
-        const rows = createChartData(trend);
-        const series = createChartSeries(trend);
+        const rows = createChartData(this.props.rows);
+        const series = createChartSeries(this.props.trend, this.props.rows);
 
         return (
             <AreaChart width={375} height={375} data={rows}>
@@ -93,6 +92,7 @@ class StageDurationChart extends React.Component {
 
 StageDurationChart.propTypes = {
     trend: PropTypes.object,
+    rows: PropTypes.object,
 };
 
 
