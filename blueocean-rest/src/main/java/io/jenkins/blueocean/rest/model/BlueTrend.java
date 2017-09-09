@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.rest.Navigable;
-import io.jenkins.blueocean.rest.pageable.Pageable;
 import org.kohsuke.stapler.export.Exported;
 
 import java.util.Map;
@@ -29,6 +28,6 @@ public abstract class BlueTrend extends Resource implements BlueTable {
     public abstract Map<String, String> getColumns();
 
     @Navigable
-    public abstract Pageable<BlueTableRow> getRows();
+    public abstract Container<BlueTableRow> getRows();
 
 }

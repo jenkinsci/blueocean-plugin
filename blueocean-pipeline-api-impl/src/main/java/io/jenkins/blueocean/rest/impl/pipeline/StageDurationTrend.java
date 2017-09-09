@@ -12,11 +12,9 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTableRow;
 import io.jenkins.blueocean.rest.model.BlueTrend;
 import io.jenkins.blueocean.rest.model.Container;
-import org.kohsuke.stapler.export.CustomExportedBean;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 
@@ -78,6 +76,8 @@ public class StageDurationTrend extends BlueTrend {
     @ExportedBean(defaultVisibility = 1000)
     public static class StageDurationTrendRow extends BlueTableRow {
 
+        static final String NODES = "nodes";
+
         private final BlueRun run;
 
         public StageDurationTrendRow(BlueRun run) {
@@ -89,12 +89,19 @@ public class StageDurationTrend extends BlueTrend {
             return run.getId();
         }
 
-        @Exported
-        public NodeMap getNodes() {
-            return new NodeMap(run);
+        // TODO: doesn't work, node properties are omitted
+        // @Exported(merge = true)
+        @Exported(name = NODES)
+        public Map getNodes() {
+            ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
+            for (BluePipelineNode node : run.getNodes()) {
+                builder.put(node.getDisplayName(), node.getDurationInMillis());
+            }
+            return builder.build();
         }
 
         /*
+        TODO: doesn't work, method is never called
         @Override
         public Object toExportedObject() {
             ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
@@ -105,25 +112,6 @@ public class StageDurationTrend extends BlueTrend {
             return builder.build();
         }
         */
-    }
-
-    @ExportedBean(defaultVisibility = 1000)
-    public static class NodeMap implements CustomExportedBean {
-
-        private final BlueRun run;
-
-        public NodeMap(BlueRun run) {
-            this.run = run;
-        }
-
-        @Override
-        public Object toExportedObject() {
-            ImmutableMap.Builder<String, Object> builder = ImmutableMap.builder();
-            for (BluePipelineNode node : run.getNodes()) {
-                builder.put(node.getDisplayName(), node.getDurationInMillis());
-            }
-            return builder.build();
-        }
     }
 
     @Extension

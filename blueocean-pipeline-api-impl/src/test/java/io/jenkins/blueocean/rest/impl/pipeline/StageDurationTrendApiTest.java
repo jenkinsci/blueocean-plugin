@@ -12,6 +12,8 @@ import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
+import static io.jenkins.blueocean.rest.impl.pipeline.StageDurationTrend.StageDurationTrendRow.NODES;
+
 /**
  * @author cliffmeyers
  */
@@ -41,9 +43,11 @@ public class StageDurationTrendApiTest extends PipelineBaseTest {
 
         Assert.assertNotNull(rows);
         Assert.assertEquals(1, rows.size());
-        Map stagesRow = (Map) rows.get(0);
-        Assert.assertNotNull(stagesRow.get("first"));
-        Assert.assertNotNull(stagesRow.get("second"));
-        Assert.assertNotNull(stagesRow.get("third"));
+
+        Map stageRow = (Map) rows.get(0);
+        Map nodes = (Map) stageRow.get(NODES);
+        Assert.assertNotNull(nodes.get("first"));
+        Assert.assertNotNull(nodes.get("second"));
+        Assert.assertNotNull(nodes.get("third"));
     }
 }
