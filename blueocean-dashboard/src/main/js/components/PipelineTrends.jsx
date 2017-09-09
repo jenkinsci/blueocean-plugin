@@ -23,15 +23,15 @@ function sortRowsById(row1, row2) {
     return parseInt(row1.id) - parseInt(row2.id);
 }
 
-function createChartData(trend) {
-    if (!trend || !trend.rows) {
+function createChartData(rows) {
+    if (!rows) {
         return [];
     }
 
-    return trend.rows.sort(sortRowsById);
+    return rows.sort(sortRowsById);
 }
 
-function createChartSeries(trend) {
+function createChartSeries(trend, rows) {
     if (!trend) {
         return [];
     }
@@ -42,8 +42,8 @@ function createChartSeries(trend) {
         columns = Object.keys(trend.columns);
     }
 
-    if (!columns.length && trend.rows) {
-        trend.rows.forEach(row => {
+    if (!columns.length && rows) {
+        rows.forEach(row => {
             for (const prop of Object.keys(row)) {
                 if (prop !== 'id' && columns.indexOf(prop) === -1) {
                     columns.push(prop);
@@ -69,12 +69,11 @@ function createChartSeries(trend) {
 }
 
 function DefaultChart(props) {
-    const { trend } = props;
-    const series = createChartSeries(trend);
-    const rows = createChartData(trend);
+    const series = createChartSeries(props.trend, props.rows);
+    const data = createChartData(props.rows);
 
     return (
-        <LineChart width={375} height={375} data={rows}>
+        <LineChart width={375} height={375} data={data}>
             <CartesianGrid strokeDasharray="3 3" />
             <XAxis dataKey="id" />
             <YAxis />
@@ -87,6 +86,7 @@ function DefaultChart(props) {
 
 DefaultChart.propTypes = {
     trend: PropTypes.object,
+    rows: PropTypes.object,
 };
 
 
@@ -105,6 +105,7 @@ export class PipelineTrends extends Component {
 
     @observable extensions = asFlat({});
     @observable trends = [];
+    rowsMap = {};
 
     fetchTrendsData(theProps) {
         const { pipeline } = theProps;
@@ -134,6 +135,26 @@ export class PipelineTrends extends Component {
         });
 
         this.trends = trends;
+
+        const rowsMap = {};
+
+        for (const trend of trends) {
+            const rowsUrl = trend._links && trend._links.rows && trend._links.rows.href;
+
+            if (rowsUrl) {
+                Fetch.fetchJSON(rowsUrl)
+                    .then(rows => this._updateTrendRows(trend, rows));
+            }
+
+            rowsMap[trend.id] = [];
+        }
+
+        this.rowsMap = observable(rowsMap);
+    }
+
+    @action
+    _updateTrendRows(trend, rows) {
+        this.rowsMap[trend.id] = rows;
     }
 
     _branchFromProps(props) {
@@ -173,15 +194,6 @@ export class PipelineTrends extends Component {
             );
         }
 
-        /*
-        for testing layout of many trend charts
-        if (this.trends && this.trends.length) {
-            for (let index = 0; index < 5; index++) {
-                trends.push(this.trends[0]);
-            }
-        }
-        */
-
         return (
             <div className="trends-view">
                 <div className="trends-branch-filter">
@@ -191,17 +203,23 @@ export class PipelineTrends extends Component {
                 <div className="trends-table">
                 { trends.map(trend => {
                     const CustomComponent = this.extensions[trend.id];
+                    const rows = this.rowsMap[trend.id];
+
+                    if (!rows || !rows.length) {
+                        // forces a full re-render of the chart when branch is changed, for animations
+                        return null;
+                    }
 
                     let chart = null;
 
                     if (CustomComponent) {
                         chart = (
                             <Extensions.SandboxedComponent>
-                                <CustomComponent trend={trend} />
+                                <CustomComponent trend={trend} rows={rows.slice()} />
                             </Extensions.SandboxedComponent>
                         );
                     } else {
-                        chart = <DefaultChart trend={trend} />;
+                        chart = <DefaultChart trend={trend} rows={rows.slice()} />;
                     }
 
                     return (
