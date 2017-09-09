@@ -1,5 +1,7 @@
 import { Route, Redirect, IndexRedirect } from 'react-router';
 import React from 'react';
+import { AppConfig } from '@jenkins-cd/blueocean-core-js';
+
 import Dashboard from './Dashboard';
 import {
     Pipelines,
@@ -114,6 +116,8 @@ function onLeaveCheckBackground() {
     persistBackgroundOnNavigationChange({ params: { runId: true } }, { params: {} }, null, null, 0);
 }
 
+const trends = AppConfig.isFeatureEnabled('trends');
+
 export default (
     <Route component={Dashboard} onChange={persistBackgroundOnNavigationChange}>
         <Route path="organizations/:organization/pipelines" component={Pipelines} />
@@ -123,7 +127,7 @@ export default (
             <Route path=":pipeline/branches" component={MultiBranch} />
             <Route path=":pipeline/activity" component={Activity} />
             <Route path=":pipeline/pr" component={PullRequests} />
-            <Route path=":pipeline/trends" component={PipelineTrends} />
+            { trends && <Route path=":pipeline/trends" component={PipelineTrends} /> }
 
             <Route path=":pipeline/detail/:branch/:runId" component={RunDetails} onLeave={onLeaveCheckBackground}>
                 <IndexRedirect to="pipeline" />
