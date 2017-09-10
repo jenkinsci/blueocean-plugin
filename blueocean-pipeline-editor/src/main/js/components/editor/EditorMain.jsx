@@ -262,7 +262,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
             sectionErrors.show = sectionErrors.steps ? 'steps' : (sectionErrors.settings ? 'settings' : null);
 
             sheets.push(
-                <ConfigPanel className="editor-config-panel stage" key={'stageConfig' + selectedStage.id}
+                <ConfigPanel className="editor-config-panel stage" key={'stageConfig' + selectedStage.id} // need to drop & re-render sheets when stages change
                              onClose={e => cleanPristine(selectedStage) || pipelineValidator.validate() || this.graphSelectedStageChanged(null)}
                              title={
                                  <div>

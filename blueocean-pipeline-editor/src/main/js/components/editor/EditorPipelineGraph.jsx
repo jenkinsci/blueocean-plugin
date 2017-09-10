@@ -8,6 +8,8 @@ import pipelineValidator from '../../services/PipelineValidator';
 import { Icon } from '@jenkins-cd/design-language';
 import AlertIcon from './AlertIcon';
 
+const NBSP = '\u00a0';
+
 // Dimensions used for layout, px
 export const defaultLayout = {
     nodeSpacingH: 120,
@@ -409,7 +411,7 @@ needsLayout = true;
         return (
             <div className={classNames.join(" ")} style={style} key={key}
                  onClick={e => this.nodeClicked({ isPlaceholder: false, stage }, e)}>
-                {details.text || '\u00a0'}
+                {details.text || NBSP}
                 {inner}
             </div>
         );

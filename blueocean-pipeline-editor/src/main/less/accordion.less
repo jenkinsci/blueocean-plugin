@@ -28,13 +28,7 @@
   @transition-time: 0.4s;
 
   display: flex;
-  -webkit-flex-direction: column;
-  -moz-flex-direction: column;
-  -ms-flex-direction: column;
   flex-direction: column;
-  -webkit-flex-flow: column;
-  -moz-flex-flow: column;
-  -ms-flex-flow: column;
   flex-flow: column;
 
   .Label {
@@ -75,14 +69,7 @@
 
   .Content {
     position: relative;
-    -webkit-flex: 0;
-    -moz-flex: 0;
-    -ms-flex: 0;
     flex: 0;
-    -webkit-transition: all @transition-time ease-in-out;
-    -moz-transition: all @transition-time ease-in-out;
-    -ms-transition: all @transition-time ease-in-out;
-    -o-transition: all @transition-time ease-in-out;
     transition: all @transition-time ease-in-out;
     height: 0;
     width: 100%;
@@ -91,9 +78,6 @@
   }
 
   .Label.active + .Content {
-    -webkit-flex: 1;
-    -moz-flex: 1;
-    -ms-flex: 1;
     flex: 1;
     height: auto;
     max-height: 100%;
