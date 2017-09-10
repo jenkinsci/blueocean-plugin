@@ -173,7 +173,6 @@ public class UserImpl extends BlueUser {
      * Gets or creates the user's private Jenkins-managed key and returns the
      * public key to the user
      * @return JSON response
-     * @throws IOException
      */
     @GET
     @WebMethod(name="publickey")
@@ -196,7 +195,6 @@ public class UserImpl extends BlueUser {
     /**
      * Deletes the user's private Jenkins-managed key
      * @return
-     * @throws IOException
      */
     @DELETE
     @WebMethod(name="publickey")
