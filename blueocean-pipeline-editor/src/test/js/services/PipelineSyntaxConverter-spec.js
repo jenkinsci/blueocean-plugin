@@ -12,7 +12,7 @@ describe('Pipeline Syntax Converter', () => {
     after(() => {
         delete pipelineMetadataService.stepData;
     });
-    
+
     it('converts from JSON: agent any', () => {
         const p = {
             "pipeline": {
@@ -41,7 +41,7 @@ describe('Pipeline Syntax Converter', () => {
         const internal = convertJsonToInternalModel(p);
         assert(internal.agent[0].key == 'docker', "Wrong agent");
     });
-    
+
     it('converts from JSON: single stage', () => {
         const p = {"pipeline": {
             "stages": [  {
@@ -104,7 +104,7 @@ describe('Pipeline Syntax Converter', () => {
         assert(internal.children[0].children[0].name == 'branch 1', "Wrong stage name");
         assert(internal.children[0].children[1].name == 'branch 2', "Wrong stage name");
     });
-    
+
     it('converts from JSON: named parameter values properly', () => {
         const p = {"pipeline": {
             "stages": [  {
@@ -141,7 +141,7 @@ describe('Pipeline Syntax Converter', () => {
         assert(batStep.data.script == 'someBatScript', "Named arguments not properly handled");
         assert(batStep.data.returnStdout == true, "Named arguments not properly handled");
     });
-    
+
     it('converts from JSON: unnamed parameter values properly', () => {
         const p = {"pipeline": {
             "stages": [  {
@@ -177,7 +177,7 @@ describe('Pipeline Syntax Converter', () => {
                     "name": "timeout","arguments": [
                         {"key": "time","value": {"isLiteral": true,"value": 5}},
                         {"key": "unit","value": {"isLiteral": true,"value": "SECONDS"}}],
-                        "children": [{"name": "echo","arguments": 
+                        "children": [{"name": "echo","arguments":
                         {"isLiteral": true,"value": "hello"}}]}]}]}],
                         "agent": {"isLiteral": true,"value": "any"}}};
         const internal = convertJsonToInternalModel(p);
@@ -279,5 +279,76 @@ describe('Pipeline Syntax Converter', () => {
             arguments[0].
             key == 'someArgument', "Unknown step arguments not restored");
     });
-    
+
+    it('reads new-style parallel with nested stages', () => {
+        const p = {"pipeline": {
+            "stages": [  {
+                "name": "parallel test",
+                "parallel": [{
+                    "name": "branch 1",
+                    "branches": [{
+                        "name": "default",
+                        "steps": [{
+                            "name": "echo",
+                            "arguments": {
+                                "isLiteral": true,
+                                "value": "this is branch 1"
+                            }
+                        }]
+                    }]
+                }, {
+                    "name": "branch 2",
+                    "branches": [{
+                        "name": "default",
+                        "steps": [{
+                            "name": "echo",
+                            "arguments": {
+                                "isLiteral": true,
+                                "value": "this is branch 2"
+                            }
+                        }]
+                    }]
+                }]
+            }],
+            "agent": {
+                "isLiteral": true,
+                "value": "any"
+            }
+        }};
+
+        const internal = convertJsonToInternalModel(p);
+        assert(internal.children[0].children.length == 2, "Stages not parallel");
+        assert(internal.children[0].steps.length == 0, "Steps not at correct stage");
+        assert(internal.children[0].children[0].name == 'branch 1', "Wrong stage name");
+        assert(internal.children[0].children[1].name == 'branch 2', "Wrong stage name");
+    });
+
+    it('generates new-style parallel with nested stages', () => {
+        const internal: Pipeline = {
+            children: [{
+                name: "top stage",
+                children: [{
+                    name: "stage 1",
+                    steps: [{
+                        functionName: 'sh',
+                        data: {
+                            script: 'echo hello',
+                        }
+                    }]
+                }, {
+                    name: "stage 2",
+                    steps: [{
+                        functionName: 'sh',
+                        data: {
+                            script: 'echo hello',
+                        }
+                    }]
+                },]
+            }],
+        };
+        const out = convertInternalModelToJson(internal);
+        assert(out.pipeline.stages[0].parallel[0].name == 'stage 1', "Bad parallel conversion");
+        assert(out.pipeline.stages[0].parallel[1].name == 'stage 2', "Bad parallel conversion");
+    });
+
 });

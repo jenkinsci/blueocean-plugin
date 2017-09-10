@@ -38,7 +38,7 @@ import javax.annotation.CheckForNull;
 
 /**
  * This provides and Blueocean REST API endpoint to obtain pipeline step metadata.
- * 
+ *
  * TODO: this should be provided off of the organization endpoint:
  * e.g. /organization/:id/pipeline-metadata
  */
@@ -73,7 +73,11 @@ public class PipelineMetadataService implements ApiRoutable {
             try {
                 DescribableModel<? extends DeclarativeAgent> model = new DescribableModel<>(d.clazz);
 
-                models.add(new ExportedDescribableModel(model, symbolForObject(d)));
+                String symbol = symbolForObject(d);
+                if ("label".equals(symbol)) { // Label has 2 symbols, but we need "node"
+                    symbol = "node";
+                }
+                models.add(new ExportedDescribableModel(model, symbol));
             } catch (NoStaplerConstructorException e) {
                 // Ignore!
             }

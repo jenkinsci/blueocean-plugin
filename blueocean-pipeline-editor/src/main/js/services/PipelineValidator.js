@@ -2,6 +2,7 @@
 
 import fetch from './fetchClassic';
 import pipelineStore from './PipelineStore';
+import pipelineMetadataService from './PipelineMetadataService';
 import type { PipelineInfo, StageInfo, StepInfo } from './PipelineStore';
 import { convertInternalModelToJson } from './PipelineSyntaxConverter';
 import idgen from './IdGenerator';
@@ -9,19 +10,95 @@ import debounce from 'lodash.debounce';
 
 const validationTimeout = 500;
 
-function _addErrorsForStagesWithoutSteps(node) {
+export function isValidEnvironmentKey(key: string): boolean {
+    if (!key) {
+        return false;
+    }
+    if (/^[_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*$/.test(key)) {
+        return true;
+    }
+    return false;
+}
+
+function _hasValidationErrors(node) {
+    return node && node.validationErrors && node.validationErrors.length;
+}
+
+function _appendValidationError(node, message) {
+    if (_hasValidationErrors(node)) {
+        node.validationErrors.push(message);
+    } else {
+        node.validationErrors = [ message ];
+    }
+}
+
+function _validateAgentEntries(metadata, agent) {
+    if (!agent || agent.type === 'none' || agent.type === 'any') {
+        return;
+    }
+    let meta;
+    for (const m of metadata.agentMetadata) {
+        if (agent.type === m.symbol) {
+            meta = m;
+            break;
+        }
+    }
+    if (!meta) {
+        _appendValidationError(meta, "Unknown agent type: " + agent.type);
+        return;
+    }
+    meta.parameters.map(param => {
+        const arg = agent.arguments.filter(arg => arg.key === param.name)[0];
+        if (param.isRequired && (!arg || !arg.value || !arg.value.value)) {
+            _appendValidationError(agent, param.name + " is required");
+        }
+    });
+}
+
+function _validateEnvironmentEntries(metadata, entries) {
+    for (const entry of entries) {
+        if (!_hasValidationErrors(entry) && !isValidEnvironmentKey(entry.key)) {
+            _appendValidationError(entry, 'Environment Name is not valid. Please ensure it is a valid Pipeline identifier.');
+        }
+    }
+}
+
+function _validateStepValues(metadata, steps) {
+    for (const step of steps) {
+        const meta = metadata.stepMetadata.find(step);
+        if (meta && meta.isRequired && !step.validationErrors && !step.value.value) {
+            _appendValidationError(entry, 'Required step value');
+        }
+        if (step.children) {
+            _validateStepValues(metadata, step.children);
+        }
+    }
+}
+
+function _addClientSideErrors(metadata, node) {
     const parent = pipelineStore.findParentStage(node);
+    if (node.agent) {
+        _validateAgentEntries(metadata, node.agent);
+    }
+    if (node.environment) {
+        _validateEnvironmentEntries(metadata, node.environment);
+    }
+    if (node.steps) {
+        _validateStepValues(metadata, node.steps);
+    }
     if (!node.children || !node.children.length) {
         if (parent && (!node.steps || !node.steps.length)) {
-            const message = 'At least one step is required';
-            if (node.validationErrors) {
-                node.validationErrors[0] = message;
-            } else {
-                node.validationErrors = [ message ];
-            }
+            // For this one particular error, just replace it
+            //node.validationErrors = [];
+            //node.steps.validationErrors = [ 'At least one step is required' ];
+            node.validationErrors = [ 'At least one step is required' ];
+        }
+        if (node === pipelineStore.pipeline) {
+            // override default message
+            node.validationErrors = [ 'A stage is required' ];
         }
     } else {
-        node.children.map(child => _addErrorsForStagesWithoutSteps(child));
+        node.children.map(child => _addClientSideErrors(metadata, child));
     }
 }
 
@@ -47,7 +124,7 @@ export class PipelineValidator {
             return false;
         }
         visited.push(node);
-        if (node.validationErrors) {
+        if (_hasValidationErrors(node)) {
             return true;
         }
         // if this is a parallel, check the parent stage for errors
@@ -72,7 +149,7 @@ export class PipelineValidator {
      */
     getNodeValidationErrors(node: Object, visited: any[] = []): Object[] {
         const validationErrors = node.validationErrors ? [ ...node.validationErrors ] : [];
-        
+
         // if this is a parallel, check the parent stage for errors
         const parent = pipelineStore.findParentStage(node);
         if (parent && pipelineStore.pipeline !== parent && parent.validationErrors) {
@@ -91,13 +168,19 @@ export class PipelineValidator {
         }
         visited.push(node);
         const validationErrors = [];
-        if (node.validationErrors) {
+        if (_hasValidationErrors(node)) {
             validationErrors.push.apply(validationErrors, node.validationErrors);
         }
-        for (const key of Object.keys(node)) {
-            const val = node[key];
-            if (val instanceof Object) {
-                const childErrors = this.getAllValidationErrors(val, visited);
+        if (node instanceof Array || typeof node === 'array') {
+            for (const v of node) {
+                const childErrors = this.getAllValidationErrors(v, visited);
+                if (childErrors) {
+                    validationErrors.push.apply(validationErrors, childErrors);
+                }
+            }
+        } else if (node instanceof Object) {
+            for (const key of Object.keys(node)) {
+                const childErrors = this.getAllValidationErrors(node[key], visited);
                 if (childErrors) {
                     validationErrors.push.apply(validationErrors, childErrors);
                 }
@@ -126,8 +209,15 @@ export class PipelineValidator {
                     const idx = parseInt(path[++i]);
                     // check if the 'default' single node path vs. parallel
                     if (!node.children || node.children.length == 0) {
-                        // err.. nothing to do
+                        // This probably in a parallel block, and is referencing the default branch, which is this node
                     } else {
+                        node = node.children[idx];
+                    }
+                    break;
+                }
+                case 'parallel': {
+                    const idx = parseInt(path[++i]);
+                    if (!isNaN(idx)) {
                         node = node.children[idx];
                     }
                     break;
@@ -148,6 +238,10 @@ export class PipelineValidator {
                     break;
                 }
                 default: {
+                    // if we have reached a key/value, just apply the error here
+                    if (node && 'key' in node && 'value' in node) {
+                        return node;
+                    }
                     // some error with some unknown section, try to find it
                     // so we can at least display the error
                     node = node[part];
@@ -157,27 +251,48 @@ export class PipelineValidator {
         }
         if (!node) {
             if (window.isDevelopmentMode) console.error('unable to find node for', path, 'in', pipeline);
+            return pipeline;
         }
         return node;
     }
 
-    applyValidationMarkers(pipeline: PipelineInfo, validation: Object): void {
+    applyValidationMarkers(metadata, pipeline: PipelineInfo, validation: Object): void {
         // just make sure nothing is hanging around
         this.clearValidationMarkers(pipeline);
         if (validation.result == 'failure') {
             for (const error of validation.errors) {
-                const node = this.findNodeFromPath(pipeline, error.location);
-                if (node && !node.pristine) {
-                    if (!node.validationErrors) {
-                        node.validationErrors = [ error.error ];
-                    } else {
-                        node.validationErrors.push(error.error);
+                if (error.location) {
+                    const node = this.findNodeFromPath(pipeline, error.location);
+                    if (node) {
+                        // ignore errors for nodes that are 'pristine'
+                        if (!node.pristine) {
+                            _appendValidationError(node, error.error);
+                        }
+                        error.applied = true;
+                    }
+                } else if (error.jenkinsfileErrors) {
+                    for (const globalError of error.jenkinsfileErrors.errors) {
+                        if (globalError.error.length) {
+                            for (const errorText of globalError.error) {
+                                _appendValidationError(pipeline, errorText);
+                                error.applied = true;
+                            }
+                        } else {
+                            _appendValidationError(pipeline, globalError.error);
+                            error.applied = true;
+                        }
                     }
                 }
             }
+            for (const error of validation.errors) {
+                if (!error.applied) {
+                    if (window.developmentMode) console.error(error);
+                    // surface in the UI
+                    _appendValidationError(pipeline, error.error);
+                }
+            }
         }
-
-        _addErrorsForStagesWithoutSteps(pipeline);
+        _addClientSideErrors(metadata, pipeline);
     }
 
     clearValidationMarkers(node: Object, visited: any[] = []): void {
@@ -188,10 +303,16 @@ export class PipelineValidator {
         if (node.validationErrors) {
             delete node.validationErrors;
         }
-        for (const key of Object.keys(node)) {
-            const val = node[key];
-            if (val instanceof Object) {
-                this.clearValidationMarkers(val, visited);
+        if (node instanceof Array || typeof node === 'array') {
+            for (const v of node) {
+                this.clearValidationMarkers(v, visited);
+            }
+        } else if (node instanceof Object) {
+            for (const key of Object.keys(node)) {
+                const val = node[key];
+                if (val instanceof Object) {
+                    this.clearValidationMarkers(val, visited);
+                }
             }
         }
     }
@@ -219,10 +340,14 @@ export class PipelineValidator {
         const pipeline = pipelineStore.pipeline;
         const json = JSON.stringify(convertInternalModelToJson(pipeline));
         this.lastPipelineValidated = json + (this.hasPristineEdits(pipeline) ? '.' : '');
-        this.validatePipeline(pipeline, validationResult => {
-            this.applyValidationMarkers(pipeline, validationResult);
-            pipelineStore.setPipeline(pipeline); // notify listeners to re-render
-            if (onComplete) onComplete();
+        pipelineMetadataService.getStepListing(stepMetadata => {
+            pipelineMetadataService.getAgentListing(agentMetadata => {
+                this.validatePipeline(pipeline, validationResult => {
+                    this.applyValidationMarkers({ stepMetadata, agentMetadata }, pipeline, validationResult);
+                    pipelineStore.setPipeline(pipeline); // notify listeners to re-render
+                    if (onComplete) onComplete();
+                });
+            });
         });
     }
 

@@ -2,6 +2,7 @@
 
 import React, { Component, PropTypes } from 'react';
 import type { PipelineInfo, StageInfo } from '../../services/PipelineStore';
+import { isValidEnvironmentKey } from '../../services/PipelineValidator';
 import idgen from '../../services/IdGenerator';
 import { Dropdown } from '@jenkins-cd/design-language';
 import { Split } from './Split';
@@ -9,6 +10,7 @@ import { TextInput } from '@jenkins-cd/design-language';
 import { getAddIconGroup, getDeleteIconGroup } from './common';
 import focusOnElement from './focusOnElement';
 import InputText from './InputText';
+import { ValidationMessageList } from './ValidationMessageList';
 
 type Props = {
     node: PipelineInfo|StageInfo,
@@ -36,16 +38,6 @@ function deleteIcon() {
             {getDeleteIconGroup(iconRadius)}
         </g>
     </svg>);
-}
-
-function isValidEnvironmentKey(key: string): boolean {
-    if (!key) {
-        return false;
-    }
-    if (/^[_$a-zA-Z\xA0-\uFFFF][_$a-zA-Z0-9\xA0-\uFFFF]*$/.test(key)) {
-        return true;
-    }
-    return false;
 }
 
 export class EnvironmentConfiguration extends Component<DefaultProps, Props, State> {
@@ -107,6 +99,7 @@ export class EnvironmentConfiguration extends Component<DefaultProps, Props, Sta
                 <button onClick={e => this.addEnvironmentEntry()} title="Add"  className="environment-add-delete-icon add">{addIcon()}</button>
             </Split>
             {node.environment && node.environment.map((env, idx) => <div className="environment-entry" key={env.id}>
+                <ValidationMessageList node={env} />
                 <Split>
                     <InputText hasError={pristine !== env.id && !isValidEnvironmentKey(env.key)}
                         defaultValue={env.key} onChange={val => { env.key = val; this.setState({ pristine: null }); this.props.onChange(); }}
