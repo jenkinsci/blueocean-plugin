@@ -9,6 +9,8 @@ import { defaultLayout } from './PipelineGraphModel';
 
 import { layoutGraph } from './PipelineGraphLayout';
 
+import { MATRIOSKA_PATHS } from './PipelineGraphModel';
+
 import type {
     NodeColumn,
     NodeInfo,
@@ -98,7 +100,7 @@ export class PipelineGraph extends Component {
     }
 
     /**
-     * Main process for laying out the graph. Calls a bunch of individual methods on self that do each task.
+     * Main process for laying out the graph. Calls out to PipelineGraphLayout module.
      */
     stagesUpdated(newStages: Array<StageInfo> = []) {
         this.setState(layoutGraph(newStages, this.state.layout));
@@ -217,7 +219,8 @@ export class PipelineGraph extends Component {
      */
     renderBasicConnections(sourceNodes: Array<NodeInfo>, destinationNodes: Array<NodeInfo>, elements: SVGChildren) {
 
-        const { connectorStrokeWidth } = this.state.layout;
+        const { connectorStrokeWidth, nodeSpacingH } = this.state.layout;
+        const halfSpacingH = nodeSpacingH / 2;
 
         // Stroke props common to straight / curved connections
         const connectorStroke = {
@@ -227,14 +230,40 @@ export class PipelineGraph extends Component {
 
         this.renderHorizontalConnection(sourceNodes[0], destinationNodes[0], connectorStroke, elements);
 
+        if (sourceNodes.length === 1 && destinationNodes.length === 1) {
+            return; // No curves needed.
+        }
+
+        // Work out the extents of source and dest space
+        let rightmostSource = sourceNodes[0].x;
+        let leftmostDestination = destinationNodes[0].x;
+
+        for (let i = 1; i < sourceNodes.length; i++) {
+            rightmostSource = Math.max(rightmostSource, sourceNodes[i].x);
+        }
+
+        for (let i = 1; i < destinationNodes.length; i++) {
+            leftmostDestination = Math.min(leftmostDestination, destinationNodes[i].x);
+        }
+
+        // console.log(''); // TODO: RM
+        // console.log('sourceNodes', sourceNodes.map(node => `${node.name} (${node.x})`).join(', ')); // TODO: RM
+        // console.log('rightmostSource',rightmostSource); // TODO: RM
+        // console.log('destNodes', destinationNodes.map(node => `${node.name} (${node.x})`).join(', ')); // TODO: RM
+        // console.log('leftmostDestination',leftmostDestination); // TODO: RM
+
         // Collapse from previous node(s) to top column node
         for (const previousNode of sourceNodes.slice(1)) {
-            this.renderBasicCurvedConnection(previousNode, destinationNodes[0], elements);
+            const midPointX = Math.round((MATRIOSKA_PATHS ? previousNode.x : rightmostSource ) + halfSpacingH);
+            // console.log('collapse from',previousNode.name,'to',destinationNodes[0].name, 'mpx', midPointX); // TODO: RM
+            this.renderBasicCurvedConnection(previousNode, destinationNodes[0], midPointX, elements);
         }
 
         // Expand from top previous node to column node(s)
         for (const destNode of destinationNodes.slice(1)) {
-            this.renderBasicCurvedConnection(sourceNodes[0], destNode, elements);
+            const midPointX = Math.round((MATRIOSKA_PATHS ? destNode.x : leftmostDestination) - halfSpacingH);
+            // console.log('expand from',sourceNodes[0].name,'to',destNode.name, 'mpx', midPointX); // TODO: RM
+            this.renderBasicCurvedConnection(sourceNodes[0], destNode, midPointX, elements);
         }
     }
 
@@ -284,14 +313,27 @@ export class PipelineGraph extends Component {
         this.renderHorizontalConnection(leftNode, destinationNodes[0], skipConnectorStroke, elements);
 
         //--------------------------------------------------------------------------
+        //  Work out the extents of source and dest space
+
+        let rightmostSource = sourceNodes[0].x;
+        let leftmostDestination = destinationNodes[0].x;
+
+        for (let i = 1; i < sourceNodes.length; i++) {
+            rightmostSource = Math.max(rightmostSource, sourceNodes[i].x);
+        }
+
+        for (let i = 1; i < destinationNodes.length; i++) {
+            leftmostDestination = Math.min(leftmostDestination, destinationNodes[i].x);
+        }
+
+        //--------------------------------------------------------------------------
         //  "Collapse" from the source node(s) down toward the first skipped
 
         leftNode = sourceNodes[0];
         rightNode = skippedNodes[0];
 
-        let midPointX = Math.round(rightNode.x - halfSpacingH);
-
         for (leftNode of sourceNodes.slice(1)) {
+            const midPointX = Math.round((MATRIOSKA_PATHS ? leftNode.x : rightmostSource ) + halfSpacingH);
             const leftNodeRadius = leftNode.isPlaceholder ? terminalRadius : nodeRadius;
             const key = connectorKey(leftNode, rightNode);
 
@@ -313,9 +355,8 @@ export class PipelineGraph extends Component {
         leftNode = lastSkippedNode;
         rightNode = destinationNodes[0];
 
-        midPointX = Math.round(leftNode.x + halfSpacingH);
-
         for (rightNode of destinationNodes.slice(1)) {
+            const midPointX = Math.round((MATRIOSKA_PATHS ? rightNode.x : leftmostDestination ) - halfSpacingH);
             const rightNodeRadius = rightNode.isPlaceholder ? terminalRadius : nodeRadius;
             const key = connectorKey(leftNode, rightNode);
 
@@ -442,11 +483,10 @@ export class PipelineGraph extends Component {
      *
      * Adds all the SVG components to the elements list.
      */
-    renderBasicCurvedConnection(leftNode: NodeInfo, rightNode: NodeInfo, elements: SVGChildren) {
-        const { nodeRadius, terminalRadius, curveRadius, connectorStrokeWidth, nodeSpacingH } = this.state.layout;
+    renderBasicCurvedConnection(leftNode: NodeInfo, rightNode: NodeInfo, midPointX: number, elements: SVGChildren) {
+        const { nodeRadius, terminalRadius, curveRadius, connectorStrokeWidth } = this.state.layout;
         const leftNodeRadius = leftNode.isPlaceholder ? terminalRadius : nodeRadius;
         const rightNodeRadius = rightNode.isPlaceholder ? terminalRadius : nodeRadius;
-        const halfSpacingH = nodeSpacingH / 2;
 
         const key = connectorKey(leftNode, rightNode);
 
@@ -465,10 +505,6 @@ export class PipelineGraph extends Component {
             className: 'pipeline-connector',
             strokeWidth: connectorStrokeWidth,
         };
-
-        const midPointX = leftNode.y > rightNode.y
-            ? Math.round(leftNode.x + halfSpacingH)
-            : Math.round(rightNode.x - halfSpacingH);
 
         const pathData = `M ${leftPos.x} ${leftPos.y}` +
             this.svgCurve(leftPos.x, leftPos.y, rightPos.x, rightPos.y, midPointX, curveRadius);
@@ -566,11 +602,13 @@ export class PipelineGraph extends Component {
         const highlightRadius = nodeRadius + (0.49 * connectorStrokeWidth);
         let selectedNode = null;
 
-        for (const column of this.state.nodeColumns) {
-            for (const node of column.nodes) {
-                if (node.isPlaceholder === false && this.stageIsSelected(node.stage)) {
-                    selectedNode = node;
-                    break;
+        columnLoop: for (const column of this.state.nodeColumns) {
+            for (const row of column.rows) {
+                for (const node of row) {
+                    if (node.isPlaceholder === false && this.stageIsSelected(node.stage)) {
+                        selectedNode = node;
+                        break columnLoop;
+                    }
                 }
             }
         }
@@ -604,9 +642,13 @@ export class PipelineGraph extends Component {
             const { selectedStage } = this.state;
 
             if (children && selectedStage) {
-                for (const child of children) {
-                    if (child === selectedStage) {
-                        return true;
+                for (const childStage of children) {
+                    let testee = childStage;
+                    while (testee) {
+                        if (testee === selectedStage) {
+                            return true;
+                        }
+                        testee = testee.nextSibling;
                     }
                 }
             }
@@ -652,11 +694,13 @@ export class PipelineGraph extends Component {
             this.renderCompositeConnection(connection, visualElements);
         });
 
-        nodeColumns.forEach(column => {
-            column.nodes.forEach(node => {
-                this.renderNode(node, visualElements);
-            });
-        });
+        for (const column of nodeColumns) {
+            for (const row of column.rows) {
+                for (const node of row) {
+                    this.renderNode(node, visualElements);
+                }
+            }
+        }
 
         return (
             <div style={outerDivStyle} className="PipelineGraph">
