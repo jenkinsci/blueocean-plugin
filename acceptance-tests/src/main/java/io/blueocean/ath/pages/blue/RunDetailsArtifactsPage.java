@@ -12,6 +12,7 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import javax.inject.Inject;
+import java.net.URLEncoder;
 
 public class  RunDetailsArtifactsPage {
     private Logger logger = Logger.getLogger(RunDetailsArtifactsPage.class);
@@ -34,10 +35,6 @@ public class  RunDetailsArtifactsPage {
         PageFactory.initElements(driver, this);
     }
 
-    public void open(String pipeline, Integer runNumber) {
-        driver.get(base+"/blue/organizations/jenkins/"+ pipeline + "/detail/master/" + runNumber +"/artifacts");
-        logger.info("Opened result page for " + pipeline);
-    }
     public void checkPipeline() {
         Assert.assertNotNull("AbstractPipeline is null", pipeline);
     }
@@ -54,7 +51,7 @@ public class  RunDetailsArtifactsPage {
 
     public String getUrl(String branch, int runNumber) {
         if(pipeline.isMultiBranch()) {
-            String tempBranch = branch == null ? "master" : branch;
+            String tempBranch = branch == null ? "master" : URLEncoder.encode(branch);
             return pipeline.getUrl() + "/detail/" + tempBranch + "/" + runNumber +"/artifacts";
         }
 

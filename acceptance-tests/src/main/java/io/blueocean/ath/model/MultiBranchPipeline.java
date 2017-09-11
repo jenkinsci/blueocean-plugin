@@ -41,4 +41,9 @@ public class MultiBranchPipeline extends AbstractPipeline {
     public void stopAllRuns() throws IOException {
         jobApi.abortAllBuilds(getFolder(), getName());
     }
+
+    @Override
+    public boolean isMultiBranch() {
+        return true;
+    }
 }

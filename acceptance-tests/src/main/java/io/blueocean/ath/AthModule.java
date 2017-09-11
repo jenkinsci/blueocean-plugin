@@ -8,12 +8,12 @@ import io.blueocean.ath.factory.ActivityPageFactory;
 import io.blueocean.ath.factory.BranchPageFactory;
 import io.blueocean.ath.factory.FreestyleJobFactory;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
-import io.blueocean.ath.factory.PipelineFactory;
+import io.blueocean.ath.factory.ClassicPipelineFactory;
 import io.blueocean.ath.factory.RunDetailsArtifactsPageFactory;
 import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
 import io.blueocean.ath.model.FreestyleJob;
 import io.blueocean.ath.model.MultiBranchPipeline;
-import io.blueocean.ath.model.Pipeline;
+import io.blueocean.ath.model.ClassicPipeline;
 import io.blueocean.ath.pages.blue.ActivityPage;
 import io.blueocean.ath.pages.blue.BranchPage;
 import io.blueocean.ath.pages.blue.RunDetailsArtifactsPage;
@@ -76,8 +76,8 @@ public class AthModule extends AbstractModule {
             .build(FreestyleJobFactory.class));
 
         install(new FactoryModuleBuilder()
-            .implement(Pipeline.class, Pipeline.class)
-            .build(PipelineFactory.class));
+            .implement(ClassicPipeline.class, ClassicPipeline.class)
+            .build(ClassicPipelineFactory.class));
 
         install(new FactoryModuleBuilder()
             .implement(RunDetailsPipelinePage.class, RunDetailsPipelinePage.class)

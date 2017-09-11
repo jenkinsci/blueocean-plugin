@@ -4,9 +4,8 @@ import com.google.inject.Inject;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.BlueOceanAcceptanceTest;
 import io.blueocean.ath.WaitUtil;
-import io.blueocean.ath.factory.PipelineFactory;
-import io.blueocean.ath.model.Pipeline;
-import io.blueocean.ath.pages.blue.RunDetailsArtifactsPage;
+import io.blueocean.ath.factory.ClassicPipelineFactory;
+import io.blueocean.ath.model.ClassicPipeline;
 import io.blueocean.ath.sse.SSEClientRule;
 import io.blueocean.ath.sse.SSEEvents;
 import org.apache.log4j.Logger;
@@ -21,7 +20,7 @@ import java.io.IOException;
 public class ArtifactsTest extends BlueOceanAcceptanceTest {
     private Logger logger = Logger.getLogger(this.getClass());
     @Inject
-    PipelineFactory pipelineFactory;
+    ClassicPipelineFactory pipelineFactory;
 
     @Rule
     @Inject
@@ -34,7 +33,7 @@ public class ArtifactsTest extends BlueOceanAcceptanceTest {
     public void testArtifactsList() throws IOException {
         String script = loadResource("artifactsList.groovy");
         String pipelineName = this.getClass().getSimpleName() + "_testArtifactListTruncate";
-        Pipeline pipeline = pipelineFactory.pipeline(pipelineName).createPipeline(script).build();
+        ClassicPipeline pipeline = pipelineFactory.pipeline(pipelineName).createPipeline(script).build();
 
         sseClientRule.untilEvents(SSEEvents.activityComplete(pipelineName));
 
