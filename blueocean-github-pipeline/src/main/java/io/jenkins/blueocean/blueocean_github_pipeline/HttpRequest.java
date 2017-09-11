@@ -97,7 +97,7 @@ class HttpRequest {
                     try {
                         return GithubScm.om.readValue(data, type);
                     } catch (JsonMappingException e) {
-                        throw new IOException("Failed to deserialize " + data, e);
+                        throw new IOException("Failed to deserialize: "+e.getMessage()+"\n" + data, e);
                     }
                 }
             }

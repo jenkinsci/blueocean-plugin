@@ -75,7 +75,6 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
                     <div className="editor-step missing">
                         <div className="editor-step-main">
                             <div className="editor-step-content">
-                                <ChildStepIcon/>
                                 <div className="editor-step-title">
                                     <span className="editor-step-summary">
                                         There are no steps, at least one is required.
@@ -86,7 +85,7 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
                     </div>);
             }
         }
-        
+
         return steps.map(step => this.renderStep(step, parent));
     }
 
@@ -161,7 +160,7 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
             {this.renderSteps(steps, parent)}
             <div className="editor-button-bar">
                 <button className="btn-primary add" onClick={(e) => this.addStepClicked(e)}>
-                    <Icon icon="ContentAdd" color="#ffffff" size={20} />
+                    <Icon icon="ContentAdd" size={20} />
                     Add step
                 </button>
             </div>

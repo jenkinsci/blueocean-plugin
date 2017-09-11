@@ -3,7 +3,7 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Icon } from '@jenkins-cd/design-language';
-import { Paths, pipelineService, AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { Paths, pipelineService } from '@jenkins-cd/blueocean-core-js';
 import Security from './services/Security';
 
 class PipelineEditorLink extends React.Component {
@@ -25,8 +25,6 @@ class PipelineEditorLink extends React.Component {
         const { run, pipeline } = this.props;
         const pipelinePath = pipeline.fullName.split('/');
         const branch = run ? run.pipeline : pipelinePath[pipelinePath.length - 1];
-        const editIconColor = run ? '#ffffff' : 'rgba(53, 64, 82, 0.25)';
-        const editIconHoverColor = run ? '#ffffff' : '#4a90e2';
         // this shows up in the branches table, each pipeline.fullName includes the branch
         // if it's not on the branches table, branch is in the run
         if (!run) {
@@ -36,7 +34,7 @@ class PipelineEditorLink extends React.Component {
 
         return (
             <Link className="pipeline-editor-link" to={baseUrl} title="Edit">
-                <Icon icon="ImageEdit" size={24} color={editIconColor} hoverColor={editIconHoverColor} />
+                <Icon icon="ImageEdit" size={24} />
             </Link>
         );
     }
@@ -52,14 +50,10 @@ class PipelineEditorLink extends React.Component {
                 }
             });
     }
-    
+
     _canSavePipeline(pipeline) {
         if (pipeline.scmSource && pipeline.scmSource.id === 'git') {
-            if (AppConfig.isFeatureEnabled('GIT_PIPELINE_EDITOR', false)) {
-                return true;
-            } else {
-                return false;
-            }
+            return true;
         }
         if (pipeline._capabilities && pipeline._capabilities
                 .find(capability => capability === 'io.jenkins.blueocean.rest.model.BluePipelineScm')) {

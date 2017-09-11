@@ -27,7 +27,10 @@ import jenkins.branch.MultiBranchProjectDescriptor;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
 import jenkins.scm.api.SCMFile;
+import jenkins.scm.api.SCMHead;
+import jenkins.scm.api.SCMHeadObserver;
 import jenkins.scm.api.SCMProbeStat;
+import jenkins.scm.api.SCMRevision;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.SCMSourceCriteria;
 import jenkins.scm.api.SCMSourceEvent;
@@ -36,6 +39,8 @@ import org.jenkinsci.plugins.pubsub.MessageException;
 import org.jenkinsci.plugins.pubsub.PubsubBus;
 import org.jenkinsci.plugins.pubsub.SimpleMessage;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -50,6 +55,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Creates {@link MultiBranchProject}s with a single {@link SCMSource}
  */
 public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineCreateRequest {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractMultiBranchCreateRequest.class);
+
     private static final String DESCRIPTOR_NAME = "org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject";
 
     private static final String ERROR_FIELD_SCM_CONFIG_URI = "scmConfig.uri";
@@ -131,7 +138,27 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
      * @return true as default. false if it can determine there is no Jenkinsfile in all branches
      */
     protected boolean repoHasJenkinsFile(@Nonnull SCMSource scmSource) {
-        return true; //default
+        final AbstractMultiBranchCreateRequest.JenkinsfileCriteria criteria = new AbstractMultiBranchCreateRequest.JenkinsfileCriteria();
+        try {
+            scmSource.fetch(criteria, new SCMHeadObserver() {
+                @Override
+                public void observe(@Nonnull SCMHead head, @Nonnull SCMRevision revision) throws IOException, InterruptedException {
+                    //do nothing
+                }
+
+                @Override
+                public boolean isObserving() {
+                    //if jenkinsfile is found stop observing
+                    return !criteria.isJekinsfileFound();
+
+                }
+            }, TaskListener.NULL);
+        } catch (IOException | InterruptedException e) {
+            logger.warn("Error detecting Jenkinsfile: "+e.getMessage(), e);
+        }
+
+        return criteria.isJekinsfileFound();
+
     }
 
     private void sendMultibranchIndexingCompleteEvent(final MultiBranchProject mbp, final int iterations) {
