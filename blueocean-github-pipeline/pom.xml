@@ -26,6 +26,13 @@
     <dependency>
       <groupId>org.kohsuke</groupId>
       <artifactId>github-api</artifactId>
+      <exclusions>
+        <!-- Upper bound fix: Pick the one from jenkins core, it has later version 2.4-->
+        <exclusion>
+          <groupId>commons-io</groupId>
+          <artifactId>commons-io</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -62,6 +69,13 @@
       <groupId>com.github.tomakehurst</groupId>
       <artifactId>wiremock</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <!-- Upper bound fix: httpclient comes from blueocean-rest-impl with later version than the one in wiremock -->
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 
