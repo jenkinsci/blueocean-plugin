@@ -5,6 +5,7 @@ import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.CustomJenkinsServer;
 import io.blueocean.ath.Login;
 import io.blueocean.ath.Retry;
+import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.pages.blue.GithubAddServerDialogPage;
 import io.blueocean.ath.pages.blue.GithubEnterpriseCreationPage;
 import io.blueocean.ath.util.GithubHelper;
@@ -26,7 +27,6 @@ import java.io.IOException;
 public class GithubEnterpriseCreationTest extends WireMockBase {
 
     private static GithubHelper githubHelper;
-    private String repositoryName;
 
     @Rule
     public WireMockRule mockServer = createWireMockServerRule(
@@ -46,19 +46,17 @@ public class GithubEnterpriseCreationTest extends WireMockBase {
     @Inject
     CustomJenkinsServer jenkins;
 
+    @Inject
+    ClassicJobApi jobApi;
+
     @BeforeClass
-    public static void createGitHubHelper() {
+    public static void setUpClass() {
         githubHelper = new GithubHelper();
     }
 
     @Before
-    public void createEmptyRepository() throws IOException {
-        repositoryName = githubHelper.createEmptyRepository();
-    }
-
-    @After
-    public void cleanupRepository() throws IOException {
-        githubHelper.cleanupRepository();
+    public void setUp() throws IOException {
+        jobApi.deletePipeline(githubHelper.getRepositoryName());
     }
 
     @Retry(3)
@@ -101,22 +99,17 @@ public class GithubEnterpriseCreationTest extends WireMockBase {
             dialog.wasDismissed();
         }
 
-
         creationPage.clickChooseServerNextStep();
         creationPage.completeCreationFlow(
             githubHelper.getAccessToken(),
             githubHelper.getOrganizationOrUsername(),
-            repositoryName,
+            githubHelper.getRepositoryName(),
             true
         );
     }
 
     protected String getServerNameUnique(String name) {
         return name + " - " + GithubHelper.getRandomSuffix();
-    }
-
-    protected String getServerUrlUnique(String url) {
-        return url + "?" + GithubHelper.getRandomSuffix();
     }
 
 }
