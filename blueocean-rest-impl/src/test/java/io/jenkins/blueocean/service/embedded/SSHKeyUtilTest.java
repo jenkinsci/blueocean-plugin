@@ -23,9 +23,10 @@
  */
 package io.jenkins.blueocean.service.embedded;
 
+import com.jcraft.jsch.JSch;
+import com.jcraft.jsch.JSchException;
+import com.jcraft.jsch.KeyPair;
 import io.jenkins.blueocean.service.embedded.util.SSHKeyUtils;
-import java.security.KeyPair;
-import java.security.interfaces.RSAPrivateKey;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -35,15 +36,13 @@ import org.junit.Test;
  */
 public class SSHKeyUtilTest {
     @Test
-    public void sshKeyUtils() {
-        KeyPair kp = SSHKeyUtils.generateRSAKey(1024);
-        Assert.assertNotNull(kp);
-        
-        RSAPrivateKey pk = (RSAPrivateKey)kp.getPrivate();
-        Assert.assertTrue(pk.getModulus().bitLength() == 1024);
-        
-        kp = SSHKeyUtils.generateRSAKey(2048);
-        pk = (RSAPrivateKey)kp.getPrivate();
-        Assert.assertTrue(pk.getModulus().bitLength() == 2048);
+    public void sshKeyUtils() throws JSchException {
+        String privateKey = SSHKeyUtils.generateKey(1024);
+        Assert.assertNotNull(privateKey);
+
+        JSch jsch = new JSch();
+        KeyPair.load(jsch, privateKey.getBytes(), null );
+
+        // can only really verify the key can be loaded
     }
 }

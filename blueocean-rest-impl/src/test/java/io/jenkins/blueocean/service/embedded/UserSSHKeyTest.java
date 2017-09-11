@@ -41,43 +41,43 @@ public class UserSSHKeyTest extends BaseTest {
         Map resp = new RequestBuilder(baseUrl)
                 .status(200)
                 .auth("bob", "bob")
-                .get("/organizations/jenkins/user/publickey").build(Map.class);
+                .get("/organizations/jenkins/user/publickey/").build(Map.class);
 
-        Object pubKey = ((Map)resp.get("data")).get("key");
+        Object pubKey = resp.get("publickey");
         Assert.assertTrue(pubKey != null);
-        
+
         // make sure the key remains the same
         resp = new RequestBuilder(baseUrl)
                 .status(200)
                 .auth("bob", "bob")
-                .get("/organizations/jenkins/user/publickey").build(Map.class);
-        
-        Object pubKey2 = ((Map)resp.get("data")).get("key");
+                .get("/organizations/jenkins/user/publickey/").build(Map.class);
+
+        Object pubKey2 = resp.get("publickey");
         Assert.assertEquals(pubKey, pubKey2);
-        
+
         // test deleting it gives a new key
         new RequestBuilder(baseUrl)
                 .status(200)
                 .auth("bob", "bob")
-                .delete("/organizations/jenkins/user/publickey").build(String.class);
-        
+                .delete("/organizations/jenkins/user/publickey/").build(String.class);
+
         resp = new RequestBuilder(baseUrl)
                 .status(200)
                 .auth("bob", "bob")
-                .get("/organizations/jenkins/user/publickey").build(Map.class);
-        
-        Object pubKey3 = ((Map)resp.get("data")).get("key");
+                .get("/organizations/jenkins/user/publickey/").build(Map.class);
+
+        Object pubKey3 = resp.get("publickey");
         Assert.assertNotEquals(pubKey2, pubKey3);
-        
+
         // ensure login is required
         new RequestBuilder(baseUrl)
                 .status(401)
-                .get("/organizations/jenkins/users/bob/publickey").build(Map.class);
-        
+                .get("/organizations/jenkins/users/bob/publickey/").build(Map.class);
+
         // make sure one user can't see another user's key
         new RequestBuilder(baseUrl)
                 .status(403)
                 .authAlice()
-                .get("/organizations/jenkins/users/bob/publickey").build(Map.class);
+                .get("/organizations/jenkins/users/bob/publickey/").build(Map.class);
     }
 }
