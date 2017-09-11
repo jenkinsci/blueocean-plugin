@@ -14,9 +14,13 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class BlueIssueFactory implements ExtensionPoint {
 
+
+    private static final Logger LOGGER = Logger.getLogger(BlueIssueFactory.class.getName());
     /**
      * @see #resolve(Job)
      * @param job job
@@ -41,13 +45,18 @@ public abstract class BlueIssueFactory implements ExtensionPoint {
      */
     public static Collection<BlueIssue> resolve(Job job) {
         LinkedHashSet<BlueIssue> allIssues = Sets.newLinkedHashSet();
-        for (BlueIssueFactory factory : ExtensionList.lookup(BlueIssueFactory.class)) {
+        try {
+            for (BlueIssueFactory factory : ExtensionList.lookup(BlueIssueFactory.class)) {
             Collection<BlueIssue> issues = factory.getIssues(job);
             if (issues == null) {
                 continue;
             }
             allIssues.addAll(issues);
         }
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING,"Unable to fetch issues for job " + e.getMessage(), e);
+        }
+
         return allIssues;
     }
 
@@ -59,12 +68,17 @@ public abstract class BlueIssueFactory implements ExtensionPoint {
      */
     public static Collection<BlueIssue> resolve(ChangeLogSet.Entry changeSetEntry) {
         LinkedHashSet<BlueIssue> allIssues = Sets.newLinkedHashSet();
-        for (BlueIssueFactory factory : ExtensionList.lookup(BlueIssueFactory.class)) {
-            Collection<BlueIssue> issues = factory.getIssues(changeSetEntry);
-            if (issues == null) {
-                continue;
+        try {
+            for (BlueIssueFactory factory : ExtensionList.lookup(BlueIssueFactory.class)) {
+
+                    Collection<BlueIssue> issues = factory.getIssues(changeSetEntry);
+                    if (issues == null) {
+                        continue;
+                    }
+                    allIssues.addAll(issues);
             }
-            allIssues.addAll(issues);
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING,"Unable to fetch issues for changeSetEntry " + e.getMessage(), e);
         }
         return allIssues;
     }
