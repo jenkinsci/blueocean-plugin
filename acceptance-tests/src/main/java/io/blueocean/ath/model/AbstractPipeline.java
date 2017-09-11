@@ -5,11 +5,13 @@ import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.factory.ActivityPageFactory;
+import io.blueocean.ath.factory.RunDetailsArtifactsPageFactory;
 import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
 import io.blueocean.ath.pages.blue.ActivityPage;
+import io.blueocean.ath.pages.blue.RunDetailsArtifactsPage;
 import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 
-public abstract class Pipeline {
+public abstract class AbstractPipeline {
     private Folder folder;
     private String name;
 
@@ -22,11 +24,14 @@ public abstract class Pipeline {
     @Inject
     RunDetailsPipelinePageFactory runDetailsPipelinePageFactory;
 
-    public Pipeline(String name) {
+    @Inject
+    RunDetailsArtifactsPageFactory runDetailsArtifactsPageFactory;
+
+    public AbstractPipeline(String name) {
         this(null, name);
     }
 
-    public Pipeline(Folder folder, String name) {
+    public AbstractPipeline(Folder folder, String name) {
         if(folder == null) {
             this.folder = Folder.folders();
         } else {
@@ -67,9 +72,6 @@ public abstract class Pipeline {
         );
     }
 
-
-
-
     public ActivityPage getActivityPage() {
         return activityPageFactory.withPipeline(this);
     }
@@ -78,4 +80,7 @@ public abstract class Pipeline {
         return runDetailsPipelinePageFactory.withPipeline(this);
     }
 
+    public RunDetailsArtifactsPage getRunDetailsArtifactsPage() {
+        return runDetailsArtifactsPageFactory.withPipeline(this);
+    }
 }

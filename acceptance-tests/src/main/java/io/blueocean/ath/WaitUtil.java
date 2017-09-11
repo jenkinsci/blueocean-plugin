@@ -1,5 +1,6 @@
 package io.blueocean.ath;
 
+import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
@@ -15,6 +16,7 @@ import java.util.function.Function;
 
 @Singleton
 public class WaitUtil {
+    private Logger logger = Logger.getLogger(WaitUtil.class);
 
 
     private WebDriver driver;
@@ -24,21 +26,27 @@ public class WaitUtil {
         this.driver = driver;
     }
 
-    public <T> T until(Function<WebDriver, T> function, long timeoutInMS) {
-        return new FluentWait<WebDriver>(driver)
-            .pollingEvery(100, TimeUnit.MILLISECONDS)
-            .withTimeout(timeoutInMS, TimeUnit.MILLISECONDS)
-            .ignoring(NoSuchElementException.class)
-            .until((WebDriver driver) -> function.apply(driver));
+    public <T> T until(Function<WebDriver, T> function, long timeoutInMS, String errorMessage) {
+        try {
+            return new FluentWait<WebDriver>(driver)
+                .pollingEvery(100, TimeUnit.MILLISECONDS)
+                .withTimeout(timeoutInMS, TimeUnit.MILLISECONDS)
+                .ignoring(NoSuchElementException.class)
+                .until((WebDriver driver) -> function.apply(driver));
+        } catch(Throwable t) {
+            throw new AcceptanceTestException(errorMessage, t);
+        }
     }
 
+    public <T> T until(Function<WebDriver, T> function, long timeoutInMS) {
+        return until(function, timeoutInMS, "Error while waiting for something");
+    }
     public <T> T until(Function<WebDriver, T> function) {
-        return new FluentWait<WebDriver>(driver)
-            .pollingEvery(100, TimeUnit.MILLISECONDS)
-            .withTimeout(20000, TimeUnit.MILLISECONDS)
-            .ignoring(NoSuchElementException.class)
-            .until((WebDriver driver) -> function.apply(driver));
+        return until(function, 20000);
+    }
 
+    public <T> T until(Function<WebDriver, T> function, String errorMessage) {
+        return until(function, 20000);
     }
 
     public WebElement until(WebElement element) {
@@ -46,8 +54,9 @@ public class WaitUtil {
     }
 
     public WebElement until(By by) {
-        return until(ExpectedConditions.visibilityOfElementLocated(by));
+        return until(ExpectedConditions.visibilityOfElementLocated(by), "Could not find " + by.toString());
     }
+
 
     public WebElement until(WebElement element, long timeoutInMS) {
         return until(ExpectedConditions.visibilityOf(element), timeoutInMS);

@@ -35,8 +35,7 @@ public class ClassicJobApi {
     String base;
 
     @Inject
-    JenkinsServer jenkins;
-
+    public JenkinsServer jenkins;
 
     public void deletePipeline(String pipeline) throws IOException {
         deletePipeline(null, pipeline);
@@ -52,12 +51,14 @@ public class ClassicJobApi {
             }
         }
     }
+
     public void createFreeStyleJob(FolderJob folder, String jobName, String command) throws IOException {
         deletePipeline(folder, jobName);
         URL url = Resources.getResource(this.getClass(), "freestyle.xml");
         jenkins.createJob(folder, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{command}}", command));
         logger.info("Created freestyle job "+ jobName);
     }
+
     public void createFreeStyleJob(String jobName, String command) throws IOException {
         deletePipeline(jobName);
         URL url = Resources.getResource(this.getClass(), "freestyle.xml");
@@ -65,6 +66,12 @@ public class ClassicJobApi {
         logger.info("Created freestyle job "+ jobName);
     }
 
+    public void createPipeline(FolderJob folder, String jobName, String script) throws IOException {
+        deletePipeline(folder, jobName);
+        URL url = Resources.getResource(this.getClass(), "pipeline.xml");
+        jenkins.createJob(null, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{script}}", script));
+        logger.info("Created pipeline job "+ jobName);
+    }
     public void createMultlBranchPipeline(FolderJob folder, String pipelineName, String repositoryPath) throws IOException {
         deletePipeline(folder, pipelineName);
         URL url = Resources.getResource(this.getClass(), "multibranch.xml");
@@ -141,6 +148,9 @@ public class ClassicJobApi {
         jenkins.getJob(getFolder(folder.append(pipeline), false), branch).build();
     }
 
+    public void build(Folder folder, String pipeline) throws IOException {
+        jenkins.getJob(getFolder(folder, false), pipeline).build();
+    }
     public void abortAllBuilds(Folder folder, String pipeline) throws IOException {
         JobWithDetails job = jenkins.getJob(getFolder(folder, false), pipeline);
 
