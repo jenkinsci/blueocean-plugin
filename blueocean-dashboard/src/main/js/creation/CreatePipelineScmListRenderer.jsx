@@ -5,6 +5,7 @@ import React, { PropTypes } from 'react';
 import Extensions from '@jenkins-cd/js-extensions';
 
 const Sandbox = Extensions.SandboxedComponent;
+const { sortByOrdinal } = Extensions.Utils;
 
 /**
  * Displays the initial set of options to begin a creation flow from a SCM Provider.
@@ -25,16 +26,9 @@ export class CreatePipelineScmListRenderer extends React.Component {
 
     _initialize() {
         // load and store the SCM providers that contributed the specified extension point
-        Extensions.store.getExtensions(this.props.extensionPoint, (extensions) => {
+        Extensions.store.getExtensions(this.props.extensionPoint, sortByOrdinal, (extensions) => {
             let providers = extensions.map(Provider => {
                 try {
-                    // TODO: remove this feature flag once all of bitbucket lands
-                    // Show Bitbucket creation with query param '?bitbucket'
-                    if ((Provider.name === 'BbCloudScmProvider' || Provider.name === 'BbServerScmProvider')
-                        && (!this.context.location || !this.context.location.query
-                        || !('bitbucket' in this.context.location.query))) {
-                        return null;
-                    }
                     return new Provider();
                 } catch (error) {
                     console.warn('error initializing ScmProvider', Provider, error);

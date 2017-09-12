@@ -7,6 +7,12 @@ const config = blueocean.config || {};
 const features = config.features || {};
 const organization = blueocean.organization || {};
 
+// any all features added by ?features=SOMETHING,SOMETHING_ELSE
+const pfx = 'features=';
+const pfxlen = pfx.length;
+(window.location.href.split('?')[1] || '').split('&')
+        .forEach(p => p.startsWith(pfx)
+            && (p.substring(pfxlen).split(',').forEach(f => { features[f] = true; })));
 
 export default {
     loadUrls() {

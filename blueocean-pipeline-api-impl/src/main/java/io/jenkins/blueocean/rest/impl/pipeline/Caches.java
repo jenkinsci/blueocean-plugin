@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import com.google.common.base.Objects;
 import com.google.common.base.Optional;
 import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
@@ -8,6 +9,7 @@ import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.Job;
 import hudson.model.listeners.ItemListener;
+import io.jenkins.blueocean.rest.factory.BlueIssueFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.Branch;
 import io.jenkins.blueocean.rest.impl.pipeline.BranchImpl.PullRequest;
 import jenkins.model.Jenkins;
@@ -35,13 +37,13 @@ class Caches {
     static final LoadingCache<String, Optional<PullRequest>> PULL_REQUEST_METADATA = CacheBuilder.newBuilder()
             .maximumSize(PR_METADATA_CACHE_MAX_SIZE)
             .expireAfterAccess(1, TimeUnit.DAYS)
-            .build(new PullRequestCacheLoader(Jenkins.getInstance().getItemGroup()));
+            .build(new PullRequestCacheLoader(null));
 
 
     static final LoadingCache<String, Optional<Branch>> BRANCH_METADATA = CacheBuilder.newBuilder()
             .maximumSize(BRANCH_METADATA_CACHE_MAX_SIZE)
             .expireAfterAccess(1, TimeUnit.DAYS)
-            .build(new BranchCacheLoader(Jenkins.getInstance().getItemGroup()));
+            .build(new BranchCacheLoader(null));
 
     @Extension
     public static class ListenerImpl extends ItemListener {
@@ -80,12 +82,13 @@ class Caches {
     static class BranchCacheLoader extends CacheLoader<String, Optional<Branch>> {
         private Jenkins jenkins;
 
-        BranchCacheLoader(Jenkins jenkins) {
+        BranchCacheLoader(@Nullable Jenkins jenkins) {
             this.jenkins = jenkins;
         }
 
         @Override
         public Optional<Branch> load(String key) throws Exception {
+            Jenkins jenkins = Objects.firstNonNull(this.jenkins, Jenkins.getInstance());
             Job job = jenkins.getItemByFullName(key, Job.class);
             if (job == null) {
                 return Optional.absent();
@@ -96,19 +99,20 @@ class Caches {
                 return Optional.absent();
             }
             String url = om != null && om.getObjectUrl() != null ? om.getObjectUrl() : null;
-            return Optional.of(new Branch(url, pima != null));
+            return Optional.of(new Branch(url, pima != null, BlueIssueFactory.resolve(job)));
         }
     }
 
     static class PullRequestCacheLoader extends CacheLoader<String, Optional<PullRequest>> {
         private Jenkins jenkins;
 
-        PullRequestCacheLoader(Jenkins jenkins) {
+        PullRequestCacheLoader(@Nullable Jenkins jenkins) {
             this.jenkins = jenkins;
         }
 
         @Override
         public Optional<PullRequest> load(String key) throws Exception {
+            Jenkins jenkins = Objects.firstNonNull(this.jenkins, Jenkins.getInstance());
             Job job = jenkins.getItemByFullName(key, Job.class);
             if (job == null) {
                 return Optional.absent();

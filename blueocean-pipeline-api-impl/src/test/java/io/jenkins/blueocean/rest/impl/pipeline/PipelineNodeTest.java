@@ -24,6 +24,7 @@ import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
@@ -78,7 +79,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
     }
 
     //TODO: Enable this test if there is way to determine when test starts running and not waiting till launched
-//    @Test
+    @Test @Ignore
     public void nodesTest1() throws IOException, ExecutionException, InterruptedException {
         WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, "p1");
         job.setDefinition(new CpsFlowDefinition("node {\n" +
@@ -2046,15 +2047,9 @@ public class PipelineNodeTest extends PipelineBaseTest {
     @Test
     public void submitInput() throws Exception {
         String script = "node {\n" +
-                "    stage(\"parallelStage\"){\n" +
-                "      parallel left : {\n" +
-                "            echo \"running\"\n" +
+                "    stage(\"first\"){\n" +
                 "            def branchInput = input message: 'Please input branch to test against', parameters: [[$class: 'StringParameterDefinition', defaultValue: 'master', description: '', name: 'branch']]\n" +
                 "            echo \"BRANCH NAME: ${branchInput}\"\n" +
-                "        }, \n" +
-                "        right : {\n" +
-                "            sh 'echo \"right done\"'\n" +
-                "        }\n" +
                 "    }\n" +
                 "}";
 
@@ -2071,22 +2066,20 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         List<Map> stepsResp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/", List.class);
 
-        Assert.assertEquals("RUNNING", stepsResp.get(0).get("state"));
+
+
+        Assert.assertEquals("PAUSED", stepsResp.get(0).get("state"));
         Assert.assertEquals("UNKNOWN", stepsResp.get(0).get("result"));
-        Assert.assertEquals("13", stepsResp.get(0).get("id"));
+        Assert.assertEquals("7", stepsResp.get(0).get("id"));
 
-        Assert.assertEquals("PAUSED", stepsResp.get(2).get("state"));
-        Assert.assertEquals("UNKNOWN", stepsResp.get(2).get("result"));
-        Assert.assertEquals("12", stepsResp.get(2).get("id"));
-
-        Map<String,Object> input = (Map<String, Object>) stepsResp.get(2).get("input");
+        Map<String,Object> input = (Map<String, Object>) stepsResp.get(0).get("input");
         Assert.assertNotNull(input);
         String id = (String) input.get("id");
         Assert.assertNotNull(id);
 
         List<Map<String,Object>> params = (List<Map<String, Object>>) input.get("parameters");
 
-        post("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/",
+        post("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/7/",
                 ImmutableMap.of("id",id,
                         PARAMETERS_ELEMENT,
                         ImmutableList.of(ImmutableMap.of("name", params.get(0).get("name"), "value", "master"))
@@ -2094,10 +2087,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
                 , 200);
 
         if(waitForBuildCount(job1,1, Result.SUCCESS)) {
-            Map<String, Object> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/12/");
+            Map<String, Object> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/steps/7/");
             Assert.assertEquals("FINISHED", resp.get("state"));
             Assert.assertEquals("SUCCESS", resp.get("result"));
-            Assert.assertEquals("12", resp.get("id"));
+            Assert.assertEquals("7", resp.get("id"));
         }
     }
 
@@ -2378,6 +2371,52 @@ public class PipelineNodeTest extends PipelineBaseTest {
         assertEquals(edges.get(0).get("id"), receivedEdges.get(0).get("id"));
         assertEquals(edges.get(1).get("id"), receivedEdges.get(1).get("id"));
         assertEquals(edges.get(2).get("id"), receivedEdges.get(2).get("id"));
+    }
+
+    @Test
+    public void encodedStepDescription() throws Exception {
+        setupScm("pipeline {\n" +
+                "  agent any\n" +
+                "  stages {\n" +
+                "    stage('Build') {\n" +
+                "      steps {\n" +
+                "          sh 'echo \"\\033[32m some text \\033[0m\"'    \n" +
+                "      }\n" +
+                "    }\n" +
+                "  }\n" +
+                "}");
+        WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
+        mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false)));
+        for (SCMSource source : mp.getSCMSources()) {
+            assertEquals(mp, source.getOwner());
+        }
+
+        mp.scheduleBuild2(0).getFuture().get();
+
+        j.waitUntilNoActivity();
+
+        WorkflowJob p = scheduleAndFindBranchProject(mp, "master");
+        j.waitUntilNoActivity();
+        WorkflowRun b1 = p.getLastBuild();
+        Assert.assertEquals(Result.SUCCESS, b1.getResult());
+
+        List<FlowNode> stages = getStages(NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1));
+
+        Assert.assertEquals(1, stages.size());
+
+        Assert.assertEquals("Build", stages.get(0).getDisplayName());
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/nodes/", List.class);
+        Assert.assertEquals(1, resp.size());
+        Assert.assertEquals("Build", resp.get(0).get("displayName"));
+
+        resp = get("/organizations/jenkins/pipelines/p/pipelines/master/runs/"+b1.getId()+"/steps/", List.class);
+        Assert.assertEquals(2, resp.size());
+
+        assertEquals("General SCM", resp.get(0).get("displayName"));
+
+        assertEquals("Shell Script", resp.get(1).get("displayName"));
+        assertEquals("echo \"\u001B[32m some text \u001B[0m\"", resp.get(1).get("displayDescription"));
     }
 
     private void setupScm(String script) throws Exception {

@@ -29,7 +29,7 @@ function noRun(pr, openRunDetails, t, columns) {
 }
 
 export class PullRequestRowRenderer extends Component {
-    
+
     render() {
         const {
             columns,
@@ -137,9 +137,9 @@ export default class PullRequestRow extends Component {
                        onNavigation={this.openRunDetails}
             />,
 
-            <RunHistoryButton pipeline={contextPipeline} branchName={pr.name} />,
+            <RunHistoryButton pipeline={contextPipeline} branchName={pr.name} t={t} />,
 
-            <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" {...t} />,
+            <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" t={t} />,
         ];
 
         return (

@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { TabLink } from '@jenkins-cd/design-language';
-import { i18nTranslator, ReplayButton, RunButton, logging } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, ReplayButton, RunButton, LoginButton, logging } from '@jenkins-cd/blueocean-core-js';
 import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '@jenkins-cd/design-language';
 
 import {
     rootPath,
@@ -33,7 +33,7 @@ const classicConfigLink = (pipeline) => {
         let url = buildClassicConfigUrl(pipeline);
         link = (
             <a href={ url } target="_blank" style={ { height: '24px' } }>
-                <Icon size={ 24 } icon="settings" style={ { fill: '#fff' } } />
+                <Icon size={ 24 } icon="ActionSettings" />
             </a>
         );
     }
@@ -49,7 +49,7 @@ const classicJobRunLink = (pipeline, branch, runId) => {
     }
     return (
         <a className="rundetails_exit_to_app" href={ runUrl } style={ { height: '24px' } } title={webTranslate('go.to.classic', { defaultValue: 'Go to classic' })}>
-            <Icon size={ 24 } icon="exit_to_app" style={ { fill: '#fff' } } />
+            <Icon size={ 24 } icon="ActionExitToApp" />
         </a>
     );
 };
@@ -213,6 +213,7 @@ class RunDetails extends Component {
             />,
             classicConfigLink(pipeline),
             classicJobRunLink(pipeline, params.branch, params.runId),
+            <LoginButton className="user-component button-bar layout-small inverse" translate={webTranslate} />,
         ];
 
         return (

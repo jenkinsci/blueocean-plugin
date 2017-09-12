@@ -1,7 +1,7 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '../Icon';
 
 type Props = {
     children: ReactChildren,
@@ -78,7 +78,7 @@ export class Checkbox extends Component {
 
                     <div className="Checkbox-indicator">
                         { !this.props.children ?
-                            <Icon icon="check" /> :
+                            <Icon icon="NavigationCheck" size={20} /> :
                             this.props.children
                         }
                     </div>

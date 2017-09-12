@@ -1,0 +1,15 @@
+
+stage('some-stage') {
+    parallel(
+        a: {
+            node('first') {
+                echo 'hello'
+                semaphore 'wait-a'
+            }
+        },
+        b: {
+            node('second') {
+                echo 'also hello'
+            }
+        })
+}

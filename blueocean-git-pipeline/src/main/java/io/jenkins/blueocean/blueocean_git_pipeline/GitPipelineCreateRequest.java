@@ -9,6 +9,7 @@ import io.jenkins.blueocean.scm.api.AbstractMultiBranchCreateRequest;
 import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
+import jenkins.plugins.git.traits.BranchDiscoveryTrait;
 import jenkins.scm.api.SCMSource;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
@@ -28,7 +29,10 @@ public class GitPipelineCreateRequest extends AbstractMultiBranchCreateRequest {
 
     @Override
     protected SCMSource createSource(@Nonnull MultiBranchProject project, @Nonnull BlueScmConfig scmConfig) {
-        return new GitSCMSource(null, StringUtils.defaultString(scmConfig.getUri()), scmConfig.getCredentialId(), "*", "", false);
+        GitSCMSource gitSource = new GitSCMSource(StringUtils.defaultString(scmConfig.getUri()));
+        gitSource.setCredentialsId(computeCredentialId(scmConfig));
+        gitSource.getTraits().add(new BranchDiscoveryTrait());
+        return gitSource;
     }
 
     @Override
@@ -38,20 +42,30 @@ public class GitPipelineCreateRequest extends AbstractMultiBranchCreateRequest {
             errors.add(new ErrorMessage.Error("scmConfig.uri", ErrorMessage.Error.ErrorCodes.MISSING.toString(), "uri is required"));
         }else {
             StandardCredentials credentials = null;
-            if(scmConfig.getCredentialId() != null){
-                credentials = GitUtils.getCredentials(Jenkins.getInstance(), scmConfig.getUri(), scmConfig.getCredentialId());
+            String credentialId = computeCredentialId(scmConfig);
+            if(credentialId != null){
+                credentials = GitUtils.getCredentials(Jenkins.getInstance(), scmConfig.getUri(), credentialId);
                 if (credentials == null) {
                     errors.add(new ErrorMessage.Error("scmConfig.credentialId",
                         ErrorMessage.Error.ErrorCodes.NOT_FOUND.toString(),
-                        String.format("credentialId: %s not found", scmConfig.getCredentialId())));
+                        String.format("credentialId: %s not found", credentialId)));
                 }
             }
             //validate credentials if no credential id (perhaps git repo doesn't need auth or credentials is present)
-            if(scmConfig.getCredentialId() == null || credentials != null) {
+            if(credentialId == null || credentials != null) {
                 errors.addAll(GitUtils.validateCredentials(scmConfig.getUri(), credentials));
             }
         }
         return errors;
     }
 
+    @Override
+    protected boolean repoHasJenkinsFile(@Nonnull SCMSource scmSource) {
+        return true;
+    }
+
+    @Override
+    protected String computeCredentialId(BlueScmConfig scmConfig) {
+        return scmConfig.getCredentialId();
+    }
 }

@@ -5,7 +5,7 @@ import com.google.inject.assistedinject.AssistedInject;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.factory.ActivityPageFactory;
-import io.blueocean.ath.model.Pipeline;
+import io.blueocean.ath.model.AbstractPipeline;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.annotations.Nullable;
 import org.openqa.selenium.By;
@@ -19,7 +19,7 @@ public class BranchPage {
     private Logger logger = Logger.getLogger(BranchPage.class);
 
     private WebDriver driver;
-    private Pipeline pipeline;
+    private AbstractPipeline pipeline;
 
     @Inject
     ActivityPageFactory activityPageFactory;
@@ -41,7 +41,7 @@ public class BranchPage {
     }
 
     @AssistedInject
-    public BranchPage(WebDriver driver, @Assisted @Nullable Pipeline pipeline) {
+    public BranchPage(WebDriver driver, @Assisted @Nullable AbstractPipeline pipeline) {
         this.pipeline = pipeline;
         this.driver = driver;
         PageFactory.initElements(driver, this);

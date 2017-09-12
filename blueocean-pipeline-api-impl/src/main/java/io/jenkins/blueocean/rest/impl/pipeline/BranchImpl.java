@@ -10,18 +10,21 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
+import io.jenkins.blueocean.rest.factory.BlueIssueFactory;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BlueIssue;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.Resource;
 import jenkins.branch.MultiBranchProject;
-import jenkins.scm.api.metadata.ObjectMetadataAction;
-import jenkins.scm.api.metadata.PrimaryInstanceMetadataAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
+import javax.annotation.CheckForNull;
+import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_BRANCH;
@@ -37,23 +40,22 @@ public class BranchImpl extends PipelineImpl {
     private final Link parent;
     protected final Job job;
 
-    public BranchImpl(Job job, Link parent) {
-        super(job);
+    public BranchImpl(BlueOrganization org, Job job, Link parent) {
+        super(org, job);
         this.job = job;
         this.parent = parent;
     }
 
     @Exported(name = PullRequest.PULL_REQUEST, inline = true, skipNull =  true)
+    @CheckForNull
     public PullRequest getPullRequest() {
         return PullRequest.get(job);
     }
 
     @Exported(name = Branch.BRANCH, inline = true)
+    @CheckForNull
     public Branch getBranch() {
-        ObjectMetadataAction om = job.getAction(ObjectMetadataAction.class);
-        PrimaryInstanceMetadataAction pima = job.getAction(PrimaryInstanceMetadataAction.class);
-        String url = om != null && om.getObjectUrl() != null ? om.getObjectUrl() : null;
-        return new Branch(url, pima != null);
+        return Branch.getBranch(job);
     }
 
     @Override
@@ -75,17 +77,17 @@ public class BranchImpl extends PipelineImpl {
     public static class PipelineFactoryImpl extends BluePipelineFactory {
 
         @Override
-        public BluePipeline getPipeline(Item item, Reachable parent) {
+        public BluePipeline getPipeline(Item item, Reachable parent, BlueOrganization organization) {
             if (item instanceof WorkflowJob && item.getParent() instanceof MultiBranchProject) {
-                return new BranchImpl((Job) item, parent.getLink());
+                return new BranchImpl(organization, (Job) item, parent.getLink());
             }
             return null;
         }
 
         @Override
-        public Resource resolve(Item context, Reachable parent, Item target) {
+        public Resource resolve(Item context, Reachable parent, Item target, BlueOrganization organization) {
             if (context==target.getParent()) {
-                return getPipeline(context,parent);
+                return getPipeline(context, parent, organization);
             }
             return null;
         }
@@ -97,13 +99,16 @@ public class BranchImpl extends PipelineImpl {
         public static final String BRANCH = "branch";
         public static final String BRANCH_URL = "url";
         public static final String BRANCH_PRIMARY = "isPrimary";
+        public static final String ISSUES = "issues";
 
         private final String url;
         private final boolean primary;
+        private final Collection<BlueIssue> issues;
 
-        public Branch(String url, boolean primary) {
+        public Branch(String url, boolean primary, Collection<BlueIssue> issues) {
             this.url = url;
             this.primary = primary;
+            this.issues = issues;
         }
 
         @Exported(name = BRANCH_URL)
@@ -114,6 +119,11 @@ public class BranchImpl extends PipelineImpl {
         @Exported(name = BRANCH_PRIMARY)
         public boolean isPrimary() {
             return primary;
+        }
+
+        @Exported(name = ISSUES, skipNull = true, inline = true)
+        public Collection<BlueIssue> getIssues() {
+            return issues;
         }
 
         public static Branch getBranch(final Job job) {

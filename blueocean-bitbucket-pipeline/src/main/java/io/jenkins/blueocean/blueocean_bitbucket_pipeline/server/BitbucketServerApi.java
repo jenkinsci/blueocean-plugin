@@ -16,7 +16,6 @@ import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbOrg;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbPage;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbRepo;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbSaveContentResponse;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbUser;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerBranch;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerPage;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerProject;
@@ -24,6 +23,7 @@ import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerRe
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerSaveContentResponse;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerUser;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.pageable.PagedResponse;
 import org.antlr.v4.runtime.misc.NotNull;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
@@ -89,7 +89,7 @@ public class BitbucketServerApi extends BitbucketApi {
     }
 
     @Override
-    public @Nonnull BbUser getUser(@Nonnull String userName){
+    public @Nonnull BbServerUser getUser(@Nonnull String userName){
         try {
             InputStream inputStream = Request.Get(String.format("%s/%s",baseUrl+"users", userName))
                     .addHeader("Authorization", basicAuthHeaderValue)
@@ -100,15 +100,29 @@ public class BitbucketServerApi extends BitbucketApi {
         }
     }
 
-
     @Override
     public @Nonnull
     BbPage<BbOrg> getOrgs(int pageNumber, int pageSize){
         try {
+            if(pageNumber <= 0){
+                pageNumber = 1;
+            }
+
+            if(pageSize <=0){
+                pageSize = PagedResponse.DEFAULT_LIMIT;
+            }
             InputStream inputStream = Request.Get(String.format("%s?start=%s&limit=%s",baseUrl+"projects/", toStart(pageNumber, pageSize), pageSize))
                     .addHeader("Authorization", basicAuthHeaderValue)
                     .execute().returnContent().asStream();
-            return om.readValue(inputStream, new TypeReference<BbServerPage<BbServerProject>>(){});
+            BbPage<BbOrg> page =  om.readValue(inputStream, new TypeReference<BbServerPage<BbServerProject>>(){});
+            if(pageNumber == 1){ //add user org as the first org on first page
+                BbServerUser user = getUser(userName);
+                List<BbOrg> teams = new ArrayList<>();
+                teams.add(user.toPersonalProject());
+                teams.addAll(page.getValues());
+                return new BbServerPage<>(page.getStart(), page.getLimit(), page.getSize()+1, teams, page.isLastPage());
+            }
+            return page;
         } catch (IOException e) {
             throw handleException(e);
         }
@@ -169,20 +183,24 @@ public class BitbucketServerApi extends BitbucketApi {
                                       @Nonnull String content,
                                       @Nonnull String commitMessage,
                                       @Nullable String branch,
+                                      @Nullable String sourceBranch,
                                       @Nullable String commitId){
         try {
             String version = getVersion(apiUrl);
             if(!isSupportedVersion(version)){
                 throw new ServiceException.PreconditionRequired(
                         Messages.bbserver_version_validation_error(
-                                apiUrl, version, BitbucketServerApi.MINIMUM_SUPPORTED_VERSION));
+                                version, BitbucketServerApi.MINIMUM_SUPPORTED_VERSION));
             }
             MultipartEntityBuilder builder = MultipartEntityBuilder.create()
                     .addTextBody("content", content)
                     .addTextBody("message", commitMessage);
 
-            if(!StringUtils.isBlank(branch)){
+            if(StringUtils.isNotBlank(branch)){
                 builder.addTextBody("branch", branch);
+            }
+            if(StringUtils.isNotBlank(sourceBranch)){
+                builder.addTextBody("sourceBranch", sourceBranch);
             }
             if(org.apache.commons.lang.StringUtils.isNotBlank(commitId)){
                    builder.addTextBody("sourceCommitId", commitId);

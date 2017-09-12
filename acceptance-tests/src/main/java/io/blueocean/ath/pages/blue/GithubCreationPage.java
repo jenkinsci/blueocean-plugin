@@ -130,10 +130,7 @@ public class GithubCreationPage {
         }
         selectOrganization(org);
 
-        wait.until(singlePipelineBtn,120000)
-            .click();
-
-        logger.info("Select a single pipeline to create");
+        logger.info("Select a repo to create");
 
         selectPipelineToCreate(pipeline);
 
@@ -144,10 +141,10 @@ public class GithubCreationPage {
                 .until(ExpectedConditions.visibilityOfElementLocated(emptyRepositoryCreateButton));
             createJenkinsFileButton.click();
             wait.until(ExpectedConditions.urlContains("pipeline-editor"), 30000);
-            logger.info("Pipeline created - now editing");
+            logger.info("AbstractPipeline created - now editing");
         } else {
             wait.until(ExpectedConditions.urlMatches(".*activity$"), 30000);
-            logger.info("Pipeline created");
+            logger.info("AbstractPipeline created");
         }
     }
 

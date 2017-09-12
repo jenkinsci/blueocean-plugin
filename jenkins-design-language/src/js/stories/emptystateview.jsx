@@ -40,7 +40,7 @@ function contentWithNarrowImage() {
 
 function contentWithIcon() {
     return (
-        <EmptyStateView iconName="done_all">
+        <EmptyStateView iconName="ActionDoneAll">
             {defaultContent()}
         </EmptyStateView>
     );

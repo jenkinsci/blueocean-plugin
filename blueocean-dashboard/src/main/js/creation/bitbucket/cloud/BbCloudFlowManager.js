@@ -8,7 +8,6 @@ import FlowManager from '../../flow2/FlowManager';
 
 import STATE from './BbCloudCreationState';
 
-import { BbCredentialManager } from '../BbCredentialManager';
 import { ListOrganizationsOutcome } from '../api/BbCreationApi';
 import { CreateMbpOutcome } from '../api/BbCreationApi';
 
@@ -29,12 +28,9 @@ const translate = i18nTranslator('blueocean-dashboard');
 
 export default class BbCloudFlowManager extends FlowManager {
 
-    credentialManager = null;
-    queuedIndexAllocations = 0;
+    credentialId = null;
 
-    get credentialId() {
-        return this.credentialManager && this.credentialManager.credentialId;
-    }
+    credentialSelected = false;
 
     @observable
     organizations = [];
@@ -59,10 +55,11 @@ export default class BbCloudFlowManager extends FlowManager {
     selectedRepository = null;
 
     @computed get stepsDisabled() {
-        return this.stateId === STATE.STEP_COMPLETE_SAVING_ERROR ||
-            this.stateId === STATE.STEP_COMPLETE_EVENT_ERROR ||
+        return this.stateId === STATE.STEP_COMPLETE_EVENT_ERROR ||
             this.stateId === STATE.STEP_COMPLETE_EVENT_TIMEOUT ||
             this.stateId === STATE.STEP_COMPLETE_MISSING_JENKINSFILE ||
+            this.stateId === STATE.PENDING_CREATION_SAVING ||
+            this.stateId === STATE.PENDING_CREATION_EVENTS ||
             this.stateId === STATE.STEP_COMPLETE_SUCCESS;
     }
 
@@ -76,14 +73,17 @@ export default class BbCloudFlowManager extends FlowManager {
 
     _sseTimeoutId = null;
 
-    constructor(creationApi, credentialsApi) {
+    constructor(creationApi) {
         super();
         this._creationApi = creationApi;
-        this.credentialManager = new BbCredentialManager(credentialsApi);
     }
 
     translate(key, opts) {
         return translate(key, opts);
+    }
+
+    getScmId() {
+        return 'bitbucket-cloud';
     }
 
     getApiUrl() {
@@ -106,7 +106,7 @@ export default class BbCloudFlowManager extends FlowManager {
     }
 
     onInitialized() {
-        this.findExistingCredential();
+        this._renderCredentialsStep();
         this.setPlaceholders(translate('creation.core.status.completed'));
     }
 
@@ -114,44 +114,38 @@ export default class BbCloudFlowManager extends FlowManager {
         this._cleanupListeners();
     }
 
-    findExistingCredential() {
-        return this.credentialManager.findExistingCredential(this.getApiUrl())
-            .then(waitAtLeast(MIN_DELAY))
-            .then(success => this._findExistingCredentialComplete(success));
-    }
-
-    _findExistingCredentialComplete(success) {
-        if (success) {
-            this.changeState(STATE.PENDING_LOADING_ORGANIZATIONS);
-            this.listOrganizations();
-        } else {
-            this.renderStep({
-                stateId: STATE.STEP_CREDENTIAL,
-                stepElement: <BbCredentialsStep />,
-                afterStateId: this._getCredentialsStepAfterStateId(),
-            });
-        }
-    }
-
     _getCredentialsStepAfterStateId() {
         return null;
     }
-    createCredential(userName, password) {
-        return this.credentialManager.createCredential(this.getApiUrl(), userName, password)
-            .then(success => this._createCredentialComplete(success));
+
+    _renderCredentialsStep() {
+        this.renderStep({
+            stateId: STATE.STEP_CREDENTIAL,
+            stepElement: <BbCredentialsStep
+                onCredentialSelected={(cred, selectionType) => this._onCredentialSelected(cred, selectionType)}
+            />,
+            afterStateId: this._getCredentialsStepAfterStateId(),
+        });
     }
 
-    _createCredentialComplete(response) {
-        if (response.success) {
-            this._renderLoadingOrganizations();
-        }
+    _onCredentialSelected(credential, selectionType) {
+        this.credentialId = credential.credentialId;
+        this.credentialSelected = selectionType === 'userSelected';
+        this._renderLoadingOrganizations();
+    }
+
+    _getOrganizationsStepAfterStateId() {
+        // if the credential was manually selected, add the organizations step after it
+        // if auto-selected, just replace it altogether
+        return this.credentialSelected ?
+            STATE.STEP_CREDENTIAL : null;
     }
 
     _renderLoadingOrganizations() {
         this.renderStep({
             stateId: STATE.PENDING_LOADING_ORGANIZATIONS,
             stepElement: <BbLoadingStep />,
-            afterStateId: STATE.STEP_CREDENTIAL,
+            afterStateId: this._getOrganizationsStepAfterStateId(),
         });
 
         this.listOrganizations();
@@ -172,21 +166,12 @@ export default class BbCloudFlowManager extends FlowManager {
             .then(orgs => this._listOrganizationsSuccess(orgs));
     }
 
-    _getOrganizationsStepAfterStateId() {
-        return this.isStateAdded(STATE.STEP_CREDENTIAL) ?
-            STATE.STEP_CREDENTIAL : null;
-    }
-
     @action
     _listOrganizationsSuccess(response) {
         if (response.outcome === ListOrganizationsOutcome.SUCCESS) {
             this.organizations = response.organizations;
 
-            this.renderStep({
-                stateId: STATE.STEP_CHOOSE_ORGANIZATION,
-                stepElement: <BbOrgListStep />,
-                afterStateId: this._getOrganizationsStepAfterStateId(),
-            });
+            this._renderChooseOrg();
         } else if (response.outcome === ListOrganizationsOutcome.INVALID_CREDENTIAL_ID) {
             this.organizations = response.organizations;
 
@@ -200,6 +185,14 @@ export default class BbCloudFlowManager extends FlowManager {
                 stepElement: <BbUnknownErrorStep message={response.error} />,
             });
         }
+    }
+
+    _renderChooseOrg() {
+        this.renderStep({
+            stateId: STATE.STEP_CHOOSE_ORGANIZATION,
+            stepElement: <BbOrgListStep />,
+            afterStateId: this._getOrganizationsStepAfterStateId(),
+        });
     }
 
     @action
@@ -288,7 +281,10 @@ export default class BbCloudFlowManager extends FlowManager {
 
         this._initListeners();
 
-        this._creationApi.createMbp(this.credentialId, this.getApiUrl(), this.pipelineName, this.selectedOrganization.key, this.selectedRepository.name)
+        this._creationApi.createMbp(this.credentialId, this.getScmId(), this.getApiUrl(), this.pipelineName,
+                                    this.selectedOrganization.key, this.selectedRepository.name,
+            'io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketPipelineCreateRequest',
+    )
             .then(waitAtLeast(MIN_DELAY * 2))
             .then(result => this._createPipelineComplete(result));
     }
@@ -302,8 +298,21 @@ export default class BbCloudFlowManager extends FlowManager {
     _createPipelineComplete(result) {
         this.outcome = result.outcome;
         if (result.outcome === CreateMbpOutcome.SUCCESS) {
-            this.changeState(STATE.STEP_COMPLETE_SUCCESS);
-            this.pipeline = result.pipeline;
+            if (!this.isStateAdded(STATE.STEP_COMPLETE_MISSING_JENKINSFILE)) {
+                this._checkForBranchCreation(result.pipeline.name, true, ({ isFound, hasError, pipeline }) => {
+                    if (!hasError && isFound) {
+                        this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+                        this.pipeline = pipeline;
+                        this.pipelineName = pipeline.name;
+                    }
+                }, this.redirectTimeout);
+                if (!this.isStateAdded(STATE.STEP_COMPLETE_MISSING_JENKINSFILE)
+                    && !this.isStateAdded(STATE.STEP_COMPLETE_SUCCESS)) {
+                    this.changeState(STATE.PENDING_CREATION_EVENTS);
+                    this.pipeline = result.pipeline;
+                    this.pipelineName = result.pipeline.name;
+                }
+            }
         } else if (result.outcome === CreateMbpOutcome.INVALID_NAME) {
             this.renderStep({
                 stateId: STATE.STEP_RENAME,
@@ -362,21 +371,35 @@ export default class BbCloudFlowManager extends FlowManager {
             this._logEvent(event);
         }
 
-        if (event.job_multibranch_indexing_status === 'INDEXING' && event.job_run_status === 'QUEUED') {
-            this.queuedIndexAllocations++;
-        }
+        if (event.blueocean_job_pipeline_name === this.pipelineName
+            && event.jenkins_object_type === 'org.jenkinsci.plugins.workflow.job.WorkflowRun'
+            && (event.job_run_status === 'ALLOCATED' || event.job_run_status === 'RUNNING' ||
+                    event.job_run_status === 'SUCCESS' || event.job_run_status === 'FAILURE')) {
 
-        if (event.job_multibranch_indexing_result) {
-            this.queuedIndexAllocations--;
+            // set pipeline details thats needed later on in BbCompleteStep.navigatePipeline()
+            this.pipeline = { organization: event.jenkins_org, fullName: this.pipelineName };
+            this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+            return;
         }
 
         const multiBranchIndexingComplete = event.job_multibranch_indexing_result === 'SUCCESS' &&
             event.blueocean_job_pipeline_name === this.pipelineName;
 
         if (multiBranchIndexingComplete) {
-            this.savedPipeline = this.pipelineName;
             LOGGER.info(`creation succeeded for ${this.pipelineName}`);
-            this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+            if (event.jenkinsfile_present === 'false') {
+                this._finishListening(STATE.STEP_COMPLETE_MISSING_JENKINSFILE);
+            }
+        } else if (event.job_multibranch_indexing_result === 'FAILURE') {
+            this._finishListening(STATE.STEP_COMPLETE_EVENT_ERROR);
+        } else {
+            this._checkForBranchCreation(event.blueocean_job_pipeline_name, false, ({ isFound, hasError, pipeline }) => {
+                if (isFound && !hasError) {
+                    this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+                    this.pipeline = pipeline;
+                    this.pipelineName = pipeline.name;
+                }
+            });
         }
     }
 
@@ -391,6 +414,23 @@ export default class BbCloudFlowManager extends FlowManager {
         this.changeState(STATE.STEP_COMPLETE_EVENT_TIMEOUT);
         this._cleanupListeners();
     }
+
+    _checkForBranchCreation(pipelineName, multiBranchIndexingComplete, onComplete, delay = 500) {
+        if (multiBranchIndexingComplete) {
+            LOGGER.debug(`multibranch indexing for ${pipelineName} completed`);
+        }
+
+        LOGGER.debug(`will check for branches of ${pipelineName} in ${delay}ms`);
+
+        setTimeout(() => {
+            this._creationApi.findBranches(pipelineName)
+                .then(data => {
+                    LOGGER.debug(`check for pipeline complete. created? ${data.isFound}`);
+                    onComplete(data);
+                });
+        }, delay);
+    }
+
 
     _logEvent(event) {
         if (event.job_multibranch_indexing_result === 'SUCCESS' || event.job_multibranch_indexing_result === 'FAILURE') {

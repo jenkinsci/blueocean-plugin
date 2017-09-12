@@ -21,6 +21,7 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainSpecification;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.AbstractScm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmOrganization;
@@ -64,9 +65,9 @@ import static com.fasterxml.jackson.annotation.JsonAutoDetect.Visibility.NONE;
 /**
  * @author Vivek Pandey
  */
-public class GithubScm extends Scm {
+public class GithubScm extends AbstractScm {
     //Used by tests to mock github
-    private static final String ID = "github";
+    public static final String ID = "github";
 
     //desired scopes
     private static final String USER_EMAIL_SCOPE = "user:email";
@@ -115,18 +116,30 @@ public class GithubScm extends Scm {
 
     @Override
     public String getCredentialId(){
-        StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(getId(), StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+        StandardUsernamePasswordCredentials githubCredential = getCredential(getUri());
         if(githubCredential != null){
             return githubCredential.getId();
         }
         return null;
     }
 
+    StandardUsernamePasswordCredentials getCredential(String apiUrl){
+        String credentialId = createCredentialId(apiUrl);
+        return CredentialsUtils.findCredential(credentialId,
+                StandardUsernamePasswordCredentials.class,
+                new BlueOceanDomainRequirement());
+    }
+
+    @Override
+    public Object getState() {
+        this.validateExistingAccessToken();
+        return super.getState();
+    }
+
     @Override
     public Container<ScmOrganization> getOrganizations() {
         StaplerRequest request = Stapler.getCurrentRequest();
-
-        String credentialId = getCredentialIdFromRequest(request);
+        String credentialId = GithubCredentialUtils.computeCredentialId(getCredentialIdFromRequest(request), getId(), getUri());
 
         User authenticatedUser = getAuthenticatedUser();
         final StandardUsernamePasswordCredentials credential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
@@ -200,7 +213,7 @@ public class GithubScm extends Scm {
     }
 
     protected @Nonnull String createCredentialId(@Nonnull String apiUrl) {
-        return ID;
+        return GithubCredentialUtils.computeCredentialId(null, GithubScm.ID, apiUrl);
     }
 
     protected @Nonnull String getCredentialDescription() {
@@ -219,10 +232,7 @@ public class GithubScm extends Scm {
             } catch (URISyntaxException ex) {
                 throw new ServiceException.BadRequestException(new ErrorMessage(400, "Invalid URI: " + apiUri));
             }
-
-            if (apiUri.endsWith("/")) {
-                apiUri = apiUri.substring(0, apiUri.length() - 1);
-            }
+            apiUri = normalizeUrl(apiUri);
         } else {
             apiUri = "";
         }
@@ -230,16 +240,11 @@ public class GithubScm extends Scm {
         return apiUri;
     }
 
-     private static String getCredentialIdFromRequest(StaplerRequest request){
-        String credentialId = request.getParameter(CREDENTIAL_ID);
-
-        if(credentialId == null){
-            credentialId = request.getHeader(X_CREDENTIAL_ID);
+    static String normalizeUrl(@Nonnull String apiUrl){
+        if (apiUrl.endsWith("/")) {
+            apiUrl = apiUrl.substring(0, apiUrl.length() - 1);
         }
-        if(credentialId == null){
-            throw new ServiceException.BadRequestException("Missing credential id. It must be provided either as HTTP header: " + X_CREDENTIAL_ID+" or as query parameter 'credentialId'");
-        }
-        return credentialId;
+        return apiUrl;
     }
 
     @Override
@@ -320,6 +325,24 @@ public class GithubScm extends Scm {
         return connection;
     }
 
+    /**
+     * Ensure any existing access token is valid and has the proper scopes.
+     */
+    protected void validateExistingAccessToken() {
+        String credentialId = createCredentialId(getUri());
+        StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+
+        if (githubCredential != null) {
+            HttpURLConnection connection;
+            try {
+                connection = connect(String.format("%s/%s", getUri(), "user"), githubCredential.getPassword().getPlainText());
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            validateAccessTokenScopes(connection);
+        }
+    }
+
     static void validateAccessTokenScopes(HttpURLConnection connection) {
         //check for user:email or user AND repo scopes
         String scopesHeader = connection.getHeaderField("X-OAuth-Scopes");
@@ -355,16 +378,6 @@ public class GithubScm extends Scm {
         }
     }
 
-    private HttpResponse createResponse(final String credentialId) {
-        return new HttpResponse() {
-            @Override
-            public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
-                rsp.setStatus(200);
-                rsp.getWriter().print(JsonConverter.toJson(ImmutableMap.of("credentialId", credentialId)));
-            }
-        };
-    }
-
     @Extension
     public static class GithubScmFactory extends ScmFactory {
         @Override
@@ -380,13 +393,5 @@ public class GithubScm extends Scm {
         public Scm getScm(Reachable parent) {
             return new GithubScm(parent);
         }
-    }
-
-    static User getAuthenticatedUser(){
-        User authenticatedUser = User.current();
-        if(authenticatedUser == null){
-            throw new ServiceException.UnauthorizedException("No logged in user found");
-        }
-        return authenticatedUser;
     }
 }

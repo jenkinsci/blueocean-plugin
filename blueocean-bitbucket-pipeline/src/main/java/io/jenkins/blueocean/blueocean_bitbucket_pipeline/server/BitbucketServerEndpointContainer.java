@@ -6,6 +6,7 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import hudson.security.ACL;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.Messages;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
@@ -58,8 +59,8 @@ public class BitbucketServerEndpointContainer extends ScmServerEndpointContainer
                 String version = BitbucketServerApi.getVersion(url);
                 if (!BitbucketServerApi.isSupportedVersion(version)) {
                     errors.add(new ErrorMessage.Error(BitbucketServerEndpoint.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(),
-                            String.format("Bitbucket server: %s version: %s is not supported. Minimum supported version: %s",
-                                    url, version, BitbucketServerApi.MINIMUM_SUPPORTED_VERSION)));
+                            Messages.bbserver_version_validation_error(
+                                    version, BitbucketServerApi.MINIMUM_SUPPORTED_VERSION)));
                 } else {
                     //validate presence of endpoint with same name
                     url = BitbucketEndpointConfiguration.normalizeServerUrl(url);
