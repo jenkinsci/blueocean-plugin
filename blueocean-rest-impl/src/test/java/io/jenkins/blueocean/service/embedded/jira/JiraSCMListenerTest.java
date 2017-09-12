@@ -4,7 +4,6 @@ import com.atlassian.jira.rest.client.api.domain.Issue;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
-import hudson.maven.FilteredChangeLogSet;
 import hudson.model.Job;
 import hudson.model.Run;
 import hudson.plugins.jira.JiraBuildAction;
