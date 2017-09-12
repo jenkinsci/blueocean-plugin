@@ -10,8 +10,8 @@
   "author": "Vivek Pandey <vivek.pandey@gmail.com> (https://github.com/vivek)",
   "license": "MIT",
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.151-tf-JENKINS-45847-beta4",
-    "@jenkins-cd/js-extensions": "0.0.37-tf-JENKINS-45847-beta4",
+    "@jenkins-cd/blueocean-core-js": "0.0.155-JENKINS-45847-beta-1",
+    "@jenkins-cd/js-extensions": "0.0.39-JENKINS-45847-beta-1",
     "@jenkins-cd/js-modules": "0.0.10",
     "rollbar-browser": "1.9.2"
   },

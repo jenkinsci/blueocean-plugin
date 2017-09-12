@@ -3,14 +3,14 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.151-tf-JENKINS-45847-beta4",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.151-tf-JENKINS-45847-beta4",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.151-tf-JENKINS-45847-beta4.tgz"
+      "version": "0.0.155-JENKINS-45847-beta-1",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.155-JENKINS-45847-beta-1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.155-JENKINS-45847-beta-1.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.145",
-      "from": "@jenkins-cd/design-language@0.0.145",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.145.tgz"
+      "version": "0.0.147",
+      "from": "@jenkins-cd/design-language@0.0.147",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.147.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -25,9 +25,9 @@
       "dev": true
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.37-tf-JENKINS-45847-beta4",
-      "from": "@jenkins-cd/js-extensions@0.0.37-tf-JENKINS-45847-beta4",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.37-tf-JENKINS-45847-beta4.tgz"
+      "version": "0.0.39-JENKINS-45847-beta-1",
+      "from": "@jenkins-cd/js-extensions@0.0.39-JENKINS-45847-beta-1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.39-JENKINS-45847-beta-1.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.10",
@@ -2740,9 +2740,9 @@
       "dev": true
     },
     "fbjs": {
-      "version": "0.8.14",
+      "version": "0.8.15",
       "from": "fbjs@>=0.8.4 <0.9.0",
-      "resolved": "https://registry.npmjs.org/fbjs/-/fbjs-0.8.14.tgz",
+      "resolved": "https://registry.npmjs.org/fbjs/-/fbjs-0.8.15.tgz",
       "dependencies": {
         "core-js": {
           "version": "1.2.7",
@@ -3292,9 +3292,9 @@
       "resolved": "https://registry.npmjs.org/i18next-xhr-backend/-/i18next-xhr-backend-1.2.0.tgz"
     },
     "iconv-lite": {
-      "version": "0.4.18",
+      "version": "0.4.19",
       "from": "iconv-lite@>=0.4.13 <0.5.0",
-      "resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.18.tgz"
+      "resolved": "https://registry.npmjs.org/iconv-lite/-/iconv-lite-0.4.19.tgz"
     },
     "ieee754": {
       "version": "1.1.8",
@@ -4289,9 +4289,9 @@
       "dev": true
     },
     "node-fetch": {
-      "version": "1.7.2",
+      "version": "1.7.3",
       "from": "node-fetch@>=1.0.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/node-fetch/-/node-fetch-1.7.2.tgz"
+      "resolved": "https://registry.npmjs.org/node-fetch/-/node-fetch-1.7.3.tgz"
     },
     "node-http-server": {
       "version": "3.0.5",
