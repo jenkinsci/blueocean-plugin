@@ -460,6 +460,14 @@
             <version>3.5.0</version>
         </dependency>
 
+        <!-- Needed by blueocean-rest-impl for ssh unititlies -->
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.1.54</version>
+        </dependency>
+
+
         <!-- Other -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>

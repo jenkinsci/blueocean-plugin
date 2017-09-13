@@ -51,9 +51,9 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>ssh-credentials</artifactId>
         </dependency>
-        <dependency> <!-- need this to solve a JSch linkage problem -->
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>git-client</artifactId>
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
         </dependency>
         <dependency>
             <groupId>oro</groupId>
@@ -134,11 +134,6 @@
             <artifactId>joda-time</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>org.jenkins-ci.main</groupId>
-            <artifactId>maven-plugin</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>org.jenkins-ci.main</groupId>
             <artifactId>jenkins-test-harness-tools</artifactId>

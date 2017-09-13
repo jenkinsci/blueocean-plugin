@@ -112,6 +112,7 @@ export {
     buildOrganizationUrl,
     buildPipelineUrl,
     rootPath,
+    buildClassicCreateJobUrl,
     buildClassicConfigUrl,
     buildClassicInputUrl,
     buildClassicBuildUrl,
