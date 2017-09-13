@@ -8,7 +8,17 @@ const Button = ({ icon, onClick }) => (
     </span>
 );
 
+Button.propTypes = {
+    icon: React.PropTypes.string,
+    onClick: React.PropTypes.func,
+};
+
 export default class BundleWatchProgress extends React.Component {
+    static propTypes = {
+        icon: React.PropTypes.any,
+        onClick: React.PropTypes.any,
+    };
+
     since = 0;
     updateSpeed = 500;
 
@@ -148,8 +158,8 @@ export default class BundleWatchProgress extends React.Component {
                             {b.building && <span className="bundle-watch-icon"><LiveStatusIndicator result="RUNNING" height={18} /></span>}
                             <span className="bundle-watch-icon" onClick={() => this.toggleLog(b.name)}>{b.name}</span>
                             <span> in: {b.lastBuildTime}ms </span>
-                            <Button icon="refresh" onClick={() => this.reRunBundle(b.name)}/>
-                            <Button icon="delete" onClick={() => this.clearLogs(b.name)}/>
+                            <Button icon="NavigationRefresh" onClick={() => this.reRunBundle(b.name)}/>
+                            <Button icon="ActionDelete" onClick={() => this.clearLogs(b.name)}/>
                         </h1>
                         {(this.state.expanded[b.name] || b.building) && <pre className="bundle-watch-log">
                             {b.log}
