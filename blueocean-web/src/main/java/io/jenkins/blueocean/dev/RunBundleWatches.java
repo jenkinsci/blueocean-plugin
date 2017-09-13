@@ -74,7 +74,6 @@ public class RunBundleWatches {
             if (!request.has("name")) throw new ServiceException.BadRequestException("Must specify name");
             for (BundleBuild build : builds) {
                 if (build.name.equals(request.getString("name"))) {
-                    build.isBuilding = true;
                     build.reRun();
                     return;
                 }
@@ -249,6 +248,7 @@ public class RunBundleWatches {
                                         build.destructor = new Destructor() {
                                             @Override
                                             public void destroy() {
+                                                build.isBuilding = true;
                                                 if (process.isAlive()) {
                                                     try {
                                                         process.destroy();
@@ -336,7 +336,9 @@ public class RunBundleWatches {
                                         if (buildProcess != null && buildProcess.isAlive()) {
                                             try {
                                                 buildProcess.destroy();
-                                                buildProcess.destroyForcibly();
+                                                if (buildProcess != null && buildProcess.isAlive()) {
+                                                    buildProcess.destroyForcibly();
+                                                }
                                             } catch (Exception e) {
                                                 // ignore
                                                 e.printStackTrace();
@@ -355,7 +357,7 @@ public class RunBundleWatches {
                                         // we might want to re-run npm install if there's a change to package.json
 
                                         // definitely exclude .java
-                                        if (modified.endsWith(".java")) {
+                                        if (modified.toString().endsWith(".java")) {
                                             return;
                                         }
 

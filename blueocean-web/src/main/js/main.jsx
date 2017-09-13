@@ -138,7 +138,7 @@ function makeRoutes(routes) {
         ...routes,
         // FIXME: Not sure best how to set this up without the hardcoded IndexRedirect :-/
         <IndexRedirect to="/pipelines" />,
-        <Route path="/bundle:watch" component={BundleWatchInfo} />,
+        window.isDevelopmentMode && <Route path="/bundle:watch" component={BundleWatchInfo} />,
         <Route path="*" component={NotFound}/>
     ];
 
