@@ -141,10 +141,10 @@ public class GithubCreationPage {
                 .until(ExpectedConditions.visibilityOfElementLocated(emptyRepositoryCreateButton));
             createJenkinsFileButton.click();
             wait.until(ExpectedConditions.urlContains("pipeline-editor"), 30000);
-            logger.info("Pipeline created - now editing");
+            logger.info("AbstractPipeline created - now editing");
         } else {
             wait.until(ExpectedConditions.urlMatches(".*activity$"), 30000);
-            logger.info("Pipeline created");
+            logger.info("AbstractPipeline created");
         }
     }
 

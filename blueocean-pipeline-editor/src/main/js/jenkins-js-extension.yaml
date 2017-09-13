@@ -14,8 +14,5 @@ extensions:
   - component: components/editor/EditorCSS #Self-implemented, currently required to make the css load
     extensionPoint: pipeline.editor.css
 
-  - component: PipelineEditor
-    extensionPoint: jenkins.pipeline.editor
-
   - component: PipelineCreateButton
     extensionPoint: jenkins.pipeline.create.missing.jenkinsfile

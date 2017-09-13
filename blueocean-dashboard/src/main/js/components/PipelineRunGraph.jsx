@@ -101,6 +101,9 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
     const results = [];
     const originalNodeForId = {};
     const convertedNodeForId = {};
+    const allEdges = []; // Array of [srcId, destId] pairs
+    const edgeCountToNode = {}; // id => int
+    // const edgeCountFromNode = {}; // id => int
     let firstNode = undefined;
 
     // Convert the basic details of nodes, and index them by id
@@ -111,7 +114,22 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
         firstNode = firstNode || convertedNode;
         convertedNodeForId[id] = convertedNode;
         originalNodeForId[id] = jenkinsNode;
+        edgeCountToNode[id] = 0;
+        // edgeCountFromNode[id] = 0;
+
+        for (const edge of jenkinsNode.edges) {
+            allEdges.push([id, edge.id]);
+        }
     });
+
+    // Filter out any edges to missing nodes
+    allEdges.filter(([src, dest]) => (src in convertedNodeForId && dest in convertedNodeForId));
+
+    // Cound edges going to/from each node.
+    for (const edgePair of allEdges) {
+        const dest = edgePair[1];
+        edgeCountToNode[dest] = edgeCountToNode[dest] + 1;
+    }
 
     // Follow the graph and build our results
     let currentNode = firstNode;
@@ -126,15 +144,38 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
             // Single following (sibling) node
             nextNode = convertedNodeForId[edges[0].id];
         } else if (edges.length > 1) {
-            // Multiple following nodes are child nodes not siblings
+            // Multiple following nodes are child nodes (parallel branch) not siblings
+
+            // Put the first node of each branch into the children
             currentNode.children = edges
                 .map(edge => convertedNodeForId[edge.id])
                 .filter(node => !!node);
 
-            // We need to look at the child node's edges to figure out what the next sibling node is
-            const childEdges = originalNodeForId[edges[0].id].edges || [];
-            if (childEdges.length) {
-                nextNode = convertedNodeForId[childEdges[0].id];
+            // Now follow the edges along until they coalesce again, which will be the next top-level stage
+            let branchNodes = currentNode.children;
+
+            while (branchNodes && branchNodes.length > 0) {
+                const nextBranchNodes = [];
+
+                for (const branchNode of branchNodes) {
+                    const branchNodeEdges = originalNodeForId[branchNode.id].edges || [];
+                    if (branchNodeEdges.length > 0) { // Should only be 0 at end of pipeline or bad input data
+                        const followingNode = convertedNodeForId[branchNodeEdges[0].id];
+
+                        // If followingNode has several edges pointing to it....
+
+                        if (edgeCountToNode[followingNode.id] > 1) {
+                            // ... then it's the next top-level stage so we're done following this parallel branch...
+                            nextNode = followingNode;
+                        } else {
+                            // ... otherwise it's the next sibling stage within this parallel branch.
+                            branchNode.nextSibling = followingNode;
+                            nextBranchNodes.push(followingNode);
+                        }
+                    }
+                }
+
+                branchNodes = nextBranchNodes;
             }
         }
 

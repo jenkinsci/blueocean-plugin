@@ -41,9 +41,9 @@
     "react-addons-test-utils": "15.3.2"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.154",
-    "@jenkins-cd/design-language": "0.0.147",
-    "@jenkins-cd/js-extensions": "0.0.38",
+    "@jenkins-cd/blueocean-core-js": "0.0.157",
+    "@jenkins-cd/design-language": "0.0.148",
+    "@jenkins-cd/js-extensions": "0.0.39",
     "@jenkins-cd/js-modules": "0.0.10",
     "lodash.debounce": "4.0.8",
     "mobx": "2.6.0",
