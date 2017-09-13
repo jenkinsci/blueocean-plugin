@@ -7,7 +7,7 @@ import {
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
-import { i18nTranslator, NotFound, Paths, ContentPageHeader, logging, AppConfig, Security } from '@jenkins-cd/blueocean-core-js';
+import { AppConfig, ContentPageHeader, i18nTranslator, logging, NotFound, Paths, Security } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from '@jenkins-cd/design-language';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
@@ -74,13 +74,13 @@ export class PipelinePage extends Component {
         }
 
         const baseUrl = buildPipelineUrl(organizationName, fullName);
+        const trendsEnabled = AppConfig.isFeatureEnabled('trends');
 
-        // TODO: remove for Freestyle?
         const pageTabLinks = [
             <TabLink to="/activity">{ translate('pipelinedetail.common.tab.activity', { defaultValue: 'Activity' }) }</TabLink>,
             <TabLink to="/branches">{ translate('pipelinedetail.common.tab.branches', { defaultValue: 'Branches' }) }</TabLink>,
             <TabLink to="/pr">{ translate('pipelinedetail.common.tab.pullrequests', { defaultValue: 'Pull Requests' }) }</TabLink>,
-            <TabLink to="/trends">{ translate('pipelinedetail.common.tab.trends', { defaultValue: 'Trends' }) }</TabLink>,
+            trendsEnabled && <TabLink to="/trends">{ translate('pipelinedetail.common.tab.trends', { defaultValue: 'Trends' }) }</TabLink>,
         ];
 
         const pageHeader = isReady ? (
