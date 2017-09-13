@@ -14,11 +14,6 @@ Button.propTypes = {
 };
 
 export default class BundleWatchProgress extends React.Component {
-    static propTypes = {
-        icon: React.PropTypes.any,
-        onClick: React.PropTypes.any,
-    };
-
     since = 0;
     updateSpeed = 500;
 
@@ -105,7 +100,7 @@ export default class BundleWatchProgress extends React.Component {
             },
             body: JSON.stringify({ name })}})
         .then(() => {
-            this.fetchLogs()
+            this.fetchLogs();
         });
     }
 
