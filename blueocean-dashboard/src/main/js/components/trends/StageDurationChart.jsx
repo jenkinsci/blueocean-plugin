@@ -28,7 +28,8 @@ function createChartData(rows) {
             id: row.id,
         };
 
-        for (const prop of Object.keys(row.nodes)) {
+        const props = (row.nodes && Object.keys(row.nodes)) || [];
+        for (const prop of props) {
             if (prop !== 'id') {
                 transformed[prop] = Math.round(parseInt(row.nodes[prop]) / 1000);
             }
@@ -48,7 +49,8 @@ function createChartSeries(trend, rows) {
     const columns = [];
 
     rows.forEach(row => {
-        for (const prop of Object.keys(row.nodes)) {
+        const props = (row.nodes && Object.keys(row.nodes)) || [];
+        for (const prop of props) {
             if (prop !== 'id' && columns.indexOf(prop) === -1) {
                 columns.push(prop);
             }
