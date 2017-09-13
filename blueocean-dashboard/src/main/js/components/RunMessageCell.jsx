@@ -1,6 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import Lozenge from './Lozenge';
 import { Link } from 'react-router';
+import LinkifiedText from './LinkifiedText'
 
 export default class RunMessageCell extends Component {
     propTypes = {
@@ -39,38 +40,12 @@ export default class RunMessageCell extends Component {
             );
         } else if (showCommitMessage) {
             let commitMsg = run.changeSet[run.changeSet.length - 1].msg;
-            const commitMsgWithIssues = [];
-            const linkedCommitMsg = (<Link to={linkTo} className="unstyled-link" >{commitMsg}</Link>);
-
-            if (run.changeSet[run.changeSet.length - 1].issues) {
-                let issuesIdString = '';
-                const issuesObj = {};
-
-                for (const issue of run.changeSet[run.changeSet.length - 1].issues) {
-                    issuesIdString += `${issue.id}|`;
-                    issuesObj[issue.id] = issue.url;
-                }
-
-                if (issuesIdString) {
-                    const issuesRegExpString = new RegExp(`(${issuesIdString.slice(0, -1)})`, 'gi');
-
-                    for (let commitMsgPart of commitMsg.split(issuesRegExpString)) {
-                        if (issuesObj[commitMsgPart]) {
-                            commitMsgWithIssues.push(<a href={issuesObj[commitMsgPart]} target="_blank">{commitMsgPart}</a>);
-                        } else {
-                            if (commitMsgPart) {
-                                commitMsgWithIssues.push((<Link to={linkTo} className="unstyled-link" >{commitMsgPart}</Link>));
-                            }
-                        }
-                    }
-                }
-            }
 
             if (run.changeSet.length > 1) {
                 return (
                     <span className="RunMessageCell" title={commitMsg}>
                         <span className="RunMessageCellInner">
-                            {commitMsgWithIssues.length ? commitMsgWithIssues : linkedCommitMsg}
+                            <LinkifiedText text={commitMsg} textLink={linkTo} issues={run.changeSet[run.changeSet.length - 1].issues} />
                         </span>
                         <Lozenge title={t('lozenge.commit', { 0: run.changeSet.length })} />
                     </span>
@@ -80,7 +55,7 @@ export default class RunMessageCell extends Component {
             return (
                 <span className="RunMessageCell" title={commitMsg}>
                     <span className="RunMessageCellInner">
-                        {commitMsgWithIssues.length ? commitMsgWithIssues : linkedCommitMsg}
+                        <LinkifiedText text={commitMsg} textLink={linkTo} issues={run.changeSet[run.changeSet.length - 1].issues} />
                     </span>
                 </span>
             );

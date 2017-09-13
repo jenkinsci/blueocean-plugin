@@ -10,6 +10,7 @@ import {
 } from '@jenkins-cd/design-language';
 import Icon from './placeholder/Icon';
 import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
+import LinkifiedText from './LinkifiedText';
 
 
 function NoChangesPlaceholder(props) {
@@ -38,45 +39,6 @@ NoChangesPlaceholder.propTypes = {
     t: PropTypes.func,
 };
 
-
-function AddIssuesLinksToMsg(props) {
-    const { commit } = props;
-
-    let commitMsg = commit.msg;
-    const commitMsgWithIssues = [];
-
-    if (commit.issues) {
-        let issuesIdString = '';
-        const issuesObj = {};
-
-        for (const issue of commit.issues) {
-            issuesIdString += `${issue.id}|`;
-            issuesObj[issue.id] = issue.url;
-        }
-
-        if (issuesIdString) {
-            const issuesRegExpString = new RegExp(`(${issuesIdString.slice(0, -1)})`, 'gi');
-
-            for (let commitMsgPart of commitMsg.split(issuesRegExpString)) {
-                if (issuesObj[commitMsgPart]) {
-                    commitMsgWithIssues.push(<a href={issuesObj[commitMsgPart]} target="_blank">{commitMsgPart}</a>);
-                } else {
-                    if (commitMsgPart) {
-                        commitMsgWithIssues.push(commitMsgPart);
-                    }
-                }
-            }
-        }
-
-        return (<span>{commitMsgWithIssues}</span>);
-    }
-
-    return (<span>{commitMsg}</span>);
-}
-
-AddIssuesLinksToMsg.propTypes = {
-    commit: PropTypes.object,
-};
 
 export default class RunDetailsChanges extends Component {
 
@@ -112,7 +74,7 @@ export default class RunDetailsChanges extends Component {
                     <TableRow key={commit.commitId}>
                         <TableCell><CommitId commitId={commit.commitId} url={commit.url} /></TableCell>
                         <TableCell>{commit.author.fullName}</TableCell>
-                        <TableCell className="multipleLines"><AddIssuesLinksToMsg commit={commit} /></TableCell>
+                        <TableCell className="multipleLines"><LinkifiedText text={commit.msg} issues={commit.issues} /></TableCell>
                         <TableCell>
                             <ReadableDate date={commit.timestamp}
                                           liveUpdate
