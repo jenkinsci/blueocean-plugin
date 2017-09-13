@@ -127,8 +127,8 @@ export default class FlowManager {
 
         // each time a new step instance is created we want fresh React state
         // assign a unique ID to the React element's key to force a remount
-        //newStep.stepElement.key = Utils.randomId();
-        newStep.stepElement = React.cloneElement(stepElement, {key: Utils.randomId()});
+        // This was: newStep.stepElement.key = Utils.randomId();
+        newStep.stepElement = React.cloneElement(stepElement, { key: Utils.randomId() });
         return newStep;
     }
 
