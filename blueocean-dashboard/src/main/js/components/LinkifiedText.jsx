@@ -32,6 +32,10 @@ const LinkifiedText = (props) => {
             }
         }
 
+        if (!textWithIssues.length) {
+            textWithIssues.push((<Link to={textLink} className="unstyled-link" >{text}</Link>));
+        }
+
         return (<span>{textWithIssues}</span>);
     }
 
