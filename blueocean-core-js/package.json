@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.141-kz-1",
+  "version": "0.0.156-kz-1",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
@@ -16,7 +16,8 @@
     "test:fast": "gulp test-fast",
     "prepublish": "gulp",
     "mvnbuild": "gulp bundle",
-    "mvntest": "echo 0"
+    "mvntest": "gulp test",
+    "build": "npm install && npm run gulp"
   },
   "author": "Cliff Meyers <cmeyers@cloudbees.com> (https://www.cloudbees.com/)",
   "contributors": [
@@ -34,10 +35,11 @@
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
+    "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/logging": "0.0.6",
-    "@jenkins-cd/react-material-icons": "1.0.0",
     "@jenkins-cd/sse-gateway": "0.0.21",
     "@jenkins-cd/storage": "0.0.6",
+    "cd": "0.3.3",
     "es6-promise": "4.0.5",
     "i18next": "3.5.2",
     "i18next-browser-languagedetector": "1.0.0",
@@ -51,10 +53,10 @@
     "react-remarkable": "1.1.1"
   },
   "devDependencies": {
-    "@jenkins-cd/design-language": "0.0.140-kz-4",
+    "@jenkins-cd/design-language": "0.0.148",
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
     "@jenkins-cd/js-builder": "0.0.60-kz-1",
-    "@jenkins-cd/js-extensions": "0.0.37-kz-2",
+    "@jenkins-cd/js-extensions": "0.0.39-kz-2",
     "@jenkins-cd/js-modules": "0.0.10",
     "@kadira/storybook": "2.20.1",
     "babel-eslint": "7.0.0",
@@ -63,7 +65,6 @@
     "babel-preset-es2015": "6.16.0",
     "babel-preset-react": "6.16.0",
     "babel-preset-stage-0": "6.16.0",
-    "babelify": "7.3.0",
     "browserify": "13.1.0",
     "chai": "3.5.0",
     "del": "2.2.2",
@@ -91,8 +92,6 @@
     "karma-phantomjs-launcher": "1.0.2",
     "less": "2.7.2",
     "minimist": "1.2.0",
-    "mocha": "3.1.0",
-    "phantomjs-prebuilt": "2.1.12",
     "react": "15.3.2",
     "react-addons-test-utils": "15.3.2",
     "react-dom": "15.3.2",

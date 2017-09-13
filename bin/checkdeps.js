@@ -46,6 +46,7 @@ packageFiles.push(require("../blueocean-dashboard/package.json"));
 packageFiles.push(require("../blueocean-web/package.json"));
 packageFiles.push(require("../blueocean-personalization/package.json"));
 packageFiles.push(require("../blueocean-config/package.json"));
+packageFiles.push(require("../blueocean-pipeline-editor/package.json"));
 packageFiles.push(require("../js-extensions/package.json"));
 packageFiles.push(require("../blueocean-core-js/package.json"));
 packageFiles.push(require("../jenkins-design-language/package.json"));

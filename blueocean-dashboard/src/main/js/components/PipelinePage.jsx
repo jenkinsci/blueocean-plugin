@@ -8,7 +8,7 @@ import {
     WeatherIcon,
 } from '@jenkins-cd/design-language';
 import { i18nTranslator, NotFound, Paths, ContentPageHeader, logging, AppConfig, Security } from '@jenkins-cd/blueocean-core-js';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '@jenkins-cd/design-language';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
 import { observer } from 'mobx-react';
@@ -21,7 +21,7 @@ const RestPaths = Paths.rest;
 const classicConfigLink = (pipeline) => {
     let link = null;
     if (Security.permit(pipeline).configure()) {
-        link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>;
+        link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="ActionSettings" style={{ verticalAlign: 'baseline' }} /></a>;
     }
     return link;
 };

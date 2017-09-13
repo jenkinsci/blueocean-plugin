@@ -10,7 +10,7 @@ import type { Result } from './status/StatusIndicator';
 
 type State = {
     resultClean: Result,
-    statusGlyph: ?any, // FIXME: It seems Flow doesn't (at 20160611) have a type for PropTypes.node
+    statusGlyph: ?ReactChildren,
     expanded: boolean
 };
 

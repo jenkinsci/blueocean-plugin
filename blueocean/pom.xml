@@ -22,14 +22,6 @@
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>jenkins-design-language</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-core-js</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-web</artifactId>
         </dependency>
         <dependency>
@@ -74,6 +66,7 @@
             <artifactId>blueocean-config</artifactId>
         </dependency>
 
+
         <!-- TODO: its here only for development, to be removed -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -101,12 +94,10 @@
             <artifactId>blueocean-autofavorite</artifactId>
         </dependency>
 
-        <!-- temporarily disabled until upgrading the 
         <dependency>
           <groupId>io.jenkins.blueocean</groupId>
           <artifactId>blueocean-pipeline-editor</artifactId>
         </dependency>
-        -->
 
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -171,23 +162,18 @@
                             }
                         };
 
-                        //
-                        // Link in other sub-modules. Add as needed.
-                        //
-                        linkHPI('jenkins-design-language');
-                        linkHPI('blueocean-core-js');
-                        linkHPI('blueocean-web');
-                        linkHPI('blueocean-dashboard');
-                        linkHPI('blueocean-personalization');
-                        linkHPI('blueocean-rest');
-                        linkHPI('blueocean-commons');
-                        linkHPI('blueocean-i18n');
-                        linkHPI('blueocean-jwt');
-                        linkHPI('blueocean-rest-impl');
-                        linkHPI('blueocean-pipeline-api-impl')
-                        linkHPI('blueocean-config')
-                        linkHPI('blueocean-github-pipeline')
-                        linkHPI('blueocean-git-pipeline')
+                        println('Automatically linking HPIs for submodules...')
+
+                        // modules to be excluded from hpi linking below
+                        def hpiExcludes = ['blueocean']
+
+                        project.parent.modules.each { module -&gt;
+                            def moduleName = module.toString()
+
+                            if (!hpiExcludes.contains(moduleName)) {
+                                linkHPI(moduleName)
+                            }
+                        }
                     </source>
                 </configuration>
             </plugin>

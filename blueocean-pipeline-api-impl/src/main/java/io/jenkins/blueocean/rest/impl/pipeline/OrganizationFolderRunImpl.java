@@ -51,7 +51,7 @@ public class OrganizationFolderRunImpl extends BlueRun {
 
     @Override
     public String getOrganization() {
-        return pipeline.getOrganization();
+        return pipeline.getOrganizationName();
     }
 
     @Override
@@ -92,6 +92,21 @@ public class OrganizationFolderRunImpl extends BlueRun {
 
     @Override
     public Date getEndTime() {
+        return null;
+    }
+
+    @Override
+    public String getStartTimeString() {
+        return null;
+    }
+
+    @Override
+    public String getEnQueueTimeString() {
+        return null;
+    }
+
+    @Override
+    public String getEndTimeString() {
         return null;
     }
 
@@ -191,7 +206,7 @@ public class OrganizationFolderRunImpl extends BlueRun {
     @Override
     public BlueRun replay() {
         if(isReplayable()) {
-            return new QueueItemImpl(pipeline.folder.scheduleBuild2(0,new CauseAction(new hudson.model.Cause.UserIdCause())), pipeline, 1).toRun();
+            return new QueueItemImpl(this.pipeline.getOrganization(), pipeline.folder.scheduleBuild2(0,new CauseAction(new hudson.model.Cause.UserIdCause())), pipeline, 1).toRun();
         }
         return null;
     }

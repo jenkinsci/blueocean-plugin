@@ -51,8 +51,8 @@ class HttpRequest {
         return this;
     }
 
-    public HttpRequest withAuthorization(String authorization){
-        this.authorization = authorization;
+    public HttpRequest withAuthorizationToken(String accessToken){
+        this.authorization = "token " + accessToken;
         return this;
     }
 
@@ -97,7 +97,7 @@ class HttpRequest {
                     try {
                         return GithubScm.om.readValue(data, type);
                     } catch (JsonMappingException e) {
-                        throw new IOException("Failed to deserialize " + data, e);
+                        throw new IOException("Failed to deserialize: "+e.getMessage()+"\n" + data, e);
                     }
                 }
             }

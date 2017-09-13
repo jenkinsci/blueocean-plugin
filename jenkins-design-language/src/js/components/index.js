@@ -23,11 +23,11 @@ export {
 export { ErrorMessage } from './ErrorMessage';
 export { Favorite } from './favorite/Favorite';
 export { ReadableDate } from './ReadableDate';
-export { CommitId, CommitId as CommitHash } from './CommitId';
+export { CommitId } from './CommitId';
 export { DownloadLink } from './DownloadLink';
 export { EmptyStateView } from './EmptyStateView';
 export { EmptyStateIcon } from './EmptyStateIcon';
-export { PipelineGraph } from './PipelineGraph';
+export { PipelineGraph } from './pipeline/PipelineGraph';
 export { FileSize } from './FileSize';
 export { Toast } from './Toast';
 export { Toaster } from './Toaster';
@@ -48,6 +48,7 @@ export {
     Dialog
 } from './dialog';
 export { FloatingElement } from './FloatingElement';
+export { Icon } from './Icon';
 export { IconButton } from './IconButton';
 export { Dropdown } from './forms/Dropdown';
 export { Checkbox } from './forms/Checkbox';

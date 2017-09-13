@@ -4,7 +4,7 @@ package io.blueocean.ath.pages.blue;
 import com.google.inject.assistedinject.Assisted;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
-import io.blueocean.ath.model.Pipeline;
+import io.blueocean.ath.model.AbstractPipeline;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
@@ -18,7 +18,7 @@ public class RunDetailsPipelinePage {
 
     private WebDriver driver;
 
-    private Pipeline pipeline;
+    private AbstractPipeline pipeline;
 
     @Inject
     @BaseUrl
@@ -28,7 +28,7 @@ public class RunDetailsPipelinePage {
     WaitUtil wait;
 
     @Inject
-    public RunDetailsPipelinePage(WebDriver driver, @Assisted Pipeline pipeline) {
+    public RunDetailsPipelinePage(WebDriver driver, @Assisted AbstractPipeline pipeline) {
         this.driver = driver;
         this.pipeline = pipeline;
         PageFactory.initElements(driver, this);
@@ -39,7 +39,7 @@ public class RunDetailsPipelinePage {
         logger.info("Opened result page for " + pipeline);
     }
     public void checkPipeline() {
-        Assert.assertNotNull("Pipeline is null", pipeline);
+        Assert.assertNotNull("AbstractPipeline is null", pipeline);
     }
 
     public void checkUrl(int runNumber) {

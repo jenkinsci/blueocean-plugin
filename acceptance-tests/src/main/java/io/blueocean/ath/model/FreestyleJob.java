@@ -3,7 +3,7 @@ package io.blueocean.ath.model;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
 
-public class FreestyleJob extends Pipeline {
+public class FreestyleJob extends AbstractPipeline {
     @AssistedInject
     public FreestyleJob(@Assisted String name) {
         super(name);

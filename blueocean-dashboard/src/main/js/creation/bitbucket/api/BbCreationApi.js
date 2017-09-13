@@ -90,12 +90,12 @@ export class BbCreationApi {
             .then(response => capabilityAugmenter.augmentCapabilities(response));
     }
 
-    createMbp(credentialId, apiUrl, itemName, bbOrganizationKey, repoName) {
+    createMbp(credentialId, scmId, apiUrl, itemName, bbOrganizationKey, repoName, creatorClass) {
         const path = UrlConfig.getJenkinsRootURL();
         const createUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/pipelines/`);
 
         const requestBody = this._buildRequestBody(
-            credentialId, apiUrl, itemName, bbOrganizationKey, repoName,
+            credentialId, scmId, apiUrl, itemName, bbOrganizationKey, repoName, creatorClass
         );
 
         const fetchOptions = {
@@ -164,11 +164,12 @@ export class BbCreationApi {
         };
     }
 
-    _buildRequestBody(credentialId, apiUrl, itemName, organizationName, repoName) {
+    _buildRequestBody(credentialId, scmId, apiUrl, itemName, organizationName, repoName, creatorClass) {
         return {
             name: itemName,
-            $class: 'io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketPipelineCreateRequest',
+            $class: creatorClass,
             scmConfig: {
+                id: scmId,
                 credentialId,
                 uri: apiUrl,
                 config: {
@@ -176,6 +177,32 @@ export class BbCreationApi {
                     repository: repoName,
                 },
             },
+        };
+    }
+
+    findBranches(pipelineName) {
+        const path = UrlConfig.getJenkinsRootURL();
+        const pipelineUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/pipelines/${pipelineName}/`);
+        return this._fetch(pipelineUrl)
+            .then(response => capabilityAugmenter.augmentCapabilities(response))
+            .then(
+                pipeline => this._findBranchesSuccess(pipeline),
+                (error) => this._findBranchesFailure(error),
+            );
+    }
+
+    _findBranchesSuccess(pipeline) {
+        return {
+            isFound: pipeline.getTotalNumberOfBranches > 0,
+            hasError: false,
+            pipeline,
+        };
+    }
+
+    _findBranchesFailure(error) {
+        return {
+            hasError: true,
+            error,
         };
     }
 }

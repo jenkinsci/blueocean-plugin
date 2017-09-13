@@ -53,9 +53,8 @@ public abstract class BlueQueueItem extends Resource {
     public abstract Date getQueuedTime();
 
     @Exported(name=QUEUED_TIME)
-    public final String getQueuedTimeString(){
-        return new SimpleDateFormat(DATE_FORMAT_STRING).format(getQueuedTime());
-    }
+    public abstract String getQueuedTimeString();
+
     /**
      *
      * @return  The expected build number of the build. This may change.

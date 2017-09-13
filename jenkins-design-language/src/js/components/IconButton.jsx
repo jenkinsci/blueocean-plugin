@@ -1,7 +1,7 @@
 // @flow
 
 import React, { PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '../components/Icon';
 
 type Props = {
     className?: string,
@@ -41,14 +41,7 @@ export function IconButton(props:Props) {
     let icon = null;
 
     if (iconName) {
-        // use react-material-icons and adapt IconButton props to Icon's API
-        const materialProps = {
-            size: iconSize,
-            style: {
-                fill: iconFill
-            }
-        };
-        icon = <Icon icon={iconName} {...materialProps} />;
+        icon = <Icon icon={iconName} size={iconSize ? iconSize : 20} color={iconFill} />;
     } else if (children) {
         // pass down props of interest to the child so it can react
         const iconProps = {

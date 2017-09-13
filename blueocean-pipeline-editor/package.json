@@ -1,0 +1,64 @@
+{
+  "name": "blueocean-pipeline-editor",
+  "version": "0.0.1",
+  "description": "Pipeline editor plugin for Jenkins Blue Ocean",
+  "scripts": {
+    "storybook": "start-storybook -p 9002 -s node_modules/@jenkins-cd/design-language/dist/assets/,target/classes/org/jenkins/ui/jsmodules/blueocean_pipeline_editor/",
+    "lint": "jjsbuilder --tasks lint",
+    "lint:fix": "jjsbuilder --tasks lint --fixLint",
+    "lint:watch": "jjsbuilder --tasks lint:watch --continueOnLint",
+    "test": "jjsbuilder --tasks test",
+    "test:watch": "jjsbuilder --tasks test:watch",
+    "bundle": "jjsbuilder --tasks bundle",
+    "bundle:watch": "jjsbuilder --tasks bundle:watch",
+    "mvnbuild": "jjsbuilder --tasks bundle",
+    "mvntest": "jjsbuilder --tasks test,lint"
+  },
+  "author": "Josh McDonald <josh@joshmcdonald.info> (https://github.com/sophistifunk)",
+  "license": "MIT",
+  "devDependencies": {
+    "@jenkins-cd/eslint-config-jenkins": "0.0.2",
+    "@jenkins-cd/js-builder": "0.0.59",
+    "@kadira/storybook": "2.20.1",
+    "babel": "6.5.2",
+    "babel-core": "6.17.0",
+    "babel-eslint": "7.0.0",
+    "babel-plugin-transform-decorators-legacy": "1.3.4",
+    "babel-preset-es2015": "6.16.0",
+    "babel-preset-react": "6.16.0",
+    "babel-preset-stage-0": "6.16.0",
+    "chai": "3.5.0",
+    "create-hmac": "1.1.4",
+    "enzyme": "2.3.0",
+    "eslint": "2.8.0",
+    "eslint-plugin-react": "4.3.0",
+    "eslint-to-editorconfig": "1.2.0",
+    "gulp": "3.9.1",
+    "gulp-mocha": "2.2.0",
+    "jsdom": "7.2.2",
+    "mocha": "2.4.5",
+    "nock": "8.0.0",
+    "react-addons-test-utils": "15.3.2"
+  },
+  "dependencies": {
+    "@jenkins-cd/blueocean-core-js": "0.0.156",
+    "@jenkins-cd/design-language": "0.0.148",
+    "@jenkins-cd/js-extensions": "0.0.39",
+    "@jenkins-cd/js-modules": "0.0.10",
+    "lodash.debounce": "4.0.8",
+    "mobx": "2.6.0",
+    "mobx-react": "3.5.7",
+    "mobx-utils": "1.1.2",
+    "react": "15.3.2",
+    "react-addons-css-transition-group": "15.3.2",
+    "react-dom": "15.3.2",
+    "react-router": "2.3.0"
+  },
+  "jenkinscd": {
+    "import": [
+      "react",
+      "react-router",
+      "react-addons-css-transition-group"
+    ]
+  }
+}

@@ -9,6 +9,7 @@ import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Lists;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.model.User;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbOrg;
 import io.jenkins.blueocean.commons.ErrorMessage;
@@ -98,14 +99,20 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
         return null;
     }
 
+    StandardUsernamePasswordCredentials getCredential(String apiUrl){
+        String credentialId = createCredentialId(apiUrl);
+        return CredentialsUtils.findCredential(credentialId,
+                StandardUsernamePasswordCredentials.class,
+                new BlueOceanDomainRequirement());
+    }
+
     @Override
     public Container<ScmOrganization> getOrganizations() {
         User authenticatedUser = getAuthenticatedUser();
 
         StaplerRequest request = Stapler.getCurrentRequest();
         Preconditions.checkNotNull(request, "This request must be made in HTTP context");
-
-        String credentialId = getCredentialIdFromRequest(request);
+        String credentialId = BitbucketCredentialUtils.computeCredentialId(getCredentialIdFromRequest(request), getId(), getUri());
 
         List<ErrorMessage.Error> errors = new ArrayList<>();
         StandardUsernamePasswordCredentials credential = null;

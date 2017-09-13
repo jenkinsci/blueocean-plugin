@@ -12,7 +12,6 @@ const gutil = require('gulp-util');
 const fs = require('fs');
 const sourcemaps = require('gulp-sourcemaps');
 const babel = require('gulp-babel');
-const concat = require('gulp-concat');
 const less = require('gulp-less');
 const clean = require('gulp-clean');
 const runSequence = require('run-sequence');
@@ -20,9 +19,8 @@ const rename = require('gulp-rename');
 const copy = require('gulp-copy');
 const svgmin = require('gulp-svgmin');
 const lint = require('gulp-eslint');
-const Karma = require('karma').Server;
-const mocha = require('gulp-mocha');
-const babelCompiler = require('babel-core/register');
+const jest = require('gulp-jest').default;
+const minimist = require('minimist');
 
 // Options, src/dest folders, etc
 
@@ -68,8 +66,12 @@ const config = {
     },
     clean: ["dist", "licenses", "reports"],
     test: {
-        sources: "test/**/*-spec.{js,jsx}"
-    }
+        sources: '.',
+        match: ['**/?(*-)(spec|test).js?(x)'],
+        reports: 'target/jest-reports/junit.xml',
+        coverage: 'target/jest-coverage',
+        coveragePathIgnorePatterns: ['/material-ui/']
+    },
 };
 
 // Watch all
@@ -110,32 +112,57 @@ gulp.task("lint", () => (
         .pipe(lint.failAfterError())
 ));
 
-gulp.task("test-mocha", () => (
-    gulp.src(config.test.sources)
-        .pipe(mocha({
-            compilers: { js: babelCompiler }
-        }))
-));
+gulp.task("test", ['test-jest']);
 
-gulp.task("test", ['test-karma']);
+gulp.task("test-debug", ['test-jest-debug']);
 
-gulp.task("test-debug", ['test-karma-debug']);
+gulp.task("test-fast", ['test-jest-fast']);
 
-gulp.task("test-karma", (done) => {
-    new Karma({
-        configFile: __dirname + '/karma.conf.js',
-    }, done).start();
+function runJest(options) {
+    const argv = minimist(process.argv.slice(2));
+    options.testPathPattern = argv.test || null;
+
+    return gulp.src(config.test.sources)
+        .pipe(jest(options))
+        .on('error', () => {
+            process.exit(1);
+        });
+}
+
+gulp.task('test-jest', () => {
+    if (!process.env.JEST_JUNIT_OUTPUT) {
+        process.env.JEST_JUNIT_OUTPUT = config.test.reports;
+    }
+
+    return runJest({
+        config: {
+            collectCoverage: true,
+            coverageDirectory: config.test.coverage,
+            coveragePathIgnorePatterns: config.test.coveragePathIgnorePatterns,
+            testMatch: config.test.match,
+            testResultsProcessor: 'jest-junit',
+        },
+    });
 });
 
-gulp.task("test-karma-debug", (done) => {
-    new Karma({
-        configFile: __dirname + '/karma.conf.js',
-        colors: true,
-        autoWatch: true,
-        singleRun: false,
-        browsers: ['Chrome'],
-    }, done).start();
-});
+gulp.task('test-jest-fast', () =>
+    runJest({
+        forceExit: true,
+        config: {
+            testMatch: config.test.match,
+        },
+    })
+);
+
+gulp.task('test-jest-debug', () =>
+    runJest({
+        runInBand: true,
+        forceExit: true,
+        config: {
+            testMatch: config.test.match,
+        },
+    })
+);
 
 // Build all
 
