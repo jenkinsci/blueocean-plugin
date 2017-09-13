@@ -39,7 +39,7 @@ export default class RunMessageCell extends Component {
                 </span>
             );
         } else if (showCommitMessage) {
-            let commitMsg = run.changeSet[run.changeSet.length - 1].msg;
+            const commitMsg = run.changeSet[run.changeSet.length - 1].msg;
 
             if (run.changeSet.length > 1) {
                 return (
