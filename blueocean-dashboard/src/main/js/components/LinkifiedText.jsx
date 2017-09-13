@@ -5,7 +5,7 @@ const LinkifiedText = (props) => {
     const { text, issues, textLink } = props;
     const textWithIssues = [];
 
-    if (issues) {
+    if (issues.length) {
         let issuesIdString = '';
         const issuesObj = {};
 
