@@ -12,6 +12,7 @@
     "test": "gulp test",
     "prepublish": "gulp test",
     "mvnbuild": "gulp build bundle",
+    "mvnbuild:fast": "gulp bundle",
     "mvntest": "gulp test",
     "bundle:watch": "gulp bundle:watch",
     "test:debug": "node --debug-brk ./node_modules/.bin/gulp test-debug",

@@ -10,6 +10,7 @@ import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.ApiRoutable;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.lang.SystemUtils;
 import org.kohsuke.stapler.QueryParameter;
 import org.kohsuke.stapler.WebMethod;
@@ -178,13 +179,14 @@ public class RunBundleWatches {
 
     static final RecursivePathWatcher.PathFilter PROJECT_PATH_FILTER = new RecursivePathWatcher.PathFilter() {
         private final List<String> disallowedDirectoryNames = Collections.unmodifiableList(
-            Arrays.asList("/.git", "/node", "/node_modules", "/target", "/src/test", "/work")
+            Arrays.asList("/.git", "/node", "/node_modules", "/target", "/src/test", "/work", "/dist", "/licenses", "/website")
         );
         @Override
         public boolean allows(Path t) {
             for (String name : disallowedDirectoryNames) {
                 try {
-                    if (t.toFile().getCanonicalPath().replaceAll("\\+", "/").endsWith(name)) {
+                    String unixPath = t.toFile().getCanonicalPath().replaceAll("\\+", "/");
+                    if (unixPath.endsWith(name)) {
                         return false;
                     }
                 } catch (IOException e) {
@@ -211,6 +213,7 @@ public class RunBundleWatches {
                 final File projectDir = findPluginWorkDir(new File(p.baseResourceURL.getPath()));
                 if (projectDir != null) {
                     final String path = projectDir.getCanonicalPath();
+                    final File packageFile = new File(projectDir, "package.json");
 
                     final BundleBuild build = new BundleBuild();
                     build.name = p.getShortName();
@@ -274,7 +277,7 @@ public class RunBundleWatches {
                                                     System.out.println("---- Rebuilding: " + path);
                                                 }
                                                 if (line.contains("missing script: bundle:watch")) {
-                                                    System.out.println("---- Unable to find script 'bundle:watch' in: " + new File(projectDir, "package.json").getCanonicalPath());
+                                                    System.out.println("---- Unable to find script 'bundle:watch' in: " + packageFile.getCanonicalPath());
                                                     // don't retry this case
                                                     build.thread = null;
                                                     return;
@@ -324,6 +327,16 @@ public class RunBundleWatches {
                             }
                         };
                     } else {
+                        JSONObject packageJson = JSONObject.fromObject(FileUtils.readFileToString(packageFile));
+                        final String[] npmCommand = { "mvnbuild" };
+
+                        if (packageJson.has("scripts")) {
+                            JSONObject scripts = packageJson.getJSONObject("scripts");
+                            if(scripts.has("mvnbuild:fast")) {
+                                npmCommand[0] = "mvnbuild:fast";
+                            }
+                        }
+
                         // java nio watch, run `mvnbuild` instead
                         build.thread = new Thread() {
                             volatile Process buildProcess;
@@ -352,7 +365,7 @@ public class RunBundleWatches {
                                 RecursivePathWatcher watcher = new RecursivePathWatcher(projectDir.toPath(), PROJECT_PATH_FILTER);
                                 watcher.start(new RecursivePathWatcher.PathEventHandler() {
                                     @Override
-                                    public void accept(RecursivePathWatcher.Event event, Path modified) {
+                                    public void accept(final RecursivePathWatcher.Event event, final Path modified) {
                                         // TODO we mainly only want to rebuild if there are changes in 'src/main/js'
                                         // we might want to re-run npm install if there's a change to package.json
 
@@ -377,12 +390,12 @@ public class RunBundleWatches {
                                                     Map<String, String> env = new HashMap<>(System.getenv());
                                                     String[] command;
                                                     if (SystemUtils.IS_OS_WINDOWS) {
-                                                        command = new String[]{"cmd", "/C", "npm", "run", "mvnbuild"};
+                                                        command = new String[]{"cmd", "/C", "npm", "run", npmCommand[0]};
                                                     } else {
-                                                        command = new String[]{"bash", "-c", "${0} ${1+\"$@\"}", "npm", "run", "mvnbuild"};
+                                                        command = new String[]{"bash", "-c", "${0} ${1+\"$@\"}", "npm", "run", npmCommand[0]};
                                                     }
 
-                                                    System.out.println("---- Rebuilding: " + path);
+                                                    System.out.println("---- Rebuilding: " + build.name + " due to change in: " + modified.toString());
                                                     ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command))
                                                         .redirectErrorStream(true)
                                                         .directory(projectDir);
