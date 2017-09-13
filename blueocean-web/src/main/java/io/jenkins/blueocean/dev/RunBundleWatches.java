@@ -22,9 +22,12 @@ import org.kohsuke.stapler.verb.POST;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -139,7 +142,7 @@ public class RunBundleWatches {
         String name;
         Thread thread;
         volatile boolean isBuilding;
-        volatile Process process;
+        volatile Destructor destructor;
         volatile long lastBuildTimeMillis;
         int lastBuildIdx = 0;
         boolean hasError = false;
@@ -147,13 +150,8 @@ public class RunBundleWatches {
         void reRun() {
             synchronized(this) {
                 logLines.add(new LogLine("\nRestarting bundle process...\n"));
-                if (process != null) {
-                    process.destroy();
-                    try {
-                        process.destroyForcibly();
-                    } catch(Exception e) {
-                        // ignore
-                    }
+                if (destructor != null) {
+                    destructor.destroy();
                 } else {
                     thread.interrupt();
                 }
@@ -175,9 +173,33 @@ public class RunBundleWatches {
         }
     }
 
+    private static interface Destructor {
+        void destroy();
+    }
+
+    static final RecursivePathWatcher.PathFilter PROJECT_PATH_FILTER = new RecursivePathWatcher.PathFilter() {
+        private final List<String> disallowedDirectoryNames = Collections.unmodifiableList(
+            Arrays.asList("/.git", "/node", "/node_modules", "/target", "/src/test", "/work")
+        );
+        @Override
+        public boolean allows(Path t) {
+            for (String name : disallowedDirectoryNames) {
+                try {
+                    if (t.toFile().getCanonicalPath().replaceAll("\\+", "/").endsWith(name)) {
+                        return false;
+                    }
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+            return true;
+        }
+    };
+
     @Initializer(after = InitMilestone.JOB_LOADED)
     public static void startBundleWatches() {
-        if (!(new BlueOceanUI().isDevelopmentMode())) {
+        if (!(new BlueOceanUI().isDevelopmentMode())
+        || Boolean.getBoolean("blueocean.features.BUNDLE_WATCH_SKIP")) {
             return;
         }
 
@@ -196,97 +218,229 @@ public class RunBundleWatches {
 
                     System.out.println("---- Watching " + build.name + " in: " + path);
 
-                    build.thread = new Thread() {
-                        public void run() {
-                            long backOff = DEFAULT_BACK_OFF;
-                            while (true) {
-                                try {
-                                    Map<String, String> env = new HashMap<>(System.getenv());
-                                    String[] command;
-                                    if (SystemUtils.IS_OS_WINDOWS) {
-                                        command = new String[]{"cmd", "/C", "npm", "run", "bundle:watch"};
-                                    } else {
-                                        command = new String[]{"bash", "-c", "${0} ${1+\"$@\"}", "npm", "run", "bundle:watch"};
+                    if (Boolean.getBoolean("blueocean.features.NATIVE_NPM_BUNDLE_WATCH")) {
+                        build.thread = new Thread() {
+                            public void run() {
+                                long backOff = DEFAULT_BACK_OFF;
+                                while (true) {
+                                    try {
+                                        Map<String, String> env = new HashMap<>(System.getenv());
+                                        String[] command;
+                                        if (SystemUtils.IS_OS_WINDOWS) {
+                                            command = new String[]{"cmd", "/C", "npm", "run", "bundle:watch"};
+                                        } else {
+                                            command = new String[]{"bash", "-c", "${0} ${1+\"$@\"}", "npm", "run", "bundle:watch"};
+                                        }
+
+                                        ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command))
+                                            .redirectErrorStream(true)
+                                            .directory(projectDir);
+
+                                        if (SystemUtils.IS_OS_WINDOWS) {
+                                            pb.environment().put("Path",
+                                                new File(projectDir, "node").getCanonicalPath() + ";" + env.get("Path"));
+                                        } else {
+                                            pb.environment().put("PATH",
+                                                new File(projectDir, "node").getCanonicalPath() + ":" + env.get("PATH"));
+                                        }
+
+                                        final Process process = pb.start();
+
+                                        build.destructor = new Destructor() {
+                                            @Override
+                                            public void destroy() {
+                                                if (process.isAlive()) {
+                                                    try {
+                                                        process.destroy();
+                                                        process.destroyForcibly();
+                                                    } catch (Exception e) {
+                                                        // ignore
+                                                    }
+                                                }
+                                                build.destructor = null;
+                                            }
+                                        };
+
+                                        InputStream in = process.getInputStream();
+                                        try (BufferedReader rdr = new BufferedReader(new InputStreamReader(in, "utf-8"))) {
+                                            String line;
+                                            long startMillis = 0;
+                                            while ((line = rdr.readLine()) != null) {
+                                                build.logLines.add(new LogLine(System.currentTimeMillis(), line));
+                                                if (line.contains("Starting 'log-env'")) {
+                                                    startMillis = System.currentTimeMillis();
+                                                    build.isBuilding = true;
+                                                    build.lastBuildIdx = build.logLines.size() - 1;
+                                                    System.out.println("---- Rebuilding: " + path);
+                                                }
+                                                if (line.contains("missing script: bundle:watch")) {
+                                                    System.out.println("---- Unable to find script 'bundle:watch' in: " + new File(projectDir, "package.json").getCanonicalPath());
+                                                    // don't retry this case
+                                                    build.thread = null;
+                                                    return;
+                                                }
+                                                //if (line.contains("Finished 'bundle:watch'") || line.contains("Finished 'bundle'")) {
+                                                if (line.contains("Finished 'bundle'")) {
+                                                    if (build.hasError) {
+                                                        for (LogLine l : build.logLines.subList(build.lastBuildIdx, build.logLines.size() - 1)) {
+                                                            System.out.println(l.text);
+                                                        }
+                                                        build.hasError = false;
+                                                    }
+                                                    long time = System.currentTimeMillis() - startMillis;
+                                                    build.lastBuildTimeMillis = time;
+                                                    build.isBuilding = false;
+                                                    System.out.println("---- Rebuilt " + build.name + " in: " + time + "ms");
+                                                }
+                                                if (line.contains("Failed at the")) {
+                                                    System.out.println("---- Failed to build: " + build.name);
+
+                                                    build.isBuilding = false;
+                                                    for (LogLine l : build.logLines.subList(build.lastBuildIdx, build.logLines.size() - 1)) {
+                                                        System.out.println(l.text);
+                                                    }
+                                                }
+                                                if (line.contains("error") || line.contains("Error") || line.contains("ERROR")) {
+                                                    build.hasError = true;
+                                                }
+                                            }
+                                        }
+                                    } catch (RuntimeException e) { // Thanks findbugs
+                                        e.printStackTrace();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
                                     }
 
-                                    ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command))
-                                        .redirectErrorStream(true)
-                                        .directory(projectDir);
+                                    build.destructor = null;
 
-                                    if (SystemUtils.IS_OS_WINDOWS) {
-                                        pb.environment().put("Path",
-                                            new File(projectDir, "node").getCanonicalPath() + ";" + env.get("Path"));
-                                    } else {
-                                        pb.environment().put("PATH",
-                                            new File(projectDir, "node").getCanonicalPath() + ":" + env.get("PATH"));
+                                    try {
+                                        Thread.sleep(backOff);
+                                        backOff = (long) Math.floor(backOff * 2);
+                                    } catch (InterruptedException e) {
+                                        // nothing to see here
+                                        backOff = DEFAULT_BACK_OFF;
                                     }
+                                }
+                            }
+                        };
+                    } else {
+                        // java nio watch, run `mvnbuild` instead
+                        build.thread = new Thread() {
+                            volatile Process buildProcess;
 
-                                    build.process = pb.start();
-                                    InputStream in = build.process.getInputStream();
-                                    try (BufferedReader rdr = new BufferedReader(new InputStreamReader(in, "utf-8"))) {
-                                        String line;
-                                        long startMillis = 0;
-                                        while ((line = rdr.readLine()) != null) {
-                                            build.logLines.add(new LogLine(System.currentTimeMillis(), line));
-                                            if (line.contains("Starting 'log-env'")) {
-                                                startMillis = System.currentTimeMillis();
+                            @Override
+                            public void run() {
+                                build.destructor = new Destructor() {
+                                    @Override
+                                    public void destroy() {
+                                        if (buildProcess != null && buildProcess.isAlive()) {
+                                            try {
+                                                buildProcess.destroy();
+                                                buildProcess.destroyForcibly();
+                                            } catch (Exception e) {
+                                                // ignore
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                        buildProcess = null;
+                                        build.logLines.add(new LogLine("Process restarted."));
+                                    }
+                                };
+
+                                RecursivePathWatcher watcher = new RecursivePathWatcher(projectDir.toPath(), PROJECT_PATH_FILTER);
+                                watcher.start(new RecursivePathWatcher.PathEventHandler() {
+                                    @Override
+                                    public void accept(RecursivePathWatcher.Event event, Path modified) {
+                                        // TODO we mainly only want to rebuild if there are changes in 'src/main/js'
+                                        // we might want to re-run npm install if there's a change to package.json
+
+                                        // definitely exclude .java
+                                        if (modified.endsWith(".java")) {
+                                            return;
+                                        }
+
+                                        // kill any currently running builds
+                                        build.destructor.destroy();
+
+                                        // run in a separate thread so we can pick up changes and kill any existing
+                                        // running processes
+                                        Thread buildThread = new Thread() {
+                                            @Override
+                                            public void run() {
                                                 build.isBuilding = true;
                                                 build.lastBuildIdx = build.logLines.size() - 1;
-                                                System.out.println("---- Rebuilding: " + path);
-                                            }
-                                            if (line.contains("missing script: bundle:watch")) {
-                                                System.out.println("---- Unable to find script 'bundle:watch' in: " + new File(projectDir, "package.json").getCanonicalPath());
-                                                // don't retry this case
-                                                build.thread = null;
-                                                return;
-                                            }
-                                            //if (line.contains("Finished 'bundle:watch'") || line.contains("Finished 'bundle'")) {
-                                            if (line.contains("Finished 'bundle'")) {
+                                                long startMillis = System.currentTimeMillis();
+
+                                                try {
+                                                    Map<String, String> env = new HashMap<>(System.getenv());
+                                                    String[] command;
+                                                    if (SystemUtils.IS_OS_WINDOWS) {
+                                                        command = new String[]{"cmd", "/C", "npm", "run", "mvnbuild"};
+                                                    } else {
+                                                        command = new String[]{"bash", "-c", "${0} ${1+\"$@\"}", "npm", "run", "mvnbuild"};
+                                                    }
+
+                                                    System.out.println("---- Rebuilding: " + path);
+                                                    ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command))
+                                                        .redirectErrorStream(true)
+                                                        .directory(projectDir);
+
+                                                    if (SystemUtils.IS_OS_WINDOWS) {
+                                                        pb.environment().put("Path",
+                                                            new File(projectDir, "node").getCanonicalPath() + ";" + env.get("Path"));
+                                                    } else {
+                                                        pb.environment().put("PATH",
+                                                            new File(projectDir, "node").getCanonicalPath() + ":" + env.get("PATH"));
+                                                    }
+
+                                                    buildProcess = pb.start();
+                                                    InputStream in = buildProcess.getInputStream();
+                                                    try (BufferedReader rdr = new BufferedReader(new InputStreamReader(in, "utf-8"))) {
+                                                        String line;
+                                                        while ((line = rdr.readLine()) != null) {
+                                                            build.logLines.add(new LogLine(System.currentTimeMillis(), line));
+                                                            if (line.contains("missing script: mvnbuild")) {
+                                                                build.hasError = true;
+                                                            }
+                                                            if (line.contains("Failed at the")) {
+                                                                build.hasError = true;
+                                                            }
+                                                            if (line.contains("error") || line.contains("Error") || line.contains("ERROR")) {
+                                                                build.hasError = true;
+                                                            }
+                                                        }
+                                                    }
+                                                } catch (RuntimeException e) { // Thanks findbugs
+                                                    e.printStackTrace();
+                                                } catch (Exception e) {
+                                                    e.printStackTrace();
+                                                }
+
+                                                buildProcess = null;
+                                                build.isBuilding = false;
+                                                build.lastBuildTimeMillis = System.currentTimeMillis() - startMillis;
+
+                                                System.out.println("---- Rebuilt " + build.name + " in: " + build.lastBuildTimeMillis + "ms");
+
                                                 if (build.hasError) {
-                                                    for (LogLine l : build.logLines.subList(build.lastBuildIdx, build.logLines.size()-1)) {
+                                                    for (LogLine l : build.logLines.subList(build.lastBuildIdx, build.logLines.size() - 1)) {
                                                         System.out.println(l.text);
                                                     }
                                                     build.hasError = false;
                                                 }
-                                                long time = System.currentTimeMillis() - startMillis;
-                                                build.lastBuildTimeMillis = time;
-                                                build.isBuilding = false;
-                                                System.out.println("---- Rebuilt " + build.name + " in: " + time + "ms");
                                             }
-                                            if (line.contains("Failed at the")) {
-                                                System.out.println("---- Failed to build: " + build.name);
-
-                                                build.isBuilding = false;
-                                                for (LogLine l : build.logLines.subList(build.lastBuildIdx, build.logLines.size()-1)) {
-                                                    System.out.println(l.text);
-                                                }
-                                            }
-                                            if (line.contains("error") || line.contains("Error") || line.contains("ERROR")) {
-                                                build.hasError = true;
-                                            }
-                                        }
+                                        };
+                                        buildThread.setDaemon(true);
+                                        buildThread.setName("Building: " + path);
+                                        buildThread.start();
                                     }
-                                } catch (RuntimeException e) { // Thanks findbugs
-                                    e.printStackTrace();
-                                } catch (Exception e) {
-                                    e.printStackTrace();
-                                }
-
-                                build.process = null;
-
-                                try {
-                                    Thread.sleep(backOff);
-                                    backOff = (long)Math.floor(backOff * 2);
-                                } catch (InterruptedException e) {
-                                    // nothing to see here
-                                    backOff = DEFAULT_BACK_OFF;
-                                }
+                                });
                             }
-                        }
-                    };
+                        };
+                    }
 
                     build.thread.setDaemon(true);
-                    build.thread.setName("bundle:watch for: " + build.name + " in: " + path);
+                    build.thread.setName("Watching " + build.name + " for changes in: " + path);
                     build.thread.start();
 
                     builds.add(build);
