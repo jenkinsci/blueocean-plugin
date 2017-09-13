@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import Lozenge from './Lozenge';
 import { Link } from 'react-router';
-import LinkifiedText from './LinkifiedText'
+import LinkifiedText from './LinkifiedText';
 
 export default class RunMessageCell extends Component {
     propTypes = {

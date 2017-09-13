@@ -35,11 +35,7 @@ const LinkifiedText = (props) => {
         return (<span>{textWithIssues}</span>);
     }
 
-    if (textLink) {
-        return (<Link to={textLink} className="unstyled-link" >{text}</Link>);
-    } else {
-        return (<span>{text}</span>);
-    }
+    return (textLink ? (<Link to={textLink} className="unstyled-link" >{text}</Link>) : (<span>{text}</span>));
 };
 
 LinkifiedText.propTypes = {
