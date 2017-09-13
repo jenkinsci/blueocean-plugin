@@ -40,7 +40,7 @@ function checkProject(pathToProject) {
     console.log(`validating dependencies in ${resolvedPath}`);
     const packageJsonPath = buildPath(`${resolvedPath}/package.json`);
     try {
-        return fs.realpathSync(`${resolvedPath}/npm-shrinkwrap.json`);
+        fs.realpathSync(`${resolvedPath}/npm-shrinkwrap.json`);
     } catch (error) {
         return; // no shrinkwrap file, is ok for now
     }
