@@ -8,11 +8,10 @@ import io.blueocean.ath.Retry;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.pages.blue.GithubAddServerDialogPage;
 import io.blueocean.ath.pages.blue.GithubEnterpriseCreationPage;
+import io.blueocean.ath.util.GithubConfig;
 import io.blueocean.ath.util.GithubHelper;
 import io.blueocean.ath.util.WireMockBase;
-import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -26,7 +25,7 @@ import java.io.IOException;
 @RunWith(ATHJUnitRunner.class)
 public class GithubEnterpriseCreationTest extends WireMockBase {
 
-    private static GithubHelper githubHelper;
+    private GithubConfig config;
 
     @Rule
     public WireMockRule mockServer = createWireMockServerRule(
@@ -49,14 +48,15 @@ public class GithubEnterpriseCreationTest extends WireMockBase {
     @Inject
     ClassicJobApi jobApi;
 
-    @BeforeClass
-    public static void setUpClass() {
-        githubHelper = new GithubHelper();
-    }
-
     @Before
     public void setUp() throws IOException {
-        jobApi.deletePipeline(githubHelper.getRepositoryName());
+        config = new GithubConfig.Builder()
+            .accessToken("1234567890abcdefghijklmnopqrstuvwxyz1234")
+            .organization("cliffmeyers")
+            .repository("ath-github-creation")
+            .build();
+
+        jobApi.deletePipeline(config.getRepository());
     }
 
     @Retry(3)
@@ -65,7 +65,7 @@ public class GithubEnterpriseCreationTest extends WireMockBase {
         String serverName = getServerNameUnique("My Server");
         String serverUrl = getServerUrl(mockServer);
 
-        creationPage.beginCreationFlow(githubHelper.getOrganizationOrUsername());
+        creationPage.beginCreationFlow(config.getOrganization());
         creationPage.clickAddServerButton();
 
         // "empty form" validation
@@ -101,9 +101,9 @@ public class GithubEnterpriseCreationTest extends WireMockBase {
 
         creationPage.clickChooseServerNextStep();
         creationPage.completeCreationFlow(
-            githubHelper.getAccessToken(),
-            githubHelper.getOrganizationOrUsername(),
-            githubHelper.getRepositoryName(),
+            config.getAccessToken(),
+            config.getOrganization(),
+            config.getRepository(),
             true
         );
     }
