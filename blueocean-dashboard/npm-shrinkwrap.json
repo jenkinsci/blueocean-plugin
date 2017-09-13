@@ -3,14 +3,14 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.155-SNAPSHOT-nicu",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.155-SNAPSHOT-nicu",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.155-SNAPSHOT-nicu.tgz"
+      "version": "0.0.156",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.156",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.156.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.148-SNAPSHOT-nicu",
-      "from": "@jenkins-cd/design-language@0.0.148-SNAPSHOT-nicu",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.148-SNAPSHOT-nicu.tgz"
+      "version": "0.0.148",
+      "from": "@jenkins-cd/design-language@0.0.148",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.148.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -53,9 +53,9 @@
       }
     },
     "@jenkins-cd/js-extensions": {
-      "version": "0.0.38",
-      "from": "@jenkins-cd/js-extensions@0.0.38",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.38.tgz"
+      "version": "0.0.39",
+      "from": "@jenkins-cd/js-extensions@0.0.39",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-extensions/-/js-extensions-0.0.39.tgz"
     },
     "@jenkins-cd/js-modules": {
       "version": "0.0.10",
@@ -1687,6 +1687,11 @@
       "from": "caseless@>=0.12.0 <0.13.0",
       "resolved": "https://registry.npmjs.org/caseless/-/caseless-0.12.0.tgz",
       "dev": true
+    },
+    "cd": {
+      "version": "0.3.3",
+      "from": "cd@0.3.3",
+      "resolved": "https://registry.npmjs.org/cd/-/cd-0.3.3.tgz"
     },
     "center-align": {
       "version": "0.1.3",

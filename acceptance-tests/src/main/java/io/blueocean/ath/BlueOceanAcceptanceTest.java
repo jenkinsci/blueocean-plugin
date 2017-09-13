@@ -7,7 +7,7 @@ import com.google.common.io.Resources;
 import java.io.IOException;
 import java.net.URL;
 
-public abstract class BaseTest {
+public abstract class BlueOceanAcceptanceTest {
     public String loadResource(String path) throws IOException {
         return Resources.toString(getResourceURL(path), Charsets.UTF_8);
     }

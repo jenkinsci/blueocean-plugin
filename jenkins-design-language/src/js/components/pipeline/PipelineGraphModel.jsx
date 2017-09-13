@@ -2,9 +2,12 @@
 
 import type { Result } from '../status/StatusIndicator';
 
+export const MATRIOSKA_PATHS = false;
+
 // Dimensions used for layout, px
 export const defaultLayout = {
     nodeSpacingH: 120,
+    parallelSpacingH: 120,
     nodeSpacingV: 70,
     nodeRadius: 12,
     terminalRadius: 7,
@@ -17,13 +20,17 @@ export const defaultLayout = {
 
 // Typedefs
 
+/**
+ * StageInfo is the input, in the form of an Array<StageInfo> of the top-level stages of a pipeline
+ */
 export type StageInfo = {
     name: string,
     title: string,
     state: Result,
     completePercent: number,
     id: number,
-    children: Array<StageInfo>
+    children: Array<StageInfo>, // Used by the top-most stages with parallel branches
+    nextSibling?: StageInfo, // Used within a parallel branch to denote sequential stages
 };
 
 export type StageNodeInfo = {
@@ -61,8 +68,9 @@ export type PlaceholderNodeInfo = {
 export type NodeInfo = StageNodeInfo | PlaceholderNodeInfo;
 
 export type NodeColumn = {
-    topStage?: StageInfo,
-    nodes: Array<NodeInfo>,
+    topStage?: StageInfo, // Top-most stage for this column, which will have no rendered nodes if it's parallel
+    rows: Array<Array<NodeInfo>>,
+    x: number, // Center X position, for positioning top bigLabel
 }
 
 export type CompositeConnection = {

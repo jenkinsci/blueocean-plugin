@@ -66,7 +66,7 @@ class SvgIcon extends Component {
     return (
       <svg
         {...other}
-        className="material-icon"
+        className="svg-icon"
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
         style={mergedStyles}

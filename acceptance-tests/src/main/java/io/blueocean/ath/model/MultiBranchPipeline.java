@@ -12,7 +12,7 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.util.List;
 
-public class MultiBranchPipeline extends Pipeline{
+public class MultiBranchPipeline extends AbstractPipeline {
 
     @Inject
     ClassicJobApi jobApi;
@@ -40,5 +40,10 @@ public class MultiBranchPipeline extends Pipeline{
 
     public void stopAllRuns() throws IOException {
         jobApi.abortAllBuilds(getFolder(), getName());
+    }
+
+    @Override
+    public boolean isMultiBranch() {
+        return true;
     }
 }
