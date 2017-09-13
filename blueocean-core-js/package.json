@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.156-kz-1",
+  "version": "0.0.156",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
@@ -56,7 +56,7 @@
     "@jenkins-cd/design-language": "0.0.148",
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
     "@jenkins-cd/js-builder": "0.0.60-kz-1",
-    "@jenkins-cd/js-extensions": "0.0.39-kz-2",
+    "@jenkins-cd/js-extensions": "0.0.39-kz-1",
     "@jenkins-cd/js-modules": "0.0.10",
     "@kadira/storybook": "2.20.1",
     "babel-eslint": "7.0.0",

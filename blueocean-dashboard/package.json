@@ -22,7 +22,7 @@
     "@jenkins-cd/design-language": "0.0.148",
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
     "@jenkins-cd/js-builder": "0.0.60-kz-1",
-    "@jenkins-cd/js-extensions": "0.0.39-kz-2",
+    "@jenkins-cd/js-extensions": "0.0.39-kz-1",
     "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/js-builder-jest": "0.0.4",
     "@kadira/storybook": "2.20.1",

@@ -84,6 +84,7 @@
     "jest": "19.0.2",
     "jest-cli": "19.0.2",
     "jest-junit": "1.5.1",
+    "less": "2.7.2",
     "minimist": "1.2.0",
     "normalize.css": "5.0.0",
     "octicons": "4.4.0",

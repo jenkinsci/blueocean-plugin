@@ -27,8 +27,8 @@ const mockExtensionStore = {
 };
 
 const mockResourceLoadTracker = {
-    onMount: function() {
-        // Don't care
+    onMount: function(_, onload) {
+        onload();
     },
 
     onUnmount: function() {
@@ -90,21 +90,25 @@ describe('ExtensionRenderer', function () {
 
     it('should change the wrapping element', function () {
         const result = mount(React.createElement(ExtensionRenderer, {extensionPoint: 'ep1', wrappingElement: 'section'}));
+        console.log(result.html());
         assert.equal(result.html(), '<section class="ExtensionPoint ep1"><div><h1>Extension is a H1</h1></div></section>', 'html output');
     });
 
     it('should render the extension', function () {
         const result = mount(React.createElement(ExtensionRenderer, {extensionPoint: 'ep1'}));
+        console.log(result.html());
         assert.equal(result.html(), '<div class="ExtensionPoint ep1"><div><h1>Extension is a H1</h1></div></div>', 'html output');
     });
 
     it('should render a custom class name', function () {
         const result = mount(React.createElement(ExtensionRenderer, {extensionPoint: 'ep1', className: 'super-dooper'}));
+        console.log(result.html());
         assert.equal(result.html(), '<div class="ExtensionPoint ep1 super-dooper"><div><h1>Extension is a H1</h1></div></div>', 'html output');
     });
 
     it('should should not show default children when extension is present', function () {
         const result = mount(React.createElement(ExtensionRenderer, {extensionPoint: 'ep1'}, 'Default text node'));
+        console.log(result.html());
         assert.equal(result.html(), '<div class="ExtensionPoint ep1"><div><h1>Extension is a H1</h1></div></div>', 'html output');
     });
 
