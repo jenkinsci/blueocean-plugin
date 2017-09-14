@@ -429,6 +429,25 @@
             <groupId>com.coravy.hudson.plugins.github</groupId>
             <artifactId>github</artifactId>
             <version>1.28.0</version>
+            <exclusions>
+                <!-- Upper bound fix.
+                     TODO: Remove it once github plugin commit
+                     https://github.com/jenkinsci/github-plugin/commit/a9308f124eeb5e599b2564d6355c5dd5cdafee34
+                     is released -->
+                <exclusion>
+                    <groupId>org.jenkins-ci</groupId>
+                    <artifactId>symbol-annotation</artifactId>
+                </exclusion>
+                <!-- Upper bound fix: Remove it once token-micro plugin is fixed to remove dependency on asm-tree -->
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm-tree</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Bitbucket dependencies -->
@@ -455,9 +474,9 @@
 
         <!-- Needed by blueocean-rest-impl for ssh unititlies -->
         <dependency>
-            <groupId>com.jcraft</groupId>
+            <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>jsch</artifactId>
-            <version>0.1.54</version>
+            <version>0.1.54.1</version>
         </dependency>
 
 
@@ -592,9 +611,18 @@
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.kohsuke</groupId>
+            <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-api</artifactId>
             <version>1.86</version>
+            <exclusions>
+                <!-- Upper bound fix
+                     TODO: Remove when PR https://github.com/jenkinsci/github-api-plugin/pull/15 is merged and released
+                -->
+                <exclusion>
+                    <groupId>com.infradna.tool</groupId>
+                    <artifactId>bridge-method-annotation</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -640,6 +668,17 @@
             <groupId>org.jvnet.hudson.plugins</groupId>
             <artifactId>favorite</artifactId>
             <version>2.3.0</version>
+            <exclusions>
+                <!-- Upper bound fix: Remove it once token-micro plugin is fixed to remove dependency on asm-tree -->
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm-tree</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.keen</groupId>
@@ -679,6 +718,21 @@
             <groupId>com.jcraft</groupId>
             <artifactId>jsch</artifactId>
             <version>0.1.54</version>
+        </dependency>
+
+        <!-- used in blueocean-rest-impl test -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>matrix-auth</artifactId>
+            <version>1.7</version>
+            <scope>test</scope>
+            <exclusions>
+                <!-- upper bound fix: icon-set comes from core, lets ignore the one coming from matrix-auth-->
+                <exclusion>
+                    <groupId>org.jenkins-ci.plugins.icon-shim</groupId>
+                    <artifactId>icon-set</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Test dependencies -->
@@ -766,6 +820,11 @@
                     <groupId>org.eclipse.jetty</groupId>
                     <artifactId>jetty-io</artifactId>
                 </exclusion>
+                <!--Upper bound fix, pick one from the core -->
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -818,44 +877,6 @@
             <version>${scm-api.version}</version>
             <classifier>tests</classifier>
             <scope>test</scope>
-        </dependency>
-
-        <!-- Upper bound fix:
-                These dependencies are defined in core but other plugins brings in higher version of dependencies
-                resulting in upper bound check failure.
-
-                After core is updated to depend on later version of these dependencies AND blueocean depends on that core,
-                 we are going to list these dependencies here.
-        -->
-        <dependency>
-            <groupId>org.jenkins-ci.plugins.icon-shim</groupId>
-            <artifactId>icon-set</artifactId>
-            <version>2.0.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm</artifactId>
-            <version>5.0.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.ow2.asm</groupId>
-            <artifactId>asm-tree</artifactId>
-            <version>5.0.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci</groupId>
-            <artifactId>symbol-annotation</artifactId>
-            <version>1.10</version>
-        </dependency>
-        <dependency>
-            <groupId>com.infradna.tool</groupId>
-            <artifactId>bridge-method-annotation</artifactId>
-            <version>1.15</version>
-        </dependency>
-        <dependency>
-            <groupId>org.antlr</groupId>
-            <artifactId>antlr4-runtime</artifactId>
-            <version>4.5.1-1</version>
         </dependency>
     </dependencies>
   </dependencyManagement>

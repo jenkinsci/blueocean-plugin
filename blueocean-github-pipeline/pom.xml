@@ -24,15 +24,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.kohsuke</groupId>
+      <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>github-api</artifactId>
-      <exclusions>
-        <!-- Upper bound fix: Pick the one from jenkins core, it has later version 2.4-->
-        <exclusion>
-          <groupId>commons-io</groupId>
-          <artifactId>commons-io</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
@@ -48,6 +41,11 @@
     <dependency>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>pubsub-light</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>fluent-hc</artifactId>
     </dependency>
 
     <!-- test dependencies -->

@@ -9,7 +9,6 @@ import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbRepo;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbSaveContentResponse;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbUser;
 import io.jenkins.blueocean.commons.ServiceException;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.HttpResponseException;
 import org.kohsuke.accmod.Restricted;
@@ -194,7 +193,7 @@ public abstract class BitbucketApi {
      * @param repoSlug Repo slug {@link BbRepo#getSlug()}
      * @return true if this is empty or un-initialized repo
      */
-    public abstract boolean isEmptyRepo(@NotNull String orgId, @Nonnull String repoSlug);
+    public abstract boolean isEmptyRepo(@Nonnull String orgId, @Nonnull String repoSlug);
 
     /**
      * Converts thrown exception during BB HTTP call in to JSON serializable {@link ServiceException}

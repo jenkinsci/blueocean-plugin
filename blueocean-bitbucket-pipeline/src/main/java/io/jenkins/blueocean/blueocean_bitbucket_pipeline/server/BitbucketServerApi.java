@@ -24,7 +24,6 @@ import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerSa
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerUser;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.pageable.PagedResponse;
-import org.antlr.v4.runtime.misc.NotNull;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -298,7 +297,7 @@ public class BitbucketServerApi extends BitbucketApi {
     }
 
     @Override
-    public boolean isEmptyRepo(@NotNull String orgId, @Nonnull String repoSlug){
+    public boolean isEmptyRepo(@Nonnull String orgId, @Nonnull String repoSlug){
         try {
             URIBuilder uriBuilder = new URIBuilder(String.format("%s/%s/repos/%s/branches/default",baseUrl+"projects",
                     orgId, repoSlug));

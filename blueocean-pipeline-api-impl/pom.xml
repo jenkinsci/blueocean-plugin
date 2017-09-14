@@ -79,6 +79,14 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>credentials</artifactId>
+            <exclusions>
+                <!-- Upper bound fix: credentials plugin is bringing it's own version of anlr4-runtime,
+                     wiremock elsewhere uses later version -->
+                <exclusion>
+                    <groupId>org.antlr</groupId>
+                    <artifactId>antlr4-runtime</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
