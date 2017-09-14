@@ -337,6 +337,8 @@ public class RunBundleWatches {
                             }
                         }
 
+                        final File watchDir = new File(projectDir, "src");
+
                         // java nio watch, run `mvnbuild` instead
                         build.thread = new Thread() {
                             volatile Process buildProcess;
@@ -362,7 +364,7 @@ public class RunBundleWatches {
                                     }
                                 };
 
-                                RecursivePathWatcher watcher = new RecursivePathWatcher(projectDir.toPath(), PROJECT_PATH_FILTER);
+                                RecursivePathWatcher watcher = new RecursivePathWatcher(watchDir.toPath(), PROJECT_PATH_FILTER);
                                 watcher.start(new RecursivePathWatcher.PathEventHandler() {
                                     @Override
                                     public void accept(final RecursivePathWatcher.Event event, final Path modified) {
