@@ -126,6 +126,7 @@
     <module>blueocean-git-pipeline</module>
     <module>blueocean-bitbucket-pipeline</module>
     <module>blueocean-pipeline-editor</module>
+    <module>blueocean-jira</module>
   </modules>
 
   <repositories>
@@ -278,6 +279,12 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-autofavorite</artifactId>
             <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-jira</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- TODO: should be moved out of blueocean repo as separate plugin -->
