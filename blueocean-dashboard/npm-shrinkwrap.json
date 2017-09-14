@@ -3,14 +3,14 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.157-SNAPSHOT-nicu",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.157-SNAPSHOT-nicu",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.157-SNAPSHOT-nicu.tgz"
+      "version": "0.0.157",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.157",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.157.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.149-SNAPSHOT-nicu",
-      "from": "@jenkins-cd/design-language@0.0.149-SNAPSHOT-nicu",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.149-SNAPSHOT-nicu.tgz"
+      "version": "0.0.148",
+      "from": "@jenkins-cd/design-language@0.0.148",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.148.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -5001,7 +5001,7 @@
       "dependencies": {
         "babylon": {
           "version": "6.18.0",
-          "from": "babylon@>=6.17.4 <7.0.0",
+          "from": "babylon@>=6.18.0 <7.0.0",
           "resolved": "https://registry.npmjs.org/babylon/-/babylon-6.18.0.tgz",
           "dev": true
         },
@@ -5129,13 +5129,13 @@
         },
         "camelcase": {
           "version": "3.0.0",
-          "from": "camelcase@>=3.0.0 <4.0.0",
+          "from": "camelcase@^3.0.0",
           "resolved": "https://registry.npmjs.org/camelcase/-/camelcase-3.0.0.tgz",
           "dev": true
         },
         "cliui": {
           "version": "3.2.0",
-          "from": "cliui@>=3.2.0 <4.0.0",
+          "from": "cliui@^3.2.0",
           "resolved": "https://registry.npmjs.org/cliui/-/cliui-3.2.0.tgz",
           "dev": true
         },
@@ -5281,7 +5281,7 @@
         },
         "yargs": {
           "version": "6.6.0",
-          "from": "yargs@>=6.3.0 <7.0.0",
+          "from": "yargs@^6.3.0",
           "resolved": "https://registry.npmjs.org/yargs/-/yargs-6.6.0.tgz",
           "dev": true
         }
@@ -5717,7 +5717,7 @@
       "dependencies": {
         "strip-bom": {
           "version": "2.0.0",
-          "from": "strip-bom@>=2.0.0 <3.0.0",
+          "from": "strip-bom@^2.0.0",
           "resolved": "https://registry.npmjs.org/strip-bom/-/strip-bom-2.0.0.tgz",
           "dev": true
         }
@@ -7976,7 +7976,7 @@
         },
         "minimist": {
           "version": "1.2.0",
-          "from": "minimist@>=1.1.1 <2.0.0",
+          "from": "minimist@^1.1.1",
           "resolved": "https://registry.npmjs.org/minimist/-/minimist-1.2.0.tgz",
           "dev": true
         }
@@ -9431,7 +9431,7 @@
       "dependencies": {
         "camelcase": {
           "version": "3.0.0",
-          "from": "camelcase@>=3.0.0 <4.0.0",
+          "from": "camelcase@^3.0.0",
           "resolved": "https://registry.npmjs.org/camelcase/-/camelcase-3.0.0.tgz",
           "dev": true
         }
