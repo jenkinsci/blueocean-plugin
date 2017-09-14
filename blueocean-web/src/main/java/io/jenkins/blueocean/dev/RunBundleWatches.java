@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Pattern;
 
 @SuppressWarnings("all")
@@ -32,21 +33,14 @@ public class RunBundleWatches {
         final List<LogLine> logLines = new CopyOnWriteArrayList<>();
         String name;
         Thread thread;
-        volatile boolean isBuilding;
+        final AtomicInteger buildCount = new AtomicInteger(0);
         volatile Destructor destructor;
         volatile long lastBuildTimeMillis;
         int lastBuildIdx = 0;
         boolean hasError = false;
 
-        void reRun() {
-            synchronized(this) {
-                logLines.add(new LogLine("\nRestarting bundle process...\n"));
-                if (destructor != null) {
-                    destructor.destroy();
-                } else {
-                    thread.interrupt();
-                }
-            }
+        boolean isBuilding() {
+            return buildCount.get() > 0;
         }
     }
 
@@ -120,6 +114,7 @@ public class RunBundleWatches {
                     // but JDL and core js currently have a different structure
                     // limiting the scope is handled with the PROJECT_PATH_FILTER and EXTENSIONS_TO_CAUSE_REBUILD
                     final File watchDir = projectDir;
+                    final Path watchPath = watchDir.toPath();
 
                     // java nio watch, run `mvnbuild` instead
                     Thread fileWatchThread = new Thread() {
@@ -146,7 +141,7 @@ public class RunBundleWatches {
                                 }
                             };
 
-                            RecursivePathWatcher watcher = new RecursivePathWatcher(watchDir.toPath(), PROJECT_PATH_FILTER);
+                            RecursivePathWatcher watcher = new RecursivePathWatcher(watchPath, PROJECT_PATH_FILTER);
                             watcher.start(new RecursivePathWatcher.PathEventHandler() {
                                 @Override
                                 public void accept(final RecursivePathWatcher.Event event, final Path modified) {
@@ -166,7 +161,7 @@ public class RunBundleWatches {
                                     build.thread = new Thread() {
                                         @Override
                                         public void run() {
-                                            build.isBuilding = true;
+                                            build.buildCount.incrementAndGet();
                                             build.lastBuildIdx = build.logLines.size() - 1;
                                             long startMillis = System.currentTimeMillis();
 
@@ -179,7 +174,7 @@ public class RunBundleWatches {
                                                     command = new String[]{"bash", "-c", "${0} ${1+\"$@\"}", "npm", "run", npmCommand[0]};
                                                 }
 
-                                                System.out.println("---- Rebuilding: " + build.name + " due to change in: " + modified.toString());
+                                                System.out.println("---- Rebuilding: " + build.name + " due to change in: " + watchPath.relativize(modified));
                                                 ProcessBuilder pb = new ProcessBuilder(Arrays.asList(command))
                                                     .redirectErrorStream(true)
                                                     .directory(projectDir);
@@ -209,27 +204,30 @@ public class RunBundleWatches {
                                                         }
                                                     }
                                                 }
+
+                                                // If process wasn't killed or error, output the rebuild info
+                                                if (buildProcess != null && buildProcess.waitFor() == 0) {
+                                                    build.lastBuildTimeMillis = System.currentTimeMillis() - startMillis;
+                                                    System.out.println("---- Rebuilt " + build.name + " in: " + build.lastBuildTimeMillis + "ms");
+                                                }
                                             } catch (RuntimeException e) { // Thanks findbugs
                                                 e.printStackTrace();
                                             } catch (Exception e) {
                                                 e.printStackTrace();
-                                            }
+                                            } finally {
+                                                buildProcess = null;
+                                                build.buildCount.decrementAndGet();
 
-                                            buildProcess = null;
-                                            build.isBuilding = false;
-                                            build.lastBuildTimeMillis = System.currentTimeMillis() - startMillis;
-
-                                            System.out.println("---- Rebuilt " + build.name + " in: " + build.lastBuildTimeMillis + "ms");
-
-                                            if (build.hasError) {
-                                                for (LogLine l : build.logLines.subList(build.lastBuildIdx, build.logLines.size() - 1)) {
-                                                    System.out.println(l.text);
+                                                if (build.hasError) {
+                                                    for (LogLine l : build.logLines.subList(build.lastBuildIdx, build.logLines.size() - 1)) {
+                                                        System.out.println(l.text);
+                                                    }
+                                                    build.hasError = false;
                                                 }
-                                                build.hasError = false;
-                                            }
 
-                                            // Don't use excessive memory:
-                                            build.logLines.clear();
+                                                // Don't use excessive memory:
+                                                build.logLines.clear();
+                                            }
                                         }
                                     };
 
@@ -272,7 +270,7 @@ public class RunBundleWatches {
         if (!isEnabled) return;
 
         for (BundleBuild build : builds) {
-            while (build.isBuilding) {
+            while (build.isBuilding()) {
                 try {
                     // Poll since the npm bundle:watch won't complete the thread
                     Thread.sleep(500);
