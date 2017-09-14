@@ -22,6 +22,7 @@ import org.eclipse.jgit.api.FetchCommand;
 import org.eclipse.jgit.api.MergeCommand;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.PushCommand;
+import org.eclipse.jgit.api.TransportCommand;
 import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -56,6 +57,7 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.util.FS;
 import org.jenkinsci.plugins.gitclient.Git;
 import org.jenkinsci.plugins.gitclient.GitClient;
+import org.jenkinsci.plugins.gitclient.trilead.SmartCredentialsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -203,9 +205,7 @@ class GitUtils {
         try (org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(repo)) {
             FetchCommand fetchCommand = git.fetch();
 
-            if (isSshUrl(repo) && credential instanceof BasicSSHUserPrivateKey) {
-                fetchCommand.setTransportConfigCallback(getSSHKeyTransport((BasicSSHUserPrivateKey)credential));
-            }
+            addCredential(repo, fetchCommand, credential);
 
             fetchCommand.setRemote("origin")
                 .setRemoveDeletedRefs(true)
@@ -216,6 +216,22 @@ class GitUtils {
                 throw new ServiceException.UnauthorizedException("Not authorized", ex);
             }
             throw new RuntimeException(ex);
+        }
+    }
+
+    /**
+     * Tries to set proper credentials for the command
+     * @param repo repo to test for url
+     * @param command command that needs credentials
+     * @param credential credential to use
+     */
+    private static void addCredential(Repository repo, TransportCommand command, StandardCredentials credential) {
+        if (isSshUrl(repo) && credential instanceof BasicSSHUserPrivateKey) {
+            command.setTransportConfigCallback(getSSHKeyTransport((BasicSSHUserPrivateKey)credential));
+        } else  if (credential != null) {
+            SmartCredentialsProvider credentialsProvider = new SmartCredentialsProvider(null);
+            credentialsProvider.addDefaultCredentials(credential);
+            command.setCredentialsProvider(credentialsProvider);
         }
     }
 
@@ -393,9 +409,9 @@ class GitUtils {
         try (org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(repo)) {
             String pushSpec = "+" + localBranchRef + ":" + remoteBranchRef;
             PushCommand pushCommand = git.push();
-            if (isSshUrl(remoteUrl) && credential instanceof BasicSSHUserPrivateKey) {
-                pushCommand.setTransportConfigCallback(getSSHKeyTransport((BasicSSHUserPrivateKey)credential));
-            }
+
+            addCredential(repo, pushCommand, credential);
+
             Iterable<PushResult> resultIterable = pushCommand
                 .setRefSpecs(new RefSpec(pushSpec))
                 .setRemote(remoteUrl)
@@ -404,8 +420,11 @@ class GitUtils {
             if (result.getRemoteUpdates().isEmpty()) {
                 throw new RuntimeException("No remote updates occurred");
             }
-        } catch (GitAPIException ex) {
-            throw new ServiceException.UnexpectedErrorException("Unable to save and push to: " + remoteUrl + " - " + ex.getMessage(), ex);
+        } catch (GitAPIException e) {
+            if (e.getMessage().toLowerCase().contains("auth")) {
+                throw new ServiceException.UnauthorizedException(e.getMessage(), e);
+            }
+            throw new ServiceException.UnexpectedErrorException("Unable to save and push to: " + remoteUrl + " - " + e.getMessage(), e);
         }
     }
 }
