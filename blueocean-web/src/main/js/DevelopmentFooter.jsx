@@ -26,7 +26,7 @@ export class DevelopmentFooter extends Component {
               <span> &#183; {revisionInfo.sha.substring(0,7)}&nbsp; </span>
               { includeBranch && <span> &#183; {revisionInfo.branch}&nbsp;</span> }
               <span> &#183; {moment(revisionInfo.timestamp).format('Do MMMM YYYY hh:mm A')}</span>
-              
+
           </div>
         );
     }

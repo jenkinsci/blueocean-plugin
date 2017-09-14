@@ -32,7 +32,10 @@ public class BlueOceanUI {
      * routes on the back-end for real 404s, we'll need to complicate this behaviour :D
      */
     public Object getDynamic(String route) {
-        RunBundleWatches.waitForScriptBuilds();
+        // JVM will optimize this branch out typically:
+        if (RunBundleWatches.isEnabled) {
+            RunBundleWatches.waitForScriptBuilds();
+        }
         for (RootRoutable r : ExtensionList.lookup(RootRoutable.class)) {
             if (r.getUrlName().equals(route))
                 return r;

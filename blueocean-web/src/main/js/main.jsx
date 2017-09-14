@@ -14,7 +14,6 @@ import { ToastDrawer } from './components/ToastDrawer';
 import { BackendConnectFailure } from './components/BackendConnectFailure';
 import { DevelopmentFooter } from './DevelopmentFooter';
 import { useStrict } from 'mobx';
-import BundleWatchInfo from './BundleWatchInfo';
 import { Icon } from '@jenkins-cd/design-language';
 
 useStrict(true);
@@ -138,7 +137,6 @@ function makeRoutes(routes) {
         ...routes,
         // FIXME: Not sure best how to set this up without the hardcoded IndexRedirect :-/
         <IndexRedirect to="/pipelines" />,
-        window.isDevelopmentMode && <Route path="/bundle:watch" component={BundleWatchInfo} />,
         <Route path="*" component={NotFound}/>
     ];
 
