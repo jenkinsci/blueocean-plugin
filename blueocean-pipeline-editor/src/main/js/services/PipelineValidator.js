@@ -20,6 +20,10 @@ export function isValidEnvironmentKey(key: string): boolean {
     return false;
 }
 
+function _isArray(o) {
+    return o instanceof Array || typeof o === 'array';
+}
+
 function _hasValidationErrors(node) {
     return node && node.validationErrors && node.validationErrors.length;
 }
@@ -272,7 +276,7 @@ export class PipelineValidator {
                     }
                 } else if (error.jenkinsfileErrors) {
                     for (const globalError of error.jenkinsfileErrors.errors) {
-                        if (globalError.error.length) {
+                        if (_isArray(globalError.error)) {
                             for (const errorText of globalError.error) {
                                 _appendValidationError(pipeline, errorText);
                                 error.applied = true;
@@ -303,7 +307,7 @@ export class PipelineValidator {
         if (node.validationErrors) {
             delete node.validationErrors;
         }
-        if (node instanceof Array || typeof node === 'array') {
+        if (_isArray(node)) {
             for (const v of node) {
                 this.clearValidationMarkers(v, visited);
             }
