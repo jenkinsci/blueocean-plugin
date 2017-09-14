@@ -77,7 +77,7 @@ class GitCloneReadSaveRequest extends GitReadSaveRequest {
         }
     }
 
-    private GitClient cloneRepo() throws InterruptedException, IOException {
+    GitClient cloneRepo() throws InterruptedException, IOException {
         EnvVars environment = new EnvVars();
         TaskListener taskListener = new LogTaskListener(Logger.getAnonymousLogger(), Level.ALL);
         String gitExe = gitTool.getGitExe();
@@ -88,9 +88,34 @@ class GitCloneReadSaveRequest extends GitReadSaveRequest {
 
         git.addCredentials(gitSource.getRemote(), getCredential());
 
-        git.clone(gitSource.getRemote(), "origin", true, null);
+        try {
+            git.clone(gitSource.getRemote(), "origin", true, null);
 
-        log.fine("Repository; " + gitSource.getRemote() + " cloned to: " + repositoryPath.getCanonicalPath());
+            log.fine("Repository " + gitSource.getRemote() + " cloned to: " + repositoryPath.getCanonicalPath());
+        } catch(GitException e) {
+            // check if this is an empty repository
+            boolean isEmptyRepo = false;
+            try {
+                if (git.getRemoteReferences(gitSource.getRemote(), null, true, false).isEmpty()) {
+                    isEmptyRepo = true;
+                }
+            } catch(GitException ge) {
+                // *sigh* @ this necessary hack; {@link org.jenkinsci.plugins.gitclient.CliGitAPIImpl#getRemoteReferences}
+                if ("unexpected ls-remote output ".equals(ge.getMessage())) { // blank line, command succeeded
+                    isEmptyRepo = true;
+                }
+                // ignore other reasons
+            }
+
+            if(isEmptyRepo) {
+                git.init();
+                git.addRemoteUrl("origin", gitSource.getRemote());
+
+                log.fine("Repository " + gitSource.getRemote() + " not found, created new to: " + repositoryPath.getCanonicalPath());
+            } else {
+                throw e;
+            }
+        }
 
         return git;
     }
@@ -146,7 +171,7 @@ class GitCloneReadSaveRequest extends GitReadSaveRequest {
         }
     }
 
-    private void cleanupRepo() {
+    void cleanupRepo() {
         try {
             FileUtils.deleteDirectory(repositoryPath);
         } catch (IOException e) {

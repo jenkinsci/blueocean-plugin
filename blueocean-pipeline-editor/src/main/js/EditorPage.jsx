@@ -59,19 +59,24 @@ class SaveDialog extends React.Component {
             if (err.responseBody.message.indexOf('error: 409.') >= 0) {
                 if (this.props.branch !== saveRequest.content.branch) {
                     errorMessage = ['The branch ', <i>{saveRequest.content.branch}</i>, ' already exists'];
-                    this.setState({ branchError: errorMessage });
+                    this.setState({branchError: errorMessage});
                     errorMessage = null;
                 } else {
                     errorMessage = [
                         <div>Your Pipeline was changed by another user.</div>,
                         <div>
-                            <a href="#" onClick={() => functions.overwriteChanges(this.state.branch, this.state.commitMessage, (...args) => this.showError(...args))}>
+                            <a href="#"
+                               onClick={() => functions.overwriteChanges(this.state.branch, this.state.commitMessage, (...args) => this.showError(...args))}>
                                 Keep my changes
                             </a> or <a href="#" onClick={() => functions.discardChanges()}>discard my changes</a>
                         </div>,
                     ];
                 }
                 //errorMessage = ['An error occurred saving to Github: ', ...errorMessage];
+            } else if (errorMessage === 'Server Error') {
+                errorMessage = err.responseBody.message;
+            } else if (err.response && err.response.status === 500) {
+                errorMessage = err.responseBody.message;
             }
         }
         this.setState({ saving: false, errorMessage });
@@ -355,7 +360,7 @@ class PipelineLoader extends React.Component {
             errorMessage = err;
         }
         else if (err instanceof Array || typeof err === 'array') {
-            errorMessage = err.map(e => <div>{e.error}</div>);
+            errorMessage = err.map(e => <div>{this.extractErrorMessage(e.error)}</div>);
         }
         else if (err.responseBody && err.responseBody.message) {
             // Github error
@@ -365,9 +370,13 @@ class PipelineLoader extends React.Component {
                 if (this.props.params.branch !== saveRequest.content.branch) {
                     errorMessage = ['the branch ', <i>{saveRequest.content.branch}</i>, ' already exists'];
                 } else {
-                    errorMessage = ['the pipeline was modified ouside of the editor'];
+                    errorMessage = ['the pipeline was modified outside of the editor'];
                 }
                 errorMessage = ['An error occurred saving to Github: ', ...errorMessage];
+            } else if (errorMessage === 'Server Error') {
+                errorMessage = err.responseBody.message;
+            } else if (err.response && err.response.status === 500) {
+                errorMessage = err.responseBody.message;
             }
         }
         else if (err.message) {

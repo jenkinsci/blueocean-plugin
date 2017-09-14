@@ -49,6 +49,7 @@ import org.eclipse.jgit.transport.JschConfigSessionFactory;
 import org.eclipse.jgit.transport.OpenSshConfig;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RefSpec;
+import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.SshSessionFactory;
 import org.eclipse.jgit.transport.SshTransport;
 import org.eclipse.jgit.transport.Transport;
@@ -390,14 +391,16 @@ class GitUtils {
     static byte[] readFile(Repository repository, String ref, String filePath) {
         try (ObjectReader reader = repository.newObjectReader()) {
             ObjectId branchRef = repository.resolve(ref); // repository.exactRef(ref);
-            RevWalk revWalk = new RevWalk(repository);
-            RevCommit commit = revWalk.parseCommit(branchRef);
-            // and using commit's tree find the path
-            RevTree tree = commit.getTree();
-            TreeWalk treewalk = TreeWalk.forPath(reader, filePath, tree);
-            if (treewalk != null) {
-                // use the blob id to read the file's data
-                return reader.open(treewalk.getObjectId(0)).getBytes();
+            if (branchRef != null) { // for empty repositories, branchRef may be null
+                RevWalk revWalk = new RevWalk(repository);
+                RevCommit commit = revWalk.parseCommit(branchRef);
+                // and using commit's tree find the path
+                RevTree tree = commit.getTree();
+                TreeWalk treewalk = TreeWalk.forPath(reader, filePath, tree);
+                if (treewalk != null) {
+                    // use the blob id to read the file's data
+                    return reader.open(treewalk.getObjectId(0)).getBytes();
+                }
             }
         } catch (IOException ex) {
             throw new RuntimeException(ex);
@@ -419,6 +422,12 @@ class GitUtils {
             PushResult result = resultIterable.iterator().next();
             if (result.getRemoteUpdates().isEmpty()) {
                 throw new RuntimeException("No remote updates occurred");
+            } else {
+                for (RemoteRefUpdate update : result.getRemoteUpdates()) {
+                    if (!RemoteRefUpdate.Status.OK.equals(update.getStatus())) {
+                        throw new ServiceException.UnexpectedErrorException("Remote update failed: " + update.getStatus().name() + ": " + update.getMessage());
+                    }
+                }
             }
         } catch (GitAPIException e) {
             if (e.getMessage().toLowerCase().contains("auth")) {

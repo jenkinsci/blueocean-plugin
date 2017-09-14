@@ -54,66 +54,54 @@ class GitBareRepoReadSaveRequest extends GitCacheCloneReadSaveRequest {
 
     @Override
     byte[] read() throws IOException {
-        try {
-            GitSCMFileSystem fs = getFilesystem();
-            return fs.invoke(new GitSCMFileSystem.FSFunction<byte[]>() {
-                @Override
-                public byte[] invoke(Repository repo) throws IOException, InterruptedException {
-                    // Make sure up-to-date and credentials work
-                    GitUtils.fetch(repo, getCredential());
-                    return GitUtils.readFile(repo, LOCAL_REF_BASE + branch, filePath);
-                }
-            });
-        } catch (InterruptedException ex) {
-            throw new ServiceException.UnexpectedErrorException("Unable to read " + filePath, ex);
-        }
+        return invokeOnScm(new GitSCMFileSystem.FSFunction<byte[]>() {
+            @Override
+            public byte[] invoke(Repository repo) throws IOException, InterruptedException {
+                // Make sure up-to-date and credentials work
+                GitUtils.fetch(repo, getCredential());
+                return GitUtils.readFile(repo, LOCAL_REF_BASE + branch, filePath);
+            }
+        });
     }
 
     @Override
     void save() throws IOException {
-        try {
-            GitSCMFileSystem fs = getFilesystem();
-            fs.invoke(new GitSCMFileSystem.FSFunction<Void>() {
-                @Override
-                public Void invoke(Repository repo) throws IOException, InterruptedException {
-                    String localBranchRef = LOCAL_REF_BASE + sourceBranch;
+        invokeOnScm(new GitSCMFileSystem.FSFunction<Void>() {
+            @Override
+            public Void invoke(Repository repo) throws IOException, InterruptedException {
+                String localBranchRef = LOCAL_REF_BASE + sourceBranch;
 
-                    ObjectId branchHead = repo.resolve(localBranchRef);
+                ObjectId branchHead = repo.resolve(localBranchRef);
 
-                    if (branchHead == null) {
-                        throw new ServiceException.BadRequestException("Invalid branch source branch: " + sourceBranch);
+                try {
+                    // Get committer info
+                    User user = User.current();
+                    if (user == null) {
+                        throw new ServiceException.UnauthorizedException("Not authenticated");
                     }
+                    String mailAddress = MailAddressResolver.resolve(user);
+                    StandardCredentials credential = getCredential();
 
+                    // Make sure up-to-date and credentials work
+                    GitUtils.fetch(repo, credential);
+
+                    GitUtils.commit(repo, localBranchRef, filePath, contents, user.getId(), mailAddress, commitMessage, TimeZone.getDefault(), new Date());
+
+                    GitUtils.push(gitSource.getRemote(), repo, credential, localBranchRef, REMOTE_REF_BASE + branch);
+                    return null;
+                } finally {
+                    // always roll back to undo our local changes
                     try {
-                        // Get committer info
-                        User user = User.current();
-                        if (user == null) {
-                            throw new ServiceException.UnauthorizedException("Not authenticated");
-                        }
-                        String mailAddress = MailAddressResolver.resolve(user);
-                        StandardCredentials credential = getCredential();
-
-                        // Make sure up-to-date and credentials work
-                        GitUtils.fetch(repo, credential);
-
-                        GitUtils.commit(repo, localBranchRef, filePath, contents, user.getId(), mailAddress, commitMessage, TimeZone.getDefault(), new Date());
-
-                        GitUtils.push(gitSource.getRemote(), repo, credential, localBranchRef, REMOTE_REF_BASE + branch);
-                        return null;
-                    } finally {
-                        // always roll back to undo our local changes
-                        try {
+                        if (branchHead != null) { // branchHead may be null if this was an empty repo
                             RefUpdate rollback = repo.updateRef(localBranchRef);
                             rollback.setNewObjectId(branchHead);
                             rollback.forceUpdate();
-                        } catch(Exception ex) {
-                            log.log(Level.SEVERE, "Unable to roll back repo after save failure", ex);
                         }
+                    } catch(Exception ex) {
+                        log.log(Level.SEVERE, "Unable to roll back repo after save failure", ex);
                     }
                 }
-            });
-        } catch (InterruptedException ex) {
-            throw new ServiceException.UnexpectedErrorException("Unable to save " + filePath, ex);
-        }
+            }
+        });
     }
 }
