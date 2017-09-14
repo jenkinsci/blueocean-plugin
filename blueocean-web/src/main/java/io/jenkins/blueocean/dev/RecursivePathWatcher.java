@@ -51,7 +51,7 @@ public class RecursivePathWatcher {
     public interface PathFilter {
         /**
          * Determins if the path is allowed
-         * @param path path to test
+         * @param path relative path from the root directory
          * @return false to exclude this path and all subtrees
          */
         boolean allows(Path path);
@@ -62,7 +62,7 @@ public class RecursivePathWatcher {
      */
     private static final PathFilter ALLOW_ALL_PATHS = new PathFilter() {
         @Override
-        public boolean allows(Path t) {
+        public boolean allows(Path path) {
             return true;
         }
     };
@@ -111,11 +111,12 @@ public class RecursivePathWatcher {
         }
     }
 
-    private void register(Path root) throws IOException {
-        Files.walkFileTree(root, new SimpleFileVisitor<Path>() {
+    private void register(Path path) throws IOException {
+        Files.walkFileTree(path, new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult preVisitDirectory(Path dir, BasicFileAttributes attributes) throws IOException {
-                if (pathFilter.allows(dir)) {
+                // always include root, otherwise give a relative dir to check
+                if (root.equals(dir) || pathFilter.allows(root.relativize(dir))) {
                     WatchKey key = dir.register(watchService, EVENT_KINDS, HIGH_SENSITIVITY);
                     keys.put(key, dir);
                     dirs.put(dir, key);

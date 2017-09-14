@@ -33,11 +33,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.regex.Pattern;
 
 @SuppressWarnings("all")
 public class RunBundleWatches {
     final static List<BundleBuild> builds = new CopyOnWriteArrayList<>();
     final static long DEFAULT_BACK_OFF = 10000;
+    final static Pattern EXTENSIONS_TO_CAUSE_REBUILD = Pattern.compile(".*[.](js|jsx|less|css|json|yaml)");
 
     @Extension
     public static class BundleWatchEndpoint implements ApiRoutable {
@@ -178,20 +180,16 @@ public class RunBundleWatches {
     }
 
     static final RecursivePathWatcher.PathFilter PROJECT_PATH_FILTER = new RecursivePathWatcher.PathFilter() {
-        private final List<String> disallowedDirectoryNames = Collections.unmodifiableList(
-            Arrays.asList("/.git", "/node", "/node_modules", "/target", "/src/test", "/work", "/dist", "/licenses", "/website")
-        );
+        private final Pattern allowedPaths = Pattern.compile("(src|less)/?.*");
+        private final Pattern disallowedPaths = Pattern.compile("(src/test).*");
         @Override
-        public boolean allows(Path t) {
-            for (String name : disallowedDirectoryNames) {
-                try {
-                    String unixPath = t.toFile().getCanonicalPath().replaceAll("\\+", "/");
-                    if (unixPath.endsWith(name)) {
-                        return false;
-                    }
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+        public boolean allows(Path path) {
+            String unixPath = path.toString().replaceAll("\\+", "/");
+            if (disallowedPaths.matcher(unixPath).matches()) {
+                return false;
+            }
+            if (!allowedPaths.matcher(unixPath).matches()) {
+                return false;
             }
             return true;
         }
@@ -337,7 +335,10 @@ public class RunBundleWatches {
                             }
                         }
 
-                        final File watchDir = new File(projectDir, "src");
+                        // Might be better to be "/src/main"
+                        // but JDL and core js currently have a different structure
+                        // limiting the scope is handled with the PROJECT_PATH_FILTER and EXTENSIONS_TO_CAUSE_REBUILD
+                        final File watchDir = projectDir;
 
                         // java nio watch, run `mvnbuild` instead
                         build.thread = new Thread() {
@@ -371,8 +372,8 @@ public class RunBundleWatches {
                                         // TODO we mainly only want to rebuild if there are changes in 'src/main/js'
                                         // we might want to re-run npm install if there's a change to package.json
 
-                                        // definitely exclude .java
-                                        if (modified.toString().endsWith(".java")) {
+                                        // only rebuild for certain types of files
+                                        if (!EXTENSIONS_TO_CAUSE_REBUILD.matcher(modified.toString()).matches()) {
                                             return;
                                         }
 
