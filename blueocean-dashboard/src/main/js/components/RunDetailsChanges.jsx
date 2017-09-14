@@ -74,7 +74,7 @@ export default class RunDetailsChanges extends Component {
                     <TableRow key={commit.commitId}>
                         <TableCell><CommitId commitId={commit.commitId} url={commit.url} /></TableCell>
                         <TableCell>{commit.author.fullName}</TableCell>
-                        <TableCell className="multipleLines"><LinkifiedText text={commit.msg} issues={commit.issues} /></TableCell>
+                        <TableCell className="multipleLines"><LinkifiedText text={commit.msg} partialTextLinks={commit.issues} /></TableCell>
                         <TableCell>
                             <ReadableDate date={commit.timestamp}
                                           liveUpdate

@@ -2,14 +2,14 @@ import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 
 const LinkifiedText = (props) => {
-    const { text, issues, textLink } = props;
+    const { text, partialTextLinks, textLink } = props;
     const textWithIssues = [];
 
-    if (issues.length) {
+    if (partialTextLinks.length) {
         let issuesIdString = '';
         const issuesObj = {};
 
-        for (const issue of issues) {
+        for (const issue of partialTextLinks) {
             issuesIdString += `${issue.id}|`;
             issuesObj[issue.id] = issue.url;
         }
@@ -43,7 +43,7 @@ const LinkifiedText = (props) => {
 };
 
 LinkifiedText.propTypes = {
-    issues: PropTypes.object,
+    partialTextLinks: PropTypes.object,
     text: PropTypes.string.isRequired,
     textLink: PropTypes.string,
 };

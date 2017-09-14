@@ -45,7 +45,7 @@ export default class RunMessageCell extends Component {
                 return (
                     <span className="RunMessageCell" title={commitMsg}>
                         <span className="RunMessageCellInner">
-                            <LinkifiedText text={commitMsg} textLink={linkTo} issues={run.changeSet[run.changeSet.length - 1].issues} />
+                            <LinkifiedText text={commitMsg} textLink={linkTo} partialTextLinks={run.changeSet[run.changeSet.length - 1].issues} />
                         </span>
                         <Lozenge title={t('lozenge.commit', { 0: run.changeSet.length })} />
                     </span>
@@ -55,7 +55,7 @@ export default class RunMessageCell extends Component {
             return (
                 <span className="RunMessageCell" title={commitMsg}>
                     <span className="RunMessageCellInner">
-                        <LinkifiedText text={commitMsg} textLink={linkTo} issues={run.changeSet[run.changeSet.length - 1].issues} />
+                        <LinkifiedText text={commitMsg} textLink={linkTo} partialTextLinks={run.changeSet[run.changeSet.length - 1].issues} />
                     </span>
                 </span>
             );

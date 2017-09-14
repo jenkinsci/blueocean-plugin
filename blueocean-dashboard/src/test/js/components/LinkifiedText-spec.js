@@ -21,39 +21,39 @@ describe("LinkifiedText", () => {
     });
 
     it("renders text with no linked issues in text", () => {
-        const mockIssues = [
+        const mockPartialTextLinks = [
             {
                 'id': 'JIRA-XXXX',
                 'url': 'https://issue.url'
             }
         ];
-        const wrapper = shallow(<LinkifiedText text="123" issues={mockIssues} />);
+        const wrapper = shallow(<LinkifiedText text="123" partialTextLinks={mockPartialTextLinks} />);
 
         assert.isTrue(wrapper.is('span'));
         assert.equal(wrapper.text(), '123');
     });
 
     it("renders text with linked issues in text", () => {
-        const mockIssues = [
+        const mockPartialTextLinks = [
             {
                 'id': 'JIRA-XXXX',
                 'url': 'https://issue.url'
             }
         ];
-        const wrapper = shallow(<LinkifiedText text="test JIRA-XXXX text" issues={mockIssues} />);
+        const wrapper = shallow(<LinkifiedText text="test JIRA-XXXX text" partialTextLinks={mockPartialTextLinks} />);
 
         assert.equal(wrapper.find('a').text(), 'JIRA-XXXX');
         assert.equal(wrapper.find('a').prop('href'), 'https://issue.url');
     });
 
     it("renders linked text with linked issues in text", () => {
-        const mockIssues = [
+        const mockPartialTextLinks = [
             {
                 'id': 'JIRA-XXXX',
                 'url': 'https://issue.url'
             }
         ];
-        const wrapper = shallow(<LinkifiedText text="test JIRA-XXXX text" textLink="link" issues={mockIssues} />);
+        const wrapper = shallow(<LinkifiedText text="test JIRA-XXXX text" textLink="link" partialTextLinks={mockPartialTextLinks} />);
 
         assert.equal(wrapper.find('a').text(), 'JIRA-XXXX');
         assert.equal(wrapper.find('a').prop('href'), 'https://issue.url');
