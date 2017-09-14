@@ -2,6 +2,7 @@ package io.jenkins.blueocean;
 
 import hudson.ExtensionList;
 import hudson.Main;
+import io.jenkins.blueocean.dev.RunBundleWatches;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ public class BlueOceanUI {
      * routes on the back-end for real 404s, we'll need to complicate this behaviour :D
      */
     public Object getDynamic(String route) {
+        RunBundleWatches.waitForScriptBuilds();
         for (RootRoutable r : ExtensionList.lookup(RootRoutable.class)) {
             if (r.getUrlName().equals(route))
                 return r;

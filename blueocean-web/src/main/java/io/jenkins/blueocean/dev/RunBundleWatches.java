@@ -37,6 +37,7 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("all")
 public class RunBundleWatches {
+    final static boolean isDisabled = !(new BlueOceanUI().isDevelopmentMode());
     final static List<BundleBuild> builds = new CopyOnWriteArrayList<>();
     final static long DEFAULT_BACK_OFF = 10000;
     final static Pattern EXTENSIONS_TO_CAUSE_REBUILD = Pattern.compile(".*[.](js|jsx|less|css|json|yaml)");
@@ -197,8 +198,7 @@ public class RunBundleWatches {
 
     @Initializer(after = InitMilestone.JOB_LOADED)
     public static void startBundleWatches() {
-        if (!(new BlueOceanUI().isDevelopmentMode())
-        || Boolean.getBoolean("blueocean.features.BUNDLE_WATCH_SKIP")) {
+        if (isDisabled || Boolean.getBoolean("blueocean.features.BUNDLE_WATCH_SKIP")) {
             return;
         }
 
@@ -324,6 +324,10 @@ public class RunBundleWatches {
                                 }
                             }
                         };
+
+                        build.thread.setDaemon(true);
+                        build.thread.setName("Watching " + build.name + " for changes in: " + path);
+                        build.thread.start();
                     } else {
                         JSONObject packageJson = JSONObject.fromObject(FileUtils.readFileToString(packageFile));
                         final String[] npmCommand = { "mvnbuild" };
@@ -341,7 +345,7 @@ public class RunBundleWatches {
                         final File watchDir = projectDir;
 
                         // java nio watch, run `mvnbuild` instead
-                        build.thread = new Thread() {
+                        Thread fileWatchThread = new Thread() {
                             volatile Process buildProcess;
 
                             @Override
@@ -382,7 +386,7 @@ public class RunBundleWatches {
 
                                         // run in a separate thread so we can pick up changes and kill any existing
                                         // running processes
-                                        Thread buildThread = new Thread() {
+                                        build.thread = new Thread() {
                                             @Override
                                             public void run() {
                                                 build.isBuilding = true;
@@ -448,18 +452,19 @@ public class RunBundleWatches {
                                                 }
                                             }
                                         };
-                                        buildThread.setDaemon(true);
-                                        buildThread.setName("Building: " + path);
-                                        buildThread.start();
+
+                                        build.thread.setDaemon(true);
+                                        build.thread.setName("Building: " + path);
+                                        build.thread.start();
                                     }
                                 });
                             }
                         };
-                    }
 
-                    build.thread.setDaemon(true);
-                    build.thread.setName("Watching " + build.name + " for changes in: " + path);
-                    build.thread.start();
+                        fileWatchThread.setDaemon(true);
+                        fileWatchThread.setName("Watching " + build.name + " for changes in: " + path);
+                        fileWatchThread.start();
+                    }
 
                     builds.add(build);
                 }
@@ -482,5 +487,20 @@ public class RunBundleWatches {
             return dir;
         }
         return findPluginWorkDir(dir.getParentFile());
+    }
+
+    public static void waitForScriptBuilds() {
+        if (isDisabled) return;
+
+        for (BundleBuild build : builds) {
+            while (build.isBuilding) {
+                try {
+                    // Poll since the npm bundle:watch won't complete the thread
+                    Thread.sleep(500);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
     }
 }
