@@ -76,6 +76,16 @@ export class DefaultSSEHandler {
         if (event.job_ismultibranch && !event.blueocean_job_branch_name) {
             return;
         }
+        // don't care about indexing events
+        if (event.job_multibranch_indexing_status === 'INDEXING') {
+            return;
+        }
+        // If we have a queued item but the branch isn't present, we need to refresh the pager
+        // this happens, for example, when you create a new pipeline in a repo that did not have one
+        const pipeline = this.pipelineService.getPipeline(`/blue/rest/organizations/${event.jenkins_org}/pipelines/${event.blueocean_job_pipeline_name}/`);
+        if (pipeline && pipeline.branchNames.indexOf(event.blueocean_job_branch_name) === -1) {
+            this.pipelineService.pipelinesPager(event.jenkins_org, event.blueocean_job_pipeline_name).refresh();
+        }
         // Sometimes we can't match the queue item so we have to skip this event
         if (!event.blueocean_queue_item_expected_build_number) {
             return;
