@@ -70,9 +70,12 @@ abstract class GitReadSaveRequest  {
                 throw new ServiceException.UnauthorizedException("Not authenticated");
             }
             credential = UserSSHKeyManager.getOrCreate(user);
-        } else if (gitSource.getCredentialsId() != null) {
-            credential = CredentialsUtils.findCredential(gitSource.getCredentialsId(),
-                StandardCredentials.class, new BlueOceanDomainRequirement());
+        } else {
+            String credentialId = gitSource.getCredentialsId();
+            if (credentialId != null) {
+                credential = CredentialsUtils.findCredential(credentialId,
+                    StandardCredentials.class, new BlueOceanDomainRequirement());
+            }
         }
         return credential;
     }
