@@ -10,11 +10,14 @@ export function getArg(step, name, isLiteral = true) {
     };
 }
 
-export function setArg(step, name, value, isLiteral = false) {
+export function setArg(step, name, value, isLiteral = true) {
     if (step.data && step.data[name]) {
         step.data[name].value = value;
+        if (arguments.length > 3) {
+            step.data[name].isLiteral = isLiteral;
+        }
     } else {
-        step.data[name].value = {
+        step.data[name] = {
             isLiteral,
             value,
         };
