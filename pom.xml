@@ -32,7 +32,7 @@
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
     <jenkins-test-harness.version>2.23</jenkins-test-harness.version>
-    <scm-api.version>2.2.1</scm-api.version>
+    <scm-api.version>2.2.2</scm-api.version>
     <git.version>3.5.1</git.version>
     <git-client.version>2.5.0</git-client.version>
   </properties>
@@ -319,7 +319,7 @@
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-model-definition</artifactId>
-            <version>1.2-beta-4</version>
+            <version>1.2-beta-5</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>

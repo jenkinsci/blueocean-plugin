@@ -16,6 +16,7 @@ import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.runner.RunWith;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
@@ -121,6 +122,7 @@ public class GithubEditorTest {
      */
     @Retry(3)
     @Test
+    @Ignore
     public void testEditor() throws IOException {
         creationPage.createPipeline(token, organization, repo, true);
         MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
