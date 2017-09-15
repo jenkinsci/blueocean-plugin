@@ -5,7 +5,7 @@ import pipelineStore from './PipelineStore';
 import pipelineMetadataService from './PipelineMetadataService';
 import type { PipelineInfo, StageInfo, StepInfo } from './PipelineStore';
 import { convertInternalModelToJson } from './PipelineSyntaxConverter';
-import idgen from './IdGenerator';
+import { isObservableArray } from 'mobx';
 import debounce from 'lodash.debounce';
 
 const validationTimeout = 500;
@@ -21,7 +21,7 @@ export function isValidEnvironmentKey(key: string): boolean {
 }
 
 function _isArray(o) {
-    return o instanceof Array || typeof o === 'array';
+    return o instanceof Array || typeof o === 'array' || isObservableArray(o);
 }
 
 function _hasValidationErrors(node) {

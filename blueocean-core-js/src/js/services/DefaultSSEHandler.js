@@ -82,7 +82,7 @@ export class DefaultSSEHandler {
         }
         // If we have a queued item but the branch isn't present, we need to refresh the pager
         // this happens, for example, when you create a new pipeline in a repo that did not have one
-        const pipeline = this.pipelineService.getPipeline(`/blue/rest/organizations/${event.jenkins_org}/pipelines/${event.blueocean_job_pipeline_name}/`);
+        const pipeline = this.pipelineService.getPipeline(`/blue/rest/organizations/${event.jenkins_org}/pipelines/${encodeURIComponent(event.blueocean_job_pipeline_name)}/`);
         if (pipeline && pipeline.branchNames.indexOf(event.blueocean_job_branch_name) === -1) {
             this.pipelineService.pipelinesPager(event.jenkins_org, event.blueocean_job_pipeline_name).refresh();
         }
