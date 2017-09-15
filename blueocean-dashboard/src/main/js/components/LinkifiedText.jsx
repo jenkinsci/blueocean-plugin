@@ -5,7 +5,7 @@ const LinkifiedText = (props) => {
     const { text, partialTextLinks, textLink } = props;
     const textWithPartialLinks = [];
 
-    if (partialTextLinks.length) {
+    if (partialTextLinks && partialTextLinks.length) {
         let partialLinksIdString = '';
         const partialLinksObj = {};
 
