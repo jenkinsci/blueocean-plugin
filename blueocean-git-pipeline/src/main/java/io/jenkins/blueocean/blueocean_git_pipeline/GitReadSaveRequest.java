@@ -31,6 +31,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequire
 import io.jenkins.blueocean.service.embedded.util.UserSSHKeyManager;
 import jenkins.plugins.git.GitSCMSource;
 
+import javax.annotation.CheckForNull;
 import java.io.IOException;
 import java.util.logging.Logger;
 
@@ -60,7 +61,7 @@ abstract class GitReadSaveRequest  {
         this.contents = contents == null ? null : contents.clone(); // grr findbugs
     }
 
-    StandardCredentials getCredential() {
+    @CheckForNull StandardCredentials getCredential() {
         StandardCredentials credential = null;
         if (GitUtils.isSshUrl(gitSource.getRemote())) {
             // Get committer info and credentials
