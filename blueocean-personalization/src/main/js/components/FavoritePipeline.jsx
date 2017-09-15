@@ -79,13 +79,13 @@ export class FavoritePipeline extends Component {
             return null;
         }
 
-        return (
+        return (!(this.props.pipeline.branchNames && !this.props.pipeline.branchNames.length) ? (
             <FavoritesProvider store={this.props.store}>
                 <Favorite checked={this.state.favorite} className={this.props.className}
                   onToggle={() => this._onFavoriteToggle()}
                 />
             </FavoritesProvider>
-        );
+        ) : null);
     }
 }
 
