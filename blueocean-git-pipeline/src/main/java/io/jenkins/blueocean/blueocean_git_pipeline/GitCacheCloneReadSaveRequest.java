@@ -141,12 +141,7 @@ class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
                 GitCloneReadSaveRequest gitClone = new GitCloneReadSaveRequest(gitSource, branch, commitMessage, sourceBranch, filePath, contents);
                 GitClient git = gitClone.cloneRepo();
                 try {
-                    return git.withRepository(new RepositoryCallback<T>() {
-                        @Override
-                        public T invoke(Repository repo, VirtualChannel channel) throws IOException, InterruptedException {
-                            return function.invoke(repo);
-                        }
-                    });
+                    return git.withRepository(new RepositoryCallbackToFSFunctionAdapter<>(function));
                 } finally {
                     gitClone.cleanupRepo();
                 }
@@ -248,6 +243,19 @@ class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
             return gitClient;
         } catch (GitAPIException | URISyntaxException ex) {
             throw new ServiceException.UnexpectedErrorException("Unable to get working repository directory", ex);
+        }
+    }
+
+    static class RepositoryCallbackToFSFunctionAdapter<T> implements RepositoryCallback<T> {
+        private final GitSCMFileSystem.FSFunction<T> function;
+
+        public RepositoryCallbackToFSFunctionAdapter(GitSCMFileSystem.FSFunction<T> function) {
+            this.function = function;
+        }
+
+        @Override
+        public T invoke(Repository repo, VirtualChannel channel) throws IOException, InterruptedException {
+            return function.invoke(repo);
         }
     }
 }
