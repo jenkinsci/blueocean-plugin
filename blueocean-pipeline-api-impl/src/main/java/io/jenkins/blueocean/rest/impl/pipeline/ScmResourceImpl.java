@@ -59,7 +59,7 @@ public class ScmResourceImpl extends BluePipelineScm {
     }
 
     private @Nonnull User checkPermission(){
-        ACL acl = Jenkins.getInstance().getACL();
+        ACL acl = item.getACL();
         Authentication a = Jenkins.getAuthentication();
         User user = User.get(a);
         if(user == null){
