@@ -3,40 +3,40 @@ import { Link } from 'react-router';
 
 const LinkifiedText = (props) => {
     const { text, partialTextLinks, textLink } = props;
-    const textWithIssues = [];
+    const textWithPartialLinks = [];
 
     if (partialTextLinks.length) {
-        let issuesIdString = '';
-        const issuesObj = {};
+        let partialLinksIdString = '';
+        const partialLinksObj = {};
 
-        for (const issue of partialTextLinks) {
-            issuesIdString += `${issue.id}|`;
-            issuesObj[issue.id] = issue.url;
+        for (const link of partialTextLinks) {
+            partialLinksIdString += `${link.id}|`;
+            partialLinksObj[link.id] = link.url;
         }
 
-        if (issuesIdString) {
-            const issuesRegExpString = new RegExp(`(${issuesIdString.slice(0, -1)})`, 'gi');
+        if (partialLinksIdString) {
+            const partialLinksRegExpString = new RegExp(`(${partialLinksIdString.slice(0, -1)})`, 'gi');
 
-            for (let commitMsgPart of text.split(issuesRegExpString)) {
-                if (issuesObj[commitMsgPart]) {
-                    textWithIssues.push(<a href={issuesObj[commitMsgPart]} target="_blank">{commitMsgPart}</a>);
+            for (let commitMsgPart of text.split(partialLinksRegExpString)) {
+                if (partialLinksObj[commitMsgPart]) {
+                    textWithPartialLinks.push(<a href={partialLinksObj[commitMsgPart]} target="_blank">{commitMsgPart}</a>);
                 } else {
                     if (commitMsgPart) {
                         if (textLink) {
-                            textWithIssues.push((<Link to={textLink} className="unstyled-link" >{commitMsgPart}</Link>));
+                            textWithPartialLinks.push((<Link to={textLink} className="unstyled-link" >{commitMsgPart}</Link>));
                         } else {
-                            textWithIssues.push(commitMsgPart);
+                            textWithPartialLinks.push(commitMsgPart);
                         }
                     }
                 }
             }
         }
 
-        if (!textWithIssues.length) {
-            textWithIssues.push((<Link to={textLink} className="unstyled-link" >{text}</Link>));
+        if (!textWithPartialLinks.length) {
+            textWithPartialLinks.push((<Link to={textLink} className="unstyled-link" >{text}</Link>));
         }
 
-        return (<span>{textWithIssues}</span>);
+        return (<span>{textWithPartialLinks}</span>);
     }
 
     return (textLink ? (<Link to={textLink} className="unstyled-link" >{text}</Link>) : (<span>{text}</span>));
