@@ -121,6 +121,14 @@ public class OrganizationFolderTest{
         assertNotNull(folderPipeline.getQueue());
         assertNotNull(folderPipeline.getQueue().iterator());
 
+        //Make sure the user does has permissions to that folder
+        PowerMockito.when(orgFolder.getACL()).thenReturn(new ACL() {
+            @Override
+            public boolean hasPermission(Authentication arg0, Permission arg1) {
+                return true;
+            }
+        });
+
         ScmResourceImpl scmResource = new ScmResourceImpl(orgFolder, folderPipeline);
         StaplerRequest staplerRequest = PowerMockito.mock(StaplerRequest.class);
         assertEquals("hello", scmResource.getContent(staplerRequest));
