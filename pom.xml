@@ -442,7 +442,9 @@
                     <groupId>org.jenkins-ci</groupId>
                     <artifactId>symbol-annotation</artifactId>
                 </exclusion>
-                <!-- Upper bound fix: Remove it once token-micro plugin is fixed to remove dependency on asm-tree -->
+                <!-- Upper bound fix: Remove it once token-micro plugin is fixed to remove dependency on asm-tree
+                     PR: https://github.com/jenkinsci/token-macro-plugin/pull/31
+                -->
                 <exclusion>
                     <groupId>org.ow2.asm</groupId>
                     <artifactId>asm-tree</artifactId>
