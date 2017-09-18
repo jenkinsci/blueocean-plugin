@@ -145,11 +145,6 @@
 
   <dependencies>
       <dependency>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
           <groupId>org.mockito</groupId>
           <artifactId>mockito-core</artifactId>
           <scope>test</scope>
@@ -167,6 +162,7 @@
       <dependency>
           <groupId>org.apache.httpcomponents</groupId>
           <artifactId>httpclient</artifactId>
+          <scope>test</scope>
       </dependency>
       <dependency>
           <groupId>org.powermock</groupId>
@@ -483,14 +479,6 @@
             <version>3.5.0</version>
         </dependency>
 
-        <!-- Needed by blueocean-rest-impl for ssh unititlies -->
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>jsch</artifactId>
-            <version>0.1.54.1</version>
-        </dependency>
-
-
         <!-- Other -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -529,7 +517,9 @@
                     <artifactId>guava</artifactId>
                 </exclusion>
 
-                <!-- Upper bound dependency fix -->
+                <!-- Upper bound dependency fix
+                    TODO: Remove it after https://github.com/jenkinsci/jira-plugin/pull/130 is merged and released.
+                -->
                 <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-beans</artifactId>
@@ -680,7 +670,9 @@
             <artifactId>favorite</artifactId>
             <version>2.3.0</version>
             <exclusions>
-                <!-- Upper bound fix: Remove it once token-micro plugin is fixed to remove dependency on asm-tree -->
+                <!-- Upper bound fix: Remove it once token-micro plugin is fixed to remove dependency on asm-tree
+                     PR https://github.com/jenkinsci/token-macro-plugin/pull/31. Fix to be available in 2.4.0.
+                -->
                 <exclusion>
                     <groupId>org.ow2.asm</groupId>
                     <artifactId>asm</artifactId>
@@ -738,7 +730,9 @@
             <version>1.7</version>
             <scope>test</scope>
             <exclusions>
-                <!-- upper bound fix: icon-set comes from core, lets ignore the one coming from matrix-auth-->
+                <!-- upper bound fix: icon-set comes from core, lets ignore the one coming from matrix-auth
+                     PR https://github.com/jenkinsci/plugin-pom/pull/72
+                -->
                 <exclusion>
                     <groupId>org.jenkins-ci.plugins.icon-shim</groupId>
                     <artifactId>icon-set</artifactId>

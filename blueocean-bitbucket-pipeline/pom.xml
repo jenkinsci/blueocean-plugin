@@ -21,7 +21,7 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>blueocean-pipeline-api-impl</artifactId>
       <exclusions>
-        <!-- Upper bound fix: credentials plugin is bringing it's own version of anlr4-runtime,
+        <!-- Upper bound fix: credentials plugin is bringing its own version of antlr4-runtime,
              wiremock uses later version
         -->
         <exclusion>
@@ -39,6 +39,10 @@
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>fluent-hc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
     </dependency>
 
     <dependency>
