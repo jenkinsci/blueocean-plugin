@@ -10,7 +10,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.2.3-SNAPSHOT</version>
+  <version>1.2.3</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean Parent</name>
@@ -40,7 +40,7 @@
     <connection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</connection>
     <developerConnection>scm:git:https://github.com/jenkinsci/blueocean-plugin.git</developerConnection>
     <url>https://github.com/jenkinsci/blueocean-plugin</url>
-    <tag>HEAD</tag>
+    <tag>blueocean-parent-1.2.3</tag>
   </scm>
 
   <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
