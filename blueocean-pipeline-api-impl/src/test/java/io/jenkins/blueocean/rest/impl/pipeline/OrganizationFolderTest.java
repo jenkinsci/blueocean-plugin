@@ -4,6 +4,9 @@ import com.google.common.collect.Lists;
 import hudson.ExtensionList;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
+import hudson.security.ACL;
+import hudson.security.Permission;
+import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -11,7 +14,10 @@ import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueOrganizationFolder;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
+import jenkins.model.Jenkins;
 import jenkins.scm.api.metadata.AvatarMetadataAction;
+
+import org.acegisecurity.Authentication;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -115,6 +121,45 @@ public class OrganizationFolderTest{
         assertNotNull(folderPipeline.getQueue());
         assertNotNull(folderPipeline.getQueue().iterator());
 
+        //Make sure the user does has permissions to that folder
+        PowerMockito.when(orgFolder.getACL()).thenReturn(new ACL() {
+            @Override
+            public boolean hasPermission(Authentication arg0, Permission arg1) {
+                return true;
+            }
+        });
+
+        ScmResourceImpl scmResource = new ScmResourceImpl(orgFolder, folderPipeline);
+        StaplerRequest staplerRequest = PowerMockito.mock(StaplerRequest.class);
+        assertEquals("hello", scmResource.getContent(staplerRequest));
+    }
+
+    @Test(expected = ServiceException.ForbiddenException.class)
+    public void testOrganizationFolderFactoryNoPermissionsFolder() throws Exception {
+        List<OrganizationFolderPipelineImpl.OrganizationFolderFactory> organizationFolderFactoryList = ExtensionList.lookup(OrganizationFolderPipelineImpl.OrganizationFolderFactory.class);
+        assertEquals(1, organizationFolderFactoryList.size());
+        assertTrue(organizationFolderFactoryList.get(0) instanceof OrganizationFolderFactoryTestImpl);
+        OrganizationFolderFactoryTestImpl organizationFolderFactoryTest = (OrganizationFolderFactoryTestImpl) organizationFolderFactoryList.get(0);
+
+        OrganizationFolderPipelineImpl folderPipeline = organizationFolderFactoryTest.getFolder(orgFolder, new Reachable() {
+            @Override
+            public Link getLink() {
+                return organization.getLink().rel("/pipelines/");
+            }
+        }, mockOrganization());
+        assertNotNull(folderPipeline);
+
+        assertNotNull(folderPipeline.getQueue());
+        assertNotNull(folderPipeline.getQueue().iterator());
+
+        //Make sure the user does not have permissions to that folder
+        PowerMockito.when(orgFolder.getACL()).thenReturn(new ACL() {
+            @Override
+            public boolean hasPermission(Authentication arg0, Permission arg1) {
+                return false;
+            }
+        });
+
         ScmResourceImpl scmResource = new ScmResourceImpl(orgFolder, folderPipeline);
         StaplerRequest staplerRequest = PowerMockito.mock(StaplerRequest.class);
         assertEquals("hello", scmResource.getContent(staplerRequest));
@@ -170,7 +215,7 @@ public class OrganizationFolderTest{
         return organization;
     }
 
-    @TestExtension("testOrganizationFolderFactory")
+    @TestExtension({ "testOrganizationFolderFactory", "testOrganizationFolderFactoryNoPermissionsFolder" })
     public static class OrganizationFolderFactoryTestImpl extends OrganizationFolderPipelineImpl.OrganizationFolderFactory {
         @Override
         protected OrganizationFolderPipelineImpl getFolder(jenkins.branch.OrganizationFolder folder, Reachable parent, BlueOrganization organization) {
