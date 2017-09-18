@@ -80,7 +80,6 @@ export class ResultItem extends Component {
     };
 
     urlClicked = (e: Event) => {
-        console.log('urlClicked');
         e.stopPropagation();
     };
 
