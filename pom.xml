@@ -165,6 +165,10 @@
           <scope>test</scope>
       </dependency>
       <dependency>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+      </dependency>
+      <dependency>
           <groupId>org.powermock</groupId>
           <artifactId>powermock-module-junit4-common</artifactId>
           <scope>test</scope>
@@ -467,6 +471,11 @@
             <version>4.5.3</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.3</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-artifact</artifactId>
             <version>3.5.0</version>
@@ -746,13 +755,6 @@
             <artifactId>unirest-java</artifactId>
             <version>1.4.9</version>
             <scope>test</scope>
-            <exclusions>
-                <!-- Upper bound fix -->
-                <exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpclient</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -847,7 +849,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>token-macro</artifactId>
-            <version>2.1</version>
+            <version>2.3</version>
         </dependency>
         <dependency>
             <!--
