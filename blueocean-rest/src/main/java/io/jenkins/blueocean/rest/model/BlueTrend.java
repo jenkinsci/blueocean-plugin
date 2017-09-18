@@ -24,9 +24,15 @@ public abstract class BlueTrend extends Resource implements BlueTable {
     @Exported(name = ID)
     public abstract String getId();
 
+    /**
+     * @return map of columns' property names (keys) and descriptions (values). optional
+     */
     @Exported(name = COLUMNS, inline = true)
     public abstract Map<String, String> getColumns();
 
+    /**
+     @return individual rows of data
+     */
     @Navigable
     public abstract Container<BlueTableRow> getRows();
 
