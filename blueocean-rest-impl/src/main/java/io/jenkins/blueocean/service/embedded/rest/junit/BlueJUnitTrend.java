@@ -54,6 +54,11 @@ public class BlueJUnitTrend extends BlueTrend {
     }
 
     @Override
+    public String getDisplayName() {
+        return "JUnit";
+    }
+
+    @Override
     @Exported
     public Map<String, String> getColumns() {
         return COLUMNS;

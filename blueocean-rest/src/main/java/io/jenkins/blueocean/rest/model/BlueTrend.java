@@ -17,12 +17,21 @@ import java.util.Map;
 public abstract class BlueTrend extends Resource implements BlueTable {
 
     public static final String ID = "id";
+    public static final String DISPLAY_NAME = "displayName";
 
     /**
-     * @return name or identifier of the trend, e.g. "buildDuration"
+     * A unique identifier for the trend to be used in the REST API path, e.g. my-pipeline/trends/${id}
+     * Note that an ID collision will result in only one trend being available.
+     * @return identifier
      */
     @Exported(name = ID)
     public abstract String getId();
+
+    /**
+     * @return name display in UI
+     */
+    @Exported(name = DISPLAY_NAME)
+    public abstract String getDisplayName();
 
     /**
      * @return map of columns' property names (keys) and descriptions (values). optional

@@ -224,7 +224,7 @@ export class PipelineTrends extends Component {
 
                     return (
                         <div className="trends-chart-container" data-trend-id={trend.id}>
-                            <div className="trends-chart-label">{trend.id}</div>
+                            <div className="trends-chart-label">{trend.displayName}</div>
 
                             {chart}
                         </div>

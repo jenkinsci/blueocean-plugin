@@ -37,6 +37,11 @@ public class StageDurationTrend extends BlueTrend {
     }
 
     @Override
+    public String getDisplayName() {
+        return "Stage Duration";
+    }
+
+    @Override
     public Map<String, String> getColumns() {
         return ImmutableMap.of();
     }
