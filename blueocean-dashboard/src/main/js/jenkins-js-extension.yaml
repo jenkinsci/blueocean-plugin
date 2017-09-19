@@ -6,8 +6,6 @@ extensions:
     extensionPoint: jenkins.blueocean.top.pipelines
   - component: PipelineRoutes
     extensionPoint: jenkins.main.routes
-  - component: PipelineStore
-    extensionPoint: jenkins.main.stores
   - component: components/PipelineRunGraph
     extensionPoint: jenkins.pipeline.run.result
 # creation for Git repos
