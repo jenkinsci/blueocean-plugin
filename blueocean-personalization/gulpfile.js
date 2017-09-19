@@ -1,4 +1,4 @@
-const jsb = require('@jenkins-cd/js-builder');
+const jsb = require('@jenkins-blueocean/js-builder');
 
 jsb.gulp.on('stop', () => {
     // force exit when in debug mode

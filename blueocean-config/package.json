@@ -13,7 +13,7 @@
     "rollbar-browser": "1.9.2"
   },
   "devDependencies": {
-    "@jenkins-cd/js-builder": "0.0.60-kz-1",
+    "@jenkins-blueocean/js-builder": "0.0.62",
     "@jenkins-cd/js-modules": "0.0.10",
     "babel-eslint": "6.1.2",
     "create-hmac": "1.1.4",

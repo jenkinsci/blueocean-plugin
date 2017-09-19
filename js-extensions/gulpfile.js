@@ -1,7 +1,7 @@
 //
 // See https://github.com/jenkinsci/js-builder
 //
-var builder = require('@jenkins-cd/js-builder');
+var builder = require('@jenkins-blueocean/js-builder');
 builder.src(['src', 'js-extensions/@jenkins-cd', 'js-extensions/@jenkins-cd/subs']);
 builder.lang('es6');
 //builder.lint('none');

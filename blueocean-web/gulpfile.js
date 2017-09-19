@@ -7,7 +7,7 @@ process.env.SKIP_BLUE_IMPORTS = 'YES';
 var gi = require('giti');
 var fs = require('fs');
 
-var builder = require('@jenkins-cd/js-builder');
+var builder = require('@jenkins-blueocean/js-builder');
 
 // create a dummy revisionInfo so developmentFooter will not fail
 const revisionInfo = '// Do not edit, it is generated and will be on each build.\nexport default {};';

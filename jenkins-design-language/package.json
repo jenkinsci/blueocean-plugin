@@ -54,7 +54,7 @@
     "react-dom": "15.3.2"
   },
   "devDependencies": {
-    "@jenkins-cd/js-builder": "0.0.60-kz-1",
+    "@jenkins-blueocean/js-builder": "0.0.62",
     "@jenkins-cd/js-modules": "0.0.10",
     "@kadira/storybook": "2.35.3",
     "babel-eslint": "7.0.0",

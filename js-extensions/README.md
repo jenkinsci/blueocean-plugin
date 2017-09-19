@@ -85,7 +85,7 @@ By default, all `@jenkins-cd/js-extensions` generated JavaScript bundles will au
   `src/main/resources/jenkins/plugins/[pluginId]`, where `pluginId` is the Jenkins HPI plugin ID with all hyphen characters replaced by a path separator
    e.g. for `blueocean-dashboard`, the path that is searched is `src/main/resources/jenkins/plugins/blueocean/dashboard`.
    
-> See `findI18nBundles()` in [@jenkins-cd/subs/extensions-bundle.js](@jenkins-cd/subs/extensions-bundle.js)
+> See `findI18nBundles()` in [@jenkins-cd/subs/extensions-bundle.js](@jenkins-blueocean/subs/extensions-bundle.js)
 
 In some situations, a `@jenkins-cd/js-extensions` generated bundle may depend on i18n resources that are not in the default location or not in the host plugin (e.g. they may be defined in a "common" style utility plugin). In this situation,
   your plugin needs to know about these i18n resources in order to generate the right pre-loading code into the generated bundle. To tell `@jenkins-cd/js-extensions` about the resources in the other plugin, you need to manually define a `i18nBundles`
