@@ -37,17 +37,8 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>fluent-hc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpclient</artifactId>
-    </dependency>
-
-    <dependency>
-      <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>httpmime</artifactId>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>apache-httpcomponents-client-4-api</artifactId>
     </dependency>
 
     <dependency>
