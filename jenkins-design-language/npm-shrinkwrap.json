@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/design-language",
-  "version": "0.0.147-SNAPSHOT",
+  "version": "0.0.148",
   "dependencies": {
     "@kadira/react-split-pane": {
       "version": "1.4.7",
@@ -6041,6 +6041,12 @@
       "dev": true,
       "optional": true
     },
+    "jquery": {
+      "version": "3.2.1",
+      "from": "jquery@>=1.9.0",
+      "resolved": "https://registry.npmjs.org/jquery/-/jquery-3.2.1.tgz",
+      "optional": true
+    },
     "js-base64": {
       "version": "2.1.9",
       "from": "js-base64@https://registry.npmjs.org/js-base64/-/js-base64-2.1.9.tgz",
@@ -6290,6 +6296,11 @@
       "from": "liftoff@https://registry.npmjs.org/liftoff/-/liftoff-2.3.0.tgz",
       "resolved": "https://registry.npmjs.org/liftoff/-/liftoff-2.3.0.tgz",
       "dev": true
+    },
+    "linkifyjs": {
+      "version": "2.1.4",
+      "from": "linkifyjs@latest",
+      "resolved": "https://registry.npmjs.org/linkifyjs/-/linkifyjs-2.1.4.tgz"
     },
     "load-json-file": {
       "version": "1.1.0",
