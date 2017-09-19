@@ -1,6 +1,8 @@
 github.repo=
 github.org=
+# required roles: repo, user:email
 github.token=
+# requires role: delete_repo
 github.deleteRepo=true
 github.randomSuffix=true
 
