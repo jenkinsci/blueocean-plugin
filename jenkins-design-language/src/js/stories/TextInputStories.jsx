@@ -57,17 +57,17 @@ function Icons() {
             <div style={style}>
                 <p>Left</p>
 
-                <TextInput iconLeft="search" />
+                <TextInput iconLeft="ActionSearch" />
             </div>
             <div style={style}>
                 <p>Right</p>
 
-                <TextInput iconRight="close" />
+                <TextInput iconRight="NavigationClose" />
             </div>
             <div style={style}>
                 <p>Both</p>
 
-                <TextInput iconLeft="search" iconRight="close" />
+                <TextInput iconLeft="ActionSearch" iconRight="NavigationClose" />
             </div>
         </div>
     );
