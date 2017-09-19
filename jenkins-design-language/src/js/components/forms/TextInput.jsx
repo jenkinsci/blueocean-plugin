@@ -8,7 +8,7 @@ import { TextControl } from './TextControl';
 function NestedIcon(props) {
     return (
         <div className={`TextInput-icon ${props.className}`}>
-            <Icon icon={props.icon} color="#999999" />
+            <Icon icon={props.icon} />
         </div>
     );
 }

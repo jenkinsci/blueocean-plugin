@@ -5,6 +5,10 @@ import React, { Component, PropTypes } from 'react';
 import {getAddIconGroup} from './common';
 import type { StageInfo } from '../../services/PipelineStore';
 import pipelineValidator from '../../services/PipelineValidator';
+import { Icon } from '@jenkins-cd/design-language';
+import AlertIcon from './AlertIcon';
+
+const NBSP = '\u00a0';
 
 // Dimensions used for layout, px
 export const defaultLayout = {
@@ -89,8 +93,13 @@ type State = {
     layout: LayoutInfo
 };
 
-function nodeHasErrors(graphNode) {
-    return graphNode.stage && pipelineValidator.hasValidationErrors(graphNode.stage);
+function stageHasErrors(stage) {
+    return stage && pipelineValidator.hasValidationErrors(stage);
+}
+
+function stageHasDirectErrors(stage) {
+    // check for validation errors but don't include children
+    return stage && pipelineValidator.hasValidationErrors(stage, [].concat(stage.children));
 }
 
 type DefaultProps = typeof EditorPipelineGraph.defaultProps;
@@ -362,42 +371,50 @@ needsLayout = true;
     }
 
     renderBigLabel(details:LabelInfo) {
-
         const { nodeSpacingH, labelOffsetV } = this.state.layout;
-
+        const stage = details.parentStage && details.parentStage.children || details.stage;
+        const isTopLevelParallel = stage.children.length;
         const labelWidth = nodeSpacingH;
         const labelOffsetH = Math.floor(labelWidth * -0.5);
-
-        // These are about layout more than appearance, so they should probably remain inline
-        const bigLabelStyle = {
-            position: "absolute",
-            width: labelWidth,
-            textAlign: "center",
-            marginLeft: labelOffsetH,
-            marginBottom: labelOffsetV
-        };
 
         const x = details.x;
         const bottom = this.state.measuredHeight - details.y;
 
-        const style = Object.assign({}, bigLabelStyle, {
+        const style = {
+            width: labelWidth,
+            marginLeft: labelOffsetH,
+            marginBottom: labelOffsetV - 4,
             bottom: bottom + "px",
             left: x + "px"
-        });
+        };
 
-        const stage = details.stage;
         const key = (stage ? stage.id : details.text) + "-big"; // TODO: Replace with a key on LabelInfo
+        const inner = [];
 
         const classNames = ["pipeline-big-label"];
-        if (this.nodeIsSelected(details.node)
-            || (stage && this.stageChildIsSelected(stage))) {
+        if (this.selectedStage === stage) {
             classNames.push("selected");
         }
-        if (nodeHasErrors(details.node)) {
-            classNames.push("errors");
+        if (isTopLevelParallel) {
+            classNames.push('top-level-parallel');
+            // add a top-level parallel config icon
+            inner.push(<Icon icon="NavigationMoreHoriz" size={24} />);
+            inner.push(<Icon icon="NavigationMoreHoriz" size={24} />);
         }
-
-        return <div className={classNames.join(" ")} style={style} key={key}>{details.text}</div>;
+        // add an alert if the stage has errors
+        if (stageHasDirectErrors(stage)) {
+            classNames.push("errors");
+            if (isTopLevelParallel) {
+                inner.push(<AlertIcon />);
+            }
+        }
+        return (
+            <div className={classNames.join(" ")} style={style} key={key}
+                 onClick={e => this.nodeClicked({ isPlaceholder: false, stage }, e)}>
+                {details.text || NBSP}
+                {inner}
+            </div>
+        );
     }
 
     renderSmallLabel(details:LabelInfo) {
@@ -434,7 +451,7 @@ needsLayout = true;
         if (this.nodeIsSelected(details.node)) {
             classNames.push("selected");
         }
-        if (nodeHasErrors(details.node)) {
+        if (stageHasErrors(details.node.stage)) {
             classNames.push("errors");
         }
 
@@ -520,7 +537,6 @@ needsLayout = true;
     }
 
     renderNode(node:NodeInfo) {
-
         const nodeIsSelected = this.nodeIsSelected(node);
         const { nodeRadius, connectorStrokeWidth } = this.state.layout;
 
@@ -533,37 +549,9 @@ needsLayout = true;
         const groupChildren = [this.getSVGForNode(node)];
 
         const classNames = ["editor-graph-nodegroup"];
-        if (nodeHasErrors(node)) {
+        if (stageHasErrors(node.stage)) {
             classNames.push("errors");
-            const alertIcon =
-                `<svg class="alerticon" width="20px" height="20px" viewBox="13 9 20 20" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                    <!-- Generator: Sketch 42 (36781) - http://www.bohemiancoding.com/sketch -->
-                    <desc>Created with Sketch.</desc>
-                    <defs>
-                        <path d="M8.0197096,1.74273849 C8.56110904,0.780250597 9.44018119,0.782544345 9.9802904,1.74273849 L17.0197096,14.2572615 C17.561109,15.2197494 17.1073772,16 16.0049107,16 L1.99508929,16 C0.893231902,16 0.440181194,15.2174557 0.980290398,14.2572615 L8.0197096,1.74273849 Z" id="path-1"></path>
-                        <mask id="mask-2" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="20" height="20">
-                            <rect x="0" y="0" width="20" height="20" fill="white"></rect>
-                            <use xlink:href="#path-1" fill="black"></use>
-                        </mask>
-                        <rect id="path-3" x="8" y="6" width="2" height="4"></rect>
-                        <mask id="mask-4" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="2" height="4" fill="white">
-                            <use xlink:href="#path-3"></use>
-                        </mask>
-                        <rect id="path-5" x="8" y="12" width="2" height="2"></rect>
-                        <mask id="mask-6" maskContentUnits="userSpaceOnUse" maskUnits="objectBoundingBox" x="0" y="0" width="2" height="2" fill="white">
-                            <use xlink:href="#path-5"></use>
-                        </mask>
-                    </defs>
-                    <g id="Group-10" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" transform="translate(15, 9)">
-                        <g id="Triangle-2">
-                            <use fill="#CE373A" fill-rule="evenodd" xlink:href="#path-1"></use>
-                            <use stroke="#FFFFFF" mask="url(#mask-2)" stroke-width="2" xlink:href="#path-1"></use>
-                        </g>
-                        <use id="Rectangle-17" stroke="#FFFFFF" mask="url(#mask-4)" stroke-width="2" fill="#D8D8D8" xlink:href="#path-3"></use>
-                        <use id="Rectangle-17-Copy" stroke="#FFFFFF" mask="url(#mask-6)" stroke-width="2" fill="#D8D8D8" xlink:href="#path-5"></use>
-                    </g>
-                </svg>`;
-            groupChildren.push(<g transform="translate(1,-1)" dangerouslySetInnerHTML={{ __html: alertIcon }} />);
+            groupChildren.push(<AlertIcon />);
         }
 
         if (nodeIsSelected) {

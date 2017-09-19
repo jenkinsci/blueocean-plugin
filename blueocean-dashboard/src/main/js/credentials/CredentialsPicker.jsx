@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 
+import GitCredentialsPicker from './git/GitCredentialsPicker';
 import GithubCredentialsPicker from './github/GithubCredentialsPicker';
 import BbCredentialsPicker from './bitbucket/BbCredentialsPicker';
 
@@ -36,7 +37,6 @@ class CredentialsPicker extends React.Component {
     }
 
     render() {
-        const { onStatus, onComplete } = this.props;
         const type = this.resolveType(this.props);
         const scmSource = this.resolveScmSource(this.props);
 
@@ -56,13 +56,19 @@ class CredentialsPicker extends React.Component {
                     apiUrl={scmSource.apiUrl}
                 />
             );
+        } else if (type === 'git') {
+            children = (
+                <GitCredentialsPicker
+                    scmId={scmSource.id}
+                />
+            );
         } else {
             children = <div>No credential picker could be found for type={type}</div>;
         }
 
         return (
             <div className="credentials-picker">
-                { React.cloneElement(children, { onStatus, onComplete }) }
+                { React.cloneElement(children, this.props) }
             </div>
         );
     }
@@ -72,6 +78,9 @@ CredentialsPicker.propTypes = {
     type: PropTypes.string,
     onStatus: PropTypes.func,
     onComplete: PropTypes.func,
+    dialog: PropTypes.bool,
+    pipeline: PropTypes.object,
+    repositoryUrl: PropTypes.string,
     scmSource: PropTypes.shape({
         id: PropTypes.string,
         apiUrl: PropTypes.string,

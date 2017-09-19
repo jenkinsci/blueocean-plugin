@@ -87,7 +87,7 @@ function removeExtraMarkers(list: any): any {
             delete v.validationErrors;
             return v;
         }
-            
+
         return list.map(o => {
             const v = clone(o);
             // Get rid of the extra UI markers
@@ -132,23 +132,29 @@ export function convertJsonToInternalModel(json: PipelineJsonContainer): Pipelin
     captureUnknownSections(pipeline, out, 'agent', 'stages', 'environment');
 
     for (let i = 0; i < pipeline.stages.length; i++) {
-        const topStage = pipeline.stages[i];
-
-        const topStageInfo: StageInfo = {
-            id: idgen.next(),
-            name: topStage.name,
-            children: [],
-            steps: [],
-        };
-
-        // FIXME: this is per top-level stage, only...
-        topStageInfo.agent = topStage.agent;
-        topStageInfo.environment = convertEnvironmentToInternal(topStage.environment);
-
-        captureUnknownSections(topStage, topStageInfo, 'name', 'steps', 'environment', 'agent');
-
+        const topStageInfo = convertStageFromJson(pipeline.stages[i]);
         out.children.push(topStageInfo);
+    }
 
+    return out;
+}
+
+export function convertStageFromJson(topStage: PipelineStage): StageInfo {
+    const topStageInfo: StageInfo = {
+        id: idgen.next(),
+        name: topStage.name,
+        children: [],
+        steps: [],
+    };
+
+    // TODO: add all config info here
+    topStageInfo.agent = topStage.agent;
+    topStageInfo.environment = convertEnvironmentToInternal(topStage.environment);
+
+    captureUnknownSections(topStage, topStageInfo, 'name', 'steps', 'environment', 'agent', 'branches', 'parallel');
+
+    // determine stage or parallel
+    if (topStage.branches) {
         for (let j = 0; j < topStage.branches.length; j++) {
             const b = topStage.branches[j];
 
@@ -158,7 +164,7 @@ export function convertJsonToInternalModel(json: PipelineJsonContainer): Pipelin
                 // nested stage named 'default'
                 stage = topStageInfo;
             } else {
-                // Otherwise this is part of a parallel set
+                // Otherwise this is part of an old-style parallel set
                 stage = {
                     id: idgen.next(),
                     name: b.name,
@@ -174,9 +180,16 @@ export function convertJsonToInternalModel(json: PipelineJsonContainer): Pipelin
                 stage.steps.push(step);
             }
         }
+    } else if (topStage.parallel) {
+        for (let j = 0; j < topStage.parallel.length; j++) {
+            const stage = convertStageFromJson(topStage.parallel[j]);
+            topStageInfo.children.push(stage);
+        }
+    } else {
+        throw new Error('Unable to determine stage type: ' + JSON.stringify(topStage));
     }
 
-    return out;
+    return topStageInfo;
 }
 
 export function convertStepFromJson(s: PipelineStep) {
@@ -186,7 +199,7 @@ export function convertStepFromJson(s: PipelineStep) {
         stepMeta = steps;
     });
     const meta = stepMeta.filter(md => md.functionName === s.name)[0]
-    
+
     // handle unknown steps
     || {
         isBlockContainer: false,
@@ -294,16 +307,11 @@ export function convertStageToJson(stage: StageInfo): PipelineStage {
 
     if (stage.children && stage.children.length > 0) {
         // parallel
-        out.branches = [];
+        out.parallel = [];
 
-        // TODO Currently, sub-stages are not supported, this should be recursive
+        // convert nested stages
         for (const child of stage.children) {
-            const outStage: PipelineStage = {
-                name: child.name,
-                steps: convertStepsToJson(child.steps),
-            };
-
-            out.branches.push(outStage);
+            out.parallel.push(convertStageToJson(child));
         }
     } else {
         // single, add a 'default' branch

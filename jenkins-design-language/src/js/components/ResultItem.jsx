@@ -2,6 +2,7 @@
 
 import React, { Component, PropTypes } from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import Linkify from 'linkifyjs/react';
 
 import { StatusIndicator, decodeResultValue } from './status/StatusIndicator';
 import { getGlyphFor } from './status/SvgStatus';
@@ -78,6 +79,10 @@ export class ResultItem extends Component {
         }
     };
 
+    urlClicked = (e: Event) => {
+        e.stopPropagation();
+    };
+
     render() {
         const { label, extraInfo } = this.props;
         const { resultClean, statusGlyph } = this.state;
@@ -104,7 +109,9 @@ export class ResultItem extends Component {
                     </span>
                     <span className="result-item-title">
                         <Expando expanded={expanded} disabled={!hasChildren}/>
-                        <span className="result-item-label">{label}</span>
+                        <span className="result-item-label">
+                            <Linkify options={{attributes: {onClick: this.urlClicked}}}>{label}</Linkify>
+                        </span>
                         <span className="result-item-extra-info">
                             {extraInfo}
                         </span>

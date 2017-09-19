@@ -8,7 +8,6 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.maven.MavenModuleSet;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Cause;
@@ -28,7 +27,6 @@ import hudson.model.User;
 import hudson.security.HudsonPrivateSecurityRealm;
 import hudson.security.LegacyAuthorizationStrategy;
 import hudson.tasks.ArtifactArchiver;
-import hudson.tasks.Maven;
 import hudson.tasks.Shell;
 import hudson.tasks.junit.JUnitResultArchiver;
 import hudson.tasks.junit.TestResultAction;
@@ -49,12 +47,10 @@ import jenkins.model.Jenkins;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestBuilder;
 import org.jvnet.hudson.test.TestExtension;
-import org.jvnet.hudson.test.ToolInstallations;
 import org.kohsuke.stapler.export.Exported;
 
 import java.io.IOException;
@@ -66,7 +62,6 @@ import java.util.Stack;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.*;
 
 /**

@@ -10,7 +10,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.3.0-beta-1-SNAPSHOT</version>
+  <version>1.3.0-beta-3-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean Parent</name>
@@ -32,8 +32,9 @@
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
     <jenkins-test-harness.version>2.23</jenkins-test-harness.version>
-    <scm-api.version>2.2.0</scm-api.version>
+    <scm-api.version>2.2.1</scm-api.version>
     <git.version>3.5.1</git.version>
+    <git-client.version>2.5.0</git-client.version>
   </properties>
 
   <scm>
@@ -126,6 +127,7 @@
     <module>blueocean-git-pipeline</module>
     <module>blueocean-bitbucket-pipeline</module>
     <module>blueocean-pipeline-editor</module>
+    <module>blueocean-jira</module>
   </modules>
 
   <repositories>
@@ -280,6 +282,12 @@
             <version>1.0.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-jira</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- TODO: should be moved out of blueocean repo as separate plugin -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -311,7 +319,7 @@
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-model-definition</artifactId>
-            <version>1.1.9</version>
+            <version>1.2-beta-4</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -353,6 +361,12 @@
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-multibranch</artifactId>
             <version>2.16</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jenkins-ci.plugins</groupId>
+                    <artifactId>script-security</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -439,6 +453,14 @@
             <version>3.5.0</version>
         </dependency>
 
+        <!-- Needed by blueocean-rest-impl for ssh unititlies -->
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.1.54</version>
+        </dependency>
+
+
         <!-- Other -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -454,6 +476,11 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>git</artifactId>
             <version>${git.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>git-client</artifactId>
+            <version>${git-client.version}</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -490,6 +517,12 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>matrix-project</artifactId>
             <version>1.11</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jenkins-ci.plugins</groupId>
+                    <artifactId>script-security</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.main</groupId>
@@ -544,6 +577,11 @@
             <version>1.86</version>
         </dependency>
         <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>jackson2-api</artifactId>
+            <version>2.7.3</version>
+        </dependency>
+        <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>1.10</version>
@@ -567,6 +605,11 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>mailer</artifactId>
             <version>1.20</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>display-url-api</artifactId>
+            <version>2.0</version>
         </dependency>
         <dependency>
             <groupId>org.bitbucket.b_c</groupId>
@@ -610,7 +653,6 @@
             <artifactId>junit</artifactId>
             <version>1.21</version>
         </dependency>
-
 
         <!-- Test dependencies -->
         <dependency>
@@ -657,7 +699,7 @@
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock</artifactId>
-            <version>2.6.0</version>
+            <version>2.7.1</version>
             <scope>test</scope>
         </dependency>
         <dependency>

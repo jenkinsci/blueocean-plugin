@@ -2,8 +2,6 @@ import React from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
 import { Icon } from '@jenkins-cd/design-language';
 
-const transitionDuration = 100;
-
 export class MoreMenu extends React.Component {
     constructor() {
         super();
@@ -22,7 +20,7 @@ export class MoreMenu extends React.Component {
         document.addEventListener('mousedown', this.clickListener = e => {
             if (this.state.showDropdown) {
                 e = e || window.event;
-                const parent = this.refs.dropdown;
+                const parent = this.container;
                 let elem = e.target;
                 while (elem) {
                     if (elem === parent) {
@@ -47,21 +45,21 @@ export class MoreMenu extends React.Component {
     render() {
         const children = [];
         if (this.state.showDropdown) {
-            children.push(<div className="menu-dropdown" ref="dropdown">
+            children.push(<div className="menu-dropdown" key="dropdown">
                 {this.props.children}
             </div>);
         }
         return (
-            <div className="more-menu">
+            <div className="more-menu" ref={container => { this.container = container; }}>
                 <span onClick={e => this.state.showDropDown ? this.closePopover() : this.openPopover()}>
-                    <Icon icon="NavigationMoreHoriz" size={22} color="#4A90E2" />
+                    <Icon icon="NavigationMoreHoriz" size={22} />
                 </span>
                 <ReactCSSTransitionGroup
-                    transitionName="more-menu"
-                    transitionAppear
-                    transitionAppearTimeout={transitionDuration}
-                    transitionEnterTimeout={transitionDuration}
-                    transitionLeaveTimeout={transitionDuration}
+                    transitionName="menu-dropdown"
+                    transitionEnter
+                    transitionLeave
+                    transitionEnterTimeout={100}
+                    transitionLeaveTimeout={100}
                 >
                     {children}
                 </ReactCSSTransitionGroup>

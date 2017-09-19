@@ -1,7 +1,7 @@
 {
   "name": "@jenkins-cd/design-language",
   "jdlName": "jenkins-design-language",
-  "version": "0.0.147-SNAPSHOT",
+  "version": "0.0.151-SNAPSHOT",
   "description": "Styles, assets, and React classes for Jenkins Design Language",
   "main": "dist/js/components/index.js",
   "scripts": {
@@ -41,6 +41,7 @@
     "url": "https://github.com/jenkinsci/jenkins-design-language.git"
   },
   "dependencies": {
+    "linkifyjs": "2.1.4",
     "lodash.debounce": "4.0.8",
     "moment": "2.15.1",
     "moment-duration-format": "1.3.0",

@@ -50,9 +50,13 @@ function _copy<T>(obj: T): ?T {
     return JSON.parse(JSON.stringify(obj));
 }
 
-function createBasicStage(name:string):StageInfo {
+function createStage(name:string):StageInfo {
     return {
         name,
+        agent: {
+            type: 'none', // default to no agent
+            arguments: [],
+        },
         id: idgen.next(),
         children: [],
         steps: [],
@@ -150,6 +154,22 @@ const findParentStepByChild = function (steps, childStep) {
     }
 };
 
+const STAGE_NO_COPY_KEYS = ['id', 'name'];
+
+/**
+ * Copies properties from one stage to another
+ * @param fromStage
+ * @param toStage
+ */
+const moveStageProperties = function (fromStage, toStage) {
+    for (const key of Object.keys(fromStage)) {
+        if (STAGE_NO_COPY_KEYS.indexOf(key) === -1) {
+            toStage[key] = fromStage[key];
+            delete fromStage[key];
+        }
+    }
+};
+
 // TODO: mobxify
 class PipelineStore {
     pipeline: StageInfo;
@@ -158,7 +178,7 @@ class PipelineStore {
     createSequentialStage(name:string) {
         const { pipeline } = this;
 
-        let newStage = createBasicStage(name);
+        let newStage = createStage(name);
         const stageId = newStage.id;
 
         pipeline.children = [...pipeline.children, newStage];
@@ -169,14 +189,14 @@ class PipelineStore {
     createParallelStage(name:string, parentStage:StageInfo) {
         let updatedChildren = [...parentStage.children]; // Start with a shallow copy, we'll add one or two to this
 
-        let newStage = createBasicStage(name);
+        let newStage = createStage(name);
 
         if (parentStage.children.length == 0) {
             // Converting a normal stage with steps into a container of parallel branches, so there's more to do
-            let zerothStage = createBasicStage(parentStage.name);
+            let zerothStage = createStage(parentStage.name);
 
-            // Move any steps from the parent stage into the new zeroth stage
-            zerothStage.steps = parentStage.steps;
+            // Move all properties steps from the parent stage into the new zeroth stage
+            moveStageProperties(parentStage, zerothStage);
             parentStage.steps = []; // Stages with children can't have steps
 
             updatedChildren.push(zerothStage);
@@ -197,7 +217,7 @@ class PipelineStore {
         const stage = findStageByStep(this.pipeline, step);
         return stage;
     }
-    
+
     findParentStep(childStep: StepInfo): ?StepInfo {
         const stage = findStageByStep(this.pipeline, childStep);
         if (!stage) {
@@ -206,7 +226,7 @@ class PipelineStore {
         const parent = findParentStepByChild(stage.steps, childStep);
         return parent;
     }
-    
+
     /**
      * Delete the selected stage from our stages list. When this leaves a single-branch of parallel jobs, the steps
      * will be moved to the parent stage, and the lone parallel branch will be deleted.
@@ -230,7 +250,7 @@ class PipelineStore {
         if (parentStage != this.pipeline && newChildren.length === 1) {
             let onlyChild = newChildren[0];
             newChildren = [];
-            parentStage.steps = onlyChild.steps;
+            moveStageProperties(onlyChild, parentStage);
         }
 
         // Update the parent with new children list
@@ -293,7 +313,7 @@ class PipelineStore {
                 ...(parent.children.slice(0, stepIdx)),
                 ...(parent.children.slice(stepIdx + 1))
             ];
-            
+
             newSelectedStep = parent;
         }
         else { // no parent
