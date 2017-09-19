@@ -37,9 +37,7 @@
     "gulp": "3.9.1",
     "gulp-mocha": "3.0.1",
     "mocha": "3.1.0",
-    "nock": "8.0.0",
     "react-addons-test-utils": "15.3.2",
-    "redux-mock-store": "1.2.1",
     "skin-deep": "0.16.0"
   },
   "dependencies": {
@@ -64,21 +62,14 @@
     "react-autocomplete": "1.4.0",
     "react-dom": "15.3.2",
     "react-i18next": "1.10.1",
-    "react-redux": "4.4.5",
     "react-remarkable": "1.1.1",
-    "react-router": "2.3.0",
-    "redux": "3.6.0",
-    "redux-thunk": "2.1.0",
-    "reselect": "2.5.4"
+    "react-router": "2.3.0"
   },
   "jenkinscd": {
     "import": [
       "immutable",
       "keymirror",
-      "react-redux",
-      "react-router",
-      "redux-thunk",
-      "reselect"
+      "react-router"
     ]
   }
 }
