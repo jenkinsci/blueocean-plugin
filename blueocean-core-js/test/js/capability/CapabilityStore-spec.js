@@ -1,8 +1,8 @@
 /**
  * Created by cmeyers on 9/8/16.
  */
+import Promise from 'bluebird';
 import { assert } from 'chai';
-import es6Promise from 'es6-promise'; es6Promise.polyfill();
 import sinon from 'sinon';
 
 import { CapabilityStore } from '../../../src/js/capability/CapabilityStore';

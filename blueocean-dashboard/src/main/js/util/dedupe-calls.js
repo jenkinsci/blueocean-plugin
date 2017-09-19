@@ -1,4 +1,4 @@
-import { Promise } from 'es6-promise';
+import Promise from 'bluebird';
 
 /**
  * DuplicateCallTracker maintains active calls against a particular key

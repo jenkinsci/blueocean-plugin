@@ -1,7 +1,7 @@
 /**
  * Created by cmeyers on 9/8/16.
  */
-import es6Promise from 'es6-promise'; es6Promise.polyfill();
+import Promise from 'bluebird';
 import { assert } from 'chai';
 
 import { CapabilityAugmenter } from '../../../src/js/capability/CapabilityAugmenter';
