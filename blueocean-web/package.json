@@ -2,6 +2,10 @@
   "name": "blueocean-web",
   "version": "0.0.1",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jenkinsci/blueocean-plugin.git"
+  },
   "scripts": {
     "lint": "gulp lint",
     "lint:fix": "gulp lint --fixLint",

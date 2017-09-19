@@ -2,6 +2,10 @@
   "name": "blueocean-pipeline-editor",
   "version": "0.0.1",
   "description": "Pipeline editor plugin for Jenkins Blue Ocean",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jenkinsci/blueocean-plugin.git"
+  },
   "scripts": {
     "storybook": "start-storybook -p 9002 -s node_modules/@jenkins-cd/design-language/dist/assets/,target/classes/org/jenkins/ui/jsmodules/blueocean_pipeline_editor/",
     "lint": "jjsbuilder --tasks lint",
