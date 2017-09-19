@@ -3,14 +3,14 @@
   "version": "0.0.2-unpublished",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.158",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.158",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.158.tgz"
+      "version": "0.0.159-SNAPSHOT-1",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.159-SNAPSHOT-1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.159-SNAPSHOT-1.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.149",
-      "from": "@jenkins-cd/design-language@0.0.149",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.149.tgz"
+      "version": "0.0.150-SNAPSHOT-1",
+      "from": "@jenkins-cd/design-language@0.0.150-SNAPSHOT-1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.150-SNAPSHOT-1.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -5311,6 +5311,12 @@
       "from": "joi@>=6.10.1 <7.0.0",
       "resolved": "https://registry.npmjs.org/joi/-/joi-6.10.1.tgz"
     },
+    "jquery": {
+      "version": "3.2.1",
+      "from": "jquery@>=1.9.0",
+      "resolved": "https://registry.npmjs.org/jquery/-/jquery-3.2.1.tgz",
+      "optional": true
+    },
     "js-base64": {
       "version": "2.1.9",
       "from": "js-base64@>=2.1.9 <3.0.0",
@@ -5703,6 +5709,11 @@
       "from": "liftoff@>=2.1.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/liftoff/-/liftoff-2.3.0.tgz",
       "dev": true
+    },
+    "linkifyjs": {
+      "version": "2.1.4",
+      "from": "linkifyjs@2.1.4",
+      "resolved": "https://registry.npmjs.org/linkifyjs/-/linkifyjs-2.1.4.tgz"
     },
     "load-json-file": {
       "version": "1.1.0",
