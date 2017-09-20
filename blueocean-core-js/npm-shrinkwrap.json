@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.163-SNAPSHOT-1",
+  "version": "0.0.164-SNAPSHOT",
   "dependencies": {
     "@jenkins-cd/design-language": {
       "version": "0.0.152",
@@ -1327,11 +1327,6 @@
       "from": "caseless@>=0.12.0 <0.13.0",
       "resolved": "https://registry.npmjs.org/caseless/-/caseless-0.12.0.tgz",
       "dev": true
-    },
-    "cd": {
-      "version": "0.3.3",
-      "from": "cd@latest",
-      "resolved": "https://registry.npmjs.org/cd/-/cd-0.3.3.tgz"
     },
     "center-align": {
       "version": "0.1.3",
