@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.service.embedded.rest;
+package io.jenkins.blueocean.service.embedded.rest.junit;
 
 import com.google.common.base.Function;
 import com.google.common.collect.ImmutableList;
@@ -12,6 +12,8 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 import javax.annotation.Nullable;
 
@@ -20,6 +22,7 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 /**
  * TODO: move to junit plugin
  */
+@Restricted(NoExternalUse.class)
 public class BlueJUnitTestResult extends BlueTestResult {
 
     protected final CaseResult testResult;

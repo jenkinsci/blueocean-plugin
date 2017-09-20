@@ -43,8 +43,8 @@
     "skin-deep": "0.16.0"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.162",
-    "@jenkins-cd/design-language": "0.0.150",
+    "@jenkins-cd/blueocean-core-js": "0.0.163",
+    "@jenkins-cd/design-language": "0.0.152",
     "@jenkins-cd/js-extensions": "0.0.39",
     "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/preferences": "0.0.4",
@@ -67,6 +67,7 @@
     "react-redux": "4.4.5",
     "react-remarkable": "1.1.1",
     "react-router": "2.3.0",
+    "recharts": "1.0.0-alpha.4",
     "redux": "3.6.0",
     "redux-thunk": "2.1.0",
     "reselect": "2.5.4"
