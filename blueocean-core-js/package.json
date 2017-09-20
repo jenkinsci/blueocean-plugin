@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.164-SNAPSHOT-1",
+  "version": "0.0.164-SNAPSHOT-2",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
@@ -48,7 +48,6 @@
     "mobx-utils": "1.1.2",
     "moment": "2.15.1",
     "pem-jwk": "1.5.1",
-    "react-remarkable": "1.1.1",
     "react-router": "2.3.0"
   },
   "peerDependencies": {
