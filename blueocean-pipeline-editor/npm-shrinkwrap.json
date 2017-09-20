@@ -3,9 +3,9 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.163",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.163",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.163.tgz"
+      "version": "0.0.164-SNAPSHOT-1",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.164-SNAPSHOT-1",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.164-SNAPSHOT-1.tgz"
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.152",
@@ -1638,11 +1638,6 @@
       "from": "caseless@>=0.12.0 <0.13.0",
       "resolved": "https://registry.npmjs.org/caseless/-/caseless-0.12.0.tgz",
       "dev": true
-    },
-    "cd": {
-      "version": "0.3.3",
-      "from": "cd@0.3.3",
-      "resolved": "https://registry.npmjs.org/cd/-/cd-0.3.3.tgz"
     },
     "center-align": {
       "version": "0.1.3",
