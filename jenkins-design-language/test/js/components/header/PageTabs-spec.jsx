@@ -28,7 +28,7 @@ describe("PageTabs", () => {
 
     it("renders one tab children when passed a falsy child", () => {
         const links = [
-            <TabLink to="/a">A</TabLink>,
+            <TabLink key="a" to="/a">A</TabLink>,
             false && <TabLink to="/b">B</TabLink>
         ];
 
