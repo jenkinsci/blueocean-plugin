@@ -112,6 +112,7 @@ function basicStory() {
 }
 
 function urlStory() {
+
     return (
         <div style={wrapperStyle}>
             <ResultItem result="success"
@@ -119,6 +120,14 @@ function urlStory() {
                         onExpand={onExpand}
                         onCollapse={onCollapse}
                         data="bravo">
+                {moLipsum()}
+            </ResultItem>
+            <br/>
+            <ResultItem result="success"
+                        label="However, ceci.nest.pas.une.url.com nor is foo.com.bar"
+                        onExpand={onExpand}
+                        onCollapse={onCollapse}
+                        data="pipey-mcpipeface">
                 {moLipsum()}
             </ResultItem>
         </div>
