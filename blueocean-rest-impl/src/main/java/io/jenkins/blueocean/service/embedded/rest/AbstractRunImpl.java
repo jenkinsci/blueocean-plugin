@@ -29,7 +29,6 @@ import io.jenkins.blueocean.rest.model.GenericResource;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.kohsuke.stapler.QueryParameter;
-import org.kohsuke.stapler.export.Exported;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;

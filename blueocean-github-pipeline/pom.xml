@@ -21,10 +21,18 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>blueocean-pipeline-api-impl</artifactId>
+      <exclusions>
+        <!-- Upper bound fix: credentials plugin is bringing its own version of antlr4-runtime,
+        wiremock uses later version -->
+        <exclusion>
+          <groupId>org.antlr</groupId>
+          <artifactId>antlr4-runtime</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
-      <groupId>org.kohsuke</groupId>
+      <groupId>org.jenkins-ci.plugins</groupId>
       <artifactId>github-api</artifactId>
     </dependency>
 
@@ -41,6 +49,11 @@
     <dependency>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>pubsub-light</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>apache-httpcomponents-client-4-api</artifactId>
     </dependency>
 
     <!-- test dependencies -->
@@ -62,6 +75,13 @@
       <groupId>com.github.tomakehurst</groupId>
       <artifactId>wiremock</artifactId>
       <scope>test</scope>
+      <exclusions>
+        <!-- Upper bound fix: httpclient comes from blueocean-rest-impl with later version than the one in wiremock -->
+        <exclusion>
+          <groupId>org.apache.httpcomponents</groupId>
+          <artifactId>httpclient</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
   </dependencies>
 

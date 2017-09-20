@@ -1,7 +1,7 @@
 /**
  * Created by cmeyers on 8/31/16.
  */
-import es6Promise from 'es6-promise'; es6Promise.polyfill();
+import Promise from 'bluebird';
 import { installInfo } from '../storage';
 
 // Create a dedicated storage namespace that we use to store classes

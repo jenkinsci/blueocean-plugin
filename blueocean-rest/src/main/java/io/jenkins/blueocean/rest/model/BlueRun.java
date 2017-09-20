@@ -186,7 +186,7 @@ public abstract class BlueRun extends Resource {
 
     /**
      *
-     * @return Gives Actions associated with this Run
+     * @return Gives Actions associated with this Run, if requested via tree
      */
     @Navigable
     @Exported(name = ACTIONS, inline = true)

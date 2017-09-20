@@ -1,18 +1,36 @@
-import es6Promise from 'es6-promise'; es6Promise.polyfill();
-import jwt from './jwt';
+import Promise from 'bluebird';
 import isoFetch from 'isomorphic-fetch';
+
+import jwt from './jwt';
 import utils from './utils';
 import config from './config';
 import dedupe from './utils/dedupe-calls';
 import urlconfig from './urlconfig';
 import { prefetchdata } from './scopes';
 import loadingIndicator from './LoadingIndicator';
-
-const Promise = es6Promise.Promise;
-
 import { capabilityAugmenter } from './capability/index';
+
+
 let refreshToken = null;
+
 export const FetchFunctions = {
+    /**
+     * Ensures the URL starts with jenkins path if not an absolute URL.
+     * @param url
+     * @returns {string}
+     */
+    prefixUrl(url) {
+        if (url.indexOf('http') === 0) {
+            return url;
+        }
+
+        if (urlconfig.getJenkinsRootURL() !== '' && !url.startsWith(urlconfig.getJenkinsRootURL())) {
+            return `${urlconfig.getJenkinsRootURL()}${url}`;
+        }
+
+        return url;
+    },
+
     checkRefreshHeader(response) {
         const _refreshToken = response.headers.get('X-Blueocean-Refresher');
         // No token in response, lets just ignore.
@@ -40,7 +58,8 @@ export const FetchFunctions = {
      */
     checkStatus(response) {
         if (response.status >= 300 || response.status < 200) {
-            const error = new Error(response.statusText);
+            const message = `fetch failed: ${response.status} for ${response.url}`;
+            const error = new Error(message);
             error.response = response;
             throw error;
         }
@@ -84,7 +103,7 @@ export const FetchFunctions = {
         // FIXME: workaround for status=200 w/ empty response body that causes error in Chrome
         // server should probably return HTTP 204 instead
         .catch((error) => {
-            if (error.message === 'Unexpected end of JSON input') {
+            if (error.message.indexOf('Unexpected end of JSON input') !== -1) {
                 return {};
             }
             throw error;
@@ -250,10 +269,7 @@ export const Fetch = {
      * @returns JSON body.
      */
     fetchJSON(url, { onSuccess, onError, fetchOptions, disableCapabilites, ignoreRefreshHeader } = {}) {
-        let fixedUrl = url;
-        if (urlconfig.getJenkinsRootURL() !== '' && !url.startsWith(urlconfig.getJenkinsRootURL())) {
-            fixedUrl = `${urlconfig.getJenkinsRootURL()}${url}`;
-        }
+        const fixedUrl = FetchFunctions.prefixUrl(url);
         let future;
         if (!config.isJWTEnabled()) {
             future = FetchFunctions.rawFetchJSON(fixedUrl, { onSuccess, onError, fetchOptions, ignoreRefreshHeader });
@@ -286,11 +302,8 @@ export const Fetch = {
      * @returns fetch body.
      */
     fetch(url, { onSuccess, onError, fetchOptions, disableLoadingIndicator, ignoreRefreshHeader } = {}) {
-        let fixedUrl = url;
+        const fixedUrl = FetchFunctions.prefixUrl(url);
 
-        if (urlconfig.getJenkinsRootURL() !== '' && !url.startsWith(urlconfig.getJenkinsRootURL())) {
-            fixedUrl = `${urlconfig.getJenkinsRootURL()}${url}`;
-        }
         if (!config.isJWTEnabled()) {
             return FetchFunctions.rawFetch(fixedUrl, { onSuccess, onError, fetchOptions, disableLoadingIndicator, ignoreRefreshHeader });
         }
