@@ -6,10 +6,12 @@ import { TimeDuration } from '../components/TimeDuration';
 import lipsum from './lipsum';
 
 storiesOf('ResultItem')
-    .add('Basic', basicStory);
+    .add('Basic', basicStory)
+    .add('URLs', urlStory)
+;
 
 const wrapperStyle = {
-    padding: '1em'
+    padding: '1em',
 };
 
 let __ctr = 1;
@@ -28,12 +30,12 @@ function moLipsum() {
 
 function onExpand(data) {
     // eslint-disable-next-line
-    console.log("Expanding",data);
+    console.log('Expanding', data);
 }
 
 function onCollapse(data) {
     // eslint-disable-next-line
-    console.log("Collapsing",data);
+    console.log('Collapsing', data);
 }
 
 function standardDe() {
@@ -89,10 +91,10 @@ function basicStory() {
             <ResultItem result="running" label="Running Step, with taller child" extraInfo="a few seconds"
                         onExpand={onExpand} onCollapse={onCollapse} data="foxtrot">
                 <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Consequuntur deserunt dicta impedit nam
-                quaerat quasi sapiente sint ullam veniam.</p>
+                    quaerat quasi sapiente sint ullam veniam.</p>
                 <p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>
                 <p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>
-                <p style={{textAlign: "center"}}><i>This space intentionally left blank</i></p>
+                <p style={{ textAlign: 'center' }}><i>This space intentionally left blank</i></p>
                 <p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>
                 <p>&nbsp;</p><p>&nbsp;</p><p>&nbsp;</p>
                 <p>Eius enim magnam obcaecati perferendis quam?</p>
@@ -102,9 +104,23 @@ function basicStory() {
 
             <ResultItem result="unstable" label="Unstable Step" extraInfo="55 sec" onExpand={onExpand}
                         onCollapse={onCollapse} data="golf">{moLipsum()}</ResultItem>
-            <ResultItem result="not_built" label="Not Built Step - no details"/>
+            <ResultItem result="not_built" label="Not Built Step - no details" />
             <ResultItem result="unknown" label="Unknown Step" extraInfo="5 minutes" onExpand={onExpand}
                         onCollapse={onCollapse} data="indigo">{moLipsum()}</ResultItem>
+        </div>
+    );
+}
+
+function urlStory() {
+    return (
+        <div style={wrapperStyle}>
+            <ResultItem result="success"
+                        label="Put a https://en.wikipedia.org/wiki/URL all up in yo https://en.wikipedia.org/wiki/Label"
+                        onExpand={onExpand}
+                        onCollapse={onCollapse}
+                        data="bravo">
+                {moLipsum()}
+            </ResultItem>
         </div>
     );
 }

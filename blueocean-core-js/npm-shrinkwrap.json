@@ -1,11 +1,11 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.158-SNAPSHOT-1",
+  "version": "0.0.161-SNAPSHOT",
   "dependencies": {
     "@jenkins-cd/design-language": {
-      "version": "0.0.149-SNAPSHOT-1",
-      "from": "@jenkins-cd/design-language@0.0.149-SNAPSHOT-1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.149-SNAPSHOT-1.tgz"
+      "version": "0.0.150",
+      "from": "@jenkins-cd/design-language@0.0.150",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.150.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -1107,6 +1107,11 @@
       "resolved": "https://registry.npmjs.org/binary-extensions/-/binary-extensions-1.8.0.tgz",
       "dev": true
     },
+    "bluebird": {
+      "version": "3.5.0",
+      "from": "bluebird@3.5.0",
+      "resolved": "https://registry.npmjs.org/bluebird/-/bluebird-3.5.0.tgz"
+    },
     "bn.js": {
       "version": "1.3.0",
       "from": "bn.js@>=1.0.0 <2.0.0",
@@ -2088,11 +2093,6 @@
       "from": "es6-map@>=0.1.3 <0.2.0",
       "resolved": "https://registry.npmjs.org/es6-map/-/es6-map-0.1.5.tgz",
       "dev": true
-    },
-    "es6-promise": {
-      "version": "4.0.5",
-      "from": "es6-promise@4.0.5",
-      "resolved": "https://registry.npmjs.org/es6-promise/-/es6-promise-4.0.5.tgz"
     },
     "es6-set": {
       "version": "0.1.5",
@@ -4654,6 +4654,12 @@
       "from": "joi@>=6.10.1 <7.0.0",
       "resolved": "https://registry.npmjs.org/joi/-/joi-6.10.1.tgz"
     },
+    "jquery": {
+      "version": "3.2.1",
+      "from": "jquery@>=1.9.0",
+      "resolved": "https://registry.npmjs.org/jquery/-/jquery-3.2.1.tgz",
+      "optional": true
+    },
     "js-base64": {
       "version": "2.1.9",
       "from": "js-base64@>=2.1.9 <3.0.0",
@@ -4883,6 +4889,11 @@
       "from": "liftoff@>=2.1.0 <3.0.0",
       "resolved": "https://registry.npmjs.org/liftoff/-/liftoff-2.3.0.tgz",
       "dev": true
+    },
+    "linkifyjs": {
+      "version": "2.1.4",
+      "from": "linkifyjs@2.1.4",
+      "resolved": "https://registry.npmjs.org/linkifyjs/-/linkifyjs-2.1.4.tgz"
     },
     "load-json-file": {
       "version": "1.1.0",
@@ -5475,6 +5486,20 @@
       "from": "negotiator@0.6.1",
       "resolved": "https://registry.npmjs.org/negotiator/-/negotiator-0.6.1.tgz",
       "dev": true
+    },
+    "nock": {
+      "version": "9.0.14",
+      "from": "nock@9.0.14",
+      "resolved": "https://registry.npmjs.org/nock/-/nock-9.0.14.tgz",
+      "dev": true,
+      "dependencies": {
+        "semver": {
+          "version": "5.4.1",
+          "from": "semver@>=5.3.0 <6.0.0",
+          "resolved": "https://registry.npmjs.org/semver/-/semver-5.4.1.tgz",
+          "dev": true
+        }
+      }
     },
     "node-fetch": {
       "version": "1.7.1",
@@ -6251,6 +6276,12 @@
       "version": "15.5.10",
       "from": "prop-types@>=15.5.7 <16.0.0",
       "resolved": "https://registry.npmjs.org/prop-types/-/prop-types-15.5.10.tgz",
+      "dev": true
+    },
+    "propagate": {
+      "version": "0.4.0",
+      "from": "propagate@0.4.0",
+      "resolved": "https://registry.npmjs.org/propagate/-/propagate-0.4.0.tgz",
       "dev": true
     },
     "proxy-addr": {
