@@ -1,4 +1,3 @@
-import es6Promise from 'es6-promise'; es6Promise.polyfill();
 import { capabilityAugmenter, Fetch, UrlConfig, Utils, AppConfig } from '@jenkins-cd/blueocean-core-js';
 
 import { Enum } from '../flow2/Enum';

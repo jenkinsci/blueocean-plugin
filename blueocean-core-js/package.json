@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.159-SNAPSHOT",
+  "version": "0.0.161-SNAPSHOT",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
@@ -32,14 +32,14 @@
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
-    "@jenkins-cd/design-language": "0.0.149",
+    "@jenkins-cd/design-language": "0.0.150",
     "@jenkins-cd/js-extensions": "0.0.39",
     "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/logging": "0.0.6",
     "@jenkins-cd/sse-gateway": "0.0.21",
     "@jenkins-cd/storage": "0.0.6",
+    "bluebird": "3.5.0",
     "cd": "0.3.3",
-    "es6-promise": "4.0.5",
     "i18next": "3.5.2",
     "i18next-browser-languagedetector": "1.0.0",
     "i18next-xhr-backend": "1.2.0",
@@ -84,6 +84,7 @@
     "jest-cli": "19.0.2",
     "jest-junit": "1.5.1",
     "minimist": "1.2.0",
+    "nock": "9.0.14",
     "react": "15.3.2",
     "react-addons-test-utils": "15.3.2",
     "react-dom": "15.3.2",
