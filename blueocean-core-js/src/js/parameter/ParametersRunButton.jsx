@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { Alerts, Dialog } from '@jenkins-cd/design-language';
-import Markdown from 'react-remarkable';
 
 import { buildClassicBuildUrl, capable, RunButtonBase as RunButton, ToastUtils } from '../index';
 
@@ -129,12 +128,10 @@ export class ParametersRunButton extends Component {
         let dialog;
         if (sanity.length !== parameters.length) {
             logger.debug('sanity check failed. Returning Alert instead of the form.');
-            const alertCaption = (<Markdown>
-                {t('inputParameter.error.message', {
-                    0: classicBuildUrl,
-                    defaultValue: 'This pipeline uses input types that are unsupported. Use [Jenkins Classic]({0}) to resolve parametrized build',
-                })}
-            </Markdown>);
+            const alertCaption = [
+                <p>{t('inputParameter.error.message')}</p>,
+                <a href={classicBuildUrl} target="_blank">{t('inputParameter.error.linktext')}</a>,
+            ];
             const alertTitle = t('inputParameter.error.title', { defaultValue: 'Error' });
             dialog = (<Dialog
                 onDismiss={this.hide.bind(this)}
