@@ -14,13 +14,12 @@ import java.util.Map;
  * @author cliffmeyers
  */
 class LogEntryLogger {
-    private static Logger logger = Logger.getLogger(LogEntryLogger.class);
-
+    private static final Logger logger = Logger.getLogger(LogEntryLogger.class);
     private static final ObjectMapper jsonMapper = new ObjectMapper();
     private static final TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
 
     static void recordLogEntry(LogEntry entry) {
-        if (!logger.isInfoEnabled()) {
+        if (!logger.isInfoEnabled() || isSuperfluousLogEntry(entry)) {
             return;
         }
 
@@ -43,5 +42,14 @@ class LogEntryLogger {
         }
 
         logger.info(String.format("%s - %s - %s", time, level, text));
+    }
+
+    // special handling to suppress some repetitive logging messages that are not helpful
+    private static final String MESSAGE_JS_LOGGING = "@jenkins-cd/logging is explained";
+    private static final String MESSAGE_CHROME_CONSOLE = "Chrome displays console errors";
+
+    static boolean isSuperfluousLogEntry(LogEntry entry) {
+        String message = entry.getMessage();
+        return message.contains(MESSAGE_JS_LOGGING) || message.contains(MESSAGE_CHROME_CONSOLE);
     }
 }
