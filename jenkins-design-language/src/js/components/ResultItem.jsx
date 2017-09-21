@@ -45,22 +45,26 @@ export class ResultItem extends Component {
     }
 
     componentWillMount() {
-        this.handleProps(this.props);
+        this.handleProps(this.props, this.props);
     }
 
     componentWillReceiveProps(nextProps: Props) {
-        this.handleProps(nextProps);
+        this.handleProps(nextProps, this.props);
     }
 
-    handleProps(props: Props) {
+    handleProps(props: Props, oldProps: Props) {
         const resultClean = decodeResultValue(props.result);
         if (resultClean !== this.state.resultClean) {
             const statusGlyph = getGlyphFor(resultClean);
             this.setState({ resultClean, statusGlyph });
         }
-        // check whether we want to change the state or whether we already are in the correct state
-        if (props.expanded !== this.state.expanded) {
-            this.toggleExpanded();
+
+        const newExpanded = !!props.expanded;
+        if (newExpanded !== (!!oldProps.expanded)) {
+            // check whether we want to change the state or whether we already are in the correct state
+            if (newExpanded !== this.state.expanded) {
+                this.toggleExpanded();
+            }
         }
     }
 
