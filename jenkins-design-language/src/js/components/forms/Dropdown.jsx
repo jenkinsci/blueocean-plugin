@@ -365,7 +365,7 @@ Dropdown.propTypes = {
     style: PropTypes.object,
     placeholder: PropTypes.string,
     options: PropTypes.array,
-    defaultOption: PropTypes.string,
+    defaultOption: PropTypes.node,
     title: PropTypes.string,
     labelField: PropTypes.string,
     labelFunction: PropTypes.func,
