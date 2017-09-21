@@ -9,6 +9,8 @@ import { ParameterApi as parameterApi, ParameterService, ParametersRender, suppo
 
 import logging from '../logging';
 const logger = logging.logger('io.jenkins.blueocean.core.ParametersRunButton');
+// eslint-disable-next-line no-unused-vars
+import Markdown from 'react-remarkable';
 
 /**
  * Translate function
