@@ -3,7 +3,6 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbBranch;
-import org.antlr.v4.runtime.misc.NotNull;
 
 import javax.annotation.Nonnull;
 
@@ -19,7 +18,7 @@ public class BbServerBranch extends BbBranch {
     @JsonCreator
     public BbServerBranch(@Nonnull @JsonProperty("latestCommit") String latestCommit,
                           @Nonnull @JsonProperty("isDefault") Boolean isDefault, @Nonnull @JsonProperty("id") String id,
-                          @NotNull @JsonProperty("displayId") String displayId) {
+                          @Nonnull @JsonProperty("displayId") String displayId) {
         this.latestCommit = latestCommit;
         this.isDefault = isDefault;
         this.id = id;
