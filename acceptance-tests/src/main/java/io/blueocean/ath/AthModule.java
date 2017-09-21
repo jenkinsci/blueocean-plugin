@@ -19,7 +19,10 @@ import io.blueocean.ath.pages.blue.BranchPage;
 import io.blueocean.ath.pages.blue.RunDetailsArtifactsPage;
 import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.Augmenter;
+import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -29,12 +32,16 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
+import java.util.logging.Level;
 
 public class AthModule extends AbstractModule {
     @Override
     protected void configure() {
 
-        DesiredCapabilities capability = DesiredCapabilities.firefox();
+        DesiredCapabilities capability = DesiredCapabilities.chrome();
+        LoggingPreferences logPrefs = new LoggingPreferences();
+        logPrefs.enable(LogType.BROWSER, Level.ALL);
+        capability.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
         try {
             WebDriver driver = new RemoteWebDriver(new URL("http://localhost:4444/wd/hub"), capability);
