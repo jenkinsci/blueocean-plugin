@@ -66,7 +66,6 @@ class StatusIndicator extends Component {
             width = '24px',
             height = '24px',
             noBackground,
-            focusable = false,
         } = this.props;
 
         const groupClasses = [
@@ -91,7 +90,7 @@ class StatusIndicator extends Component {
         return (
             <svg className={groupClasses.join(' ')} xmlns="http://www.w3.org/2000/svg"
               viewBox={`0 0 ${2 * radius} ${2 * radius}`} width={width} height={height}
-              focusable={focusable}
+              focusable={false}
             >
                 <title>{resultClean}</title>
                 <g transform={transforms.join(' ')}>
@@ -108,7 +107,6 @@ StatusIndicator.propTypes = {
     width: PropTypes.string,
     height: PropTypes.string,
     noBackground: PropTypes.bool,
-    focusable: PropTypes.bool,
 };
 
 export {StatusIndicator, SvgSpinner, SvgStatus};
