@@ -5,6 +5,7 @@ import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.pages.blue.DashboardPage;
+import io.blueocean.ath.pages.blue.ExecutorPluginPage;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
@@ -16,6 +17,9 @@ import java.io.IOException;
 public class DashboardTest {
     @Inject
     DashboardPage dashboardPage;
+
+    @Inject
+    ExecutorPluginPage executorPluginPage;
 
     @Inject
     ClassicJobApi jobApi;
@@ -30,4 +34,16 @@ public class DashboardTest {
         dashboardPage.open();
         dashboardPage.testJobCountAtLeast(2);
     }
+
+
+    @Test
+    public void checkExecutorPluginLoaded() throws InterruptedException, UnirestException, IOException {
+        jobApi.createFreeStyleJob("freestyle-alpha", "echo alpha");
+        dashboardPage.open();
+        dashboardPage.testJobCountAtLeast(1);
+        executorPluginPage.open();
+        executorPluginPage.checkComputers();
+    }
+
+
 }
