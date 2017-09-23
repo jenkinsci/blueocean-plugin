@@ -17,7 +17,9 @@ import io.jenkins.blueocean.rest.model.BlueIssue;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
+import io.jenkins.blueocean.rest.model.BlueTrendContainer;
 import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.service.embedded.rest.BlueTrendContainerImpl;
 import jenkins.branch.MultiBranchProject;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.stapler.export.Exported;
@@ -71,6 +73,11 @@ public class BranchImpl extends PipelineImpl {
         }else{
             return null;
         }
+    }
+
+    @Override
+    public BlueTrendContainer getTrends() {
+        return new BlueTrendContainerImpl(this);
     }
 
     @Extension(ordinal = 4)

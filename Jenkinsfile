@@ -24,6 +24,7 @@ node() {
     withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
       try {
         stage('Building JS Libraries') {
+          sh 'node -v && npm -v'
           sh 'npm --prefix ./js-extensions run build'
           sh 'npm --prefix ./jenkins-design-language run build'
           sh 'npm --prefix ./blueocean-core-js run build'

@@ -2,11 +2,18 @@
 
 import React, { Component, PropTypes } from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
+import Linkify from 'linkifyjs/react';
 
 import { StatusIndicator, decodeResultValue } from './status/StatusIndicator';
 import { getGlyphFor } from './status/SvgStatus';
 
 import type { Result } from './status/StatusIndicator';
+
+// Makes sure we only linkify explicit URLs with expected protocols
+function validateURL(value: string) {
+    const explicitURL = /^(http|https|file|ftp|mailto):/i;
+    return explicitURL.test(value);
+}
 
 type State = {
     resultClean: Result,
@@ -26,7 +33,7 @@ type Props = {
 
 export class ResultItem extends Component {
 
-    state:State;
+    state: State;
 
     constructor(props: Props) {
         super(props);
@@ -38,22 +45,26 @@ export class ResultItem extends Component {
     }
 
     componentWillMount() {
-        this.handleProps(this.props);
+        this.handleProps(this.props, this.props);
     }
 
     componentWillReceiveProps(nextProps: Props) {
-        this.handleProps(nextProps);
+        this.handleProps(nextProps, this.props);
     }
 
-    handleProps(props: Props) {
+    handleProps(props: Props, oldProps: Props) {
         const resultClean = decodeResultValue(props.result);
         if (resultClean !== this.state.resultClean) {
             const statusGlyph = getGlyphFor(resultClean);
-            this.setState({resultClean, statusGlyph});
+            this.setState({ resultClean, statusGlyph });
         }
-        // check whether we want to change the state or whether we already are in the correct state
-        if (props.expanded !== this.state.expanded) {
-            this.toggleExpanded();
+
+        const newExpanded = !!props.expanded;
+        if (newExpanded !== (!!oldProps.expanded)) {
+            // check whether we want to change the state or whether we already are in the correct state
+            if (newExpanded !== this.state.expanded) {
+                this.toggleExpanded();
+            }
         }
     }
 
@@ -63,8 +74,8 @@ export class ResultItem extends Component {
         if (this.props.children && !selected) {
             const expanded = !this.state.expanded;
 
-            this.setState({expanded}, () => {
-                const {data, onExpand, onCollapse} = this.props;
+            this.setState({ expanded }, () => {
+                const { data, onExpand, onCollapse } = this.props;
                 // Data is arbitrary, set by parent
 
                 if (onExpand && expanded) {
@@ -76,6 +87,10 @@ export class ResultItem extends Component {
                 }
             });
         }
+    };
+
+    urlClicked = (e: Event) => {
+        e.stopPropagation();
     };
 
     render() {
@@ -94,6 +109,13 @@ export class ResultItem extends Component {
         const outerClassName = classes.join(' ');
         const iconClassName = `result-item-icon result-bg ${resultClean}`;
 
+        const linkifyOptions = {
+            attributes: {
+                onClick: this.urlClicked,
+            },
+            validate: validateURL,
+        };
+
         return (
             <div className={outerClassName}>
                 <div className="result-item-head" onClick={this.toggleExpanded}>
@@ -103,8 +125,10 @@ export class ResultItem extends Component {
                         </svg>
                     </span>
                     <span className="result-item-title">
-                        <Expando expanded={expanded} disabled={!hasChildren}/>
-                        <span className="result-item-label">{label}</span>
+                        <Expando expanded={expanded} disabled={!hasChildren} />
+                        <span className="result-item-label">
+                            <Linkify options={linkifyOptions}>{label}</Linkify>
+                        </span>
                         <span className="result-item-extra-info">
                             {extraInfo}
                         </span>
@@ -152,7 +176,7 @@ class Expando extends Component {
             <svg width="28" height="24" className={outerClassName}>
                 <g transform="translate(14 12)">
                     <g className="expando-glyph">
-                        <polygon points="-1.7,-5 3.3,0 -1.7,5 -2.9,3.8 1,0 -2.9,-3.8"/>
+                        <polygon points="-1.7,-5 3.3,0 -1.7,5 -2.9,3.8 1,0 -2.9,-3.8" />
                     </g>
                 </g>
             </svg>
