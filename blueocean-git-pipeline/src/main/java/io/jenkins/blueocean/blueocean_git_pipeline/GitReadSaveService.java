@@ -84,7 +84,7 @@ public class GitReadSaveService extends ScmContentProvider {
         TYPE = type;
     }
 
-    private GitReadSaveRequest makeSaveRequest(
+    static GitReadSaveRequest makeSaveRequest(
             Item item,String branch, String commitMessage,
             String sourceBranch, String filePath, byte[] contents) {
         String defaultBranch = "master";

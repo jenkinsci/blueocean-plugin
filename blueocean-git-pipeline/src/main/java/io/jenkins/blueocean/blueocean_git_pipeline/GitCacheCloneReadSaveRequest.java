@@ -29,8 +29,8 @@ import hudson.plugins.git.GitException;
 import hudson.remoting.VirtualChannel;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.service.embedded.util.UserSSHKeyManager;
+import jenkins.plugins.git.AbstractGitSCMSource;
 import jenkins.plugins.git.GitSCMFileSystem;
-import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMFileSystem;
 import jenkins.scm.api.SCMHead;
 import org.apache.commons.io.FileUtils;
@@ -67,7 +67,7 @@ class GitCacheCloneReadSaveRequest extends GitReadSaveRequest {
     private static final String LOCAL_REF_BASE = "refs/heads/";
     private static final String REMOTE_REF_BASE = "refs/heads/";
 
-    public GitCacheCloneReadSaveRequest(GitSCMSource gitSource, String branch, String commitMessage, String sourceBranch, String filePath, byte[] contents) {
+    public GitCacheCloneReadSaveRequest(AbstractGitSCMSource gitSource, String branch, String commitMessage, String sourceBranch, String filePath, byte[] contents) {
         super(gitSource, branch, commitMessage, sourceBranch, filePath, contents);
     }
 

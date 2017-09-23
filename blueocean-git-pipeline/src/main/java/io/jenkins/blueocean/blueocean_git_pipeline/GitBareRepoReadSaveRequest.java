@@ -33,8 +33,8 @@ import java.util.Date;
 import java.util.TimeZone;
 import java.util.logging.Level;
 
+import jenkins.plugins.git.AbstractGitSCMSource;
 import jenkins.plugins.git.GitSCMFileSystem;
-import jenkins.plugins.git.GitSCMSource;
 import org.eclipse.jgit.lib.ObjectId;
 import org.eclipse.jgit.lib.RefUpdate;
 import org.eclipse.jgit.lib.Repository;
@@ -48,7 +48,7 @@ class GitBareRepoReadSaveRequest extends GitCacheCloneReadSaveRequest {
     private static final String LOCAL_REF_BASE = "refs/remotes/origin/";
     private static final String REMOTE_REF_BASE = "refs/heads/";
 
-    GitBareRepoReadSaveRequest(GitSCMSource gitSource, String branch, String commitMessage, String sourceBranch, String filePath, byte[] contents) {
+    GitBareRepoReadSaveRequest(AbstractGitSCMSource gitSource, String branch, String commitMessage, String sourceBranch, String filePath, byte[] contents) {
         super(gitSource, branch, commitMessage, sourceBranch, filePath, contents);
     }
 
@@ -57,7 +57,9 @@ class GitBareRepoReadSaveRequest extends GitCacheCloneReadSaveRequest {
         return invokeOnScm(new GitSCMFileSystem.FSFunction<byte[]>() {
             @Override
             public byte[] invoke(Repository repo) throws IOException, InterruptedException {
-                // Make sure up-to-date and credentials work
+                // Make sure credentials work
+                GitUtils.validatePushAccess(repo, gitSource.getRemote(), getCredential());
+                // Make sure up-to-date
                 GitUtils.fetch(repo, getCredential());
                 return GitUtils.readFile(repo, LOCAL_REF_BASE + branch, filePath);
             }

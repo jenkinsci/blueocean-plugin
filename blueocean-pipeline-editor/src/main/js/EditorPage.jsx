@@ -190,13 +190,13 @@ class PipelineLoader extends React.Component {
         this.forceUpdate();
     }
 
-    showLoadingError(err) {
+    showLoadingError(err, generalMessage = <div>
+            There was an error loading the pipeline from the Jenkinsfile in this repository.
+            Correct the error by editing the Jenkinsfile using the declarative syntax then commit it back to the repository.
+        </div>) {
         this.showErrorDialog(
             <div className="errors">
-                <div>
-                    There was an error loading the pipeline from the Jenkinsfile in this repository.
-                    Correct the error by editing the Jenkinsfile using the declarative syntax then commit it back to the repository.
-                </div>
+                {generalMessage}
                 <div>&nbsp;</div>
                 <div><i>{this.extractErrorMessage(err)}</i></div>
             </div>
@@ -402,8 +402,15 @@ class PipelineLoader extends React.Component {
     }
 
     showCredentialDialog({ loading = false } = {}) {
+        const { branch = this.defaultBranch } = this.props.params;
         const pipeline = pipelineService.getPipeline(this.href);
         const { scmSource } = pipeline;
+
+        if (!scmSource || !scmSource.id) {
+            this.showLoadingError('', 'This SCM does not support saving');
+            return;
+        }
+
         const title = this.getScmTitle(scmSource.id);
         const githubConfig = {
             scmId: scmSource.id,
@@ -427,6 +434,8 @@ class PipelineLoader extends React.Component {
                         type={scmSource.id}
                         githubConfig={githubConfig}
                         pipeline={{ fullName: pipeline.fullName}}
+                        requirePush
+                        branch={branch}
                         dialog
                     />
                 </Dialog>

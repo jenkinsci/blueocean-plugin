@@ -38,7 +38,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import jenkins.model.Jenkins;
-import jenkins.plugins.git.GitSCMSource;
+import jenkins.plugins.git.AbstractGitSCMSource;
 import jenkins.plugins.git.traits.GitToolSCMSourceTrait;
 import jenkins.scm.api.trait.SCMSourceTrait;
 import org.apache.commons.io.FileUtils;
@@ -54,12 +54,12 @@ class GitCloneReadSaveRequest extends GitReadSaveRequest {
     private final File repositoryPath;
     private final GitTool gitTool;
 
-    public GitCloneReadSaveRequest(GitSCMSource gitSource, String branch, String commitMessage, String sourceBranch, String filePath, byte[] contents) {
+    public GitCloneReadSaveRequest(AbstractGitSCMSource gitSource, String branch, String commitMessage, String sourceBranch, String filePath, byte[] contents) {
         super(gitSource, branch, commitMessage, sourceBranch, filePath, contents);
 
         GitTool.DescriptorImpl toolDesc = Jenkins.getInstance().getDescriptorByType(GitTool.DescriptorImpl.class);
         @SuppressWarnings("deprecation")
-        GitTool foundGitTool = toolDesc.getInstallation(gitSource.getGitTool());
+        GitTool foundGitTool = null;
         for (SCMSourceTrait trait : gitSource.getTraits()) {
             if (trait instanceof GitToolSCMSourceTrait) {
                 foundGitTool = toolDesc.getInstallation(((GitToolSCMSourceTrait) trait).getGitTool());

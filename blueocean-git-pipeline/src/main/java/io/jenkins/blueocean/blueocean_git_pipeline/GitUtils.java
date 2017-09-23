@@ -128,6 +128,46 @@ class GitUtils {
         return errors;
     }
 
+    /**
+     *  Attempts to push to a non-existent branch to validate the user actually has push access
+     *
+     * @param repo local repository
+     * @param remoteUrl git repo url
+     * @param credential credential to use when accessing git
+     * @return list of Errors. Empty list means success.
+     */
+    public static void validatePushAccess(@Nonnull Repository repo, @Nonnull String remoteUrl, @Nullable StandardCredentials credential) throws GitException {
+        try (org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(repo)) {
+            // we need to perform an actual push, so we try a deletion of a very-unlikely-to-exist branch
+            // which needs to have push permissions in order to get a 'branch not found' message
+            String pushSpec = ":this-branch-is-only-to-test-if-jenkins-has-push-access";
+            PushCommand pushCommand = git.push();
+
+            addCredential(repo, pushCommand, credential);
+
+            Iterable<PushResult> resultIterable = pushCommand
+                .setRefSpecs(new RefSpec(pushSpec))
+                .setRemote(remoteUrl)
+                .setDryRun(true) // we only want to test
+                .call();
+            PushResult result = resultIterable.iterator().next();
+            if (result.getRemoteUpdates().isEmpty()) {
+                System.out.println("No remote updates occurred");
+            } else {
+                for (RemoteRefUpdate update : result.getRemoteUpdates()) {
+                    if (!RemoteRefUpdate.Status.NON_EXISTING.equals(update.getStatus()) && !RemoteRefUpdate.Status.OK.equals(update.getStatus())) {
+                        throw new ServiceException.UnexpectedErrorException("Expected non-existent ref but got: " + update.getStatus().name() + ": " + update.getMessage());
+                    }
+                }
+            }
+        } catch (GitAPIException e) {
+            if (e.getMessage().toLowerCase().contains("auth")) {
+                throw new ServiceException.UnauthorizedException(e.getMessage(), e);
+            }
+            throw new ServiceException.UnexpectedErrorException("Unable to access and push to: " + remoteUrl + " - " + e.getMessage(), e);
+        }
+    }
+
     private static final Pattern SSH_URL_PATTERN = Pattern.compile("(\\Qssh://\\E.*|[^@:]+@.*)");
 
     /**

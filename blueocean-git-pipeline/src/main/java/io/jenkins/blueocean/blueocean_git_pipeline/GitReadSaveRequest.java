@@ -29,7 +29,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.service.embedded.util.UserSSHKeyManager;
-import jenkins.plugins.git.GitSCMSource;
+import jenkins.plugins.git.AbstractGitSCMSource;
 
 import javax.annotation.CheckForNull;
 import java.io.IOException;
@@ -41,7 +41,7 @@ import java.util.logging.Logger;
 abstract class GitReadSaveRequest  {
     final static Logger log = Logger.getLogger(GitReadSaveRequest.class.getName());
 
-    final GitSCMSource gitSource;
+    final AbstractGitSCMSource gitSource;
     final String branch;
     final String commitMessage;
     final String sourceBranch;
@@ -49,7 +49,7 @@ abstract class GitReadSaveRequest  {
     final byte[] contents;
 
     GitReadSaveRequest(
-            GitSCMSource gitSource,
+            AbstractGitSCMSource gitSource,
             String branch, String commitMessage,
             String sourceBranch, String filePath,
             byte[] contents) {
