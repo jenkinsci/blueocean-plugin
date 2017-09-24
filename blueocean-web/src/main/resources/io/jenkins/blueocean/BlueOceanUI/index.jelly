@@ -7,7 +7,7 @@
       <st:include it="${pd}" page="httpHeaders.jelly" optional="true"/>
     </j:forEach>
     <x:doctype name="html"/>
-    <html>
+    <html lang="${it.lang}">
 
         <!-- HACK that need to be cleaned up -->
         <j:new var="h" className="hudson.Functions"/><!-- instead of JSP functions -->
