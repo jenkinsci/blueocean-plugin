@@ -24,7 +24,7 @@ function logApplicationError(messageOrEvent) {
     const message = messageOrEvent.error || messageOrEvent;
 
     if (message && message.stack) {
-        console.error('Unhandled Error: ', message.stack);
+        console.error('Unhandled Error: ', JSON.stringify(message.stack, null, 4));
 
         if (messageOrEvent.preventDefault) {
             messageOrEvent.preventDefault();
@@ -37,7 +37,7 @@ function logUnhandledPromiseRejection(errorEvent) {
     const { reason } = errorEvent.detail || errorEvent;
 
     if (reason && reason.stack) {
-        console.error('Unhandled Rejection: ', reason.stack);
+        console.error('Unhandled Rejection: ', JSON.stringify(reason.stack, null, 4));
         errorEvent.preventDefault();
     }
     // otherwise we'll fall back to the default rejection handler
