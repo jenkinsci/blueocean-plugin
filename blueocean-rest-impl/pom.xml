@@ -44,24 +44,6 @@
             <artifactId>credentials</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>ssh-credentials</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-            <!--
-                Setting optional=true ensures plugins depending on blueocean-rest-impl do not see jsch it depends on.
-
-                It fixes loader constraint violation: loader (instance of hudson/ClassicPluginStrategy$AntClassLoader2) previously
-                initiated loading for a different type with name "com/jcraft/jsch/JSch"
-
-                This is happening with git-plugin/git-client-plugin/jgit library loading it's own copy of jsch while
-                blueocean-rest-impl has already loaded its own jsch, resulting in LinkageError.
-            -->
-            <optional>true</optional>
-        </dependency>
-        <dependency>
             <groupId>oro</groupId>
             <artifactId>oro</artifactId>
         </dependency>

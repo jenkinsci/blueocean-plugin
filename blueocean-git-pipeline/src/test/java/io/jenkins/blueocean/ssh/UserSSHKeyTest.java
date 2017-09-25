@@ -21,11 +21,13 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.jenkins.blueocean.service.embedded;
+package io.jenkins.blueocean.ssh;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.IOException;
 import java.util.Map;
+
+import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -33,7 +35,7 @@ import org.junit.Test;
  * Test for User's Jenkins-managed public/private key pair
  * @author kzantow
  */
-public class UserSSHKeyTest extends BaseTest {
+public class UserSSHKeyTest extends PipelineBaseTest {
     @Test
     public void createPersonalSSHKey() throws IOException, UnirestException {
         login(); // bob

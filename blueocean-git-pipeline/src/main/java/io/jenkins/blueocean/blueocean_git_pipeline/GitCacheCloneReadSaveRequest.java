@@ -28,7 +28,7 @@ import hudson.model.User;
 import hudson.plugins.git.GitException;
 import hudson.remoting.VirtualChannel;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.service.embedded.util.UserSSHKeyManager;
+import io.jenkins.blueocean.ssh.UserSSHKeyManager;
 import jenkins.plugins.git.AbstractGitSCMSource;
 import jenkins.plugins.git.GitSCMFileSystem;
 import jenkins.scm.api.SCMFileSystem;

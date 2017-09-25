@@ -28,7 +28,7 @@ import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
-import io.jenkins.blueocean.service.embedded.util.UserSSHKeyManager;
+import io.jenkins.blueocean.ssh.UserSSHKeyManager;
 import jenkins.plugins.git.AbstractGitSCMSource;
 
 import javax.annotation.CheckForNull;

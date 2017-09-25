@@ -30,7 +30,7 @@ import com.jcraft.jsch.KeyPair;
 import hudson.model.User;
 import hudson.remoting.Base64;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
-import io.jenkins.blueocean.service.embedded.util.UserSSHKeyManager;
+import io.jenkins.blueocean.ssh.UserSSHKeyManager;
 import io.jenkins.blueocean.test.ssh.SSHServer;
 import jenkins.plugins.git.GitSampleRepoRule;
 import jenkins.scm.impl.mock.AbstractSampleDVCSRepoRule;
