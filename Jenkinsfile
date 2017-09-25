@@ -26,8 +26,6 @@ node() {
         stage('Building JS Libraries') {
           sh 'node -v && npm -v'
           sh 'npm --prefix ./js-extensions run build'
-          sh 'npm --prefix ./jenkins-design-language run build'
-          sh 'npm --prefix ./blueocean-core-js run build'
         }
 
         stage('Building BlueOcean') {
