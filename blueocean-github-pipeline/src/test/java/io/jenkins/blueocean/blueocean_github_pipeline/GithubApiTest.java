@@ -4,20 +4,20 @@ import com.cloudbees.plugins.credentials.domains.Domain;
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import hudson.ProxyConfiguration;
 import io.jenkins.blueocean.credential.CredentialsUtils;
-import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import org.junit.Assert;
 import org.junit.Test;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.List;
 import java.util.Map;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 /**
  * @author Vivek Pandey
@@ -119,5 +119,17 @@ public class GithubApiTest extends GithubMockBase {
                 .build(Map.class);
 
         assertEquals("RunMyProcess-task", resp.get("name"));
+    }
+
+    @Test
+    public void proxyTest() throws IOException {
+        HttpURLConnection connection = HttpRequest.get(j.getURL().toString()).connect();
+        Assert.assertFalse(connection.usingProxy());
+
+        URL wiremockProxy = new URL(githubApiUrl);
+        j.jenkins.proxy = new ProxyConfiguration(wiremockProxy.getHost(), wiremockProxy.getPort());
+
+        connection = HttpRequest.get(j.getURL().toString()).connect();
+        Assert.assertTrue(connection.usingProxy());
     }
 }
