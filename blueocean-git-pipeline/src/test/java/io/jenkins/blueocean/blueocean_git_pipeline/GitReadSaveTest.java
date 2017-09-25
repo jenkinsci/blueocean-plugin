@@ -32,11 +32,13 @@ import hudson.remoting.Base64;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.ssh.UserSSHKeyManager;
 import io.jenkins.blueocean.test.ssh.SSHServer;
+import jenkins.plugins.git.GitSCMFileSystem;
 import jenkins.plugins.git.GitSampleRepoRule;
 import jenkins.scm.impl.mock.AbstractSampleDVCSRepoRule;
 import jenkins.scm.impl.mock.AbstractSampleRepoRule;
 import org.apache.commons.io.FileUtils;
 import org.apache.sshd.common.util.OsUtils;
+import org.eclipse.jgit.lib.Repository;
 import org.jenkinsci.plugins.scriptsecurity.scripts.ScriptApproval;
 import org.junit.After;
 import org.junit.Assert;
@@ -177,6 +179,18 @@ public class GitReadSaveTest extends PipelineBaseTest {
             sshd.stop();
             sshd = null;
         }
+    }
+    @Test
+    public void testRepositoryCallbackToFSFunctionAdapter() throws IOException, InterruptedException {
+        final boolean[] called = { false };
+        new GitCacheCloneReadSaveRequest.RepositoryCallbackToFSFunctionAdapter<>(new GitSCMFileSystem.FSFunction<Object>() {
+            @Override
+            public Object invoke(Repository repository) throws IOException, InterruptedException {
+                called[0] = true;
+                return null;
+            }
+        }).invoke(null, null);
+        Assert.assertTrue(called[0]);
     }
 
     @Test
