@@ -112,7 +112,7 @@ public class GitUtilsTest extends PipelineBaseTest {
 
         resp = put("/organizations/jenkins/scm/git/validate/",
             ImmutableMap.of(
-                "repositoryUrl", "git@github.com:vivek/test-no-jenkins-file.git",
+                "repositoryUrl", "git@github.com:vivek/capability-annotation.git",
                 "credentialId", id,
                 "requirePush", true,
                 "branch", "master")
