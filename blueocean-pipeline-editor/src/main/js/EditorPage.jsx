@@ -406,8 +406,25 @@ class PipelineLoader extends React.Component {
         const pipeline = pipelineService.getPipeline(this.href);
         const { scmSource } = pipeline;
 
-        if (!scmSource || !scmSource.id) {
-            this.showLoadingError('', 'This SCM does not support saving');
+        // FIXME centralize this, move credential creation into jenkins.credential.selection for git
+        function isSshRepositoryUrl(url) {
+            if (!url || url.trim() === '') {
+                return false;
+            }
+
+            if (/ssh:\/\/.*/.test(url)) {
+                return true;
+            }
+
+            if (/[^@:]+@.*/.test(url)) {
+                return true;
+            }
+
+            return false;
+        }
+
+        if (!scmSource || !scmSource.id || (scmSource.id === 'git' && !isSshRepositoryUrl(scmSource.apiUrl))) {
+            this.showLoadingError('', 'This repository does not support saving');
             return;
         }
 
@@ -433,7 +450,7 @@ class PipelineLoader extends React.Component {
                         onComplete={cred => this.onCredentialSelected(cred)}
                         type={scmSource.id}
                         githubConfig={githubConfig}
-                        pipeline={{ fullName: pipeline.fullName}}
+                        pipeline={{ fullName: pipeline.fullName }}
                         requirePush
                         branch={branch}
                         dialog

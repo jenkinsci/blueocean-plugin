@@ -134,7 +134,6 @@ class GitUtils {
      * @param repo local repository
      * @param remoteUrl git repo url
      * @param credential credential to use when accessing git
-     * @return list of Errors. Empty list means success.
      */
     public static void validatePushAccess(@Nonnull Repository repo, @Nonnull String remoteUrl, @Nullable StandardCredentials credential) throws GitException {
         try (org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(repo)) {

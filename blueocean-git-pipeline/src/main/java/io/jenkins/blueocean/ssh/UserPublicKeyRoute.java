@@ -6,7 +6,6 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.UserRoute;
 import io.jenkins.blueocean.rest.model.BlueUser;
-import io.jenkins.blueocean.service.embedded.rest.UserKey;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
