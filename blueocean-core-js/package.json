@@ -15,7 +15,8 @@
     "test:debug": "node --debug-brk ./node_modules/.bin/gulp test-debug",
     "test:fast": "gulp test-fast",
     "prepublish": "gulp",
-    "mvnbuild": "gulp bundle",
+    "mvnbuild": "gulp build bundle",
+    "mvnbuild:fast": "gulp bundle",
     "mvntest": "gulp test",
     "build": "npm install && npm run gulp"
   },

@@ -1,5 +1,5 @@
 {
-  "name": "@jenkins-blueocean/js-extensions",
+  "name": "@jenkins-cd/js-extensions",
   "version": "0.0.39",
   "description": "Jenkins Extension Store",
   "main": "index.js",
