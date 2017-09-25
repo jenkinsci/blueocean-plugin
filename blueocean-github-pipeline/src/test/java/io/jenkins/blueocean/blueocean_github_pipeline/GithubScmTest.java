@@ -33,6 +33,7 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.ByteArrayInputStream;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.URL;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.scm.Scm.CREDENTIAL_ID;
@@ -44,7 +45,7 @@ import static org.powermock.api.mockito.PowerMockito.*;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({GithubScm.class, Jenkins.class, Authentication.class, User.class, Secret.class,
-        CredentialsMatchers.class, CredentialsProvider.class, Stapler.class})
+        CredentialsMatchers.class, CredentialsProvider.class, Stapler.class, HttpRequest.class})
 @PowerMockIgnore({"javax.crypto.*", "javax.security.*"})
 public class GithubScmTest {
 
@@ -83,7 +84,7 @@ public class GithubScmTest {
 
         URL urlMock = mock(URL.class);
         whenNew(URL.class).withAnyArguments().thenReturn(urlMock);
-        when(urlMock.openConnection()).thenReturn(httpURLConnectionMock);
+        when(urlMock.openConnection(Proxy.NO_PROXY)).thenReturn(httpURLConnectionMock);
         when(httpURLConnectionMock.getHeaderField("X-OAuth-Scopes")).thenReturn("user:email,repo");
         when(httpURLConnectionMock.getResponseCode()).thenReturn(200);
 
@@ -118,7 +119,7 @@ public class GithubScmTest {
 
         URL urlMock = mock(URL.class);
         whenNew(URL.class).withAnyArguments().thenReturn(urlMock);
-        when(urlMock.openConnection()).thenReturn(httpURLConnectionMock);
+        when(urlMock.openConnection(Proxy.NO_PROXY)).thenReturn(httpURLConnectionMock);
         when(httpURLConnectionMock.getHeaderField("X-OAuth-Scopes")).thenReturn("user:email,repo");
         when(httpURLConnectionMock.getResponseCode()).thenReturn(200);
 
