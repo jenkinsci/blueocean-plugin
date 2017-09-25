@@ -28,7 +28,9 @@ import java.io.IOException;
 import java.util.Map;
 
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -36,6 +38,11 @@ import org.junit.Test;
  * @author kzantow
  */
 public class UserSSHKeyTest extends PipelineBaseTest {
+    @BeforeClass
+    public static void zzzResetJWT() {
+        System.clearProperty("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION");
+    }
+
     @Test
     public void createPersonalSSHKey() throws IOException, UnirestException {
         login(); // bob
