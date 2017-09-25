@@ -1,6 +1,8 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
+import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Files;
+import hudson.model.User;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import jenkins.plugins.git.GitSampleRepoRule;
 import org.apache.commons.io.FileUtils;
@@ -12,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.File;
+import java.util.Map;
 
 public class GitUtilsTest extends PipelineBaseTest {
     @Rule
@@ -93,5 +96,26 @@ public class GitUtilsTest extends PipelineBaseTest {
         repo.git("reset", "--hard", "refs/heads/master"); // get the latest content
         text = FileUtils.readFileToString(new File(repo.getRoot(), "test.txt"), "utf-8");
         Assert.assertTrue(secondText.equals(text));
+    }
+
+    @Test
+    public void testValidatePushAccessFails() throws Exception {
+        User user = login();
+        this.jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
+
+        Map resp = new RequestBuilder(baseUrl)
+            .status(200)
+            .get("/organizations/jenkins/user/publickey/").build(Map.class);
+
+        String id = (String)resp.get("id");
+        Assert.assertTrue(id != null);
+
+        resp = put("/organizations/jenkins/scm/git/validate/",
+            ImmutableMap.of(
+                "repositoryUrl", "git@github.com:vivek/test-no-jenkins-file.git",
+                "credentialId", id,
+                "requirePush", true,
+                "branch", "master")
+            , 428);
     }
 }
