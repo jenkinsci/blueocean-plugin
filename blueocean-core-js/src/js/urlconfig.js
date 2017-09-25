@@ -10,6 +10,9 @@ function loadConfig() {
 
         // typically '/jenkins/'
         jenkinsRootURL = headElement.getAttribute('data-rooturl');
+        if (typeof jenkinsRootURL !== 'string') {
+            jenkinsRootURL = '/';
+        }
 
         // typically '/jenkins/blue'
         blueOceanAppURL = headElement.getAttribute('data-appurl');

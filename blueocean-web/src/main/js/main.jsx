@@ -15,6 +15,7 @@ import { BackendConnectFailure } from './components/BackendConnectFailure';
 import { DevelopmentFooter } from './DevelopmentFooter';
 import { useStrict } from 'mobx';
 import { Icon } from '@jenkins-cd/design-language';
+import ErrorUtils from './ErrorUtils';
 
 useStrict(true);
 

@@ -5,12 +5,12 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>2.17</version>
+    <version>2.33</version>
   </parent>
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.3.0-beta-3-SNAPSHOT</version>
+  <version>1.3.0-beta-4-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean Parent</name>
@@ -129,6 +129,7 @@
     <module>blueocean-git-pipeline</module>
     <module>blueocean-bitbucket-pipeline</module>
     <module>blueocean-pipeline-editor</module>
+    <module>blueocean-jira</module>
   </modules>
 
   <repositories>
@@ -146,11 +147,6 @@
 
   <dependencies>
       <dependency>
-          <groupId>junit</groupId>
-          <artifactId>junit</artifactId>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
           <groupId>org.mockito</groupId>
           <artifactId>mockito-core</artifactId>
           <scope>test</scope>
@@ -163,6 +159,13 @@
       <dependency>
           <groupId>com.mashape.unirest</groupId>
           <artifactId>unirest-java</artifactId>
+          <scope>test</scope>
+      </dependency>
+
+      <!-- Needed for unirest -->
+      <dependency>
+          <groupId>org.jenkins-ci.plugins</groupId>
+          <artifactId>apache-httpcomponents-client-4-api</artifactId>
           <scope>test</scope>
       </dependency>
       <dependency>
@@ -293,6 +296,12 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-autofavorite</artifactId>
             <version>1.0.0</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-jira</artifactId>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- TODO: should be moved out of blueocean repo as separate plugin -->
@@ -436,6 +445,34 @@
             <groupId>com.coravy.hudson.plugins.github</groupId>
             <artifactId>github</artifactId>
             <version>1.28.0</version>
+            <exclusions>
+                <!-- Upper bound fix.
+                     TODO: Remove it once github plugin commit
+                     https://github.com/jenkinsci/github-plugin/commit/a9308f124eeb5e599b2564d6355c5dd5cdafee34
+                     is released -->
+                <exclusion>
+                    <groupId>org.jenkins-ci</groupId>
+                    <artifactId>symbol-annotation</artifactId>
+                </exclusion>
+                <!-- Upper bound fix: Remove it once token-micro plugin is fixed to remove dependency on asm-tree
+                     PR: https://github.com/jenkinsci/token-macro-plugin/pull/31
+                -->
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm-tree</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
+        <!--Used from blueocean-github-pipeline and blueocean-bitbucket-pipeline modules as well as by tests using unirest -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>apache-httpcomponents-client-4-api</artifactId>
+            <version>4.5.3-2.0</version>
         </dependency>
 
         <!-- Bitbucket dependencies -->
@@ -445,28 +482,10 @@
             <version>2.2.3</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>fluent-hc</artifactId>
-            <version>4.5.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpmime</artifactId>
-            <version>4.5.3</version>
-        </dependency>
-        <dependency>
             <groupId>org.apache.maven</groupId>
             <artifactId>maven-artifact</artifactId>
             <version>3.5.0</version>
         </dependency>
-
-        <!-- Needed by blueocean-rest-impl for ssh unititlies -->
-        <dependency>
-            <groupId>com.jcraft</groupId>
-            <artifactId>jsch</artifactId>
-            <version>0.1.54</version>
-        </dependency>
-
 
         <!-- Other -->
         <dependency>
@@ -488,6 +507,13 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>git-client</artifactId>
             <version>${git-client.version}</version>
+            <!-- upper bound fix: Later version of httpclient comes from apache-httpcomponents-client-4-api -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -497,6 +523,30 @@
                 <exclusion>
                     <groupId>com.google.guava</groupId>
                     <artifactId>guava</artifactId>
+                </exclusion>
+
+                <!-- Upper bound dependency fix
+                    TODO: Remove it after https://github.com/jenkinsci/jira-plugin/pull/130 is merged and released.
+                -->
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpmime</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpcore</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.objenesis</groupId>
+                    <artifactId>objenesis</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -514,11 +564,6 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-folder</artifactId>
             <version>6.1.2</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.main</groupId>
-            <artifactId>maven-plugin</artifactId>
-            <version>2.17</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -579,9 +624,18 @@
             <version>${jackson.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.kohsuke</groupId>
+            <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-api</artifactId>
             <version>1.86</version>
+            <exclusions>
+                <!-- Upper bound fix
+                     TODO: Remove when PR https://github.com/jenkinsci/github-api-plugin/pull/15 is merged and released
+                -->
+                <exclusion>
+                    <groupId>com.infradna.tool</groupId>
+                    <artifactId>bridge-method-annotation</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -627,6 +681,19 @@
             <groupId>org.jvnet.hudson.plugins</groupId>
             <artifactId>favorite</artifactId>
             <version>2.3.0</version>
+            <exclusions>
+                <!-- Upper bound fix: Remove it once token-micro plugin is fixed to remove dependency on asm-tree
+                     PR https://github.com/jenkinsci/token-macro-plugin/pull/31. Fix to be available in 2.4.0.
+                -->
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm-tree</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>io.keen</groupId>
@@ -661,6 +728,30 @@
             <version>1.21</version>
         </dependency>
 
+        <!-- Needed by blueocean-rest-impl for ssh unititlies -->
+        <dependency>
+            <groupId>com.jcraft</groupId>
+            <artifactId>jsch</artifactId>
+            <version>0.1.54</version>
+        </dependency>
+
+        <!-- used in blueocean-rest-impl test -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>matrix-auth</artifactId>
+            <version>1.7</version>
+            <scope>test</scope>
+            <exclusions>
+                <!-- upper bound fix: icon-set comes from core, lets ignore the one coming from matrix-auth
+                     PR https://github.com/jenkinsci/plugin-pom/pull/72
+                -->
+                <exclusion>
+                    <groupId>org.jenkins-ci.plugins.icon-shim</groupId>
+                    <artifactId>icon-set</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.hamcrest</groupId>
@@ -672,6 +763,21 @@
             <artifactId>unirest-java</artifactId>
             <version>1.4.9</version>
             <scope>test</scope>
+            <exclusions>
+                <!--Exclude httpcomponents libraries, these are loaded from apache-httpcomponents-client-4-api plugin -->
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpmime</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpcore</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.mockito</groupId>
@@ -683,6 +789,11 @@
                 <exclusion>
                     <artifactId>hamcrest-core</artifactId>
                     <groupId>org.hamcrest</groupId>
+                </exclusion>
+                <!-- Upper bound fix: powermock has later version -->
+                <exclusion>
+                    <groupId>org.objenesis</groupId>
+                    <artifactId>objenesis</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -706,8 +817,40 @@
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock</artifactId>
-            <version>2.6.0</version>
+            <version>2.7.1</version>
             <scope>test</scope>
+            <exclusions>
+                <!-- Upper bound dependency fix: later version comes from org.jenkins-ci.main:jenkins-test-harness -->
+                <exclusion>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-webapp</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-server</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-servlet</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-http</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-util</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.eclipse.jetty</groupId>
+                    <artifactId>jetty-io</artifactId>
+                </exclusion>
+                <!--Upper bound fix, pick one from the core -->
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -760,7 +903,6 @@
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
   </dependencyManagement>
 

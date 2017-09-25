@@ -64,7 +64,7 @@ public class GithubRepositories extends ScmRepositories {
                     parent.getRepoType(),
                     pageSize, pageNumber), accessToken);
 
-            this.repositories = GithubScm.om.readValue(connection.getInputStream(), GH_REPO_EX_LIST_TYPE);
+            this.repositories = GithubScm.om.readValue(HttpRequest.getInputStream(connection), GH_REPO_EX_LIST_TYPE);
 
             String link = connection.getHeaderField("Link");
 

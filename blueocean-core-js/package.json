@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.157",
+  "version": "0.0.165-SNAPSHOT",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
@@ -40,8 +40,8 @@
     "@jenkins-cd/logging": "0.0.6",
     "@jenkins-cd/sse-gateway": "0.0.21",
     "@jenkins-cd/storage": "0.0.6",
+    "bluebird": "3.5.0",
     "cd": "0.3.3",
-    "es6-promise": "4.0.5",
     "i18next": "3.5.2",
     "i18next-browser-languagedetector": "1.0.0",
     "i18next-xhr-backend": "1.2.0",
@@ -54,7 +54,7 @@
     "react-remarkable": "1.1.1"
   },
   "devDependencies": {
-    "@jenkins-cd/design-language": "0.0.148",
+    "@jenkins-cd/design-language": "0.0.153",
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
     "@jenkins-blueocean/js-builder": "0.0.62",
     "@jenkins-cd/js-extensions": "0.0.39-kz-1",
@@ -86,6 +86,7 @@
     "jest-junit": "1.5.1",
     "less": "2.7.2",
     "minimist": "1.2.0",
+    "nock": "9.0.14",
     "react": "15.3.2",
     "react-addons-test-utils": "15.3.2",
     "react-dom": "15.3.2",

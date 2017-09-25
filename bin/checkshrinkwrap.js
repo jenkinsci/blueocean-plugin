@@ -19,7 +19,7 @@
 
 const fs = require('fs');
 // match "1.2.3" or "1.2.3-beta5"
-const PRECISE_VERSION_CHARS_PATTERN = /^\d+\.\d+\.\d+(-[A-Za-z0-9]+)*$/;
+const PRECISE_VERSION_CHARS_PATTERN = /^\d+\.\d+\.\d+(-[A-Za-z0-9.]+)*$/;
 
 const start = new Date().getTime();
 

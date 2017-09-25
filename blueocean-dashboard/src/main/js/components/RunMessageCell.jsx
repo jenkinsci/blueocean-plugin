@@ -1,15 +1,19 @@
 import React, { Component, PropTypes } from 'react';
 import Lozenge from './Lozenge';
+import { Link } from 'react-router';
+import LinkifiedText from './LinkifiedText';
 
 export default class RunMessageCell extends Component {
     propTypes = {
         run: PropTypes.object,
         t: PropTypes.func,
+        linkTo: PropTypes.string,
     };
 
     render() {
         const run = this.props.run;
         const t = this.props.t;
+        const linkTo = this.props.linkTo || '';
         let message;
 
         // Note that the order that this is evaluated is important for providing a relevant message to the user
@@ -25,22 +29,47 @@ export default class RunMessageCell extends Component {
         const showCauses = run && (run.causes && run.causes.length > 0);
 
         if (showUserDefinedMessage) {
-            message = (<span className="RunMessageCell" title={run.description}><span className="RunMessageCellInner">{run.description}</span></span>);
+            message = (
+                <span className="RunMessageCell" title={run.description}>
+                    <span className="RunMessageCellInner">
+                        <Link to={linkTo} className="unstyled-link" >
+                            {run.description}
+                        </Link>
+                    </span>
+                </span>
+            );
         } else if (showCommitMessage) {
             const commitMsg = run.changeSet[run.changeSet.length - 1].msg;
+
             if (run.changeSet.length > 1) {
                 return (
                     <span className="RunMessageCell" title={commitMsg}>
-                        <span className="RunMessageCellInner">{commitMsg}</span>
+                        <span className="RunMessageCellInner">
+                            <LinkifiedText text={commitMsg} textLink={linkTo} partialTextLinks={run.changeSet[run.changeSet.length - 1].issues} />
+                        </span>
                         <Lozenge title={t('lozenge.commit', { 0: run.changeSet.length })} />
                     </span>
                 );
             }
-            return (<span className="RunMessageCell" title={commitMsg}><span className="RunMessageCellInner">{commitMsg}</span></span>);
+            
+            return (
+                <span className="RunMessageCell" title={commitMsg}>
+                    <span className="RunMessageCellInner">
+                        <LinkifiedText text={commitMsg} textLink={linkTo} partialTextLinks={run.changeSet[run.changeSet.length - 1].issues} />
+                    </span>
+                </span>
+            );
         } else if (showCauses) {
             // Last cause is always more significant than the first
             const cause = run.causes[run.causes.length - 1].shortDescription;
-            return (<span className="RunMessageCell" title={cause}><span className="RunMessageCellInner">{cause}</span></span>);
+            const linkedCauseMsg = (<Link to={linkTo} className="unstyled-link" >{ cause }</Link>);
+            return (
+                <span className="RunMessageCell" title={cause}>
+                    <span className="RunMessageCellInner">
+                        {linkedCauseMsg}
+                    </span>
+                </span>
+            );
         } else {
             message = (<span className="RunMessageCell"><span className="RunMessageCellInner">–</span></span>);
         }
