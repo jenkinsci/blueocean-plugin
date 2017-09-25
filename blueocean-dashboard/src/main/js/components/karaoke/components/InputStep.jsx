@@ -9,7 +9,6 @@ import {
     logging,
 } from '@jenkins-cd/blueocean-core-js';
 import { Alerts } from '@jenkins-cd/design-language';
-import Markdown from 'react-remarkable';
 
 /**
  * Simple helper to stop stopPropagation
@@ -100,7 +99,10 @@ export default class InputStep extends Component {
         logger.debug('sanity check', sanity.length, parameters.length, this.props.classicInputUrl);
         if (sanity.length !== parameters.length) {
             logger.debug('sanity check failed. Returning Alert instead of the form.');
-            const alertCaption = <Markdown>{translate('inputSteps.error.message', { 0: this.props.classicInputUrl, defaultValue: 'This pipeline uses input types that are unsupported.  \nUse [Jenkins Classic]({0}) to resolve this input step.' })}</Markdown>;
+            const alertCaption = [
+                <p>{translate('inputStep.error.message')}</p>,
+                <a href={this.props.classicInputUrl} target="_blank">{translate('inputStep.error.linktext')}</a>
+            ];
             const alertTitle = translate('inputStep.error.title', { defaultValue: 'Error' });
             return (<div className="inputStep">
                 <Alerts message={alertCaption} type="Error" title={alertTitle} />

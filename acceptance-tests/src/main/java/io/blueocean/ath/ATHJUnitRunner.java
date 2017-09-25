@@ -18,6 +18,8 @@ import org.junit.runners.model.Statement;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.logging.LogEntries;
+import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.remote.ScreenshotException;
 
 import java.io.File;
@@ -75,8 +77,10 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
 
                 try {
                     next.evaluate();
+                    outputConsoleLogs();
                 } catch (Exception e) {
                     writeScreenShotCause(e, test, method);
+                    outputConsoleLogs();
                     throw e;
                 }
 
@@ -114,7 +118,16 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
             FileUtils.copyFile(scrFile, file);
             logger.info("Wrote screenshot to " + file.getAbsolutePath());
         }
-     }
+    }
+
+    private void outputConsoleLogs() {
+        logger.info("browser console output below:");
+        WebDriver driver = injector.getInstance(WebDriver.class);
+        LogEntries logs = driver.manage().logs().get("browser");
+        for (LogEntry entry : logs) {
+            LogEntryLogger.recordLogEntry(entry);
+        }
+    }
 
 
     @Override
@@ -174,4 +187,5 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
             return this;
         }
     }
+
 }
