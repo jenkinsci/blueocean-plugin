@@ -34,7 +34,6 @@
     <jenkins-test-harness.version>2.23</jenkins-test-harness.version>
     <scm-api.version>2.2.2</scm-api.version>
     <git.version>3.5.1</git.version>
-    <git-client.version>2.5.0</git-client.version>
   </properties>
 
   <scm>
@@ -488,18 +487,6 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>git</artifactId>
             <version>${git.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>git-client</artifactId>
-            <version>${git-client.version}</version>
-            <!-- upper bound fix: Later version of httpclient comes from apache-httpcomponents-client-4-api -->
-            <exclusions>
-                <exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpclient</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
