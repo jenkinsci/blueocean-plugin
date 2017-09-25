@@ -239,7 +239,7 @@ public class GithubScm extends Scm {
     }
 
     protected static HttpURLConnection connect(String apiUrl, String accessToken) throws IOException {
-        HttpURLConnection connection = HttpRequest.get(apiUrl).withAuthorization(accessToken).connect();
+        HttpURLConnection connection = HttpRequest.get(apiUrl).withAuthorization("token " + accessToken).connect();
         int status = connection.getResponseCode();
         if(status == 401){
             throw new ServiceException.PreconditionRequired("Invalid accessToken");
