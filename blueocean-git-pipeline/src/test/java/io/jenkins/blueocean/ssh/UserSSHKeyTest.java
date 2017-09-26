@@ -27,20 +27,24 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import java.io.IOException;
 import java.util.Map;
 
+import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
-import org.junit.AfterClass;
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.*;
 
 /**
  * Test for User's Jenkins-managed public/private key pair
  * @author kzantow
  */
 public class UserSSHKeyTest extends PipelineBaseTest {
+
     @BeforeClass
-    public static void zzzResetJWT() {
-        System.clearProperty("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION");
+    public static void disableJWT() {
+        BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION = false;
+    }
+
+    @AfterClass
+    public static void restoreJWT() {
+        BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION = Boolean.getBoolean(BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION_PROPERTY);
     }
 
     @Test
