@@ -63,7 +63,7 @@ abstract class GitReadSaveRequest  {
 
     @CheckForNull StandardCredentials getCredential() {
         StandardCredentials credential = null;
-        if (GitUtils.isSshUrl(gitSource.getRemote())) {
+        if (GitUtils.isSshUrl(gitSource.getRemote()) || GitUtils.isLocalUnixFileUrl(gitSource.getRemote())) {
             // Get committer info and credentials
             User user = User.current();
             if (user == null) {
@@ -71,11 +71,7 @@ abstract class GitReadSaveRequest  {
             }
             credential = UserSSHKeyManager.getOrCreate(user);
         } else {
-            String credentialId = gitSource.getCredentialsId();
-            if (credentialId != null) {
-                credential = CredentialsUtils.findCredential(credentialId,
-                    StandardCredentials.class, new BlueOceanDomainRequirement());
-            }
+            throw new ServiceException.UnauthorizedException("Editing only supported for repositories using SSH");
         }
         return credential;
     }

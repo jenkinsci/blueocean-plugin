@@ -13,7 +13,7 @@ import {
     FormElement,
     Alerts,
 } from '@jenkins-cd/design-language';
-
+import { isSshRepositoryUrl } from './GitUtils';
 
 import ScmContentApi, {LoadError} from './api/ScmContentApi';
 
@@ -405,23 +405,6 @@ class PipelineLoader extends React.Component {
         const { branch = this.defaultBranch } = this.props.params;
         const pipeline = pipelineService.getPipeline(this.href);
         const { scmSource } = pipeline;
-
-        // FIXME centralize this, move credential creation into jenkins.credential.selection for git
-        function isSshRepositoryUrl(url) {
-            if (!url || url.trim() === '') {
-                return false;
-            }
-
-            if (/ssh:\/\/.*/.test(url)) {
-                return true;
-            }
-
-            if (/[^@:]+@.*/.test(url)) {
-                return true;
-            }
-
-            return false;
-        }
 
         if (!scmSource || !scmSource.id || (scmSource.id === 'git' && !isSshRepositoryUrl(scmSource.apiUrl))) {
             this.showLoadingError('', 'This repository does not support saving');

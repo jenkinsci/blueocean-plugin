@@ -179,6 +179,15 @@ class GitUtils {
     }
 
     /**
+     * Determines this is a local *NIX file URL, e.g. /Users/me/repo
+     * @param remote remote url
+     * @return true if this starts with a forward slash
+     */
+    static boolean isLocalUnixFileUrl(@Nullable String remote) {
+        return remote != null && remote.startsWith("/");
+    }
+
+    /**
      * Determines if the repository is using an SSH URL
      * @param repo repository to
      * @return true if there appears to be an SSH style remote URL
