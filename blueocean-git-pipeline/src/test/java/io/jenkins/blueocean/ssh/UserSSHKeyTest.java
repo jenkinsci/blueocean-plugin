@@ -28,6 +28,7 @@ import java.io.IOException;
 import java.util.Map;
 
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
+import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTestNoJWT;
 import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
@@ -37,11 +38,7 @@ import org.junit.Test;
  * Test for User's Jenkins-managed public/private key pair
  * @author kzantow
  */
-public class UserSSHKeyTest extends PipelineBaseTest {
-    @BeforeClass
-    public static void zzzResetJWT() {
-        System.clearProperty("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION");
-    }
+public class UserSSHKeyTest extends PipelineBaseTestNoJWT {
 
     @Test
     public void createPersonalSSHKey() throws IOException, UnirestException {
