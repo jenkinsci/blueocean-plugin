@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import { Icon } from '@jenkins-cd/design-language';
 import { Paths, pipelineService } from '@jenkins-cd/blueocean-core-js';
 import Security from './services/Security';
+import { isSshRepositoryUrl } from './GitUtils';
 
 class PipelineEditorLink extends React.Component {
     state = {};
@@ -53,7 +54,7 @@ class PipelineEditorLink extends React.Component {
 
     _canSavePipeline(pipeline) {
         if (pipeline.scmSource && pipeline.scmSource.id === 'git') {
-            return true;
+            return isSshRepositoryUrl(pipeline.scmSource.apiUrl);
         }
         if (pipeline._capabilities && pipeline._capabilities
                 .find(capability => capability === 'io.jenkins.blueocean.rest.model.BluePipelineScm')) {
