@@ -6,6 +6,7 @@ import hudson.model.ItemGroup;
 import hudson.model.queue.QueueTaskFuture;
 import hudson.util.OneShotEvent;
 import io.jenkins.blueocean.events.sse.SSEConnection;
+import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.service.embedded.OrganizationFactoryImpl;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
@@ -55,7 +56,7 @@ import static org.junit.Assert.*;
  */
 public class SseEventTest {
     @Rule
-    public JenkinsRule j = new JenkinsRule();
+    public JenkinsRule j = new PipelineBaseTest.PipelineBaseJenkinsRule();
 
     @Rule
     public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();
