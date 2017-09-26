@@ -23,6 +23,8 @@ function isFirefox() {
 function logApplicationError(messageOrEvent) {
     const message = messageOrEvent.error || messageOrEvent;
 
+    console.log('Unhandled Error 1: ' + JSON.stringify(messageOrEvent, null, 4));
+
     if (message && message.stack) {
         console.error('Unhandled Error: ', JSON.stringify(message.stack, null, 4));
 
@@ -35,6 +37,8 @@ function logApplicationError(messageOrEvent) {
 
 function logUnhandledPromiseRejection(errorEvent) {
     const { reason } = errorEvent.detail || errorEvent;
+
+    console.log('Unhandled Rejection 1: ' + JSON.stringify(errorEvent, null, 4));
 
     if (reason && reason.stack) {
         console.error('Unhandled Rejection: ', JSON.stringify(reason.stack, null, 4));
