@@ -1,5 +1,6 @@
 import React from 'react';
 import { Dropdown } from '@jenkins-cd/design-language';
+import { getArg, setArg } from '../../services/PipelineMetadataService';
 
 const timeUnits = [
     'SECONDS',
@@ -18,8 +19,8 @@ export default class TimeUnitPropertyInput extends React.Component {
             <div>
                 <label className="form-label">{type.capitalizedName + (type.isRequired ? '*' : '')}</label>
                 <Dropdown options={timeUnits}
-                    defaultOption={step.data[propName] || timeUnits[0]}
-                    onChange={timeUnit => { step.data[propName] = timeUnit; onChange(step); }} />
+                    defaultOption={getArg(step, propName).value || timeUnits[0]}
+                    onChange={timeUnit => { setArg(step, propName, timeUnit); onChange(step); }} />
             </div>
         );
     }

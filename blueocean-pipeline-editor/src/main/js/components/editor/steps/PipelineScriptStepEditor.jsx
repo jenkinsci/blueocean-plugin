@@ -1,16 +1,17 @@
 import React, { Component, PropTypes } from 'react';
 import debounce from 'lodash.debounce';
+import { getArg, setArg } from '../../../services/PipelineMetadataService';
 
 export default class PipelineScriptStepEditor extends React.Component {
     textChanged = debounce(value => {
-        this.props.step.data.scriptBlock = value;
+        setArg(this.props.step, 'scriptBlock', value);
         this.props.onChange(this.props.step);
     }, 300);
 
     render() {
         const { step } = this.props;
         return (<textarea className="editor-step-detail-script"
-                  defaultValue={step.data.scriptBlock}
+                  defaultValue={getArg(step, 'scriptBlock').value}
                   onChange={(e) => this.textChanged(e.target.value)} />);
     }
 }

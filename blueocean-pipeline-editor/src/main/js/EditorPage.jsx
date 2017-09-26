@@ -59,19 +59,24 @@ class SaveDialog extends React.Component {
             if (err.responseBody.message.indexOf('error: 409.') >= 0) {
                 if (this.props.branch !== saveRequest.content.branch) {
                     errorMessage = ['The branch ', <i>{saveRequest.content.branch}</i>, ' already exists'];
-                    this.setState({ branchError: errorMessage });
+                    this.setState({branchError: errorMessage});
                     errorMessage = null;
                 } else {
                     errorMessage = [
                         <div>Your Pipeline was changed by another user.</div>,
                         <div>
-                            <a href="#" onClick={() => functions.overwriteChanges(this.state.branch, this.state.commitMessage, (...args) => this.showError(...args))}>
+                            <a href="#"
+                               onClick={() => functions.overwriteChanges(this.state.branch, this.state.commitMessage, (...args) => this.showError(...args))}>
                                 Keep my changes
                             </a> or <a href="#" onClick={() => functions.discardChanges()}>discard my changes</a>
                         </div>,
                     ];
                 }
                 //errorMessage = ['An error occurred saving to Github: ', ...errorMessage];
+            } else if (errorMessage === 'Server Error') {
+                errorMessage = err.responseBody.message;
+            } else if (err.response && err.response.status === 500) {
+                errorMessage = err.responseBody.message;
             }
         }
         this.setState({ saving: false, errorMessage });
@@ -185,13 +190,13 @@ class PipelineLoader extends React.Component {
         this.forceUpdate();
     }
 
-    showLoadingError(err) {
+    showLoadingError(err, generalMessage = <div>
+            There was an error loading the pipeline from the Jenkinsfile in this repository.
+            Correct the error by editing the Jenkinsfile using the declarative syntax then commit it back to the repository.
+        </div>) {
         this.showErrorDialog(
             <div className="errors">
-                <div>
-                    There was an error loading the pipeline from the Jenkinsfile in this repository.
-                    Correct the error by editing the Jenkinsfile using the declarative syntax then commit it back to the repository.
-                </div>
+                {generalMessage}
                 <div>&nbsp;</div>
                 <div><i>{this.extractErrorMessage(err)}</i></div>
             </div>
@@ -355,7 +360,7 @@ class PipelineLoader extends React.Component {
             errorMessage = err;
         }
         else if (err instanceof Array || typeof err === 'array') {
-            errorMessage = err.map(e => <div>{e.error}</div>);
+            errorMessage = err.map(e => <div>{this.extractErrorMessage(e.error)}</div>);
         }
         else if (err.responseBody && err.responseBody.message) {
             // Github error
@@ -365,9 +370,13 @@ class PipelineLoader extends React.Component {
                 if (this.props.params.branch !== saveRequest.content.branch) {
                     errorMessage = ['the branch ', <i>{saveRequest.content.branch}</i>, ' already exists'];
                 } else {
-                    errorMessage = ['the pipeline was modified ouside of the editor'];
+                    errorMessage = ['the pipeline was modified outside of the editor'];
                 }
                 errorMessage = ['An error occurred saving to Github: ', ...errorMessage];
+            } else if (errorMessage === 'Server Error') {
+                errorMessage = err.responseBody.message;
+            } else if (err.response && err.response.status === 500) {
+                errorMessage = err.responseBody.message;
             }
         }
         else if (err.message) {
@@ -393,8 +402,32 @@ class PipelineLoader extends React.Component {
     }
 
     showCredentialDialog({ loading = false } = {}) {
+        const { branch = this.defaultBranch } = this.props.params;
         const pipeline = pipelineService.getPipeline(this.href);
         const { scmSource } = pipeline;
+
+        // FIXME centralize this, move credential creation into jenkins.credential.selection for git
+        function isSshRepositoryUrl(url) {
+            if (!url || url.trim() === '') {
+                return false;
+            }
+
+            if (/ssh:\/\/.*/.test(url)) {
+                return true;
+            }
+
+            if (/[^@:]+@.*/.test(url)) {
+                return true;
+            }
+
+            return false;
+        }
+
+        if (!scmSource || !scmSource.id || (scmSource.id === 'git' && !isSshRepositoryUrl(scmSource.apiUrl))) {
+            this.showLoadingError('', 'This repository does not support saving');
+            return;
+        }
+
         const title = this.getScmTitle(scmSource.id);
         const githubConfig = {
             scmId: scmSource.id,
@@ -417,7 +450,9 @@ class PipelineLoader extends React.Component {
                         onComplete={cred => this.onCredentialSelected(cred)}
                         type={scmSource.id}
                         githubConfig={githubConfig}
-                        pipeline={{ fullName: pipeline.fullName}}
+                        pipeline={{ fullName: pipeline.fullName }}
+                        requirePush
+                        branch={branch}
                         dialog
                     />
                 </Dialog>
