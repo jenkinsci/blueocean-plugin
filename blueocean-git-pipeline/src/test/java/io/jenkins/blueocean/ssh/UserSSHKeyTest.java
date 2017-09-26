@@ -32,6 +32,7 @@ import org.junit.AfterClass;
 import org.junit.Assert;
 import org.junit.BeforeClass;
 import org.junit.Test;
+import org.junit.Ignore;
 
 /**
  * Test for User's Jenkins-managed public/private key pair
@@ -43,6 +44,7 @@ public class UserSSHKeyTest extends PipelineBaseTest {
         System.clearProperty("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION");
     }
 
+    @Ignore
     @Test
     public void createPersonalSSHKey() throws IOException, UnirestException {
         login(); // bob
