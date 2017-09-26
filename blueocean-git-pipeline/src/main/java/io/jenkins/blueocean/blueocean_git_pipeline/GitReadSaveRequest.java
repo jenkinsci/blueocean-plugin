@@ -63,7 +63,7 @@ abstract class GitReadSaveRequest  {
 
     @CheckForNull StandardCredentials getCredential() {
         StandardCredentials credential = null;
-        if (GitUtils.isSshUrl(gitSource.getRemote())) {
+        if (GitUtils.isSshUrl(gitSource.getRemote()) || GitUtils.isLocalUnixFileUrl(gitSource.getRemote())) {
             // Get committer info and credentials
             User user = User.current();
             if (user == null) {
