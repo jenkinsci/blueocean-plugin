@@ -16,6 +16,12 @@ import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.JsonConverter;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+import org.acegisecurity.adapters.PrincipalAcegiUserToken;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.userdetails.UserDetails;
+import org.eclipse.jetty.security.HashLoginService;
+import org.eclipse.jetty.security.LoginService;
+import org.eclipse.jetty.util.security.Password;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,9 +38,6 @@ import java.util.Map;
 import java.util.logging.LogManager;
 
 import static io.jenkins.blueocean.auth.jwt.JwtToken.X_BLUEOCEAN_JWT;
-import org.acegisecurity.adapters.PrincipalAcegiUserToken;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.userdetails.UserDetails;
 
 /**
  * @author Vivek Pandey
@@ -42,13 +45,22 @@ import org.acegisecurity.userdetails.UserDetails;
 public abstract class BaseTest {
     private static  final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
 
-    public BaseTest() {
-        //System.setProperty("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION", "true");
-        j = new JenkinsRule();
-    }
-    @Rule
-    public JenkinsRule j;
 
+
+    @Rule
+    public JenkinsRule j = new BaseTestJenkinsRule();
+
+    public static class BaseTestJenkinsRule extends JenkinsRule{
+        @Override
+        protected LoginService configureUserRealm() {
+            HashLoginService realm = new HashLoginService();
+            realm.setName("default");   // this is the magic realm name to make it effective on everywhere
+            realm.update("alice", new Password("alice"), new String[]{"user","female"});
+            realm.update("bob", new Password("bob"), new String[]{"user","male"});
+            realm.update("charlie", new Password("charlie"), new String[]{"user","male"});
+            return realm;
+        }
+    }
     protected  String baseUrl;
 
     protected String getContextPath(){

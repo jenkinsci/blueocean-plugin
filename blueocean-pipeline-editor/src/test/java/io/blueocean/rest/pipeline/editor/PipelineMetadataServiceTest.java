@@ -1,10 +1,9 @@
 package io.blueocean.rest.pipeline.editor;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-
+import hudson.model.JDK;
+import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
+import net.sf.json.JSONArray;
+import net.sf.json.JSONObject;
 import org.hamcrest.Matcher;
 import org.jenkinsci.plugins.pipeline.modeldefinition.agent.impl.DockerPipeline;
 import org.junit.Rule;
@@ -12,19 +11,14 @@ import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.JenkinsRule.JSONWebResponse;
 
-import hudson.model.JDK;
-import net.sf.json.JSONArray;
-import net.sf.json.JSONObject;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
-import static org.hamcrest.CoreMatchers.hasItem;
-import static org.hamcrest.CoreMatchers.is;
-import static org.hamcrest.CoreMatchers.not;
+import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.beans.HasPropertyWithValue.hasProperty;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 
 /**
@@ -32,7 +26,7 @@ import static org.junit.Assert.assertTrue;
  */
 public class PipelineMetadataServiceTest {
     @Rule
-    public JenkinsRule j = new JenkinsRule();
+    public JenkinsRule j = new PipelineBaseTest.PipelineBaseJenkinsRule();
 
     @Test
     public void testBasicStepsReturned() throws IOException {

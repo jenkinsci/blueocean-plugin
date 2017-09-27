@@ -4,6 +4,9 @@ import com.gargoylesoftware.htmlunit.Page;
 import hudson.model.User;
 import hudson.tasks.Mailer;
 import net.sf.json.JSONObject;
+import org.eclipse.jetty.security.HashLoginService;
+import org.eclipse.jetty.security.LoginService;
+import org.eclipse.jetty.util.security.Password;
 import org.jose4j.jwk.RsaJsonWebKey;
 import org.jose4j.jws.JsonWebSignature;
 import org.jose4j.jwt.JwtClaims;
@@ -23,7 +26,17 @@ import java.util.Map;
 public class JwtAuthenticationServiceImplTest {
 
     @Rule
-    public JenkinsRule j = new JenkinsRule();
+    public JenkinsRule j = new JenkinsRule(){
+        @Override
+        protected LoginService configureUserRealm() {
+            HashLoginService realm = new HashLoginService();
+            realm.setName("default");   // this is the magic realm name to make it effective on everywhere
+            realm.update("alice", new Password("alice"), new String[]{"user","female"});
+            realm.update("bob", new Password("bob"), new String[]{"user","male"});
+            realm.update("charlie", new Password("charlie"), new String[]{"user","male"});
+            return realm;
+        }
+    };
 
     @Test
     public void getToken() throws Exception {
