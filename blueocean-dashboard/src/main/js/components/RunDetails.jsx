@@ -178,6 +178,11 @@ class RunDetails extends Component {
 
         const base = { base: baseUrl };
 
+        const failureCount = Math.min(99, currentRun.testSummary && parseInt(currentRun.testSummary.failed) || 0);
+        const testsBadge = failureCount && (
+            <div className="TabBadgeIcon">{ failureCount }</div>
+        );
+
         const tabs = [
             <TabLink to="/pipeline" { ...base }>{ t('rundetail.header.tab.pipeline', {
                 defaultValue: 'Pipeline',
@@ -185,9 +190,10 @@ class RunDetails extends Component {
             <TabLink to="/changes" { ...base }>{ t('rundetail.header.tab.changes', {
                 defaultValue: 'Changes',
             }) }</TabLink>,
-            <TabLink to="/tests" { ...base }>{ t('rundetail.header.tab.tests', {
-                defaultValue: 'Tests',
-            }) }</TabLink>,
+            <TabLink to="/tests" { ...base }>
+                { t('rundetail.header.tab.tests', { defaultValue: 'Tests' }) }
+                { testsBadge }
+            </TabLink>,
             <TabLink to="/artifacts" { ...base }>{ t('rundetail.header.tab.artifacts', {
                 defaultValue: 'Artifacts',
             }) }</TabLink>,
