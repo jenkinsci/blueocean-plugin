@@ -24,7 +24,7 @@ export class TextInput extends React.Component {
     render() {
         const classLeft = this.props.iconLeft ? 'u-icon-left' : '';
         const classRight = this.props.iconRight ? 'u-icon-right': '';
-        const { ariaLabel = this.props.placeholder } = this.props;
+        const ariaLabel = this.props['aria-label'] || this.props.placeholder;
 
         return (
             <TextControl {...this.props} className={`TextInput ${this.props.className} ${classLeft} ${classRight}`}>
@@ -47,7 +47,7 @@ TextInput.propTypes = {
     iconRight: PropTypes.string,
     onChange: PropTypes.func,
     onBlur: PropTypes.func,
-    ariaLabel: PropTypes.string
+    'aria-label': PropTypes.string
 };
 
 TextInput.defaultProps = {

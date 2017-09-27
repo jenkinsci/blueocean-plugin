@@ -10,6 +10,7 @@ describe("TextInput", () => {
         const wrapper = mount(<TextInput />);
         assert.ok(wrapper);
         assert.equal(wrapper.find('input').props().placeholder, undefined);
+        assert.equal(wrapper.find('input').props()['aria-label'], undefined);
     });
     it('TextInput should render ok with placeholder.', () => {
         const wrapper = mount(<TextInput placeholder="placeholder"/>);
@@ -17,7 +18,7 @@ describe("TextInput", () => {
         assert.equal(wrapper.find('input').props().placeholder, "placeholder");
     });
     it('TextInput should render aria props.', () => {
-        const wrapper = mount(<TextInput ariaLabel="placeholder"/>);
+        const wrapper = mount(<TextInput aria-label="placeholder"/>);
         assert.ok(wrapper);
         assert.equal(wrapper.find('input').props()['aria-label'], "placeholder");
     });
