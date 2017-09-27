@@ -6,6 +6,33 @@ import { describeArcAsPath } from '../SVG';
 export const strokeWidth = 3.5; // px. Maybe we can fetch this from CSS at runtime in the future
 
 export default class SvgSpinner extends Component {
+    componentWillMount() {
+        this.infiniteRotationRunning = false;
+        this.setState({
+            infiniteRotatePercentage: 0
+        });
+    }
+
+    infiniteLoadingTimer = () => {
+        let infiniteRotatePercentage = this.state.infiniteRotatePercentage;
+        
+        infiniteRotatePercentage += 1.5;
+
+        if (infiniteRotatePercentage >= 360) {
+            infiniteRotatePercentage = 0;
+        }
+
+        this.setState({
+            infiniteRotatePercentage: infiniteRotatePercentage
+        });
+
+        requestAnimationFrame(this.infiniteLoadingTimer);
+    }
+
+    componentWillUnmount() {
+        cancelAnimationFrame(this.infiniteLoadingTimer);
+    }
+
     render() {
 
         const {result} = this.props;
@@ -30,6 +57,12 @@ export default class SvgSpinner extends Component {
         else if (percentage > 100) {
             groupClasses.push('spin');
             percentage = 25;
+
+            if (!this.infiniteRotationRunning) {
+                requestAnimationFrame(this.infiniteLoadingTimer);
+
+                this.infiniteRotationRunning = true;
+            }
         }
 
         const rotate = percentage / 100 * 360;
@@ -38,7 +71,7 @@ export default class SvgSpinner extends Component {
         const innerRadius = radius / 3;
 
         return (
-            <g className={groupClasses.join(' ')}>
+            <g className={groupClasses.join(' ')} transform={`rotate(${this.state.infiniteRotatePercentage})`} >
                 <circle cx="0" cy="0" r={radius} strokeWidth={strokeWidth}/>
                 <circle className="inner" cx="0" cy="0" r={innerRadius} />
                 { percentage ? <path className={result} fill="none" strokeWidth={strokeWidth} d={d}/> : null}
