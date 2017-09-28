@@ -27,7 +27,6 @@ import hudson.Extension;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.Queue;
-import hudson.model.Run;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
@@ -36,6 +35,7 @@ import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import jenkins.model.Jenkins;
+import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.pubsub.EventProps;
 import org.jenkinsci.plugins.pubsub.Events;
 import org.jenkinsci.plugins.pubsub.JobChannelMessage;
@@ -107,8 +107,17 @@ public class BlueMessageEnricher extends MessageEnricher {
                 BlueQueueItem blueQueueItem = QueueUtil.getQueuedItem(null, queueItem, job);
                 if (blueQueueItem != null) {
                     jobChannelMessage.set(BlueEventProps.blueocean_queue_item_expected_build_number, Integer.toString(blueQueueItem.getExpectedBuildNumber()));
+                } else {
+                    // If build is already running, we simply take the run id and pass it on
+                    if(message.get("job_run_status") != null){
+                        String buildNumberStr = message.get("jenkins_object_id");
+                        if(StringUtils.isNotBlank(buildNumberStr)) {
+                            jobChannelMessage.set(BlueEventProps.blueocean_queue_item_expected_build_number, message.get("jenkins_object_id"));
+                        }
+                    }
                 }
             }
+
         }
     }
 }
