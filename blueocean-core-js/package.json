@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.166-SNAPSHOT-nicu2",
+  "version": "0.0.166",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
@@ -32,7 +32,7 @@
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
-    "@jenkins-cd/design-language": "0.0.155-SNAPSHOT-nicu2",
+    "@jenkins-cd/design-language": "0.0.155",
     "@jenkins-cd/js-extensions": "0.0.39",
     "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/logging": "0.0.6",
