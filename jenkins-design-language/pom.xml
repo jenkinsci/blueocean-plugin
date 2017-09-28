@@ -11,7 +11,7 @@
 
     <groupId>io.jenkins.blueocean</groupId>
     <artifactId>jenkins-design-language</artifactId>
-    <version>1.3.0-beta-4-SNAPSHOT</version>
+    <version>1.4.0-beta-1-corejs-jdl-SNAPSHOT</version>
     <packaging>hpi</packaging>
 
     <name>Jenkins Design Language</name>
