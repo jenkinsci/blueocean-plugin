@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.165-SNAPSHOT",
+  "version": "0.0.166-SNAPSHOT",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
@@ -54,7 +54,7 @@
     "react-remarkable": "1.1.1"
   },
   "devDependencies": {
-    "@jenkins-cd/design-language": "0.0.153",
+    "@jenkins-cd/design-language": "0.0.154",
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
     "@jenkins-blueocean/js-builder": "0.0.62",
     "@jenkins-cd/js-extensions": "0.0.39-kz-1",

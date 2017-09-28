@@ -13,8 +13,8 @@
     "mvntest": "gulp test lint"
   },
   "devDependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.164",
-    "@jenkins-cd/design-language": "0.0.153",
+    "@jenkins-cd/blueocean-core-js": "0.0.165",
+    "@jenkins-cd/design-language": "0.0.154",
     "@jenkins-blueocean/js-builder": "0.0.62",
     "@jenkins-cd/js-extensions": "0.0.39-kz-1",
     "babel-eslint": "7.0.0",

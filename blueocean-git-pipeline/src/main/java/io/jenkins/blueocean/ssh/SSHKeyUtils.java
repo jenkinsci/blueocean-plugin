@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.jenkins.blueocean.service.embedded.util;
+package io.jenkins.blueocean.ssh;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.KeyPair;

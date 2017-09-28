@@ -290,7 +290,8 @@ a.pipelineRedirectLink svg {
             flex-direction: row;
         }
 
-        a {
+        a.linenumber {
+            // FIXME: Remove these when line numbers are gone
             display: inline-block;
             text-align: right;
             min-width: 40px;
@@ -299,21 +300,23 @@ a.pipelineRedirectLink svg {
             text-decoration: none;
             color: @gray-light;
             white-space: nowrap;
-        }
-        a::before {
-            content: counter(line-numbering);
-            user-select: none;
-            counter-increment: line-numbering;
-            padding-right: 1em;
-        }
-        a:hover {
-            color: @pre-color;
-            text-decoration: none;
+
+            &::before {
+                content: counter(line-numbering);
+                user-select: none;
+                counter-increment: line-numbering;
+                padding-right: 1em;
+            }
+            &:hover {
+                color: @pre-color;
+                text-decoration: none;
+            }
         }
     }
     p:hover {
         background-color: @pre-color-hover;
     }
+
     .line {
         color: @pre-color;
         padding-left: 22px;

@@ -2,18 +2,12 @@
 
 import React, { Component, PropTypes } from 'react';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import Linkify from 'linkifyjs/react';
 
 import { StatusIndicator, decodeResultValue } from './status/StatusIndicator';
 import { getGlyphFor } from './status/SvgStatus';
+import { Linkify } from '.';
 
 import type { Result } from './status/StatusIndicator';
-
-// Makes sure we only linkify explicit URLs with expected protocols
-function validateURL(value: string) {
-    const explicitURL = /^(http|https|file|ftp|mailto):/i;
-    return explicitURL.test(value);
-}
 
 type State = {
     resultClean: Result,
@@ -113,7 +107,6 @@ export class ResultItem extends Component {
             attributes: {
                 onClick: this.urlClicked,
             },
-            validate: validateURL,
         };
 
         return (

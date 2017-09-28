@@ -21,26 +21,29 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.jenkins.blueocean.service.embedded;
+package io.jenkins.blueocean.ssh;
 
 import com.mashape.unirest.http.exceptions.UnirestException;
-import java.io.IOException;
-import java.util.Map;
+import hudson.model.User;
+import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import org.junit.Assert;
 import org.junit.Test;
+
+import java.io.IOException;
+import java.util.Map;
 
 /**
  * Test for User's Jenkins-managed public/private key pair
  * @author kzantow
  */
-public class UserSSHKeyTest extends BaseTest {
+public class UserSSHKeyTest extends PipelineBaseTest {
     @Test
     public void createPersonalSSHKey() throws IOException, UnirestException {
-        login(); // bob
+        User bob = login(); // bob
 
         Map resp = new RequestBuilder(baseUrl)
                 .status(200)
-                .auth("bob", "bob")
+                .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
                 .get("/organizations/jenkins/user/publickey/").build(Map.class);
 
         Object pubKey = resp.get("publickey");
@@ -49,7 +52,7 @@ public class UserSSHKeyTest extends BaseTest {
         // make sure the key remains the same
         resp = new RequestBuilder(baseUrl)
                 .status(200)
-                .auth("bob", "bob")
+                .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
                 .get("/organizations/jenkins/user/publickey/").build(Map.class);
 
         Object pubKey2 = resp.get("publickey");
@@ -58,12 +61,12 @@ public class UserSSHKeyTest extends BaseTest {
         // test deleting it gives a new key
         new RequestBuilder(baseUrl)
                 .status(200)
-                .auth("bob", "bob")
+                .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
                 .delete("/organizations/jenkins/user/publickey/").build(String.class);
 
         resp = new RequestBuilder(baseUrl)
                 .status(200)
-                .auth("bob", "bob")
+                .jwtToken(getJwtToken(j.jenkins, bob.getId(), bob.getId()))
                 .get("/organizations/jenkins/user/publickey/").build(Map.class);
 
         Object pubKey3 = resp.get("publickey");
@@ -77,7 +80,7 @@ public class UserSSHKeyTest extends BaseTest {
         // make sure one user can't see another user's key
         new RequestBuilder(baseUrl)
                 .status(403)
-                .authAlice()
+                .jwtToken(getJwtToken(j.jenkins, "alice", "alice"))
                 .get("/organizations/jenkins/users/bob/publickey/").build(Map.class);
     }
 }

@@ -138,8 +138,8 @@ describe('Pipeline Syntax Converter', () => {
         const batStep = internal.children[0].steps[0];
         assert(batStep.name == 'bat', "Incorrect step function");
         // 'script' is the required parameter
-        assert(batStep.data.script == 'someBatScript', "Named arguments not properly handled");
-        assert(batStep.data.returnStdout == true, "Named arguments not properly handled");
+        assert(batStep.data.script.value == 'someBatScript', "Named arguments not properly handled");
+        assert(batStep.data.returnStdout.value == true, "Named arguments not properly handled");
     });
 
     it('converts from JSON: unnamed parameter values properly', () => {
@@ -166,7 +166,7 @@ describe('Pipeline Syntax Converter', () => {
         const batStep = internal.children[0].steps[0];
         assert(batStep.name == 'bat', "Incorrect step function");
         // 'script' is the required parameter
-        assert(batStep.data.script == 'someBatScript', "Single required argument not properly handled");
+        assert(batStep.data.script.value == 'someBatScript', "Single required argument not properly handled");
     });
 
     it('converts from JSON: nested steps', () => {
@@ -196,7 +196,10 @@ describe('Pipeline Syntax Converter', () => {
                         {
                             functionName: 'sh',
                             data: {
-                                script: 'echo hello',
+                                script: {
+                                    isLiteral: true,
+                                    value: 'echo hello',
+                                },
                             }
                         }
                     ]
