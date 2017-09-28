@@ -94,7 +94,11 @@ public class BlueMessageEnricher extends MessageEnricher {
             }
 
             if (message.containsKey("job_run_queueId") && jobChannelItem instanceof hudson.model.Job) {
-                final long queueId = Long.parseLong(message.get("job_run_queueId"));
+                String queueIdStr = message.get("job_run_queueId");
+                if (queueIdStr == null) {
+                    return;
+                }
+                final long queueId = Long.parseLong(queueIdStr);
                 Queue.Item queueItem = Jenkins.getInstance().getQueue().getItem(queueId);
                 if (queueItem == null) {
                     return;
