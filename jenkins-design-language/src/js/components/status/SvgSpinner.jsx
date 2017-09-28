@@ -9,28 +9,28 @@ export default class SvgSpinner extends Component {
     componentWillMount() {
         this.infiniteRotationRunning = false;
         this.setState({
-            infiniteRotatePercentage: 0
+            infiniteRotateDegrees: 0
         });
     }
 
     infiniteLoadingTimer = () => {
-        let infiniteRotatePercentage = this.state.infiniteRotatePercentage;
+        let infiniteRotateDegrees = this.state.infiniteRotateDegrees;
         
-        infiniteRotatePercentage += 1.5;
+        infiniteRotateDegrees += 1.5;
 
-        if (infiniteRotatePercentage >= 360) {
-            infiniteRotatePercentage = 0;
+        if (infiniteRotateDegrees >= 360) {
+            infiniteRotateDegrees = 0;
         }
 
         this.setState({
-            infiniteRotatePercentage: infiniteRotatePercentage
+            infiniteRotateDegrees: infiniteRotateDegrees
         });
 
-        requestAnimationFrame(this.infiniteLoadingTimer);
+        this.requestAnimationFrameId = requestAnimationFrame(this.infiniteLoadingTimer);
     }
 
     componentWillUnmount() {
-        cancelAnimationFrame(this.infiniteLoadingTimer);
+        cancelAnimationFrame(this.requestAnimationFrameId);
     }
 
     render() {
@@ -71,7 +71,7 @@ export default class SvgSpinner extends Component {
         const innerRadius = radius / 3;
 
         return (
-            <g className={groupClasses.join(' ')} transform={`rotate(${this.state.infiniteRotatePercentage})`} >
+            <g className={groupClasses.join(' ')} transform={`rotate(${this.state.infiniteRotateDegrees})`} >
                 <circle cx="0" cy="0" r={radius} strokeWidth={strokeWidth}/>
                 <circle className="inner" cx="0" cy="0" r={innerRadius} />
                 { percentage ? <path className={result} fill="none" strokeWidth={strokeWidth} d={d}/> : null}
