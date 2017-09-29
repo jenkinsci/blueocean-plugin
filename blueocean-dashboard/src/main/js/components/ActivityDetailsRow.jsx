@@ -51,6 +51,7 @@ class ActivityDetailsRow extends Component {
 
         const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
         const runDetailsUrl = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'pipeline');
+        const changesUrl = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'changes');
 
         const {
             durationInMillis,
@@ -87,7 +88,7 @@ class ActivityDetailsRow extends Component {
                 <TableCell linkTo={runDetailsUrl}>{run.id}</TableCell>
                 <TableCell linkTo={runDetailsUrl}><CommitId commitId={run.commitId} /></TableCell>
                 { isMultibranch && <TableCell linkTo={runDetailsUrl}>{branchName}</TableCell> }
-                <TableCell><RunMessageCell linkTo={runDetailsUrl} run={run} t={t} /></TableCell>
+                <TableCell><RunMessageCell linkTo={runDetailsUrl} run={run} t={t} changesUrl={changesUrl}/></TableCell>
                 <TableCell linkTo={runDetailsUrl}>
                     <TimeDuration millis={durationInMillis}
                                   updatePeriod={1000}
@@ -132,7 +133,7 @@ ActivityDetailsRow.propTypes = {
     t: PropTypes.func,
     getTimes: PropTypes.func,
     columns: PropTypes.object,
-    isMultibranch: PropTypes.boolan,
+    isMultibranch: PropTypes.boolean,
 };
 
 ActivityDetailsRow.contextTypes = {
