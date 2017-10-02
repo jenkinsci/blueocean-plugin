@@ -9,6 +9,7 @@ import hudson.model.Run;
 import hudson.scm.ChangeLogSet;
 import hudson.util.DescribableList;
 import io.jenkins.blueocean.rest.factory.BlueIssueFactory;
+import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.model.BlueIssue;
 import jenkins.branch.MultiBranchProject;
 import jenkins.plugins.git.GitSCMSource;
@@ -27,7 +28,7 @@ import static org.mockito.Mockito.when;
 public class GithubIssueTest {
 
     @Rule
-    public JenkinsRule j = new JenkinsRule();
+    public JenkinsRule j = new PipelineBaseTest.PipelineBaseJenkinsRule();
 
     @Test
     public void findIssueKeys() {
