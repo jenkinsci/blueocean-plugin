@@ -116,7 +116,6 @@ public class GithubCreationTest{
      *
      * TODO: Add PR coverage.
      */
-    @Ignore
     @Test
     @Retry(3)
     public void testCreatePipelineFull() throws IOException {
