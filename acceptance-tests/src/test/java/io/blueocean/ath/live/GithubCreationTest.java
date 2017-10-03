@@ -119,6 +119,8 @@ public class GithubCreationTest{
     @Test
     @Retry(3)
     public void testCreatePipelineFull() throws IOException {
+        // Log SSE events to help debug flakiness
+        sseClient.setLogEvents(true);
         URL jenkinsFileUrl = Resources.getResource(this.getClass(), "Jenkinsfile");
         byte[] content = Resources.toByteArray(jenkinsFileUrl);
         GHContentUpdateResponse updateResponse = ghRepository.createContent(content, "Jenkinsfile", "Jenkinsfile", "master");
