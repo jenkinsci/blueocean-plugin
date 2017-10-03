@@ -15,7 +15,7 @@ echo $SELENIUM_IP > ./target/.selenium_ip
 
 echo ""
 echo "**************************************************************"
-echo "**** Docker container with Selenium, Firefox and VNC running."
+echo "**** Docker container with Selenium, Chrome and VNC running."
 echo "****   Selenium server listening on $SELENIUM_IP:4444"
 echo "****   "
 echo "****   To connect and view with VNC, run:"

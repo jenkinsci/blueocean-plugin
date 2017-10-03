@@ -31,7 +31,7 @@ import org.junit.Test;
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
 public class DevRunner extends BOJUnitTest {
-    
+
     @Test
     public void runAndStayRunning() throws Exception {
         System.out.println("");
@@ -50,7 +50,7 @@ public class DevRunner extends BOJUnitTest {
         System.out.println("    See http://nightwatchjs.org/");
         System.out.println("");
         System.out.println("    NOTE:");
-        System.out.println("        Selenium and the browser (Firefox) are running in a docker");
+        System.out.println("        Selenium and the browser (Chrome) are running in a docker");
         System.out.println("        container that also has VNC. This allows you to connect if");
         System.out.println("        you'd like to look at the browser while the tests run.");
         System.out.println("        Simple run:");
@@ -59,7 +59,7 @@ public class DevRunner extends BOJUnitTest {
         System.out.println("------------------------------------------------------------------------------------");
         System.out.println("");
         System.out.println("ctrl-c to exit...");
-        
+
         while(true) {
             Thread.sleep(1000);
         }
