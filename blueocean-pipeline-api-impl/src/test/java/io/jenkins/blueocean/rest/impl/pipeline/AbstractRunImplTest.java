@@ -58,7 +58,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
     @After
     public void tearDown() {
-        System.setProperty(AbstractRunImpl.BLUEOCEAN_FEATURE_RUN_DESCRIPTION_ENABLED, "");
+        System.clearProperty(AbstractRunImpl.BLUEOCEAN_FEATURE_RUN_DESCRIPTION_ENABLED);
     }
 
     //Disabled, see JENKINS-36453
