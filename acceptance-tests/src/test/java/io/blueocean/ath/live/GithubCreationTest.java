@@ -117,7 +117,7 @@ public class GithubCreationTest{
      * TODO: Add PR coverage.
      */
     @Test
-    @Retry(3)
+   // @Retry(3)
     public void testCreatePipelineFull() throws IOException {
         byte[] content = "stage('build') { echo 'yes' }".getBytes("UTF-8");
         GHContentUpdateResponse updateResponse = ghRepository.createContent(content, "Jenkinsfile", "Jenkinsfile", "master");

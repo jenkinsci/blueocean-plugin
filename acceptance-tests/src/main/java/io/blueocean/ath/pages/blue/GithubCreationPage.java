@@ -152,9 +152,8 @@ public class GithubCreationPage {
             try {
                 wait.until(ExpectedConditions.urlMatches(".*activity$"), 90000);
             } catch (Throwable e) {
-                driver.get(baseUrl + "/blue/organizations/jenkins/pipelines/" + pipeline + "/activity");
+                driver.get(baseUrl + "/blue/organizations/jenkins/" + pipeline + "/activity");
                 wait.until(ExpectedConditions.urlMatches(".*activity$"), 90000);
-
             }
             logger.info("AbstractPipeline created");
         }
