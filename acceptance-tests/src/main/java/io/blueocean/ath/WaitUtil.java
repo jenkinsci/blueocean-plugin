@@ -1,5 +1,6 @@
 package io.blueocean.ath;
 
+import com.google.common.base.Function;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -12,7 +13,7 @@ import org.openqa.selenium.support.ui.FluentWait;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.concurrent.TimeUnit;
-import java.util.function.Function;
+
 
 @Singleton
 public class WaitUtil {
