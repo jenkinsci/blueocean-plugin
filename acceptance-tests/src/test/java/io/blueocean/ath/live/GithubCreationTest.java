@@ -119,7 +119,7 @@ public class GithubCreationTest{
     @Test
     @Retry(3)
     public void testCreatePipelineFull() throws IOException {
-        byte[] content = "node { sh 'ping -c 20 localhost' \n sh 'ping -c 20 localhost' }".getBytes("UTF-8");
+        byte[] content = "stage('build') { echo 'yes' }".getBytes("UTF-8");
         GHContentUpdateResponse updateResponse = ghRepository.createContent(content, "Jenkinsfile", "Jenkinsfile", "master");
         ghRepository.createRef("refs/heads/branch1", updateResponse.getCommit().getSHA1());
         logger.info("Created master and branch1 branches in " + repo);
