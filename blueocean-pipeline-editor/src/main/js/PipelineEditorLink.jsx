@@ -54,7 +54,7 @@ class PipelineEditorLink extends React.Component {
 
     _canSavePipeline(pipeline) {
         if (pipeline.scmSource && pipeline.scmSource.id === 'git') {
-            return isSshRepositoryUrl(pipeline.scmSource.apiUrl);
+            return true;
         }
         if (pipeline._capabilities && pipeline._capabilities
                 .find(capability => capability === 'io.jenkins.blueocean.rest.model.BluePipelineScm')) {
