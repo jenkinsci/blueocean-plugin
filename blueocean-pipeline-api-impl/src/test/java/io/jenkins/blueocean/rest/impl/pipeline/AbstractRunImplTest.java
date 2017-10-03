@@ -160,12 +160,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
     @Test(timeout = 20000)
     @Issue("JENKINS-44736")
     public void earlyUnstableStatusShouldReportPunStateAsRunningAndResultAsUnknown() throws Exception {
-        WorkflowJob p = j.createProject(WorkflowJob.class, "project");
-
-        URL resource = Resources.getResource(getClass(), "earlyUnstableStatusShouldReportPunStateAsRunningAndResultAsUnknown.jenkinsfile");
-        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
-        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
-        p.save();
+        WorkflowJob p = createWorkflowJobWithJenkinsfile("earlyUnstableStatusShouldReportPunStateAsRunningAndResultAsUnknown.jenkinsfile");
 
         Run r = p.scheduleBuild2(0).waitForStart();
 
@@ -190,12 +185,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
     @Test
     public void pipelineLatestRunIncludesRunning() throws Exception {
-        WorkflowJob p = j.createProject(WorkflowJob.class, "project");
-
-        URL resource = Resources.getResource(getClass(), "latestRunIncludesQueued.jenkinsfile");
-        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
-        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
-        p.save();
+        WorkflowJob p = createWorkflowJobWithJenkinsfile("latestRunIncludesQueued.jenkinsfile");
 
         // Ensure null before first run
         Map pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
@@ -250,12 +240,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
     @Issue("JENKINS-44981")
     @Test
     public void queuedSingleNode() throws Exception {
-        WorkflowJob p = j.createProject(WorkflowJob.class, "project");
-
-        URL resource = Resources.getResource(getClass(), "queuedSingleNode.jenkinsfile");
-        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
-        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
-        p.save();
+        WorkflowJob p = createWorkflowJobWithJenkinsfile("queuedSingleNode.jenkinsfile");
 
         // Ensure null before first run
         Map pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
@@ -281,12 +266,8 @@ public class AbstractRunImplTest extends PipelineBaseTest {
     @Issue("JENKINS-44981")
     @Test
     public void declarativeQueuedAgent() throws Exception {
-        WorkflowJob p = j.createProject(WorkflowJob.class, "project");
+        WorkflowJob p = createWorkflowJobWithJenkinsfile("declarativeQueuedAgent.jenkinsfile");
 
-        URL resource = Resources.getResource(getClass(), "declarativeQueuedAgent.jenkinsfile");
-        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
-        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
-        p.save();
         j.jenkins.setNumExecutors(0);
         // Ensure null before first run
         Map pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
@@ -331,12 +312,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
     @Issue("JENKINS-44981")
     @Test
     public void queuedAndRunningParallel() throws Exception {
-        WorkflowJob p = j.createProject(WorkflowJob.class, "project");
-
-        URL resource = Resources.getResource(getClass(), "queuedAndRunningParallel.jenkinsfile");
-        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
-        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
-        p.save();
+        WorkflowJob p = createWorkflowJobWithJenkinsfile("queuedAndRunningParallel.jenkinsfile");
 
         // Ensure null before first run
         Map pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
@@ -373,12 +349,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
     @Test
     public void disableDescription() throws Exception {
-        WorkflowJob p = j.createProject(WorkflowJob.class, "project");
-
-        URL resource = Resources.getResource(getClass(), "disableDescription.jenkinsfile");
-        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
-        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
-        p.save();
+        WorkflowJob p = createWorkflowJobWithJenkinsfile("disableDescription.jenkinsfile");
 
         WorkflowRun r = p.scheduleBuild2(0).waitForStart();
         j.waitForCompletion(r);
@@ -393,5 +364,13 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         Assert.assertEquals(null, run.get("description"));
     }
 
+    private WorkflowJob createWorkflowJobWithJenkinsfile(String jenkinsFileName) throws java.io.IOException {
+        WorkflowJob p = j.createProject(WorkflowJob.class, "project");
 
+        URL resource = Resources.getResource(getClass(), jenkinsFileName);
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+        p.save();
+        return p;
+    }
 }
