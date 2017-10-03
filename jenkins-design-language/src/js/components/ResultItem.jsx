@@ -119,9 +119,7 @@ export class ResultItem extends Component {
                     </span>
                     <span className="result-item-title">
                         <Expando expanded={expanded} disabled={!hasChildren} />
-                        <span className="result-item-label">
-                            <Linkify options={linkifyOptions}>{label}</Linkify>
-                        </span>
+                        <Linkify className="result-item-label" options={linkifyOptions}>{label}</Linkify>
                         <span className="result-item-extra-info">
                             {extraInfo}
                         </span>
