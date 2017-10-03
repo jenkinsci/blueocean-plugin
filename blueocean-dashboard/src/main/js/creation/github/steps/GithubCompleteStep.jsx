@@ -63,7 +63,6 @@ export default class GithubCompleteStep extends React.Component {
 
         let copy = '';
         let showDashboardLink = false;
-        let showCreateLink = false;
 
         if (state === STATE.STEP_COMPLETE_EVENT_ERROR) {
             copy = t('creation.core.error.creating.pipeline');
@@ -71,8 +70,6 @@ export default class GithubCompleteStep extends React.Component {
         } else if (state === STATE.STEP_COMPLETE_EVENT_TIMEOUT) {
             copy = t('creation.core.status.waiting');
             showDashboardLink = true;
-        } else if (state === STATE.STEP_COMPLETE_MISSING_JENKINSFILE) {
-            showCreateLink = true;
         } else if (state === STATE.STEP_COMPLETE_SUCCESS) {
             setTimeout(() => this.navigatePipeline(), redirectTimeout);
         }
@@ -86,14 +83,6 @@ export default class GithubCompleteStep extends React.Component {
                     <p>{t('creation.core.status.return.new_pipelines')}.</p>
 
                     <button onClick={() => this.navigateDashboard()}>{t('creation.core.button.dashboard')}</button>
-                </div>
-                }
-
-                { showCreateLink &&
-                <div>
-                    <Extensions.Renderer extensionPoint="jenkins.pipeline.create.missing.jenkinsfile"
-                                         organization={'jenkins'} fullName={pipelineName}
-                    />
                 </div>
                 }
             </div>

@@ -1,5 +1,5 @@
 import { action, asFlat, computed, observable } from 'mobx';
-import { logging, Utils } from '@jenkins-cd/blueocean-core-js';
+import { logging, Utils, ToastService, UrlConfig, AppConfig } from '@jenkins-cd/blueocean-core-js';
 
 
 const LOGGER = logging.logger('io.jenkins.blueocean.create-pipeline');
@@ -164,6 +164,18 @@ export default class FlowManager {
         this.stateId = stateId;
 
         LOGGER.debug(`changed stateId to ${stateId}`);
+
+        if ('STEP_COMPLETE_MISSING_JENKINSFILE' === this.stateId) {
+            setTimeout(() => {
+                this._navigateToPipelineEditor();
+                ToastService.newToast({ text: 'No Jenkinsfiles were found in this repository. Get started by creating one.' });
+            }, this.redirectTimeout);
+        }
+    }
+
+    _navigateToPipelineEditor() {
+        const url = `/organizations/${AppConfig.getOrganizationName()}/pipeline-editor/${encodeURIComponent(this.pipelineName)}/`;
+        this.completeFlow({ url })
     }
 
     _findStep(stateId) {
