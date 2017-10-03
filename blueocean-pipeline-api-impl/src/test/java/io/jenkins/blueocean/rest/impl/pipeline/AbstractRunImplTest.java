@@ -8,8 +8,11 @@ import hudson.model.Queue;
 import hudson.model.Run;
 import hudson.tasks.ArtifactArchiver;
 import hudson.tasks.Shell;
+import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
+import io.jenkins.blueocean.rest.factory.BlueRunFactory;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
+import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
@@ -17,11 +20,13 @@ import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.plugins.git.GitSampleRepoRule;
 import jenkins.scm.api.SCMSource;
+import jenkins.util.SystemProperties;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.jenkinsci.plugins.workflow.test.steps.SemaphoreStep;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.ClassRule;
@@ -50,6 +55,12 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         super.setup();
         sampleRepo.init();
     }
+
+    @After
+    public void tearDown() {
+        System.setProperty(AbstractRunImpl.BLUEOCEAN_FEATURE_RUN_DESCRIPTION_ENABLED, "");
+    }
+
     //Disabled, see JENKINS-36453
     @Test @Ignore
     public void replayRunTest() throws Exception {
@@ -359,4 +370,28 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
         j.assertBuildStatusSuccess(j.waitForCompletion(r));
     }
+
+    @Test
+    public void disableDescription() throws Exception {
+        WorkflowJob p = j.createProject(WorkflowJob.class, "project");
+
+        URL resource = Resources.getResource(getClass(), "disableDescription.jenkinsfile");
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+        p.save();
+
+        WorkflowRun r = p.scheduleBuild2(0).waitForStart();
+        j.waitForCompletion(r);
+
+        // Description should be available to the pipeline
+        Map run = request().get("/organizations/jenkins/pipelines/project/runs/1/").build(Map.class);
+        Assert.assertEquals("A cool pipeline", run.get("description"));
+
+        // Disable descriptions
+        System.setProperty(AbstractRunImpl.BLUEOCEAN_FEATURE_RUN_DESCRIPTION_ENABLED, "false");
+        run = request().get("/organizations/jenkins/pipelines/project/runs/1/").build(Map.class);
+        Assert.assertEquals(null, run.get("description"));
+    }
+
+
 }
