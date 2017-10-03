@@ -17,7 +17,6 @@ import pipelineValidator from '../../services/PipelineValidator';
 import { ValidationMessageList } from './ValidationMessageList';
 import focusOnElement from './focusOnElement';
 import debounce from 'lodash.debounce';
-import { Dialog, TextInput, FormElement } from '@jenkins-cd/design-language';
 
 type Props = {
 };
@@ -116,29 +115,10 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         }
     }
 
-    promptForParallelName(parentStage:StageInfo) {
-        let val = '';
-        const createStage = () => {
-            this.setState({ dialog: null }, () => this.createStage(parentStage, val));
-        };
-        this.setState({ dialog: (
-            <Dialog className="name-new-parallel" onDismiss={() => this.setState({dialog: null})}
-                    title="Name Parallel Group"
-                    buttons={<div><button onClick={() => createStage()}>Create</button></div>}>
-                <FormElement title="Group Name">
-                    <TextInput isRequired
-                               defaultValue={val}
-                               onChange={v => val = v}
-                               onEnterPressed={() => createStage()}/>
-                </FormElement>
-            </Dialog>
-        )}, () => document.querySelector('.name-new-parallel input').focus());
-    }
-
     createStage(parentStage:StageInfo, parallelGroupName:string) {
         if (parentStage && !parallelGroupName) {
             if (!parentStage.children || !parentStage.children.length) {
-                this.promptForParallelName(parentStage);
+                this.createStage(parentStage, parentStage.name);
                 return;
             }
         }
