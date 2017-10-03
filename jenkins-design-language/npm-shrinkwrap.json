@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/design-language",
-  "version": "0.0.148",
+  "version": "0.0.156-SNAPSHOT",
   "dependencies": {
     "@kadira/react-split-pane": {
       "version": "1.4.7",
@@ -3143,9 +3143,9 @@
       "dev": true
     },
     "fbjs": {
-      "version": "0.8.6",
-      "from": "fbjs@https://registry.npmjs.org/fbjs/-/fbjs-0.8.6.tgz",
-      "resolved": "https://registry.npmjs.org/fbjs/-/fbjs-0.8.6.tgz"
+      "version": "0.8.16",
+      "from": "fbjs@>=0.8.4 <0.9.0",
+      "resolved": "https://registry.npmjs.org/fbjs/-/fbjs-0.8.16.tgz"
     },
     "figures": {
       "version": "1.7.0",
@@ -7011,9 +7011,9 @@
       "dev": true
     },
     "node-fetch": {
-      "version": "1.6.3",
-      "from": "node-fetch@https://registry.npmjs.org/node-fetch/-/node-fetch-1.6.3.tgz",
-      "resolved": "https://registry.npmjs.org/node-fetch/-/node-fetch-1.6.3.tgz"
+      "version": "1.7.3",
+      "from": "node-fetch@>=1.0.1 <2.0.0",
+      "resolved": "https://registry.npmjs.org/node-fetch/-/node-fetch-1.7.3.tgz"
     },
     "node-gyp": {
       "version": "3.4.0",
@@ -7922,19 +7922,19 @@
       }
     },
     "react": {
-      "version": "15.3.2",
-      "from": "react@https://registry.npmjs.org/react/-/react-15.3.2.tgz",
-      "resolved": "https://registry.npmjs.org/react/-/react-15.3.2.tgz"
+      "version": "15.4.2",
+      "from": "react@15.4.2",
+      "resolved": "https://registry.npmjs.org/react/-/react-15.4.2.tgz"
     },
     "react-addons-css-transition-group": {
-      "version": "15.3.2",
-      "from": "react-addons-css-transition-group@https://registry.npmjs.org/react-addons-css-transition-group/-/react-addons-css-transition-group-15.3.2.tgz",
-      "resolved": "https://registry.npmjs.org/react-addons-css-transition-group/-/react-addons-css-transition-group-15.3.2.tgz"
+      "version": "15.4.2",
+      "from": "react-addons-css-transition-group@15.4.2",
+      "resolved": "https://registry.npmjs.org/react-addons-css-transition-group/-/react-addons-css-transition-group-15.4.2.tgz"
     },
     "react-addons-test-utils": {
-      "version": "15.3.2",
-      "from": "react-addons-test-utils@https://registry.npmjs.org/react-addons-test-utils/-/react-addons-test-utils-15.3.2.tgz",
-      "resolved": "https://registry.npmjs.org/react-addons-test-utils/-/react-addons-test-utils-15.3.2.tgz",
+      "version": "15.4.2",
+      "from": "react-addons-test-utils@15.4.2",
+      "resolved": "https://registry.npmjs.org/react-addons-test-utils/-/react-addons-test-utils-15.4.2.tgz",
       "dev": true
     },
     "react-docgen": {
@@ -7958,9 +7958,9 @@
       }
     },
     "react-dom": {
-      "version": "15.3.2",
-      "from": "react-dom@https://registry.npmjs.org/react-dom/-/react-dom-15.3.2.tgz",
-      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-15.3.2.tgz"
+      "version": "15.4.2",
+      "from": "react-dom@15.4.2",
+      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-15.4.2.tgz"
     },
     "react-fuzzy": {
       "version": "0.3.3",
@@ -8459,8 +8459,7 @@
     "setimmediate": {
       "version": "1.0.5",
       "from": "setimmediate@https://registry.npmjs.org/setimmediate/-/setimmediate-1.0.5.tgz",
-      "resolved": "https://registry.npmjs.org/setimmediate/-/setimmediate-1.0.5.tgz",
-      "dev": true
+      "resolved": "https://registry.npmjs.org/setimmediate/-/setimmediate-1.0.5.tgz"
     },
     "setprototypeof": {
       "version": "1.0.2",
@@ -9038,9 +9037,9 @@
       "dev": true
     },
     "ua-parser-js": {
-      "version": "0.7.12",
-      "from": "ua-parser-js@https://registry.npmjs.org/ua-parser-js/-/ua-parser-js-0.7.12.tgz",
-      "resolved": "https://registry.npmjs.org/ua-parser-js/-/ua-parser-js-0.7.12.tgz"
+      "version": "0.7.14",
+      "from": "ua-parser-js@>=0.7.9 <0.8.0",
+      "resolved": "https://registry.npmjs.org/ua-parser-js/-/ua-parser-js-0.7.14.tgz"
     },
     "uglify-js": {
       "version": "2.7.4",
@@ -9415,9 +9414,9 @@
       "dev": true
     },
     "whatwg-fetch": {
-      "version": "2.0.1",
-      "from": "whatwg-fetch@https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-2.0.1.tgz",
-      "resolved": "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-2.0.1.tgz"
+      "version": "2.0.3",
+      "from": "whatwg-fetch@>=0.10.0",
+      "resolved": "https://registry.npmjs.org/whatwg-fetch/-/whatwg-fetch-2.0.3.tgz"
     },
     "whatwg-url": {
       "version": "4.8.0",
