@@ -19,7 +19,6 @@ import net.sf.json.JSONObject;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.collections.ComparatorUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
 import org.jenkinsci.plugins.github_branch_source.GitHubConfiguration;
@@ -29,9 +28,7 @@ import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.StringWriter;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -82,11 +79,7 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
         if (StringUtils.isNotEmpty(url)) {
             // Validate that the URL represents a Github API endpoint
             try {
-                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-                connection.setDoOutput(true);
-                connection.setRequestMethod("GET");
-                connection.setRequestProperty("Content-type", "application/json");
-                connection.connect();
+                HttpURLConnection connection = HttpRequest.get(url).connect();
 
                 if (connection.getHeaderField("X-GitHub-Request-Id") == null) {
                     errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), ERROR_MESSAGE_INVALID_SERVER));
@@ -99,9 +92,9 @@ public class GithubServerContainer extends ScmServerEndpointContainer {
                         int code = connection.getResponseCode();
 
                         if (200 <= code && code < 300) {
-                            inputStream = connection.getInputStream();
+                            inputStream = HttpRequest.getInputStream(connection);
                         } else {
-                            inputStream = connection.getErrorStream();
+                            inputStream = HttpRequest.getErrorStream(connection);
                         }
 
                         TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};

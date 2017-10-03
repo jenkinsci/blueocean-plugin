@@ -77,6 +77,14 @@ public class GitReadSaveService extends ScmContentProvider {
 
     @Override
     public String getApiUrl(@Nonnull Item item) {
+        if (item instanceof org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject) {
+            MultiBranchProject<?,?> mbp = (MultiBranchProject<?,?>)item;
+            SCMSource s = mbp.getSCMSources().iterator().next();
+            if (s instanceof GitSCMSource) {
+                String remote = ((GitSCMSource)s).getRemote();
+                return remote;
+            }
+        }
         return null;
     }
 
@@ -84,7 +92,7 @@ public class GitReadSaveService extends ScmContentProvider {
         TYPE = type;
     }
 
-    private GitReadSaveRequest makeSaveRequest(
+    static GitReadSaveRequest makeSaveRequest(
             Item item,String branch, String commitMessage,
             String sourceBranch, String filePath, byte[] contents) {
         String defaultBranch = "master";
@@ -197,13 +205,6 @@ public class GitReadSaveService extends ScmContentProvider {
 
     @Override
     public boolean support(@Nonnull Item item) {
-        if (item instanceof org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject) {
-            MultiBranchProject<?,?> mbp = (MultiBranchProject<?,?>)item;
-            SCMSource s = mbp.getSCMSources().iterator().next();
-            if (s instanceof GitSCMSource) {
-                return true;
-            }
-        }
-        return false;
+        return getApiUrl(item) != null;
     }
 }
