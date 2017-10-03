@@ -21,30 +21,39 @@ function isFirefox() {
 }
 
 function logApplicationError(messageOrEvent) {
-    const message = messageOrEvent.error || messageOrEvent;
+    let message = null;
 
-    console.log('Unhandled Error 1: ' + JSON.stringify(messageOrEvent, null, 4));
-
-    if (message && message.stack) {
-        console.error('Unhandled Error: ', JSON.stringify(message.stack, null, 4));
-
-        if (messageOrEvent.preventDefault) {
-            messageOrEvent.preventDefault();
-        }
+    if (messageOrEvent.error && messageOrEvent.error.stack) {
+        message = messageOrEvent.error.stack;
+    } else if (messageOrEvent.stack) {
+        message = messageOrEvent.stack;
+    } else {
+        message = messageOrEvent;
     }
-    // otherwise fall back to any default behavior
+
+    console.error('Unhandled Error: ', JSON.stringify(message, null, 4));
+
+    if (messageOrEvent.preventDefault) {
+        messageOrEvent.preventDefault();
+    }
 }
 
 function logUnhandledPromiseRejection(errorEvent) {
-    const { reason } = errorEvent.detail || errorEvent;
+    let message = null;
 
-    console.log('Unhandled Rejection 1: ' + JSON.stringify(errorEvent, null, 4));
+    if (errorEvent.detail && errorEvent.detail.reason && errorEvent.detail.reason.stack) {
+        message = errorEvent.detail.reason.stack;
+    } else if (errorEvent.reason && errorEvent.reason.stack) {
+        message = errorEvent.reason.stack;
+    } else {
+        message = errorEvent;
+    }
 
-    if (reason && reason.stack) {
-        console.error('Unhandled Rejection: ', JSON.stringify(reason.stack, null, 4));
+    console.error('Unhandled Rejection: ', JSON.stringify(message, null, 4));
+
+    if (errorEvent.preventDefault) {
         errorEvent.preventDefault();
     }
-    // otherwise we'll fall back to the default rejection handler
 }
 
 function initializeErrorHandling() {
