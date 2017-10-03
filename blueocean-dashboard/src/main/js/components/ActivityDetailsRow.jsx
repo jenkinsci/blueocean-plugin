@@ -18,6 +18,7 @@ import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import IfCapability from './IfCapability';
 import RunMessageCell from './RunMessageCell';
+import RunIdCell from './RunIdCell';
 
 /*
  Rest source: http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/{PIPELINE_NAME}/runs
@@ -85,7 +86,7 @@ class ActivityDetailsRow extends Component {
                         estimatedDuration={run.estimatedDurationInMillis}
                     />
                 </TableCell>
-                <TableCell linkTo={runDetailsUrl}>{run.id}</TableCell>
+                <TableCell linkTo={runDetailsUrl}><RunIdCell run={run} /></TableCell>
                 <TableCell linkTo={runDetailsUrl}><CommitId commitId={run.commitId} /></TableCell>
                 { isMultibranch && <TableCell linkTo={runDetailsUrl}>{branchName}</TableCell> }
                 <TableCell><RunMessageCell linkTo={runDetailsUrl} run={run} t={t} changesUrl={changesUrl}/></TableCell>

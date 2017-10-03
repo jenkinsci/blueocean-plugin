@@ -143,7 +143,7 @@ public class GithubCreationPage {
             wait.until(ExpectedConditions.urlContains("pipeline-editor"), 30000);
             logger.info("AbstractPipeline created - now editing");
         } else {
-            wait.until(ExpectedConditions.urlMatches(".*activity$"), 30000);
+            wait.until(ExpectedConditions.urlMatches(".*activity$"), 90000);
             logger.info("AbstractPipeline created");
         }
     }
