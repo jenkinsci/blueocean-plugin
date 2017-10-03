@@ -2,10 +2,8 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    overflow: auto;
+    overflow-x: auto;
     margin-bottom: 16px;
-    max-height: ~"calc(70vh - 120px)"; // Leave room for header (120px) and log (30vh)
-    // NB: ^^ Needs to be escaped or LESS silently ruins it
 
     .PipelineGraph {
         margin-left: auto;
