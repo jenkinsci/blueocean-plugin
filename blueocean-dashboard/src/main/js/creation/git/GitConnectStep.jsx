@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
 import Extensions from '@jenkins-cd/js-extensions';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import { Dropdown, FormElement, TextInput } from '@jenkins-cd/design-language';
+import { Alerts, Dropdown, FormElement, TextInput } from '@jenkins-cd/design-language';
 
 import FlowStep from '../flow2/FlowStep';
 
@@ -23,11 +23,11 @@ function isSshRepositoryUrl(url) {
         return false;
     }
 
-    if (/ssh:\/\/.*/.test(url)) {
+    if (/^ssh:\/\/.*/.test(url)) {
         return true;
     }
 
-    if (/[^@:]+@.*/.test(url)) {
+    if (/^[^@:]+@.*/.test(url)) {
         return true;
     }
 
@@ -197,23 +197,30 @@ export default class GitConnectStep extends React.Component {
                 }
 
                 {isNonSshRepositoryUrl(this.state.repositoryUrl) &&
-                <FormElement title={t('creation.git.step1.credentials')} errorMessage={credentialErrorMsg}>
-                    <Dropdown
-                        ref={dropdown => this._bindDropdown(dropdown)}
-                        className="dropdown-credentials"
-                        options={flowManager.credentials}
-                        defaultOption={noCredentialsOption}
-                        labelField="displayName"
-                        onChange={opt => this._selectedCredentialChange(opt)}
-                    />
+                <div>
+                    <div style={{marginTop: 16, marginBottom: 10}}>
+                        <Alerts type="Warning"
+                            message={<div style={{marginTop: 6, marginBottom: 6}}>
+                                Saving Pipelines is unsupported using http/https repositories. Please use SSH instead.</div>} />
+                    </div>
+                    <FormElement title={t('creation.git.step1.credentials')} errorMessage={credentialErrorMsg}>
+                        <Dropdown
+                            ref={dropdown => this._bindDropdown(dropdown)}
+                            className="dropdown-credentials"
+                            options={flowManager.credentials}
+                            defaultOption={noCredentialsOption}
+                            labelField="displayName"
+                            onChange={opt => this._selectedCredentialChange(opt)}
+                        />
 
-                    <button
-                        className="button-create-credential btn-secondary"
-                        onClick={() => this._onCreateCredentialClick()}
-                    >
-                        {t('creation.git.step1.create_credential_button')}
-                    </button>
-                </FormElement>
+                        <button
+                            className="button-create-credential btn-secondary"
+                            onClick={() => this._onCreateCredentialClick()}
+                        >
+                            {t('creation.git.step1.create_credential_button')}
+                        </button>
+                    </FormElement>
+                </div>
                 }
                 </ReactCSSTransitionGroup>
 
