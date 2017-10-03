@@ -62,8 +62,5 @@ public class GithubEnterpriseCreationPage extends GithubCreationPage {
     public void selectExistingServer() {
         wait.until(ExpectedConditions.visibilityOf(dropDown)).click();
         wait.until(ExpectedConditions.visibilityOf(existingServer)).click();
-
-
-
     }
 }

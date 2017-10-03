@@ -21,6 +21,14 @@
         <id>repo.jenkins-ci.org</id>
         <url>http://repo.jenkins-ci.org/public/</url>
       </repository>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>jcenter</id>
+            <name>bintray</name>
+            <url>http://jcenter.bintray.com</url>
+        </repository>
     </repositories>
     <pluginRepositories>
       <pluginRepository>
@@ -60,11 +68,7 @@
             <artifactId>jenkins-client</artifactId>
             <version>0.3.7</version>
         </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>21.0</version>
-        </dependency>
+
         <dependency>
             <groupId>org.kohsuke</groupId>
             <artifactId>github-api</artifactId>
@@ -105,6 +109,11 @@
             <groupId>com.github.tomakehurst</groupId>
             <artifactId>wiremock</artifactId>
             <version>2.7.1</version>
+        </dependency>
+        <dependency>
+            <groupId>com.cdancy</groupId>
+            <artifactId>bitbucket-rest</artifactId>
+            <version>1.0.3</version>
         </dependency>
     </dependencies>
 
