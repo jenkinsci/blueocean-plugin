@@ -134,7 +134,7 @@ ActivityDetailsRow.propTypes = {
     t: PropTypes.func,
     getTimes: PropTypes.func,
     columns: PropTypes.object,
-    isMultibranch: PropTypes.boolean,
+    isMultibranch: PropTypes.bool,
 };
 
 ActivityDetailsRow.contextTypes = {
