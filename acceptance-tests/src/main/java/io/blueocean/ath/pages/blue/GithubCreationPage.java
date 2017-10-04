@@ -1,9 +1,11 @@
 package io.blueocean.ath.pages.blue;
 
+import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
+import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -41,6 +43,10 @@ public class GithubCreationPage {
 
     @FindBy(css = ".button-create")
     public WebElement createBtn;
+
+    @Inject
+    @BaseUrl
+    String baseUrl;
 
     @Inject
     WaitUtil wait;
@@ -143,7 +149,12 @@ public class GithubCreationPage {
             wait.until(ExpectedConditions.urlContains("pipeline-editor"), 30000);
             logger.info("AbstractPipeline created - now editing");
         } else {
-            wait.until(ExpectedConditions.urlMatches(".*activity$"), 30000);
+            try {
+                wait.until(ExpectedConditions.urlMatches(".*activity$"), 90000);
+            } catch (Throwable e) {
+                driver.get(baseUrl + "/blue/organizations/jenkins/" + pipeline + "/activity");
+                wait.until(ExpectedConditions.urlMatches(".*activity"), 90000);
+            }
             logger.info("AbstractPipeline created");
         }
     }
