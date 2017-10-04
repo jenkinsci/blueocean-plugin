@@ -5,8 +5,11 @@ import hudson.Extension;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.OrganizationFolderPipelineImpl;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import jenkins.branch.OrganizationFolder;
 import jenkins.scm.api.SCMNavigator;
+import jenkins.scm.api.trait.SCMTrait;
+import jenkins.scm.impl.trait.WildcardSCMHeadFilterTrait;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.kohsuke.stapler.export.Exported;
@@ -22,8 +25,8 @@ public class GithubOrganizationFolder  extends OrganizationFolderPipelineImpl {
     //Map of repo properties.
     private final Map<String, BlueRepositoryProperty> repos = new HashMap<>();
 
-    public GithubOrganizationFolder(OrganizationFolder folder, Link parent) {
-        super(folder, parent);
+    public GithubOrganizationFolder(BlueOrganization organization, OrganizationFolder folder, Link parent) {
+        super(organization, folder, parent);
     }
 
     @Override
@@ -32,11 +35,10 @@ public class GithubOrganizationFolder  extends OrganizationFolderPipelineImpl {
             SCMNavigator scmNavigator = getFolder().getSCMNavigators().get(0);
             if(scmNavigator instanceof GitHubSCMNavigator){
                 GitHubSCMNavigator gitHubSCMNavigator = (GitHubSCMNavigator) scmNavigator;
-                return (StringUtils.isBlank(gitHubSCMNavigator.getIncludes()) || gitHubSCMNavigator.getIncludes().equals("*"))
-                        && StringUtils.isBlank(gitHubSCMNavigator.getExcludes())
-                        && (StringUtils.isBlank(gitHubSCMNavigator.getPattern())
-                        || gitHubSCMNavigator.getPattern().equals(".*"));
-
+                WildcardSCMHeadFilterTrait wildcardTraits = SCMTrait.find(gitHubSCMNavigator.getTraits(), WildcardSCMHeadFilterTrait.class);
+                return wildcardTraits == null
+                        || ((StringUtils.isBlank(wildcardTraits.getIncludes()) || wildcardTraits.getIncludes().equals("*"))
+                        && StringUtils.isBlank(wildcardTraits.getExcludes()));
             }
         }
         return super.isScanAllRepos();
@@ -61,9 +63,9 @@ public class GithubOrganizationFolder  extends OrganizationFolderPipelineImpl {
     @Extension(ordinal = -8)
     public static class OrganizationFolderFactoryImpl extends OrganizationFolderFactory {
         @Override
-        protected OrganizationFolderPipelineImpl getFolder(jenkins.branch.OrganizationFolder folder, Reachable parent) {
+        protected OrganizationFolderPipelineImpl getFolder(jenkins.branch.OrganizationFolder folder, Reachable parent, BlueOrganization organization) {
             SCMNavigator navigator = Iterables.getFirst(folder.getNavigators(), null);
-            return GitHubSCMNavigator.class.isInstance(navigator) ? new GithubOrganizationFolder(folder, parent.getLink()) : null;
+            return GitHubSCMNavigator.class.isInstance(navigator) ? new GithubOrganizationFolder(organization, folder, parent.getLink()) : null;
         }
     }
 

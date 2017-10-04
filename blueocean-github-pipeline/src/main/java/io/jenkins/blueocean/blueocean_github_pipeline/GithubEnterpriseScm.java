@@ -4,18 +4,12 @@ import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredenti
 import hudson.Extension;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.commons.stapler.TreeResponse;
-import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
-import io.jenkins.blueocean.rest.model.Container;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.kohsuke.stapler.WebMethod;
-import org.kohsuke.stapler.verb.GET;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import org.parboiled.common.StringUtils;
 
 import javax.annotation.Nonnull;
@@ -51,8 +45,7 @@ public class GithubEnterpriseScm extends GithubScm {
 
     @Override
     public String getCredentialId() {
-        String credentialId = createCredentialId(getUri());
-        StandardUsernamePasswordCredentials githubCredential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+        StandardUsernamePasswordCredentials githubCredential = getCredential(getUri());
         if(githubCredential != null){
             return githubCredential.getId();
         }
@@ -69,21 +62,21 @@ public class GithubEnterpriseScm extends GithubScm {
         return false;
     }
 
-    @WebMethod(name="") @GET @TreeResponse
+    @Override
     public Object getState() {
         // will produce a 400 if apiUrl wasn't sent
         getUri();
-        return this;
+        return super.getState();
     }
 
     @Navigable
-    public Container<GithubServer> getServers() {
+    public ScmServerEndpointContainer getServers() {
         return new GithubServerContainer(getLink());
     }
 
     @Override
     protected @Nonnull String createCredentialId(@Nonnull String apiUri) {
-        return getId() + ":" + DigestUtils.sha256Hex(apiUri);
+        return GithubCredentialUtils.computeCredentialId(null, GithubEnterpriseScm.ID, apiUri);
     }
 
     @Override

@@ -104,7 +104,7 @@ export class FilterableList extends React.Component {
                     placeholder={placeholder}
                     disabled={disabled}
                     onChange={text => this._onFilterChange(text)}
-                    iconLeft="search"
+                    iconLeft="ActionSearch"
                 />
 
                 { noMatches && emptyText &&

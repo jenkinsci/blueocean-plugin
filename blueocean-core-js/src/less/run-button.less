@@ -1,11 +1,19 @@
 .run-button-component {
 
     display: inline-block;
-    height: 24px;
+
+    .JTable & {
+        height: 24px;
+    }
 
     .run-button, .stop-button {
         display: inline-block;
         cursor: pointer;
+    }
+
+    .run-button.btn-secondary .svg-icon {
+        display: inherit;
+        vertical-align: middle;
     }
 
     // default (text) display

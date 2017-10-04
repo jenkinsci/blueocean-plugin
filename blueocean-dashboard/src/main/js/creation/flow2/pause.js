@@ -1,4 +1,4 @@
-import { Promise } from 'es6-promise';
+import Promise from 'bluebird';
 
 /**
  * Util to delay resolution of a Promise.
@@ -6,6 +6,7 @@ import { Promise } from 'es6-promise';
  * @param data
  * @param delay
  * @returns {Promise}
+ * @deprecated
  */
 function pause(data, delay = 1000) {
     return new Promise(resolve => {

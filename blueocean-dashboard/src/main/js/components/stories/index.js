@@ -8,7 +8,6 @@ ext.store.init({
 
 require('./ColumnFilterStories');
 require('./FullScreenStories');
-require('./icons');
 require('./inputStep');
 require('./moments');
 require('./pipelines');

@@ -1,6 +1,6 @@
 import React from 'react';
 import { action, computed, observable } from 'mobx';
-import { Promise } from 'es6-promise';
+import Promise from 'bluebird';
 
 import { i18nTranslator, logging } from '@jenkins-cd/blueocean-core-js';
 const translate = i18nTranslator('blueocean-dashboard');

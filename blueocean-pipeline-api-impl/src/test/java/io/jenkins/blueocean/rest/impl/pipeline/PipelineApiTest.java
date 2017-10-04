@@ -14,6 +14,7 @@ import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.kohsuke.stapler.AcceptHeader;
 import org.kohsuke.stapler.export.Exported;
@@ -73,7 +74,7 @@ public class PipelineApiTest extends PipelineBaseTest {
     }
 
     //TODO: Fix test - see JENKINS-38319
-    //@Test
+    @Test @Ignore
     public void getPipelineRunblockingStopTest() throws Exception {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
 
@@ -142,12 +143,14 @@ public class PipelineApiTest extends PipelineBaseTest {
         job1.setDefinition(new CpsFlowDefinition("" +
             "node {" +
             "   stage ('Build1'); " +
-            "   sh('sleep 60') " +
+            "   sh('sleep 120') " +
             "   stage ('Test1'); " +
             "   echo ('Testing'); " +
             "}"));
 
         WorkflowRun b1 = job1.scheduleBuild2(0).waitForStart();
+        // Give the job some time to really start (allocate nodes and so on)
+        Thread.sleep(5000);
         for (int i = 0; i < 10; i++) {
             b1.doStop();
             if (b1.getResult() != null) {

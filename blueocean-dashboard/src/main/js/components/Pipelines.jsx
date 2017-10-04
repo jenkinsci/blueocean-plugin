@@ -5,7 +5,7 @@ import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '@j
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '@jenkins-cd/design-language';
 
 import { documentTitle } from './DocumentTitle';
 import CreatePipelineLink from './CreatePipelineLink';
@@ -124,7 +124,7 @@ export class Pipelines extends Component {
             );
         });
 
-        this.props.setTitle('Jenkins Blue Ocean');
+        this.props.setTitle('Jenkins');
 
         return (
             <Page>
@@ -142,11 +142,11 @@ export class Pipelines extends Component {
 
                         <div className="TextInput search-pipelines-input u-icon-left" iconLeft="search">
                             <div className="TextInput-icon u-icon-left">
-                                <Icon icon="search" />
+                                <Icon icon="ActionSearch" />
                             </div>
                             <input className="fastsearch-input TextInput-control" value={this.state.searchText} placeholder="Search pipelines..." onChange={(e) => {this.onChange(e.target.value ? e.target.value : '');}} />
                             <div className="TextInput-icon clear-icon-container" onClick={this.clearSearchInputText}>
-                                <Icon icon="clear" />
+                                <Icon icon="ContentClear" />
                             </div>
                         </div>
                     </div>

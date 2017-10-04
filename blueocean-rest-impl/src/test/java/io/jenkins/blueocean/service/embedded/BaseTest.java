@@ -11,9 +11,17 @@ import com.mashape.unirest.request.HttpRequest;
 import com.mashape.unirest.request.HttpRequestWithBody;
 import hudson.model.Job;
 import hudson.model.Run;
+import hudson.model.User;
+import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.JsonConverter;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+import org.acegisecurity.adapters.PrincipalAcegiUserToken;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.userdetails.UserDetails;
+import org.eclipse.jetty.security.HashLoginService;
+import org.eclipse.jetty.security.LoginService;
+import org.eclipse.jetty.util.security.Password;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,13 +45,22 @@ import static io.jenkins.blueocean.auth.jwt.JwtToken.X_BLUEOCEAN_JWT;
 public abstract class BaseTest {
     private static  final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
 
-    public BaseTest() {
-        //System.setProperty("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION", "true");
-        j = new JenkinsRule();
-    }
-    @Rule
-    public JenkinsRule j;
 
+
+    @Rule
+    public JenkinsRule j = new BaseTestJenkinsRule();
+
+    public static class BaseTestJenkinsRule extends JenkinsRule{
+        @Override
+        protected LoginService configureUserRealm() {
+            HashLoginService realm = new HashLoginService();
+            realm.setName("default");   // this is the magic realm name to make it effective on everywhere
+            realm.update("alice", new Password("alice"), new String[]{"user","female"});
+            realm.update("bob", new Password("bob"), new String[]{"user","male"});
+            realm.update("charlie", new Password("charlie"), new String[]{"user","male"});
+            return realm;
+        }
+    }
     protected  String baseUrl;
 
     protected String getContextPath(){
@@ -400,7 +417,7 @@ public abstract class BaseTest {
             return this;
         }
 
-        public <T> T build(Class<T> clzzz) {
+        public <T> HttpResponse<T> execute(Class<T> clzzz) {
             assert url != null;
             assert url.startsWith("/");
             try {
@@ -441,12 +458,16 @@ public abstract class BaseTest {
                 if(request instanceof HttpRequestWithBody && data != null) {
                     ((HttpRequestWithBody)request).body(data);
                 }
-                HttpResponse<T> response = request.asObject(clzzz);
-                Assert.assertEquals(expectedStatus, response.getStatus());
-                return response.getBody();
+                return request.asObject(clzzz);
             } catch (UnirestException e) {
                 throw new RuntimeException(e);
             }
+        }
+            
+        public <T> T build(Class<T> clzzz) {
+            HttpResponse<T> response = execute(clzzz);
+            Assert.assertEquals(expectedStatus, response.getStatus());
+            return response.getBody();
         }
     }
 
@@ -482,6 +503,24 @@ public abstract class BaseTest {
         Map u = JSONObject.fromObject(claim);
         Assert.assertEquals(username,u.get("sub"));
         return token;
+    }
+
+    protected User login(String userId, String fullName, String email) throws IOException {
+        j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
+
+        hudson.model.User bob = User.get(userId);
+
+        bob.setFullName(fullName);
+        bob.addProperty(new Mailer.UserProperty(email));
+
+
+        UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
+
+        SecurityContextHolder.getContext().setAuthentication(new PrincipalAcegiUserToken(bob.getId(),bob.getId(),bob.getId(), d.getAuthorities(), bob.getId()));
+        return bob;
+    }
+    protected User login() throws IOException {
+        return login("bob", "Bob Smith", "bob@jenkins-ci.org");
     }
 
 }

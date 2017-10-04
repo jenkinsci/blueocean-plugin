@@ -5,7 +5,7 @@ import com.google.inject.assistedinject.AssistedInject;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.factory.BranchPageFactory;
-import io.blueocean.ath.model.Pipeline;
+import io.blueocean.ath.model.AbstractPipeline;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.annotations.Nullable;
 import org.junit.Assert;
@@ -22,7 +22,7 @@ public class ActivityPage {
     private Logger logger = Logger.getLogger(ActivityPage.class);
 
     private WebDriver driver;
-    private Pipeline pipeline;
+    private AbstractPipeline pipeline;
     @Inject
     @BaseUrl
     String base;
@@ -40,7 +40,7 @@ public class ActivityPage {
     }
 
     @AssistedInject
-    public ActivityPage(WebDriver driver, @Assisted @Nullable Pipeline pipeline) {
+    public ActivityPage(WebDriver driver, @Assisted @Nullable AbstractPipeline pipeline) {
         this.pipeline = pipeline;
         this.driver = driver;
         PageFactory.initElements(driver, this);
@@ -53,18 +53,18 @@ public class ActivityPage {
     }
 
     public void checkPipeline() {
-        Assert.assertNotNull("Pipeline is null", pipeline);
+        Assert.assertNotNull("AbstractPipeline is null", pipeline);
     }
 
     public ActivityPage checkUrl() {
-        wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity"), 30000);
-        wait.until(By.cssSelector("article.activity"));
+        wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity"), 120000);
+        wait.until(By.cssSelector("article.activity"), 60000);
         return this;
     }
 
     public ActivityPage checkUrl(String filter) {
         wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity?branch=" + URLEncoder.encode(URLEncoder.encode(filter))), 30000);
-        wait.until(By.cssSelector("article.activity"));
+        wait.until(By.cssSelector("article.activity"), 60000);
         return this;
     }
 
@@ -102,5 +102,11 @@ public class ActivityPage {
     public void assertIsDuration(String text) {
         final String durationRegex = "<1s|\\d+\\w";
         Assert.assertTrue("String (\"" + text + "\") contains a valid duration", text.matches(durationRegex));
+    }
+
+    public void testNumberRunsComplete(int atLeast) {
+        By selector = By.cssSelector("div[data-pipeline='" + pipeline.getName() + "'].JTable-row circle.success");
+        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(selector, atLeast - 1));
+        logger.info("At least " + atLeast + " runs are complete");
     }
 }

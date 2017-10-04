@@ -39,7 +39,12 @@ public class GithubAddServerDialogPage {
     @FindBy(css = ".github-enterprise-add-server-dialog .button-create-server")
     WebElement buttonCreate;
 
+    @FindBy(css = ".github-enterprise-add-server-dialog .btn-secondary")
+    WebElement buttonCancel;
+
+
     public void enterServerName(String name) {
+        logger.info(String.format("enter server name '%s", name));
         WebElementUtils.setText(
             wait.until(ExpectedConditions.visibilityOf(textName)),
             name
@@ -47,6 +52,7 @@ public class GithubAddServerDialogPage {
     }
 
     public void enterServerUrl(String url) {
+        logger.info(String.format("enter server url '%s", url));
         WebElementUtils.setText(
             wait.until(ExpectedConditions.visibilityOf(textUrl)),
             url
@@ -54,8 +60,14 @@ public class GithubAddServerDialogPage {
     }
 
     public void clickSaveServerButton() {
+        logger.info("clicking save button");
         wait.until(ExpectedConditions.visibilityOf(buttonCreate)).click();
     }
+
+    public void clickCancelButton() {
+        wait.until(ExpectedConditions.visibilityOf(buttonCancel)).click();
+    }
+
 
     public void findFormErrorMessage(String errorMessage) {
         wait.until(CustomExpectedConditions.textMatchesAnyElement(
@@ -65,11 +77,25 @@ public class GithubAddServerDialogPage {
         logger.info("Found error message = " + errorMessage);
     }
 
+    public boolean hasFormErrorMessage(String errorMessage) {
+        try {
+            wait.until(CustomExpectedConditions.textMatchesAnyElement(
+                By.cssSelector(".github-enterprise-add-server-dialog .FormElement .ErrorMessage"),
+                Pattern.compile(errorMessage)
+            ));
+            logger.info("Found expected error message = " + errorMessage);
+            return true;
+        } catch (Exception  e) {
+            return false;
+        }
+    }
+
+
     public void waitForErrorMessagesGone() {
         wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".github-enterprise-add-server-dialog .FormElement .ErrorMessage")));
     }
 
     public void wasDismissed() {
-        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".github-enterprise-add-server-dialog")));
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".github-enterprise-add-server-dialog")), 120000);
     }
 }

@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded;
 
+import hudson.model.User;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.OrganizationRoute;
@@ -22,7 +23,7 @@ public class OrganizationApiTest extends BaseTest {
     @Test
     public void organizationUsers() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        hudson.model.User alice = j.jenkins.getUser("alice");
+        hudson.model.User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
         alice.addProperty(new Mailer.UserProperty("alice@example.com"));
 
@@ -38,7 +39,7 @@ public class OrganizationApiTest extends BaseTest {
     @Test
     public void defaultOrganization() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        hudson.model.User alice = j.jenkins.getUser("alice");
+        hudson.model.User alice = User.get("alice");
         alice.setFullName("Alice Cooper");
 
         Map organization = request().authAlice().get("/organizations/jenkins/").build(Map.class);

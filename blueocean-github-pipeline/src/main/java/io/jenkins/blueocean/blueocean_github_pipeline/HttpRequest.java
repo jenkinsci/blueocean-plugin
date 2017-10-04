@@ -1,17 +1,20 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.fasterxml.jackson.databind.JsonMappingException;
+import hudson.ProxyConfiguration;
 import io.jenkins.blueocean.commons.ServiceException;
+import jenkins.model.Jenkins;
 import org.apache.commons.io.IOUtils;
-import org.kohsuke.github.HttpConnector;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.lang.reflect.Array;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.URL;
 import java.util.Collections;
+import java.util.concurrent.TimeUnit;
 import java.util.zip.GZIPInputStream;
 
 /**
@@ -51,8 +54,8 @@ class HttpRequest {
         return this;
     }
 
-    public HttpRequest withAuthorization(String authorization){
-        this.authorization = authorization;
+    public HttpRequest withAuthorizationToken(String accessToken){
+        this.authorization = "token " + accessToken;
         return this;
     }
 
@@ -64,8 +67,6 @@ class HttpRequest {
     public <T> T to(Class<T> type) throws IOException {
         HttpURLConnection connection = connect();
         if (methodNeedsBody()) {
-            connection.setDoOutput(true);
-            connection.setRequestProperty("Content-type", contentType);
             if (body == null) {
                 GithubScm.om.writeValue(connection.getOutputStream(), Collections.emptyMap());
             } else {
@@ -85,7 +86,7 @@ class HttpRequest {
                 throw new ServiceException.ForbiddenException("Invalid accessToken");
             }
             if(status == 404){
-                throw new ServiceException.NotFoundException("Not Found: "+getErrorResponse(connection));
+                throw new ServiceException.NotFoundException("Not Found. Remote server sent code " + getErrorResponse(connection));
             }
             if(status > 399) {
                 throw new ServiceException.BadRequestException(String.format("%s %s returned error: %s. Error message: %s.", method, url ,status, getErrorResponse(connection)));
@@ -97,7 +98,7 @@ class HttpRequest {
                     try {
                         return GithubScm.om.readValue(data, type);
                     } catch (JsonMappingException e) {
-                        throw new IOException("Failed to deserialize " + data, e);
+                        throw new IOException("Failed to deserialize: "+e.getMessage()+"\n" + data, e);
                     }
                 }
             }
@@ -118,8 +119,12 @@ class HttpRequest {
         return (!method.equals("GET") && !method.equals("DELETE"));
     }
 
-    private HttpURLConnection connect() throws IOException {
-        HttpURLConnection connect = HttpConnector.DEFAULT.connect(new URL(url));
+    HttpURLConnection connect() throws IOException {
+        URL apiUrl = new URL(url);
+        ProxyConfiguration proxyConfig = Jenkins.getInstance().proxy;
+        Proxy proxy = proxyConfig == null ? Proxy.NO_PROXY : proxyConfig.createProxy(apiUrl.getHost());
+
+        HttpURLConnection connect=(HttpURLConnection) apiUrl.openConnection(proxy);
         if (authorization!=null) {
             connect.setRequestProperty("Authorization", authorization);
         }
@@ -127,10 +132,21 @@ class HttpRequest {
         connect.setRequestProperty("Accept-Encoding", "gzip");
         connect.setDoOutput(true);
         connect.setRequestProperty("Content-type", contentType);
+        connect.setConnectTimeout((int) TimeUnit.SECONDS.toMillis(10));
+        connect.setReadTimeout((int) TimeUnit.SECONDS.toMillis(10));
+        connect.connect();
         return connect;
     }
 
-    private InputStream wrapStream(InputStream in, String contentEncoding) throws IOException {
+    static InputStream getInputStream(HttpURLConnection connection) throws IOException {
+        return wrapStream(connection.getInputStream(), connection.getContentEncoding());
+    }
+
+    static InputStream getErrorStream(HttpURLConnection connection) throws IOException {
+        return wrapStream(connection.getErrorStream(), connection.getContentEncoding());
+    }
+
+    private static InputStream wrapStream(InputStream in, String contentEncoding) throws IOException {
         if (contentEncoding==null || in==null) return in;
         if (contentEncoding.equals("gzip"))    return new GZIPInputStream(in);
 

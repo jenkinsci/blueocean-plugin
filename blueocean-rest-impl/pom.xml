@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.2.0-beta-2-SNAPSHOT</version>
+        <version>1.4.0-beta-1-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean-rest-impl</artifactId>
@@ -33,15 +33,11 @@
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>scm-api</artifactId>
+            <artifactId>display-url-api</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-jwt</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>junit</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -59,26 +55,14 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>com.mashape.unirest</groupId>
-            <artifactId>unirest-java</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
             <groupId>org.jvnet.hudson.plugins</groupId>
             <artifactId>favorite</artifactId>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>token-macro</artifactId>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>matrix-project</artifactId>
             <scope>test</scope>
         </dependency>
-
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>junit</artifactId>
@@ -103,10 +87,10 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jenkins-ci.main</groupId>
-            <artifactId>maven-plugin</artifactId>
-            <scope>test</scope>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
         </dependency>
+
         <dependency>
             <groupId>org.jenkins-ci.main</groupId>
             <artifactId>jenkins-test-harness-tools</artifactId>
@@ -115,6 +99,31 @@
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>matrix-auth</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-cps</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-job</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-durable-task-step</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-basic-steps</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

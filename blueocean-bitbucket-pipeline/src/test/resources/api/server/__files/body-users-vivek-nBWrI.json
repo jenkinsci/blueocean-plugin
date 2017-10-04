@@ -1,0 +1,16 @@
+{
+  "name": "vivek",
+  "emailAddress": "vpandey@example.com",
+  "id": 1,
+  "displayName": "Vivek Pandey",
+  "active": true,
+  "slug": "vivek",
+  "type": "NORMAL",
+  "links": {
+    "self": [
+      {
+        "href": "http://localhost:7990/users/vivek"
+      }
+    ]
+  }
+}

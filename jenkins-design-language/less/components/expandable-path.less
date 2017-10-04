@@ -1,5 +1,6 @@
 .expandable-path {
     display: inline-flex;
+    vertical-align: middle;
 
     .link {
         cursor: pointer;
@@ -17,8 +18,8 @@
             align-items: center;
 
             &.show-label {
-                .svg-icon.folder {
-                    display: none;
+                svg[icon="FileFolder"] {
+                    display: none !important;
                 }
 
                 .path-text{
@@ -35,6 +36,10 @@
                     display: none;
                 }
             }
+
+            svg {
+                fill: rgba(255, 255, 255, 0.5);
+            }
         }
 
         /* always hide the last slash */
@@ -46,7 +51,7 @@
 
         /* on hover, show all labels */
         &:hover {
-            .svg-icon.folder {
+            svg[icon="FileFolder"] {
                 display: none !important;
             }
 

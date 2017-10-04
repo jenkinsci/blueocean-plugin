@@ -1,0 +1,23 @@
+github.repo=
+github.org=
+# required roles: repo, user:email
+github.token=
+# requires role: delete_repo
+github.deleteRepo=true
+github.randomSuffix=true
+
+# git@github.com:myorg/private-repo.git
+git.ssh.repository=
+# /Users/ivan/.ssh/id_rsa
+git.ssh.keyfile=
+# Name of the created pipeline (will match repo name).
+git.ssh.pipelineName=
+
+# https://github.com/myorg/private-repo.git
+git.https.repository=
+# org/user
+git.https.user=
+# personal access token
+git.https.pass=
+# Name of the created pipeline (will match repo name).
+git.https.pipelineName=

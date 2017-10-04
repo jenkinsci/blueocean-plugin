@@ -7,8 +7,8 @@ import {
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
-import { i18nTranslator, NotFound, Paths, ContentPageHeader, logging, AppConfig, Security } from '@jenkins-cd/blueocean-core-js';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { AppConfig, ContentPageHeader, i18nTranslator, logging, NotFound, Paths, Security } from '@jenkins-cd/blueocean-core-js';
+import { Icon } from '@jenkins-cd/design-language';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';
 import { observer } from 'mobx-react';
@@ -21,7 +21,7 @@ const RestPaths = Paths.rest;
 const classicConfigLink = (pipeline) => {
     let link = null;
     if (Security.permit(pipeline).configure()) {
-        link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="settings" style={{ fill: '#fff' }} /></a>;
+        link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="ActionSettings" style={{ verticalAlign: 'baseline' }} /></a>;
     }
     return link;
 };
@@ -54,10 +54,10 @@ export class PipelinePage extends Component {
         const { location = {} } = this.context;
 
         const { organization, name, fullName, fullDisplayName } = pipeline || {};
-        
+
         const organizationName = organization || AppConfig.getOrganizationName();
         const organizationDisplayName = organization === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : organization;
-        
+
         const orgUrl = buildOrganizationUrl(organizationName);
         const activityUrl = buildPipelineUrl(organizationName, fullName, 'activity');
         const isReady = !!pipeline;
@@ -74,11 +74,13 @@ export class PipelinePage extends Component {
         }
 
         const baseUrl = buildPipelineUrl(organizationName, fullName);
+        const trendsEnabled = AppConfig.isFeatureEnabled('trends');
 
         const pageTabLinks = [
             <TabLink to="/activity">{ translate('pipelinedetail.common.tab.activity', { defaultValue: 'Activity' }) }</TabLink>,
             <TabLink to="/branches">{ translate('pipelinedetail.common.tab.branches', { defaultValue: 'Branches' }) }</TabLink>,
             <TabLink to="/pr">{ translate('pipelinedetail.common.tab.pullrequests', { defaultValue: 'Pull Requests' }) }</TabLink>,
+            trendsEnabled && <TabLink to="/trends">{ translate('pipelinedetail.common.tab.trends', { defaultValue: 'Trends' }) }</TabLink>,
         ];
 
         const pageHeader = isReady ? (

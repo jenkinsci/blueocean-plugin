@@ -13,8 +13,9 @@ const validResultValues = {
     paused: 'paused',
     unstable: 'unstable',
     aborted: 'aborted',
-    not_built: 'not_built',
-    unknown: 'unknown'
+    not_built: 'not_built', // May be pending, or job was ended before this point
+    skipped: 'skipped', // excluded via pipeline "when" clause
+    unknown: 'unknown', // bad data or client code needs updating for new values
 };
 
 // Enum type from const validResultValues
@@ -31,7 +32,8 @@ export function decodeResultValue(resultMaybe: any):Result {
     return 'unknown';
 }
 
-// Returns the correct <g> element for the result / progress percent
+// Returns the correct <g> element for the result / progress percent.
+// NB: This is also used by the PipelineGraph
 export function getGroupForResult(result: Result, percentage: number, radius: number) {
     if (usesSvgSpinner(result)) {
         return <SvgSpinner radius={radius} result={result} percentage={percentage}/>;
@@ -46,6 +48,7 @@ function usesSvgSpinner(result: Result) {
         case 'running':
         case 'queued':
         case 'not_built':
+        case 'skipped':
             return true;
         default:
             return false;
@@ -54,7 +57,7 @@ function usesSvgSpinner(result: Result) {
 
 class StatusIndicator extends Component {
 
-    static validResultValues:typeof validResultValues;
+    static validResultValues:typeof validResultValues = validResultValues;
 
     render() {
         const {
@@ -87,6 +90,7 @@ class StatusIndicator extends Component {
         return (
             <svg className={groupClasses.join(' ')} xmlns="http://www.w3.org/2000/svg"
               viewBox={`0 0 ${2 * radius} ${2 * radius}`} width={width} height={height}
+              focusable={false}
             >
                 <title>{resultClean}</title>
                 <g transform={transforms.join(' ')}>
@@ -104,7 +108,5 @@ StatusIndicator.propTypes = {
     height: PropTypes.string,
     noBackground: PropTypes.bool,
 };
-
-StatusIndicator.validResultValues = validResultValues;
 
 export {StatusIndicator, SvgSpinner, SvgStatus};

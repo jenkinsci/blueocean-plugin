@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.2.0-beta-2-SNAPSHOT</version>
+        <version>1.4.0-beta-1-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean-pipeline-api-impl</artifactId>
@@ -81,6 +81,11 @@
             <artifactId>credentials</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>htmlpublisher</artifactId>
+        </dependency>
+
         <!-- Needed for input step submitterParameter -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -96,8 +101,18 @@
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-model-definition</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>plain-credentials</artifactId>
+        </dependency>
 
         <!-- Test plugins -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins.workflow</groupId>
+            <artifactId>workflow-support</artifactId>
+            <classifier>tests</classifier>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-stage-step</artifactId>
@@ -110,11 +125,6 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-scm-step</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.mashape.unirest</groupId>
-            <artifactId>unirest-java</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>
@@ -145,7 +155,6 @@
             <classifier>tests</classifier>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>

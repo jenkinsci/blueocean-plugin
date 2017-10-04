@@ -1,0 +1,1 @@
+{"errors":[{"context":null,"message":"refs/heads/master is set as the default branch, but this branch does not exist","exceptionName":"com.atlassian.bitbucket.repository.NoDefaultBranchException"}]}

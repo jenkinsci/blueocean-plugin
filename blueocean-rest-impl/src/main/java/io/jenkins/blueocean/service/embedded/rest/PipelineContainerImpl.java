@@ -31,24 +31,11 @@ import java.util.List;
 public class PipelineContainerImpl extends BluePipelineContainer {
     private final @Nonnull ItemGroup itemGroup;
     private final Link self;
-    private final BlueOrganization org;
 
-    public PipelineContainerImpl() {
-        this(Jenkins.getInstance(),null);
-    }
-
-    public PipelineContainerImpl(ItemGroup itemGroup) {
-        this(itemGroup,null);
-    }
-
-    public PipelineContainerImpl(ItemGroup itemGroup, Reachable parent) {
+    public PipelineContainerImpl(BlueOrganization organization, ItemGroup itemGroup, Reachable parent) {
+        super(organization);
         this.itemGroup = itemGroup instanceof Jenkins ? new PermissionFilteredItemGroup((Jenkins) itemGroup) : itemGroup;
-        this.org = OrganizationFactory.getInstance().getContainingOrg(itemGroup);
-        if(parent!=null){
-            this.self = parent.getLink().rel("pipelines");
-        }else{
-            this.self = org.getLink().rel("pipelines");
-        }
+        this.self = parent.getLink().rel("pipelines");
     }
     @Override
     public Link getLink() {

@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.2.0-beta-2-SNAPSHOT</version>
+        <version>1.4.0-beta-1-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean</artifactId>
@@ -78,6 +78,20 @@
             <artifactId>blueocean-git-pipeline</artifactId>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-bitbucket-pipeline</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-pipeline-editor</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-jira</artifactId>
+        </dependency>
 
         <!-- Bundled plugins for improved out of the box experience -->
         <dependency>
@@ -91,11 +105,6 @@
         </dependency>
 
         <dependency>
-          <groupId>io.jenkins.blueocean</groupId>
-          <artifactId>blueocean-pipeline-editor</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-build-step</artifactId>
         </dependency>
@@ -103,6 +112,11 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-milestone-step</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>apache-httpcomponents-client-4-api</artifactId>
         </dependency>
 
         <!-- Test deps -->
@@ -153,33 +167,30 @@
                             if (theHpl.file) {
                                 workPluginsDir.mkdirs();
                                 ant.copy(file: theHpl, tofile: new File(workPluginsDir, pluginId + '.hpl'), overwrite: true, verbose: true);
+                                println('Automatically linking ' + pluginId)
                             } else {
                                 println('Warning: no such file ' + theHpl);
                             }
-                        };
+                        }
 
-                        //
-                        // Link in other sub-modules. Add as needed.
-                        //
-                        linkHPI('blueocean-web');
-                        linkHPI('blueocean-dashboard');
-                        linkHPI('blueocean-personalization');
-                        linkHPI('blueocean-rest');
-                        linkHPI('blueocean-commons');
-                        linkHPI('blueocean-i18n');
-                        linkHPI('blueocean-jwt');
-                        linkHPI('blueocean-rest-impl');
-                        linkHPI('blueocean-pipeline-api-impl')
-                        linkHPI('blueocean-config')
-                        linkHPI('blueocean-github-pipeline')
-                        linkHPI('blueocean-git-pipeline')
+                        println('Automatically linking HPIs for submodules...')
+
+                        // modules to be excluded from hpi linking below
+                        def hpiExcludes = ['blueocean']
+
+                        project.parent.modules.each { module -&gt;
+                            def moduleName = module.toString()
+
+                            if (!hpiExcludes.contains(moduleName)) {
+                                linkHPI(moduleName)
+                            }
+                        }
                     </source>
                 </configuration>
             </plugin>
             <plugin>
                 <groupId>org.jenkins-ci.tools</groupId>
                 <artifactId>maven-hpi-plugin</artifactId>
-                <version>1.119</version>
                 <executions>
                     <execution>
                         <phase>package</phase>

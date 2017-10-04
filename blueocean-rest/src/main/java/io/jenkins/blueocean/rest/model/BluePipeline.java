@@ -1,17 +1,14 @@
 package io.jenkins.blueocean.rest.model;
 
-import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
-import net.sf.json.JSONObject;
-import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.PUT;
 
-import java.io.IOException;
+import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
@@ -55,10 +52,16 @@ public abstract class BluePipeline extends Resource {
     private static final String PARAMETERS = "parameters";
 
     /**
+     * @return the organization that this pipeline is a child of
+     */
+    @Nonnull
+    public abstract BlueOrganization getOrganization();
+
+    /**
      * @return name of the organization
      */
     @Exported(name = ORGANIZATION)
-    public abstract String getOrganization();
+    public abstract String getOrganizationName();
 
     /**
      * @return name of the pipeline
@@ -175,4 +178,10 @@ public abstract class BluePipeline extends Resource {
      * @return Gives scm resource attached to this pipeline
      */
     public abstract BluePipelineScm getScm();
+
+    /**
+     * @return trend data related to this pipeline
+     */
+    @Navigable
+    public abstract BlueTrendContainer getTrends();
 }

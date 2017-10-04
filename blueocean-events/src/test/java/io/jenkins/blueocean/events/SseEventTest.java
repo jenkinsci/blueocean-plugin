@@ -6,6 +6,7 @@ import hudson.model.ItemGroup;
 import hudson.model.queue.QueueTaskFuture;
 import hudson.util.OneShotEvent;
 import io.jenkins.blueocean.events.sse.SSEConnection;
+import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.service.embedded.OrganizationFactoryImpl;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
@@ -55,7 +56,7 @@ import static org.junit.Assert.*;
  */
 public class SseEventTest {
     @Rule
-    public JenkinsRule j = new JenkinsRule();
+    public JenkinsRule j = new PipelineBaseTest.PipelineBaseJenkinsRule();
 
     @Rule
     public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();
@@ -222,6 +223,8 @@ public class SseEventTest {
 
         final boolean[] masterBranchPipelineEvent = {false};
         final boolean[] feature1BranchPipelineEvent = {false};
+        final boolean[] masterBranchNodeBlockEvent = {false};
+        final boolean[] feature1BranchNodeBlockEvent = {false};
 
         SSEConnection con = new SSEConnection(j.getURL(), "me", new ChannelSubscriber() {
             @Override
@@ -316,9 +319,17 @@ public class SseEventTest {
                     if("pipeline1/master".equals(message.get(pipeline_job_name))){
                         assertEquals("1", message.get(pipeline_run_id));
                         masterBranchPipelineEvent[0]=true;
+                        if ("pipeline_step".equals(message.get(jenkins_event)) &&
+                            "node".equals(message.get(pipeline_step_name))) {
+                            masterBranchNodeBlockEvent[0] = true;
+                        }
                     } else if("pipeline1/feature%2Fux-1".equals(message.get(pipeline_job_name))){
                         feature1BranchPipelineEvent[0]=true;
                         assertEquals("1", message.get(pipeline_run_id));
+                        if ("pipeline_step".equals(message.get(jenkins_event)) &&
+                            "node".equals(message.get(pipeline_step_name))) {
+                            feature1BranchNodeBlockEvent[0] = true;
+                        }
                     }
                     if("pipeline_stage".equals(message.get(jenkins_event))){
                         assertNotNull(message.get(pipeline_step_stage_name));
@@ -359,6 +370,8 @@ public class SseEventTest {
         if(success.isSignaled()) {
             assertTrue(masterBranchPipelineEvent[0]);
             assertTrue(feature1BranchPipelineEvent[0]);
+            assertTrue(masterBranchNodeBlockEvent[0]);
+            assertTrue(feature1BranchNodeBlockEvent[0]);
             assertArrayEquals(mbpStatus, new boolean[]{true, true, true, true});
             assertArrayEquals(masterBranchStatus, new boolean[]{true, true, true, true, true});
             assertArrayEquals(feature1BranchStatus, new boolean[]{true, true, true, true, true});

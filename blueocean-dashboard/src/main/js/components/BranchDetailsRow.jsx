@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import {
-    CommitHash,
+    CommitId,
     ReadableDate,
     WeatherIcon,
     TableRow,
@@ -9,24 +9,12 @@ import {
 import { LiveStatusIndicator, RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
-import RunMessageCell from './RunMessageCell';
 
+import RunMessageCell from './RunMessageCell';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import RunHistoryButton from './RunHistoryButton';
 
-// For sorting the extensions in the actions column
-function sortByOrdinal(extensions, done) {
-    const sorted = extensions.sort((a, b) => {
-        if (a.ordinal || b.ordinal) {
-            if (!a.ordinal) return 1;
-            if (!b.ordinal) return -1;
-            if (a.ordinal < b.ordinal) return -1;
-            return 1;
-        }
-        return a.pluginId.localeCompare(b.pluginId);
-    });
-    done(sorted);
-}
+const { sortByOrdinal } = Extensions.Utils;
 
 function noRun(branch, openRunDetails, t, store, columns) {
     const cleanBranchName = decodeURIComponent(branch.name);
@@ -93,7 +81,7 @@ export class BranchDetailsRowRenderer extends Component {
                 </TableCell>
                 <TableCell linkTo={runDetailsUrl}>{ statusIndicator }</TableCell>
                 <TableCell linkTo={runDetailsUrl}>{ branchName }</TableCell>
-                <TableCell linkTo={runDetailsUrl}><CommitHash commitId={commitId} /></TableCell>
+                <TableCell linkTo={runDetailsUrl}><CommitId commitId={commitId} /></TableCell>
                 <TableCell linkTo={runDetailsUrl}>{ runMessage }</TableCell>
                 <TableCell linkTo={runDetailsUrl}>{ completed }</TableCell>
                 { actionsCell }
@@ -156,7 +144,7 @@ export class BranchDetailsRow extends Component {
         );
 
         const runMessage = (
-            <RunMessageCell run={latestRun} t={t} />
+            <RunMessageCell linkTo={runDetailsUrl} run={latestRun} t={t} />
         );
 
         const completed = (
@@ -175,7 +163,11 @@ export class BranchDetailsRow extends Component {
                 latestRun={branch.latestRun}
                 onNavigation={openRunDetails}
             />,
-            <RunHistoryButton pipeline={pipeline} branchName={branch.name} />,
+            <RunHistoryButton
+                pipeline={pipeline}
+                branchName={branch.name}
+                t={t}
+            />,
             <Extensions.Renderer
                 extensionPoint="jenkins.pipeline.branches.list.action"
                 filter={sortByOrdinal}

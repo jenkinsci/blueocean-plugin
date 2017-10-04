@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <artifactId>blueocean-parent</artifactId>
+    <groupId>io.jenkins.blueocean</groupId>
+    <version>1.4.0-beta-1-SNAPSHOT</version>
+  </parent>
+
+  <name>Bitbucket Pipeline for Blue Ocean</name>
+  <artifactId>blueocean-bitbucket-pipeline</artifactId>
+  <packaging>hpi</packaging>
+
+  <properties>
+    <jacoco.haltOnFailure>true</jacoco.haltOnFailure>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>blueocean-pipeline-api-impl</artifactId>
+      <exclusions>
+        <!-- Upper bound fix: credentials plugin is bringing its own version of antlr4-runtime,
+             wiremock uses later version
+        -->
+        <exclusion>
+          <groupId>org.antlr</groupId>
+          <artifactId>antlr4-runtime</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>cloudbees-bitbucket-branch-source</artifactId>
+      <exclusions>
+        <!-- Upper bound fix: later version of jsch is picked from git-plugin's transitive dependency -->
+        <exclusion>
+          <groupId>com.jcraft</groupId>
+          <artifactId>jsch</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>org.jenkins-ci.plugins</groupId>
+      <artifactId>apache-httpcomponents-client-4-api</artifactId>
+    </dependency>
+
+    <dependency>
+        <groupId>org.jenkins-ci.plugins</groupId>
+        <artifactId>pubsub-light</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+    </dependency>
+
+    <!-- test dependencies -->
+    <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>blueocean-pipeline-api-impl</artifactId>
+      <classifier>tests</classifier>
+      <version>${project.version}</version>
+      <scope>test</scope>
+    </dependency>
+
+    <!--Needed to preempt wiremock from loading older version and breaking, that breaking serialization -->
+    <dependency>
+      <groupId>com.fasterxml.jackson.core</groupId>
+      <artifactId>jackson-core</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-artifact</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>com.github.tomakehurst</groupId>
+      <artifactId>wiremock</artifactId>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+</project>

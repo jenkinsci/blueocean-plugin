@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '@jenkins-cd/design-language';
 import { AppConfig, logging, ResultPageHeader, TimeManager } from '@jenkins-cd/blueocean-core-js';
-import { ExpandablePath, ReadableDate, TimeDuration } from '@jenkins-cd/design-language';
+import { ExpandablePath, ReadableDate, TimeDuration, CommitId } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import { Link } from 'react-router';
 import { buildPipelineUrl } from '../util/UrlUtils';
@@ -38,7 +38,6 @@ class RunDetailsHeader extends Component {
             onCloseClick,
             onAuthorsClick,
             onOrganizationClick,
-            onNameClick,
             topNavLinks,
             runButton,
             isMultiBranch,
@@ -78,14 +77,16 @@ class RunDetailsHeader extends Component {
         const dateFormatShort = t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' });
         const dateFormatLong = t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' });
 
+        const activityUrl = `${buildPipelineUrl(run.organization, pipeline.fullName)}/activity`;
+
         // Sub-trees
         const title = (
             <h1 className="RunDetailsHeader-title">
                 {AppConfig.showOrg() && <span><a onClick={ onOrganizationClick }>{ run.organization === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : run.organization }</a>
                 <span>&nbsp;/&nbsp;</span></span>}
-                <a className="path-link" onClick={ onNameClick }>
+                <Link className="path-link" to={ activityUrl }>
                     <ExpandablePath path={ fullDisplayName } hideFirst className="dark-theme" iconSize={ 20 } />
-                </a>
+                </Link>
                 <span>&nbsp;<RunIdCell run={run} /></span>
             </h1>
         );
@@ -101,7 +102,7 @@ class RunDetailsHeader extends Component {
                         <Link to={ branchUrl }>{ displayName }</Link>
                         { !run.pullRequest && run.branch && run.branch.url &&
                             <a className="inline-svg" title="Opens branch in a new window" target="_blank" href={ run.branch.url }>
-                                <Icon size={14} icon="launch" />
+                                <Icon size={14} icon="ActionLaunch" />
                             </a>
                         }
                     </span>
@@ -112,7 +113,7 @@ class RunDetailsHeader extends Component {
                 { run.pullRequest && run.pullRequest.url &&
                     <span>
                         <a title="Opens pull request in a new window" target="_blank" href={run.pullRequest.url}>
-                            <Icon size={14} icon="launch" />
+                            <Icon size={14} icon="ActionLaunch" />
                         </a>
                     </span>
                 }
@@ -120,18 +121,20 @@ class RunDetailsHeader extends Component {
         );
 
         const commitIdString = run.commitId || '—';
+        const commitUrl = run.commitUrl || '';
+
         const commitSourceDetails = (
             <div className="u-label-value" title={commitLabel + ': ' + commitIdString}>
                 <label className={labelClassName}>{ commitLabel }:</label>
                 <span className="commit">
-                     { commitIdString.substring(0, 7) }
+                    <CommitId commitId={commitIdString} url={commitUrl} />
                 </span>
             </div>
         );
 
         const durationDetails = (
             <div>
-                <Icon size={ 16 } icon="timelapse" style={ { fill: '#fff' } } />
+                <Icon size={ 16 } icon="ImageTimelapse" />
                 <TimeDuration
                     millis={ isRunning() ? this.durationInMillis : durationInMillis }
                     liveUpdate={ isRunning() }
@@ -146,7 +149,7 @@ class RunDetailsHeader extends Component {
 
         const endTimeDetails = (
             <div>
-                <Icon size={ 16 } icon="access_time" style={ { fill: '#fff' } } />
+                <Icon size={ 16 } icon="DeviceAccessTime" />
                 <ReadableDate
                     date={ endTime }
                     liveUpdate
@@ -169,6 +172,7 @@ class RunDetailsHeader extends Component {
                               className="RunDetailsHeader"
                               topNavLinks={ topNavLinks }
                               runButton={ runButton }
+                              t= { t }
             >
                 <div className="RunDetailsHeader-sources">
                     { branchSourceDetails }
@@ -195,7 +199,6 @@ RunDetailsHeader.propTypes = {
     pipeline: PropTypes.object,
     colors: PropTypes.object,
     onOrganizationClick: PropTypes.func,
-    onNameClick: PropTypes.func,
     onAuthorsClick: PropTypes.func,
     onCloseClick: PropTypes.func,
     t: PropTypes.func,

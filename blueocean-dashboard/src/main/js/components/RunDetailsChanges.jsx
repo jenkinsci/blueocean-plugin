@@ -1,7 +1,16 @@
 import React, { Component, PropTypes } from 'react';
-import { CommitHash, PlaceholderTable, ReadableDate, Table } from '@jenkins-cd/design-language';
+import {
+    CommitId,
+    PlaceholderTable,
+    ReadableDate,
+    JTable,
+    TableHeaderRow,
+    TableRow,
+    TableCell,
+} from '@jenkins-cd/design-language';
 import Icon from './placeholder/Icon';
 import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
+import LinkifiedText from './LinkifiedText';
 
 
 function NoChangesPlaceholder(props) {
@@ -31,15 +40,6 @@ NoChangesPlaceholder.propTypes = {
 };
 
 
-const CommitLink = (commit) => {
-    if (commit.url) {
-        return (<a href={commit.url}>
-            <CommitHash commitId={commit.commitId} />
-        </a>);
-    }
-    return <CommitHash commitId={commit.commitId} />;
-};
-
 export default class RunDetailsChanges extends Component {
 
     render() {
@@ -55,34 +55,37 @@ export default class RunDetailsChanges extends Component {
             return <NoChangesPlaceholder t={t} />;
         }
 
-        const head = 'rundetail.changes.header';
+        const commitLabel = t('rundetail.changes.header.commit', { defaultValue: 'Commit' });
+        const authorLabel = t('rundetail.changes.header.author', { defaultValue: 'Author' });
+        const messageLabel = t('rundetail.changes.header.message', { defaultValue: 'Message' });
+        const dateLabel = t('rundetail.changes.header.date', { defaultValue: 'Date' });
 
-        const headers = [
-            t(`${head}.commit`),
-            { label: t(`${head}.author`, { defaultValue: 'Author' }), className: 'author' },
-            { label: t(`${head}.message`, { defaultValue: 'Message' }), className: 'message' },
-            { label: t(`${head}.date`, { defaultValue: 'Date' }), className: 'date' },
+        const columns = [
+            JTable.column(100, commitLabel),
+            JTable.column(100, authorLabel),
+            JTable.column(500, messageLabel, true),
+            JTable.column(100, dateLabel),
         ];
 
         return (
-            <Table headers={headers} className="changeset-table">
+            <JTable columns={columns} className="changeset-table">
+                <TableHeaderRow />
                 { changeSet.map(commit => (
-                    <tr key={commit.commitId}>
-                        <td><CommitLink {...commit} /></td>
-                        <td>{commit.author.fullName}</td>
-                        <td className="multipleLines">{commit.msg}</td>
-                        <td>
-                            <ReadableDate
-                              date={commit.timestamp}
-                              liveUpdate
-                              locale={locale}
-                              shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
-                              longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
+                    <TableRow key={commit.commitId}>
+                        <TableCell><CommitId commitId={commit.commitId} url={commit.url} /></TableCell>
+                        <TableCell>{commit.author.fullName}</TableCell>
+                        <TableCell className="multipleLines"><LinkifiedText text={commit.msg} partialTextLinks={commit.issues} /></TableCell>
+                        <TableCell>
+                            <ReadableDate date={commit.timestamp}
+                                          liveUpdate
+                                          locale={locale}
+                                          shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                                          longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
                             />
-                        </td>
-                    </tr>
+                        </TableCell>
+                    </TableRow>
                 ))}
-            </Table>
+            </JTable>
         );
     }
 }

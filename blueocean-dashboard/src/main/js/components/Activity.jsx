@@ -7,7 +7,7 @@ import {
 } from '@jenkins-cd/design-language';
 import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
-import { RunDetailsRow } from './RunDetailsRow';
+import { ActivityDetailsRow } from './ActivityDetailsRow';
 import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { buildPipelineUrl } from '../util/UrlUtils';
@@ -85,10 +85,16 @@ export class Activity extends Component {
         this.context.router.push(activitiesURL);
     };
 
+    createPipeline() {
+        const { organization, pipeline } = this.context.params;
+        const url = `/organizations/${organization}/pipeline-editor/${pipeline}/`;
+        this.context.router.push(url);
+    }
+
     render() {
         const { pipeline, t, locale } = this.props;
         const { actionExtensionCount } = this.state;
-        const actionsInRowCount = RunDetailsRow.actionItemsCount; // Non-extension actions
+        const actionsInRowCount = ActivityDetailsRow.actionItemsCount; // Non-extension actions
 
         if (!pipeline) {
             return null;
@@ -107,22 +113,28 @@ export class Activity extends Component {
         };
 
         const latestRun = runs && runs[0];
+
         // Only show the Run button for non multi-branch pipelines.
         // Multi-branch pipelines have the Run/play button beside them on
         // the Branches/PRs tab.
-        const runButton = !isMultiBranchPipeline && (
-            <RunButton
-                buttonType="run-only"
-                innerButtonClasses="btn-secondary"
-                runnable={pipeline}
-                latestRun={latestRun}
-                onNavigation={onNavigation}
-            />
-        );
+        const runButton = isMultiBranchPipeline ? null : (
+                <RunButton buttonType="run-only"
+                           innerButtonClasses="btn-secondary"
+                           runnable={pipeline}
+                           latestRun={latestRun}
+                           onNavigation={onNavigation}
+                />
+            );
 
         if (!isLoading) {
             if (isMultiBranchPipeline && !hasBranches) {
-                return <NoBranchesPlaceholder t={t} />;
+                return (
+                    <NoBranchesPlaceholder t={t} primaryAction={
+                        <button className="btn btn-primary" onClick={() => this.createPipeline()}>
+                            {t('creation.git.step1.create_button')}
+                        </button>
+                    } />
+                );
             }
             if (!runs || !runs.length) {
                 if (!isMultiBranchPipeline) {
@@ -193,7 +205,7 @@ export class Activity extends Component {
                     {
                         runs.map(extractLatestRecord).map(
                             ([run, changeset], index) => (
-                                <RunDetailsRow t={t}
+                                <ActivityDetailsRow t={t}
                                                locale={locale}
                                                run={run}
                                                pipeline={pipeline}

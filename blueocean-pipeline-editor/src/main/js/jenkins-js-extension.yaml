@@ -1,0 +1,18 @@
+# Extensions in this plugin
+extensions:
+  - component: EditorRoutes
+    extensionPoint: jenkins.main.routes
+
+  - component: PipelineEditorLink
+    extensionPoint: jenkins.blueocean.rundetails.top.widgets
+    dataType: org.jenkinsci.plugins.workflow.job.WorkflowRun
+
+  - component: PipelineEditorLink
+    extensionPoint: jenkins.pipeline.branches.list.action
+    ordinal: 50
+
+  - component: components/editor/EditorCSS #Self-implemented, currently required to make the css load
+    extensionPoint: pipeline.editor.css
+
+  - component: PipelineCreateButton
+    extensionPoint: jenkins.pipeline.create.missing.jenkinsfile

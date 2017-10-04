@@ -34,15 +34,11 @@ import org.powermock.modules.junit4.PowerMockRunner;
 
 import java.io.ByteArrayInputStream;
 import java.net.HttpURLConnection;
+import java.net.Proxy;
 import java.net.URL;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.scm.Scm.CREDENTIAL_ID;
-import static org.powermock.api.mockito.PowerMockito.doNothing;
-import static org.powermock.api.mockito.PowerMockito.method;
-import static org.powermock.api.mockito.PowerMockito.mock;
-import static org.powermock.api.mockito.PowerMockito.mockStatic;
-import static org.powermock.api.mockito.PowerMockito.when;
-import static org.powermock.api.mockito.PowerMockito.whenNew;
+import static org.powermock.api.mockito.PowerMockito.*;
 
 
 /**
@@ -50,7 +46,7 @@ import static org.powermock.api.mockito.PowerMockito.whenNew;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({GithubScm.class, Jenkins.class, Authentication.class, User.class, Secret.class,
-        CredentialsMatchers.class, CredentialsProvider.class, Stapler.class})
+        CredentialsMatchers.class, CredentialsProvider.class, Stapler.class, HttpRequest.class})
 @PowerMockIgnore({"javax.crypto.*", "javax.security.*"})
 public class GithubScmTest {
 
@@ -89,18 +85,12 @@ public class GithubScmTest {
 
         URL urlMock = mock(URL.class);
         whenNew(URL.class).withAnyArguments().thenReturn(urlMock);
-        when(urlMock.openConnection()).thenReturn(httpURLConnectionMock);
+        when(urlMock.openConnection(Proxy.NO_PROXY)).thenReturn(httpURLConnectionMock);
         when(httpURLConnectionMock.getHeaderField("X-OAuth-Scopes")).thenReturn("user:email,repo");
         when(httpURLConnectionMock.getResponseCode()).thenReturn(200);
 
         HttpURLConnection httpURLConnection = GithubScm.connect(GitHubSCMSource.GITHUB_URL, "abcd");
         GithubScm.validateAccessTokenScopes(httpURLConnection);
-    }
-
-    @Test
-    public void getAuthenticatedUser() throws Exception {
-        User u = GithubScm.getAuthenticatedUser();
-        Assert.assertEquals("joe", u.getId());
     }
 
     @Test
@@ -124,7 +114,7 @@ public class GithubScmTest {
 
         URL urlMock = mock(URL.class);
         whenNew(URL.class).withAnyArguments().thenReturn(urlMock);
-        when(urlMock.openConnection()).thenReturn(httpURLConnectionMock);
+        when(urlMock.openConnection(Proxy.NO_PROXY)).thenReturn(httpURLConnectionMock);
         when(httpURLConnectionMock.getHeaderField("X-OAuth-Scopes")).thenReturn("user:email,repo");
         when(httpURLConnectionMock.getResponseCode()).thenReturn(200);
 

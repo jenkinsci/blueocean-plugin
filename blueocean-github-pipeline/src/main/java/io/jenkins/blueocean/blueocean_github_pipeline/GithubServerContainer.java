@@ -1,47 +1,56 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.google.common.base.Charsets;
 import com.google.common.base.Function;
 import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Ordering;
+import com.google.common.hash.Hashing;
+import hudson.security.ACL;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.commons.stapler.TreeResponse;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.model.Container;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpoint;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import net.sf.json.JSONObject;
+import org.acegisecurity.context.SecurityContext;
+import org.acegisecurity.context.SecurityContextHolder;
 import org.apache.commons.collections.ComparatorUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
 import org.jenkinsci.plugins.github_branch_source.GitHubConfiguration;
-import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.json.JsonBody;
-import org.kohsuke.stapler.verb.POST;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nullable;
+import java.io.IOException;
+import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-public class GithubServerContainer extends Container<GithubServer> {
+public class GithubServerContainer extends ScmServerEndpointContainer {
 
     private static final Logger LOGGER = Logger.getLogger(GithubServerContainer.class.getName());
+    static final String ERROR_MESSAGE_INVALID_SERVER = "Specified URL is not a GitHub server; check hostname";
+    static final String ERROR_MESSAGE_INVALID_APIURL = "Specified URL is not a GitHub API endpoint; check path";
 
     private final Link parent;
+
 
     GithubServerContainer(Link parent) {
         this.parent = parent;
     }
 
-    @POST
-    @WebMethod(name="")
-    @TreeResponse
-    public @CheckForNull GithubServer create(@JsonBody JSONObject request) {
+    public @CheckForNull ScmServerEndpoint create(@JsonBody JSONObject request) {
 
         List<ErrorMessage.Error> errors = Lists.newLinkedList();
 
@@ -61,7 +70,7 @@ public class GithubServerContainer extends Container<GithubServer> {
         if (StringUtils.isEmpty(url)) {
             errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.MISSING.toString(), GithubServer.API_URL + " is required"));
         } else {
-            GithubServer byUrl = findByURL(url);
+            Endpoint byUrl = GitHubConfiguration.get().findEndpoint(url);
             if (byUrl != null) {
                 errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), GithubServer.API_URL + " is already registered as '" + byUrl.getName() + "'"));
             }
@@ -70,13 +79,36 @@ public class GithubServerContainer extends Container<GithubServer> {
         if (StringUtils.isNotEmpty(url)) {
             // Validate that the URL represents a Github API endpoint
             try {
-                HttpURLConnection connection = (HttpURLConnection) new URL(url).openConnection();
-                connection.setDoOutput(true);
-                connection.setRequestMethod("GET");
-                connection.setRequestProperty("Content-type", "application/json");
-                connection.connect();
+                HttpURLConnection connection = HttpRequest.get(url).connect();
+
                 if (connection.getHeaderField("X-GitHub-Request-Id") == null) {
-                    errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), "Specified URL is not a Github server"));
+                    errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), ERROR_MESSAGE_INVALID_SERVER));
+                } else {
+                    boolean isGithubCloud = false;
+                    boolean isGithubEnterprise = false;
+
+                    try {
+                        InputStream inputStream;
+                        int code = connection.getResponseCode();
+
+                        if (200 <= code && code < 300) {
+                            inputStream = HttpRequest.getInputStream(connection);
+                        } else {
+                            inputStream = HttpRequest.getErrorStream(connection);
+                        }
+
+                        TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
+                        Map<String, String> responseBody = GithubScm.om.readValue(inputStream, typeRef);
+
+                        isGithubCloud = code == 200 && responseBody.containsKey("current_user_url");
+                        isGithubEnterprise = code == 401 && responseBody.containsKey("message");
+                    } catch (IOException ioe) {
+                        LOGGER.log(Level.INFO, "Could not parse response body from Github");
+                    }
+
+                    if (!isGithubCloud && !isGithubEnterprise) {
+                        errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), ERROR_MESSAGE_INVALID_APIURL));
+                    }
                 }
             } catch (Throwable e) {
                 errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.INVALID.toString(), e.toString()));
@@ -84,29 +116,29 @@ public class GithubServerContainer extends Container<GithubServer> {
             }
         }
 
-        if (!errors.isEmpty()) {
-            ErrorMessage errorMessage = new ErrorMessage(400, "Failed to create Github server");
-            errorMessage.addAll(errors);
-            throw new ServiceException.BadRequestException(errorMessage);
-        } else {
-            GitHubConfiguration config = GitHubConfiguration.get();
-            GithubServer server;
-            synchronized (config) {
-                // TODO: this is a temp workaround to facilitate automated Selenium tests
-                // since duplicate URLs are not allowed, Selenium appends a random query string param to the API URL
-                // this bypasses the uniqueness check but a URL with a query string param will cause downstream errors
-                // therefore this method trims off the query string when actually saving the server so a clean URL is used
-                // once there is an easy way to delete existing GitHub servers this same logic should be added to validation above
+        if (errors.isEmpty()) {
+            SecurityContext old = null;
+            try {
+                // We need to escalate privilege to add user defined endpoint to
+                old = ACL.impersonate(ACL.SYSTEM);
+                GitHubConfiguration config = GitHubConfiguration.get();
                 String sanitizedUrl = discardQueryString(url);
                 Endpoint endpoint = new Endpoint(sanitizedUrl, name);
-                List<Endpoint> endpoints = Lists.newLinkedList(config.getEndpoints());
-                endpoints.add(endpoint);
-                config.setEndpoints(endpoints);
-                config.save();
-                server = new GithubServer(endpoint, getLink());
+                if (!config.addEndpoint(endpoint)) {
+                    errors.add(new ErrorMessage.Error(GithubServer.API_URL, ErrorMessage.Error.ErrorCodes.ALREADY_EXISTS.toString(), GithubServer.API_URL + " is already registered as '" + endpoint.getName() + "'"));
+                } else {
+                    return new GithubServer(endpoint, getLink());
+                }
+            }finally {
+                //reset back to original privilege level
+                if(old != null){
+                    SecurityContextHolder.setContext(old);
+                }
             }
-            return server;
         }
+        ErrorMessage message = new ErrorMessage(400, "Failed to create Github server");
+        message.addAll(errors);
+        throw new ServiceException.BadRequestException(message);
      }
 
     @Override
@@ -115,29 +147,30 @@ public class GithubServerContainer extends Container<GithubServer> {
     }
 
     @Override
-    public GithubServer get(final String name) {
-        GithubServer githubServer = findByName(name);
-        if (githubServer == null) {
+    public GithubServer get(final String encodedApiUrl) {
+        Endpoint endpoint = Iterables.find(GitHubConfiguration.get().getEndpoints(), new Predicate<Endpoint>() {
+            @Override
+            public boolean apply(@Nullable Endpoint input) {
+                return input != null && encodedApiUrl.equals(Hashing.sha256().hashString(input.getApiUri(), Charsets.UTF_8).toString());
+            }
+        }, null);
+        if (endpoint == null) {
             throw new ServiceException.NotFoundException("not found");
         }
-        return githubServer;
+        return new GithubServer(endpoint, getLink());
     }
 
     @Override
-    public Iterator<GithubServer> iterator() {
-        GitHubConfiguration config = GitHubConfiguration.get();
-        List<Endpoint> endpoints;
-        synchronized (config) {
-            endpoints = Ordering.from(new Comparator<Endpoint>() {
-                @Override
-                public int compare(Endpoint o1, Endpoint o2) {
-                    return ComparatorUtils.NATURAL_COMPARATOR.compare(o1.getName(), o2.getName());
-                }
-            }).sortedCopy(config.getEndpoints());
-        }
-        return Iterators.transform(endpoints.iterator(), new Function<Endpoint, GithubServer>() {
+    public Iterator<ScmServerEndpoint> iterator() {
+        List<Endpoint> endpoints = Ordering.from(new Comparator<Endpoint>() {
             @Override
-            public GithubServer apply(Endpoint input) {
+            public int compare(Endpoint o1, Endpoint o2) {
+                return ComparatorUtils.NATURAL_COMPARATOR.compare(o1.getName(), o2.getName());
+            }
+        }).sortedCopy(GitHubConfiguration.get().getEndpoints());
+        return Iterators.transform(endpoints.iterator(), new Function<Endpoint, ScmServerEndpoint>() {
+            @Override
+            public ScmServerEndpoint apply(Endpoint input) {
                 return new GithubServer(input, getLink());
             }
         });
@@ -147,24 +180,14 @@ public class GithubServerContainer extends Container<GithubServer> {
         if (apiUrl != null && apiUrl.contains("?")) {
             return apiUrl.substring(0, apiUrl.indexOf("?"));
         }
-
         return apiUrl;
     }
 
     private GithubServer findByName(final String name) {
-        return Iterators.find(iterator(), new Predicate<GithubServer>() {
+        return (GithubServer) Iterators.find(iterator(), new Predicate<ScmServerEndpoint>() {
             @Override
-            public boolean apply(GithubServer input) {
+            public boolean apply(ScmServerEndpoint input) {
                 return input.getName().equals(name);
-            }
-        }, null);
-    }
-
-    private GithubServer findByURL(final String url) {
-        return Iterators.find(iterator(), new Predicate<GithubServer>() {
-            @Override
-            public boolean apply(GithubServer input) {
-                return input.getApiUrl().equals(url);
             }
         }, null);
     }

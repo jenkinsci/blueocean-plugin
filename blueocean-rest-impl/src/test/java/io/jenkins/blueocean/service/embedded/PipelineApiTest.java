@@ -8,7 +8,6 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.Extension;
 import hudson.FilePath;
 import hudson.Launcher;
-import hudson.maven.MavenModuleSet;
 import hudson.model.AbstractBuild;
 import hudson.model.BuildListener;
 import hudson.model.Cause;
@@ -24,10 +23,10 @@ import hudson.model.Project;
 import hudson.model.Run;
 import hudson.model.StringParameterDefinition;
 import hudson.model.StringParameterValue;
+import hudson.model.User;
 import hudson.security.HudsonPrivateSecurityRealm;
 import hudson.security.LegacyAuthorizationStrategy;
 import hudson.tasks.ArtifactArchiver;
-import hudson.tasks.Maven;
 import hudson.tasks.Shell;
 import hudson.tasks.junit.JUnitResultArchiver;
 import hudson.tasks.junit.TestResultAction;
@@ -41,17 +40,17 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.ArtifactContainerImpl;
+import io.jenkins.blueocean.service.embedded.rest.ArtifactImpl;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueueUtil;
 import jenkins.model.Jenkins;
 import org.junit.Assert;
+import org.junit.Ignore;
 import org.junit.Test;
-import org.jvnet.hudson.test.ExtractResourceSCM;
 import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.MockFolder;
 import org.jvnet.hudson.test.TestBuilder;
 import org.jvnet.hudson.test.TestExtension;
-import org.jvnet.hudson.test.ToolInstallations;
 import org.kohsuke.stapler.export.Exported;
 
 import java.io.IOException;
@@ -63,7 +62,6 @@ import java.util.Stack;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
-import static junit.framework.TestCase.assertFalse;
 import static org.junit.Assert.*;
 
 /**
@@ -235,7 +233,7 @@ public class PipelineApiTest extends BaseTest {
     }
 
     /** TODO: latest stapler change broke delete, disabled for now */
-//    @Test
+    @Test @Ignore
     public void deletePipelineTest() throws IOException {
         Project p = j.createFreeStyleProject("pipeline1");
 
@@ -505,12 +503,15 @@ public class PipelineApiTest extends BaseTest {
         assertEquals(1, artifacts.size());
         assertEquals("fizz", ((Map) artifacts.get(0)).get("name"));
 
-        BlueArtifact blueArtifact = new ArtifactContainerImpl(b, new Reachable() {
+        String artifactName = (String) ((Map) artifacts.get(0)).get("name");
+        String name = ArtifactImpl.class.getName() + ":" + artifactName;
+        ArtifactContainerImpl container = new ArtifactContainerImpl(b, new Reachable() {
             @Override
             public Link getLink() {
                 return new Link("/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/artifacts/");
             }
-        }).get((String) ((Map) artifacts.get(0)).get("path"));
+        });
+        BlueArtifact blueArtifact = container.get(name);
         assertNotNull(blueArtifact);
     }
 
@@ -594,15 +595,15 @@ public class PipelineApiTest extends BaseTest {
     public static class PipelineFactoryTestImpl extends BluePipelineFactory {
 
         @Override
-        public BluePipeline getPipeline(Item item, Reachable parent) {
+        public BluePipeline getPipeline(Item item, Reachable parent, BlueOrganization organization) {
             if(item instanceof TestProject){
-                return new TestPipelineImpl((Job)item);
+                return new TestPipelineImpl(organization, (Job)item);
             }
             return null;
         }
 
         @Override
-        public Resource resolve(Item context, Reachable parent, Item target) {
+        public Resource resolve(Item context, Reachable parent, Item target, BlueOrganization organization) {
             return  null;
         }
     }
@@ -610,8 +611,8 @@ public class PipelineApiTest extends BaseTest {
     @Capability({"io.jenkins.blueocean.rest.annotation.test.TestPipeline", "io.jenkins.blueocean.rest.annotation.test.TestPipelineExample"})
     public static class TestPipelineImpl extends AbstractPipelineImpl {
 
-        public TestPipelineImpl(Job job) {
-            super(job);
+        public TestPipelineImpl(BlueOrganization organization, Job job) {
+            super(organization, job);
         }
 
         @Exported(name = "hello")
@@ -711,7 +712,7 @@ public class PipelineApiTest extends BaseTest {
     public void PipelineSecureWithLoggedInUserPermissionTest() throws IOException, UnirestException {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
 
-        hudson.model.User user = j.jenkins.getUser("alice");
+        hudson.model.User user = User.get("alice");
         user.setFullName("Alice Cooper");
 
 
@@ -795,19 +796,6 @@ public class PipelineApiTest extends BaseTest {
                 ), 400);
     }
 
-    @Test public void mavenModulesNoteListed() throws Exception {
-        ToolInstallations.configureDefaultMaven("apache-maven-2.2.1", Maven.MavenInstallation.MAVEN_21);
-        MavenModuleSet m = j.jenkins.createProject(MavenModuleSet.class, "p");
-        m.setScm(new ExtractResourceSCM(getClass().getResource("maven-multimod.zip")));
-        assertFalse("MavenModuleSet.isNonRecursive() should be false", m.isNonRecursive());
-        j.buildAndAssertSuccess(m);
-
-        List responses = get("/organizations/jenkins/pipelines/", List.class);
-        assertEquals(1, responses.size());
-        assertEquals("p", ((Map) responses.get(0)).get("name"));
-
-    }
-
     @Test
     public void actionsTest() throws Exception {
         FreeStyleProject p = j.createFreeStyleProject("pipeline1");
@@ -826,7 +814,7 @@ public class PipelineApiTest extends BaseTest {
 
         resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/?tree=*[*]", Map.class);
         actions = (List<Map>) resp.get("actions");
-        Assert.assertEquals(2, actions.size());
+        Assert.assertFalse(actions.isEmpty());
     }
 
     /**

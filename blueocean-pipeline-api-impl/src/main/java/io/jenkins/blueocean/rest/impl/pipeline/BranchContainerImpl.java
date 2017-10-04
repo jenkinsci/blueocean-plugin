@@ -4,7 +4,10 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
 import hudson.model.Job;
+import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
@@ -34,12 +37,22 @@ public class BranchContainerImpl extends BluePipelineContainer {
             BranchImpl pipeline1 = (BranchImpl)_pipeline1;
             BranchImpl pipeline2 = (BranchImpl)_pipeline2;
 
-            // If one pipeline isnt the primary there is no need to go further
-            if(pipeline1.getBranch().isPrimary() && !pipeline2.getBranch().isPrimary()) {
+            BranchImpl.Branch branch1 = pipeline1.getBranch();
+            if (branch1 == null) {
                 return -1;
             }
 
-            if(!pipeline1.getBranch().isPrimary() && pipeline2.getBranch().isPrimary()) {
+            BranchImpl.Branch branch2 = pipeline2.getBranch();
+            if (branch2 == null) {
+                return 1;
+            }
+
+            // If one pipeline isnt the primary there is no need to go further
+            if(branch1.isPrimary() && !branch2.isPrimary()) {
+                return -1;
+            }
+
+            if(!branch1.isPrimary() && branch2.isPrimary()) {
                 return 1;
             }
 
@@ -124,17 +137,23 @@ public class BranchContainerImpl extends BluePipelineContainer {
     private final Link self;
 
     public BranchContainerImpl(MultiBranchPipelineImpl pipeline, Link self) {
+        super(pipeline.getOrganization());
         this.pipeline = pipeline;
         this.self = self;
     }
+
     //TODO: implement rest of the methods
     @Override
     public BluePipeline get(String name) {
         Job job = pipeline.mbp.getItem(name);
-        if(job != null){
-            return new BranchImpl(job, getLink());
+        if (job == null) {
+            return null;
         }
-        return null;
+        BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(job);
+        if (organization == null) {
+            return null;
+        }
+        return new BranchImpl(organization, job, getLink());
     }
 
     @Override
@@ -145,6 +164,10 @@ public class BranchContainerImpl extends BluePipelineContainer {
     @Override
     @SuppressWarnings("unchecked")
     public Iterator<BluePipeline> iterator(int start, int limit) {
+        final BlueOrganization organization = OrganizationFactory.getInstance().getContainingOrg(pipeline.mbp.getItemGroup());
+        if (organization == null) {
+            throw new ServiceException.UnexpectedErrorException("Could not find organization for " + pipeline.mbp.getFullName());
+        }
         final Link link = getLink();
         // Filter will decide if the requester wants branches or pull requests
         Collection allJobsMatchinFilter = ContainerFilter.filter(pipeline.mbp.getAllJobs());
@@ -152,7 +175,7 @@ public class BranchContainerImpl extends BluePipelineContainer {
         Iterable<BluePipeline> branches = Iterables.transform(allJobsMatchinFilter, new Function<Job, BluePipeline>() {
             @Override
             public BluePipeline apply(Job input) {
-                return new BranchImpl(input, link);
+                return new BranchImpl(organization, input, link);
             }
         });
         // Order them using the comparator
