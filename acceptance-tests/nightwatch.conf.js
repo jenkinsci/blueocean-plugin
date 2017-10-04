@@ -46,7 +46,7 @@ module.exports = (function (settings) {
 
     console.log('Jenkins running at: ' + settings.test_settings.default.launch_url);
     console.log("    NOTE:");
-    console.log("        Selenium and the browser (Chrome) are running in a docker");
+    console.log("        Selenium and the browser are running in a docker");
     console.log("        container that also has VNC. This allows you to connect if");
     console.log("        you'd like to look at the browser while the tests run.");
     console.log("        Simple run:");
