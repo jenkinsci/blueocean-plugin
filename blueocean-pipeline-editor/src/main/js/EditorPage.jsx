@@ -560,10 +560,12 @@ class PipelineLoader extends React.Component {
                         {pipeline && title}
                     </h1>
                 </div>
+                {pipelineStore.pipeline &&
                 <div className="editor-page-header-controls">
                     <button className="btn-link inverse" onClick={() => this.cancel()}>Cancel</button>
                     {pipelineName && <button className="btn-primary inverse" onClick={() => this.showSaveDialog()}>Save</button>}
                 </div>
+                }
             </ContentPageHeader>
             {pipelineStore.pipeline &&
                 <div className="pipeline-editor">
