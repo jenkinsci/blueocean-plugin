@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/react-material-icons';
+import { Icon } from '@jenkins-cd/design-language';
 import { fetchAllSuffix as suffix } from '../../../util/UrlUtils';
 
 import moment from 'moment';
