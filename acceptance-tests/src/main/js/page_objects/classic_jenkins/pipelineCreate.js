@@ -24,7 +24,7 @@ module.exports.commands = [{
      */
     createPipeline: function(jobName, script, oncreated) {
         var self = this;
-        
+
         self.waitForJobDeleted(jobName);
 
         self.setValue('@nameInput', jobName);
