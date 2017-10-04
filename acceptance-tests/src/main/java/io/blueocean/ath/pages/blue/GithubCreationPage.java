@@ -111,12 +111,16 @@ public class GithubCreationPage {
         createPipeline(apikey, org, pipeline, false);
     }
     public void createPipeline(String apiKey, String org, String pipeline, boolean createJenkinsFile) throws IOException {
-        beginCreationFlow(org);
+        beginCreationFlow(pipeline);
         completeCreationFlow(apiKey, org, pipeline, createJenkinsFile);
     }
 
-    public void beginCreationFlow(String org) throws IOException {
-        jobApi.deletePipeline(org);
+    /**
+     * @param jobName name of job to be created
+     * @throws IOException
+     */
+    public void beginCreationFlow(String jobName) throws IOException {
+        jobApi.deletePipeline(jobName);
         navigateToCreation();
         selectGithubCreation();
     }
