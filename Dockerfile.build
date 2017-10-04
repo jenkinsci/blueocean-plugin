@@ -43,7 +43,7 @@ RUN wget --no-verbose https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION
 RUN tar -C /usr/local --strip-components 1 -xJf /opt/nodejs.tar.xz
 RUN mkdir /.npm && chmod 777 /.npm
 # Update to latest version so optional dependancies + shrinkwrap work
-RUN npm install -g npm@4.3.0
+RUN npm install -g npm@3.10.3
 
 #=============================================
 # Misc packages needed by the ATH
