@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/design-language",
-  "version": "0.0.157-SNAPSHOT-1",
+  "version": "0.0.157",
   "dependencies": {
     "@kadira/react-split-pane": {
       "version": "1.4.7",
