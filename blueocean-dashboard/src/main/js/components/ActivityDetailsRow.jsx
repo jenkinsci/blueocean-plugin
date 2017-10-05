@@ -52,7 +52,8 @@ class ActivityDetailsRow extends Component {
 
         const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
         const runDetailsUrl = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'pipeline');
-
+        const changesUrl = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'changes');
+        console.log('ignore this, just pleasing lint', changesUrl); // TODO:RM
         const {
             durationInMillis,
             endTime,
