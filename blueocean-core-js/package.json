@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-core-js",
-  "version": "0.0.167-SNAPSHOT-2",
+  "version": "0.0.168-SNAPSHOT",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
   "scripts": {
@@ -32,7 +32,7 @@
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
-    "@jenkins-cd/design-language": "0.0.156-SNAPSHOT-1",
+    "@jenkins-cd/design-language": "0.0.156",
     "@jenkins-cd/js-extensions": "0.0.39",
     "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/logging": "0.0.6",
@@ -85,9 +85,9 @@
     "jest-junit": "1.5.1",
     "minimist": "1.2.0",
     "nock": "9.0.14",
-    "react": "15.4.2",
-    "react-addons-test-utils": "15.4.2",
-    "react-dom": "15.4.2",
+    "react": "15.3.2",
+    "react-addons-test-utils": "15.3.2",
+    "react-dom": "15.3.2",
     "run-sequence": "1.2.2",
     "sinon": "1.17.6",
     "watchify": "3.7.0"

@@ -3,14 +3,14 @@
   "version": "0.0.2-unpublished",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.167-SNAPSHOT-2",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.167-SNAPSHOT-2",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.167-SNAPSHOT-2.tgz"
+      "version": "0.0.167",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.167",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.167.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.156-SNAPSHOT-1",
-      "from": "@jenkins-cd/design-language@0.0.156-SNAPSHOT-1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.156-SNAPSHOT-1.tgz"
+      "version": "0.0.156",
+      "from": "@jenkins-cd/design-language@0.0.156",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.156.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -7526,25 +7526,25 @@
       "dev": true
     },
     "react": {
-      "version": "15.4.2",
-      "from": "react@15.4.2",
-      "resolved": "https://registry.npmjs.org/react/-/react-15.4.2.tgz"
+      "version": "15.3.2",
+      "from": "react@15.3.2",
+      "resolved": "https://registry.npmjs.org/react/-/react-15.3.2.tgz"
     },
     "react-addons-css-transition-group": {
-      "version": "15.4.2",
-      "from": "react-addons-css-transition-group@15.4.2",
-      "resolved": "https://registry.npmjs.org/react-addons-css-transition-group/-/react-addons-css-transition-group-15.4.2.tgz"
+      "version": "15.3.2",
+      "from": "react-addons-css-transition-group@15.3.2",
+      "resolved": "https://registry.npmjs.org/react-addons-css-transition-group/-/react-addons-css-transition-group-15.3.2.tgz"
     },
     "react-addons-test-utils": {
-      "version": "15.4.2",
-      "from": "react-addons-test-utils@15.4.2",
-      "resolved": "https://registry.npmjs.org/react-addons-test-utils/-/react-addons-test-utils-15.4.2.tgz",
+      "version": "15.3.2",
+      "from": "react-addons-test-utils@15.3.2",
+      "resolved": "https://registry.npmjs.org/react-addons-test-utils/-/react-addons-test-utils-15.3.2.tgz",
       "dev": true
     },
     "react-dom": {
-      "version": "15.4.2",
-      "from": "react-dom@15.4.2",
-      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-15.4.2.tgz"
+      "version": "15.3.2",
+      "from": "react-dom@15.3.2",
+      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-15.3.2.tgz"
     },
     "react-fuzzy": {
       "version": "0.3.3",
