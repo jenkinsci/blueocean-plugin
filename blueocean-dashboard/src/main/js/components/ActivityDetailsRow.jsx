@@ -89,7 +89,7 @@ class ActivityDetailsRow extends Component {
                 <TableCell linkTo={runDetailsUrl}><RunIdCell run={run} /></TableCell>
                 <TableCell linkTo={runDetailsUrl}><CommitId commitId={run.commitId} /></TableCell>
                 { isMultibranch && <TableCell linkTo={runDetailsUrl}>{branchName}</TableCell> }
-                <TableCell><RunMessageCell linkTo={runDetailsUrl} run={run} t={t} changesUrl={changesUrl}/></TableCell>
+                <TableCell><RunMessageCell linkTo={runDetailsUrl} run={run} t={t} changesUrl={changesUrl} /></TableCell>
                 <TableCell linkTo={runDetailsUrl}>
                     <TimeDuration millis={durationInMillis}
                                   updatePeriod={1000}
