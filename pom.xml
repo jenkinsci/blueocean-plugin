@@ -20,6 +20,7 @@
     <jackson.version>2.8.9</jackson.version>
     <jenkins.version>2.46.3</jenkins.version> <!-- Should be kept in sync with Dockerfile FROM statement-->
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
+    <frontend.version>1.0</frontend.version>
     <node.version>6.4.0</node.version>
     <npm.version>3.10.3</npm.version>
     <findbugs-maven-plugin.version>3.0.4</findbugs-maven-plugin.version>
