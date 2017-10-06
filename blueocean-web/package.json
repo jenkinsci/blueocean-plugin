@@ -30,8 +30,8 @@
     "zombie": "4.2.1"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.167",
-    "@jenkins-cd/design-language": "0.0.156",
+    "@jenkins-cd/blueocean-core-js": "0.0.168",
+    "@jenkins-cd/design-language": "0.0.157",
     "@jenkins-cd/js-extensions": "0.0.39",
     "@jenkins-cd/js-modules": "0.0.10",
     "history": "2.0.2",
@@ -41,9 +41,9 @@
     "mobx-react": "3.5.7",
     "mobx-react-devtools": "4.2.6",
     "moment": "2.15.1",
-    "react": "15.3.2",
-    "react-addons-css-transition-group": "15.3.2",
-    "react-dom": "15.3.2",
+    "react": "15.4.2",
+    "react-addons-css-transition-group": "15.4.2",
+    "react-dom": "15.4.2",
     "react-i18next": "1.10.1",
     "react-redux": "4.4.5",
     "react-router": "2.3.0",

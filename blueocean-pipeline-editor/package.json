@@ -38,20 +38,20 @@
     "jsdom": "7.2.2",
     "mocha": "2.4.5",
     "nock": "8.0.0",
-    "react-addons-test-utils": "15.3.2"
+    "react-addons-test-utils": "15.4.2"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.167",
-    "@jenkins-cd/design-language": "0.0.156",
+    "@jenkins-cd/blueocean-core-js": "0.0.168",
+    "@jenkins-cd/design-language": "0.0.157",
     "@jenkins-cd/js-extensions": "0.0.39",
     "@jenkins-cd/js-modules": "0.0.10",
     "lodash.debounce": "4.0.8",
     "mobx": "2.6.0",
     "mobx-react": "3.5.7",
     "mobx-utils": "1.1.2",
-    "react": "15.3.2",
-    "react-addons-css-transition-group": "15.3.2",
-    "react-dom": "15.3.2",
+    "react": "15.4.2",
+    "react-addons-css-transition-group": "15.4.2",
+    "react-dom": "15.4.2",
     "react-router": "2.3.0"
   },
   "jenkinscd": {

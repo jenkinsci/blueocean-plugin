@@ -3,14 +3,14 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.167",
-      "from": "@jenkins-cd/blueocean-core-js@0.0.167",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.167.tgz"
+      "version": "0.0.168",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.168",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.168.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.156",
-      "from": "@jenkins-cd/design-language@0.0.156",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.156.tgz"
+      "version": "0.0.157",
+      "from": "@jenkins-cd/design-language@0.0.157",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.157.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -223,9 +223,9 @@
       "dev": true
     },
     "asap": {
-      "version": "2.0.5",
+      "version": "2.0.6",
       "from": "asap@>=2.0.3 <2.1.0",
-      "resolved": "https://registry.npmjs.org/asap/-/asap-2.0.5.tgz"
+      "resolved": "https://registry.npmjs.org/asap/-/asap-2.0.6.tgz"
     },
     "asn1": {
       "version": "0.1.11",
@@ -2109,9 +2109,9 @@
       "dev": true
     },
     "fbjs": {
-      "version": "0.8.12",
+      "version": "0.8.16",
       "from": "fbjs@>=0.8.4 <0.9.0",
-      "resolved": "https://registry.npmjs.org/fbjs/-/fbjs-0.8.12.tgz"
+      "resolved": "https://registry.npmjs.org/fbjs/-/fbjs-0.8.16.tgz"
     },
     "figures": {
       "version": "1.7.0",
@@ -3952,9 +3952,9 @@
       "dev": true
     },
     "node-fetch": {
-      "version": "1.7.1",
+      "version": "1.7.3",
       "from": "node-fetch@>=1.0.1 <2.0.0",
-      "resolved": "https://registry.npmjs.org/node-fetch/-/node-fetch-1.7.1.tgz"
+      "resolved": "https://registry.npmjs.org/node-fetch/-/node-fetch-1.7.3.tgz"
     },
     "node-http-server": {
       "version": "3.0.5",
@@ -4296,9 +4296,9 @@
       "dev": true
     },
     "promise": {
-      "version": "7.1.1",
+      "version": "7.3.1",
       "from": "promise@>=7.1.1 <8.0.0",
-      "resolved": "https://registry.npmjs.org/promise/-/promise-7.1.1.tgz"
+      "resolved": "https://registry.npmjs.org/promise/-/promise-7.3.1.tgz"
     },
     "public-encrypt": {
       "version": "4.0.0",
@@ -4416,19 +4416,19 @@
       "dev": true
     },
     "react": {
-      "version": "15.3.2",
-      "from": "react@15.3.2",
-      "resolved": "https://registry.npmjs.org/react/-/react-15.3.2.tgz"
+      "version": "15.4.2",
+      "from": "react@15.4.2",
+      "resolved": "https://registry.npmjs.org/react/-/react-15.4.2.tgz"
     },
     "react-addons-css-transition-group": {
-      "version": "15.3.2",
-      "from": "react-addons-css-transition-group@15.3.2",
-      "resolved": "https://registry.npmjs.org/react-addons-css-transition-group/-/react-addons-css-transition-group-15.3.2.tgz"
+      "version": "15.4.2",
+      "from": "react-addons-css-transition-group@15.4.2",
+      "resolved": "https://registry.npmjs.org/react-addons-css-transition-group/-/react-addons-css-transition-group-15.4.2.tgz"
     },
     "react-dom": {
-      "version": "15.3.2",
-      "from": "react-dom@15.3.2",
-      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-15.3.2.tgz"
+      "version": "15.4.2",
+      "from": "react-dom@15.4.2",
+      "resolved": "https://registry.npmjs.org/react-dom/-/react-dom-15.4.2.tgz"
     },
     "react-i18next": {
       "version": "1.10.1",
@@ -5247,9 +5247,9 @@
       "dev": true
     },
     "ua-parser-js": {
-      "version": "0.7.12",
+      "version": "0.7.14",
       "from": "ua-parser-js@>=0.7.9 <0.8.0",
-      "resolved": "https://registry.npmjs.org/ua-parser-js/-/ua-parser-js-0.7.12.tgz"
+      "resolved": "https://registry.npmjs.org/ua-parser-js/-/ua-parser-js-0.7.14.tgz"
     },
     "uglify-js": {
       "version": "2.3.6",
