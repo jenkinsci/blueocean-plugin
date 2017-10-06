@@ -36,8 +36,6 @@ class SaveDialog extends React.Component {
            { branch: branch, toString: () => ['Commit to ', <i>{branch}</i>]},
            { branch: '', toString: () => `Commit to new branch`},
        ];
-
-       this.processBranchName = this.processBranchName.bind(this);
     }
 
     save() {
@@ -116,7 +114,7 @@ class SaveDialog extends React.Component {
                             className="TextInput-control"
                             type="text"
                             value={this.state.branch}
-                            onChange={this.processBranchName}
+                            onChange={event => this.processBranchName(event)}
                             disabled={this.state.branch !== this.branchOptions[1].branch || this.state.saving}
                         />
                     </div>
