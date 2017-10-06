@@ -26,6 +26,10 @@ class Analytics {
         analyticsService.track('pipeline_creation_visited');
     }
 
+    trackBitbucketPipelineConnectVisited() {
+        analyticsService.track('bitbucket_pipeline_connect_visited');
+    }
+
     trackPipelineRunVisited() {
         analyticsService.track('pipeline_run_visited');
     }

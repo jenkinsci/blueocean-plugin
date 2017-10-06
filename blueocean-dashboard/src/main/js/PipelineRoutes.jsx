@@ -18,6 +18,7 @@ import {
     RunDetailsTests,
 } from './components';
 import { CreatePipeline } from './creation';
+import PipelineConnect from './creation/bitbucket/cloud/PipelineConnect';
 
 /**
  * gets the background element used for the modal underlay
@@ -132,6 +133,7 @@ export default (
     <Route component={Dashboard} onEnter={onTopLevelRouteEnter} onChange={onRouteChange}>
         <Route path="organizations/:organization/pipelines" component={Pipelines} onEnter={analytics.trackDashboardVisited} />
         <Route path="organizations/:organization/create-pipeline" component={CreatePipeline} onEnter={analytics.trackPipelineCreationVisited} />
+        <Route path="organizations/:organization/bitbucket-connect" component={PipelineConnect} onEnter={analytics.trackBitbucketPipelineConnectVisited} />
         <Redirect from="organizations/:organization(/*)" to="organizations/:organization/pipelines" />
         <Route path="organizations/:organization" component={PipelinePage}>
             <Route path=":pipeline/branches" component={MultiBranch} onEnter={analytics.trackPipelineBranchesVisited} />

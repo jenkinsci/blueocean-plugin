@@ -1,0 +1,57 @@
+{
+  "key": "${addon.key}",
+  "baseUrl": "${addon.base-url}",
+  "name": "Jenkins BlueOcean Add-On",
+  "description": "Jenkins BlueOcean Bitbucket Cloud AddOn",
+  "vendor": {
+    "name": "CloudBees",
+    "url": "https://www.cloudbees.com/"
+  },
+  "authentication": {
+    "type": "jwt"
+  },
+  "modules": {
+    "webItem": [
+      {
+        "url": "/blue/organizations/jenkins/{repository.name}/activity/",
+        "name": {
+          "value": "Open Jenkins BlueOcean"
+        },
+        "location": "org.bitbucket.repository.navigation",
+        "key": "open-jenkins-pipelines",
+        "icon":{
+          "url": "https://3454be85.ngrok.io/jenkins/plugin/blueocean-rest-impl/images/48x48/blueocean.png",
+          "width": 48,
+          "height":48
+        }
+      }
+    ],
+    "repoPage": [
+      {
+        "url": "https://3454be85.ngrok.io/jenkins/blue/",
+        "name": {
+          "value": "Jenkins BlueOcean"
+        },
+        "location": "org.bitbucket.repository.actions",
+        "key": "repo-page-action",
+        "icon":{
+          "url": "https://3454be85.ngrok.io/jenkins/plugin/blueocean-rest-impl/images/48x48/blueocean.png",
+          "width": 48,
+          "height":48
+        }
+      }
+    ],
+    "webPanel": [
+      {
+        "url": "https://3454be85.ngrok.io/jenkins/blue/organizations/jenkins/bitbucket-connect/",
+        "name": {
+          "value": "Jenkins BlueOcean Pipelines"
+        },
+        "location": "org.bitbucket.repository.overview.informationPanel",
+        "key": "dashboard-web-panel"
+      }
+    ]
+  },
+  "scopes":["repository:write", "account", "team"],
+  "contexts": ["account"]
+}

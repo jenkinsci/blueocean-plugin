@@ -1,14 +1,13 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 
-import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMNavigator;
+import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSource;
 import hudson.model.TopLevelItem;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbOrg;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmOrganization;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmRepositoryContainer;
-import jenkins.branch.OrganizationFolder;
+import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
-import jenkins.scm.api.SCMNavigator;
 import org.kohsuke.stapler.export.Exported;
 
 /**
@@ -48,12 +47,12 @@ public class BitbucketOrg extends ScmOrganization {
     @Override
     public boolean isJenkinsOrganizationPipeline() {
         for(TopLevelItem item: Jenkins.getInstance().getItems()){
-            if(item instanceof OrganizationFolder){
-                OrganizationFolder folder = (OrganizationFolder) item;
-                for(SCMNavigator navigator: folder.getNavigators()) {
-                    if (navigator instanceof BitbucketSCMNavigator) {
-                        BitbucketSCMNavigator scmNavigator = (BitbucketSCMNavigator) navigator;
-                        if(scmNavigator.getRepoOwner().equals(getName())){
+            if(item instanceof MultiBranchProject){
+                MultiBranchProject folder = (MultiBranchProject) item;
+                for(Object source: folder.getSCMSources()) {
+                    if (source instanceof BitbucketSCMSource) {
+                        BitbucketSCMSource scmNavigator = (BitbucketSCMSource) source;
+                        if(scmNavigator.getRepoOwner().equals(getKey())){
                             return true;
                         }
                     }

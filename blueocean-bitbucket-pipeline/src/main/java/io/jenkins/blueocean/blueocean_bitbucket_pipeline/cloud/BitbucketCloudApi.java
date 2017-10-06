@@ -1,12 +1,15 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud;
 
+import com.cloudbees.jenkins.plugins.bitbucket.client.BitbucketConnectJwtCredentials;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.fasterxml.jackson.core.type.TypeReference;
 import hudson.Extension;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApiFactory;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.HttpRequest;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.HttpResponse;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.model.BbCloudBranch;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.model.BbCloudConnectLifecyclePayload;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.model.BbCloudPage;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.model.BbCloudRepo;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud.model.BbCloudSaveContentResponse;
@@ -18,21 +21,21 @@ import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbPage;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbRepo;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbSaveContentResponse;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbUser;
+import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.pageable.PagedResponse;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.NotImplementedException;
-import org.apache.http.HttpEntity;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.NotImplementedException;
+import org.apache.http.HttpEntity;
+import org.apache.http.client.HttpResponseException;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import static io.jenkins.blueocean.commons.JsonConverter.om;
 import static org.apache.commons.lang.StringUtils.isNotBlank;
 
@@ -45,6 +48,75 @@ public class BitbucketCloudApi extends BitbucketApi {
     protected BitbucketCloudApi(String apiUrl, StandardUsernamePasswordCredentials credentials) {
         super(apiUrl, credentials);
         this.baseUrl = this.apiUrl+"api/2.0/";
+    }
+
+
+
+    /**
+     * Initiate Bitbucket Cloud connect request
+     * @param redirectUri url where bitbucket will redirect back. It's a url on Jenkins host
+     * @param descriptor Bitbucket connect descriptor
+     * @return Bitbucket redirect URL.
+     */
+    public static String initiateAddOnInstall(String redirectUri, String descriptor){
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create()
+                .addTextBody("descriptor", descriptor)
+                .addTextBody("redirect_uri", redirectUri);
+
+        HttpEntity entity = builder.build();
+        HttpRequest request = new HttpRequest.HttpRequestBuilder("https://bitbucket.org/").build();
+        HttpResponse resp = request.post("https://bitbucket.org/site/addons/request_token", entity);
+//            HttpClient instance = HttpClientBuilder.create().disableRedirectHandling().build();
+//            HttpPost httpPost = new HttpPost("https://bitbucket.org/site/addons/request_token");
+//            httpPost.setEntity(entity);
+//            HttpResponse resp = instance.execute(httpPost);;
+        int status = resp.getStatus();
+        if(status == 303){
+            return resp.getHeader("Location");
+        }else{
+            throw new ServiceException.UnexpectedErrorException("Failed to initiate Bitbucket connect request: "+status);
+        }
+    }
+
+    public static BbCloudConnectLifecyclePayload completeAddOnInstall(String code, String descriptor){
+        try {
+            MultipartEntityBuilder builder = MultipartEntityBuilder.create()
+                    .addTextBody("descriptor", descriptor)
+                    .addTextBody("code", code);
+
+            HttpEntity entity = builder.build();
+
+            HttpRequest request = new HttpRequest.HttpRequestBuilder("https://bitbucket.org/").build();
+            HttpResponse resp = request.post("https://bitbucket.org/site/addons/install", entity);
+
+//            Response response = Request.Post("https://bitbucket.org/site/addons/install")
+//                    .body(entity)
+//                    .execute();
+//            HttpResponse resp = response.returnResponse();
+            int status = resp.getStatus();
+            if(status == 200){
+                return JsonConverter.om.readValue(resp.getContent(), BbCloudConnectLifecyclePayload.class);
+            }else{
+                String error = IOUtils.toString(resp.getContent());
+                throw new ServiceException.UnexpectedErrorException(
+                        String.format("Failed to complete Bitbucket connect request, status:%s, error: %s",status, error));
+            }
+        } catch (IOException e) {
+            throw doHandleException(e);
+        }
+    }
+
+    static BbUser getUserUsingJwt(String authHeader) {
+        try {
+            HttpRequest request = new HttpRequest.HttpRequestBuilder("https://bitbucket.org/").build();
+            HttpResponse resp = request.get("https://bitbucket.org/api/2.0/user");
+//            InputStream inputStream = Request.Get("https://bitbucket.org/api/2.0/user")
+//                    .addHeader("Authorization", authHeader)
+//                    .execute().returnContent().asStream();
+            return om.readValue(resp.getContent(), BbCloudUser.class);
+        } catch (IOException e) {
+            throw doHandleException(e);
+        }
     }
 
     @Nonnull
@@ -151,6 +223,15 @@ public class BitbucketCloudApi extends BitbucketApi {
         }
     }
 
+    @Override
+    protected String getAuthorizationHeader(StandardUsernamePasswordCredentials credentials) {
+        if(credentials instanceof BitbucketConnectJwtCredentials) {
+            return "JWT "+((BitbucketConnectJwtCredentials) credentials).getJwtToken();
+        }
+        return super.getAuthorizationHeader(credentials);
+    }
+
+
     @Nonnull
     @Override
     public String getContent(@Nonnull String orgId, @Nonnull String repoSlug, @Nonnull String path, @Nonnull String commitId) {
@@ -246,6 +327,13 @@ public class BitbucketCloudApi extends BitbucketApi {
         throw new NotImplementedException("Not implemented");
     }
 
+    static ServiceException doHandleException(Exception e){
+        if(e instanceof HttpResponseException){
+            return new ServiceException(((HttpResponseException) e).getStatusCode(), e.getMessage(), e);
+        }
+        return new ServiceException.UnexpectedErrorException(e.getMessage(), e);
+    }
+
     @Extension
     public static class BitbucketCloudApiFactory extends BitbucketApiFactory {
         @Override
@@ -259,5 +347,4 @@ public class BitbucketCloudApi extends BitbucketApi {
             return new BitbucketCloudApi(apiUrl, credentials);
         }
     }
-
 }

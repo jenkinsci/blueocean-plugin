@@ -13,7 +13,8 @@ import { CreateMbpOutcome } from '../api/BbCreationApi';
 
 import BbLoadingStep from '../steps/BbLoadingStep';
 import BbCredentialsStep from '../steps/BbCredentialStep';
-import BbOrgListStep from '../steps/BbOrgListStep';
+import BbCloudCredentialsStep from './steps/BbCloudCredentialStep';
+import BbCloudOrgListStep from './steps/BbCloudOrgListStep';
 import BbRepositoryStep from '../steps/BbRepositoryStep';
 import BbCompleteStep from '../steps/BbCompleteStep';
 import BbUnknownErrorStep from '../steps/BbUnknownErrorStep';
@@ -30,7 +31,15 @@ export default class BbCloudFlowManager extends FlowManager {
 
     credentialId = null;
 
-    credentialSelected = false;
+    get credentialId() {
+        const cid = this.credentialManager && this.credentialManager.credentialId;
+        if (cid) {
+            return cid;
+        } else if (this.selectedOrganization) {
+            return `bitbucket-cloud-connect-${this.selectedOrganization.key}`;
+        }
+        return '';
+    }
 
     @observable
     organizations = [];
@@ -106,7 +115,7 @@ export default class BbCloudFlowManager extends FlowManager {
     }
 
     onInitialized() {
-        this._renderCredentialsStep();
+        this._renderLoadingOrganizations();
         this.setPlaceholders(translate('creation.core.status.completed'));
     }
 
@@ -118,20 +127,29 @@ export default class BbCloudFlowManager extends FlowManager {
         return null;
     }
 
-    _renderCredentialsStep() {
+    _findExistingCredentialComplete(success) {
+        if (success) {
+            this.changeState(STATE.PENDING_LOADING_ORGANIZATIONS);
+            this.listOrganizations();
+        } else {
+            this.renderCredentialStep();
+        }
+    }
+
+    renderCredentialStep() {
         this.renderStep({
             stateId: STATE.STEP_CREDENTIAL,
-            stepElement: <BbCredentialsStep
-                onCredentialSelected={(cred, selectionType) => this._onCredentialSelected(cred, selectionType)}
-            />,
-            afterStateId: this._getCredentialsStepAfterStateId(),
+            stepElement: <BbCloudCredentialsStep />,
         });
     }
 
-    _onCredentialSelected(credential, selectionType) {
-        this.credentialId = credential.credentialId;
-        this.credentialSelected = selectionType === 'userSelected';
-        this._renderLoadingOrganizations();
+
+    _getCredentialsStepAfterStateId() {
+        return null;
+    }
+    createCredential(userName, password) {
+        return this.credentialManager.createCredential(this.getApiUrl(), userName, password)
+            .then(success => this._createCredentialComplete(success));
     }
 
     _getOrganizationsStepAfterStateId() {
@@ -161,9 +179,14 @@ export default class BbCloudFlowManager extends FlowManager {
 
     @action
     listOrganizations() {
-        this._creationApi.listOrganizations(this.credentialId, this.getApiUrl())
+        this._creationApi.listOrganizations('', this.getApiUrl())
             .then(waitAtLeast(MIN_DELAY))
             .then(orgs => this._listOrganizationsSuccess(orgs));
+    }
+
+    @action
+    _renderOrgStep() {
+        return <BbCloudOrgListStep />;
     }
 
     @action
@@ -190,7 +213,7 @@ export default class BbCloudFlowManager extends FlowManager {
     _renderChooseOrg() {
         this.renderStep({
             stateId: STATE.STEP_CHOOSE_ORGANIZATION,
-            stepElement: <BbOrgListStep />,
+            stepElement: <BbCloudOrgListStep />,
             afterStateId: this._getOrganizationsStepAfterStateId(),
         });
     }

@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
+import hudson.util.Secret;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbBranch;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbOrg;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbPage;
@@ -8,6 +9,8 @@ import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbRepo;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbSaveContentResponse;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbUser;
 import io.jenkins.blueocean.commons.ServiceException;
+import java.io.UnsupportedEncodingException;
+import org.apache.commons.codec.binary.Base64;
 import org.apache.http.client.HttpResponseException;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -31,7 +34,7 @@ public abstract class BitbucketApi {
 
     protected BitbucketApi(@Nonnull String apiUrl, @Nonnull StandardUsernamePasswordCredentials credentials) {
         this.apiUrl = ensureTrailingSlash(apiUrl);
-        this.request = new HttpRequest.HttpRequestBuilder(apiUrl).credentials(credentials).build();
+        this.request = new HttpRequest.HttpRequestBuilder(apiUrl).authenticationHeader(getAuthorizationHeader(credentials)).build();
         this.userName = credentials.getUsername();
     }
 
@@ -199,5 +202,15 @@ public abstract class BitbucketApi {
             return url+"/";
         }
         return url;
+    }
+
+    protected String getAuthorizationHeader(StandardUsernamePasswordCredentials credentials){
+        try {
+            return String.format("Basic %s",
+                    Base64.encodeBase64String(String.format("%s:%s", credentials.getUsername(),
+                            Secret.toString(credentials.getPassword())).getBytes("UTF-8")));
+        } catch (UnsupportedEncodingException e) {
+            throw new ServiceException.UnexpectedErrorException("Failed to create basic auth header: "+e.getMessage(), e);
+        }
     }
 }
