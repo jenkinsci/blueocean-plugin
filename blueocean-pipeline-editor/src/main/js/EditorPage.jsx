@@ -113,6 +113,7 @@ class SaveDialog extends React.Component {
                         <input
                             className="TextInput-control"
                             type="text"
+                            placeholder="my-new-branch"
                             value={this.state.branch}
                             onChange={event => this.processBranchName(event)}
                             disabled={this.state.branch !== this.branchOptions[1].branch || this.state.saving}
