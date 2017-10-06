@@ -11,8 +11,8 @@
     "test:watch": "jjsbuilder --tasks test:watch",
     "bundle": "jjsbuilder --tasks bundle",
     "bundle:watch": "jjsbuilder --tasks bundle:watch",
-    "mvnbuild": "jjsbuilder --tasks bundle",
-    "mvntest": "jjsbuilder --tasks test,lint"
+    "mvnbuild": "jjsbuilder --tasks lint,bundle",
+    "mvntest": "jjsbuilder --tasks test"
   },
   "author": "Josh McDonald <josh@joshmcdonald.info> (https://github.com/sophistifunk)",
   "license": "MIT",
