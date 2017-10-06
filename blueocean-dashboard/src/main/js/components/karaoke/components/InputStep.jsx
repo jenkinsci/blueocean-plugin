@@ -101,7 +101,7 @@ export default class InputStep extends Component {
             logger.debug('sanity check failed. Returning Alert instead of the form.');
             const alertCaption = [
                 <p>{translate('inputStep.error.message')}</p>,
-                <a href={this.props.classicInputUrl} target="_blank">{translate('inputStep.error.linktext')}</a>
+                <a href={this.props.classicInputUrl} target="_blank">{translate('inputStep.error.linktext')}</a>,
             ];
             const alertTitle = translate('inputStep.error.title', { defaultValue: 'Error' });
             return (<div className="inputStep">
