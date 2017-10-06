@@ -36,6 +36,8 @@ class SaveDialog extends React.Component {
            { branch: branch, toString: () => ['Commit to ', <i>{branch}</i>]},
            { branch: '', toString: () => `Commit to new branch`},
        ];
+
+       this.processBranchName = this.processBranchName.bind(this);
     }
 
     save() {
@@ -82,6 +84,12 @@ class SaveDialog extends React.Component {
         this.setState({ saving: false, errorMessage });
     }
 
+    processBranchName(event) {
+        const cleanBranchName = event.target.value.replace(/\s/g, "");
+
+        this.setState({branch: this.branchOptions[1].branch = cleanBranchName});
+    }
+
     render() {
         const { branch } = this.props;
         const { errorMessage } = this.state;
@@ -103,8 +111,15 @@ class SaveDialog extends React.Component {
                     onChange={o => this.setState({branch: o.branch})} disabled={this.state.saving} />
                 <div className="indent-form" style={{marginBottom: '-6px'}}>
                 <FormElement className="customBranch" errorMessage={this.state.branchError}>
-                    <TextInput placeholder="my-new-branch" onChange={value => this.setState({branch: this.branchOptions[1].branch = value})}
-                        disabled={this.state.branch !== this.branchOptions[1].branch || this.state.saving} />
+                    <div className="TextInput">
+                        <input
+                            className="TextInput-control"
+                            type="text"
+                            value={this.state.branch}
+                            onChange={this.processBranchName}
+                            disabled={this.state.branch !== this.branchOptions[1].branch || this.state.saving}
+                        />
+                    </div>
                 </FormElement>
                 </div>
             </Dialog>
