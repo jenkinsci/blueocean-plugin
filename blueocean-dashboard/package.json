@@ -14,8 +14,8 @@
     "test:watch": "gulp test:debug",
     "bundle": "gulp bundle",
     "bundle:watch": "gulp bundle:watch",
-    "mvnbuild": "gulp bundle",
-    "mvntest": "gulp test lint"
+    "mvnbuild": "gulp lint bundle",
+    "mvntest": "gulp test"
   },
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
