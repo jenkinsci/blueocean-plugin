@@ -13,7 +13,7 @@ describe('UrlUtils', () => {
                 'jenkins'
             );
 
-            assert.equal(url, '/organizations/jenkins/foo');
+            assert.equal(url, '/organizations/jenkins');
         });
     });
     describe('buildPipelineUrl', () => {
