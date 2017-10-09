@@ -85,7 +85,8 @@ class SaveDialog extends React.Component {
     processBranchName(event) {
         const cleanBranchName = event.target.value.replace(/\s/g, "");
 
-        this.setState({branch: this.branchOptions[1].branch = cleanBranchName});
+        this.branchOptions[1].branch = cleanBranchName;
+        this.setState({branch: cleanBranchName});
     }
 
     render() {
