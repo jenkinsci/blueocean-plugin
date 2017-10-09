@@ -5,7 +5,6 @@ import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -34,9 +33,6 @@ public class GithubCreationPage {
 
     @FindBy(css = ".button-connect")
     public WebElement connectButton;
-
-    @FindBy(css = ".button-single-repo")
-    public WebElement singlePipelineBtn;
 
     @FindBy(css = ".repo-list input")
     public WebElement pipelineSearchInput;
