@@ -38,7 +38,7 @@ public class GithubCreationPage {
     public WebElement pipelineSearchInput;
 
     @FindBy(css = ".button-create")
-    public WebElement createBtn;
+    public WebElement createPipelineButton;
 
     @Inject
     @BaseUrl
@@ -107,6 +107,10 @@ public class GithubCreationPage {
         logger.info("Selected pipeline to create");
     }
 
+    public void clickCreatePipelineButton() {
+        wait.until(ExpectedConditions.elementToBeClickable(createPipelineButton)).click();
+    }
+
     public By emptyRepositoryCreateButton = By.cssSelector(".jenkins-pipeline-create-missing-jenkinsfile > div > button");
 
     public void createPipeline(String apikey, String org, String pipeline) throws IOException {
@@ -139,8 +143,7 @@ public class GithubCreationPage {
         logger.info("Select a repo to create");
 
         selectPipelineToCreate(pipeline);
-
-        wait.until(createBtn).click();
+        clickCreatePipelineButton();
 
         if(createJenkinsFile) {
             WebElement createJenkinsFileButton = wait
