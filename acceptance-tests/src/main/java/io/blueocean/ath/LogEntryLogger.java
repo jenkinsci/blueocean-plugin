@@ -47,9 +47,11 @@ class LogEntryLogger {
     // special handling to suppress some repetitive logging messages that are not helpful
     private static final String MESSAGE_JS_LOGGING = "@jenkins-cd/logging is explained";
     private static final String MESSAGE_CHROME_CONSOLE = "Chrome displays console errors";
+    private static final String MESSAGE_PASSWORD_INSECURE = "page includes a password or credit card input";
 
     static boolean isSuperfluousLogEntry(LogEntry entry) {
         String message = entry.getMessage();
-        return message.contains(MESSAGE_JS_LOGGING) || message.contains(MESSAGE_CHROME_CONSOLE);
+        return message.contains(MESSAGE_JS_LOGGING) || message.contains(MESSAGE_CHROME_CONSOLE) ||
+            message.contains(MESSAGE_PASSWORD_INSECURE);
     }
 }
