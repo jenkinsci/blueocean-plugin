@@ -133,7 +133,7 @@ public abstract class Property implements Comparable<Property> {
         TreePruner child = pruner.accept(object, this);
         if (child==null)        return;
 
-        Object d = writer.getExportConfig().getExportInterceptor().getValue(this,object,writer.getExportConfig());
+        Object d = writer.getExportConfig().getExportInterceptor().getValue(this,object, writer.getExportConfig());
 
         if ((d==null && skipNull) || d == ExportInterceptor.SKIP) { // don't write anything
             return;
@@ -141,16 +141,13 @@ public abstract class Property implements Comparable<Property> {
         if (merge) {
             // merged property will get all its properties written here
             if (d != null) {
-                Model model;
-                try {
-                    model = owner.get(d.getClass(), parent.type, name);
-                } catch (NotExportableException e) {
-                    if(writer.getExportConfig().isSkipIfFail()){
-                        return;
-                    }
-                    throw e;
+                Class<?> objectType = d.getClass();
+                Model model = owner.getOrNull(objectType, parent.type, name);
+                if (model == null && !writer.getExportConfig().isSkipIfFail()) {
+                    throw new NotExportableException(objectType);
+                } else if (model != null) {
+                    model.writeNestedObjectTo(d, new FilteringTreePruner(parent.HAS_PROPERTY_NAME_IN_ANCESTORY,child), writer);
                 }
-                model.writeNestedObjectTo(d, new FilteringTreePruner(parent.HAS_PROPERTY_NAME_IN_ANCESTORY,child), writer);
             }
         } else {
             writer.name(name);
@@ -188,6 +185,7 @@ public abstract class Property implements Comparable<Property> {
     /**
      * Writes one value of the property to {@link DataWriter}.
      */
+    @SuppressWarnings("unchecked")
     private void writeValue(Type expected, Object value, TreePruner pruner, DataWriter writer, boolean skipIfFail) throws IOException {
         if(value==null) {
             writer.valueNull();
@@ -201,10 +199,8 @@ public abstract class Property implements Comparable<Property> {
 
         Class c = value.getClass();
 
-        Model model;
-        try {
-            model = owner.get(c, parent.type, name);
-        } catch (NotExportableException ex) {
+        Model model = owner.getOrNull(c, parent.type, name);
+        if (model == null) {
             if(STRING_TYPES.contains(c)) {
                 writer.value(value.toString());
                 return;
@@ -300,19 +296,13 @@ public abstract class Property implements Comparable<Property> {
                 return;
             }
 
-            throw ex;
-        }
-
-        try {
+            throw new NotExportableException(c);
+        } else {
             writer.type(expected, value.getClass());
-        } catch (AbstractMethodError _) {
-            // legacy impl that doesn't understand it
+            writer.startObject();
+            model.writeNestedObjectTo(value, pruner, writer);
+            writer.endObject();
         }
-
-
-        writer.startObject();
-        model.writeNestedObjectTo(value, pruner, writer);
-        writer.endObject();
     }
 
     private static class BufferedDataWriter implements DataWriter {
