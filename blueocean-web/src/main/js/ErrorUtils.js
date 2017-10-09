@@ -31,7 +31,7 @@ function logApplicationError(messageOrEvent) {
         message = messageOrEvent;
     }
 
-    console.error('Unhandled Error: ', JSON.stringify(message, null, 4));
+    console.error('Unhandled Error: ' + JSON.stringify(message, null, 4));
 
     if (messageOrEvent.preventDefault) {
         messageOrEvent.preventDefault();
@@ -49,7 +49,7 @@ function logUnhandledPromiseRejection(errorEvent) {
         message = errorEvent;
     }
 
-    console.error('Unhandled Rejection: ', JSON.stringify(message, null, 4));
+    console.error('Unhandled Rejection: ' + JSON.stringify(message, null, 4));
 
     if (errorEvent.preventDefault) {
         errorEvent.preventDefault();
