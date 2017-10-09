@@ -78,8 +78,8 @@ module.exports = {
         //click the re run button
         blueRunDetailPage.waitForElementVisible('.result-item.failure.expanded');
         blueRunDetailPage.clickReRunButton();
-        // TODO: this wait fails frequently (in Chrome at least). the stage graph stays visible and is not replaced
-        // when the data is refetched
+        // once the new run starts, the stage graph should disappear and then be re-rendered
+        // TODO: this wait fails frequently (in Chrome at least). the stage graph is not updated after new run starts
         blueRunDetailPage.waitForElementNotPresent('.result-item.failure.expanded');
 
         //Ccheck that it runs and we could stop if if we want to
@@ -92,9 +92,9 @@ module.exports = {
         blueRunDetailPage.waitForElementVisible('.pipeline-node-selected');
         blueRunDetailPage.waitForElementVisible('.download-log-button');
         blueRunDetailPage.waitForElementVisible('.pipeline-selection-highlight');
-        // TODO: these 2 waits also seem to fail in Chrome
-        blueRunDetailPage.waitForElementVisible('.pipeline-connector');
-        blueRunDetailPage.waitForElementVisible('.pipeline-node-hittarget');
+        // in Chrome, 'Visible' seems to fail but 'Present' works ok
+        blueRunDetailPage.waitForElementPresent('.pipeline-connector');
+        blueRunDetailPage.waitForElementPresent('.pipeline-node-hittarget');
 
         // this will show up when it has finished replaying
         blueRunDetailPage.waitForElementVisible('.replay-button');
