@@ -2,6 +2,7 @@ package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.google.common.base.Function;
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Objects;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
@@ -65,7 +66,7 @@ public class GithubIssue extends BlueIssue {
                 return null;
             }
             GitHubSCMSource gitHubSource = (GitHubSCMSource)source;
-            String apiUri = MoreObjects.firstNonNull(gitHubSource.getApiUri(), GitHubServerConfig.GITHUB_URL);
+            String apiUri = Objects.firstNonNull(gitHubSource.getApiUri(), GitHubServerConfig.GITHUB_URL);
             final String repositoryUri = new HttpsRepositoryUriResolver().getRepositoryUri(apiUri, gitHubSource.getRepoOwner(), gitHubSource.getRepository());
             return Collections2.transform(findIssueKeys(changeSetEntry.getMsg()), new Function<String, BlueIssue>() {
                 @Override
