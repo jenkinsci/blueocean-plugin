@@ -29,8 +29,6 @@ const translate = i18nTranslator('blueocean-dashboard');
 
 export default class BbCloudFlowManager extends FlowManager {
 
-    credentialId = null;
-
     get credentialId() {
         const cid = this.credentialManager && this.credentialManager.credentialId;
         if (cid) {

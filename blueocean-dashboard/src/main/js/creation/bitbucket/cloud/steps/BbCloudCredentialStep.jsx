@@ -16,14 +16,6 @@ export default class BbCredentialsStep extends React.Component {
         };
     }
 
-    _createCredential() {
-        const valid = this._performValidation();
-        if (!valid) {
-            return;
-        }
-        this.props.flowManager.createCredential(this.state.usernameValue, this.state.passwordValue);
-    }
-
     _installAddOn() {
         this.setState({
             installResult: 'running',
