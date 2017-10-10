@@ -54,7 +54,8 @@ public class GithubIssue extends BlueIssue {
                 return null;
             }
             MultiBranchProject mbp = (MultiBranchProject)job.getParent();
-            SCMSource source = getFirst((List<SCMSource>)mbp.getSCMSources());
+            List<SCMSource> scmSources = (List<SCMSource>) mbp.getSCMSources();
+            SCMSource source = scmSources.isEmpty() ? null : scmSources.get(0);
             if (source == null || !(source instanceof GitHubSCMSource)) {
                 return null;
             }
@@ -68,14 +69,6 @@ public class GithubIssue extends BlueIssue {
                 results.add(new GithubIssue("#" + input, String.format("%s/issues/%s", uri, input)));
             }
             return results;
-        }
-
-        private SCMSource getFirst(List<SCMSource> scmSources) {
-            if (scmSources.isEmpty()) {
-                return null;
-            } else {
-                return scmSources.get(0);
-            }
         }
 
     }
