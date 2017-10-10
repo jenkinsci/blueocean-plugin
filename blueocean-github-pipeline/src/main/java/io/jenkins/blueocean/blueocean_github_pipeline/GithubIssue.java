@@ -59,7 +59,8 @@ public class GithubIssue extends BlueIssue {
                 return null;
             }
             GitHubSCMSource gitHubSource = (GitHubSCMSource)source;
-            String apiUri = getApiUri(gitHubSource);
+            String url = gitHubSource.getApiUri();
+            String apiUri = (url == null) ? GitHubServerConfig.GITHUB_URL : url;
             final String repositoryUri = new HttpsRepositoryUriResolver().getRepositoryUri(apiUri, gitHubSource.getRepoOwner(), gitHubSource.getRepository());
             Collection<BlueIssue> results = new ArrayList<>();
             for (String input : findIssueKeys(changeSetEntry.getMsg())) {
@@ -77,15 +78,6 @@ public class GithubIssue extends BlueIssue {
             }
         }
 
-    }
-
-    private static String getApiUri(GitHubSCMSource gitHubSource) {
-        String url = gitHubSource.getApiUri();
-        if (url != null) {
-            return url;
-        } else {
-            return GitHubServerConfig.GITHUB_URL;
-        }
     }
 
     static Collection<String> findIssueKeys(String input) {
