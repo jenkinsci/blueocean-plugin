@@ -26,6 +26,7 @@ package io.jenkins.blueocean.commons.stapler.export;
 import org.kohsuke.stapler.export.ExportedBean;
 
 import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,18 +39,39 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ModelBuilder {
     /**
      * Instantiated {@link Model}s.
-     * Registration happens in {@link Model#Model(org.kohsuke.stapler.export.ModelBuilder,Class)} so that cyclic references
+     * Registration happens in {@link Model#Model(ModelBuilder, Class, Class, String)} so that cyclic references
      * are handled correctly.
      */
     /*package*/ final Map<Class, Model> models = new ConcurrentHashMap<Class, Model>();
 
+    @Nonnull
     public <T> Model<T> get(Class<T> type) throws NotExportableException {
         return get(type, null, null);
     }
 
+    /**
+     * @throws NotExportableException if type is not exportable
+     * @return model
+     */
+    @Nonnull
     public <T> Model<T> get(Class<T> type, @CheckForNull Class<?> propertyOwner, @Nullable String property) throws NotExportableException {
-        Model m = models.get(type);
-        if(m==null) {
+        Model<T> model = getOrNull(type, propertyOwner, property);
+        if (model == null) {
+            throw new NotExportableException(type);
+        }
+        return model;
+    }
+
+    /**
+     * Instead of throwing {@link NotExportableException} this method will return null
+     * This should be used on hot paths where throwing the exception and catching it would incur a performance hit
+     * @return model
+     * @since 1.253
+     */
+    @CheckForNull
+    public <T> Model<T> getOrNull(Class<T> type, @CheckForNull Class<?> propertyOwner, @Nullable String property) {
+        Model<T> m = models.get(type);
+        if(m==null && type.getAnnotation(ExportedBean.class) != null) {
             m = new Model<T>(this, type, propertyOwner, property);
         }
         return m;

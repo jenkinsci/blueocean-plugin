@@ -90,6 +90,7 @@ class StatusIndicator extends Component {
         return (
             <svg className={groupClasses.join(' ')} xmlns="http://www.w3.org/2000/svg"
               viewBox={`0 0 ${2 * radius} ${2 * radius}`} width={width} height={height}
+              focusable={false}
             >
                 <title>{resultClean}</title>
                 <g transform={transforms.join(' ')}>

@@ -14,9 +14,7 @@ import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueOrganizationFolder;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
-import jenkins.model.Jenkins;
 import jenkins.scm.api.metadata.AvatarMetadataAction;
-
 import org.acegisecurity.Authentication;
 import org.junit.Before;
 import org.junit.Rule;
@@ -48,7 +46,7 @@ import static org.mockito.Mockito.when;
 @PrepareForTest({OrganizationFactory.class, OrganizationFolder.class, StaplerRequest.class})
 public class OrganizationFolderTest{
     @Rule
-    JenkinsRule j = new JenkinsRule();
+    JenkinsRule j = new PipelineBaseTest.PipelineBaseJenkinsRule();
 
     private BlueOrganization organization;
     private OrganizationFolder orgFolder;

@@ -2,7 +2,6 @@ package io.blueocean.ath.live;
 
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.Login;
-import io.blueocean.ath.Retry;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.pages.blue.ActivityPage;
@@ -119,7 +118,6 @@ public class GithubEditorTest {
      *
      * Creates a blank github repo, and then uses editor to create a simple pipeline.
      */
-    @Retry(3)
     @Test
     public void testEditor() throws IOException {
         creationPage.createPipeline(token, organization, repo, true);
@@ -131,7 +129,7 @@ public class GithubEditorTest {
         sseClient.clear();
         BranchPage branchPage = activityPage.clickBranchTab();
         branchPage.openEditor("master");
-        editorPage.saveBranch("new-branch");
+        editorPage.saveBranch("new - branch");
         activityPage.checkUrl();
         activityPage.getRunRowForBranch("new-branch");
 

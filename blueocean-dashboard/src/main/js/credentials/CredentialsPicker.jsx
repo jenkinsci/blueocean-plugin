@@ -78,6 +78,8 @@ CredentialsPicker.propTypes = {
     type: PropTypes.string,
     onStatus: PropTypes.func,
     onComplete: PropTypes.func,
+    requirePush: PropTypes.bool,
+    branch: PropTypes.string,
     dialog: PropTypes.bool,
     pipeline: PropTypes.object,
     repositoryUrl: PropTypes.string,

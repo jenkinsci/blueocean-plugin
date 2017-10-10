@@ -23,14 +23,17 @@
  */
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
-import java.io.IOException;
-import java.util.logging.Logger;
-
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.service.embedded.util.UserSSHKeyManager;
-import jenkins.plugins.git.GitSCMSource;
+import io.jenkins.blueocean.credential.CredentialsUtils;
+import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
+import io.jenkins.blueocean.ssh.UserSSHKeyManager;
+import jenkins.plugins.git.AbstractGitSCMSource;
+
+import javax.annotation.CheckForNull;
+import java.io.IOException;
+import java.util.logging.Logger;
 
 /**
  * @author kzantow
@@ -38,7 +41,7 @@ import jenkins.plugins.git.GitSCMSource;
 abstract class GitReadSaveRequest  {
     final static Logger log = Logger.getLogger(GitReadSaveRequest.class.getName());
 
-    final GitSCMSource gitSource;
+    final AbstractGitSCMSource gitSource;
     final String branch;
     final String commitMessage;
     final String sourceBranch;
@@ -46,7 +49,7 @@ abstract class GitReadSaveRequest  {
     final byte[] contents;
 
     GitReadSaveRequest(
-            GitSCMSource gitSource,
+            AbstractGitSCMSource gitSource,
             String branch, String commitMessage,
             String sourceBranch, String filePath,
             byte[] contents) {
@@ -58,15 +61,17 @@ abstract class GitReadSaveRequest  {
         this.contents = contents == null ? null : contents.clone(); // grr findbugs
     }
 
-    StandardCredentials getCredential() {
+    @CheckForNull StandardCredentials getCredential() {
         StandardCredentials credential = null;
-        if (GitUtils.isSshUrl(gitSource.getRemote())) {
+        if (GitUtils.isSshUrl(gitSource.getRemote()) || GitUtils.isLocalUnixFileUrl(gitSource.getRemote())) {
             // Get committer info and credentials
             User user = User.current();
             if (user == null) {
                 throw new ServiceException.UnauthorizedException("Not authenticated");
             }
             credential = UserSSHKeyManager.getOrCreate(user);
+        } else {
+            throw new ServiceException.UnauthorizedException("Editing only supported for repositories using SSH");
         }
         return credential;
     }

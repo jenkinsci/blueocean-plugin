@@ -1,14 +1,15 @@
 import React from 'react';
 import { FormElement, TextInput } from '@jenkins-cd/design-language';
+import { getArg, setArg } from '../../services/PipelineMetadataService';
 
 export default class StringPropertyInput extends React.Component {
     render() {
         const { type: p, step } = this.props;
         return (
             <FormElement title={p.capitalizedName + (p.isRequired ? '*' : '')}
-                errorMessage={!step.pristine && p.isRequired && !step.data[p.name] && (p.capitalizedName + ' is required')}>
-                <TextInput defaultValue={step.data[this.props.propName]}
-                    onChange={val => { step.data[this.props.propName] = val; this.props.onChange(step); }}/>
+                errorMessage={!step.pristine && p.isRequired && !getArg(step, p.name).value && (p.capitalizedName + ' is required')}>
+                <TextInput defaultValue={getArg(step, this.props.propName).value}
+                    onChange={val => { setArg(step, this.props.propName, val); this.props.onChange(step); }}/>
             </FormElement>
         );
     }

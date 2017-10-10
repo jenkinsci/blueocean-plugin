@@ -21,12 +21,11 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.jenkins.blueocean.service.embedded;
+package io.jenkins.blueocean.ssh;
 
 import com.jcraft.jsch.JSch;
 import com.jcraft.jsch.JSchException;
 import com.jcraft.jsch.KeyPair;
-import io.jenkins.blueocean.service.embedded.util.SSHKeyUtils;
 import org.junit.Assert;
 import org.junit.Test;
 
