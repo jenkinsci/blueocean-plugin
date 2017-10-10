@@ -1,10 +1,6 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
-import com.google.common.base.Function;
-import com.google.common.base.Objects;
-import com.google.common.collect.Collections2;
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Lists;
+
 import hudson.Extension;
 import hudson.model.Job;
 import hudson.scm.ChangeLogSet;
@@ -16,6 +12,7 @@ import org.jenkinsci.plugins.github.config.GitHubServerConfig;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.jenkinsci.plugins.github_branch_source.HttpsRepositoryUriResolver;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -57,26 +54,33 @@ public class GithubIssue extends BlueIssue {
                 return null;
             }
             MultiBranchProject mbp = (MultiBranchProject)job.getParent();
-            SCMSource source = Iterables.getFirst((List<SCMSource>)mbp.getSCMSources(), null);
+            SCMSource source = getFirst((List<SCMSource>)mbp.getSCMSources());
             if (!(source instanceof GitHubSCMSource)) {
                 return null;
             }
             GitHubSCMSource gitHubSource = (GitHubSCMSource)source;
-            String apiUri = Objects.firstNonNull(gitHubSource.getApiUri(), GitHubServerConfig.GITHUB_URL);
+            String apiUri = (gitHubSource.getApiUri() != null) ? gitHubSource.getApiUri() : GitHubServerConfig.GITHUB_URL;
             final String repositoryUri = new HttpsRepositoryUriResolver().getRepositoryUri(apiUri, gitHubSource.getRepoOwner(), gitHubSource.getRepository());
-            return Collections2.transform(findIssueKeys(changeSetEntry.getMsg()), new Function<String, BlueIssue>() {
-                @Override
-                public BlueIssue apply(String input) {
-                    // Remove ".git"
-                    String uri = repositoryUri.substring(0, repositoryUri.length() - 4);
-                    return new GithubIssue("#" + input, String.format("%s/issues/%s", uri, input));
-                }
-            });
+            Collection<BlueIssue> results = new ArrayList<>();
+            for (String input : findIssueKeys(changeSetEntry.getMsg())) {
+                String uri = repositoryUri.substring(0, repositoryUri.length() - 4);
+                results.add(new GithubIssue("#" + input, String.format("%s/issues/%s", uri, input)));
+            }
+            return results;
         }
+
+        private SCMSource getFirst(List<SCMSource> scmSources) {
+            if (scmSources.isEmpty()) {
+                return null;
+            } else {
+                return scmSources.get(0);
+            }
+        }
+
     }
 
     static Collection<String> findIssueKeys(String input) {
-        Collection<String> ids = Lists.newArrayList();
+        Collection<String> ids = new ArrayList<>();
         Matcher m = PATTERN.matcher(input);
         while (m.find()) {
             if (m.groupCount() >= 1) {
