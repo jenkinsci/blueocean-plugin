@@ -55,7 +55,7 @@ public class GithubIssue extends BlueIssue {
             }
             MultiBranchProject mbp = (MultiBranchProject)job.getParent();
             SCMSource source = getFirst((List<SCMSource>)mbp.getSCMSources());
-            if (!(source instanceof GitHubSCMSource)) {
+            if (source == null || !(source instanceof GitHubSCMSource)) {
                 return null;
             }
             GitHubSCMSource gitHubSource = (GitHubSCMSource)source;
