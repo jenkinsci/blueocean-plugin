@@ -1,9 +1,7 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.google.common.base.Function;
-import com.google.common.base.MoreObjects;
 import com.google.common.base.Objects;
-import com.google.common.base.Predicate;
 import com.google.common.collect.Collections2;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
@@ -17,9 +15,7 @@ import jenkins.scm.api.SCMSource;
 import org.jenkinsci.plugins.github.config.GitHubServerConfig;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.jenkinsci.plugins.github_branch_source.HttpsRepositoryUriResolver;
-import org.kohsuke.github.GitHub;
 
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.List;
 import java.util.regex.Matcher;
