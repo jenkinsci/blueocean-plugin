@@ -89,8 +89,8 @@
         
         <dependency>
           <groupId>org.jenkins-ci.plugins</groupId>
-          <artifactId>blueocean-executor-info-plugin</artifactId>
-          <version>0.1-SNAPSHOT</version>
+          <artifactId>blueocean-executor-info</artifactId>
+          <version>0.1-beta-1</version>
           <exclusions>
             <exclusion>  <!-- declare the exclusion here -->
               <groupId>io.jenkins.blueocean</groupId>
