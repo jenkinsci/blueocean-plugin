@@ -10,9 +10,19 @@ const organization = blueocean.organization || {};
 // any all features added by ?features=SOMETHING,SOMETHING_ELSE
 const pfx = 'features=';
 const pfxlen = pfx.length;
-(window.location.href.split('?')[1] || '').split('&')
-        .forEach(p => p.startsWith(pfx)
-            && (p.substring(pfxlen).split(',').forEach(f => { features[f] = true; })));
+const condition = window
+    && window.location
+    && window.location.href
+    && window.location.href.split instanceof Function
+    && window.location.href.split('?').length > 0;
+const query = condition ? window.location.href.split('?')[1] : undefined;
+if (query) {
+    query.split('&')
+            .forEach(p => p.startsWith(pfx)
+                && (p.substring(pfxlen).split(',').forEach(f => {
+                    features[f] = true;
+                })));
+}
 
 export default {
     loadUrls() {
@@ -50,7 +60,7 @@ export default {
     getOrganizationName(encoded = true) {
         return encoded ? encodeURIComponent(organization.name) : organization.name;
     },
-    
+
     getOrganizationDisplayName() {
         return organization.displayName;
     },
