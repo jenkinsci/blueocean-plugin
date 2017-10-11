@@ -198,10 +198,14 @@ export default class GitConnectStep extends React.Component {
 
                 {isNonSshRepositoryUrl(this.state.repositoryUrl) &&
                 <div>
-                    <div style={{marginTop: 16, marginBottom: 10}}>
+                    <div style={{ marginTop: 16, marginBottom: 10 }}>
                         <Alerts type="Warning"
-                            message={<div style={{marginTop: 6, marginBottom: 6}}>
-                                Saving Pipelines is unsupported using http/https repositories. Please use SSH instead.</div>} />
+                            message={
+                                <div style={{ marginTop: 6, marginBottom: 6 }}>
+                                    Saving Pipelines is unsupported using http/https repositories. Please use SSH instead.
+                                </div>
+                            }
+                        />
                     </div>
                     <FormElement title={t('creation.git.step1.credentials')} errorMessage={credentialErrorMsg}>
                         <Dropdown
