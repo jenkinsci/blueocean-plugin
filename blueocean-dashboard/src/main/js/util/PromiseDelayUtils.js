@@ -25,7 +25,6 @@ function time() {
  *     .then(function() {}, error => console.error(value))
  */
 
-
 /**
  * Returns a function that should be chained to a promise to resolve it after the delay.
  *
@@ -46,7 +45,7 @@ function delayResolve(delay = 1000) {
     return function proceed(data) {
         // if we haven't reached the delay yet, stash the payload
         // so the setTimeout above will resolve it later
-        if ((time() - begin) < delay) {
+        if (time() - begin < delay) {
             promise.payload = data;
             return promise;
         }
@@ -75,7 +74,7 @@ function delayReject(delay = 1000) {
     return function proceed(error) {
         // if we haven't reached the delay yet, stash the payload
         // so the setTimeout above will resolve it later
-        if ((time() - begin) < delay) {
+        if (time() - begin < delay) {
             promise.payload = error;
             return promise;
         }
@@ -91,12 +90,8 @@ function delayReject(delay = 1000) {
  * @returns {Array} Array of two functions to pass to 'then()' via spread
  */
 function delayBoth(delay = 1000) {
-    return [
-        delayResolve(delay),
-        delayReject(delay),
-    ];
+    return [delayResolve(delay), delayReject(delay)];
 }
-
 
 export default {
     delayResolve,

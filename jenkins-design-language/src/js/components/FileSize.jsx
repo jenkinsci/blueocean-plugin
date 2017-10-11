@@ -1,15 +1,17 @@
 // @flow
 
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 
 const { oneOfType, number, string } = PropTypes;
 const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
 
 // Ponyfill for old browsers and IE
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/log10
-const log10 = Math.log10 || function (x) {
-    return Math.log(x) / Math.LN10;
-};
+const log10 =
+    Math.log10 ||
+    function(x) {
+        return Math.log(x) / Math.LN10;
+    };
 
 export class FileSize extends Component {
     render() {
@@ -21,7 +23,7 @@ export class FileSize extends Component {
         }
 
         if (bytes === 0) {
-             output = `0 ${units[0]}`;
+            output = `0 ${units[0]}`;
         } else if (!isNaN(bytes)) {
             // calculate the unit (e.g. 'MB') to display
             // but ensure it doesn't go over the max we support
@@ -33,12 +35,10 @@ export class FileSize extends Component {
             output = `${value} ${units[power]}`;
         }
 
-        return (
-            <span>{output}</span>
-        );
+        return <span>{output}</span>;
     }
 }
 
 FileSize.propTypes = {
-    bytes: oneOfType([number, string])
+    bytes: oneOfType([number, string]),
 };

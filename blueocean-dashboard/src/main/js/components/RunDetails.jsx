@@ -5,13 +5,7 @@ import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 
 import { Icon } from '@jenkins-cd/design-language';
 
-import {
-    rootPath,
-    buildOrganizationUrl,
-    buildPipelineUrl,
-    buildRunDetailsUrl,
-    buildClassicConfigUrl,
-} from '../util/UrlUtils';
+import { rootPath, buildOrganizationUrl, buildPipelineUrl, buildRunDetailsUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
@@ -27,13 +21,13 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.RunDetails');
 const translate = i18nTranslator('blueocean-dashboard');
 const webTranslate = i18nTranslator('blueocean-web');
 
-const classicConfigLink = (pipeline) => {
+const classicConfigLink = pipeline => {
     let link = null;
     if (Security.permit(pipeline).configure()) {
         let url = buildClassicConfigUrl(pipeline);
         link = (
-            <a href={ url } target="_blank" style={ { height: '24px' } }>
-                <Icon size={ 24 } icon="ActionSettings" />
+            <a href={url} target="_blank" style={{ height: '24px' }}>
+                <Icon size={24} icon="ActionSettings" />
             </a>
         );
     }
@@ -48,15 +42,14 @@ const classicJobRunLink = (pipeline, branch, runId) => {
         runUrl = `${rootPath(pipeline.fullName)}${encodeURIComponent(runId)}`;
     }
     return (
-        <a className="rundetails_exit_to_app" href={ runUrl } style={ { height: '24px' } } title={webTranslate('go.to.classic', { defaultValue: 'Go to classic' })}>
-            <Icon size={ 24 } icon="ActionExitToApp" />
+        <a className="rundetails_exit_to_app" href={runUrl} style={{ height: '24px' }} title={webTranslate('go.to.classic', { defaultValue: 'Go to classic' })}>
+            <Icon size={24} icon="ActionExitToApp" />
         </a>
     );
 };
 
 @observer
 class RunDetails extends Component {
-
     constructor(props) {
         super(props);
         this.state = { isVisible: true };
@@ -93,10 +86,12 @@ class RunDetails extends Component {
     }
 
     _didRunChange(oldParams, newParams) {
-        return oldParams.organization !== newParams.organization ||
+        return (
+            oldParams.organization !== newParams.organization ||
             oldParams.pipeline !== newParams.pipeline ||
             oldParams.branch !== newParams.branch ||
-            oldParams.runId !== newParams.runId;
+            oldParams.runId !== newParams.runId
+        );
     }
 
     navigateToOrganization = () => {
@@ -116,15 +111,7 @@ class RunDetails extends Component {
     };
 
     navigateToChanges = () => {
-        const {
-            location,
-            params: {
-                organization,
-                pipeline,
-                branch,
-                runId,
-            },
-        } = this.context;
+        const { location, params: { organization, pipeline, branch, runId } } = this.context;
 
         const changesUrl = buildRunDetailsUrl(organization, pipeline, branch, runId, 'changes');
         location.pathname = changesUrl;
@@ -151,8 +138,7 @@ class RunDetails extends Component {
     render() {
         const run = this.context.activityService.getActivity(this.href);
         // early out
-        if (!this.context.params
-            || !run) {
+        if (!this.context.params || !run) {
             return null;
         }
 
@@ -168,50 +154,48 @@ class RunDetails extends Component {
         const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
         logger.debug('params', params.organization, params.pipeline, params.branch, params.runId);
         const currentRun = new RunRecord(run);
-        const computedTitle = `${currentRun.organization} / ${pipeline.fullName} / ${params.pipeline === params.branch ? '' : `${params.branch} / `} #${currentRun.id}`;
+        const computedTitle = `${currentRun.organization} / ${pipeline.fullName} / ${params.pipeline === params.branch
+            ? ''
+            : `${params.branch} / `} #${currentRun.id}`;
         setTitle(computedTitle);
 
-        const switchRunDetails = (newUrl) => {
+        const switchRunDetails = newUrl => {
             location.pathname = newUrl;
             router.push(location);
         };
 
         const base = { base: baseUrl };
 
-        const failureCount = Math.min(99, currentRun.testSummary && parseInt(currentRun.testSummary.failed) || 0);
-        const testsBadge = failureCount > 0 && (
-            <div className="TabBadgeIcon">{ failureCount }</div>
-        );
+        const failureCount = Math.min(99, (currentRun.testSummary && parseInt(currentRun.testSummary.failed)) || 0);
+        const testsBadge = failureCount > 0 && <div className="TabBadgeIcon">{failureCount}</div>;
 
         const tabs = [
-            <TabLink to="/pipeline" { ...base }>{ t('rundetail.header.tab.pipeline', {
-                defaultValue: 'Pipeline',
-            }) }</TabLink>,
-            <TabLink to="/changes" { ...base }>{ t('rundetail.header.tab.changes', {
-                defaultValue: 'Changes',
-            }) }</TabLink>,
-            <TabLink to="/tests" { ...base }>
-                { t('rundetail.header.tab.tests', { defaultValue: 'Tests' }) }
-                { testsBadge }
+            <TabLink to="/pipeline" {...base}>
+                {t('rundetail.header.tab.pipeline', {
+                    defaultValue: 'Pipeline',
+                })}
             </TabLink>,
-            <TabLink to="/artifacts" { ...base }>{ t('rundetail.header.tab.artifacts', {
-                defaultValue: 'Artifacts',
-            }) }</TabLink>,
+            <TabLink to="/changes" {...base}>
+                {t('rundetail.header.tab.changes', {
+                    defaultValue: 'Changes',
+                })}
+            </TabLink>,
+            <TabLink to="/tests" {...base}>
+                {t('rundetail.header.tab.tests', { defaultValue: 'Tests' })}
+                {testsBadge}
+            </TabLink>,
+            <TabLink to="/artifacts" {...base}>
+                {t('rundetail.header.tab.artifacts', {
+                    defaultValue: 'Artifacts',
+                })}
+            </TabLink>,
         ];
 
         const iconButtons = [
-            <ReplayButton className="icon-button dark"
-                          runnable={ this.props.pipeline }
-                          latestRun={ currentRun }
-                          onNavigation={ switchRunDetails }
-                          autoNavigate
-            />,
-            <RunButton className="icon-button dark"
-                       runnable={ this.props.pipeline }
-                       latestRun={ currentRun }
-                       buttonType="stop-only"
-            />,
-            <Extensions.Renderer extensionPoint="jenkins.blueocean.rundetails.top.widgets"
+            <ReplayButton className="icon-button dark" runnable={this.props.pipeline} latestRun={currentRun} onNavigation={switchRunDetails} autoNavigate />,
+            <RunButton className="icon-button dark" runnable={this.props.pipeline} latestRun={currentRun} buttonType="stop-only" />,
+            <Extensions.Renderer
+                extensionPoint="jenkins.blueocean.rundetails.top.widgets"
                 filter={dataType(currentRun)}
                 pipeline={pipeline}
                 run={currentRun}
@@ -223,36 +207,32 @@ class RunDetails extends Component {
         ];
 
         return (
-            <FullScreen isVisible={ isVisible } afterClose={ this.afterClose } onDismiss={ this.closeButtonClicked }>
-
+            <FullScreen isVisible={isVisible} afterClose={this.afterClose} onDismiss={this.closeButtonClicked}>
                 <RunDetailsHeader
-                    t={ t }
-                    locale={ locale }
-                    pipeline={ pipeline }
-                    data={ currentRun }
-                    runButton={ iconButtons }
-                    topNavLinks={ tabs }
-                    onOrganizationClick={ this.navigateToOrganization }
-                    onNameClick={ this.navigateToPipeline }
-                    onAuthorsClick={ this.navigateToChanges }
-                    onCloseClick={ this.closeButtonClicked }
-                    isMultiBranch={ this.isMultiBranch }
+                    t={t}
+                    locale={locale}
+                    pipeline={pipeline}
+                    data={currentRun}
+                    runButton={iconButtons}
+                    topNavLinks={tabs}
+                    onOrganizationClick={this.navigateToOrganization}
+                    onNameClick={this.navigateToPipeline}
+                    onAuthorsClick={this.navigateToChanges}
+                    onCloseClick={this.closeButtonClicked}
+                    isMultiBranch={this.isMultiBranch}
                 />
 
                 <div className="RunDetails-content">
-                    { run && React.cloneElement(
-                        this.props.children,
-                        {
+                    {run &&
+                        React.cloneElement(this.props.children, {
                             locale: translate.lng,
                             baseUrl,
                             t: translate,
                             result: currentRun,
                             isMultiBranch: this.isMultiBranch,
                             ...this.props,
-                        }
-                    ) }
+                        })}
                 </div>
-
             </FullScreen>
         );
     }

@@ -5,13 +5,12 @@ import React, { PropTypes } from 'react';
 type Props = {
     className?: string,
     style?: Object,
-    children?: ReactChildren
-}
+    children?: ReactChildren,
+};
 
 export const HeaderDetails = (props: Props) => {
-
     const style = props.style || {};
-    const classNames = ["Header-details"];
+    const classNames = ['Header-details'];
 
     if (props.className) {
         classNames.push(props.className);
@@ -25,5 +24,5 @@ export const HeaderDetails = (props: Props) => {
 };
 
 HeaderDetails.propTypes = {
-    children: PropTypes.node
+    children: PropTypes.node,
 };

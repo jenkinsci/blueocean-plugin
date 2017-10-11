@@ -1,4 +1,4 @@
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 import { Icon } from './Icon';
 
 /**
@@ -12,7 +12,6 @@ import { Icon } from './Icon';
  * onDismiss - function to invoke when dismiss link is clicked, or Toast auto-dismisses.
  */
 export class Toast extends Component {
-
     onActionClick() {
         if (this.props.onActionClick) {
             this.props.onActionClick();
@@ -26,20 +25,24 @@ export class Toast extends Component {
     }
 
     render() {
-        const toastStyle = (this.props.style || 'default');
+        const toastStyle = this.props.style || 'default';
         return (
             <div className={`toast ${toastStyle}`}>
                 <span className="text">
-                    <Caption text={this.props.caption}/>
+                    <Caption text={this.props.caption} />
                     {this.props.text}
                 </span>
-                <a className="action" onClick={() => this.onActionClick()}>{this.props.action}</a>
+                <a className="action" onClick={() => this.onActionClick()}>
+                    {this.props.action}
+                </a>
                 <a className="dismiss" onClick={() => this.onDismissClick()}>
-                  <Icon {...{
-                      size: 18,
-                      icon: 'ContentClear',
-                      style: { fill: "#fff" },
-                  }} />
+                    <Icon
+                        {...{
+                            size: 18,
+                            icon: 'ContentClear',
+                            style: { fill: '#fff' },
+                        }}
+                    />
                 </a>
             </div>
         );
@@ -59,7 +62,7 @@ const Caption = ({ text }) => {
     if (!text) {
         return null;
     }
-    return (<h4 className="caption">{text}</h4>);
+    return <h4 className="caption">{text}</h4>;
 };
 Caption.propTypes = {
     text: PropTypes.string,

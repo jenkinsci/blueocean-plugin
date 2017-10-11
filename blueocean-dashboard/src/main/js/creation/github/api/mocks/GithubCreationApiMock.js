@@ -11,7 +11,6 @@ import repos3 from './repos-3';
 /* eslint-disable no-unused-vars, prefer-rest-params */
 
 export class GithubCreationApi extends ApiMock {
-
     listOrganizations(credentialId) {
         const cloned = Utils.clone(organizations);
         return this._delayedResolve(cloned);
@@ -70,10 +69,8 @@ export class GithubCreationApi extends ApiMock {
         });
     }
 
-
     createOrgFolder(credentialId, organization, repoNames = []) {
         console.log('createOrgFolder called with', ...arguments);
         return this._delayedResolve(creationCreateSuccess);
     }
-
 }

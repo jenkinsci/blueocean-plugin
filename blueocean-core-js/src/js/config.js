@@ -10,9 +10,16 @@ const organization = blueocean.organization || {};
 // any all features added by ?features=SOMETHING,SOMETHING_ELSE
 const pfx = 'features=';
 const pfxlen = pfx.length;
-(window.location.href.split('?')[1] || '').split('&')
-        .forEach(p => p.startsWith(pfx)
-            && (p.substring(pfxlen).split(',').forEach(f => { features[f] = true; })));
+(window.location.href.split('?')[1] || '').split('&').forEach(
+    p =>
+        p.startsWith(pfx) &&
+        p
+            .substring(pfxlen)
+            .split(',')
+            .forEach(f => {
+                features[f] = true;
+            })
+);
 
 export default {
     loadUrls() {
@@ -50,7 +57,7 @@ export default {
     getOrganizationName(encoded = true) {
         return encoded ? encodeURIComponent(organization.name) : organization.name;
     },
-    
+
     getOrganizationDisplayName() {
         return organization.displayName;
     },
@@ -76,7 +83,7 @@ export default {
     },
 
     getPluginInfo(pluginId) {
-        return blueocean.jsExtensions.find((pluginInfo) => pluginInfo.hpiPluginId === pluginId);
+        return blueocean.jsExtensions.find(pluginInfo => pluginInfo.hpiPluginId === pluginId);
     },
 
     isFeatureEnabled(name, defaultValue) {
@@ -98,23 +105,22 @@ export default {
         if (!config.isLoaded) {
             this.loadUrls();
         }
-        return (typeof config.jenkinsRootURL === 'string' ? config.jenkinsRootURL : '/jenkins');
+        return typeof config.jenkinsRootURL === 'string' ? config.jenkinsRootURL : '/jenkins';
     },
 
     getResourceURL() {
         if (!config.isLoaded) {
             this.loadUrls();
         }
-        return (typeof config.resourceUrl === 'string' ? config.resourceUrl : '/jenkins/static');
+        return typeof config.resourceUrl === 'string' ? config.resourceUrl : '/jenkins/static';
     },
 
     getServerBrowserTimeSkewMillis() {
         if (!config.isLoaded) {
             this.loadUrls();
         }
-        return (typeof config.serverBrowserTimeSkewMillis === 'number' ? config.serverBrowserTimeSkewMillis : 0);
+        return typeof config.serverBrowserTimeSkewMillis === 'number' ? config.serverBrowserTimeSkewMillis : 0;
     },
-
 
     getRestRoot() {
         return `${this.getJenkinsRootURL()}/blue/rest`;
@@ -130,4 +136,3 @@ export default {
         config.jenkinsConfig = newConfig;
     },
 };
-

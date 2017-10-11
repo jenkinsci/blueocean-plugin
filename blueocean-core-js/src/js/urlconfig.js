@@ -21,8 +21,7 @@ function loadConfig() {
         }
 
         // typically '/jenkins/blue/rest'
-        restBaseURL = `${blueOceanAppURL}/rest`
-            .replace(/\/\/+/g, '/'); // eliminate any duplicated slashes
+        restBaseURL = `${blueOceanAppURL}/rest`.replace(/\/\/+/g, '/'); // eliminate any duplicated slashes
 
         loaded = true;
     } catch (error) {

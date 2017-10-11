@@ -9,22 +9,21 @@ class DownloadLink extends Component {
     render() {
         const { style, fileData, title = 'Download the log' } = this.props;
         if (!fileData) return null;
-        const {
-          contents,
-          mime,
-          filename,
-        } = fileData;
+        const { contents, mime, filename } = fileData;
         const blob = new Blob([contents], { type: mime });
         const url = URL.createObjectURL(blob);
 
-        return (<a {...{
-            download: filename,
-            href: url,
-            title: title,
-        }}
-        >
-            <Icon {...{ style, icon: 'file_download' }} />
-        </a>);
+        return (
+            <a
+                {...{
+                    download: filename,
+                    href: url,
+                    title: title,
+                }}
+            >
+                <Icon {...{ style, icon: 'file_download' }} />
+            </a>
+        );
     }
 }
 DownloadLink.propTypes = {
@@ -32,6 +31,4 @@ DownloadLink.propTypes = {
     style: object,
     title: string,
 };
-export {
-  DownloadLink,
-};
+export { DownloadLink };

@@ -27,7 +27,6 @@ function prepareOptions(body) {
     return fetchOptions;
 }
 export class ParameterApi {
-
     /**
      * Start a run with parameters
      * @param href - the destination (ends normally with /runs/)

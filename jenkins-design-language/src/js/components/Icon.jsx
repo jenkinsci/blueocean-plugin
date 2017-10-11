@@ -8,9 +8,7 @@ export function Icon(props) {
         return null;
     }
 
-    return (
-        <ChildIcon {...props} />
-    );
+    return <ChildIcon {...props} />;
 }
 
 Icon.propTypes = {

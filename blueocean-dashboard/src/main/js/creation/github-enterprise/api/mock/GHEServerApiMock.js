@@ -1,11 +1,9 @@
 import { ApiMock } from '../../../github/api/mocks/ApiMock';
 
-
 /**
  * Handles lookup of Github orgs and repos, and saving of the Github org folder.
  */
 class GHEServerApi extends ApiMock {
-
     listServers({ hasServer = true } = {}) {
         const servers = [];
 
@@ -41,7 +39,6 @@ class GHEServerApi extends ApiMock {
             apiUrl: serverUrl,
         });
     }
-
 }
 
 export default GHEServerApi;

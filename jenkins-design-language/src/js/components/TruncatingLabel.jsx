@@ -1,6 +1,6 @@
 // @flow
 
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 import ReactDOM from 'react-dom';
 
 //--------------------------------------
@@ -31,7 +31,7 @@ type RenderState = $Keys<typeof RenderStateValues>;
 type Props = {
     children?: string,
     style?: Object,
-    className?: string
+    className?: string,
 };
 
 /**
@@ -40,7 +40,6 @@ type Props = {
  * Use with a set width + height (or maxWidth / maxHeight) to get any use from it :D
  */
 export class TruncatingLabel extends Component {
-
     //--------------------------------------
     //  Component state / lifecycle
     //--------------------------------------
@@ -93,15 +92,12 @@ export class TruncatingLabel extends Component {
     //--------------------------------------
 
     render() {
-        const {
-            style = {},
-            className = ''
-        } = this.props;
+        const { style = {}, className = '' } = this.props;
 
         const mergedStyle = {
             overflow: 'hidden',
             wordWrap: 'break-word',
-            ...style
+            ...style,
         };
 
         if (this.renderState !== RS_STABLE) {
@@ -109,7 +105,9 @@ export class TruncatingLabel extends Component {
         }
 
         return (
-            <div style={mergedStyle} className={'TruncatingLabel ' + className}>{this.innerText}</div>
+            <div style={mergedStyle} className={'TruncatingLabel ' + className}>
+                {this.innerText}
+            </div>
         );
     }
 
@@ -118,16 +116,15 @@ export class TruncatingLabel extends Component {
     //--------------------------------------
 
     handleProps(props: Props) {
+        const { children = '' } = props;
 
-        const {children = ""} = props;
-
-        if (typeof children === "string") {
+        if (typeof children === 'string') {
             this.completeText = children;
         } else if (children === null || children === false) {
-            this.completeText = ""; // Assume content has been boolean'd out
+            this.completeText = ''; // Assume content has been boolean'd out
         } else {
-            console.warn("TruncatingLabel - Label children must be string but is", typeof children, children);
-            this.completeText = "Contents must be string";
+            console.warn('TruncatingLabel - Label children must be string but is', typeof children, children);
+            this.completeText = 'Contents must be string';
         }
 
         this.renderState = RS_MEASURE;
@@ -151,12 +148,7 @@ export class TruncatingLabel extends Component {
         }
 
         const thisElement = ReactDOM.findDOMNode(this);
-        const {
-            scrollHeight,
-            clientHeight,
-            scrollWidth,
-            clientWidth
-        } = thisElement;
+        const { scrollHeight, clientHeight, scrollWidth, clientWidth } = thisElement;
 
         const tooBig = scrollHeight > clientHeight || scrollWidth > clientWidth;
 
@@ -166,7 +158,7 @@ export class TruncatingLabel extends Component {
             if (tooBig) {
                 this.renderState = RS_FLUID;
 
-                // Set initial params for binary search of length 
+                // Set initial params for binary search of length
                 this.longestGood = MINLENGTH;
                 this.textCutoffLength = this.shortestBad = this.innerText.length;
             } else {
@@ -192,7 +184,6 @@ export class TruncatingLabel extends Component {
                 // We're done searching, hoorays!
                 keepMeasuring = false;
             } else {
-
                 // Update search space
                 if (tooBig) {
                     this.shortestBad = Math.min(this.shortestBad, lastLength);
@@ -222,5 +213,5 @@ export class TruncatingLabel extends Component {
 TruncatingLabel.propTypes = {
     children: PropTypes.string,
     style: PropTypes.object,
-    className: PropTypes.string
+    className: PropTypes.string,
 };

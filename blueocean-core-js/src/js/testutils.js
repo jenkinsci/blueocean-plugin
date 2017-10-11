@@ -5,7 +5,6 @@ const fetchJSON = Fetch.fetchJSON;
 const fetch = Fetch.fetch;
 
 export default {
-
     /**
      * Switches fetch functions with arbitrary replacements.
      * Useful for test spies.

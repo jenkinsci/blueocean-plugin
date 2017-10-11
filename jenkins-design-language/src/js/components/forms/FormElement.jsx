@@ -14,24 +14,14 @@ export function FormElement(props) {
 
     return (
         <div className={`FormElement ${extraClass} ${errorClass} ${dividerClass} ${layoutClass} ${childFreeClass}`}>
-            { (props.title || props.errorMessage) &&
-            <div className="FormElement-heading">
-                { props.title &&
-                <label className="FormElement-title">{props.title}</label>
-                }
-                { (props.title && props.errorMessage) &&
-                <span>&nbsp;-&nbsp;</span>
-                }
-                { props.errorMessage &&
-                <ErrorMessage>{props.errorMessage}</ErrorMessage>
-                }
-            </div>
-            }
-            { props.children &&
-            <div className="FormElement-children">
-                { props.children }
-            </div>
-            }
+            {(props.title || props.errorMessage) && (
+                <div className="FormElement-heading">
+                    {props.title && <label className="FormElement-title">{props.title}</label>}
+                    {props.title && props.errorMessage && <span>&nbsp;-&nbsp;</span>}
+                    {props.errorMessage && <ErrorMessage>{props.errorMessage}</ErrorMessage>}
+                </div>
+            )}
+            {props.children && <div className="FormElement-children">{props.children}</div>}
         </div>
     );
 }

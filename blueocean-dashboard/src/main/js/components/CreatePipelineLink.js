@@ -11,7 +11,7 @@ export default function CreatePipelineLink() {
         return null;
     }
     const organization = AppConfig.getOrganizationName();
-    const link = (organization) ? `/organizations/${organization}/create-pipeline` : '/create-pipeline';
+    const link = organization ? `/organizations/${organization}/create-pipeline` : '/create-pipeline';
 
     return (
         <Link to={link} className="btn-new-pipeline btn-secondary inverse">

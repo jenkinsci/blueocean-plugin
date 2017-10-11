@@ -14,30 +14,32 @@ function badNode(jenkinsNode) {
 }
 
 function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
-    if (!jenkinsNode
-        || !jenkinsNode.id) {
+    if (!jenkinsNode || !jenkinsNode.id) {
         throw badNode(jenkinsNode);
     }
     logger.debug('jenkinsNode', jenkinsNode);
     const isRunning = () => {
         switch (jenkinsNode.state) {
-        case 'RUNNING':
-        case 'PAUSED':
-        case 'QUEUED':
-            return true;
-        default:
-            return false;
+            case 'RUNNING':
+            case 'PAUSED':
+            case 'QUEUED':
+                return true;
+            default:
+                return false;
         }
     };
 
     const { durationInMillis, startTime } = jenkinsNode;
 
     // we need to make sure that we calculate with the correct time offset
-    const harmonized = timeManager.harmonizeTimes({
-        isRunning: isRunning(),
-        durationInMillis,
-        startTime,
-    }, skewMillis);
+    const harmonized = timeManager.harmonizeTimes(
+        {
+            isRunning: isRunning(),
+            durationInMillis,
+            startTime,
+        },
+        skewMillis
+    );
     let completePercent = 0;
     let state = 'unknown';
 
@@ -62,16 +64,17 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
     } else if (jenkinsNode.state === 'RUNNING') {
         state = 'running';
         completePercent = 50;
-    } else if (jenkinsNode.state === 'QUEUED'
-        || (jenkinsNode.state === null && !isCompleted)) {
+    } else if (jenkinsNode.state === 'QUEUED' || (jenkinsNode.state === null && !isCompleted)) {
         state = 'queued';
         completePercent = 0;
-    } else if (jenkinsNode.state === 'NOT_BUILT'
-        || jenkinsNode.state == null) {
+    } else if (jenkinsNode.state === 'NOT_BUILT' || jenkinsNode.state == null) {
         state = 'not_built';
         completePercent = 0;
     }
-    const i18nDuration = timeManager.format(harmonized.durationInMillis, translate('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' }));
+    const i18nDuration = timeManager.format(
+        harmonized.durationInMillis,
+        translate('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })
+    );
 
     const title = translate(`common.state.${state}`, { 0: i18nDuration });
 
@@ -123,7 +126,7 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
     });
 
     // Filter out any edges to missing nodes
-    allEdges.filter(([src, dest]) => (src in convertedNodeForId && dest in convertedNodeForId));
+    allEdges.filter(([src, dest]) => src in convertedNodeForId && dest in convertedNodeForId);
 
     // Cound edges going to/from each node.
     for (const edgePair of allEdges) {
@@ -147,9 +150,7 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
             // Multiple following nodes are child nodes (parallel branch) not siblings
 
             // Put the first node of each branch into the children
-            currentNode.children = edges
-                .map(edge => convertedNodeForId[edge.id])
-                .filter(node => !!node);
+            currentNode.children = edges.map(edge => convertedNodeForId[edge.id]).filter(node => !!node);
 
             // Now follow the edges along until they coalesce again, which will be the next top-level stage
             let branchNodes = currentNode.children;
@@ -159,7 +160,8 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
 
                 for (const branchNode of branchNodes) {
                     const branchNodeEdges = originalNodeForId[branchNode.id].edges || [];
-                    if (branchNodeEdges.length > 0) { // Should only be 0 at end of pipeline or bad input data
+                    if (branchNodeEdges.length > 0) {
+                        // Should only be 0 at end of pipeline or bad input data
                         const followingNode = convertedNodeForId[branchNodeEdges[0].id];
 
                         // If followingNode has several edges pointing to it....
@@ -186,7 +188,6 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
 }
 
 export default class PipelineRunGraph extends Component {
-
     constructor(props) {
         super(props);
         this.lastData = null;
@@ -227,9 +228,13 @@ export default class PipelineRunGraph extends Component {
 
         if (!graphNodes) {
             // FIXME: Make a placeholder empty state when nodes is null (loading)
-            return (<div>{t('common.pager.loading', {
-                defaultValue: 'Loading...',
-            })}</div>);
+            return (
+                <div>
+                    {t('common.pager.loading', {
+                        defaultValue: 'Loading...',
+                    })}
+                </div>
+            );
         } else if (graphNodes.length === 0) {
             // Do nothing when there's no nodes
             return null;
@@ -258,10 +263,7 @@ export default class PipelineRunGraph extends Component {
 
         return (
             <div className="PipelineGraph-container">
-                <PipelineGraph stages={graphNodes}
-                               selectedStage={selectedStage}
-                               onNodeClick={this.graphNodeClicked}
-                />
+                <PipelineGraph stages={graphNodes} selectedStage={selectedStage} onNodeClick={this.graphNodeClicked} />
             </div>
         );
     }
@@ -276,7 +278,6 @@ PipelineRunGraph.propTypes = {
     selectedStage: object,
     callback: func,
 };
-
 
 PipelineRunGraph.contextTypes = {
     config: object.isRequired,

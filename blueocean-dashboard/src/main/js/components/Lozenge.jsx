@@ -12,12 +12,16 @@ export default class Lozenge extends Component {
 
         if (linkTo) {
             return (
-                <Link to={linkTo} className="Lozenge" title={title}>{title}</Link>
+                <Link to={linkTo} className="Lozenge" title={title}>
+                    {title}
+                </Link>
             );
         }
 
         return (
-            <span className="Lozenge" title={title}>{title}</span>
+            <span className="Lozenge" title={title}>
+                {title}
+            </span>
         );
     }
 }

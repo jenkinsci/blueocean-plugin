@@ -10,13 +10,10 @@ import VerticalStep from './flow2/VerticalStep';
 import StepStatus from './flow2/FlowStepStatus';
 import creationUtils from './creation-status-utils';
 
-
 const Sandbox = Extensions.SandboxedComponent;
 const t = i18nTranslator('blueocean-dashboard');
 
-
 export default class CreatePipeline extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -74,58 +71,56 @@ export default class CreatePipeline extends React.Component {
 
                         <ClassicCreationLink />
                     </ContentPageHeader>
-                    { creationUtils.isEnabled() &&
-                    <main>
-                        <article className="content-area">
-                            <VerticalStep className="first-step" status={firstStepStatus}>
-                                <h1>{t('creation.core.intro.scm_provider')}</h1>
+                    {creationUtils.isEnabled() && (
+                        <main>
+                            <article className="content-area">
+                                <VerticalStep className="first-step" status={firstStepStatus}>
+                                    <h1>{t('creation.core.intro.scm_provider')}</h1>
 
-                                <CreatePipelineScmListRenderer
-                                    extensionPoint="jenkins.pipeline.create.scm.provider"
-                                    onSelection={(provider) => this._onSelection(provider)}
-                                    selectedProvider={this.state.selectedProvider}
-                                />
-                            </VerticalStep>
+                                    <CreatePipelineScmListRenderer
+                                        extensionPoint="jenkins.pipeline.create.scm.provider"
+                                        onSelection={provider => this._onSelection(provider)}
+                                        selectedProvider={this.state.selectedProvider}
+                                    />
+                                </VerticalStep>
 
-                            <Sandbox>
-                                <CreatePipelineStepsRenderer
-                                    selectedProvider={this.state.selectedProvider}
-                                    onCompleteFlow={(data) => this._onCompleteFlow(data)}
-                                />
-                            </Sandbox>
-                        </article>
-                    </main>
-                    }
-                    { creationUtils.isDisabled() &&
-                    <main>
-                        <article className="content-area">
-                            <VerticalStep className="first-step" status={StepStatus.ERROR}>
-                                <h1>{t('creation.core.intro.invalid_security_title')}</h1>
+                                <Sandbox>
+                                    <CreatePipelineStepsRenderer
+                                        selectedProvider={this.state.selectedProvider}
+                                        onCompleteFlow={data => this._onCompleteFlow(data)}
+                                    />
+                                </Sandbox>
+                            </article>
+                        </main>
+                    )}
+                    {creationUtils.isDisabled() && (
+                        <main>
+                            <article className="content-area">
+                                <VerticalStep className="first-step" status={StepStatus.ERROR}>
+                                    <h1>{t('creation.core.intro.invalid_security_title')}</h1>
 
-                                <p>
-                                    <span>{t('creation.core.intro.invalid_security_message')} - </span>
+                                    <p>
+                                        <span>{t('creation.core.intro.invalid_security_message')} - </span>
 
-                                    <a href={t('creation.core.intro.invalid_security_linkhref')} target="_blank">
-                                        {t('creation.core.intro.invalid_security_linktext')}
-                                    </a>
-                                </p>
-                            </VerticalStep>
-                        </article>
-                    </main>
-                    }
-                    { creationUtils.isHidden() &&
-                    <main>
-                        <article className="content-area">
-                            <VerticalStep className="first-step" status={StepStatus.ERROR}>
-                                <h1>{t('creation.core.intro.invalid_permission_title')}</h1>
+                                        <a href={t('creation.core.intro.invalid_security_linkhref')} target="_blank">
+                                            {t('creation.core.intro.invalid_security_linktext')}
+                                        </a>
+                                    </p>
+                                </VerticalStep>
+                            </article>
+                        </main>
+                    )}
+                    {creationUtils.isHidden() && (
+                        <main>
+                            <article className="content-area">
+                                <VerticalStep className="first-step" status={StepStatus.ERROR}>
+                                    <h1>{t('creation.core.intro.invalid_permission_title')}</h1>
 
-                                <button onClick={() => this._onNavigatePipelines()}>
-                                    {t('creation.core.intro.invalid_permission_button')}
-                                </button>
-                            </VerticalStep>
-                        </article>
-                    </main>
-                    }
+                                    <button onClick={() => this._onNavigatePipelines()}>{t('creation.core.intro.invalid_permission_button')}</button>
+                                </VerticalStep>
+                            </article>
+                        </main>
+                    )}
                 </div>
             </Page>
         );

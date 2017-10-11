@@ -2,15 +2,13 @@ import React, { PropTypes } from 'react';
 import { TextControl } from './TextControl';
 
 export class PasswordInput extends React.Component {
-
     render() {
         return (
             <TextControl {...this.props} className={`PasswordInput ${this.props.className}`}>
-                <input type="password" className="TextInput-control" { ...{ name: this.props.name } } />
+                <input type="password" className="TextInput-control" {...{ name: this.props.name }} />
             </TextControl>
         );
     }
-
 }
 
 PasswordInput.propTypes = {

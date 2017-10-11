@@ -48,7 +48,8 @@ export class TimeManager {
         // assume we do not have an end date
         let endTime = null;
         let durationInMillis = 0;
-        if (props.endTime) { // sync server end date to local time via the skewMillis
+        if (props.endTime) {
+            // sync server end date to local time via the skewMillis
             const serverEndTime = moment(props.endTime);
             if (skewMillis < 0) {
                 serverEndTime.add({ milliseconds: Math.abs(skewMillis) });
@@ -57,7 +58,8 @@ export class TimeManager {
             }
             endTime = serverEndTime.toJSON();
         }
-        if (props.endTime || !props.isRunning) { // sync server end date to local time via the skewMillis
+        if (props.endTime || !props.isRunning) {
+            // sync server end date to local time via the skewMillis
             durationInMillis = props.durationInMillis;
         } else {
             logger.debug('running, using timeElapsed for duration');

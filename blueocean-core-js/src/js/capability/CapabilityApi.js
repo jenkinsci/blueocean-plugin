@@ -6,7 +6,6 @@ import config from '../urlconfig';
 import utils from '../utils';
 
 export class CapabilityApi {
-
     /**
      * Fetch the capabilities for one or more class names.
      *
@@ -24,12 +23,9 @@ export class CapabilityApi {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify(
-                { q: noDuplicates }
-            ),
+            body: JSON.stringify({ q: noDuplicates }),
         };
 
         return Fetch.fetchJSON(classesUrl, { disableCapabilites: true, fetchOptions });
     }
-
 }

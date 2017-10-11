@@ -22,13 +22,12 @@
  * THE SOFTWARE.
  */
 
-export const root = (typeof self === 'object' && self.self === self && self) ||
-    (typeof global === 'object' && global.global === global && global) || this;
+export const root = (typeof self === 'object' && self.self === self && self) || (typeof global === 'object' && global.global === global && global) || this;
 
 //
 // See blueocean-config/src/main/java/io/jenkins/blueocean/config/BlueOceanConfig.java
 // and blueocean-config/src/main/resources/io/jenkins/blueocean/config/BlueOceanConfig/header.jelly
 //
-export const blueocean = (root.$blueocean || {});
+export const blueocean = root.$blueocean || {};
 
-export const prefetchdata = (blueocean.prefetchdata || {});
+export const prefetchdata = blueocean.prefetchdata || {};

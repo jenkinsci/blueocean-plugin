@@ -12,7 +12,7 @@ type Props = {
     iconSize?: number,
     iconFill?: string,
     onClick?: Function,
-}
+};
 
 /**
  * button element with icon.
@@ -29,7 +29,7 @@ type Props = {
  * @param {function} [props.onClick] - onclick callback function
  * @constructor
  */
-export function IconButton(props:Props) {
+export function IconButton(props: Props) {
     function _onClick() {
         if (onClick) {
             onClick();
@@ -60,18 +60,10 @@ export function IconButton(props:Props) {
     const spacingClass = label && icon ? 'u-inner-margin' : '';
 
     return (
-        <button
-            className={`IconButton ${customClass} ${iconNameClass} ${materialClass} ${spacingClass}`}
-            style={style}
-            onClick={_onClick}
-        >
+        <button className={`IconButton ${customClass} ${iconNameClass} ${materialClass} ${spacingClass}`} style={style} onClick={_onClick}>
             <div className="IconButton-wrapper">
-                { icon &&
-                <span className="IconButton-icon">{icon}</span>
-                }
-                { label &&
-                <span className="IconButton-text">{label}</span>
-                }
+                {icon && <span className="IconButton-icon">{icon}</span>}
+                {label && <span className="IconButton-text">{label}</span>}
             </div>
         </button>
     );

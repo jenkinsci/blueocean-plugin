@@ -11,7 +11,6 @@ const t = i18nTranslator('blueocean-dashboard');
 
 @observer
 class BbCredentialsPicker extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -38,8 +37,7 @@ class BbCredentialsPicker extends React.Component {
 
     componentDidMount() {
         this._configure(this.props);
-        this.credentialsManager.findExistingCredential()
-            .then(credential => this._findExistingCredentialComplete(credential));
+        this.credentialsManager.findExistingCredential().then(credential => this._findExistingCredentialComplete(credential));
     }
 
     _configure(props) {
@@ -63,7 +61,8 @@ class BbCredentialsPicker extends React.Component {
         if (!valid) {
             return;
         }
-        this.credentialsManager.createCredential(this.state.usernameValue, this.state.passwordValue)
+        this.credentialsManager
+            .createCredential(this.state.usernameValue, this.state.passwordValue)
             .then(credential => this._onCreateCredentialSuccess(credential));
     }
 
@@ -150,25 +149,22 @@ class BbCredentialsPicker extends React.Component {
         };
 
         return (
-            !this.state.loading &&
-            <div className="credentials-picker-bitbucket">
-                <p className="instructions">
-                    {t('creation.bitbucket.connect.authorize')}. &nbsp;
-                </p>
-                <FormElement
-                    className="credentials-new"
-                    errorMessage={errorMessage}
-                    verticalLayout
-                >
-                    <FormElement title={t('creation.git.create_credential.username_title')} errorMessage={this.state.usernameErrorMsg}>
-                        <TextInput className="text-username" onChange={val => this._usernameChange(val)} />
+            !this.state.loading && (
+                <div className="credentials-picker-bitbucket">
+                    <p className="instructions">{t('creation.bitbucket.connect.authorize')}. &nbsp;</p>
+                    <FormElement className="credentials-new" errorMessage={errorMessage} verticalLayout>
+                        <FormElement title={t('creation.git.create_credential.username_title')} errorMessage={this.state.usernameErrorMsg}>
+                            <TextInput className="text-username" onChange={val => this._usernameChange(val)} />
+                        </FormElement>
+                        <FormElement title={t('creation.git.create_credential.password_title')} errorMessage={this.state.passwordErrorMsg}>
+                            <PasswordInput className="text-password" onChange={val => this._passwordChange(val)} />
+                        </FormElement>
                     </FormElement>
-                    <FormElement title={t('creation.git.create_credential.password_title')} errorMessage={this.state.passwordErrorMsg}>
-                        <PasswordInput className="text-password" onChange={val => this._passwordChange(val)} />
-                    </FormElement>
-                </FormElement>
-                <Button className="button-create-credental" status={status} onClick={() => this._createCredential()}>Connect</Button>
-            </div>
+                    <Button className="button-create-credental" status={status} onClick={() => this._createCredential()}>
+                        Connect
+                    </Button>
+                </div>
+            )
         );
     }
 }

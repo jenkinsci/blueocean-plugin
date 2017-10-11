@@ -15,11 +15,12 @@ export { karaokeService as KaraokeService };
  *       allowedValues: ['classic', 'pipeline'],
  *   }]}
  */
-export const preferencesArray = [{
-    key: 'runDetails.logView',
-    defaultValue: 'pipeline',
-    allowedValues: ['classic', 'pipeline'],
-},
+export const preferencesArray = [
+    {
+        key: 'runDetails.logView',
+        defaultValue: 'pipeline',
+        allowedValues: ['classic', 'pipeline'],
+    },
     {
         key: 'runDetails.pipeline.updateOnFinish',
         defaultValue: 'default',

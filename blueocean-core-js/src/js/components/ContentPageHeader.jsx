@@ -1,10 +1,5 @@
 import React, { PropTypes } from 'react';
-import {
-    BasicHeader,
-    TopNav,
-    PageTabs,
-    HeaderDetails,
-} from '@jenkins-cd/design-language';
+import { BasicHeader, TopNav, PageTabs, HeaderDetails } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { BlueLogo } from './BlueLogo';
@@ -31,8 +26,8 @@ export const SiteHeader = props => {
                     <BlueLogo href={`${props.homeURL}/`} />
                 </Extensions.Renderer>
                 <div className="u-flex-grow" />
-                { topNavLinks }
-                { userComponents }
+                {topNavLinks}
+                {userComponents}
             </TopNav>
         </BasicHeader>
     );
@@ -46,19 +41,13 @@ SiteHeader.propTypes = {
 };
 
 export const ContentPageHeader = props => {
-    const pageTabLinks = _wrap(
-        props.pageTabLinks,
-        PageTabs,
-        { base: props.pageTabBase }
-    );
+    const pageTabLinks = _wrap(props.pageTabLinks, PageTabs, { base: props.pageTabBase });
 
     return (
         <BasicHeader className="ContentPageHeader">
             <HeaderDetails>
-                <div className="ContentPageHeader-main u-flex-grow">
-                    { props.children }
-                </div>
-                { pageTabLinks }
+                <div className="ContentPageHeader-main u-flex-grow">{props.children}</div>
+                {pageTabLinks}
             </HeaderDetails>
         </BasicHeader>
     );

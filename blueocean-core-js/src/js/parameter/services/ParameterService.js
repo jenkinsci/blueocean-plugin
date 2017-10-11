@@ -4,7 +4,6 @@ import { action, observable, computed } from 'mobx';
  * Holds one or more parameters in state for display in UI.
  */
 export class ParameterService {
-
     @observable parameters = [];
 
     /**
@@ -68,9 +67,8 @@ export class ParameterService {
         });
     }
 
-    @computed get count() {
+    @computed
+    get count() {
         return this.parameters ? this.parameters.length : 0;
     }
-
-
 }

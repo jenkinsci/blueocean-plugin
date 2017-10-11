@@ -5,13 +5,10 @@ import { Dialog, FormElement, TextInput } from '@jenkins-cd/design-language';
 
 import ServerErrorRenderer from './ServerErrorRenderer';
 
-
 let t = null;
-
 
 @observer
 class BBAddServerDialog extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -68,11 +65,9 @@ class BBAddServerDialog extends React.Component {
 
         const { serverManager } = this.props.flowManager;
 
-        serverManager.createServer(this.state.nameValue, this.state.urlValue)
-            .then(
-                server => this._onCreateServerSuccess(server),
-                error => this._onCreateServerFailure(error),
-            );
+        serverManager
+            .createServer(this.state.nameValue, this.state.urlValue)
+            .then(server => this._onCreateServerSuccess(server), error => this._onCreateServerFailure(error));
 
         this.setState({
             pending: true,
@@ -127,9 +122,7 @@ class BBAddServerDialog extends React.Component {
         if (duplicateUrl) {
             newState.urlErrorMsg = t('creation.bbserver.add_server.text_url_error_duplicate');
         } else if (invalidUrl && error.errors) {
-            error.errors.map(err => (
-                    newState.urlErrorMsg = err.message
-                ));
+            error.errors.map(err => (newState.urlErrorMsg = err.message));
         }
 
         if (!duplicateName && !duplicateUrl && !invalidUrl) {
@@ -158,30 +151,29 @@ class BBAddServerDialog extends React.Component {
         ];
 
         return (
-            <Dialog
-                className="github-enterprise-add-server-dialog"
-                title={t('creation.bbserver.add_server.title')}
-                buttons={buttons}
-            >
-                <FormElement
-                    className="server-new"
-                    title={t('creation.bbserver.add_server.instructions')}
-                    verticalLayout
-                >
-                    { this.state.unknownError && <ServerErrorRenderer error={this.state.unknownError} /> }
+            <Dialog className="github-enterprise-add-server-dialog" title={t('creation.bbserver.add_server.title')} buttons={buttons}>
+                <FormElement className="server-new" title={t('creation.bbserver.add_server.instructions')} verticalLayout>
+                    {this.state.unknownError && <ServerErrorRenderer error={this.state.unknownError} />}
 
                     <FormElement title={t('creation.bbserver.add_server.text_name_title')} errorMessage={this.state.nameErrorMsg}>
-                        <TextInput className="text-name" placeholder={t('creation.bbserver.add_server.text_name_placeholder')} onChange={val => this._nameChange(val)} />
+                        <TextInput
+                            className="text-name"
+                            placeholder={t('creation.bbserver.add_server.text_name_placeholder')}
+                            onChange={val => this._nameChange(val)}
+                        />
                     </FormElement>
 
                     <FormElement title={t('creation.bbserver.add_server.text_url_title')} errorMessage={this.state.urlErrorMsg}>
-                        <TextInput className="text-url" placeholder={t('creation.bbserver.add_server.text_url_placeholder')} onChange={val => this._urlChange(val)} />
+                        <TextInput
+                            className="text-url"
+                            placeholder={t('creation.bbserver.add_server.text_url_placeholder')}
+                            onChange={val => this._urlChange(val)}
+                        />
                     </FormElement>
                 </FormElement>
             </Dialog>
         );
     }
-
 }
 
 BBAddServerDialog.propTypes = {

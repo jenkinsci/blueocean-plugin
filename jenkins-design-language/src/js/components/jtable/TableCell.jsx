@@ -4,32 +4,23 @@ import React, { Component, PropTypes } from 'react';
 import { generateLink } from './TableRow';
 
 type Props = {
-    children ?: ReactChildren,
-    className ?: string,
-    href ?: string,
-    linkTo ?: string,
-    onClick ?: Function,
-    style ?: Object,
-    title ?: string
+    children?: ReactChildren,
+    className?: string,
+    href?: string,
+    linkTo?: string,
+    onClick?: Function,
+    style?: Object,
+    title?: string,
 };
 
 /**
  * Takes the place of a <TD>
  */
 export class TableCell extends Component {
-
     props: Props;
 
     render() {
-
-        const {
-            href,
-            linkTo,
-            title,
-            className,
-            children,
-            ...restProps
-        } = this.props;
+        const { href, linkTo, title, className, children, ...restProps } = this.props;
 
         const classNames = ['JTable-cell'];
 
@@ -37,10 +28,7 @@ export class TableCell extends Component {
             classNames.push(className);
         }
 
-        const {
-            linkProps,
-            tagOrComponent
-        } = generateLink('div', href, linkTo);
+        const { linkProps, tagOrComponent } = generateLink('div', href, linkTo);
 
         const outerProps = {
             ...restProps,
@@ -53,11 +41,7 @@ export class TableCell extends Component {
             outerProps.title = children;
         }
 
-        const wrappedChildren = (
-            <div className="JTable-cell-contents">
-                {children}
-            </div>
-        );
+        const wrappedChildren = <div className="JTable-cell-contents">{children}</div>;
 
         return React.createElement(tagOrComponent, outerProps, wrappedChildren);
     }
@@ -70,18 +54,14 @@ TableCell.propTypes = {
     linkTo: PropTypes.string,
     onClick: PropTypes.func,
     style: PropTypes.object,
-    title: PropTypes.string
+    title: PropTypes.string,
 };
 
 /**
  * Takes the place of a single <TH>
  */
-export const TableHeader = (props: $PropertyType<TableCell, 'props'> ) => {
-
-    const {
-        className,
-        children
-    } = props;
+export const TableHeader = (props: $PropertyType<TableCell, 'props'>) => {
+    const { className, children } = props;
 
     const classNames = ['JTable-header'];
 
@@ -92,7 +72,7 @@ export const TableHeader = (props: $PropertyType<TableCell, 'props'> ) => {
     const newProps = {
         ...props,
         children: undefined,
-        className: classNames.join(' ')
+        className: classNames.join(' '),
     };
 
     return <TableCell {...newProps}>{children}</TableCell>;

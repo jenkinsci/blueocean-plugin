@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react';
 import StepIndicator from './StepIndicator';
 import Status from './FlowStepStatus';
 
-
 function buildClassNames(props) {
     const classNameArray = [];
 
@@ -21,7 +20,6 @@ function buildClassNames(props) {
     return classNameArray.join(' ');
 }
 
-
 /**
  * Visual component that displays a progress indicator along with its children.
  * These components are intended to be stacked vertically.
@@ -33,13 +31,11 @@ export default function VerticalStep(props) {
     return (
         <div className={`vertical-step-component ${classNames}`}>
             <div className="step-progress">
-                <div className="step-stroke-top"></div>
+                <div className="step-stroke-top" />
                 <StepIndicator status={props.status} percentage={props.percentage} />
-                <div className="step-stroke-bottom"></div>
+                <div className="step-stroke-bottom" />
             </div>
-            <div className="step-content">
-                {props.children}
-            </div>
+            <div className="step-content">{props.children}</div>
         </div>
     );
 }

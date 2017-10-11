@@ -8,9 +8,7 @@ function getCredentialsUrl(organization) {
     return Utils.cleanSlashes(`${path}/organizations/${organization}/credentials/user/`);
 }
 
-
 export class CredentialsApi {
-
     constructor(fetch) {
         this._fetch = fetch || Fetch.fetchJSON;
         this.organization = AppConfig.getOrganizationName();
@@ -22,10 +20,7 @@ export class CredentialsApi {
 
         return this._fetch(searchUrl)
             .then(data => capabilityAugmenter.augmentCapabilities(data))
-            .then(
-                creds => this._listAllCredentialsSuccess(creds),
-                error => this._listAllCredentialsFailure(error),
-            );
+            .then(creds => this._listAllCredentialsSuccess(creds), error => this._listAllCredentialsFailure(error));
     }
 
     _listAllCredentialsSuccess(credentials) {
@@ -124,5 +119,4 @@ export class CredentialsApi {
 
         return this._fetch(requestUrl, { fetchOptions });
     }
-
 }

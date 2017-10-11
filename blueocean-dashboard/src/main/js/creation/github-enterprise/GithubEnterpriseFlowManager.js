@@ -9,13 +9,10 @@ import GHEChooseServerStep from './steps/GHEChooseServerStep';
 import GHEServerManager from './GHEServerManager';
 import STATE from './GHECreationState';
 
-
 const translate = i18nTranslator('blueocean-dashboard');
 const MIN_DELAY = 500;
 
-
 export default class GithubEnterpriseFlowManager extends GithubFlowManager {
-
     selectedServer = null;
 
     constructor(creationApi, serverApi) {
@@ -57,12 +54,12 @@ export default class GithubEnterpriseFlowManager extends GithubFlowManager {
     }
 
     _getOrganizationsStepAfterStateId() {
-        return this.credentialSelected ?
-            STATE.STEP_ACCESS_TOKEN : STATE.STEP_CHOOSE_SERVER;
+        return this.credentialSelected ? STATE.STEP_ACCESS_TOKEN : STATE.STEP_CHOOSE_SERVER;
     }
 
     _loadServerList() {
-        return this.serverManager.listServers()
+        return this.serverManager
+            .listServers()
             .then(waitAtLeast(MIN_DELAY))
             .then(success => this._loadServerListComplete(success));
     }
@@ -78,5 +75,4 @@ export default class GithubEnterpriseFlowManager extends GithubFlowManager {
         this.selectedServer = server;
         this._renderCredentialsStep();
     }
-
 }

@@ -7,7 +7,8 @@ export class LocationService {
     @observable current;
     @observable previous;
 
-    @action setCurrent(newLocation) {
+    @action
+    setCurrent(newLocation) {
         if (newLocation.action !== 'REPLACE') {
             this.previous = this.current;
         }

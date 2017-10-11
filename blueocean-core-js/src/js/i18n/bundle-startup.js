@@ -47,7 +47,7 @@ export function execute(done, bundleConfig) {
             if (pluginInfo.i18nBundles && pluginInfo.i18nBundles.length > 0) {
                 logger.debug(`Plugin ${bundleConfig.hpiPluginId} defines i18n resource bundles that must be loaded:`, pluginInfo.i18nBundles);
                 const loadedBundles = [];
-                const loadBundle = (namespace) => {
+                const loadBundle = namespace => {
                     let hpiPluginId = bundleConfig.hpiPluginId;
                     let i18nResource = namespace;
 
@@ -74,7 +74,7 @@ export function execute(done, bundleConfig) {
                     // Any random key is fine ... just needs to trigger the loading.
                     translator('xxxx');
                 };
-                pluginInfo.i18nBundles.forEach((bundleNamespace) => loadBundle(bundleNamespace));
+                pluginInfo.i18nBundles.forEach(bundleNamespace => loadBundle(bundleNamespace));
             } else {
                 logger.debug(`Plugin "${bundleConfig.hpiPluginId}" doesn't define any i18n resource bundles.`);
                 done();

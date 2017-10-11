@@ -1,5 +1,4 @@
 class ServerError {
-
     constructor(response) {
         const { code, message, errors } = response.responseBody;
 
@@ -12,7 +11,6 @@ class ServerError {
 
     // eslint-disable-next-line no-unused-vars
     _handleCustomErrors(errors, code, message) {}
-
 }
 
 export default ServerError;

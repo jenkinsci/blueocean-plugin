@@ -5,7 +5,6 @@ import { Link } from 'react-router';
 import { PlaceholderDialog } from './PlaceholderDialog';
 import Icon from './Icon';
 
-
 export function DashboardPlaceholder(props) {
     const { t } = props;
 
@@ -21,7 +20,11 @@ export function DashboardPlaceholder(props) {
         icon: Icon.PIPELINE_RUNNING,
         title: t('home.placeholder.title'),
         message: t('home.placeholder.message'),
-        linkElement: <Link className="btn" to="/create-pipeline">{t('home.placeholder.linktext')}</Link>,
+        linkElement: (
+            <Link className="btn" to="/create-pipeline">
+                {t('home.placeholder.linktext')}
+            </Link>
+        ),
     };
 
     return (

@@ -12,7 +12,6 @@ let t = null;
 
 @observer
 export default class GithubCompleteStep extends React.Component {
-
     componentWillMount() {
         t = this.props.flowManager.translate;
     }
@@ -46,7 +45,11 @@ export default class GithubCompleteStep extends React.Component {
         } else if (state === STATE.STEP_COMPLETE_EVENT_TIMEOUT) {
             return t('creation.core.status.pending');
         } else if (state === STATE.STEP_COMPLETE_MISSING_JENKINSFILE) {
-            return <span>{t('creation.core.error.missing.jenkinsfile')} <i>{repo.name}</i></span>;
+            return (
+                <span>
+                    {t('creation.core.error.missing.jenkinsfile')} <i>{repo.name}</i>
+                </span>
+            );
         } else if (state === STATE.STEP_COMPLETE_SUCCESS) {
             return t('creation.core.status.completed');
         }
@@ -81,21 +84,19 @@ export default class GithubCompleteStep extends React.Component {
             <div>
                 <p className="instructions">{copy}</p>
 
-                { showDashboardLink &&
-                <div>
-                    <p>{t('creation.core.status.return.new_pipelines')}.</p>
+                {showDashboardLink && (
+                    <div>
+                        <p>{t('creation.core.status.return.new_pipelines')}.</p>
 
-                    <button onClick={() => this.navigateDashboard()}>{t('creation.core.button.dashboard')}</button>
-                </div>
-                }
+                        <button onClick={() => this.navigateDashboard()}>{t('creation.core.button.dashboard')}</button>
+                    </div>
+                )}
 
-                { showCreateLink &&
-                <div>
-                    <Extensions.Renderer extensionPoint="jenkins.pipeline.create.missing.jenkinsfile"
-                                         organization={'jenkins'} fullName={pipelineName}
-                    />
-                </div>
-                }
+                {showCreateLink && (
+                    <div>
+                        <Extensions.Renderer extensionPoint="jenkins.pipeline.create.missing.jenkinsfile" organization={'jenkins'} fullName={pipelineName} />
+                    </div>
+                )}
             </div>
         );
     }
@@ -106,8 +107,7 @@ export default class GithubCompleteStep extends React.Component {
         const error = this._getError(flowManager.stateId);
         const title = this._getTitle(flowManager.stateId, flowManager.selectedRepository);
         const content = this._getContent(flowManager.stateId);
-        const loading = (flowManager.stateId === STATE.PENDING_CREATION_SAVING ||
-            flowManager.stateId === STATE.PENDING_CREATION_EVENTS);
+        const loading = flowManager.stateId === STATE.PENDING_CREATION_SAVING || flowManager.stateId === STATE.PENDING_CREATION_EVENTS;
 
         return (
             <FlowStep {...this.props} className="github-complete-step" title={title} status={status} loading={loading} error={error}>

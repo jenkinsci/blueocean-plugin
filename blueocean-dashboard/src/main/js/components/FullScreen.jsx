@@ -8,7 +8,6 @@ const transitionDuration = 150;
 // FIXME: Move this component to JDL, and replace all instances of the *other* fullscreen component with this.
 
 export class FullScreen extends Component {
-
     constructor(props) {
         super(props);
         this.transitionTimeout = undefined;
@@ -42,7 +41,7 @@ export class FullScreen extends Component {
         }
     }
 
-    keyPressed = (event) => {
+    keyPressed = event => {
         const { onDismiss } = this.props;
 
         if (onDismiss && event.keyCode === 27) {
@@ -65,10 +64,10 @@ export class FullScreen extends Component {
         }
 
         const wrappedChildren = isVisible && (
-                <div className="FullScreen-contents" style={style}>
-                    {children}
-                </div>
-            );
+            <div className="FullScreen-contents" style={style}>
+                {children}
+            </div>
+        );
 
         return (
             <div className="FullScreen">
@@ -79,7 +78,7 @@ export class FullScreen extends Component {
                     transitionEnterTimeout={transitionDuration}
                     transitionLeaveTimeout={transitionDuration}
                 >
-                    { wrappedChildren }
+                    {wrappedChildren}
                 </ReactCSSTransitionGroup>
             </div>
         );

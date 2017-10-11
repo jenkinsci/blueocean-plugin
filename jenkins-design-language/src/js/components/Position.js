@@ -4,15 +4,14 @@ export const positionValues = {
     above: 'above',
     below: 'below',
     left: 'left',
-    right: 'right'
+    right: 'right',
 };
 
 type Position = $Keys<typeof positionValues>;
 
 export const positions: Array<Position> = Object.keys(positionValues);
 
-export function sanitizePosition(input:Position) {
-
+export function sanitizePosition(input: Position) {
     if (positions.indexOf(input) === -1) {
         return positionValues.above;
     }
@@ -20,11 +19,20 @@ export function sanitizePosition(input:Position) {
     return input;
 }
 
-function makePosition(position:Position) {
+function makePosition(position: Position) {
     // eslint-disable-next-line max-len, unused-var
-    return function simplePositionFunction(selfWidth:number, selfHeight:number, targetWidth:number, targetHeight:number, targetLeft:number, targetTop:number, viewportWidth:number, viewportHeight:number) {
-        let newLeft:number, newTop:number;
-        const margin:number = 5; // PX
+    return function simplePositionFunction(
+        selfWidth: number,
+        selfHeight: number,
+        targetWidth: number,
+        targetHeight: number,
+        targetLeft: number,
+        targetTop: number,
+        viewportWidth: number,
+        viewportHeight: number
+    ) {
+        let newLeft: number, newTop: number;
+        const margin: number = 5; // PX
         const preferred = sanitizePosition(position || positionValues.above);
 
         // Initial calculations
@@ -75,5 +83,5 @@ export const PositionFunctions = {
     above: makePosition(positionValues.above),
     below: makePosition(positionValues.below),
     left: makePosition(positionValues.left),
-    right: makePosition(positionValues.right)
+    right: makePosition(positionValues.right),
 };

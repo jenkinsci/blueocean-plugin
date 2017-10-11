@@ -1,6 +1,6 @@
 // @flow
 
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
 import { StatusIndicator, decodeResultValue } from './StatusIndicator';
 
@@ -11,13 +11,13 @@ type Props = {
     percentage?: number,
     width: string,
     height: string,
-    noBackground: bool,
+    noBackground: boolean,
     startTime: string,
-    estimatedDuration: number
+    estimatedDuration: number,
 };
 
 type State = {
-    percentage: number
+    percentage: number,
 };
 
 /**
@@ -29,7 +29,6 @@ type State = {
  * "startTime": ISO-8601 string indicating when tracking of progress begins from.
  */
 export class LiveStatusIndicator extends Component {
-
     props: Props;
     state: State;
 
@@ -75,8 +74,7 @@ export class LiveStatusIndicator extends Component {
         const isRunning = cleanResult === 'running';
 
         if (isRunning) {
-            this.startTime = moment(props.startTime, moment.ISO_8601)
-                .utcOffset(props.startTime);
+            this.startTime = moment(props.startTime, moment.ISO_8601).utcOffset(props.startTime);
 
             // update the progress each second
             this.clearIntervalId = setInterval(() => {
@@ -95,7 +93,7 @@ export class LiveStatusIndicator extends Component {
         if (elapsed > 0 && estimatedDuration > 0) {
             this.percentage = Math.floor(elapsed / estimatedDuration * 100);
         } else {
-            // if both aren't available, set to 'indeterminate' state 
+            // if both aren't available, set to 'indeterminate' state
             this.percentage = 101;
         }
 
@@ -105,7 +103,7 @@ export class LiveStatusIndicator extends Component {
             // set the percentage > 100 so the indeterminate spinner will display
             // no more progress updates are required
             this.setState({
-                percentage: 101
+                percentage: 101,
             });
 
             this._stopProgressUpdates();
@@ -118,7 +116,7 @@ export class LiveStatusIndicator extends Component {
             // then request another draw on next frame
             const newPercent = this.state.percentage + 1;
             this.setState({
-                percentage: newPercent
+                percentage: newPercent,
             });
 
             this.animationFrameId = requestAnimationFrame(() => {
@@ -139,9 +137,7 @@ export class LiveStatusIndicator extends Component {
     }
 
     render() {
-        return (
-            <StatusIndicator { ... this.props } percentage={this.state.percentage} />
-        );
+        return <StatusIndicator {...this.props} percentage={this.state.percentage} />;
     }
 }
 

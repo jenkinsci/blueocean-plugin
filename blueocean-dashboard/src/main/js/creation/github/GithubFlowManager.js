@@ -13,7 +13,6 @@ import { ListOrganizationsOutcome } from '../bitbucket/api/BbCreationApi';
 import { CreateMbpOutcome } from '../bitbucket/api/BbCreationApi';
 import RenameStep from '../bitbucket/steps/BbRenameStep';
 
-
 import GithubLoadingStep from './steps/GithubLoadingStep';
 import GithubCredentialsStep from './steps/GithubCredentialStep';
 import GithubOrgListStep from './steps/GithubOrgListStep';
@@ -28,45 +27,42 @@ const PAGE_SIZE = 100;
 const SSE_TIMEOUT_DELAY = 1000 * 60;
 const translate = i18nTranslator('blueocean-dashboard');
 
-
 export default class GithubFlowManager extends FlowManager {
-
     apiUrl = null;
 
     credentialId = null;
 
     credentialSelected = false;
 
-    @observable
-    organizations = [];
+    @observable organizations = [];
 
-    @observable
-    repositories = [];
+    @observable repositories = [];
 
-    @observable
-    repositoriesLoading = false;
+    @observable repositoriesLoading = false;
 
-    @computed get selectableRepositories() {
+    @computed
+    get selectableRepositories() {
         if (!this.repositories) {
             return [];
         }
         return this.repositories;
     }
 
-    @observable
-    selectedOrganization = null;
+    @observable selectedOrganization = null;
 
-    @observable
-    selectedRepository = null;
+    @observable selectedRepository = null;
 
-    @computed get stepsDisabled() {
-        return this.stateId === STATE.PENDING_CREATION_SAVING ||
+    @computed
+    get stepsDisabled() {
+        return (
+            this.stateId === STATE.PENDING_CREATION_SAVING ||
             this.stateId === STATE.STEP_COMPLETE_SAVING_ERROR ||
             this.stateId === STATE.PENDING_CREATION_EVENTS ||
             this.stateId === STATE.STEP_COMPLETE_EVENT_ERROR ||
             this.stateId === STATE.STEP_COMPLETE_EVENT_TIMEOUT ||
             this.stateId === STATE.STEP_COMPLETE_MISSING_JENKINSFILE ||
-            this.stateId === STATE.STEP_COMPLETE_SUCCESS;
+            this.stateId === STATE.STEP_COMPLETE_SUCCESS
+        );
     }
 
     _repositoryCache = {};
@@ -78,7 +74,7 @@ export default class GithubFlowManager extends FlowManager {
     _sseTimeoutId = null;
 
     pipeline = null;
-    pipelineName=null;
+    pipelineName = null;
 
     constructor(creationApi) {
         super();
@@ -136,10 +132,12 @@ export default class GithubFlowManager extends FlowManager {
     _renderCredentialsStep() {
         this.renderStep({
             stateId: STATE.STEP_ACCESS_TOKEN,
-            stepElement: <GithubCredentialsStep
-                scmId={this.getScmId()}
-                onCredentialSelected={(cred, selectionType) => this._onCredentialSelected(cred, selectionType)}
-            />,
+            stepElement: (
+                <GithubCredentialsStep
+                    scmId={this.getScmId()}
+                    onCredentialSelected={(cred, selectionType) => this._onCredentialSelected(cred, selectionType)}
+                />
+            ),
             afterStateId: this._getCredentialsStepAfterStateId(),
         });
     }
@@ -158,8 +156,7 @@ export default class GithubFlowManager extends FlowManager {
     _getOrganizationsStepAfterStateId() {
         // if the credential was manually selected, add the organizations step after it
         // if auto-selected, just replace it altogether
-        return this.credentialSelected ?
-            STATE.STEP_ACCESS_TOKEN : null;
+        return this.credentialSelected ? STATE.STEP_ACCESS_TOKEN : null;
     }
 
     _renderLoadingOrganizations() {
@@ -174,7 +171,8 @@ export default class GithubFlowManager extends FlowManager {
 
     @action
     listOrganizations() {
-        this._creationApi.listOrganizations(this.credentialId, this.getApiUrl())
+        this._creationApi
+            .listOrganizations(this.credentialId, this.getApiUrl())
             .then(waitAtLeast(MIN_DELAY))
             .then(orgs => this._listOrganizationsSuccess(orgs));
     }
@@ -249,8 +247,7 @@ export default class GithubFlowManager extends FlowManager {
         this._repositoryCache[organizationName] = this.repositories.slice();
 
         if (morePages) {
-            this._loadPagedRepository(organizationName, nextPage)
-                .then(repos2 => this._updateRepositories(organizationName, repos2, nextPage));
+            this._loadPagedRepository(organizationName, nextPage).then(repos2 => this._updateRepositories(organizationName, repos2, nextPage));
         } else {
             this.repositoriesLoading = false;
         }
@@ -272,8 +269,7 @@ export default class GithubFlowManager extends FlowManager {
 
     @action
     _saveRepo() {
-        const afterStateId = this.isStateAdded(STATE.STEP_RENAME) ?
-            STATE.STEP_RENAME : STATE.STEP_CHOOSE_REPOSITORY;
+        const afterStateId = this.isStateAdded(STATE.STEP_RENAME) ? STATE.STEP_RENAME : STATE.STEP_CHOOSE_REPOSITORY;
 
         this.renderStep({
             stateId: STATE.PENDING_CREATION_SAVING,
@@ -285,9 +281,16 @@ export default class GithubFlowManager extends FlowManager {
 
         this._initListeners();
 
-        this._creationApi.createMbp(this.credentialId, this.getScmId(), this.getApiUrl(), this.pipelineName,
-                                        this.selectedOrganization.name, this.selectedRepository.name,
-                                'io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest')
+        this._creationApi
+            .createMbp(
+                this.credentialId,
+                this.getScmId(),
+                this.getApiUrl(),
+                this.pipelineName,
+                this.selectedOrganization.name,
+                this.selectedRepository.name,
+                'io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest'
+            )
             .then(waitAtLeast(MIN_DELAY * 2))
             .then(result => this._createPipelineComplete(result));
     }
@@ -302,15 +305,19 @@ export default class GithubFlowManager extends FlowManager {
         this.outcome = result.outcome;
         if (result.outcome === CreateMbpOutcome.SUCCESS) {
             if (!this.isStateAdded(STATE.STEP_COMPLETE_MISSING_JENKINSFILE)) {
-                this._checkForBranchCreation(result.pipeline.name, true, ({ isFound, hasError, pipeline }) => {
-                    if (!hasError && isFound) {
-                        this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
-                        this.pipeline = pipeline;
-                        this.pipelineName = pipeline.name;
-                    }
-                }, this.redirectTimeout);
-                if (!this.isStateAdded(STATE.STEP_COMPLETE_MISSING_JENKINSFILE)
-                    && !this.isStateAdded(STATE.STEP_COMPLETE_SUCCESS)) {
+                this._checkForBranchCreation(
+                    result.pipeline.name,
+                    true,
+                    ({ isFound, hasError, pipeline }) => {
+                        if (!hasError && isFound) {
+                            this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+                            this.pipeline = pipeline;
+                            this.pipelineName = pipeline.name;
+                        }
+                    },
+                    this.redirectTimeout
+                );
+                if (!this.isStateAdded(STATE.STEP_COMPLETE_MISSING_JENKINSFILE) && !this.isStateAdded(STATE.STEP_COMPLETE_SUCCESS)) {
                     this.changeState(STATE.PENDING_CREATION_EVENTS);
                     this.pipeline = result.pipeline;
                     this.pipelineName = result.pipeline.name;
@@ -327,8 +334,7 @@ export default class GithubFlowManager extends FlowManager {
             this.removeSteps({ afterStateId: STATE.STEP_CREDENTIAL });
             this._showPlaceholder();
         } else if (result.outcome === CreateMbpOutcome.ERROR) {
-            const afterStateId = this.isStateAdded(STATE.STEP_RENAME) ?
-                STATE.STEP_RENAME : STATE.STEP_CHOOSE_REPOSITORY;
+            const afterStateId = this.isStateAdded(STATE.STEP_RENAME) ? STATE.STEP_RENAME : STATE.STEP_CHOOSE_REPOSITORY;
             this.renderStep({
                 stateId: STATE.ERROR,
                 stepElement: <GithubUnknownErrorStep error={result.error} />,
@@ -346,9 +352,7 @@ export default class GithubFlowManager extends FlowManager {
     }
 
     _showPlaceholder() {
-        this.setPlaceholders([
-            this.translate('creation.core.status.completed'),
-        ]);
+        this.setPlaceholders([this.translate('creation.core.status.completed')]);
     }
 
     _initListeners() {
@@ -382,16 +386,19 @@ export default class GithubFlowManager extends FlowManager {
             this._logEvent(event);
         }
 
-        if (event.blueocean_job_pipeline_name === this.pipelineName
-            && event.jenkins_object_type === 'org.jenkinsci.plugins.workflow.job.WorkflowRun'
-            && (event.job_run_status === 'ALLOCATED' || event.job_run_status === 'RUNNING' ||
-                event.job_run_status === 'SUCCESS' || event.job_run_status === 'FAILURE')) {
+        if (
+            event.blueocean_job_pipeline_name === this.pipelineName &&
+            event.jenkins_object_type === 'org.jenkinsci.plugins.workflow.job.WorkflowRun' &&
+            (event.job_run_status === 'ALLOCATED' ||
+                event.job_run_status === 'RUNNING' ||
+                event.job_run_status === 'SUCCESS' ||
+                event.job_run_status === 'FAILURE')
+        ) {
             this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
             return;
         }
 
-        const multiBranchIndexingComplete = event.job_multibranch_indexing_result === 'SUCCESS' &&
-            event.blueocean_job_pipeline_name === this.pipelineName;
+        const multiBranchIndexingComplete = event.job_multibranch_indexing_result === 'SUCCESS' && event.blueocean_job_pipeline_name === this.pipelineName;
 
         if (multiBranchIndexingComplete) {
             LOGGER.info(`creation succeeded for ${this.pipelineName}`);
@@ -419,14 +426,12 @@ export default class GithubFlowManager extends FlowManager {
         LOGGER.debug(`will check for branches of ${pipelineName} in ${delay}ms`);
 
         setTimeout(() => {
-            this._creationApi.findBranches(pipelineName)
-                .then(data => {
-                    LOGGER.debug(`check for pipeline complete. created? ${data.isFound}`);
-                    onComplete(data);
-                });
+            this._creationApi.findBranches(pipelineName).then(data => {
+                LOGGER.debug(`check for pipeline complete. created? ${data.isFound}`);
+                onComplete(data);
+            });
         }, delay);
     }
-
 
     _finishListening(stateId) {
         LOGGER.debug('finishListening', stateId);
@@ -447,5 +452,4 @@ export default class GithubFlowManager extends FlowManager {
             // LOGGER.debug(`created branch: ${event.job_name}`);
         }
     }
-
 }

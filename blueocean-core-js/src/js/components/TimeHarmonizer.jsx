@@ -5,12 +5,12 @@ import i18nTranslator from '../i18n/i18n';
 
 function jobStillActive(status) {
     switch (String(status).toUpperCase()) {
-    case 'RUNNING':
-    case 'PAUSED':
-    case 'QUEUED':
-        return true;
-    default:
-        return false;
+        case 'RUNNING':
+        case 'PAUSED':
+        case 'QUEUED':
+            return true;
+        default:
+            return false;
     }
 }
 
@@ -34,19 +34,23 @@ export class TimeHarmonizerUtil {
         }
 
         // we need to make sure that we calculate with the correct time offset
-        return TimeHarmonizerUtil.timeManager.harmonizeTimes({
-            startTime,
-            endTime,
-            durationInMillis,
-            isRunning: jobStillActive(result),
-        }, this.getSkewMillis());
+        return TimeHarmonizerUtil.timeManager.harmonizeTimes(
+            {
+                startTime,
+                endTime,
+                durationInMillis,
+                isRunning: jobStillActive(result),
+            },
+            this.getSkewMillis()
+        );
     };
 
-    getI18nTitle = (result) => {
+    getI18nTitle = result => {
         const durationInMillis = this.getDuration(result);
         const i18nDuration = TimeHarmonizerUtil.timeManager.format(
             durationInMillis,
-            TimeHarmonizerUtil.translate('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' }));
+            TimeHarmonizerUtil.translate('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })
+        );
 
         const title = TimeHarmonizerUtil.translate(`common.state.${result.toLowerCase()}`, { 0: i18nDuration });
         return title;
@@ -65,7 +69,6 @@ TimeHarmonizerUtil.logger = logging.logger('io.jenkins.blueocean.core.TimeHarmon
  */
 export const TimeHarmonizer = ComposedComponent => {
     class NewComponent extends Component {
-
         componentWillMount() {
             this.timeHarmonizerUtil = new TimeHarmonizerUtil(this);
         }
@@ -86,7 +89,7 @@ export const TimeHarmonizer = ComposedComponent => {
             }
 
             // create a composedComponent and inject the functions we want to expose
-            return (<ComposedComponent {...childProps} />);
+            return <ComposedComponent {...childProps} />;
         }
     }
 

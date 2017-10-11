@@ -18,8 +18,7 @@ function jobPrefixPath(organizationGroup) {
  * Build a root-relative URL to the organization's pipeline list screen.
  * @param organization
  */
-export const buildOrganizationUrl = (organization) =>
-    `/organizations/${encodeURIComponent(organization)}`;
+export const buildOrganizationUrl = organization => `/organizations/${encodeURIComponent(organization)}`;
 
 /**
  * Build a root-relative URL to the pipeline details screen.
@@ -29,8 +28,7 @@ export const buildOrganizationUrl = (organization) =>
  * @returns {string}
  */
 export const buildPipelineUrl = (organization, fullName, tabName) => {
-    const baseUrl = `/organizations/${encodeURIComponent(organization)}/` +
-        `${encodeURIComponent(fullName)}`;
+    const baseUrl = `/organizations/${encodeURIComponent(organization)}/` + `${encodeURIComponent(fullName)}`;
 
     return tabName ? `${baseUrl}/${tabName}` : baseUrl;
 };
@@ -38,12 +36,12 @@ export const buildClassicCreateJobUrl = () => {
     const jenkinsUrl = AppConfig.getJenkinsRootURL();
     return `${jenkinsUrl}${jobPrefixPath(AppConfig.getOrganizationGroup())}/newJob`;
 };
-export const rootPath = (name) => {
+export const rootPath = name => {
     const jenkinsUrl = AppConfig.getJenkinsRootURL();
     return `${jenkinsUrl}${jobPrefixPath(AppConfig.getOrganizationGroup())}/job/${name.split('/').join('/job/')}/`;
 };
 
-export const buildClassicConfigUrl = (pipeline) => {
+export const buildClassicConfigUrl = pipeline => {
     if (pipeline && pipeline.fullName) {
         return `${rootPath(pipeline.fullName)}configure`;
     }
@@ -58,13 +56,12 @@ export const buildClassicInputUrl = (pipeline, runNumber) => {
 };
 
 // http://localhost:8080/jenkins/job/scherler/job/Jenkins-40617-params/build?delay=0sec
-export const buildClassicBuildUrl = (pipeline) => {
+export const buildClassicBuildUrl = pipeline => {
     if (pipeline && pipeline.fullName) {
         return `${rootPath(pipeline.fullName)}build?delay=0sec`;
     }
     return null;
 };
-
 
 /**
  * Build a root-relative URL to the run details screen.
@@ -75,7 +72,8 @@ export const buildClassicBuildUrl = (pipeline) => {
  * @param tabName
  */
 export const buildRunDetailsUrl = (organization, pipeline, branch, runId, tabName) => {
-    const baseUrl = `/organizations/${encodeURIComponent(organization)}/` +
+    const baseUrl =
+        `/organizations/${encodeURIComponent(organization)}/` +
         `${encodeURIComponent(pipeline)}/detail/` +
         `${encodeURIComponent(branch)}/${encodeURIComponent(runId)}`;
     return tabName ? `${baseUrl}/${tabName}` : baseUrl;
@@ -84,14 +82,14 @@ export const buildRunDetailsUrl = (organization, pipeline, branch, runId, tabNam
 /**
  * Double encode name, feature/test#1 is encoded as feature%252Ftest%25231
  */
-export const doubleUriEncode = (input) => encodeURIComponent(encodeURIComponent(input));
+export const doubleUriEncode = input => encodeURIComponent(encodeURIComponent(input));
 
 // general fetchAllTrigger
 export const fetchAllSuffix = '?start=0';
 
 // Add fetchAllSuffix in case it is needed
 export function applyFetchAll(config, url) {
-// if we pass fetchAll means we want the full log -> start=0 will trigger that on the server
+    // if we pass fetchAll means we want the full log -> start=0 will trigger that on the server
     if (config.fetchAll && !url.includes(fetchAllSuffix)) {
         return `${url}${fetchAllSuffix}`;
     }
@@ -113,7 +111,7 @@ export function calculateFetchAll(props) {
 }
 
 // using the hook 'location.search'.includes('view=0') to trigger the logConsole view instead of steps
-export const calculateLogView = function (props) {
+export const calculateLogView = function(props) {
     const { location: { search } } = props;
 
     if (search) {
@@ -129,7 +127,7 @@ export const calculateLogView = function (props) {
  * helper to calculate log url. When we have a node we get create a special url, otherwise we use the url passed to us
  * @param config { nodesBaseUrl, node, url}
  */
-export const calculateLogUrl = (config) => {
+export const calculateLogUrl = config => {
     let returnUrl = config.url;
     if (config.node) {
         const { nodesBaseUrl, node } = config;
@@ -145,9 +143,7 @@ export const calculateLogUrl = (config) => {
  */
 export function calculateNodeBaseUrl(config) {
     const { name, runId, branch, _appURLBase, isMultiBranch, organization } = config;
-    const baseUrl =
-        `${_appURLBase}/rest/organizations/${encodeURIComponent(organization)}/` +
-        `pipelines/${name}`;
+    const baseUrl = `${_appURLBase}/rest/organizations/${encodeURIComponent(organization)}/` + `pipelines/${name}`;
     if (isMultiBranch) {
         return `${baseUrl}/branches/${doubleUriEncode(branch)}/runs/${runId}/nodes/`;
     }
@@ -162,9 +158,7 @@ export function calculateNodeBaseUrl(config) {
  */
 export function calculateStepsBaseUrl(config) {
     const { name, runId, branch, _appURLBase, isMultiBranch, node, organization } = config;
-    let baseUrl =
-        `${_appURLBase}/rest/organizations/${encodeURIComponent(organization)}/` +
-        `pipelines/${name}`;
+    let baseUrl = `${_appURLBase}/rest/organizations/${encodeURIComponent(organization)}/` + `pipelines/${name}`;
     if (isMultiBranch) {
         baseUrl = `${baseUrl}/branches/${doubleUriEncode(branch)}`;
     }
@@ -180,8 +174,7 @@ export function calculateStepsBaseUrl(config) {
  */
 export function calculateRunLogURLObject(config) {
     const { name, runId, branch, _appURLBase, isMultiBranch, organization } = config;
-    const baseUrl = `${_appURLBase}/rest/organizations/${encodeURIComponent(organization)}` +
-        `/pipelines/${name}`;
+    const baseUrl = `${_appURLBase}/rest/organizations/${encodeURIComponent(organization)}` + `/pipelines/${name}`;
     let url;
     let fileName;
     if (isMultiBranch) {
@@ -228,8 +221,7 @@ export function endSlash(str) {
  */
 export function getRestUrl({ organization, pipeline, branch, runId }) {
     const pipelineName = typeof pipeline === 'object' ? pipeline.fullName : pipeline;
-    const organizationName = organization ||
-        (typeof pipeline === 'object' ? pipeline.organization : '');
+    const organizationName = organization || (typeof pipeline === 'object' ? pipeline.organization : '');
     const jenkinsUrl = AppConfig.getJenkinsRootURL();
     let url = `${jenkinsUrl}/blue/rest/organizations/${encodeURIComponent(organizationName)}`;
     if (pipelineName) {
@@ -275,7 +267,7 @@ export function relativeUrl(location, ...args) {
  * it was unable to decode the page URL.
  */
 export function toClassicJobPage(pageUrl, isMultibranch = false) {
-    const pageUrlTokens = pageUrl.split('/').filter((token) => typeof token === 'string' && token !== '');
+    const pageUrlTokens = pageUrl.split('/').filter(token => typeof token === 'string' && token !== '');
 
     // Remove all path elements up to and including the Jenkins
     // organization name.

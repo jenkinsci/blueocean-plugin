@@ -1,7 +1,7 @@
 // @flow
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 
-import {ModalContainer} from './ModalContainer';
+import { ModalContainer } from './ModalContainer';
 
 //--------------------------------------------------------------------------
 //
@@ -17,12 +17,11 @@ import {ModalContainer} from './ModalContainer';
 
  */
 export class BasicDialog extends Component {
-
     props: {
         className?: string,
         onDismiss?: Function,
-        ignoreEscapeKey?: bool,
-        children?: ReactChildren
+        ignoreEscapeKey?: boolean,
+        children?: ReactChildren,
     };
 
     //--------------------------------------
@@ -37,7 +36,7 @@ export class BasicDialog extends Component {
         }
     };
 
-    keyPressed = (event:KeyboardEvent) => {
+    keyPressed = (event: KeyboardEvent) => {
         // TODO: Move this into ModalContainer, and remove from Popover as well!
         const { onDismiss, ignoreEscapeKey } = this.props;
 
@@ -51,9 +50,8 @@ export class BasicDialog extends Component {
     //--------------------------------------
 
     render() {
-
-        const {className, children} = this.props;
-        const newClassName = (className ? className + " " : "") + ' Dialog';
+        const { className, children } = this.props;
+        const newClassName = (className ? className + ' ' : '') + ' Dialog';
 
         return (
             <ModalContainer onScreenClick={this.modalScreenClicked}>
@@ -63,12 +61,12 @@ export class BasicDialog extends Component {
     }
 
     componentDidMount() {
-        document.addEventListener("keyup", this.keyPressed, false);
+        document.addEventListener('keyup', this.keyPressed, false);
         // TODO: Remove from here and Popover
     }
 
     componentWillUnmount() {
-        document.removeEventListener("keyup", this.keyPressed, false);
+        document.removeEventListener('keyup', this.keyPressed, false);
         // TODO: Remove from here and Popover
     }
 }
@@ -76,7 +74,7 @@ export class BasicDialog extends Component {
 BasicDialog.propTypes = {
     onDismiss: PropTypes.func,
     ignoreEscapeKey: PropTypes.bool,
-    children: PropTypes.node
+    children: PropTypes.node,
 };
 
 //--------------------------------------------------------------------------
@@ -88,7 +86,7 @@ BasicDialog.propTypes = {
 /** Basic header for dialogs */
 export class DialogHeader extends Component {
     props: {
-        children?: ReactChildren
+        children?: ReactChildren,
     };
 
     render() {
@@ -101,7 +99,7 @@ export class DialogHeader extends Component {
 }
 
 DialogHeader.propTypes = {
-    children: PropTypes.node
+    children: PropTypes.node,
 };
 
 //--------------------------------------------------------------------------
@@ -113,22 +111,20 @@ DialogHeader.propTypes = {
 /** Wraps the content of a dialog to provide a scrollbar if there's too much to fit */
 export class DialogContent extends Component {
     props: {
-        children?: ReactChildren
+        children?: ReactChildren,
     };
 
     render() {
         return (
             <div className="Dialog-content-scroll">
-                <div className="Dialog-content-margin">
-                    {this.props.children}
-                </div>
+                <div className="Dialog-content-margin">{this.props.children}</div>
             </div>
         );
     }
 }
 
 DialogContent.propTypes = {
-    children: PropTypes.node
+    children: PropTypes.node,
 };
 
 //--------------------------------------------------------------------------
@@ -139,24 +135,19 @@ DialogContent.propTypes = {
 
 /** A container for dialog action buttons */
 export class DialogButtonBar extends Component {
-
     props: {
-        children?: ReactChildren
+        children?: ReactChildren,
     };
 
     render() {
-        const {children} = this.props;
+        const { children } = this.props;
 
-        return (
-            <div className="Dialog-button-bar">
-                {children}
-            </div>
-        );
+        return <div className="Dialog-button-bar">{children}</div>;
     }
 }
 
 DialogButtonBar.propTypes = {
-    children: PropTypes.node
+    children: PropTypes.node,
 };
 
 //--------------------------------------------------------------------------
@@ -167,22 +158,15 @@ DialogButtonBar.propTypes = {
 
 /** An easy-to-use Dialog component with a title and button bar, and scroll pane for children */
 export class Dialog extends Component {
-
     userDismissed = () => {
-        const {onDismiss} = this.props;
+        const { onDismiss } = this.props;
         if (onDismiss) {
             onDismiss(this);
         }
     };
 
     render() {
-        const {
-            className,
-            title,
-            buttons,
-            children,
-            ignoreEscapeKey
-            } = this.props;
+        const { className, title, buttons, children, ignoreEscapeKey } = this.props;
 
         const defaultButton = <button onClick={this.userDismissed}>Close</button>;
         const buttonArray = [].concat(buttons || defaultButton);
@@ -191,12 +175,10 @@ export class Dialog extends Component {
         const buttonBar = React.createElement(DialogButtonBar, {}, ...buttonArray);
 
         return (
-            <BasicDialog className={className}
-                         ignoreEscapeKey={ignoreEscapeKey}
-                         onDismiss={this.userDismissed}>
-                <DialogHeader>{ title }</DialogHeader>
-                <DialogContent>{ children }</DialogContent>
-                { buttonBar }
+            <BasicDialog className={className} ignoreEscapeKey={ignoreEscapeKey} onDismiss={this.userDismissed}>
+                <DialogHeader>{title}</DialogHeader>
+                <DialogContent>{children}</DialogContent>
+                {buttonBar}
             </BasicDialog>
         );
     }
@@ -208,5 +190,5 @@ Dialog.propTypes = {
     buttons: PropTypes.node,
     children: PropTypes.node,
     onDismiss: PropTypes.func,
-    ignoreEscapeKey: PropTypes.bool
+    ignoreEscapeKey: PropTypes.bool,
 };

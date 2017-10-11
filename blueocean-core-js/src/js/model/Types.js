@@ -1,7 +1,7 @@
 // @flow
 export type LinkObject = {
-    [ id: string ] : { href: string}
-}
+    [id: string]: { href: string },
+};
 
 export type ActivityModel = {
     organization: string,
@@ -14,9 +14,9 @@ export type ActivityModel = {
     result: string,
     state: string,
     startTime: string,
-    endTime: string;
-    commitId: string
-}
+    endTime: string,
+    commitId: string,
+};
 
 export type PipelineModel = {
     name: string,
@@ -30,9 +30,9 @@ export type PipelineModel = {
     weatherScore: string,
     _links: LinkObject,
     _class: string,
-    latestRun: ActivityModel
-}
+    latestRun: ActivityModel,
+};
 
 export type BranchModel = PipelineModel & {
-    pullRequest: Object
-}
+    pullRequest: Object,
+};

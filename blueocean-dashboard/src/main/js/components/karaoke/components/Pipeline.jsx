@@ -49,11 +49,15 @@ export default class Pipeline extends Component {
             logger.debug('stopping karaoke mode.');
             this.stopKaraoke();
         }
-        logger.debug('karaoke mode.',
+        logger.debug(
+            'karaoke mode.',
             'nextProps.augmenter.karaoke ',
-            nextProps.augmenter.karaoke, 'this.props.augmenter.karaoke',
-            this.props.augmenter.karaoke, 'this.karaoke',
-            this.karaoke);
+            nextProps.augmenter.karaoke,
+            'this.props.augmenter.karaoke',
+            this.props.augmenter.karaoke,
+            'this.karaoke',
+            this.karaoke
+        );
         // update on finish and start, you can de-activate it by setting updateOnFinish to false
         //
         if (nextProps.run.id !== this.props.run.id || (this.updateOnFinish !== 'never' && nextProps.run.isCompleted() && !this.props.run.isCompleted())) {
@@ -104,55 +108,55 @@ export default class Pipeline extends Component {
      * @param event sse event coming from the backende
      */
     sseEventHandler(event) {
-         // we are using try/catch to throw an early out error
+        // we are using try/catch to throw an early out error
         try {
             logger.debug('incoming event', event);
             const karaokeOut = KaraokeConfig.getPreference('runDetails.pipeline.karaoke').value === 'never' || !this.karaoke;
             const jenkinsEvent = event.jenkins_event;
             const { run } = this.props;
             const runId = run.id;
-             // we get events from the pipeline and the job channel, they have different naming for the id
+            // we get events from the pipeline and the job channel, they have different naming for the id
             //  && event.jenkins_object_id !== runId -> job
             if (event.pipeline_run_id !== runId) {
                 logger.debug('early out');
                 throw new Error('exit');
             }
             switch (jenkinsEvent) {
-            case 'pipeline_step': {
-                if (karaokeOut) {
-                    logger.debug('early out because we do not want to follow along sse events');
-                    throw new Error('exit');
-                }
-                logger.debug('sse event step fetchCurrentSteps', jenkinsEvent);
-                debounce(() => {
-                    logger.debug('sse fetch it', this.karaoke);
-                    this.pager.fetchCurrentStepUrl();
-                }, 200)();
-                // prevent flashing of stages and nodes
-                this.showPending = false;
-                break;
-            }
-            case 'pipeline_end':
-            case 'pipeline_start':
-            case 'job_run_ended':
-            case 'pipeline_block_end':
-            case 'pipeline_stage': {
-                logger.debug('sse event block starts refetchNodes', jenkinsEvent);
-                debounce(() => {
-                    logger.debug('sse fetch it', this.karaoke);
+                case 'pipeline_step': {
                     if (karaokeOut) {
-                        this.pager.fetchNodesOnly({});
-                    } else {
-                        this.pager.fetchNodes({});
+                        logger.debug('early out because we do not want to follow along sse events');
+                        throw new Error('exit');
                     }
-                }, 200)();
-                // prevent flashing of stages and nodes
-                this.showPending = false;
-                break;
-            }
-            default: {
-                logger.debug('ignoring event', jenkinsEvent);
-            }
+                    logger.debug('sse event step fetchCurrentSteps', jenkinsEvent);
+                    debounce(() => {
+                        logger.debug('sse fetch it', this.karaoke);
+                        this.pager.fetchCurrentStepUrl();
+                    }, 200)();
+                    // prevent flashing of stages and nodes
+                    this.showPending = false;
+                    break;
+                }
+                case 'pipeline_end':
+                case 'pipeline_start':
+                case 'job_run_ended':
+                case 'pipeline_block_end':
+                case 'pipeline_stage': {
+                    logger.debug('sse event block starts refetchNodes', jenkinsEvent);
+                    debounce(() => {
+                        logger.debug('sse fetch it', this.karaoke);
+                        if (karaokeOut) {
+                            this.pager.fetchNodesOnly({});
+                        } else {
+                            this.pager.fetchNodes({});
+                        }
+                    }, 200)();
+                    // prevent flashing of stages and nodes
+                    this.showPending = false;
+                    break;
+                }
+                default: {
+                    logger.debug('ignoring event', jenkinsEvent);
+                }
             }
         } catch (e) {
             // we only ignore the exit error
@@ -168,40 +172,44 @@ export default class Pipeline extends Component {
         // Queue magic since a pipeline is only showing queued state a short time even if still waiting for executors
         const isPipelineQueued = (run.isQueued() || run.isRunning()) && noResultsToDisplay;
         logger.debug('isQueued', run.isQueued(), 'noResultsToDisplay', noResultsToDisplay, 'isPipelineQueued', isPipelineQueued);
-        if (isPipelineQueued) { // if queued we are saying that we are waiting to start
+        if (isPipelineQueued) {
+            // if queued we are saying that we are waiting to start
             logger.debug('EarlyOut - abort due to run queued.');
-            return (<QueuedState
-                translation={t}
-                titleKey="rundetail.pipeline.waiting.message.title"
-                messageKey="rundetail.pipeline.waiting.message.description"
-                message={run.causeOfBlockage}
-            />);
+            return (
+                <QueuedState
+                    translation={t}
+                    titleKey="rundetail.pipeline.waiting.message.title"
+                    messageKey="rundetail.pipeline.waiting.message.description"
+                    message={run.causeOfBlockage}
+                />
+            );
         }
         const supportsNodes = this.pager.nodes === undefined;
-        if (!this.pager.pending && (this.classicLog || (noResultsToDisplay && supportsNodes))) { // no information? fallback to freeStyle
+        if (!this.pager.pending && (this.classicLog || (noResultsToDisplay && supportsNodes))) {
+            // no information? fallback to freeStyle
             logger.debug('EarlyOut - We do not have any information we can display or we opt-out by preference, falling back to freeStyle rendering');
-            return (<FreeStyle {...this.props } />);
+            return <FreeStyle {...this.props} />;
         }
-        if (this.pager.pending && this.showPending) { // we are waiting for the backend information
+        if (this.pager.pending && this.showPending) {
+            // we are waiting for the backend information
             logger.debug('EarlyOut - abort due to pager pending');
-            return (<QueuedState
-                translation={t}
-                titleKey="rundetail.pipeline.pending.message.title"
-                messageKey="rundetail.pipeline.pending.message.description"
-            />);
+            return (
+                <QueuedState translation={t} titleKey="rundetail.pipeline.pending.message.title" messageKey="rundetail.pipeline.pending.message.description" />
+            );
         }
         // here we decide what to do next if somebody clicks on a flowNode
         // Underlying tasks are fetching nodes information for the selected node
-        const afterClick = (id) => {
+        const afterClick = id => {
             logger.debug('clicked on node with id:', id);
             this.showPending = false; // Configure flag to not show pending anymore -> reduce flicker
-            const nextNode = this.pager.nodes.data.model.filter((item) => item.id === id)[0];
+            const nextNode = this.pager.nodes.data.model.filter(item => item.id === id)[0];
             // remove trailing /
             const pathname = location.pathname.replace(/\/$/, '');
             let nextPath;
             if (pathname.endsWith('pipeline')) {
                 nextPath = pathname;
-            } else { // means we are in a node url
+            } else {
+                // means we are in a node url
                 // remove last bits
                 const pathArray = pathname.split('/');
                 pathArray.pop();
@@ -227,67 +235,70 @@ export default class Pipeline extends Component {
             logger.debug('redirecting now to:', location.pathname);
             router.push(location);
         };
-        const title = this.pager.nodes !== undefined ? t('rundetail.pipeline.steps', {
-            defaultValue: 'Steps {0}',
-            0: this.pager.currentNode.displayName,
-        }) : '';
+        const title =
+            this.pager.nodes !== undefined
+                ? t('rundetail.pipeline.steps', {
+                      defaultValue: 'Steps {0}',
+                      0: this.pager.currentNode.displayName,
+                  })
+                : '';
         // JENKINS-40526 node can provide logs only related to that node
         const logUrl = this.pager.nodes !== undefined ? augmenter.getNodesLogUrl(this.pager.currentNode) : augmenter.generalLogUrl;
         const logFileName = this.pager.nodes !== undefined ? augmenter.getNodesLogFileName(this.pager.currentNode) : augmenter.generalLogFileName;
         logger.debug('displayName', this.pager.currentNode.displayName, 'logging info', logUrl, logFileName);
-        return (<div>
-            { <RunDescription run={this.props.run} t={t} /> }
-            { this.pager.nodes !== undefined &&
-                <Extensions.Renderer
-                    extensionPoint="jenkins.pipeline.run.result"
-                    selectedStage={this.pager.currentNode}
-                    callback={afterClick}
-                    nodes={this.pager.nodes.data.model}
-                    pipelineName={pipeline.displayName}
-                    branchName={augmenter.isMultiBranchPipeline ? branch : undefined}
-                    runId={run.id}
-                    run={run}
-                    t={t}
-                />
-            }
-            { !isPipelineQueued &&
-                <LogToolbar
-                    fileName={logFileName}
-                    url={logUrl}
-                    title={title}
-                />
-            }
-            { this.pager.steps && !noResultsToDisplay &&
-                <Steps
-                    {...{
-                        key: this.pager.currentStepsUrl,
-                        nodeInformation: this.pager.steps.data,
-                        followAlong: augmenter.karaoke,
-                        augmenter,
-                        t,
-                        scrollToBottom,
-                        router,
-                        location,
-                    }}
-                />
-            }
+        return (
+            <div>
+                {<RunDescription run={this.props.run} t={t} />}
+                {this.pager.nodes !== undefined && (
+                    <Extensions.Renderer
+                        extensionPoint="jenkins.pipeline.run.result"
+                        selectedStage={this.pager.currentNode}
+                        callback={afterClick}
+                        nodes={this.pager.nodes.data.model}
+                        pipelineName={pipeline.displayName}
+                        branchName={augmenter.isMultiBranchPipeline ? branch : undefined}
+                        runId={run.id}
+                        run={run}
+                        t={t}
+                    />
+                )}
+                {!isPipelineQueued && <LogToolbar fileName={logFileName} url={logUrl} title={title} />}
+                {this.pager.steps &&
+                    !noResultsToDisplay && (
+                        <Steps
+                            {...{
+                                key: this.pager.currentStepsUrl,
+                                nodeInformation: this.pager.steps.data,
+                                followAlong: augmenter.karaoke,
+                                augmenter,
+                                t,
+                                scrollToBottom,
+                                router,
+                                location,
+                            }}
+                        />
+                    )}
 
-            { !this.pager.pending && !isPipelineQueued && noResultsToDisplay &&
-                <NoSteps
-                    translation={t}
-                    titleKey="rundetail.pipeline.nosteps.message.title"
-                    messageKey="rundetail.pipeline.nosteps.message.description"
-                />
-            }
+                {!this.pager.pending &&
+                    !isPipelineQueued &&
+                    noResultsToDisplay && (
+                        <NoSteps
+                            translation={t}
+                            titleKey="rundetail.pipeline.nosteps.message.title"
+                            messageKey="rundetail.pipeline.nosteps.message.description"
+                        />
+                    )}
 
-            { isPipelineQueued &&
-                <QueuedState translation={t}
-                    titleKey="rundetail.pipeline.waiting.message.title"
-                    messageKey="rundetail.pipeline.waiting.message.description"
-                    message={run.causeOfBlockage}
-                />
-            }
-        </div>);
+                {isPipelineQueued && (
+                    <QueuedState
+                        translation={t}
+                        titleKey="rundetail.pipeline.waiting.message.title"
+                        messageKey="rundetail.pipeline.waiting.message.description"
+                        message={run.causeOfBlockage}
+                    />
+                )}
+            </div>
+        );
     }
 }
 // nodeInformation: this.pager.steps.data

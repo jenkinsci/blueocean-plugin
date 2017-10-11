@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
 
-
 /**
  * Convert the dialog's "content" prop to appropriate elements for rendering.
  * @param content
@@ -13,16 +12,17 @@ function createContent(content) {
 
     const { icon, title, message, linkElement, linkText, linkHref } = content;
     // use 'linkElement' as is, or build a link if the text and href were supplied
-    const link = linkElement || (linkText && linkHref && <a className="btn" target="_blank" href={linkHref}>{linkText}</a>);
+    const link =
+        linkElement ||
+        (linkText &&
+            linkHref && (
+                <a className="btn" target="_blank" href={linkHref}>
+                    {linkText}
+                </a>
+            ));
 
-    return [
-        icon && React.cloneElement(icon, { className: 'icon' }),
-        <h1 className="title">{title}</h1>,
-        message && <p className="message">{message}</p>,
-        link,
-    ];
+    return [icon && React.cloneElement(icon, { className: 'icon' }), <h1 className="title">{title}</h1>, message && <p className="message">{message}</p>, link];
 }
-
 
 /**
  * Dialog that displays simple messaging for "no data" states.
@@ -38,7 +38,7 @@ export function PlaceholderDialog(props) {
 
     return (
         <div className="PlaceholderDialog" style={{ ...style, width }}>
-            { newChildren }
+            {newChildren}
         </div>
     );
 }

@@ -8,7 +8,6 @@ import validateInvalid from './validate-invalid';
 /* eslint-disable no-unused-vars */
 
 export class GithubCredentialsApi extends ApiMock {
-
     findExistingCredential() {
         if (this._hasUrlKey('credential=missing')) {
             return this._delayedResolve(credentialMissing);
@@ -24,5 +23,4 @@ export class GithubCredentialsApi extends ApiMock {
 
         return this._delayedResolve(validateSuccess);
     }
-
 }

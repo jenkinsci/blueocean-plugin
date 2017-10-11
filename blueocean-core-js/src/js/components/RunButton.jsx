@@ -16,7 +16,6 @@ const { permit } = Security;
  * Run Buttons allows a pipeline or branch to be run and also be stopped thereafter.
  */
 export class RunButton extends Component {
-
     constructor(props) {
         super(props);
 
@@ -31,8 +30,8 @@ export class RunButton extends Component {
     }
 
     _updateState(nextProps) {
-        const oldStatus = this.props.latestRun && this.props.latestRun.state || '';
-        const newStatus = nextProps.latestRun && nextProps.latestRun.state || '';
+        const oldStatus = (this.props.latestRun && this.props.latestRun.state) || '';
+        const newStatus = (nextProps.latestRun && nextProps.latestRun.state) || '';
 
         // if the state of the run changed, then assume it's no longer trying to stop
         if (oldStatus !== newStatus) {
@@ -43,8 +42,7 @@ export class RunButton extends Component {
     }
 
     _onRunClick() {
-        runApi.startRun(this.props.runnable)
-            .then((run) => ToastUtils.createRunStartedToast(this.props.runnable, run, this.props.onNavigation));
+        runApi.startRun(this.props.runnable).then(run => ToastUtils.createRunStartedToast(this.props.runnable, run, this.props.onNavigation));
     }
 
     _onStopClick() {
@@ -86,14 +84,18 @@ export class RunButton extends Component {
         showRunButton = showRunButton && permit(this.props.runnable).start();
         showStopButton = showStopButton && permit(this.props.runnable).stop();
 
-        const runLabel = this.props.runText || translate('toast.run', {
-            defaultValue: 'Run',
-        });
-        let stopLabel = this.state.stopping ? translate('toast.stopping', {
-            defaultValue: 'Stopping ...',
-        }) : translate('toast.stop', {
-            defaultValue: 'Stop',
-        });
+        const runLabel =
+            this.props.runText ||
+            translate('toast.run', {
+                defaultValue: 'Run',
+            });
+        let stopLabel = this.state.stopping
+            ? translate('toast.stopping', {
+                  defaultValue: 'Stopping ...',
+              })
+            : translate('toast.stop', {
+                  defaultValue: 'Stop',
+              });
 
         if (isPaused && !this.state.stopping) {
             stopLabel = translate('toast.abort', { defaultValue: 'Abort' });
@@ -106,27 +108,30 @@ export class RunButton extends Component {
         const { onClick = () => this._onRunClick() } = this.props;
 
         return (
-            <div className={`run-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
-                { showRunButton &&
-                <a className={`run-button ${innerButtonClass}`} title={runLabel} onClick={onClick}>
-                    <Icon size={24} icon="AvPlayCircleOutline" style={{ marginRight: '5px' }} />
-                    <span className="button-label">{runLabel}</span>
-                </a>
-                }
+            <div className={`run-button-component ${outerClass}`} onClick={event => stopProp(event)}>
+                {showRunButton && (
+                    <a className={`run-button ${innerButtonClass}`} title={runLabel} onClick={onClick}>
+                        <Icon size={24} icon="AvPlayCircleOutline" style={{ marginRight: '5px' }} />
+                        <span className="button-label">{runLabel}</span>
+                    </a>
+                )}
 
-                { showStopButton &&
-                <a className={`stop-button ${innerButtonClass} ${stopClass}`} title={stopLabel} onClick={() => this._onStopClick()}>
-                    { /* eslint-disable max-len */ }
-                    <svg className="svg-icon" width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
-                        <g fill="none" fill-rule="evenodd">
-                            <path d="M-2-2h24v24H-2z" />
-                            <path className="svg-icon-inner action-button-fill" d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zM7 7h6v6H7V7zm3 11c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z" />
-                        </g>
-                    </svg>
-                    { /* eslint-enable max-len */ }
-                    <span className="button-label">{stopLabel}</span>
-                </a>
-                }
+                {showStopButton && (
+                    <a className={`stop-button ${innerButtonClass} ${stopClass}`} title={stopLabel} onClick={() => this._onStopClick()}>
+                        {/* eslint-disable max-len */}
+                        <svg className="svg-icon" width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg">
+                            <g fill="none" fill-rule="evenodd">
+                                <path d="M-2-2h24v24H-2z" />
+                                <path
+                                    className="svg-icon-inner action-button-fill"
+                                    d="M10 0C4.48 0 0 4.48 0 10s4.48 10 10 10 10-4.48 10-10S15.52 0 10 0zM7 7h6v6H7V7zm3 11c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z"
+                                />
+                            </g>
+                        </svg>
+                        {/* eslint-enable max-len */}
+                        <span className="button-label">{stopLabel}</span>
+                    </a>
+                )}
             </div>
         );
     }

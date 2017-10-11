@@ -17,7 +17,6 @@
  *
  */
 export class Enum {
-
     _values = [];
 
     constructor(props) {
@@ -51,5 +50,4 @@ export class Enum {
     values() {
         return this._values.slice();
     }
-
 }

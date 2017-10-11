@@ -31,7 +31,8 @@ function _findAndUpdate(obj, replacer, visited, path) {
     if (obj instanceof Array || obj instanceof Immutable.Iterable.Indexed) {
         let updated = false;
         let idx = 0;
-        const next = obj.map(curr => { // retains $pager info
+        const next = obj.map(curr => {
+            // retains $pager info
             path.push(idx);
             const other = _findAndUpdate(curr, replacer, visited, path);
             path.pop();
@@ -97,31 +98,36 @@ function _findAndUpdate(obj, replacer, visited, path) {
 export default function findAndUpdate(obj, replacer) {
     try {
         debugLog('findAndUpdate called with: ', obj, 'from:', new Error(), 'with replacer:', replacer);
-        const noReplacement = { };
-        const out = _findAndUpdate(obj, replacer, {
-            visited: [],
-            replaced: [],
-            stop(o) {
-                const idx = this.visited.indexOf(o);
-                if (idx >= 0) {
-                    const replacement = this.replaced[idx];
-                    if (replacement) {
-                        return replacement;
+        const noReplacement = {};
+        const out = _findAndUpdate(
+            obj,
+            replacer,
+            {
+                visited: [],
+                replaced: [],
+                stop(o) {
+                    const idx = this.visited.indexOf(o);
+                    if (idx >= 0) {
+                        const replacement = this.replaced[idx];
+                        if (replacement) {
+                            return replacement;
+                        }
+                        return noReplacement;
                     }
-                    return noReplacement;
-                }
-                this.visited.push(o);
-                this.replaced.push(undefined);
-                return false;
+                    this.visited.push(o);
+                    this.replaced.push(undefined);
+                    return false;
+                },
+                setReplaced(o, replacement) {
+                    const idx = this.visited.indexOf(o);
+                    if (idx < 0) {
+                        throw new Error('Unable to find visited value.');
+                    }
+                    this.replaced[idx] = { replacement };
+                },
             },
-            setReplaced(o, replacement) {
-                const idx = this.visited.indexOf(o);
-                if (idx < 0) {
-                    throw new Error('Unable to find visited value.');
-                }
-                this.replaced[idx] = { replacement };
-            },
-        }, []);
+            []
+        );
         debugLog('findAndUpdateDone: ', out || obj);
         return out || obj;
     } catch (e) {

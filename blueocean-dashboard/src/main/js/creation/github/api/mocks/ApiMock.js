@@ -2,7 +2,6 @@ import Promise from 'bluebird';
 import { Utils } from '@jenkins-cd/blueocean-core-js';
 
 export class ApiMock {
-
     _delayedResolve(payload, delay = 500) {
         return new Promise(resolve => {
             setTimeout(() => {
@@ -25,7 +24,12 @@ export class ApiMock {
     }
 
     _hasUrlKey(keyValue) {
-        return window.location.href.split('?').slice(-1).join('').indexOf(keyValue) !== -1;
+        return (
+            window.location.href
+                .split('?')
+                .slice(-1)
+                .join('')
+                .indexOf(keyValue) !== -1
+        );
     }
-
 }

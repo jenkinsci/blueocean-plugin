@@ -3,17 +3,14 @@ import { action, observable } from 'mobx';
 import CreateServerError from './api/CreateServerError';
 
 class BbServerManager {
-
-    @observable
-    servers = [];
+    @observable servers = [];
 
     constructor(serverApi) {
         this.serverApi = serverApi;
     }
 
     listServers() {
-        return this.serverApi.listServers()
-            .then(servers => this._onListServersSuccess(servers));
+        return this.serverApi.listServers().then(servers => this._onListServersSuccess(servers));
     }
 
     @action
@@ -23,11 +20,7 @@ class BbServerManager {
     }
 
     validateVersion(id) {
-        return this.serverApi.validateVersion(id)
-            .then(
-                success => this._onValidateVersionSuccess(success),
-                error => this._onValidateVersionFailure(error),
-            );
+        return this.serverApi.validateVersion(id).then(success => this._onValidateVersionSuccess(success), error => this._onValidateVersionFailure(error));
     }
 
     _onValidateVersionSuccess(success) {
@@ -39,11 +32,7 @@ class BbServerManager {
     }
 
     createServer(name, url) {
-        return this.serverApi.createServer(name, url)
-            .then(
-                server => this._onCreateServerSuccess(server),
-                error => this._onCreateServerFailure(error),
-            );
+        return this.serverApi.createServer(name, url).then(server => this._onCreateServerSuccess(server), error => this._onCreateServerFailure(error));
     }
 
     @action

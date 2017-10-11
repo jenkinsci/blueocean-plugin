@@ -24,4 +24,3 @@ BbDefaultOption.propTypes = {
     onSelect: PropTypes.func,
     isSelected: PropTypes.bool,
 };
-

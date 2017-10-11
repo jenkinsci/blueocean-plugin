@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 
-const LinkifiedText = (props) => {
+const LinkifiedText = props => {
     const { text, partialTextLinks, textLink } = props;
     const textWithPartialLinks = [];
 
@@ -19,11 +19,19 @@ const LinkifiedText = (props) => {
 
             for (let commitMsgPart of text.split(partialLinksRegExpString)) {
                 if (partialLinksObj[commitMsgPart]) {
-                    textWithPartialLinks.push(<a href={partialLinksObj[commitMsgPart]} target="_blank">{commitMsgPart}</a>);
+                    textWithPartialLinks.push(
+                        <a href={partialLinksObj[commitMsgPart]} target="_blank">
+                            {commitMsgPart}
+                        </a>
+                    );
                 } else {
                     if (commitMsgPart) {
                         if (textLink) {
-                            textWithPartialLinks.push((<Link to={textLink} className="unstyled-link" >{commitMsgPart}</Link>));
+                            textWithPartialLinks.push(
+                                <Link to={textLink} className="unstyled-link">
+                                    {commitMsgPart}
+                                </Link>
+                            );
                         } else {
                             textWithPartialLinks.push(commitMsgPart);
                         }
@@ -33,13 +41,23 @@ const LinkifiedText = (props) => {
         }
 
         if (!textWithPartialLinks.length) {
-            textWithPartialLinks.push((<Link to={textLink} className="unstyled-link" >{text}</Link>));
+            textWithPartialLinks.push(
+                <Link to={textLink} className="unstyled-link">
+                    {text}
+                </Link>
+            );
         }
 
-        return (<span>{textWithPartialLinks}</span>);
+        return <span>{textWithPartialLinks}</span>;
     }
 
-    return (textLink ? (<Link to={textLink} className="unstyled-link" >{text}</Link>) : (<span>{text}</span>));
+    return textLink ? (
+        <Link to={textLink} className="unstyled-link">
+            {text}
+        </Link>
+    ) : (
+        <span>{text}</span>
+    );
 };
 
 LinkifiedText.propTypes = {

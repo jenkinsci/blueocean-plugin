@@ -16,19 +16,19 @@ export class WeatherIcon extends Component {
         const status = getStatusClassName(successpc);
         let classNames = `weather-icon ${status}`;
 
-        if (this.props.size === "large") {
-            classNames += " large-icon";
+        if (this.props.size === 'large') {
+            classNames += ' large-icon';
         }
 
         return <svg title={status} className={classNames} />;
     }
 
     static defaultProps = {
-        size: "default"
+        size: 'default',
     };
 
     static propTypes = {
         score: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-        size: PropTypes.string
+        size: PropTypes.string,
     };
 }

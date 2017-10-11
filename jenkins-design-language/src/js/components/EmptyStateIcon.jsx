@@ -1,6 +1,6 @@
 // @flow
 
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 
 /**
  * Displays one of the available "Noun Project" icons used in empty state panels
@@ -12,12 +12,10 @@ export class EmptyStateIcon extends Component {
 
     render() {
         const classNames = `empty-state-icon ${this.props.name}`;
-        return (
-            <div className={classNames}/>
-        );
+        return <div className={classNames} />;
     }
 }
 
 EmptyStateIcon.propTypes = {
-    name: PropTypes.oneOf(['branch','goat','shoes']).isRequired,
+    name: PropTypes.oneOf(['branch', 'goat', 'shoes']).isRequired,
 };

@@ -16,8 +16,7 @@ function appendApiUrlParam(fullUrl, apiUrl) {
 
         appendedUrl += 'apiUrl=';
         // trim trailing slash from URL
-        appendedUrl += apiUrl.slice(-1) === '/' ?
-            apiUrl.slice(0, -1) : apiUrl;
+        appendedUrl += apiUrl.slice(-1) === '/' ? apiUrl.slice(0, -1) : apiUrl;
     }
 
     return appendedUrl;
@@ -36,7 +35,6 @@ function extractProtocolHost(url) {
     const host = hostAndPath.split('/')[0];
     return `${protocol}//${host}`;
 }
-
 
 export default {
     appendApiUrlParam,

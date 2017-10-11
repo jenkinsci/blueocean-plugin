@@ -25,7 +25,12 @@ export const capable = (subject, ...capabilityNames) => {
         }
 
         // build short form of subject's caps, then find intersection
-        const shortNames = subject._capabilities.map(longName => longName.split('.').slice(-1).join(''));
+        const shortNames = subject._capabilities.map(longName =>
+            longName
+                .split('.')
+                .slice(-1)
+                .join('')
+        );
 
         const shortNameMatches = flattenedCapabilities.filter(longName => shortNames.indexOf(longName) !== -1);
         if (shortNameMatches.length > 0) {

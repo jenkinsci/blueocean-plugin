@@ -1,17 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import {
-    CommitId,
-    ReadableDate,
-    TimeDuration,
-    TableRow,
-    TableCell,
-} from '@jenkins-cd/design-language';
-import {
-    ReplayButton,
-    RunButton,
-    LiveStatusIndicator,
-    TimeHarmonizer as timeHarmonizer,
-} from '@jenkins-cd/blueocean-core-js';
+import { CommitId, ReadableDate, TimeDuration, TableRow, TableCell } from '@jenkins-cd/design-language';
+import { ReplayButton, RunButton, LiveStatusIndicator, TimeHarmonizer as timeHarmonizer } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
@@ -25,26 +14,17 @@ import RunIdCell from './RunIdCell';
  */
 
 class ActivityDetailsRow extends Component {
-
     // The number of hardcoded actions not provided by extensions
     static actionItemsCount = 2;
 
-    openRunDetails = (newURL) => {
+    openRunDetails = newURL => {
         const { router, location } = this.context;
         location.pathname = newURL;
         router.push(location);
     };
 
     render() {
-        const {
-            run,
-            pipeline,
-            t,
-            locale,
-            getTimes,
-            columns,
-            isMultibranch,
-        } = this.props;
+        const { run, pipeline, t, locale, getTimes, columns, isMultibranch } = this.props;
 
         if (!run || !pipeline) {
             return null;
@@ -54,11 +34,7 @@ class ActivityDetailsRow extends Component {
         const runDetailsUrl = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'pipeline');
         const changesUrl = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'changes');
 
-        const {
-            durationInMillis,
-            endTime,
-            startTime,
-        } = getTimes({
+        const { durationInMillis, endTime, startTime } = getTimes({
             result: resultRun,
             durationInMillis: run.durationInMillis,
             startTime: run.startTime,
@@ -86,37 +62,40 @@ class ActivityDetailsRow extends Component {
                         estimatedDuration={run.estimatedDurationInMillis}
                     />
                 </TableCell>
-                <TableCell linkTo={runDetailsUrl}><RunIdCell run={run} /></TableCell>
-                <TableCell linkTo={runDetailsUrl}><CommitId commitId={run.commitId} /></TableCell>
-                { isMultibranch && <TableCell linkTo={runDetailsUrl}>{branchName}</TableCell> }
-                <TableCell><RunMessageCell linkTo={runDetailsUrl} run={run} t={t} changesUrl={changesUrl} /></TableCell>
                 <TableCell linkTo={runDetailsUrl}>
-                    <TimeDuration millis={durationInMillis}
-                                  updatePeriod={1000}
-                                  liveUpdate={isRunning}
-                                  locale={locale}
-                                  displayFormat={t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' })}
-                                  liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
-                                  hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
+                    <RunIdCell run={run} />
+                </TableCell>
+                <TableCell linkTo={runDetailsUrl}>
+                    <CommitId commitId={run.commitId} />
+                </TableCell>
+                {isMultibranch && <TableCell linkTo={runDetailsUrl}>{branchName}</TableCell>}
+                <TableCell>
+                    <RunMessageCell linkTo={runDetailsUrl} run={run} t={t} changesUrl={changesUrl} />
+                </TableCell>
+                <TableCell linkTo={runDetailsUrl}>
+                    <TimeDuration
+                        millis={durationInMillis}
+                        updatePeriod={1000}
+                        liveUpdate={isRunning}
+                        locale={locale}
+                        displayFormat={t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' })}
+                        liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
+                        hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
                     />
                 </TableCell>
                 <TableCell linkTo={runDetailsUrl}>
-                    <ReadableDate date={endTime}
-                                  liveUpdate
-                                  locale={locale}
-                                  shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
-                                  longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
+                    <ReadableDate
+                        date={endTime}
+                        liveUpdate
+                        locale={locale}
+                        shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                        longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
                     />
                 </TableCell>
                 <TableCell className="TableCell--actions">
                     <Extensions.Renderer extensionPoint="jenkins.pipeline.activity.list.action" {...t} />
-                    <RunButton
-                        className="icon-button"
-                        runnable={this.props.pipeline}
-                        latestRun={this.props.run}
-                        buttonType="stop-only"
-                    />
-                    { /* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */ }
+                    <RunButton className="icon-button" runnable={this.props.pipeline} latestRun={this.props.run} buttonType="stop-only" />
+                    {/* TODO: check can probably removed and folded into ReplayButton once JENKINS-37519 is done */}
                     <IfCapability className={pipeline._class} capability={[MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE]}>
                         <ReplayButton className="icon-button" runnable={pipeline} latestRun={run} onNavigation={this.openRunDetails} />
                     </IfCapability>
@@ -146,4 +125,3 @@ const harmonized = timeHarmonizer(ActivityDetailsRow);
 harmonized.actionItemsCount = ActivityDetailsRow.actionItemsCount;
 
 export { harmonized as ActivityDetailsRow };
-

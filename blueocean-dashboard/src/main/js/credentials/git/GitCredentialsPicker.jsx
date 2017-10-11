@@ -37,8 +37,7 @@ class GitCredentialsPicker extends React.Component {
         if (onStatus) {
             onStatus('promptLoading');
         }
-        Fetch.fetchJSON(this.restOrgPrefix + '/user/publickey/')
-        .then(credential => {
+        Fetch.fetchJSON(this.restOrgPrefix + '/user/publickey/').then(credential => {
             this.setState({ credential });
             if (onStatus) {
                 onStatus('promptReady');
@@ -75,25 +74,25 @@ class GitCredentialsPicker extends React.Component {
         };
         this.setState({ connectStatus: { result: 'running' } });
         return Fetch.fetchJSON(this.restOrgPrefix + '/scm/git/validate', { fetchOptions })
-        .then(() => {
-            this.setState({
-                credentialError: null,
-                connectStatus: {
-                    result: 'success',
-                    reset: false,
-                },
+            .then(() => {
+                this.setState({
+                    credentialError: null,
+                    connectStatus: {
+                        result: 'success',
+                        reset: false,
+                    },
+                });
+                onComplete(this.state.credential);
+            })
+            .catch(error => {
+                const message = error.responseBody ? error.responseBody.message : 'An unknown error occurred';
+                this.setState({
+                    credentialError: message && t('creation.git.step1.credentials_publickey_invalid'),
+                    connectStatus: {
+                        reset: true,
+                    },
+                });
             });
-            onComplete(this.state.credential);
-        })
-        .catch(error => {
-            const message = error.responseBody ? error.responseBody.message : 'An unknown error occurred';
-            this.setState({
-                credentialError: message && t('creation.git.step1.credentials_publickey_invalid'),
-                connectStatus: {
-                    reset: true,
-                },
-            });
-        });
     }
 
     closeDialog() {
@@ -108,20 +107,41 @@ class GitCredentialsPicker extends React.Component {
             <div className="credentials-picker-git">
                 <p className="instructions">
                     {t('creation.git.credentials.register_ssh_key_instructions')}{' '}
-                    <a target="jenkins-docs" href="https://jenkins.io/doc/book/blueocean/creating-pipelines/#creating-a-pipeline-for-a-git-repository">learn more</a>.
+                    <a target="jenkins-docs" href="https://jenkins.io/doc/book/blueocean/creating-pipelines/#creating-a-pipeline-for-a-git-repository">
+                        learn more
+                    </a>.
                 </p>
                 <FormElement>
-                    <textarea className="TextArea-control" ref={e => { this.publicKeyElement = e; }}
+                    <textarea
+                        className="TextArea-control"
+                        ref={e => {
+                            this.publicKeyElement = e;
+                        }}
                         readOnly
-                        onChange={e => e} value={this.state.credential.publickey} />
+                        onChange={e => e}
+                        value={this.state.credential.publickey}
+                    />
                 </FormElement>
-                <a href="#" className="copy-key-link" onClick={e => { this.copyPublicKeyToClipboard(); e.preventDefault(); }}>
+                <a
+                    href="#"
+                    className="copy-key-link"
+                    onClick={e => {
+                        this.copyPublicKeyToClipboard();
+                        e.preventDefault();
+                    }}
+                >
                     {t('creation.git.credentials.copy_to_clipboard')}
                 </a>
-                {this.props.dialog && <FormElement errorMessage={this.state.credentialError} className="action-buttons">
-                    <Button status={this.state.connectStatus} onClick={() => this.testCredentialAndCloseDialog()}>{t('creation.git.credentials.connect_and_validate')}</Button>
-                    <Button onClick={() => this.closeDialog()} className="btn-secondary">{t('creation.git.create_credential.button_close')}</Button>
-                </FormElement>}
+                {this.props.dialog && (
+                    <FormElement errorMessage={this.state.credentialError} className="action-buttons">
+                        <Button status={this.state.connectStatus} onClick={() => this.testCredentialAndCloseDialog()}>
+                            {t('creation.git.credentials.connect_and_validate')}
+                        </Button>
+                        <Button onClick={() => this.closeDialog()} className="btn-secondary">
+                            {t('creation.git.create_credential.button_close')}
+                        </Button>
+                    </FormElement>
+                )}
             </div>
         );
     }

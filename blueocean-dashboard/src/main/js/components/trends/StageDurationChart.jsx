@@ -1,18 +1,7 @@
 import React, { PropTypes } from 'react';
 import { Area, AreaChart, CartesianGrid, Legend, Tooltip, XAxis, YAxis } from 'recharts';
 
-
-const seriesColors = [
-    '#4A90E2',
-    '#d54c53',
-    '#78b037',
-    '#F5A623',
-    '#bd0fe1',
-    '#24B0D5',
-    '#949393',
-    '#8CC04F',
-    '#F6B44B',
-];
+const seriesColors = ['#4A90E2', '#d54c53', '#78b037', '#F5A623', '#bd0fe1', '#24B0D5', '#949393', '#8CC04F', '#F6B44B'];
 
 function sortRowsById(row1, row2) {
     return parseInt(row1.id) - parseInt(row2.id);
@@ -64,15 +53,12 @@ function createChartSeries(trend, rows) {
     for (const col of columns) {
         if (col !== 'id') {
             const color = colors.shift() || '#4A4A4A';
-            series.push(
-                <Area type="monotone" dataKey={col} stroke={color} fill={color} stackId="1" />
-            );
+            series.push(<Area type="monotone" dataKey={col} stroke={color} fill={color} stackId="1" />);
         }
     }
 
     return series;
 }
-
 
 class StageDurationChart extends React.Component {
     render() {
@@ -96,7 +82,6 @@ StageDurationChart.propTypes = {
     trend: PropTypes.object,
     rows: PropTypes.object,
 };
-
 
 export default {
     trendId: 'stageDuration',

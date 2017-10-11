@@ -6,7 +6,6 @@ import TestDetails from './TestDetails';
 
 @observer
 export default class TestCaseResultRow extends Component {
-
     propTypes = {
         testService: PropTypes.object,
         testCase: PropTypes.object,
@@ -25,20 +24,20 @@ export default class TestCaseResultRow extends Component {
         const { testCase: t, translation, locale = 'en' } = this.props;
         moment.locale(locale);
         const duration = moment.duration(Number(t.duration), 'milliseconds').humanize();
-        const showTestCase = (t.errorStackTrace || t.errorDetails || this.stdout || this.stderr);
+        const showTestCase = t.errorStackTrace || t.errorDetails || this.stdout || this.stderr;
         let statusIndicator = null;
         switch (t.status) {
-        case 'FAILED':
-            statusIndicator = StatusIndicator.validResultValues.failure;
-            break;
-        case 'PASSED':
-            statusIndicator = StatusIndicator.validResultValues.success;
-            break;
-        case 'SKIPPED':
-            statusIndicator = StatusIndicator.validResultValues.not_built;
-            break;
-        default:
-            statusIndicator = StatusIndicator.validResultValues.unknown;
+            case 'FAILED':
+                statusIndicator = StatusIndicator.validResultValues.failure;
+                break;
+            case 'PASSED':
+                statusIndicator = StatusIndicator.validResultValues.success;
+                break;
+            case 'SKIPPED':
+                statusIndicator = StatusIndicator.validResultValues.not_built;
+                break;
+            default:
+                statusIndicator = StatusIndicator.validResultValues.unknown;
         }
 
         const onExpand = () => {
@@ -60,24 +59,25 @@ export default class TestCaseResultRow extends Component {
         this.stdout = this.logService.getStdOut(t);
         this.stderr = this.logService.getStdErr(t);
 
-        const testDetails = showTestCase ?
+        const testDetails = showTestCase ? (
             <TestDetails
-                test={ t }
-                duration={ duration }
-                stdout={ this.stdout && this.stdout.log ? this.stdout.log : null }
-                stderr={ this.stderr && this.stderr.log ? this.stderr.log : null }
-                translation={ translation }
-            /> : null;
+                test={t}
+                duration={duration}
+                stdout={this.stdout && this.stdout.log ? this.stdout.log : null}
+                stderr={this.stderr && this.stderr.log ? this.stderr.log : null}
+                translation={translation}
+            />
+        ) : null;
         return (
             <ResultItem
-                result={ statusIndicator }
-                expanded={ this.state.isFocused }
-                label={ `${t.name}` }
-                onExpand={ onExpand }
-                onCollapse={ onCollapse }
-                extraInfo={ duration }
+                result={statusIndicator}
+                expanded={this.state.isFocused}
+                label={`${t.name}`}
+                onExpand={onExpand}
+                onCollapse={onCollapse}
+                extraInfo={duration}
             >
-            { testDetails }
+                {testDetails}
             </ResultItem>
         );
     }

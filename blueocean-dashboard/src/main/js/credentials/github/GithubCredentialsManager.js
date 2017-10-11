@@ -9,18 +9,14 @@ import { LoadError, SaveError } from './GithubCredentialsApi';
 const MIN_DELAY = 500;
 const { delayBoth } = PromiseDelayUtils;
 
-
 /**
  * Manages retrieving, validating and saving the Github access token.
  * Also holds the state of the token for use in GithubCredentialStep.
  */
 class GithubCredentialsManager {
+    @observable stateId = null;
 
-    @observable
-    stateId = null;
-
-    @observable
-    pendingValidation = false;
+    @observable pendingValidation = false;
 
     configure(scmId, apiUrl) {
         this._credentialsApi = new GithubCredentialsApi(scmId);
@@ -30,7 +26,8 @@ class GithubCredentialsManager {
     @action
     findExistingCredential() {
         this.stateId = GithubCredentialsState.PENDING_LOADING_CREDS;
-        return this._credentialsApi.findExistingCredential(this.apiUrl)
+        return this._credentialsApi
+            .findExistingCredential(this.apiUrl)
             .then(...delayBoth(MIN_DELAY))
             .catch(error => this._findExistingCredentialFailure(error));
     }
@@ -52,7 +49,8 @@ class GithubCredentialsManager {
     createAccessToken(token) {
         this.pendingValidation = true;
 
-        return this._credentialsApi.createAccessToken(token, this.apiUrl)
+        return this._credentialsApi
+            .createAccessToken(token, this.apiUrl)
             .then(...delayBoth(MIN_DELAY))
             .then(cred => this._onCreateTokenSuccess(cred))
             .catch(error => this._onCreateTokenFailure(error));
@@ -77,7 +75,6 @@ class GithubCredentialsManager {
             throw error;
         }
     }
-
 }
 
 export default GithubCredentialsManager;

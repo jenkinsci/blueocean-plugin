@@ -1,24 +1,24 @@
 // @flow
 
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 import moment from 'moment';
 require('moment-duration-format');
 // needs to be loaded since the moment lib will use require which in run time will fail
 import 'moment/min/locales.min';
 
 type Props = {
-     millis: number,
-     updatePeriod: number,
-     hint?: string,
-     liveUpdate: bool,
-     displayFormat: ?string,
-     liveFormat: ?string,
-     hintFormat: ?string,
-     locale: ?string,
+    millis: number,
+    updatePeriod: number,
+    hint?: string,
+    liveUpdate: boolean,
+    displayFormat: ?string,
+    liveFormat: ?string,
+    hintFormat: ?string,
+    locale: ?string,
 };
 
 type State = {
-    elapsed: number
+    elapsed: number,
 };
 
 /**
@@ -34,7 +34,6 @@ type State = {
  * "liveUpdate": boolean
  */
 export class TimeDuration extends Component {
-
     props: Props;
     state: State;
     timerPeriodMillis: number;
@@ -44,10 +43,9 @@ export class TimeDuration extends Component {
         super(props);
         // track how much time has elapsed since live updating tracking started
         this.state = { elapsed: 0 };
-        const {updatePeriod = 30000} = this.props;
+        const { updatePeriod = 30000 } = this.props;
         this.timerPeriodMillis = typeof updatePeriod !== 'number' || isNaN(updatePeriod) ? 30000 : updatePeriod;
         this.clearIntervalId = 0;
-
     }
 
     componentWillMount() {
@@ -81,7 +79,7 @@ export class TimeDuration extends Component {
     _updateTime() {
         const elapsed = this.state.elapsed + this.timerPeriodMillis;
         this.setState({
-            elapsed
+            elapsed,
         });
     }
 
@@ -96,10 +94,8 @@ export class TimeDuration extends Component {
         const millis = parseInt(this.props.millis) + this.state.elapsed;
 
         if (!isNaN(millis)) {
-            if(millis < 1000) {
-                return (
-                    <span title={this.props.hint ? this.props.hint : '<1s'}>&#x3C;1s</span>
-                );
+            if (millis < 1000) {
+                return <span title={this.props.hint ? this.props.hint : '<1s'}>&#x3C;1s</span>;
             }
             const {
                 locale = 'en',
@@ -109,18 +105,14 @@ export class TimeDuration extends Component {
             } = this.props;
             moment.locale(locale);
             // in case we are in live update we are interested in seconds
-            const duration = this.props.liveUpdate ?
-                moment.duration(millis).format(liveFormat) : moment.duration(millis).format(displayFormat);
+            const duration = this.props.liveUpdate ? moment.duration(millis).format(liveFormat) : moment.duration(millis).format(displayFormat);
 
-            const hint = this.props.hint ?
-                this.props.hint : moment.duration(millis).format(hintFormat);
+            const hint = this.props.hint ? this.props.hint : moment.duration(millis).format(hintFormat);
 
-            return (
-                <span title={hint}>{duration}</span>
-            );
+            return <span title={hint}>{duration}</span>;
         }
 
-        return (<span>-</span>);
+        return <span>-</span>;
     }
 }
 

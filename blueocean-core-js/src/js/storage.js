@@ -53,7 +53,7 @@ export const _clearJenkinsNS = (installVersion, installPluginList) => {
     const storedVersion = installInfo.get('version');
     const storedPluginList = installInfo.get('plugins');
 
-    const doClear = (because) => {
+    const doClear = because => {
         jenkinsNS.clear();
         installInfo.set('version', installVersion);
         installInfo.set('plugins', installPluginList);
@@ -79,9 +79,9 @@ export const _clearJenkinsNS = (installVersion, installPluginList) => {
                     // match up i.e. that we can find each plugin in each list and
                     // that the versions match.
                     try {
-                        installPluginList.forEach((installedPlugin) => {
+                        installPluginList.forEach(installedPlugin => {
                             let found = false;
-                            storedPluginList.forEach((storedPlugin) => {
+                            storedPluginList.forEach(storedPlugin => {
                                 if (storedPlugin.hpiPluginId === installedPlugin.hpiPluginId) {
                                     // same plugin.
                                     found = true;

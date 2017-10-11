@@ -5,13 +5,10 @@ import { Dropdown, FormElement } from '@jenkins-cd/design-language';
 import FlowStep from '../../flow2/FlowStep';
 import GHEAddServerDialog from '../GHEAddServerDialog';
 
-
 let t = null;
-
 
 @observer
 class GHEChooseServerStep extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -72,7 +69,9 @@ class GHEChooseServerStep extends React.Component {
             <FlowStep {...this.props} className="github-enterprise-choose-server-step" disabled={disabled} title={title}>
                 <FormElement title={t('creation.githubent.choose_server.instructions')}>
                     <Dropdown
-                        ref={dropdown => { this.dropdown = dropdown; }}
+                        ref={dropdown => {
+                            this.dropdown = dropdown;
+                        }}
                         className="dropdown-server"
                         options={serverManager.servers}
                         labelField="name"
@@ -83,12 +82,7 @@ class GHEChooseServerStep extends React.Component {
                     </button>
                 </FormElement>
 
-                { this.state.showAddServerDialog &&
-                <GHEAddServerDialog
-                    flowManager={flowManager}
-                    onClose={cred => this._onAddServerDialogClosed(cred)}
-                />
-                }
+                {this.state.showAddServerDialog && <GHEAddServerDialog flowManager={flowManager} onClose={cred => this._onAddServerDialogClosed(cred)} />}
 
                 <div className="FormElement">
                     <div className="FormElement-heading">

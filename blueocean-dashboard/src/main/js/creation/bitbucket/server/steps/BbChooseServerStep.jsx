@@ -5,13 +5,10 @@ import { Dropdown, FormElement } from '@jenkins-cd/design-language';
 import FlowStep from '../../../flow2/FlowStep';
 import BbAddServerDialog from '../BbAddServerDialog';
 
-
 let t = null;
-
 
 @observer
 class BbChooseServerStep extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -30,11 +27,7 @@ class BbChooseServerStep extends React.Component {
 
     _onChangeServerDropdown(option) {
         const { serverManager } = this.props.flowManager;
-        serverManager.validateVersion(option.id)
-            .then(
-                success => this._onValidateVersion(success),
-                error => this._onValidateVersion(error),
-            );
+        serverManager.validateVersion(option.id).then(success => this._onValidateVersion(success), error => this._onValidateVersion(error));
         this.setState({
             selectedServer: option,
         });
@@ -93,7 +86,9 @@ class BbChooseServerStep extends React.Component {
             <FlowStep {...this.props} className="bitbucket-server-add-server-dialog" disabled={disabled} title={title}>
                 <FormElement title={t('creation.bbserver.choose_server.instructions')}>
                     <Dropdown
-                        ref={dropdown => { this.dropdown = dropdown; }}
+                        ref={dropdown => {
+                            this.dropdown = dropdown;
+                        }}
                         className="dropdown-server"
                         options={serverManager.servers}
                         labelField="name"
@@ -104,24 +99,19 @@ class BbChooseServerStep extends React.Component {
                     </button>
                 </FormElement>
 
-                { this.state.showAddServerDialog &&
-                <BbAddServerDialog
-                    flowManager={flowManager}
-                    onClose={cred => this._onAddServerDialogClosed(cred)}
-                />
-                }
+                {this.state.showAddServerDialog && <BbAddServerDialog flowManager={flowManager} onClose={cred => this._onAddServerDialogClosed(cred)} />}
                 <div className="FormElement">
                     <div className="FormElement-heading">
                         <label className="FormElement-title creation-selected-server-url">{url}</label>
                     </div>
                 </div>
-                { this.state.urlErrorMsg &&
-                    <div className="FormElement u-error-state" >
+                {this.state.urlErrorMsg && (
+                    <div className="FormElement u-error-state">
                         <div className="FormElement-heading">
                             <label className="FormElement-title">{this.state.urlErrorMsg}</label>
                         </div>
                     </div>
-                }
+                )}
                 <button className="button-next-step" disabled={disabledNext} onClick={() => this._onClickNextButton()}>
                     {t('creation.githubent.choose_server.button_next')}
                 </button>

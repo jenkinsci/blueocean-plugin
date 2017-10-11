@@ -3,21 +3,9 @@
 export { WeatherIcon } from './weather-icon';
 export { Page } from './page';
 export { TabLink } from './TabLink';
-export {
-    JTable,
-    TableRow,
-    TableCell,
-    TableHeader,
-    TableHeaderRow
-} from './jtable';
-export {
-    StatusIndicator,
-    SvgSpinner,
-    SvgStatus,
-} from './status/StatusIndicator';
-export {
-    LiveStatusIndicator,
-} from './status/LiveStatusIndicator';
+export { JTable, TableRow, TableCell, TableHeader, TableHeaderRow } from './jtable';
+export { StatusIndicator, SvgSpinner, SvgStatus } from './status/StatusIndicator';
+export { LiveStatusIndicator } from './status/LiveStatusIndicator';
 export { ErrorMessage } from './ErrorMessage';
 export { Favorite } from './favorite/Favorite';
 export { ReadableDate } from './ReadableDate';
@@ -37,14 +25,7 @@ export { PositionFunctions } from './Position';
 export { ExpandablePath } from './ExpandablePath';
 export { FilterableList } from './FilterableList';
 export { List } from './List';
-export {
-    BasicDialog,
-    ModalContainer,
-    DialogHeader,
-    DialogContent,
-    DialogButtonBar,
-    Dialog
-} from './dialog';
+export { BasicDialog, ModalContainer, DialogHeader, DialogContent, DialogButtonBar, Dialog } from './dialog';
 export { FloatingElement } from './FloatingElement';
 export { Icon } from './Icon';
 export { IconButton } from './IconButton';
@@ -55,18 +36,7 @@ export { TextArea } from './forms/TextArea';
 export { TextInput } from './forms/TextInput';
 export { FormElement } from './forms/FormElement';
 export { PasswordInput } from './forms/PasswordInput';
-export {
-    BasicHeader,
-    TopNav,
-    HeaderDetails,
-    PageTabs
-} from './header';
+export { BasicHeader, TopNav, HeaderDetails, PageTabs } from './header';
 export { Alerts } from './Alerts';
-export {
-    PlaceholderTable,
-    PlaceholderText,
-    PlaceholderIcon,
-    PlaceholderTextCell,
-    PlaceholderIconCell,
-} from './Placeholder';
+export { PlaceholderTable, PlaceholderText, PlaceholderIcon, PlaceholderTextCell, PlaceholderIconCell } from './Placeholder';
 export { Linkify } from './Linkify';

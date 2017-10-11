@@ -14,12 +14,10 @@ export const ListOrganizationsOutcome = new Enum({
     ERROR: 'error',
 });
 
-
 /**
  * Handles lookup of Github orgs and repos, and saving of the Github org folder.
  */
 export class GithubCreationApi {
-
     constructor(scmId) {
         this._fetch = Fetch.fetchJSON;
         this.organization = AppConfig.getOrganizationName();
@@ -28,15 +26,15 @@ export class GithubCreationApi {
 
     listOrganizations(credentialId, apiUrl) {
         const path = UrlConfig.getJenkinsRootURL();
-        let orgsUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/organizations/?credentialId=${credentialId}`, false);
+        let orgsUrl = Utils.cleanSlashes(
+            `${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/organizations/?credentialId=${credentialId}`,
+            false
+        );
         orgsUrl = GithubApiUtils.appendApiUrlParam(orgsUrl, apiUrl);
 
         return this._fetch(orgsUrl)
             .then(orgs => capabilityAugmenter.augmentCapabilities(orgs))
-            .then(
-                orgs => this._listOrganizationsSuccess(orgs),
-                error => this._listOrganizationsFailure(error),
-            );
+            .then(orgs => this._listOrganizationsSuccess(orgs), error => this._listOrganizationsFailure(error));
     }
 
     _listOrganizationsSuccess(organizations) {
@@ -73,11 +71,11 @@ export class GithubCreationApi {
         const path = UrlConfig.getJenkinsRootURL();
         let reposUrl = Utils.cleanSlashes(
             `${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/organizations/${organizationName}/repositories/` +
-            `?credentialId=${credentialId}&pageNumber=${pageNumber}&pageSize=${pageSize}`);
+                `?credentialId=${credentialId}&pageNumber=${pageNumber}&pageSize=${pageSize}`
+        );
         reposUrl = GithubApiUtils.appendApiUrlParam(reposUrl, apiUrl);
 
-        return this._fetch(reposUrl)
-            .then(response => capabilityAugmenter.augmentCapabilities(response));
+        return this._fetch(reposUrl).then(response => capabilityAugmenter.augmentCapabilities(response));
     }
 
     findExistingOrgFolder(githubOrganization) {
@@ -85,10 +83,7 @@ export class GithubCreationApi {
         const orgFolderUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/pipelines/${githubOrganization.name}`);
         return this._fetch(orgFolderUrl)
             .then(response => capabilityAugmenter.augmentCapabilities(response))
-            .then(
-                data => this._findExistingOrgFolderSuccess(data),
-                error => this._findExistingOrgFolderFailure(error),
-            );
+            .then(data => this._findExistingOrgFolderSuccess(data), error => this._findExistingOrgFolderFailure(error));
     }
 
     _findExistingOrgFolderSuccess(orgFolder) {
@@ -113,10 +108,7 @@ export class GithubCreationApi {
         const pipelineUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/pipelines/${pipelineName}`);
         return this._fetch(pipelineUrl)
             .then(response => capabilityAugmenter.augmentCapabilities(response))
-            .then(
-                pipeline => this._findExistingOrgFolderPipelineSuccess(pipeline),
-                () => this._findExistingOrgFolderPipelineFailure(),
-            );
+            .then(pipeline => this._findExistingOrgFolderPipelineSuccess(pipeline), () => this._findExistingOrgFolderPipelineFailure());
     }
 
     _findExistingOrgFolderPipelineSuccess(pipeline) {
@@ -136,9 +128,7 @@ export class GithubCreationApi {
         const path = UrlConfig.getJenkinsRootURL();
         const createUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/pipelines/`);
 
-        const requestBody = this._buildRequestBody(
-            credentialId, scmId, apiUrl, githubOrganization.name, githubOrganization.name, repoNames,
-        );
+        const requestBody = this._buildRequestBody(credentialId, scmId, apiUrl, githubOrganization.name, githubOrganization.name, repoNames);
 
         const fetchOptions = {
             method: 'POST',
@@ -148,8 +138,7 @@ export class GithubCreationApi {
             body: JSON.stringify(requestBody),
         };
 
-        return this._fetch(createUrl, { fetchOptions })
-            .then(pipeline => capabilityAugmenter.augmentCapabilities(pipeline));
+        return this._fetch(createUrl, { fetchOptions }).then(pipeline => capabilityAugmenter.augmentCapabilities(pipeline));
     }
 
     _buildRequestBody(credentialId, scmId, apiUrl, itemName, organizationName, repoNames) {
@@ -167,5 +156,4 @@ export class GithubCreationApi {
             },
         };
     }
-
 }

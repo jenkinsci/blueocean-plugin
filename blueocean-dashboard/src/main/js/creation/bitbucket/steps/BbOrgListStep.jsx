@@ -22,19 +22,14 @@ OrgRenderer.propTypes = {
     listItem: PropTypes.object,
 };
 
-
 @observer
 export default class BbOrgListStep extends React.Component {
-
     selectOrganization(org) {
         this.props.flowManager.selectOrganization(org);
     }
 
     render() {
-        const {
-            flowManager,
-            title = 'creation.bbcloud.repository.title',
-        } = this.props;
+        const { flowManager, title = 'creation.bbcloud.repository.title' } = this.props;
 
         const titleString = t(title);
         const disabled = flowManager.stepsDisabled;

@@ -13,10 +13,8 @@ import { User } from './User';
  * @param subject
  * @returns {{read: (function()), create: (function()), start: (function()), stop: (function())}}
  */
-const permit = (subject) => {
-    const checkPermissions = (permissionName) => (
-        subject && subject.permissions && !!subject.permissions[permissionName]
-    );
+const permit = subject => {
+    const checkPermissions = permissionName => subject && subject.permissions && !!subject.permissions[permissionName];
 
     return {
         read: () => checkPermissions('read'),

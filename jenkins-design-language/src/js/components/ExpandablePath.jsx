@@ -20,7 +20,6 @@ const SHOW_FOLDER_CLASS = 'show-folder';
  *      uriDecode: set to true to show uri-decoded form of each path element.
  */
 export class ExpandablePath extends Component {
-
     /**
      * Replace the last element in 'path' with 'label'.
      * Helpful for transforming a path to include a friendly display name.
@@ -30,7 +29,13 @@ export class ExpandablePath extends Component {
      * @returns {string}
      */
     static replaceLastPathElement(path, label) {
-        return path ? path.split('/').slice(0, -1).concat(label).join('/') : '';
+        return path
+            ? path
+                  .split('/')
+                  .slice(0, -1)
+                  .concat(label)
+                  .join('/')
+            : '';
     }
 
     render() {
@@ -44,10 +49,10 @@ export class ExpandablePath extends Component {
         return (
             <span className={`expandable-path ${extraClass}`}>
                 <ul className="path-list">
-                    { pathElements.map((pathElem, index, elements) => {
+                    {pathElements.map((pathElem, index, elements) => {
                         const isFirst = index === 0;
-                        const isSecondLast = (index + 1) === (elements.length - 1);
-                        const isLast = (index + 1) === elements.length;
+                        const isSecondLast = index + 1 === elements.length - 1;
+                        const isLast = index + 1 === elements.length;
 
                         const label = this.props.uriDecode ? decodeURIComponent(pathElem) : pathElem;
 
@@ -59,9 +64,7 @@ export class ExpandablePath extends Component {
 
                         return (
                             <li key={index} className={`path-item ${displayClass}`}>
-                                {this.props.showIcon &&
-                                    <Icon size={this.props.iconSize} icon="FileFolder" style={{marginRight: '5px'}} />
-                                }
+                                {this.props.showIcon && <Icon size={this.props.iconSize} icon="FileFolder" style={{ marginRight: '5px' }} />}
                                 <span className="path-text">{label.trim()}</span>
                                 <span className="separator">&nbsp;/&nbsp;</span>
                             </li>

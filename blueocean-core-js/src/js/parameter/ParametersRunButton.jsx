@@ -27,7 +27,6 @@ const MULTIBRANCH_PIPELINE = 'io.jenkins.blueocean.rest.model.BlueMultiBranchPip
  * and further in './parameter/commonProptypes' you need to include the new type in the oneOf array.
  */
 export class ParametersRunButton extends Component {
-
     constructor(props) {
         super(props);
         if (props.runnable && props.runnable.parameters) {
@@ -50,9 +49,13 @@ export class ParametersRunButton extends Component {
      * react life cycle mapper to invoke the update of the service
      */
     componentWillReceiveProps(nextProps) {
-        if (nextProps.runnable && nextProps.runnable.parameters &&
-            this.props.runnable && this.props.runnable.parameters &&
-            nextProps.runnable.parameters !== this.props.runnable.parameters) {
+        if (
+            nextProps.runnable &&
+            nextProps.runnable.parameters &&
+            this.props.runnable &&
+            this.props.runnable.parameters &&
+            nextProps.runnable.parameters !== this.props.runnable.parameters
+        ) {
             this.parameterService.init(nextProps.runnable.parameters);
         }
     }
@@ -88,11 +91,9 @@ export class ParametersRunButton extends Component {
      */
     initializeBuild() {
         const parameters = this.parameterService.parametersToSubmitArray();
-        parameterApi.startRunWithParameters(this.state.href, parameters)
-            .then((run) => {
-                ToastUtils
-                  .createRunStartedToast(this.props.runnable, run, this.props.onNavigation);
-            });
+        parameterApi.startRunWithParameters(this.state.href, parameters).then(run => {
+            ToastUtils.createRunStartedToast(this.props.runnable, run, this.props.onNavigation);
+        });
         return this.hide();
     }
 
@@ -104,12 +105,16 @@ export class ParametersRunButton extends Component {
         const ok = t('parametrised.pipeline.submit', { defaultValue: 'Run' });
         const cancelCaption = t('parametrised.pipeline.cancel', { defaultValue: 'Cancel' });
         // buttons
-        const cancelButton = (<button title={cancelCaption} onClick={() => this.hide()} className="btn inputStepCancel run-button btn-secondary" >
-            <span className="button-label">{cancelCaption}</span>
-        </button>);
-        const okButton = (<button title={ok} onClick={() => this.initializeBuild()} className="btn inputStepSubmit" >
-            <span className="button-label">{ok}</span>
-        </button>);
+        const cancelButton = (
+            <button title={cancelCaption} onClick={() => this.hide()} className="btn inputStepCancel run-button btn-secondary">
+                <span className="button-label">{cancelCaption}</span>
+            </button>
+        );
+        const okButton = (
+            <button title={ok} onClick={() => this.initializeBuild()} className="btn inputStepSubmit">
+                <span className="button-label">{ok}</span>
+            </button>
+        );
         // common run properties
         const runButtonProps = { ...this.props };
         // when we have build parameters we need to show them before trigger a build
@@ -129,41 +134,33 @@ export class ParametersRunButton extends Component {
         let dialog;
         if (sanity.length !== parameters.length) {
             logger.debug('sanity check failed. Returning Alert instead of the form.');
-            const alertCaption = (<Markdown>
-                {t('inputParameter.error.message', {
-                    0: classicBuildUrl,
-                    defaultValue: 'This pipeline uses input types that are unsupported. Use [Jenkins Classic]({0}) to resolve parametrized build',
-                })}
-            </Markdown>);
+            const alertCaption = (
+                <Markdown>
+                    {t('inputParameter.error.message', {
+                        0: classicBuildUrl,
+                        defaultValue: 'This pipeline uses input types that are unsupported. Use [Jenkins Classic]({0}) to resolve parametrized build',
+                    })}
+                </Markdown>
+            );
             const alertTitle = t('inputParameter.error.title', { defaultValue: 'Error' });
-            dialog = (<Dialog
-                onDismiss={this.hide.bind(this)}
-                title={message}
-                className="Dialog--input"
-            >
-                <Alerts message={alertCaption} type="Error" title={alertTitle} />
-            </Dialog>);
+            dialog = (
+                <Dialog onDismiss={this.hide.bind(this)} title={message} className="Dialog--input">
+                    <Alerts message={alertCaption} type="Error" title={alertTitle} />
+                </Dialog>
+            );
         } else {
-            dialog = (<Dialog
-                buttons={[okButton, cancelButton]}
-                onDismiss={this.hide.bind(this)}
-                title={message}
-                className="Dialog--input Dialog--medium-size"
-            >
-                <ParametersRender
-                    parameters={parameters}
-                    onChange={(index, newValue) => this.parameterService.changeParameter(index, newValue) }
-                />
-            </Dialog>);
+            dialog = (
+                <Dialog buttons={[okButton, cancelButton]} onDismiss={this.hide.bind(this)} title={message} className="Dialog--input Dialog--medium-size">
+                    <ParametersRender parameters={parameters} onChange={(index, newValue) => this.parameterService.changeParameter(index, newValue)} />
+                </Dialog>
+            );
         }
-        return (<div className="ParametersRunButton">
-            <RunButton {...runButtonProps} />
-            { this.state.visible &&
-                <div className="inputParameters">
-                    { dialog }
-                </div>
-            }
-        </div>);
+        return (
+            <div className="ParametersRunButton">
+                <RunButton {...runButtonProps} />
+                {this.state.visible && <div className="inputParameters">{dialog}</div>}
+            </div>
+        );
     }
 }
 

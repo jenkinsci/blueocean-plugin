@@ -4,14 +4,12 @@ import Status from './FlowStepStatus';
 
 const SCROLL_DELAY_MILLIS = 50;
 
-
 /**
  * Visual/logic component that defines an individual step of a multi-step workflow.
  * Intended to be used within a MultiStepFlow component.
  * Hides all content except for the title until the step becomes active.
  */
 export default class FlowStep extends React.Component {
-
     componentDidMount() {
         this._adjustScrolling({}, this.props);
     }
@@ -60,20 +58,10 @@ export default class FlowStep extends React.Component {
         const status = props.error ? Status.ERROR : props.status;
 
         return (
-            <VerticalStep
-                className={props.className}
-                status={status}
-                percentage={percentage}
-                isLastStep={props.isLastStep}
-            >
+            <VerticalStep className={props.className} status={status} percentage={percentage} isLastStep={props.isLastStep}>
                 <div ref={step => this._bindStep(step)}>
                     <h1>{props.title}</h1>
-                    {
-                        props.status !== Status.INCOMPLETE &&
-                        <fieldset disabled={props.disabled}>
-                            {props.children}
-                        </fieldset>
-                    }
+                    {props.status !== Status.INCOMPLETE && <fieldset disabled={props.disabled}>{props.children}</fieldset>}
                 </div>
             </VerticalStep>
         );

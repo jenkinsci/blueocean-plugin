@@ -1,8 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import {
-    JTable,
-    TableHeaderRow,
-} from '@jenkins-cd/design-language';
+import { JTable, TableHeaderRow } from '@jenkins-cd/design-language';
 import { capable, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 
@@ -17,7 +14,6 @@ import Extensions from '@jenkins-cd/js-extensions';
 // TODO: Rename this
 @observer
 export class MultiBranch extends Component {
-
     state = {
         actionExtensionCount: 0,
     };
@@ -33,7 +29,7 @@ export class MultiBranch extends Component {
     // Figure out how many extensions we have for the action buttons column so we can size it appropriately
     _countExtensions() {
         Extensions.store.getExtensions('jenkins.pipeline.branches.list.action', extensions => {
-            const count = extensions && typeof(extensions.length) === 'number' ? extensions.length : 0;
+            const count = extensions && typeof extensions.length === 'number' ? extensions.length : 0;
             if (count !== this.state.actionExtensionCount) {
                 this.setState({ actionExtensionCount: count });
             }
@@ -53,7 +49,7 @@ export class MultiBranch extends Component {
                 linkHref: t('pipelinedetail.placeholder.unsupported.branches.linkhref'),
             };
 
-            return (<UnsupportedPlaceholder {...childProps} />);
+            return <UnsupportedPlaceholder {...childProps} />;
         }
 
         const branches = this.pager.data;
@@ -88,9 +84,9 @@ export class MultiBranch extends Component {
                 <article>
                     <JTable columns={columns} className="multibranch-table">
                         <TableHeaderRow />
-                        { branches.map(branch => (
+                        {branches.map(branch => (
                             <BranchDetailsRow pipeline={pipeline} key={`${branch.name}-${branch.organization}`} data={branch} t={t} locale={locale} />
-                        )) }
+                        ))}
                     </JTable>
                     <ShowMoreButton pager={this.pager} />
                 </article>

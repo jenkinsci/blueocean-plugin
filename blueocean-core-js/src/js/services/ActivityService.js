@@ -66,7 +66,6 @@ export class ActivityService extends BunkerService {
             return Promise.resolve(this.getItem(href));
         }
 
-
         return Fetch.fetchJSON(href)
             .then(data => {
                 // Should really have dedupe on methods like these, but for now

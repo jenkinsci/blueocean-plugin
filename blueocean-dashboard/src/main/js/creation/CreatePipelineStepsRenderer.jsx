@@ -12,7 +12,6 @@ import MultiStepFlow from './flow2/MultiStepFlow';
  */
 @observer
 export class CreatePipelineStepsRenderer extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -59,20 +58,13 @@ export class CreatePipelineStepsRenderer extends React.Component {
 
         // create Step elements for each "placeholder" text and
         // then combine with the actual rendered steps
-        const placeholderSteps = this.flowManager.placeholders.map(text => (
-            <FlowStep title={text} />
-        ));
+        const placeholderSteps = this.flowManager.placeholders.map(text => <FlowStep title={text} />);
 
-        const allSteps = [].concat(
-            steps,
-            placeholderSteps,
-        );
+        const allSteps = [].concat(steps, placeholderSteps);
 
         return (
             <MultiStepFlow className="creation-steps" activeIndex={this.flowManager.activeIndex}>
-                {React.Children.map(allSteps, child => (
-                    React.cloneElement(child, props)
-                ))}
+                {React.Children.map(allSteps, child => React.cloneElement(child, props))}
             </MultiStepFlow>
         );
     }
