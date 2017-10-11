@@ -174,11 +174,6 @@
 
       <!-- Needed for unirest -->
       <dependency>
-          <groupId>org.jenkins-ci.plugins</groupId>
-          <artifactId>apache-httpcomponents-client-4-api</artifactId>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
           <groupId>org.powermock</groupId>
           <artifactId>powermock-module-junit4-common</artifactId>
           <scope>test</scope>
@@ -464,13 +459,6 @@
                     <artifactId>asm</artifactId>
                 </exclusion>
             </exclusions>
-        </dependency>
-
-        <!--Used from blueocean-github-pipeline and blueocean-bitbucket-pipeline modules as well as by tests using unirest -->
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>apache-httpcomponents-client-4-api</artifactId>
-            <version>4.5.3-2.0</version>
         </dependency>
 
         <!-- Bitbucket dependencies -->
@@ -764,7 +752,6 @@
             <version>1.4.9</version>
             <scope>test</scope>
             <exclusions>
-                <!--Exclude httpcomponents libraries, these are loaded from apache-httpcomponents-client-4-api plugin -->
                 <exclusion>
                     <groupId>org.apache.httpcomponents</groupId>
                     <artifactId>httpclient</artifactId>
@@ -919,6 +906,21 @@
             <version>${scm-api.version}</version>
             <classifier>tests</classifier>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>4.5.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>fluent-hc</artifactId>
+            <version>4.5.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>4.5.3</version>
         </dependency>
     </dependencies>
   </dependencyManagement>
