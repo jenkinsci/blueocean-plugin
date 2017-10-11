@@ -247,8 +247,8 @@ export default class GitFlowManager extends FlowManager {
                         this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
                     }
                 })
-                .catch(err => {
-                    this._finishListening(STATE.STEP_COMPLETE_EVENT_ERROR)
+                .catch(() => {
+                    this._finishListening(STATE.STEP_COMPLETE_EVENT_ERROR);
                 });
         }
     }
