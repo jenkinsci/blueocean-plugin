@@ -7,7 +7,6 @@ import FlowStep from '../../flow2/FlowStep';
 import FlowStepStatus from '../../flow2/FlowStepStatus';
 import STATE from '../GithubCreationState';
 
-import Extensions from '@jenkins-cd/js-extensions';
 let t = null;
 
 @observer
@@ -59,7 +58,7 @@ export default class GithubCompleteStep extends React.Component {
     }
 
     _getContent(state) {
-        const { redirectTimeout, pipelineName } = this.props.flowManager;
+        const { redirectTimeout } = this.props.flowManager;
 
         let copy = '';
         let showDashboardLink = false;

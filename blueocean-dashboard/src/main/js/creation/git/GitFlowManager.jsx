@@ -5,7 +5,7 @@ import Promise from 'bluebird';
 import { i18nTranslator, logging, sseService, pipelineService } from '@jenkins-cd/blueocean-core-js';
 const translate = i18nTranslator('blueocean-dashboard');
 
-import FlowManager from '../flow2/FlowManager';
+import FlowManager from '../CreationFlowManager';
 import waitAtLeast from '../flow2/waitAtLeast';
 import { CreatePipelineOutcome } from './GitCreationApi';
 import { CredentialsManager } from '../credentials/CredentialsManager';
