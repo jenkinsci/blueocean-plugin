@@ -77,6 +77,8 @@ class SaveDialog extends React.Component {
                 errorMessage = err.responseBody.message;
             } else if (err.response && err.response.status === 500) {
                 errorMessage = err.responseBody.message;
+            } else if (/^fetch failed:.*/.test(errorMessage)) {
+                errorMessage = err.responseBody.message;
             }
         }
         this.setState({ saving: false, errorMessage });
@@ -193,7 +195,7 @@ class PipelineLoader extends React.Component {
     showLoadingError(err, generalMessage = <div>
             There was an error loading the pipeline from the Jenkinsfile in this repository.
             Correct the error by editing the Jenkinsfile using the declarative syntax then commit it back to the repository.
-        </div>) {
+        </div>, title = 'Error loading Pipeline') {
         this.showErrorDialog(
             <div className="errors">
                 {generalMessage}
@@ -203,7 +205,7 @@ class PipelineLoader extends React.Component {
             , {
                 buttonRow: <button className="btn-primary" onClick={() => this.cancel()}>Go Back</button>,
                 onClose: () => this.cancel(),
-                title: 'Error loading Pipeline',
+                title,
             });
     }
 
@@ -301,7 +303,8 @@ class PipelineLoader extends React.Component {
                     if (onComplete) onComplete();
                     this.makeEmptyPipeline();
                 } else if (err.type === LoadError.TOKEN_NOT_FOUND || err.type === LoadError.TOKEN_REVOKED) {
-                    this.showCredentialDialog({ loading: true });
+                    // if there already is a dialog, make sure to show it: an invalid credential was selected
+                    this.showCredentialDialog({ loading: !this.state.dialog });
                 } else {
                     if (onComplete) onComplete();
                     this.showLoadingError(err);
@@ -407,7 +410,17 @@ class PipelineLoader extends React.Component {
         const { scmSource } = pipeline;
 
         if (!scmSource || !scmSource.id || (scmSource.id === 'git' && !isSshRepositoryUrl(scmSource.apiUrl))) {
-            this.showLoadingError('', 'This repository does not support saving');
+            this.showLoadingError('', 'This repository does not support saving', 'No save access');
+            return;
+        }
+
+        // if showing this dialog with a credential, the write test failed
+        // except for git, where we need to prompt with the user's public key so they can continue
+        // in the case the user has a credential, like a github token there is only one
+        // so we don't want to prompt them for another, instead they should contact someone
+        // to fix the permissions
+        if (this.state.credential && this.state.credential.id && scmSource.id !== 'git') {
+            this.showLoadingError('', 'You do not appear to be able to save to this repository', 'No save access');
             return;
         }
 
