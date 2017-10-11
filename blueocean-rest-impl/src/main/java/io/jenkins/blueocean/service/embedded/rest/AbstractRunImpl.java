@@ -26,6 +26,7 @@ import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.GenericResource;
+import jenkins.util.SystemProperties;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.kohsuke.stapler.QueryParameter;
@@ -46,6 +47,8 @@ import java.util.logging.Logger;
  * @author Vivek Pandey
  */
 public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
+
+    public static final String BLUEOCEAN_FEATURE_RUN_DESCRIPTION_ENABLED = "blueocean.feature.run.description.enabled";
 
     public static final DateTimeFormatter DATE_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
     private static final Logger LOGGER = Logger.getLogger(AbstractRunImpl.class.getName());
@@ -95,7 +98,7 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public String getDescription() {
-        return run.getDescription();
+        return SystemProperties.getBoolean(BLUEOCEAN_FEATURE_RUN_DESCRIPTION_ENABLED, true) ? run.getDescription() : null;
     }
 
     @Override

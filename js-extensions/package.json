@@ -37,9 +37,9 @@
     "gulp": "^3.9.1",
     "gulp-mocha": "^2.2.0",
     "jsdom": "^9.5.0",
-    "react": "^0.14.7 || ^15.0.0",
-    "react-addons-test-utils": "^15.3.2",
-    "react-dom": "^0.14.7 || ^15.0.0"
+    "react": "15.4.2",
+    "react-addons-test-utils": "15.4.2",
+    "react-dom": "15.4.2"
   },
   "dependencies": {
     "envify": "3.4.1",

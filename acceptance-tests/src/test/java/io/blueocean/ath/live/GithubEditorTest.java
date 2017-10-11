@@ -129,7 +129,7 @@ public class GithubEditorTest {
         sseClient.clear();
         BranchPage branchPage = activityPage.clickBranchTab();
         branchPage.openEditor("master");
-        editorPage.saveBranch("new-branch");
+        editorPage.saveBranch("new - branch");
         activityPage.checkUrl();
         activityPage.getRunRowForBranch("new-branch");
 
