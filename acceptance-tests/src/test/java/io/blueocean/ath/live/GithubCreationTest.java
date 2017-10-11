@@ -117,7 +117,7 @@ public class GithubCreationTest{
      * TODO: Add PR coverage.
      */
     @Test
-    @Retry(3)
+   // @Retry(3)
     public void testCreatePipelineFull() throws IOException {
         URL jenkinsFileUrl = Resources.getResource(this.getClass(), "Jenkinsfile");
         byte[] content = Resources.toByteArray(jenkinsFileUrl);
