@@ -350,7 +350,8 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-job</artifactId>
-            <version>2.14.1</version>
+            <!-- workflow-job version > 2.12.2 is not compatible with 2.60.3. PLEASE DO NOT UPGRADE -->
+            <version>2.12.2</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
