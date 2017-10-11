@@ -13,7 +13,6 @@ let t = null;
  */
 @observer
 export default class GitCompletedStep extends React.Component {
-
     constructor(props) {
         super(props);
 

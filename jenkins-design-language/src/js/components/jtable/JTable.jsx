@@ -9,7 +9,7 @@ export const TABLE_COLUMN_SPACING = 32;
 export type ColumnDescription = {
     name?: string,
     width: number,
-    isFlexible: boolean
+    isFlexible: boolean,
 };
 
 type Props = {
@@ -17,7 +17,7 @@ type Props = {
     className?: string,
     children?: ReactChildren,
     columns: Array<ColumnDescription>,
-    style?: Object
+    style?: Object,
 };
 
 /**
@@ -25,23 +25,22 @@ type Props = {
  * over layout, and allows us to do things like making a whole row an anchor, etc.
  */
 export class JTable extends Component {
-
     /**
      * Just a simple helper
      */
     static column(width: number, name: string = '', isFlexible: boolean = false): ColumnDescription {
-        return {name, width, isFlexible};
+        return { name, width, isFlexible };
     }
 
     props: Props;
     state: {
-        columns: Array<ColumnDescription>
+        columns: Array<ColumnDescription>,
     };
 
     constructor(props: Props) {
         super(props);
 
-        this.state = {columns: []};
+        this.state = { columns: [] };
     }
 
     componentWillMount() {
@@ -55,7 +54,6 @@ export class JTable extends Component {
     }
 
     processColumns(propColumns: any) {
-
         if (propColumns == null) {
             propColumns = [];
         }
@@ -66,7 +64,6 @@ export class JTable extends Component {
 
         let hasFlexibleColumn = false;
         const processedColumns = propColumns.map(input => {
-
             let colName = '';
 
             if (input.name && React.isValidElement(input.name)) {
@@ -78,7 +75,7 @@ export class JTable extends Component {
             const result = {
                 name: colName,
                 width: parseInt(input.width),
-                isFlexible: !!input.isFlexible
+                isFlexible: !!input.isFlexible,
             };
 
             hasFlexibleColumn = hasFlexibleColumn || result.isFlexible;
@@ -102,21 +99,16 @@ export class JTable extends Component {
     }
 
     render() {
-
-        const {
-            className,
-            children,
-            ...restProps
-        } = this.props;
+        const { className, children, ...restProps } = this.props;
 
         const classNames = ['JTable', 'u-table-maxwidth'];
 
         if (className) {
-            classNames.push(...(className.split(/\s+/)));
+            classNames.push(...className.split(/\s+/));
         }
 
         const newChildProps = {
-            columns: this.state.columns
+            columns: this.state.columns,
         };
 
         const newChildren = [];
@@ -142,10 +134,5 @@ JTable.propTypes = {
     className: PropTypes.string,
     children: PropTypes.node,
     style: PropTypes.object,
-    columns: PropTypes.array
+    columns: PropTypes.array,
 };
-
-
-
-
-

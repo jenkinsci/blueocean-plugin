@@ -7,9 +7,7 @@ import GHEServerApi from './api/GHEServerApi';
 import GithubDefaultOption from '../github/GithubDefaultOption';
 import GithubEnterpriseFlowManager from './GithubEnterpriseFlowManager';
 
-
 export default class GithubEnterpriseScmProvider extends GithubScmProvider {
-
     manager = null;
 
     getDefaultOption() {

@@ -22,7 +22,6 @@ import { Toast } from './Toast';
  * dismissDelay - number, default duration in millis after which to hide a Toast
  */
 export class Toaster extends Component {
-
     constructor() {
         super();
 
@@ -38,7 +37,7 @@ export class Toaster extends Component {
     }
 
     _initialize(props) {
-        if(!props.toasts) {
+        if (!props.toasts) {
             return;
         }
 
@@ -92,9 +91,11 @@ export class Toaster extends Component {
                 <TransitionGroup
                     transitionName="toast"
                     transitionAppear
-                    transitionAppearTimeout={300} transitionEnterTimeout={300} transitionLeaveTimeout={300}
+                    transitionAppearTimeout={300}
+                    transitionEnterTimeout={300}
+                    transitionLeaveTimeout={300}
                 >
-                    { this.props.toasts.map((toast) => {
+                    {this.props.toasts.map(toast => {
                         if (!toast.id) {
                             // eslint-disable-next-line no-console
                             console.warn("toast cannot be added without 'id' property", toast);
@@ -113,7 +114,7 @@ export class Toaster extends Component {
                                 onActionClick={() => this._onActionClick(toast)}
                                 onDismiss={() => this._onDismiss(toast)}
                             />
-                       );
+                        );
                     })}
                 </TransitionGroup>
             </div>
@@ -131,4 +132,3 @@ Toaster.propTypes = {
 Toaster.defaultProps = {
     toasts: [],
 };
-

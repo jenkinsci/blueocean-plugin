@@ -3,7 +3,6 @@ import { Fetch, UrlConfig, Utils, AppConfig } from '@jenkins-cd/blueocean-core-j
 import GithubApiUtils from '../../creation/github/api/GithubApiUtils';
 import TypedError from '../TypedError';
 
-
 export const LoadError = {
     TOKEN_NOT_FOUND: 'TOKEN_NOT_FOUND',
     TOKEN_REVOKED: 'TOKEN_REVOKED',
@@ -21,12 +20,10 @@ const INVALID_TOKEN = 'Invalid accessToken';
 const INVALID_SCOPES = 'missing scopes';
 const INVALID_API_URL = 'Invalid apiUrl';
 
-
 /**
  * Handles lookup, validation and creation the Github access token credential.
  */
 class GithubCredentialsApi {
-
     constructor(scmId) {
         this._fetch = Fetch.fetchJSON;
         this.organization = AppConfig.getOrganizationName();
@@ -38,11 +35,7 @@ class GithubCredentialsApi {
         let credUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}`);
         credUrl = GithubApiUtils.appendApiUrlParam(credUrl, apiUrl);
 
-        return this._fetch(credUrl)
-            .then(
-                result => this._findExistingCredentialSuccess(result),
-                error => this._findExistingCredentialFailure(error)
-            );
+        return this._fetch(credUrl).then(result => this._findExistingCredentialSuccess(result), error => this._findExistingCredentialFailure(error));
     }
 
     _findExistingCredentialSuccess(credential) {
@@ -83,8 +76,7 @@ class GithubCredentialsApi {
             body: JSON.stringify(requestBody),
         };
 
-        return this._fetch(tokenUrl, { fetchOptions })
-            .catch(error => this._createAccessTokenFailure(error));
+        return this._fetch(tokenUrl, { fetchOptions }).catch(error => this._createAccessTokenFailure(error));
     }
 
     _createAccessTokenFailure(error) {
@@ -100,7 +92,6 @@ class GithubCredentialsApi {
 
         throw error;
     }
-
 }
 
 export default GithubCredentialsApi;

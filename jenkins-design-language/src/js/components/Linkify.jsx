@@ -20,10 +20,9 @@ type Props = Object; // FIXME: How do we import the type of OriginalLinkify:prop
  * @param props
  */
 export const Linkify = (props: Props) => {
-
     const childOptions = {
         validate: validateURL,
-        ...(props.options || {})
+        ...(props.options || {}),
     };
 
     const childProps = {
@@ -31,9 +30,7 @@ export const Linkify = (props: Props) => {
         options: childOptions,
     };
 
-    return (
-        <OriginalLinkify {...childProps} />
-    );
+    return <OriginalLinkify {...childProps} />;
 };
 
 Linkify.propTypes = OriginalLinkify.propTypes;

@@ -81,25 +81,30 @@ export class GeneralLogPager {
                 logData.newStart = newStart;
                 return response.text();
             })
-            .then(action('Process pager data', text => {
-                if (text && text.trim) {
-                    logData.data = text.trim().split('\n');
-                    // Store item in bunker.
-                    this.bunker.setItem(logData);
-                    logger.debug('saved data', this.augmenter.generalLogUrl, logData.newStart, followAlong);
-                }
-                this.pending = false;
-                if (Number(logData.newStart) > 0 && followAlong) {
-                    // kill current  timeout if any
-                    clearTimeout(this.timeout);
-                    // we need to get more input from the log stream
-                    this.timeout = setTimeout(() => {
-                        this.followGeneralLog(logData);
-                    }, 1000);
-                }
-            })).catch(err => {
+            .then(
+                action('Process pager data', text => {
+                    if (text && text.trim) {
+                        logData.data = text.trim().split('\n');
+                        // Store item in bunker.
+                        this.bunker.setItem(logData);
+                        logger.debug('saved data', this.augmenter.generalLogUrl, logData.newStart, followAlong);
+                    }
+                    this.pending = false;
+                    if (Number(logData.newStart) > 0 && followAlong) {
+                        // kill current  timeout if any
+                        clearTimeout(this.timeout);
+                        // we need to get more input from the log stream
+                        this.timeout = setTimeout(() => {
+                            this.followGeneralLog(logData);
+                        }, 1000);
+                    }
+                })
+            )
+            .catch(err => {
                 logger.error('Error fetching page', err);
-                action('set error', () => { this.error = err; });
+                action('set error', () => {
+                    this.error = err;
+                });
             });
     }
 
@@ -113,33 +118,39 @@ export class GeneralLogPager {
         clearTimeout(this.timeout);
         const logData = { ...logDataOrg };
         return KaraokeApi.getGeneralLog(this.augmenter.generalLogUrl, { start: logData.newStart })
-            .then(action('Process pager data following 1', response => {
-                const { newStart, hasMore } = response;
-                logger.warn({ newStart, hasMore });
-                logData.newStart = response.newStart;
-                return response.text();
-            }))
-            .then(action('Process pager data following 2', text => {
-                if (text && text.trim) {
-                    const items = text.trim().split('\n');
-                    logData.data = logData.data.concat(items);
-                    // Store item in bunker.
-                    this.bunker.setItem(logData);
-                    logger.debug('saved data', this.augmenter.generalLogUrl, logData.newStart);
-                }
-                if (logData.newStart !== null) {
-                    // kill current  timeout if any
-                    // we need to get mpre input from the log stream
-                    this.timeout = setTimeout(() => {
-                        this.followGeneralLog(logData);
-                    }, 1000);
-                }
-            })).catch(err => {
+            .then(
+                action('Process pager data following 1', response => {
+                    const { newStart, hasMore } = response;
+                    logger.warn({ newStart, hasMore });
+                    logData.newStart = response.newStart;
+                    return response.text();
+                })
+            )
+            .then(
+                action('Process pager data following 2', text => {
+                    if (text && text.trim) {
+                        const items = text.trim().split('\n');
+                        logData.data = logData.data.concat(items);
+                        // Store item in bunker.
+                        this.bunker.setItem(logData);
+                        logger.debug('saved data', this.augmenter.generalLogUrl, logData.newStart);
+                    }
+                    if (logData.newStart !== null) {
+                        // kill current  timeout if any
+                        // we need to get mpre input from the log stream
+                        this.timeout = setTimeout(() => {
+                            this.followGeneralLog(logData);
+                        }, 1000);
+                    }
+                })
+            )
+            .catch(err => {
                 logger.error('Error fetching page', err);
-                action('set error', () => { this.error = err; });
+                action('set error', () => {
+                    this.error = err;
+                });
             });
     }
-
 
     clear() {
         clearTimeout(this.timeout);

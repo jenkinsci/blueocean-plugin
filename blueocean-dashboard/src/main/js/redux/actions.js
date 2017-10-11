@@ -3,13 +3,7 @@ import { applyFetchMarkers, fetch as smartFetch, paginate } from '../util/smart-
 import { State } from '../components/records';
 import UrlConfig from '../config';
 import { getNodesInformation } from '../util/logDisplayHelper';
-import {
-    calculateLogUrl,
-    calculateNodeBaseUrl,
-    calculateStepsBaseUrl,
-    getRestUrl,
-    paginateUrl,
-} from '../util/UrlUtils';
+import { calculateLogUrl, calculateNodeBaseUrl, calculateStepsBaseUrl, getRestUrl, paginateUrl } from '../util/UrlUtils';
 import findAndUpdate from '../util/find-and-update';
 import { Fetch, FetchFunctions, AppConfig } from '@jenkins-cd/blueocean-core-js';
 const debugLog = require('debug')('blueocean-actions-js:debug');
@@ -96,8 +90,7 @@ export const actionHandlers = {
         return state.set('messages', messages);
     },
     [ACTION_TYPES.CLEAR_PIPELINES_DATA](state) {
-        return state.set('allPipelines', null)
-            .set('organizationPipelines', null);
+        return state.set('allPipelines', null).set('organizationPipelines', null);
     },
     [ACTION_TYPES.SET_ALL_PIPELINES_DATA](state, { payload }): State {
         return state.set('allPipelines', payload);
@@ -112,7 +105,7 @@ export const actionHandlers = {
         return state.set('pipeline', payload);
     },
     [ACTION_TYPES.SET_CURRENT_RUN_DATA](state, { payload }): State {
-        return state.set('currentRuns', payload.map((run) => _mapQueueToPsuedoRun(run)));
+        return state.set('currentRuns', payload.map(run => _mapQueueToPsuedoRun(run)));
     },
     [ACTION_TYPES.SET_CURRENT_RUN](state, { payload }): State {
         return state.set('currentRun', payload);
@@ -129,8 +122,7 @@ export const actionHandlers = {
         const runs = { ...state.runs } || {};
         runs[id] = payload.map(run => _mapQueueToPsuedoRun(run));
         applyFetchMarkers(runs[id], payload);
-        return state.set('runs', runs)
-            .set('currentRuns', runs[id]);
+        return state.set('runs', runs).set('currentRuns', runs[id]);
     },
     [ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA](state) {
         return state.delete('currentBranches');
@@ -163,8 +155,8 @@ export const actionHandlers = {
     [ACTION_TYPES.REMOVE_LOG](state, { key }): State {
         const logs = { ...state.logs } || {};
         Object.keys(logs)
-            .filter((item) => item.indexOf(key) !== -1)
-            .map((item) => delete logs[item]);
+            .filter(item => item.indexOf(key) !== -1)
+            .map(item => delete logs[item]);
         return state.set('logs', logs);
     },
     [ACTION_TYPES.FIND_AND_UPDATE](state, { payload }): State {
@@ -247,7 +239,7 @@ function clone(json) {
 export const actions = {
     clearPipelinesData: () => ({ type: ACTION_TYPES.CLEAR_PIPELINES_DATA }),
     clearPipelineData() {
-        return (dispatch) => dispatch({ type: ACTION_TYPES.CLEAR_PIPELINE_DATA });
+        return dispatch => dispatch({ type: ACTION_TYPES.CLEAR_PIPELINE_DATA });
     },
 
     /**
@@ -286,13 +278,11 @@ export const actions = {
      */
     // eslint-disable-next-line no-unused-vars
     fetchAllPipelines() {
-        return (dispatch) => {
+        return dispatch => {
             // Note: this is including folders, which we can't deal with, so exclude them with the ?filter=no-folders
             const organization = AppConfig.getOrganizationName();
-            const url =
-                `${UrlConfig.getRestRoot()}/search/?q=type:pipeline;organization:${organization};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
-            return paginate({ urlProvider: paginateUrl(url) })
-            .then(data => {
+            const url = `${UrlConfig.getRestRoot()}/search/?q=type:pipeline;organization:${organization};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
+            return paginate({ urlProvider: paginateUrl(url) }).then(data => {
                 dispatch({
                     type: ACTION_TYPES.SET_ALL_PIPELINES_DATA,
                     payload: data,
@@ -302,24 +292,26 @@ export const actions = {
     },
 
     clearBranchData() {
-        return (dispatch) => dispatch({
-            type: ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA,
-        });
+        return dispatch =>
+            dispatch({
+                type: ACTION_TYPES.CLEAR_CURRENT_BRANCHES_DATA,
+            });
     },
 
     clearPRData() {
-        return (dispatch) => dispatch({
-            type: ACTION_TYPES.CLEAR_CURRENT_PULL_REQUEST_DATA,
-        });
+        return dispatch =>
+            dispatch({
+                type: ACTION_TYPES.CLEAR_CURRENT_PULL_REQUEST_DATA,
+            });
     },
 
     fetchOrganizationPipelines({ organizationName }) {
-        return (dispatch) => {
+        return dispatch => {
             // Note: this is including folders, which we can't deal with, so exclude them with the ?filter=no-folders
-            const url =
-                `${UrlConfig.getRestRoot()}/search/?q=type:pipeline;organization:${encodeURIComponent(organizationName)};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
-            return paginate({ urlProvider: paginateUrl(url) })
-            .then(data => {
+            const url = `${UrlConfig.getRestRoot()}/search/?q=type:pipeline;organization:${encodeURIComponent(
+                organizationName
+            )};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
+            return paginate({ urlProvider: paginateUrl(url) }).then(data => {
                 dispatch({
                     type: ACTION_TYPES.SET_ORG_PIPELINES_DATA,
                     payload: data,
@@ -329,11 +321,9 @@ export const actions = {
     },
 
     fetchBranches({ organizationName, pipelineName }) {
-        return (dispatch) => {
-            const url =
-                `${UrlConfig.getRestRoot()}/organizations/${encodeURIComponent(organizationName)}/pipelines/${pipelineName}/branches/?filter=origin`;
-            return paginate({ urlProvider: paginateUrl(url) })
-            .then(data => {
+        return dispatch => {
+            const url = `${UrlConfig.getRestRoot()}/organizations/${encodeURIComponent(organizationName)}/pipelines/${pipelineName}/branches/?filter=origin`;
+            return paginate({ urlProvider: paginateUrl(url) }).then(data => {
                 dispatch({
                     id: pipelineName,
                     type: ACTION_TYPES.SET_CURRENT_BRANCHES_DATA,
@@ -344,11 +334,11 @@ export const actions = {
     },
 
     fetchPullRequests({ organizationName, pipelineName }) {
-        return (dispatch) => {
-            const url =
-                `${UrlConfig.getRestRoot()}/organizations/${encodeURIComponent(organizationName)}/pipelines/${pipelineName}/branches/?filter=pull-requests`;
-            return paginate({ urlProvider: paginateUrl(url) })
-            .then(data => {
+        return dispatch => {
+            const url = `${UrlConfig.getRestRoot()}/organizations/${encodeURIComponent(
+                organizationName
+            )}/pipelines/${pipelineName}/branches/?filter=pull-requests`;
+            return paginate({ urlProvider: paginateUrl(url) }).then(data => {
                 dispatch({
                     type: ACTION_TYPES.SET_CURRENT_PULL_REQUEST_DATA,
                     payload: data,
@@ -361,10 +351,9 @@ export const actions = {
      * Fetch a specific pipeline, sets as current
      */
     fetchPipeline(organizationName, pipelineName) {
-        return (dispatch) =>
-            smartFetch(
-                getRestUrl({ organization: organizationName, pipeline: pipelineName }),
-                data => dispatch({
+        return dispatch =>
+            smartFetch(getRestUrl({ organization: organizationName, pipeline: pipelineName }), data =>
+                dispatch({
                     id: pipelineName,
                     type: ACTION_TYPES.SET_PIPELINE,
                     payload: data,
@@ -375,7 +364,7 @@ export const actions = {
     processJobQueuedEvent(event) {
         return (dispatch, getState) => {
             const id = event.blueocean_job_pipeline_name;
-            const runsByJobName = getState().adminStore && getState().adminStore.runs || {};
+            const runsByJobName = (getState().adminStore && getState().adminStore.runs) || {};
             const eventJobRuns = runsByJobName[id];
 
             // Only interested in the event if we have already loaded the runs for that job.
@@ -388,8 +377,7 @@ export const actions = {
                 let nextId = 0;
                 for (let i = 0; i < eventJobRuns.length; i++) {
                     const run = eventJobRuns[i];
-                    if (event.job_ismultibranch
-                        && event.blueocean_job_branch_name !== run.pipeline) {
+                    if (event.job_ismultibranch && event.blueocean_job_branch_name !== run.pipeline) {
                         // Not the same branch. Yes, run.pipeline actually contains
                         // the branch name i.e. naming seems a bit confusing.
                         continue;
@@ -399,7 +387,8 @@ export const actions = {
                         // run. No need to create another i.e. ignore this event.
                         return;
                     }
-                    if (parseInt(run.id, 10) > nextId) { // figure out the next id, expectedBuildNumber
+                    if (parseInt(run.id, 10) > nextId) {
+                        // figure out the next id, expectedBuildNumber
                         nextId = parseInt(run.id, 10);
                     }
                 }
@@ -453,7 +442,7 @@ export const actions = {
             // only proceed with removal if the job was cancelled
             if (event.job_run_status === 'CANCELLED') {
                 const id = event.blueocean_job_pipeline_name;
-                const runsByJobName = getState().adminStore && getState().adminStore.runs || {};
+                const runsByJobName = (getState().adminStore && getState().adminStore.runs) || {};
                 const eventJobRuns = runsByJobName[id];
 
                 // Only interested in the event if we have already loaded the runs for that job.
@@ -461,9 +450,7 @@ export const actions = {
                     const newRuns = clone(eventJobRuns);
                     applyFetchMarkers(newRuns, eventJobRuns);
 
-                    const queueItemToRemove = newRuns.find((run) => (
-                        run.job_run_queueId === event.job_run_queueId
-                    ));
+                    const queueItemToRemove = newRuns.find(run => run.job_run_queueId === event.job_run_queueId);
 
                     newRuns.splice(newRuns.indexOf(queueItemToRemove), 1);
 
@@ -483,8 +470,10 @@ export const actions = {
 
     updateRunState(event) {
         function matchesEvent(evt, o) {
-            return o.job_run_queueId === evt.job_run_queueId
-                || (o._links && o._links.self && o._links.self.href.indexOf(evt.blueocean_job_rest_url) === 0 && o.id === evt.jenkins_object_id);
+            return (
+                o.job_run_queueId === evt.job_run_queueId ||
+                (o._links && o._links.self && o._links.self.href.indexOf(evt.blueocean_job_rest_url) === 0 && o.id === evt.jenkins_object_id)
+            );
         }
         return (dispatch, getState) => {
             debugLog('updateRunState:', event);
@@ -499,39 +488,40 @@ export const actions = {
                 debugLog('Calling dispatch for event ', event);
                 const runUrl = `${UrlConfig.getJenkinsRootURL()}${event.blueocean_job_rest_url}runs/${event.jenkins_object_id}`;
                 smartFetch(runUrl)
-                .then(data => {
-                    if (data.$pending) return;
-                    debugLog('Updating run: ', data);
-                    dispatchFindAndUpdate(dispatch, run => {
-                        if (matchesEvent(event, run)) {
-                            if (event.jenkins_event !== 'job_run_ended') {
-                                return { ...data,
-                                    id: event.jenkins_object_id, // make sure the runId is set so we can find it later
-                                    // here, we explicitly set to running. this is because
-                                    // pipeline runs get removed from the queue, a running event is sent
-                                    // but they are still queued in Jenkins, as they may not actually
-                                    // be executing anything. However, pipeline doesn't send any further
-                                    // events so we're never notified when it actually does start, so
-                                    // we just treat this subsequent runStateEvent as a start or a finish
-                                    state: 'RUNNING',
-                                    result: 'UNKNOWN',
-                                };
+                    .then(data => {
+                        if (data.$pending) return;
+                        debugLog('Updating run: ', data);
+                        dispatchFindAndUpdate(dispatch, run => {
+                            if (matchesEvent(event, run)) {
+                                if (event.jenkins_event !== 'job_run_ended') {
+                                    return {
+                                        ...data,
+                                        id: event.jenkins_object_id, // make sure the runId is set so we can find it later
+                                        // here, we explicitly set to running. this is because
+                                        // pipeline runs get removed from the queue, a running event is sent
+                                        // but they are still queued in Jenkins, as they may not actually
+                                        // be executing anything. However, pipeline doesn't send any further
+                                        // events so we're never notified when it actually does start, so
+                                        // we just treat this subsequent runStateEvent as a start or a finish
+                                        state: 'RUNNING',
+                                        result: 'UNKNOWN',
+                                    };
+                                }
+                                return data;
                             }
-                            return data;
-                        }
-                        return undefined;
+                            return undefined;
+                        });
+                    })
+                    .catch(err => {
+                        // Just update the run state for fetch failures (this was the existing behavior, not sure why, really)
+                        dispatchFindAndUpdate(dispatch, o => {
+                            if (o.job_run_queueId === event.job_run_queueId) {
+                                return { ...o, state: event.jenkins_event === 'job_run_ended' ? 'FINISHED' : 'RUNNING' };
+                            }
+                            return undefined;
+                        });
+                        debugLog('Fetch error: ', err);
                     });
-                })
-                .catch(err => {
-                    // Just update the run state for fetch failures (this was the existing behavior, not sure why, really)
-                    dispatchFindAndUpdate(dispatch, o => {
-                        if (o.job_run_queueId === event.job_run_queueId) {
-                            return { ...o, state: event.jenkins_event === 'job_run_ended' ? 'FINISHED' : 'RUNNING' };
-                        }
-                        return undefined;
-                    });
-                    debugLog('Fetch error: ', err);
-                });
             }
         };
     },
@@ -542,25 +532,29 @@ export const actions = {
             let found = false;
             findAndUpdate(getState().adminStore, o => {
                 debugLog('updateBranchState:', o);
-                if (!found && o && o.latestRun && (o.fullName === event.job_name)) {
+                if (!found && o && o.latestRun && o.fullName === event.job_name) {
                     debugLog('found:', o);
                     found = true;
                 }
             });
             if (found) {
                 const url = `${UrlConfig.getJenkinsRootURL()}${event.blueocean_job_rest_url}`;
-                smartFetch(url, (branchData) => {
-                    if (branchData.$pending) { return; }
+                smartFetch(url, branchData => {
+                    if (branchData.$pending) {
+                        return;
+                    }
                     if (branchData.$failure) {
                         debugLog(branchData.$failure);
                         return;
                     }
                     // apply the new data to the store
                     dispatchFindAndUpdate(dispatch, branch => {
-                        if (branch && branch.latestRun && (branch.fullName === event.job_name)) {
+                        if (branch && branch.latestRun && branch.fullName === event.job_name) {
                             if (branchData.latestRun.state !== 'RUNNING') {
-                                return { ...branchData,
-                                    latestRun: { ...branchData.latestRun,
+                                return {
+                                    ...branchData,
+                                    latestRun: {
+                                        ...branchData.latestRun,
                                         // Jenkins doesn't update this value
                                         // at least not fast enough...
                                         state: event.jenkins_event === 'job_run_ended' ? 'FINISHED' : 'RUNNING',
@@ -591,51 +585,48 @@ export const actions = {
     },
 
     fetchRuns({ organization, pipeline }) {
-        return (dispatch, getState) => paginate({
-            urlProvider: paginateUrl(
-                `${UrlConfig.getRestRoot()}/organizations/${organization}/pipelines/${pipeline}/activities/`),
-            onData: data => {
-                const runs = getState().adminStore && getState().adminStore.runs ? getState().adminStore.runs[pipeline] : [];
-                dispatch({
-                    id: pipeline,
-                    payload: data.map(run => tryToFixRunState(run, runs)),
-                    type: ACTION_TYPES.SET_RUNS_DATA,
-                });
-            },
-        });
+        return (dispatch, getState) =>
+            paginate({
+                urlProvider: paginateUrl(`${UrlConfig.getRestRoot()}/organizations/${organization}/pipelines/${pipeline}/activities/`),
+                onData: data => {
+                    const runs = getState().adminStore && getState().adminStore.runs ? getState().adminStore.runs[pipeline] : [];
+                    dispatch({
+                        id: pipeline,
+                        payload: data.map(run => tryToFixRunState(run, runs)),
+                        type: ACTION_TYPES.SET_RUNS_DATA,
+                    });
+                },
+            });
     },
 
     fetchRun(config) {
         return (dispatch, getState) => {
             const runs = getState().adminStore && getState().adminStore.runs ? getState().adminStore.runs[config.pipeline] : [];
-            smartFetch(
-                getRestUrl(config),
-                data => {
-                    if (data.$failed && runs) { // might be a queued item...
-                        const found = runs.filter(r => r.id === config.runId)[0];
-                        if (found) {
-                            try {
-                                found.$success = true;
-                            } catch (e) {
-                                // Ignore, might be a real item
-                                console.log('amoc', e);
-                            }
-                            dispatch({
-                                id: config.pipeline,
-                                type: ACTION_TYPES.SET_CURRENT_RUN,
-                                payload: found,
-                            });
-                            return; // skip the next dispatch
+            smartFetch(getRestUrl(config), data => {
+                if (data.$failed && runs) {
+                    // might be a queued item...
+                    const found = runs.filter(r => r.id === config.runId)[0];
+                    if (found) {
+                        try {
+                            found.$success = true;
+                        } catch (e) {
+                            // Ignore, might be a real item
+                            console.log('amoc', e);
                         }
+                        dispatch({
+                            id: config.pipeline,
+                            type: ACTION_TYPES.SET_CURRENT_RUN,
+                            payload: found,
+                        });
+                        return; // skip the next dispatch
                     }
-                    dispatch({
-                        id: config.pipeline,
-                        type: ACTION_TYPES.SET_CURRENT_RUN,
-                        payload: tryToFixRunState(data, runs),
-                    });
                 }
-            )
-            .catch(err => {
+                dispatch({
+                    id: config.pipeline,
+                    type: ACTION_TYPES.SET_CURRENT_RUN,
+                    payload: tryToFixRunState(data, runs),
+                });
+            }).catch(err => {
                 debugLog('Fetch error: ', err);
             });
         };
@@ -657,19 +648,19 @@ export const actions = {
                 let nodeModel;
                 let node;
                 if (!config.node) {
-                    const focused = information.model.filter((item) => item.isFocused)[0];
+                    const focused = information.model.filter(item => item.isFocused)[0];
                     if (focused) {
                         nodeModel = focused;
                     } else {
                         if (config.isPipelineQueued) {
-                            nodeModel = (information.model[0]);
+                            nodeModel = information.model[0];
                         } else {
-                            nodeModel = (information.model[information.model.length - 1]);
+                            nodeModel = information.model[information.model.length - 1];
                         }
                     }
                     node = nodeModel ? nodeModel.id : null;
                 } else {
-                    nodeModel = information.model.filter((item) => item.id === config.node)[0];
+                    nodeModel = information.model.filter(item => item.id === config.node)[0];
                     node = config.node;
                 }
                 // console.log('ACTION_TYPES.SET_NODE', nodeModel);
@@ -684,7 +675,7 @@ export const actions = {
 
             if (!data || !data[nodesBaseUrl] || config.refetch) {
                 return Fetch.fetchJSON(nodesBaseUrl)
-                    .then((json) => {
+                    .then(json => {
                         const information = getNodesInformation(json);
                         information.nodesBaseUrl = nodesBaseUrl;
                         // console.log('nodes fetch log', information, json);
@@ -694,7 +685,8 @@ export const actions = {
                         });
 
                         return getNodeAndSteps(information);
-                    }).catch(FetchFunctions.consoleError);
+                    })
+                    .catch(FetchFunctions.consoleError);
             }
 
             return getNodeAndSteps(data[nodesBaseUrl]);
@@ -708,7 +700,7 @@ export const actions = {
             if (!data || !data[nodesBaseUrl] || config.refetch) {
                 return actions.fetchNodes(config);
             }
-            const node = data[nodesBaseUrl].model.filter((item) => item.id === config.node)[0];
+            const node = data[nodesBaseUrl].model.filter(item => item.id === config.node)[0];
             return dispatch({
                 type: ACTION_TYPES.SET_NODE,
                 payload: node,
@@ -717,10 +709,11 @@ export const actions = {
     },
 
     cleanNodePointer() {
-        return (dispatch) => dispatch({
-            type: ACTION_TYPES.SET_NODE,
-            payload: null,
-        });
+        return dispatch =>
+            dispatch({
+                type: ACTION_TYPES.SET_NODE,
+                payload: null,
+            });
     },
     /*
      For the detail view we need to fetch the different steps of a nodes.
@@ -733,7 +726,7 @@ export const actions = {
             const stepBaseUrl = calculateStepsBaseUrl(config);
             if (!data || !data[stepBaseUrl] || config.refetch) {
                 return Fetch.fetchJSON(stepBaseUrl)
-                    .then((json) => {
+                    .then(json => {
                         const information = getNodesInformation(json);
                         information.nodesBaseUrl = stepBaseUrl;
                         // console.log('action fetch log', information, json);
@@ -742,7 +735,8 @@ export const actions = {
                             type: ACTION_TYPES.SET_STEPS,
                             payload: information,
                         });
-                    }).catch(FetchFunctions.consoleError);
+                    })
+                    .catch(FetchFunctions.consoleError);
             }
             return null;
         };
@@ -754,10 +748,11 @@ export const actions = {
      * @returns {function(*)}
      */
     removeStep(id) {
-        return (dispatch) => dispatch({
-            type: ACTION_TYPES.REMOVE_STEP,
-            stepId: id,
-        });
+        return dispatch =>
+            dispatch({
+                type: ACTION_TYPES.REMOVE_STEP,
+                stepId: id,
+            });
     },
     /**
      * Remove logs from cache
@@ -766,10 +761,11 @@ export const actions = {
      * @returns {function(*)}
      */
     removeLogs(id) {
-        return (dispatch) => dispatch({
-            type: ACTION_TYPES.REMOVE_LOG,
-            key: id,
-        });
+        return dispatch =>
+            dispatch({
+                type: ACTION_TYPES.REMOVE_LOG,
+                key: id,
+            });
     },
     /*
      Get a specific log for a node, fetch it only if needed.
@@ -785,15 +781,16 @@ export const actions = {
             const logUrl = calculateLogUrl(config);
             if (
                 config.fetchAll ||
-                !data || !data[logUrl] ||
+                !data ||
+                !data[logUrl] ||
                 config.newStart > 0 ||
-                (data && data[logUrl] && data[logUrl].newStart > 0 || !data[logUrl].logArray)
+                ((data && data[logUrl] && data[logUrl].newStart > 0) || !data[logUrl].logArray)
             ) {
                 return exports.fetchLogsInjectStart(
                     logUrl,
                     config.newStart || null,
-                    response => response.response.text()
-                        .then(text => {
+                    response =>
+                        response.response.text().then(text => {
                             // By default only last 150 KB log data is returned in the response.
                             const maxLength = 150000;
                             const contentLength = Number(response.response.headers.get('X-Text-Size'));
@@ -818,7 +815,7 @@ export const actions = {
                                 type: ACTION_TYPES.SET_LOGS,
                             });
                         }),
-                    (error) => console.error('error', error) // eslint-disable-line no-console
+                    error => console.error('error', error) // eslint-disable-line no-console
                 );
             }
             return null;

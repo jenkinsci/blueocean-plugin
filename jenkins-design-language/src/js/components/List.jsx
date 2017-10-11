@@ -9,17 +9,16 @@ type Props = {
     style: Object,
     data?: Array<Object>,
     labelFunction?: Function,
-    disabled?: bool,
+    disabled?: boolean,
     keyFunction?: Function,
-    defaultStyles: bool,
+    defaultStyles: boolean,
     defaultSelection?: Object,
     onItemSelect?: Function,
-}
+};
 
 type State = {
     selectedItem?: Object,
 };
-
 
 /**
  * Checks whether the supplied child is scrolled above or below the parent's top/bottom edges.
@@ -73,7 +72,6 @@ function isScrolledAboveOrBelow(parent, child) {
  * @property {Function} [onItemSelect] callback when an item is selected, receiving listIndex and listItem.
  */
 export class List extends React.Component {
-
     props: Props;
     state: State;
     groupId: string;
@@ -85,7 +83,7 @@ export class List extends React.Component {
         labelFunction: itemToLabel,
     };
 
-    constructor(props:Props) {
+    constructor(props: Props) {
         super(props);
 
         this.state = {};
@@ -93,7 +91,7 @@ export class List extends React.Component {
         this.groupId = Utils.randomId('List');
     }
 
-    componentWillReceiveProps(nextProps:Props) {
+    componentWillReceiveProps(nextProps: Props) {
         const { selectedItem } = this.state;
         const { data } = nextProps;
 
@@ -111,22 +109,22 @@ export class List extends React.Component {
         this._defaultSelection(this.props);
     }
 
-    get selectedIndex():number {
+    get selectedIndex(): number {
         const { selectedItem } = this.state;
         const { data } = this.props;
 
         return selectedItem && data ? data.indexOf(selectedItem) : -1;
     }
 
-    get selectedItem():?Object {
+    get selectedItem(): ?Object {
         return this.state.selectedItem;
     }
 
-    _storeSelfNode(node:Element) {
+    _storeSelfNode(node: Element) {
         this.selfNode = node;
     }
 
-    _defaultSelection(nextProps:Props) {
+    _defaultSelection(nextProps: Props) {
         if (!this.state.selectedItem && nextProps.defaultSelection) {
             this.setState({
                 selectedItem: nextProps.defaultSelection,
@@ -134,14 +132,14 @@ export class List extends React.Component {
         }
     }
 
-    _onChangeSelection(event:Event, index:number, item:Object) {
+    _onChangeSelection(event: Event, index: number, item: Object) {
         // Firefox and Safari don't apply focus after "change" so force it
         if (document.activeElement !== event.currentTarget && event.currentTarget instanceof HTMLElement) {
             event.currentTarget.focus();
         }
 
         this.setState({
-            selectedItem: item
+            selectedItem: item,
         });
 
         if (this.props.onItemSelect) {
@@ -149,16 +147,16 @@ export class List extends React.Component {
         }
     }
 
-    _scrollFocusedItemIntoView(event:Event) {
+    _scrollFocusedItemIntoView(event: Event) {
         if (event.currentTarget instanceof Element && event.currentTarget.parentElement) {
             // get the .List-Item associated w/ the focused input[type="radio"]
-            const parentElement:Element = event.currentTarget.parentElement;
+            const parentElement: Element = event.currentTarget.parentElement;
             const items = parentElement.getElementsByClassName('List-Item');
             this._scrollNodeIntoView(items[0]);
         }
     }
 
-    _scrollNodeIntoView(targetNode:HTMLElement) {
+    _scrollNodeIntoView(targetNode: HTMLElement) {
         const position = isScrolledAboveOrBelow(this.selfNode, targetNode);
 
         if (position.above || position.below) {
@@ -171,7 +169,7 @@ export class List extends React.Component {
 
         const childCount = React.Children.count(children);
 
-        let childTemplate:React$Element<*>;
+        let childTemplate: React$Element<*>;
 
         if (childCount === 0) {
             childTemplate = <DefaultRenderer />;
@@ -188,38 +186,39 @@ export class List extends React.Component {
         const disabledClass = disabled ? 'disabled' : '';
 
         return (
-                <div
-                    ref={node => this._storeSelfNode(node)}
-                    className={`List ${selectedClass} ${listClass} ${defaultClass} ${disabledClass}`}
-                    style={this.props.style}
-                >
-                { data && data.map((item, index) => {
-                    const itemSelectedClass = item === this.state.selectedItem ? 'List-Item-selected' : '';
-                    const keyValue = keyFunction ? keyFunction(item) : index;
+            <div
+                ref={node => this._storeSelfNode(node)}
+                className={`List ${selectedClass} ${listClass} ${defaultClass} ${disabledClass}`}
+                style={this.props.style}
+            >
+                {data &&
+                    data.map((item, index) => {
+                        const itemSelectedClass = item === this.state.selectedItem ? 'List-Item-selected' : '';
+                        const keyValue = keyFunction ? keyFunction(item) : index;
 
-                    return (
-                        <label className="List-Row" key={keyValue}>
-                            <input
-                                type="radio"
-                                name={this.groupId}
-                                className="List-Radio cloak"
-                                onChange={(event) => this._onChangeSelection(event, index, item)}
-                                onFocus={event => this._scrollFocusedItemIntoView(event)}
-                                disabled={disabled}
-                                checked={!!itemSelectedClass}
-                            />
+                        return (
+                            <label className="List-Row" key={keyValue}>
+                                <input
+                                    type="radio"
+                                    name={this.groupId}
+                                    className="List-Radio cloak"
+                                    onChange={event => this._onChangeSelection(event, index, item)}
+                                    onFocus={event => this._scrollFocusedItemIntoView(event)}
+                                    disabled={disabled}
+                                    checked={!!itemSelectedClass}
+                                />
 
-                            <div className={`List-Item ${itemSelectedClass}`}>
-                                {React.cloneElement(childTemplate, {
-                                    listIndex: index,
-                                    listItem: item,
-                                    labelFunction,
-                                })}
-                            </div>
-                        </label>
-                    );
-                })}
-                </div>
+                                <div className={`List-Item ${itemSelectedClass}`}>
+                                    {React.cloneElement(childTemplate, {
+                                        listIndex: index,
+                                        listItem: item,
+                                        labelFunction,
+                                    })}
+                                </div>
+                            </label>
+                        );
+                    })}
+            </div>
         );
     }
 }
@@ -246,7 +245,6 @@ function itemToLabel(item) {
 
     return '';
 }
-
 
 function DefaultRenderer(props) {
     return (

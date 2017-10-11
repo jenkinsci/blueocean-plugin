@@ -3,9 +3,7 @@ import Extensions from '@jenkins-cd/js-extensions';
 
 import FlowStep from '../../flow2/FlowStep';
 
-
 export default class GithubCredentialsStep extends React.Component {
-
     constructor(props) {
         super(props);
 

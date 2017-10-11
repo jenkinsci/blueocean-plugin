@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import debounce from 'lodash.debounce';
 import { Icon } from '../Icon';
 
-import {FloatingElement} from '../FloatingElement';
+import { FloatingElement } from '../FloatingElement';
 import KeyCodes from '../../KeyCodes';
 
 const POSITION = {
@@ -13,11 +13,10 @@ const POSITION = {
 
     values: () => {
         return [POSITION.FIRST, POSITION.PREV, POSITION.NEXT, POSITION.LAST];
-    }
+    },
 };
 
 export class Dropdown extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -85,14 +84,14 @@ export class Dropdown extends React.Component {
     }
 
     // (note: also triggered via spacebar press when button has focus)
-    _onDropdownMouseEvent = (event) => {
+    _onDropdownMouseEvent = event => {
         // console.log('_onDropdownMouseEvent');
         // prevent navigation if anchor was clicked
         event.preventDefault();
         this._toggleDropdownMenu();
     };
 
-    _handleKeyEvent = (event) => {
+    _handleKeyEvent = event => {
         // console.log('_handleKeyEvent', this.state.menuOpen);
         if (!this.state.menuOpen) {
             return;
@@ -138,7 +137,7 @@ export class Dropdown extends React.Component {
         }
     };
 
-    _handleMouseEvent = (event) => {
+    _handleMouseEvent = event => {
         // console.log("_handleMouseEvent");
         const { clientX, clientY } = event;
 
@@ -148,10 +147,8 @@ export class Dropdown extends React.Component {
             // close the dropdown only if the user clicked "outside" of it
             // (only if the button, thumb and menu was not clicked)
             // clicking those elements will actually close the it via different means
-            const clickedOutsideDropdown = !this.buttonRef.contains(element) &&
-                !this.thumbRef.contains(element) &&
-                !this.wrapperRef.contains(element) &&
-                !this.menuRef.contains(element);
+            const clickedOutsideDropdown =
+                !this.buttonRef.contains(element) && !this.thumbRef.contains(element) && !this.wrapperRef.contains(element) && !this.menuRef.contains(element);
 
             if (clickedOutsideDropdown) {
                 this._closeDropdownMenu();
@@ -171,9 +168,9 @@ export class Dropdown extends React.Component {
         const scrollDown = this.menuRef.scrollTop > this.lastScrollTop;
         this.lastScrollTop = this.menuRef.scrollTop;
         const rect = this.menuRef.getBoundingClientRect();
-        const nextFocusItem = scrollDown ?
-            document.elementFromPoint(rect.left + 1, rect.top + rect.height - 2) :
-            document.elementFromPoint(rect.left + 1, rect.top + 1);
+        const nextFocusItem = scrollDown
+            ? document.elementFromPoint(rect.left + 1, rect.top + rect.height - 2)
+            : document.elementFromPoint(rect.left + 1, rect.top + 1);
 
         this._focusListItem(nextFocusItem.parentNode);
     }, 200);
@@ -207,7 +204,7 @@ export class Dropdown extends React.Component {
             const focusedIndex = allListItems.indexOf(focusedListItem);
             const nextFocusIndex = focusedIndex + (position === POSITION.NEXT ? 1 : -1);
 
-            if (0 <= nextFocusIndex && (nextFocusIndex <= allListItems.length - 1)) {
+            if (0 <= nextFocusIndex && nextFocusIndex <= allListItems.length - 1) {
                 const nextListItem = allListItems[nextFocusIndex];
                 this._focusListItem(nextListItem);
             }
@@ -232,7 +229,7 @@ export class Dropdown extends React.Component {
                 } else if (listItemRect.bottom > menuRect.bottom) {
                     this.menuRef.scrollTop += listItemRect.bottom - menuRect.bottom;
                 }
-            }, 1000/60);
+            }, 1000 / 60);
         }
     }
 
@@ -292,11 +289,14 @@ export class Dropdown extends React.Component {
         const buttonDisabled = disabled || noOptions;
         const buttonLabel = this._optionToLabel(this.state.selectedOption) || this.props.placeholder;
         const buttonTitle = title || buttonLabel;
-        const menuWidth = this.buttonRef && this.buttonRef.offsetWidth || 0;
+        const menuWidth = (this.buttonRef && this.buttonRef.offsetWidth) || 0;
 
         return (
             <div className={`Dropdown ${openClass} ${extraClass}`} style={style}>
-                <button ref={button => { this.buttonRef = button; }}
+                <button
+                    ref={button => {
+                        this.buttonRef = button;
+                    }}
                     className={`Dropdown-button ${promptClass}`}
                     disabled={buttonDisabled}
                     title={buttonTitle}
@@ -305,55 +305,66 @@ export class Dropdown extends React.Component {
                     {buttonLabel}
                 </button>
 
-                <a ref={thumb => { this.thumbRef = thumb; }}
-                   className="Dropdown-thumb"
-                   onClick={this._onDropdownMouseEvent}
+                <a
+                    ref={thumb => {
+                        this.thumbRef = thumb;
+                    }}
+                    className="Dropdown-thumb"
+                    onClick={this._onDropdownMouseEvent}
                 >
                     <Icon icon="HardwareKeyboardArrowDown" size={16} />
                 </a>
 
-                { this.state.menuOpen &&
-                <FloatingElement
-                    targetElement={this.buttonRef}
-                    positionFunction={positionMenu}
-                    style={{width: menuWidth}}
-                >
-                    <div ref={wrapper => this.wrapperRef = wrapper}>
-                        <ul
-                            ref={list => { this.menuRef = list; }}
-                            className="Dropdown-menu"
-                            onWheel={this._onMenuScrollEvent}
-                        >
-                            { options && options.map((option, index) => {
-                                const selectedClass = this.state.selectedOption === option ? 'Dropdown-menu-item-selected' : '';
-                                const optionLabel = this._optionToLabel(option);
+                {this.state.menuOpen && (
+                    <FloatingElement targetElement={this.buttonRef} positionFunction={positionMenu} style={{ width: menuWidth }}>
+                        <div ref={wrapper => (this.wrapperRef = wrapper)}>
+                            <ul
+                                ref={list => {
+                                    this.menuRef = list;
+                                }}
+                                className="Dropdown-menu"
+                                onWheel={this._onMenuScrollEvent}
+                            >
+                                {options &&
+                                    options.map((option, index) => {
+                                        const selectedClass = this.state.selectedOption === option ? 'Dropdown-menu-item-selected' : '';
+                                        const optionLabel = this._optionToLabel(option);
 
-                                return (
-                                    <li key={index} data-position={index} className={`${selectedClass}`}>
-                                        <a className={`Dropdown-menu-item ${selectedClass}`}
-                                           href="#"
-                                           onClick={event => this._onMenuItemClick(event, option, index)}
-                                        >
-                                            {optionLabel}
-                                        </a>
-                                    </li>
-                                );
-                            })}
-                        </ul>
-                        { footer }
-                    </div>
-                </FloatingElement>
-                }
+                                        return (
+                                            <li key={index} data-position={index} className={`${selectedClass}`}>
+                                                <a
+                                                    className={`Dropdown-menu-item ${selectedClass}`}
+                                                    href="#"
+                                                    onClick={event => this._onMenuItemClick(event, option, index)}
+                                                >
+                                                    {optionLabel}
+                                                </a>
+                                            </li>
+                                        );
+                                    })}
+                            </ul>
+                            {footer}
+                        </div>
+                    </FloatingElement>
+                )}
             </div>
         );
     }
-
 }
 
-const BORDER_OFFSET:number = 2;
+const BORDER_OFFSET: number = 2;
 
 // eslint-disable-next-line max-len, no-unused-vars
-function positionMenu(selfWidth:number, selfHeight:number, targetWidth:number, targetHeight:number, targetLeft:number, targetTop:number, viewportWidth:number, viewportHeight:number) {
+function positionMenu(
+    selfWidth: number,
+    selfHeight: number,
+    targetWidth: number,
+    targetHeight: number,
+    targetLeft: number,
+    targetTop: number,
+    viewportWidth: number,
+    viewportHeight: number
+) {
     return {
         newLeft: targetLeft,
         newTop: targetTop + targetHeight + BORDER_OFFSET,

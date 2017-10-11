@@ -8,7 +8,6 @@ import BbServerFlowManager from './BbServerFlowManager';
 import BbServerApi from './api/BbServerApi';
 
 export default class BbServerScmProvider extends ScmProvider {
-
     manager = null;
 
     getDefaultOption() {

@@ -26,17 +26,8 @@ const LogLine = ({ prefix, line, index, router, location }) => {
     return (
         <p key={index + 1} id={`${prefix}log-${index + 1}`}>
             <div className="log-boxes">
-                <a
-                    className="linenumber"
-                    key={index + 1}
-                    href={`#${prefix || ''}log-${index + 1}`}
-                    name={`${prefix}log-${index + 1}`}
-                    onClick={onClick}
-                >
-                </a>
-                {
-                    React.createElement(Linkify, { className: 'line ansi-color' }, ...lineChunks)
-                }
+                <a className="linenumber" key={index + 1} href={`#${prefix || ''}log-${index + 1}`} name={`${prefix}log-${index + 1}`} onClick={onClick} />
+                {React.createElement(Linkify, { className: 'line ansi-color' }, ...lineChunks)}
             </div>
         </p>
     );
@@ -51,7 +42,6 @@ LogLine.propTypes = {
 };
 
 export class LogConsole extends Component {
-
     constructor(props) {
         super(props);
         this.queuedLines = [];
@@ -71,7 +61,8 @@ export class LogConsole extends Component {
     }
 
     // componentWillReceiveProps does not return anything and return null is an early out, so disable lint complaining
-    componentWillReceiveProps(nextProps) { // eslint-disable-line
+    componentWillReceiveProps(nextProps) {
+        // eslint-disable-line
         logger.debug('newProps isArray', Array.isArray(nextProps.logArray));
         // We need a shallow copy of the ObservableArray to "cast" it down to normal array
         const newArray = nextProps.logArray !== undefined && nextProps.logArray.slice();
@@ -163,33 +154,31 @@ export class LogConsole extends Component {
         }
         logger.debug('render lines length', lines.length);
 
+        return (
+            <div className="log-wrapper">
+                {isLoading && (
+                    <div className="loadingContainer" id={`${prefix}log-${0}`}>
+                        <Progress />
+                    </div>
+                )}
 
-        return (<div className="log-wrapper">
-            {isLoading && <div className="loadingContainer" id={`${prefix}log-${0}`}>
-                <Progress />
-            </div>}
-
-            {!isLoading && <div className="log-body"><pre>
-                {hasMore && <div key={0} id={`${prefix}log-${0}`} className="fullLog">
-                    <a className="btn-link inverse"
-                       key={0}
-                       target="_blank"
-                       href={`${currentLogUrl}?start=0`}
-                    >
-                        {t('Show.complete.logs')}
-                    </a>
-                </div>}
-                {!isLoading && lines.map((line, index) => (
-                    <LogLine prefix={prefix}
-                             index={index}
-                             line={line}
-                             router={router}
-                             location={location} />
-                ))}
-            </pre>
-            </div>}
-
-        </div>);
+                {!isLoading && (
+                    <div className="log-body">
+                        <pre>
+                            {hasMore && (
+                                <div key={0} id={`${prefix}log-${0}`} className="fullLog">
+                                    <a className="btn-link inverse" key={0} target="_blank" href={`${currentLogUrl}?start=0`}>
+                                        {t('Show.complete.logs')}
+                                    </a>
+                                </div>
+                            )}
+                            {!isLoading &&
+                                lines.map((line, index) => <LogLine prefix={prefix} index={index} line={line} router={router} location={location} />)}
+                        </pre>
+                    </div>
+                )}
+            </div>
+        );
     }
 }
 

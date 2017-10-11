@@ -1,4 +1,3 @@
-
 import { observable, action, asMap } from 'mobx';
 export class DataBunker {
     @observable _data = asMap();

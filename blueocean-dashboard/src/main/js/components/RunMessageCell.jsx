@@ -43,7 +43,6 @@ export default class RunMessageCell extends Component {
             const commitMsg = run.changeSet[run.changeSet.length - 1].msg;
 
             if (run.changeSet.length > 1) {
-
                 const { changesUrl } = this.props;
 
                 return (
@@ -66,16 +65,22 @@ export default class RunMessageCell extends Component {
         } else if (showCauses) {
             // Last cause is always more significant than the first
             const cause = run.causes[run.causes.length - 1].shortDescription;
-            const linkedCauseMsg = (<Link to={linkTo} className="unstyled-link">{cause}</Link>);
+            const linkedCauseMsg = (
+                <Link to={linkTo} className="unstyled-link">
+                    {cause}
+                </Link>
+            );
             return (
                 <span className="RunMessageCell" title={cause}>
-                    <span className="RunMessageCellInner">
-                        {linkedCauseMsg}
-                    </span>
+                    <span className="RunMessageCellInner">{linkedCauseMsg}</span>
                 </span>
             );
         } else {
-            message = (<span className="RunMessageCell"><span className="RunMessageCellInner">–</span></span>);
+            message = (
+                <span className="RunMessageCell">
+                    <span className="RunMessageCellInner">–</span>
+                </span>
+            );
         }
         return message;
     }

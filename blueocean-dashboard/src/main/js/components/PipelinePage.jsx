@@ -1,12 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import Extensions from '@jenkins-cd/js-extensions';
-import {
-    ExpandablePath,
-    Page,
-    TabLink,
-    WeatherIcon,
-} from '@jenkins-cd/design-language';
+import { ExpandablePath, Page, TabLink, WeatherIcon } from '@jenkins-cd/design-language';
 import { AppConfig, ContentPageHeader, i18nTranslator, logging, NotFound, Paths, Security } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from '@jenkins-cd/design-language';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
@@ -18,10 +13,14 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.PipelinePage');
 
 const RestPaths = Paths.rest;
 
-const classicConfigLink = (pipeline) => {
+const classicConfigLink = pipeline => {
     let link = null;
     if (Security.permit(pipeline).configure()) {
-        link = <a href={buildClassicConfigUrl(pipeline)} target="_blank"><Icon size={24} icon="ActionSettings" style={{ verticalAlign: 'baseline' }} /></a>;
+        link = (
+            <a href={buildClassicConfigUrl(pipeline)} target="_blank">
+                <Icon size={24} icon="ActionSettings" style={{ verticalAlign: 'baseline' }} />
+            </a>
+        );
     }
     return link;
 };
@@ -30,8 +29,6 @@ const translate = i18nTranslator('blueocean-dashboard');
 
 @observer
 export class PipelinePage extends Component {
-
-
     componentWillMount() {
         if (this.props.params) {
             this.href = RestPaths.pipeline(this.props.params.organization, this.props.params.pipeline);
@@ -45,7 +42,6 @@ export class PipelinePage extends Component {
     _setError(error) {
         this.error = error;
     }
-
 
     render() {
         const pipeline = this.context.pipelineService.getPipeline(this.href);
@@ -77,41 +73,43 @@ export class PipelinePage extends Component {
         const trendsEnabled = AppConfig.isFeatureEnabled('trends');
 
         const pageTabLinks = [
-            <TabLink to="/activity">{ translate('pipelinedetail.common.tab.activity', { defaultValue: 'Activity' }) }</TabLink>,
-            <TabLink to="/branches">{ translate('pipelinedetail.common.tab.branches', { defaultValue: 'Branches' }) }</TabLink>,
-            <TabLink to="/pr">{ translate('pipelinedetail.common.tab.pullrequests', { defaultValue: 'Pull Requests' }) }</TabLink>,
-            trendsEnabled && <TabLink to="/trends">{ translate('pipelinedetail.common.tab.trends', { defaultValue: 'Trends' }) }</TabLink>,
+            <TabLink to="/activity">{translate('pipelinedetail.common.tab.activity', { defaultValue: 'Activity' })}</TabLink>,
+            <TabLink to="/branches">{translate('pipelinedetail.common.tab.branches', { defaultValue: 'Branches' })}</TabLink>,
+            <TabLink to="/pr">{translate('pipelinedetail.common.tab.pullrequests', { defaultValue: 'Pull Requests' })}</TabLink>,
+            trendsEnabled && <TabLink to="/trends">{translate('pipelinedetail.common.tab.trends', { defaultValue: 'Trends' })}</TabLink>,
         ];
 
         const pageHeader = isReady ? (
-                <ContentPageHeader pageTabBase={baseUrl} pageTabLinks={pageTabLinks}>
-                    <WeatherIcon score={pipeline.weatherScore} />
-                    <h1>
-                        {AppConfig.showOrg() && <span><Link to={orgUrl} query={location.query}>{organizationDisplayName}</Link>
-                            <span>&nbsp;/&nbsp;</span></span>}
-                            <Link to={activityUrl} query={location.query}>
-                                <ExpandablePath path={fullDisplayName} hideFirst className="dark-theme" iconSize={20} />
+            <ContentPageHeader pageTabBase={baseUrl} pageTabLinks={pageTabLinks}>
+                <WeatherIcon score={pipeline.weatherScore} />
+                <h1>
+                    {AppConfig.showOrg() && (
+                        <span>
+                            <Link to={orgUrl} query={location.query}>
+                                {organizationDisplayName}
                             </Link>
-                    </h1>
-                    <Extensions.Renderer
-                        extensionPoint="jenkins.pipeline.detail.header.action"
-                        store={this.context.store}
-                        pipeline={pipeline}
-                    />
-                    {classicConfigLink(pipeline)}
-                </ContentPageHeader>
-            ) : (
-                <ContentPageHeader pageTabBase={baseUrl} pageTabLinks={pageTabLinks}>
-                    <h1>
-                        <Link to={orgUrl}>{organizationDisplayName}</Link>
-                        <span> / </span>
-                    </h1>
-                </ContentPageHeader>
-            );
+                            <span>&nbsp;/&nbsp;</span>
+                        </span>
+                    )}
+                    <Link to={activityUrl} query={location.query}>
+                        <ExpandablePath path={fullDisplayName} hideFirst className="dark-theme" iconSize={20} />
+                    </Link>
+                </h1>
+                <Extensions.Renderer extensionPoint="jenkins.pipeline.detail.header.action" store={this.context.store} pipeline={pipeline} />
+                {classicConfigLink(pipeline)}
+            </ContentPageHeader>
+        ) : (
+            <ContentPageHeader pageTabBase={baseUrl} pageTabLinks={pageTabLinks}>
+                <h1>
+                    <Link to={orgUrl}>{organizationDisplayName}</Link>
+                    <span> / </span>
+                </h1>
+            </ContentPageHeader>
+        );
 
         return (
             <Page>
-                { pageHeader }
+                {pageHeader}
                 {isReady && React.cloneElement(this.props.children, { pipeline, setTitle, t: translate, locale: translate.lng })}
             </Page>
         );
@@ -125,7 +123,6 @@ PipelinePage.propTypes = {
     setTitle: PropTypes.func,
 };
 
-
 PipelinePage.contextTypes = {
     config: PropTypes.object.isRequired,
     location: PropTypes.object,
@@ -134,4 +131,3 @@ PipelinePage.contextTypes = {
 };
 
 export default documentTitle(PipelinePage);
-

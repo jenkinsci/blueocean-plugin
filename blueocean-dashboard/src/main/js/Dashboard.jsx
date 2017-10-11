@@ -1,18 +1,10 @@
 import React, { Component, PropTypes } from 'react';
 import { pipelineService, activityService } from '@jenkins-cd/blueocean-core-js';
 
-import {
-    actions,
-    allPipelines as allPipelinesSelector,
-    organizationPipelines as organizationPipelinesSelector,
-    connect,
-    createSelector,
-} from './redux';
+import { actions, allPipelines as allPipelinesSelector, organizationPipelines as organizationPipelinesSelector, connect, createSelector } from './redux';
 import navState from './DashboardNavState';
 
-
 class Dashboard extends Component {
-
     constructor(props) {
         super(props);
         this._context = {};
@@ -52,7 +44,9 @@ Dashboard.childContextTypes = {
     activityService: PropTypes.object,
 };
 
-const selectors = createSelector([allPipelinesSelector, organizationPipelinesSelector],
-    (allPipelines, organizationPipelines) => ({ allPipelines, organizationPipelines }));
+const selectors = createSelector([allPipelinesSelector, organizationPipelinesSelector], (allPipelines, organizationPipelines) => ({
+    allPipelines,
+    organizationPipelines,
+}));
 
 export default connect(selectors, actions)(Dashboard);

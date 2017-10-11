@@ -6,7 +6,6 @@ import config from '../urlconfig';
 import utils from '../utils';
 
 export class RunApi {
-
     startRun(item) {
         const path = config.getJenkinsRootURL();
         const runUrl = utils.cleanSlashes(`${path}/${item._links.self.href}/runs/`);
@@ -50,5 +49,4 @@ export class RunApi {
 
         return Fetch.fetchJSON(replayPipelineUrl, { fetchOptions });
     }
-
 }

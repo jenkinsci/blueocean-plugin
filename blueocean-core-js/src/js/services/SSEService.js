@@ -9,9 +9,13 @@ export class SSEService {
 
     _initListeners() {
         if (!this.jobListener) {
-            this.jobListener = this.connection.subscribe('job', (event) => {
-                this._handleJobEvent(event);
-            }, { jenkins_org: AppConfig.getOrganizationName() });
+            this.jobListener = this.connection.subscribe(
+                'job',
+                event => {
+                    this._handleJobEvent(event);
+                },
+                { jenkins_org: AppConfig.getOrganizationName() }
+            );
         }
     }
 

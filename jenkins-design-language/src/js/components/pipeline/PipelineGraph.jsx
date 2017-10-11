@@ -11,14 +11,7 @@ import { layoutGraph } from './PipelineGraphLayout';
 
 import { MATRIOSKA_PATHS } from './PipelineGraphModel';
 
-import type {
-    NodeColumn,
-    NodeInfo,
-    LabelInfo,
-    LayoutInfo,
-    StageInfo,
-    CompositeConnection,
-} from './PipelineGraphModel';
+import type { NodeColumn, NodeInfo, LabelInfo, LayoutInfo, StageInfo, CompositeConnection } from './PipelineGraphModel';
 
 type SVGChildren = Array<any>; // Fixme: Maybe refine this?
 
@@ -26,7 +19,7 @@ type Props = {
     stages: Array<StageInfo>,
     layout: LayoutInfo,
     onNodeClick: (nodeName: string, id: string) => void,
-    selectedStage: StageInfo
+    selectedStage: StageInfo,
 };
 
 // Generate a react key for a connection
@@ -35,7 +28,6 @@ function connectorKey(leftNode, rightNode) {
 }
 
 export class PipelineGraph extends Component {
-
     // Flow typedefs
     state: {
         nodeColumns: Array<NodeColumn>,
@@ -45,7 +37,7 @@ export class PipelineGraph extends Component {
         measuredWidth: number,
         measuredHeight: number,
         layout: LayoutInfo,
-        selectedStage: StageInfo
+        selectedStage: StageInfo,
     };
 
     constructor(props: Props) {
@@ -67,7 +59,6 @@ export class PipelineGraph extends Component {
     }
 
     componentWillReceiveProps(nextProps: Props) {
-
         let newState = null; // null == no new state
         let needsLayout = false;
 
@@ -110,13 +101,7 @@ export class PipelineGraph extends Component {
      * Generate the Component for a big label
      */
     renderBigLabel(details: LabelInfo) {
-
-        const {
-            nodeSpacingH,
-            labelOffsetV,
-            connectorStrokeWidth,
-            ypStart,
-        } = this.state.layout;
+        const { nodeSpacingH, labelOffsetV, connectorStrokeWidth, ypStart } = this.state.layout;
 
         const labelWidth = nodeSpacingH - connectorStrokeWidth * 2;
         const labelHeight = ypStart - labelOffsetV;
@@ -145,24 +130,20 @@ export class PipelineGraph extends Component {
             classNames.push('selected');
         }
 
-        return <TruncatingLabel className={classNames.join(' ')} style={style} key={details.key}>{details.text}</TruncatingLabel>;
+        return (
+            <TruncatingLabel className={classNames.join(' ')} style={style} key={details.key}>
+                {details.text}
+            </TruncatingLabel>
+        );
     }
 
     /**
      * Generate the Component for a small label
      */
     renderSmallLabel(details: LabelInfo) {
+        const { nodeSpacingH, nodeSpacingV, curveRadius, connectorStrokeWidth, nodeRadius, smallLabelOffsetV } = this.state.layout;
 
-        const {
-            nodeSpacingH,
-            nodeSpacingV,
-            curveRadius,
-            connectorStrokeWidth,
-            nodeRadius,
-            smallLabelOffsetV,
-        } = this.state.layout;
-
-        const smallLabelWidth = Math.floor(nodeSpacingH - (2 * curveRadius) - (2 * connectorStrokeWidth)); // Fit between lines
+        const smallLabelWidth = Math.floor(nodeSpacingH - 2 * curveRadius - 2 * connectorStrokeWidth); // Fit between lines
         const smallLabelHeight = Math.floor(nodeSpacingV - smallLabelOffsetV - nodeRadius - nodeStrokeWidth);
         const smallLabelOffsetH = Math.floor(smallLabelWidth * -0.5);
 
@@ -198,11 +179,7 @@ export class PipelineGraph extends Component {
      * components to the elements list.
      */
     renderCompositeConnection(connection: CompositeConnection, elements: SVGChildren) {
-        const {
-            sourceNodes,
-            destinationNodes,
-            skippedNodes,
-        } = connection;
+        const { sourceNodes, destinationNodes, skippedNodes } = connection;
 
         if (skippedNodes.length === 0) {
             // Nothing too complicated, use the original connection drawing code
@@ -218,7 +195,6 @@ export class PipelineGraph extends Component {
      * Adds all the SVG components to the elements list.
      */
     renderBasicConnections(sourceNodes: Array<NodeInfo>, destinationNodes: Array<NodeInfo>, elements: SVGChildren) {
-
         const { connectorStrokeWidth, nodeSpacingH } = this.state.layout;
         const halfSpacingH = nodeSpacingH / 2;
 
@@ -254,7 +230,7 @@ export class PipelineGraph extends Component {
 
         // Collapse from previous node(s) to top column node
         for (const previousNode of sourceNodes.slice(1)) {
-            const midPointX = Math.round((MATRIOSKA_PATHS ? previousNode.x : rightmostSource ) + halfSpacingH);
+            const midPointX = Math.round((MATRIOSKA_PATHS ? previousNode.x : rightmostSource) + halfSpacingH);
             // console.log('collapse from',previousNode.name,'to',destinationNodes[0].name, 'mpx', midPointX); // TODO: RM
             this.renderBasicCurvedConnection(previousNode, destinationNodes[0], midPointX, elements);
         }
@@ -272,19 +248,8 @@ export class PipelineGraph extends Component {
      *
      * Adds all the SVG components to the elements list.
      */
-    renderSkippingConnections(sourceNodes: Array<NodeInfo>,
-                              destinationNodes: Array<NodeInfo>,
-                              skippedNodes: Array<NodeInfo>,
-                              elements: SVGChildren) {
-
-        const {
-            connectorStrokeWidth,
-            nodeRadius,
-            terminalRadius,
-            curveRadius,
-            nodeSpacingV,
-            nodeSpacingH,
-        } = this.state.layout;
+    renderSkippingConnections(sourceNodes: Array<NodeInfo>, destinationNodes: Array<NodeInfo>, skippedNodes: Array<NodeInfo>, elements: SVGChildren) {
+        const { connectorStrokeWidth, nodeRadius, terminalRadius, curveRadius, nodeSpacingV, nodeSpacingH } = this.state.layout;
 
         const halfSpacingH = nodeSpacingH / 2;
 
@@ -333,20 +298,18 @@ export class PipelineGraph extends Component {
         rightNode = skippedNodes[0];
 
         for (leftNode of sourceNodes.slice(1)) {
-            const midPointX = Math.round((MATRIOSKA_PATHS ? leftNode.x : rightmostSource ) + halfSpacingH);
+            const midPointX = Math.round((MATRIOSKA_PATHS ? leftNode.x : rightmostSource) + halfSpacingH);
             const leftNodeRadius = leftNode.isPlaceholder ? terminalRadius : nodeRadius;
             const key = connectorKey(leftNode, rightNode);
 
-            const x1 = leftNode.x + leftNodeRadius - (nodeStrokeWidth / 2);
+            const x1 = leftNode.x + leftNodeRadius - nodeStrokeWidth / 2;
             const y1 = leftNode.y;
             const x2 = midPointX;
             const y2 = rightNode.y;
 
             const pathData = `M ${x1} ${y1}` + this.svgCurve(x1, y1, x2, y2, midPointX, curveRadius);
 
-            elements.push(
-                <path {...connectorStroke} key={key} d={pathData} fill="none" />,
-            );
+            elements.push(<path {...connectorStroke} key={key} d={pathData} fill="none" />);
         }
 
         //--------------------------------------------------------------------------
@@ -356,20 +319,18 @@ export class PipelineGraph extends Component {
         rightNode = destinationNodes[0];
 
         for (rightNode of destinationNodes.slice(1)) {
-            const midPointX = Math.round((MATRIOSKA_PATHS ? rightNode.x : leftmostDestination ) - halfSpacingH);
+            const midPointX = Math.round((MATRIOSKA_PATHS ? rightNode.x : leftmostDestination) - halfSpacingH);
             const rightNodeRadius = rightNode.isPlaceholder ? terminalRadius : nodeRadius;
             const key = connectorKey(leftNode, rightNode);
 
             const x1 = midPointX;
             const y1 = leftNode.y;
-            const x2 = rightNode.x - rightNodeRadius + (nodeStrokeWidth / 2);
+            const x2 = rightNode.x - rightNodeRadius + nodeStrokeWidth / 2;
             const y2 = rightNode.y;
 
             const pathData = `M ${x1} ${y1}` + this.svgCurve(x1, y1, x2, y2, midPointX, curveRadius);
 
-            elements.push(
-                <path {...connectorStroke} key={key} d={pathData} fill="none" />,
-            );
+            elements.push(<path {...connectorStroke} key={key} d={pathData} fill="none" />);
         }
 
         //--------------------------------------------------------------------------
@@ -389,7 +350,7 @@ export class PipelineGraph extends Component {
         const inflectiontOffset = Math.round(skipHeight * 0.7071); // cos(45º)-ish
 
         // Start point
-        const p1x = leftNode.x + leftNodeRadius - (nodeStrokeWidth / 2);
+        const p1x = leftNode.x + leftNodeRadius - nodeStrokeWidth / 2;
         const p1y = leftNode.y;
 
         // Begin curve down point
@@ -433,7 +394,7 @@ export class PipelineGraph extends Component {
         const c7y = p6y - controlOffsetMid;
 
         // End point
-        const p8x = rightNode.x - rightNodeRadius + (nodeStrokeWidth / 2);
+        const p8x = rightNode.x - rightNodeRadius + nodeStrokeWidth / 2;
         const p8y = rightNode.y;
 
         const pathData =
@@ -456,26 +417,17 @@ export class PipelineGraph extends Component {
      * Adds all the SVG components to the elements list.
      */
     renderHorizontalConnection(leftNode: NodeInfo, rightNode: NodeInfo, connectorStroke: Object, elements: SVGChildren) {
-
         const { nodeRadius, terminalRadius } = this.state.layout;
         const leftNodeRadius = leftNode.isPlaceholder ? terminalRadius : nodeRadius;
         const rightNodeRadius = rightNode.isPlaceholder ? terminalRadius : nodeRadius;
 
         const key = connectorKey(leftNode, rightNode);
 
-        const x1 = leftNode.x + leftNodeRadius - (nodeStrokeWidth / 2);
-        const x2 = rightNode.x - rightNodeRadius + (nodeStrokeWidth / 2);
+        const x1 = leftNode.x + leftNodeRadius - nodeStrokeWidth / 2;
+        const x2 = rightNode.x - rightNodeRadius + nodeStrokeWidth / 2;
         const y = leftNode.y;
 
-        elements.push(
-            <line {...connectorStroke}
-                  key={key}
-                  x1={x1}
-                  y1={y}
-                  x2={x2}
-                  y2={y}
-            />,
-        );
+        elements.push(<line {...connectorStroke} key={key} x1={x1} y1={y} x2={x2} y2={y} />);
     }
 
     /**
@@ -491,12 +443,12 @@ export class PipelineGraph extends Component {
         const key = connectorKey(leftNode, rightNode);
 
         const leftPos = {
-            x: leftNode.x + leftNodeRadius - (nodeStrokeWidth / 2),
+            x: leftNode.x + leftNodeRadius - nodeStrokeWidth / 2,
             y: leftNode.y,
         };
 
         const rightPos = {
-            x: rightNode.x - rightNodeRadius + (nodeStrokeWidth / 2),
+            x: rightNode.x - rightNodeRadius + nodeStrokeWidth / 2,
             y: rightNode.y,
         };
 
@@ -506,12 +458,9 @@ export class PipelineGraph extends Component {
             strokeWidth: connectorStrokeWidth,
         };
 
-        const pathData = `M ${leftPos.x} ${leftPos.y}` +
-            this.svgCurve(leftPos.x, leftPos.y, rightPos.x, rightPos.y, midPointX, curveRadius);
+        const pathData = `M ${leftPos.x} ${leftPos.y}` + this.svgCurve(leftPos.x, leftPos.y, rightPos.x, rightPos.y, midPointX, curveRadius);
 
-        elements.push(
-            <path {...connectorStroke} key={key} d={pathData} fill="none" />,
-        );
+        elements.push(<path {...connectorStroke} key={key} d={pathData} fill="none" />);
     }
 
     /**
@@ -519,17 +468,17 @@ export class PipelineGraph extends Component {
      */
     svgCurve(x1: number, y1: number, x2: number, y2: number, midPointX: number, curveRadius: number) {
         const verticalDirection = Math.sign(y2 - y1); // 1 == curve down, -1 == curve up
-        const w1 = midPointX - curveRadius - x1 + (curveRadius * verticalDirection);
-        const w2 = x2 - curveRadius - midPointX - (curveRadius * verticalDirection);
-        const v = y2 - y1 - (2 * curveRadius * verticalDirection); // Will be -ive if curve up
+        const w1 = midPointX - curveRadius - x1 + curveRadius * verticalDirection;
+        const w2 = x2 - curveRadius - midPointX - curveRadius * verticalDirection;
+        const v = y2 - y1 - 2 * curveRadius * verticalDirection; // Will be -ive if curve up
         const cv = verticalDirection * curveRadius;
 
         return (
-            ` l ${w1} 0` // first horizontal line
-            + ` c ${curveRadius} 0 ${curveRadius} ${cv} ${curveRadius} ${cv}`  // turn
-            + ` l 0 ${v}` // vertical line
-            + ` c 0 ${cv} ${curveRadius} ${cv} ${curveRadius} ${cv}` // turn again
-            + ` l ${w2} 0` // second horizontal line
+            ` l ${w1} 0` + // first horizontal line
+            ` c ${curveRadius} 0 ${curveRadius} ${cv} ${curveRadius} ${cv}` + // turn
+            ` l 0 ${v}` + // vertical line
+            ` c 0 ${cv} ${curveRadius} ${cv} ${curveRadius} ${cv}` + // turn again
+            ` l ${w2} 0` // second horizontal line
         );
     }
 
@@ -539,7 +488,6 @@ export class PipelineGraph extends Component {
      * Adds all the SVG components to the elements list.
      */
     renderNode(node: NodeInfo, elements: SVGChildren) {
-
         let nodeIsSelected = false;
         const { nodeRadius, connectorStrokeWidth, terminalRadius } = this.state.layout;
         const key = node.key;
@@ -547,9 +495,7 @@ export class PipelineGraph extends Component {
         const groupChildren = [];
 
         if (node.isPlaceholder === true) {
-            groupChildren.push(
-                <circle r={terminalRadius} className="pipeline-node-terminal" />,
-            );
+            groupChildren.push(<circle r={terminalRadius} className="pipeline-node-terminal" />);
         } else {
             const { completePercent = 0, title, state } = node.stage;
             const resultClean = decodeResultValue(state);
@@ -574,11 +520,7 @@ export class PipelineGraph extends Component {
         // Add an invisible click/touch/mouseover target, coz the nodes are small and (more importantly)
         // many are hollow.
         groupChildren.push(
-            <circle r={nodeRadius + (2 * connectorStrokeWidth)}
-                    className="pipeline-node-hittarget"
-                    fillOpacity="0"
-                    stroke="none"
-                    {...clickableProps} />,
+            <circle r={nodeRadius + 2 * connectorStrokeWidth} className="pipeline-node-hittarget" fillOpacity="0" stroke="none" {...clickableProps} />
         );
 
         // Most of the nodes are in shared code, so they're rendered at 0,0. We transform with a <g> to position them
@@ -597,9 +539,8 @@ export class PipelineGraph extends Component {
      * Adds all the SVG components to the elements list.
      */
     renderSelectionHighlight(elements: SVGChildren) {
-
         const { nodeRadius, connectorStrokeWidth } = this.state.layout;
-        const highlightRadius = nodeRadius + (0.49 * connectorStrokeWidth);
+        const highlightRadius = nodeRadius + 0.49 * connectorStrokeWidth;
         let selectedNode = null;
 
         columnLoop: for (const column of this.state.nodeColumns) {
@@ -619,11 +560,10 @@ export class PipelineGraph extends Component {
             elements.push(
                 <g className="pipeline-selection-highlight" transform={transform} key="selection-highlight">
                     <circle r={highlightRadius} strokeWidth={connectorStrokeWidth * 1.1} />
-                </g>,
+                </g>
             );
         }
     }
-
 
     /**
      * Is this stage currently selected?
@@ -671,19 +611,12 @@ export class PipelineGraph extends Component {
     }
 
     render() {
-        const {
-            nodeColumns = [],
-            connections = [],
-            bigLabels = [],
-            smallLabels = [],
-            measuredWidth,
-            measuredHeight,
-        } = this.state;
+        const { nodeColumns = [], connections = [], bigLabels = [], smallLabels = [], measuredWidth, measuredHeight } = this.state;
 
         // Without these we get fire, so they're hardcoded
         const outerDivStyle = {
             position: 'relative', // So we can put the labels where we need them
-            overflow: 'visible' // So long labels can escape this component in layout
+            overflow: 'visible', // So long labels can escape this component in layout
         };
 
         const visualElements = []; // Buffer for children of the SVG

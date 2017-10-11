@@ -17,7 +17,6 @@ const translate = i18nTranslator('blueocean-dashboard');
 
 @observer
 export class Pipelines extends Component {
-
     state = {
         actionExtensionCount: 0,
     };
@@ -61,14 +60,14 @@ export class Pipelines extends Component {
     // Figure out how many extensions we have for the action buttons column so we can size it appropriately
     _countExtensions() {
         Extensions.store.getExtensions('jenkins.pipeline.list.action', extensions => {
-            const count = extensions && typeof(extensions.length) === 'number' ? extensions.length : 0;
+            const count = extensions && typeof extensions.length === 'number' ? extensions.length : 0;
             if (count !== this.state.actionExtensionCount) {
                 this.setState({ actionExtensionCount: count });
             }
         });
     }
 
-    handleKeyDownEvent = (event) => {
+    handleKeyDownEvent = event => {
         if (document.activeElement !== this.getSearchInput()) {
             if (event.key === 't') {
                 this.getSearchInput().focus();
@@ -79,7 +78,7 @@ export class Pipelines extends Component {
                 this.clearSearchInputText();
             }
         }
-    }
+    };
 
     render() {
         const { organization } = this.context.params;
@@ -91,11 +90,7 @@ export class Pipelines extends Component {
         this.pager = this.context.pipelineService.pipelinesPager(organizationName, searchText);
         const pipelines = this.pager.data;
 
-        const orgLink = organizationName ? (
-            <Link to={ `organizations/${organizationName}` }>
-                { organizationDisplayName }
-            </Link>
-        ) : '';
+        const orgLink = organizationName ? <Link to={`organizations/${organizationName}`}>{organizationDisplayName}</Link> : '';
 
         const showPipelineList = pipelines && pipelines.length > 0;
         const showEmptyState = !this.pager.pending && !this.getSearchText() && (!pipelines || !pipelines.length);
@@ -113,16 +108,12 @@ export class Pipelines extends Component {
             JTable.column(actionExtensionCount * 24, ''),
         ];
 
-        const pipelineRows = pipelines && pipelines.map(pipeline => {
-            const key = pipeline._links.self.href;
-            return (
-                <PipelineRowItem
-                    t={ translate }
-                    key={ key } pipeline={ pipeline }
-                    showOrganization={ AppConfig.showOrg() && !organizationName }
-                />
-            );
-        });
+        const pipelineRows =
+            pipelines &&
+            pipelines.map(pipeline => {
+                const key = pipeline._links.self.href;
+                return <PipelineRowItem t={translate} key={key} pipeline={pipeline} showOrganization={AppConfig.showOrg() && !organizationName} />;
+            });
 
         this.props.setTitle('Jenkins');
 
@@ -132,11 +123,9 @@ export class Pipelines extends Component {
                     <div className="u-flex-grow">
                         <Extensions.Renderer extensionPoint="jenkins.pipeline.header">
                             <h1>
-                                <Link to="/">
-                                    { translate('home.header.dashboard', { defaultValue: 'Dashboard' }) }
-                                </Link>
-                                { AppConfig.showOrg() && organizationName && ' / ' }
-                                { AppConfig.showOrg() && organizationName && orgLink }
+                                <Link to="/">{translate('home.header.dashboard', { defaultValue: 'Dashboard' })}</Link>
+                                {AppConfig.showOrg() && organizationName && ' / '}
+                                {AppConfig.showOrg() && organizationName && orgLink}
                             </h1>
                         </Extensions.Renderer>
 
@@ -144,7 +133,14 @@ export class Pipelines extends Component {
                             <div className="TextInput-icon u-icon-left">
                                 <Icon icon="ActionSearch" />
                             </div>
-                            <input className="fastsearch-input TextInput-control" value={this.state.searchText} placeholder="Search pipelines..." onChange={(e) => {this.onChange(e.target.value ? e.target.value : '');}} />
+                            <input
+                                className="fastsearch-input TextInput-control"
+                                value={this.state.searchText}
+                                placeholder="Search pipelines..."
+                                onChange={e => {
+                                    this.onChange(e.target.value ? e.target.value : '');
+                                }}
+                            />
                             <div className="TextInput-icon clear-icon-container" onClick={this.clearSearchInputText}>
                                 <Icon icon="ContentClear" />
                             </div>
@@ -156,26 +152,24 @@ export class Pipelines extends Component {
                 </ContentPageHeader>
                 <main>
                     <article>
-                        {!this.getSearchText() &&
-                            <Extensions.Renderer
-                                extensionPoint="jenkins.pipeline.list.top"
-                                store={ this.context.store }
-                                router={ this.context.router }
-                            />
-                        }
-                        { showEmptyState && <DashboardPlaceholder t={translate} /> }
-                        { !this.pager.pending && !pipelines.length && this.getSearchText() &&
-                            <div className="no-search-results-container">
-                                There are no pipelines that match <i>{this.getSearchText()}</i>
-                            </div>
-                        }
-                        { showPipelineList && (
-                            <JTable className="pipelines-table" columns={ columns } >
+                        {!this.getSearchText() && (
+                            <Extensions.Renderer extensionPoint="jenkins.pipeline.list.top" store={this.context.store} router={this.context.router} />
+                        )}
+                        {showEmptyState && <DashboardPlaceholder t={translate} />}
+                        {!this.pager.pending &&
+                            !pipelines.length &&
+                            this.getSearchText() && (
+                                <div className="no-search-results-container">
+                                    There are no pipelines that match <i>{this.getSearchText()}</i>
+                                </div>
+                            )}
+                        {showPipelineList && (
+                            <JTable className="pipelines-table" columns={columns}>
                                 <TableHeaderRow />
-                                { pipelineRows }
+                                {pipelineRows}
                             </JTable>
                         )}
-                        { (pipelines || this.pager.pending) && <ShowMoreButton pager={this.pager} /> }
+                        {(pipelines || this.pager.pending) && <ShowMoreButton pager={this.pager} />}
                     </article>
                 </main>
             </Page>

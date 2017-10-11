@@ -9,7 +9,6 @@ import NoTestsPlaceholder from './testing/NoTestsPlaceholder';
  * Displays a list of tests from the supplied build run property.
  */
 export default class RunDetailsTests extends Component {
-
     propTypes = {
         params: PropTypes.object,
         pipeline: PropTypes.object,
@@ -35,19 +34,12 @@ export default class RunDetailsTests extends Component {
         if (this.props.result.testSummary.total || this.props.result.testSummary.total > 0) {
             result = (
                 <div className="test-results-container">
-                    <TestResults
-                        locale={locale}
-                        t={t}
-                        pipeline={this.props.pipeline}
-                        run={this.props.result}
-                        testService={this.testService}
-                    />
+                    <TestResults locale={locale} t={t} pipeline={this.props.pipeline} run={this.props.result} testService={this.testService} />
                 </div>
             );
         } else {
-            result = (<NoTestsPlaceholder t={this.props.t} />);
+            result = <NoTestsPlaceholder t={this.props.t} />;
         }
         return result;
     }
 }
-

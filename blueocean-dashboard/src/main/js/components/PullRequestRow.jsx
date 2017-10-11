@@ -7,11 +7,7 @@ import RunHistoryButton from './RunHistoryButton';
 
 function noRun(pr, openRunDetails, t, columns) {
     const actions = [
-        <RunButton className="icon-button"
-                   runnable={pr}
-                   latestRun={pr.latestRun}
-                   onNavigation={openRunDetails}
-        />,
+        <RunButton className="icon-button" runnable={pr} latestRun={pr.latestRun} onNavigation={openRunDetails} />,
 
         <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" {...t} />,
     ];
@@ -29,19 +25,8 @@ function noRun(pr, openRunDetails, t, columns) {
 }
 
 export class PullRequestRowRenderer extends Component {
-
     render() {
-        const {
-            columns,
-            runDetailsUrl,
-            pipelineName,
-            statusIndicator,
-            pullRequestId,
-            summary,
-            author,
-            completed,
-            actions = [],
-        } = this.props;
+        const { columns, runDetailsUrl, pipelineName, statusIndicator, pullRequestId, summary, author, completed, actions = [] } = this.props;
 
         const dataProps = {
             'data-pipeline': pipelineName,
@@ -56,16 +41,17 @@ export class PullRequestRowRenderer extends Component {
             {
                 className: 'TableCell--actions',
             },
-            ...actions);
+            ...actions
+        );
 
         return (
             <TableRow columns={columns} linkTo={runDetailsUrl} {...dataProps}>
-                <TableCell>{ statusIndicator }</TableCell>
-                <TableCell>{ pullRequestId || ' - ' }</TableCell>
-                <TableCell>{ summary || ' - ' }</TableCell>
-                <TableCell>{ author || ' - ' }</TableCell>
-                <TableCell>{ completed || ' - ' }</TableCell>
-                { actionsCell }
+                <TableCell>{statusIndicator}</TableCell>
+                <TableCell>{pullRequestId || ' - '}</TableCell>
+                <TableCell>{summary || ' - '}</TableCell>
+                <TableCell>{author || ' - '}</TableCell>
+                <TableCell>{completed || ' - '}</TableCell>
+                {actionsCell}
             </TableRow>
         );
     }
@@ -84,7 +70,6 @@ PullRequestRowRenderer.propTypes = {
 };
 
 export default class PullRequestRow extends Component {
-
     // The number of hardcoded actions not provided by extensions
     static actionItemsCount = 2;
 
@@ -122,20 +107,17 @@ export default class PullRequestRow extends Component {
         );
 
         const completed = (
-            <ReadableDate date={latestRun.endTime}
-                          liveUpdate
-                          locale={locale}
-                          shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
-                          longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
+            <ReadableDate
+                date={latestRun.endTime}
+                liveUpdate
+                locale={locale}
+                shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
             />
         );
 
         const actions = [
-            <RunButton className="icon-button"
-                       runnable={pr}
-                       latestRun={pr.latestRun}
-                       onNavigation={this.openRunDetails}
-            />,
+            <RunButton className="icon-button" runnable={pr} latestRun={pr.latestRun} onNavigation={this.openRunDetails} />,
 
             <RunHistoryButton pipeline={contextPipeline} branchName={pr.name} t={t} />,
 
@@ -143,15 +125,16 @@ export default class PullRequestRow extends Component {
         ];
 
         return (
-            <PullRequestRowRenderer columns={columns}
-                                    runDetailsUrl={runDetailsUrl}
-                                    pipelineName={name}
-                                    statusIndicator={statusIndicator}
-                                    pullRequestId={pullRequest.id}
-                                    summary={pullRequest.title}
-                                    author={pullRequest.author}
-                                    completed={completed}
-                                    actions={actions}
+            <PullRequestRowRenderer
+                columns={columns}
+                runDetailsUrl={runDetailsUrl}
+                pipelineName={name}
+                statusIndicator={statusIndicator}
+                pullRequestId={pullRequest.id}
+                summary={pullRequest.title}
+                author={pullRequest.author}
+                completed={completed}
+                actions={actions}
             />
         );
     }

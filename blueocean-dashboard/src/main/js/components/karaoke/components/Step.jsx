@@ -15,7 +15,9 @@ function createStepLabel(step) {
 
     if (displayDescription) {
         return [
-            <span className="result-item-label-desc" title={displayDescription}>{displayDescription}</span>,
+            <span className="result-item-label-desc" title={displayDescription}>
+                {displayDescription}
+            </span>,
             <span className="result-item-label-name">&mdash; {displayName}</span>,
         ];
     }
@@ -45,7 +47,7 @@ export class Step extends Component {
     componentWillMount() {
         const { step } = this.props;
         // needed for running steps as reference
-        this.durationInMillis = (this.durationHarmonize(step)).durationInMillis;
+        this.durationInMillis = this.durationHarmonize(step).durationInMillis;
         logger.debug('durationInMillis mounting', this.durationInMillis);
     }
     /**
@@ -102,18 +104,21 @@ export class Step extends Component {
         if (logArray && !step.isInputStep) {
             const currentLogUrl = prefixIfNeeded(this.pager.currentLogUrl);
             logger.debug('Updating children');
-            children = (<LogConsole {...{
-                t,
-                router,
-                location,
-                hasMore,
-                scrollToBottom,
-                logArray,
-                currentLogUrl,
-                key: step.logUrl,
-                prefix: `step-${step.id}-`,
-            }}
-            />);
+            children = (
+                <LogConsole
+                    {...{
+                        t,
+                        router,
+                        location,
+                        hasMore,
+                        scrollToBottom,
+                        logArray,
+                        currentLogUrl,
+                        key: step.logUrl,
+                        prefix: `step-${step.id}-`,
+                    }}
+                />
+            );
         } else if (step.isInputStep) {
             children = <InputStep {...{ step, key: 'step' }} />;
         } else if (!logArray && step.hasLogs) {
@@ -141,30 +146,35 @@ export class Step extends Component {
         // duration calaculations
         const duration = step.isRunning ? this.durationInMillis : durationInMillis;
         logger.debug('duration', duration, step.isRunning);
-        const time = (<TimeDuration
-            millis={duration }
-            liveUpdate={step.isRunning}
-            updatePeriod={1000}
-            locale={locale}
-            displayFormat={t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' })}
-            liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
-            hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
-        />);
+        const time = (
+            <TimeDuration
+                millis={duration}
+                liveUpdate={step.isRunning}
+                updatePeriod={1000}
+                locale={locale}
+                displayFormat={t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' })}
+                liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
+                hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
+            />
+        );
 
-        return (<div className={logConsoleClass}>
-            <ResultItem {...{
-                extraInfo: time,
-                key: step.key,
-                result: step.computedResult.toLowerCase(),
-                expanded: isFocused,
-                label: createStepLabel(step),
-                onCollapse: removeFocus,
-                onExpand: getLogForNode,
-            }}
-            >
-                { children }
-            </ResultItem>
-        </div>);
+        return (
+            <div className={logConsoleClass}>
+                <ResultItem
+                    {...{
+                        extraInfo: time,
+                        key: step.key,
+                        result: step.computedResult.toLowerCase(),
+                        expanded: isFocused,
+                        label: createStepLabel(step),
+                        onCollapse: removeFocus,
+                        onExpand: getLogForNode,
+                    }}
+                >
+                    {children}
+                </ResultItem>
+            </div>
+        );
     }
 }
 

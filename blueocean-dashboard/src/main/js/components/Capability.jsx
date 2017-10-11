@@ -45,67 +45,67 @@ export class CapabilityRecord extends Record({ classNames: [] }) {
  *    }
  * }
  */
-export const capabilityStore = classesFunction => ComposedComponent => class extends Component {
-    constructor(props) {
-        super(props);
+export const capabilityStore = classesFunction => ComposedComponent =>
+    class extends Component {
+        constructor(props) {
+            super(props);
 
-        this.state = {
-            capabilities: {},
-        };
-    }
-
-    componentDidMount() {
-        const self = this;
-        let classesMap = classesFunction(this.props);
-
-        if (typeof classesMap === 'string') {
-            classesMap = [classesMap];
+            this.state = {
+                capabilities: {},
+            };
         }
 
-        for (const className of classesMap) {
-            classMetadataStore.getClassMetadata(className, (classMeta) => {
-                self._setState(className, new CapabilityRecord({ classNames: classMeta.classes }));
-            });
-        }
-    }
+        componentDidMount() {
+            const self = this;
+            let classesMap = classesFunction(this.props);
 
-    componentWillUnmount() {
-        this.unmounted = true;
-    }
+            if (typeof classesMap === 'string') {
+                classesMap = [classesMap];
+            }
 
-    _setState(key, value) {
-        // Block calls to setState for components that are
-        // not in a mounted state.
-        if (!this.unmounted) {
-            const newData = { capabilities: {} };
-            newData.capabilities[key] = { $set: value };
-            this.setState(previousState => update(previousState, newData));
-        }
-    }
-
-    render() {
-        const { capabilities } = this.state;
-        
-        // Early out. Doing it here means we don't have to do it in
-        // the composed componenet
-        let classesMap = classesFunction(this.props);
-        if (classesMap === undefined || classesMap === null) {
-            throw new Error('capabilityStore function did not find class in props.');
-        }
-
-        if (typeof classesMap === 'string') {
-            classesMap = [classesMap];
-        }
-        
-        for (const className of classesMap) {
-            if (!capabilities[className] || !capabilities[className].classNames) {
-                return null;
+            for (const className of classesMap) {
+                classMetadataStore.getClassMetadata(className, classMeta => {
+                    self._setState(className, new CapabilityRecord({ classNames: classMeta.classes }));
+                });
             }
         }
 
-        // This passes all props and state to ComposedComponent where
-        // they will all show as props.
-        return <ComposedComponent {...this.props} {...this.state} />;
-    }
-};
+        componentWillUnmount() {
+            this.unmounted = true;
+        }
 
+        _setState(key, value) {
+            // Block calls to setState for components that are
+            // not in a mounted state.
+            if (!this.unmounted) {
+                const newData = { capabilities: {} };
+                newData.capabilities[key] = { $set: value };
+                this.setState(previousState => update(previousState, newData));
+            }
+        }
+
+        render() {
+            const { capabilities } = this.state;
+
+            // Early out. Doing it here means we don't have to do it in
+            // the composed componenet
+            let classesMap = classesFunction(this.props);
+            if (classesMap === undefined || classesMap === null) {
+                throw new Error('capabilityStore function did not find class in props.');
+            }
+
+            if (typeof classesMap === 'string') {
+                classesMap = [classesMap];
+            }
+
+            for (const className of classesMap) {
+                if (!capabilities[className] || !capabilities[className].classNames) {
+                    return null;
+                }
+            }
+
+            // This passes all props and state to ComposedComponent where
+            // they will all show as props.
+            return <ComposedComponent {...this.props} {...this.state} />;
+        }
+    };

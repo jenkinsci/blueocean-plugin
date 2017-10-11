@@ -34,7 +34,6 @@ class PipelinePermissions {
     }
 }
 
-
 class CredentialPermissions {
     constructor(blueUser = {}) {
         if (blueUser.permission && blueUser.permission.credential) {
@@ -66,7 +65,6 @@ class CredentialPermissions {
 }
 
 export class User {
-     
     constructor(blueUser = {}) {
         this._blueUser = blueUser;
     }
@@ -92,7 +90,7 @@ export class User {
     }
 
     isAnonymous() {
-        return (this.id === 'anonymous');
+        return this.id === 'anonymous';
     }
 
     static current() {
@@ -116,7 +114,7 @@ let CURRENT = new User(blueocean.user);
 
 /* eslint-disable */
 export const TestUtil = {
-    setCurrent: function (user) {
+    setCurrent: function(user) {
         CURRENT = new User(user);
     },
 };

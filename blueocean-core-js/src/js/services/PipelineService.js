@@ -52,7 +52,6 @@ export class PipelineService extends BunkerService {
         });
     }
 
-
     /**
      * Gets pager for /blue/organization/:organization/pipelines/:pipeline/pullRequests
      *
@@ -72,7 +71,7 @@ export class PipelineService extends BunkerService {
      * @param {Object} pipelineData Raw data from backend.
      * @return {Object} mapped pipelineData with latestRun set to be a mobx computed value.
      */
-    bunkerMapper = (pipelineData) => {
+    bunkerMapper = pipelineData => {
         const data = utils.clone(pipelineData);
         const latestRun = data.latestRun;
 
@@ -81,7 +80,7 @@ export class PipelineService extends BunkerService {
         }
 
         return data;
-    }
+    };
     /**
      * Gets a pipeline from the store
      *
@@ -91,7 +90,6 @@ export class PipelineService extends BunkerService {
     getPipeline(href) {
         return this.getItem(href);
     }
-
 
     /**
      * Fetches pipeline from the backend and stores it in
@@ -108,7 +106,6 @@ export class PipelineService extends BunkerService {
 
         return Fetch.fetchJSON(href).then(data => this.setItem(data));
     }
-
 
     /**
      * MobX Action to update the latest run on a pipeline. Use for SSE. This will cause a reaction

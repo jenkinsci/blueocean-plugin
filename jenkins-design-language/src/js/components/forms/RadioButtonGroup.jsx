@@ -15,7 +15,6 @@ import Utils from '../../Utils';
  *      onChange: handler func calls when user changes selection, receiving 'option' as only arg.
  */
 export class RadioButtonGroup extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -23,7 +22,9 @@ export class RadioButtonGroup extends React.Component {
             selectedOption: null,
         };
 
-        this.groupId = () => { return Utils.randomId('RadioButtonGroup'); };
+        this.groupId = () => {
+            return Utils.randomId('RadioButtonGroup');
+        };
     }
 
     componentWillMount() {
@@ -61,7 +62,7 @@ export class RadioButtonGroup extends React.Component {
 
         return (
             <div className={`RadioButtonGroup ${this.props.className}`}>
-                { this.props.options.map((option, index) => {
+                {this.props.options.map((option, index) => {
                     const checked = option === this.state.selectedOption;
 
                     let labelValue = '';
@@ -75,17 +76,14 @@ export class RadioButtonGroup extends React.Component {
                     }
 
                     return (
-                        <label
-                          key={index}
-                          className="RadioButtonGroup-item"
-                        >
+                        <label key={index} className="RadioButtonGroup-item">
                             <input
-                              className="RadioButtonGroup-button"
-                              name={groupId}
-                              type="radio"
-                              checked={checked}
-                              disabled={this.props.disabled}
-                              onChange={() => this._onChange(option)}
+                                className="RadioButtonGroup-button"
+                                name={groupId}
+                                type="radio"
+                                checked={checked}
+                                disabled={this.props.disabled}
+                                onChange={() => this._onChange(option)}
                             />
 
                             <Indicator />
@@ -97,7 +95,6 @@ export class RadioButtonGroup extends React.Component {
             </div>
         );
     }
-
 }
 
 RadioButtonGroup.propTypes = {
@@ -117,14 +114,10 @@ RadioButtonGroup.defaultProps = {
 function Indicator() {
     return (
         <div className="RadioButtonGroup-indicator">
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"
-                width="100%" height="100%" className="svg-shape" focusable="false"
-            >
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="100%" height="100%" className="svg-shape" focusable="false">
                 <g>
-                    <circle className="outer-circle" cx="10" cy="10" r="9.5" stroke="black" strokeWidth="1" fill="none"
-                            shapeRendering="geometricPrecision"/>
-                    <circle className="inner-circle" cx="10" cy="10" r="3" fill="white"
-                            shapeRendering="geometricPrecision"/>
+                    <circle className="outer-circle" cx="10" cy="10" r="9.5" stroke="black" strokeWidth="1" fill="none" shapeRendering="geometricPrecision" />
+                    <circle className="inner-circle" cx="10" cy="10" r="3" fill="white" shapeRendering="geometricPrecision" />
                 </g>
             </svg>
             <div className="RadioButtonGroup-focus" />

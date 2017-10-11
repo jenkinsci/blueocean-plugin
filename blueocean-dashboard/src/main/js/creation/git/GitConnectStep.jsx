@@ -11,7 +11,6 @@ import { CreateCredentialDialog } from '../credentials/CreateCredentialDialog';
 import { CreatePipelineOutcome } from './GitCreationApi';
 import STATE from './GitCreationState';
 
-
 let t = null;
 
 function validateUrl(url) {
@@ -47,7 +46,6 @@ function isNonSshRepositoryUrl(url) {
  */
 @observer
 export default class GitConnectStep extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -167,75 +165,65 @@ export default class GitConnectStep extends React.Component {
         const credentialErrorMsg = this._getCredentialErrorMsg(flowManager.outcome);
 
         const disabled = flowManager.stateId !== STATE.STEP_CONNECT && flowManager.stateId !== STATE.COMPLETE;
-        const createButtonLabel = !disabled ?
-            t('creation.git.step1.create_button') :
-            t('creation.git.step1.create_button_progress');
+        const createButtonLabel = !disabled ? t('creation.git.step1.create_button') : t('creation.git.step1.create_button_progress');
 
         return (
             <FlowStep {...this.props} className="git-step-connect" title={t('creation.git.step1.title')} disabled={disabled}>
                 <p className="instructions">
                     {t('creation.git.step1.instructions')} &nbsp;
-                    <a href="https://jenkins.io/doc/book/pipeline/jenkinsfile/" target="_blank">{t('creation.git.step1.instructions_link')}</a>
+                    <a href="https://jenkins.io/doc/book/pipeline/jenkinsfile/" target="_blank">
+                        {t('creation.git.step1.instructions_link')}
+                    </a>
                 </p>
 
                 <FormElement title={t('creation.git.step1.repo_title')} errorMessage={repositoryErrorMsg}>
                     <TextInput className="text-repository-url" onChange={val => this._repositoryUrlChange(val)} />
                 </FormElement>
 
-                <ReactCSSTransitionGroup transitionName="slide-down"
-                                         transitionAppear
-                                         transitionAppearTimeout={300}
-                                         transitionEnterTimeout={300}
-                                         transitionLeaveTimeout={300}>
-                {isSshRepositoryUrl(this.state.repositoryUrl) &&
-                <Extensions.Renderer
-                    extensionPoint="jenkins.credentials.selection"
-                    onComplete={(credential) => this._onCreateCredentialClosed(credential)}
-                    type="git"
-                    repositoryUrl={this.state.repositoryUrl}
-                />
-                }
+                <ReactCSSTransitionGroup
+                    transitionName="slide-down"
+                    transitionAppear
+                    transitionAppearTimeout={300}
+                    transitionEnterTimeout={300}
+                    transitionLeaveTimeout={300}
+                >
+                    {isSshRepositoryUrl(this.state.repositoryUrl) && (
+                        <Extensions.Renderer
+                            extensionPoint="jenkins.credentials.selection"
+                            onComplete={credential => this._onCreateCredentialClosed(credential)}
+                            type="git"
+                            repositoryUrl={this.state.repositoryUrl}
+                        />
+                    )}
 
-                {isNonSshRepositoryUrl(this.state.repositoryUrl) &&
-                <FormElement title={t('creation.git.step1.credentials')} errorMessage={credentialErrorMsg}>
-                    <Dropdown
-                        ref={dropdown => this._bindDropdown(dropdown)}
-                        className="dropdown-credentials"
-                        options={flowManager.credentials}
-                        defaultOption={noCredentialsOption}
-                        labelField="displayName"
-                        onChange={opt => this._selectedCredentialChange(opt)}
-                    />
+                    {isNonSshRepositoryUrl(this.state.repositoryUrl) && (
+                        <FormElement title={t('creation.git.step1.credentials')} errorMessage={credentialErrorMsg}>
+                            <Dropdown
+                                ref={dropdown => this._bindDropdown(dropdown)}
+                                className="dropdown-credentials"
+                                options={flowManager.credentials}
+                                defaultOption={noCredentialsOption}
+                                labelField="displayName"
+                                onChange={opt => this._selectedCredentialChange(opt)}
+                            />
 
-                    <button
-                        className="button-create-credential btn-secondary"
-                        onClick={() => this._onCreateCredentialClick()}
-                    >
-                        {t('creation.git.step1.create_credential_button')}
-                    </button>
-                </FormElement>
-                }
+                            <button className="button-create-credential btn-secondary" onClick={() => this._onCreateCredentialClick()}>
+                                {t('creation.git.step1.create_credential_button')}
+                            </button>
+                        </FormElement>
+                    )}
                 </ReactCSSTransitionGroup>
 
-                { this.state.showCreateCredentialDialog &&
-                    <CreateCredentialDialog
-                      flowManager={flowManager}
-                      onClose={cred => this._onCreateCredentialClosed(cred)}
-                    />
-                }
+                {this.state.showCreateCredentialDialog && (
+                    <CreateCredentialDialog flowManager={flowManager} onClose={cred => this._onCreateCredentialClosed(cred)} />
+                )}
 
-                {isSshRepositoryUrl(this.state.repositoryUrl) && credentialErrorMsg &&
-                <FormElement className="public-key-display" errorMessage={t('creation.git.step1.credentials_publickey_invalid')} />
-                }
+                {isSshRepositoryUrl(this.state.repositoryUrl) &&
+                    credentialErrorMsg && <FormElement className="public-key-display" errorMessage={t('creation.git.step1.credentials_publickey_invalid')} />}
 
-                <button
-                  className="button-create-pipeline"
-                  onClick={() => this._beginCreation()}
-                  disabled={!validateUrl(this.state.repositoryUrl)}
-                >
+                <button className="button-create-pipeline" onClick={() => this._beginCreation()} disabled={!validateUrl(this.state.repositoryUrl)}>
                     {createButtonLabel}
                 </button>
-
             </FlowStep>
         );
     }

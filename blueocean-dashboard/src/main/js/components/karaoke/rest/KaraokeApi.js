@@ -35,7 +35,7 @@ function parseMoreDataHeader(response) {
          */
         newStart = response.headers.get('X-TEXT-SIZE');
     }
-    response.newStart = newStart;  // eslint-disable-line
+    response.newStart = newStart; // eslint-disable-line
     return response;
 }
 
@@ -50,7 +50,6 @@ function parseNewStart(response) {
 }
 
 export class KaraokeApi {
-
     /**
      * Get a run with runId and augment the capabilities
      * @param {object} pipeline Pipeline that this pager belongs to.
@@ -73,7 +72,7 @@ export class KaraokeApi {
      * @returns {*} Promise
      */
     getGeneralLog(href, { start }) {
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             debounce(() => {
                 const fetchOptions = prepareOptions();
                 const finalHref = start ? `${href}?start=${start}` : href;
@@ -83,17 +82,19 @@ export class KaraokeApi {
                     logger.warn('could not fetch with empty href');
                     resolve();
                 }
-                resolve(Fetch.fetch(finalHref, { fetchOptions })
-                    .then(FetchFunctions.checkStatus)
-                    .then(parseMoreDataHeader)
-                    .then(parseNewStart));
+                resolve(
+                    Fetch.fetch(finalHref, { fetchOptions })
+                        .then(FetchFunctions.checkStatus)
+                        .then(parseMoreDataHeader)
+                        .then(parseNewStart)
+                );
             }, 200)();
         });
     }
 
     getNodes(href) {
         // creating a new promise to be able to debounce the fetching
-        return new Promise((resolve) => {
+        return new Promise(resolve => {
             debounce(() => {
                 const fetchOptions = prepareOptions();
                 logger.debug('Fetching with json enabled parsing the following href', href);
@@ -102,10 +103,12 @@ export class KaraokeApi {
                     logger.warn('could not fetch with empty href');
                     resolve();
                 }
-                resolve(Fetch.fetchJSON(href, { fetchOptions })
-                    .then(FetchFunctions.checkStatus)
-                    .then(data => capabilityAugmenter.augmentCapabilities(data))
-                    .then(getNodesInformation));
+                resolve(
+                    Fetch.fetchJSON(href, { fetchOptions })
+                        .then(FetchFunctions.checkStatus)
+                        .then(data => capabilityAugmenter.augmentCapabilities(data))
+                        .then(getNodesInformation)
+                );
             }, 200)();
         });
     }

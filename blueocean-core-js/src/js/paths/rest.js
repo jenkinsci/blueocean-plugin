@@ -18,7 +18,9 @@ export default {
             searchTextQuery = ('*' + searchText + '*').replace(/\//g, '*/*').replace('**', '*');
         }
 
-        return `${this.apiRoot()}/search/?q=type:pipeline${organization};pipeline:${encodeURIComponent(searchTextQuery)};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
+        return `${this.apiRoot()}/search/?q=type:pipeline${organization};pipeline:${encodeURIComponent(
+            searchTextQuery
+        )};excludedFromFlattening:jenkins.branch.MultiBranchProject,hudson.matrix.MatrixProject&filter=no-folders`;
     },
 
     runs(organization, pipeline, branch) {

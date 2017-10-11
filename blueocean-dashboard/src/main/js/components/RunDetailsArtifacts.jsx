@@ -7,7 +7,7 @@ import { logging, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.artifacts');
 
-const ZipFileDownload = (props) => {
+const ZipFileDownload = props => {
     const { zipFile, t } = props;
     if (!zipFile) {
         return null;
@@ -16,18 +16,19 @@ const ZipFileDownload = (props) => {
     const title = t('rundetail.artifacts.button.downloadAll.title', { defaultValue: 'Download all artifact as zip' });
     const href = `${UrlConfig.getJenkinsRootURL()}${zipFile}`;
 
-    return (<div className="downloadAllArtifactsButton">
-        <a className="btn-secondary" target="_blank" title={title} href={href}>
-            {t('rundetail.artifacts.button.downloadAll.text', { defaultValue: 'Download All' })}
-        </a>
-    </div>);
+    return (
+        <div className="downloadAllArtifactsButton">
+            <a className="btn-secondary" target="_blank" title={title} href={href}>
+                {t('rundetail.artifacts.button.downloadAll.text', { defaultValue: 'Download All' })}
+            </a>
+        </div>
+    );
 };
 
 ZipFileDownload.propTypes = {
     zipFile: PropTypes.string,
     t: PropTypes.func,
 };
-
 
 function ArtifactListingLimited(props) {
     const { t } = props;
@@ -45,7 +46,6 @@ function ArtifactListingLimited(props) {
 ArtifactListingLimited.propTypes = {
     t: PropTypes.func,
 };
-
 
 /**
  * Displays a list of artifacts from the supplied build run property.
@@ -88,11 +88,7 @@ export default class RunDetailsArtifacts extends Component {
         const downloadLabel = t('rundetail.artifacts.button.download', { defaultValue: 'Download the artifact' });
         const openLabel = t('rundetail.artifacts.button.open', { defaultValue: 'Open the artifact' });
 
-        const columns = [
-            JTable.column(500, nameLabel, true),
-            JTable.column(120, sizeLabel),
-            JTable.column(50, ''),
-        ];
+        const columns = [JTable.column(500, nameLabel, true), JTable.column(120, sizeLabel), JTable.column(50, '')];
 
         const rootURL = UrlConfig.getJenkinsRootURL();
 
@@ -104,17 +100,13 @@ export default class RunDetailsArtifacts extends Component {
             let downloadLink = null;
             if (artifact.downloadable) {
                 downloadLink = (
-                    <a target="_blank"
-                       className="action-button-colors"
-                       download={fileName} title={downloadLabel}
-                       href={`${rootURL}${artifact.url}`}
-                    >
+                    <a target="_blank" className="action-button-colors" download={fileName} title={downloadLabel} href={`${rootURL}${artifact.url}`}>
                         <Icon icon="FileFileDownload" color="rgba(53, 64, 82, 0.25)" />
                     </a>
                 );
             }
 
-            const artifactSize = artifact.size >= 0 ? (<FileSize bytes={artifact.size} />) : (<span>–</span>);
+            const artifactSize = artifact.size >= 0 ? <FileSize bytes={artifact.size} /> : <span>–</span>;
 
             return (
                 <TableRow key={artifact.url}>
@@ -123,12 +115,8 @@ export default class RunDetailsArtifacts extends Component {
                             {artifact.path}
                         </a>
                     </TableCell>
-                    <TableCell>
-                        {artifactSize}
-                    </TableCell>
-                    <TableCell className="TableCell--actions">
-                        {downloadLink}
-                    </TableCell>
+                    <TableCell>{artifactSize}</TableCell>
+                    <TableCell className="TableCell--actions">{downloadLink}</TableCell>
                 </TableRow>
             );
         });
@@ -138,7 +126,7 @@ export default class RunDetailsArtifacts extends Component {
 
         return (
             <div>
-                { artifacts.length > 100 && <ArtifactListingLimited t={t} /> }
+                {artifacts.length > 100 && <ArtifactListingLimited t={t} />}
                 <JTable columns={columns} className="artifacts-table">
                     <TableHeaderRow />
                     <TableRow>
@@ -154,7 +142,7 @@ export default class RunDetailsArtifacts extends Component {
                             </a>
                         </TableCell>
                     </TableRow>
-                    { artifactsRendered }
+                    {artifactsRendered}
                 </JTable>
                 <ZipFileDownload zipFile={zipFile} t={t} />
             </div>

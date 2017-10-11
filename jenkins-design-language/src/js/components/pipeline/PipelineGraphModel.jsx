@@ -45,7 +45,7 @@ export type StageNodeInfo = {
     isPlaceholder: false,
 
     // -- Unique
-    stage: StageInfo
+    stage: StageInfo,
 };
 
 export type PlaceholderNodeInfo = {
@@ -60,8 +60,8 @@ export type PlaceholderNodeInfo = {
     isPlaceholder: true,
 
     // -- Unique
-    type: 'start' | 'end'
-}
+    type: 'start' | 'end',
+};
 
 // TODO: Attempt to extract a "common" node type with intersection operator to remove duplication
 
@@ -71,12 +71,12 @@ export type NodeColumn = {
     topStage?: StageInfo, // Top-most stage for this column, which will have no rendered nodes if it's parallel
     rows: Array<Array<NodeInfo>>,
     x: number, // Center X position, for positioning top bigLabel
-}
+};
 
 export type CompositeConnection = {
     sourceNodes: Array<NodeInfo>,
     destinationNodes: Array<NodeInfo>,
-    skippedNodes: Array<NodeInfo>
+    skippedNodes: Array<NodeInfo>,
 };
 
 export type LabelInfo = {
@@ -85,7 +85,7 @@ export type LabelInfo = {
     text: string,
     key: string,
     stage?: StageInfo,
-    node: NodeInfo
+    node: NodeInfo,
 };
 
 export type LayoutInfo = typeof defaultLayout;

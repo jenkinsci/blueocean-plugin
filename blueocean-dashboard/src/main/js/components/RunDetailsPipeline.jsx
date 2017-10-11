@@ -31,8 +31,10 @@ export class RunDetailsPipeline extends Component {
         if (KaraokeConfig.getPreference('runDetails.pipeline.updateOnFinish').value !== 'never') {
             logger.debug('Augmenting next properties');
             this.augment(nextProps);
-        } else if (((nextProps.params.runId !== this.props.params.runId) || nextProps.result.id !== this.props.result.id)
-            && KaraokeConfig.getPreference('runDetails.pipeline.updateOnFinish').value === 'never') {
+        } else if (
+            (nextProps.params.runId !== this.props.params.runId || nextProps.result.id !== this.props.result.id) &&
+            KaraokeConfig.getPreference('runDetails.pipeline.updateOnFinish').value === 'never'
+        ) {
             logger.debug('Augmenting next properties - new run needs update');
             this.augment(nextProps);
         } else {
@@ -43,7 +45,7 @@ export class RunDetailsPipeline extends Component {
         document.removeEventListener('keydown', this._handleKeys);
         document.removeEventListener('wheel', this._onScrollHandler);
     }
- // we bail out on arrow_up key
+    // we bail out on arrow_up key
     _handleKeys(event) {
         if (event.keyCode === 38 && this.augmenter.karaoke) {
             logger.debug('stop follow along by key up');
@@ -61,7 +63,7 @@ export class RunDetailsPipeline extends Component {
     augment(props) {
         // we do not want to follow any builds that are finished
         const { result: run, pipeline, params: { branch } } = props;
-        const followAlong = props && props.result && props.result.state !== 'FINISHED' || false;
+        const followAlong = (props && props.result && props.result.state !== 'FINISHED') || false;
         this.augmenter = new Augmenter(pipeline, branch, run, followAlong);
     }
     render() {
@@ -81,26 +83,26 @@ export class RunDetailsPipeline extends Component {
         let provider;
         const stepScrollAreaClass = `step-scroll-area ${this.augmenter.karaoke ? 'follow-along-on' : 'follow-along-off'}`;
         if (this.augmenter.isFreeStyle) {
-            provider = (<Extensions.Renderer {
-                    ...{
+            provider = (
+                <Extensions.Renderer
+                    {...{
                         extensionPoint: 'jenkins.pipeline.karaoke.freestyle.provider',
                         ...commonProps,
-                    }
-                }
-            />);
+                    }}
+                />
+            );
         }
         if (!this.classicLog && this.augmenter.isPipeline) {
-            provider = (<Extensions.Renderer {
-                    ...{
+            provider = (
+                <Extensions.Renderer
+                    {...{
                         extensionPoint: 'jenkins.pipeline.karaoke.pipeline.provider',
                         ...commonProps,
-                    }
-                }
-            />);
+                    }}
+                />
+            );
         }
-        return (<div className={stepScrollAreaClass} >
-            { provider }
-        </div>);
+        return <div className={stepScrollAreaClass}>{provider}</div>;
     }
 }
 RunDetailsPipeline.propTypes = {

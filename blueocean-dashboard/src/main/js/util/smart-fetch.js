@@ -12,7 +12,7 @@ export const defaultPageSize = 5;
 /**
  * Freezes an object and all child properties
  */
-const deepFreeze = (obj) => {
+const deepFreeze = obj => {
     const propNames = Object.getOwnPropertyNames(obj);
     for (let idx = 0; idx < propNames.length; idx++) {
         const prop = obj[propNames[idx]];
@@ -54,20 +54,21 @@ export function fetch(url, options, onData) {
         return dedupe(url, () =>
             Fetch.fetchJSON(url, { fetchOptions: _options || {} }) // Fetch data
                 .then(data => augmenter.augmentCapabilities(data))
-                .then(successAndFreeze)) // add success field & freeze graph
-                .then((data) => {
-                    debugLog(' -- success: ', url, data);
-                    _onData(data);
-                })
-                .catch(err => {
-                    debugLog(' -- error: ', url, err);
-                    _onData({ $failed: err });
-                });
+                .then(successAndFreeze)
+        ) // add success field & freeze graph
+            .then(data => {
+                debugLog(' -- success: ', url, data);
+                _onData(data);
+            })
+            .catch(err => {
+                debugLog(' -- error: ', url, err);
+                _onData({ $failed: err });
+            });
     }
     // return a fake promise, a thenable
     // so it can be resolved multiple times
     return {
-        then: (fn) => fetch(url, _onData, fn),
+        then: fn => fetch(url, _onData, fn),
     };
 }
 
@@ -87,7 +88,8 @@ export function applyFetchMarkers(toObj, fromObj) {
                 fromObj.$pager.onData,
                 fromObj.$pager.startIndex,
                 fromObj.$pager.pageSize,
-                toObj); // current data
+                toObj
+            ); // current data
             toObj.$pager.hasMore = fromObj.$pager.hasMore;
             toObj.$pager.current = fromObj.$pager.current;
         }
@@ -98,7 +100,8 @@ export function applyFetchMarkers(toObj, fromObj) {
 }
 
 function assignObj(obj, vals) {
-    obj.map = function map(...args) { // eslint-disable-line no-param-reassign
+    obj.map = function map(...args) {
+        // eslint-disable-line no-param-reassign
         const out = Array.prototype.map.apply(this, args);
         applyFetchMarkers(out, this);
         return out;
@@ -138,10 +141,11 @@ class Pager {
         infoLog('Fetching paged data: ', this);
         return dedupe(url, () =>
             Fetch.fetchJSON(url) // Fetch data
-            .then(data => augmenter.augmentCapabilities(data))
-            .then(successAndFreeze)) // add success field & freeze graph
+                .then(data => augmenter.augmentCapabilities(data))
+                .then(successAndFreeze)
+        ) // add success field & freeze graph
             .then(
-                (data) => {
+                data => {
                     debugLog(' -- success: ', url, data);
                     // fetched an extra to test if more
                     const hasMore = data.length > limit;

@@ -17,22 +17,15 @@ function isRunningNode(item) {
     return item.state === STATES.RUNNING || item.state === STATES.PAUSED;
 }
 
-export const getNodesInformation = (nodes) => {
+export const getNodesInformation = nodes => {
     // calculation of information about stages
     // nodes in Runing state
-    const runningNodes = nodes
-        .filter((item) => isRunningNode(item) && (!item.edges || item.edges.length < 2))
-        .map((item) => item.id);
+    const runningNodes = nodes.filter(item => isRunningNode(item) && (!item.edges || item.edges.length < 2)).map(item => item.id);
     // nodes with error result
-    const errorNodes = nodes
-        .filter((item) => item.result === RESULTS.FAILURE)
-        .map((item) => item.id);
-    const queuedNodes = nodes
-        .filter((item) => item.state === null && item.result === null)
-        .map((item) => item.id);
+    const errorNodes = nodes.filter(item => item.result === RESULTS.FAILURE).map(item => item.id);
+    const queuedNodes = nodes.filter(item => item.state === null && item.result === null).map(item => item.id);
     // nodes without information
-    const hasResultsForSteps = nodes
-            .filter((item) => item.state === null && item.result === null).length !== nodes.length;
+    const hasResultsForSteps = nodes.filter(item => item.state === null && item.result === null).length !== nodes.length;
     // principal model mapper
     let wasFocused = false; // we only want one node to be focused if any
     let parallelNodes = [];
@@ -42,15 +35,14 @@ export const getNodesInformation = (nodes) => {
     const finished = runningNodes.length === 0 && queuedNodes.length !== nodes.length;
     const error = !(errorNodes.length === 0);
     const model = nodes.map((item, index) => {
-        const hasFailingNode = item.edges && item.edges.length >= 2 ? item.edges
-            .filter((itemError) => errorNodes.indexOf(itemError.id) > -1).length > 0 : false;
+        const hasFailingNode = item.edges && item.edges.length >= 2 ? item.edges.filter(itemError => errorNodes.indexOf(itemError.id) > -1).length > 0 : false;
         const isFailingNode = errorNodes.indexOf(item.id) > -1;
         const isRunning = runningNodes.indexOf(item.id) > -1;
         /*
          * are we in a node that indicates that we have parallel nodes?
          */
         if (item.edges && item.edges.length >= 2) {
-            parallelNodes = item.edges.map((itemParallel) => itemParallel.id);
+            parallelNodes = item.edges.map(itemParallel => itemParallel.id);
         }
         // in case we had been in a parallel node before, we will indicate it and remove the id of the parallel array
         const indexParallel = parallelNodes.indexOf(item.id);
@@ -59,8 +51,7 @@ export const getNodesInformation = (nodes) => {
             // remove the match from the array
             parallelNodes.splice(indexParallel, 1);
         }
-        const logActions = item.actions ? item.actions
-            .filter(action => capable(action, 'org.jenkinsci.plugins.workflow.actions.LogAction')) : [];
+        const logActions = item.actions ? item.actions.filter(action => capable(action, 'org.jenkinsci.plugins.workflow.actions.LogAction')) : [];
         const hasLogs = logActions.length > 0;
         const isCompleted = item.result !== 'UNKNOWN' && item.result !== null;
         const computedResult = isCompleted ? item.result : item.state;

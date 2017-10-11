@@ -23,9 +23,7 @@ export class ColumnFilter extends Component {
         const { onChange } = this.props;
         this.setState({ value });
         // only update on enter press or click
-        if (event.type === 'select'
-            || event.type === 'blur'
-            || (event.type === 'keypress' && event.key === 'Enter')) {
+        if (event.type === 'select' || event.type === 'blur' || (event.type === 'keypress' && event.key === 'Enter')) {
             this.setState({ originalValue: value });
             onChange(value);
             setTimeout(() => {
@@ -52,7 +50,7 @@ export class ColumnFilter extends Component {
         if (targetElem.value === '' && hoveredElem && hoveredElem.className !== 'item selected') {
             this.setState({ value: this.state.originalValue });
         }
-    }
+    };
 
     // hack due to strange behavior of triggering onChange from autocomplete when
     // clicking on the input when the dropdown is open and an item is selected
@@ -77,41 +75,47 @@ export class ColumnFilter extends Component {
             width: '100%',
         };
 
-        return (<div className={`ColumnFilter ${value ? '' : 'empty'} ${focused ? 'focused' : ''}`}>
-            <Autocomplete
-                wrapperStyle={wrapperStyle}
-                ref="autocomplete"
-                value={value}
-                inputProps={{
-                    className: 'autocomplete',
-                    name: 'Filter',
-                    placeholder: focused ? '' : placeholder,
-                    onMouseDown: e => this.preventStupidInput(e),
-                    onKeyDown: e => this.handleEmptyEnterPressBetter(e),
-                    onFocus: e => this.focus(e),
-                    onBlur: e => this.blur(e) }}
-                menuStyle={{
-                    position: 'fixed',
-                    overflow: 'auto',
-                    maxHeight: '50%' }}
-                items={options}
-                autoHighlight
-                getItemValue={(item) => item}
-                shouldItemRender={(item, v) => item.toLowerCase().indexOf(v.toLowerCase()) >= 0}
-                onChange={(event, v) => this.setState({ value: v }) || this.onChange(event, v)}
-                onSelect={v => this.setState({ value: v }) || this.onChange({ type: 'select' }, v)}
-                onMenuVisibilityChange={() => this.setState({ visible: !this.state.visible })}
-                renderItem={(item, selected) => (
-                  <div className={selected ? 'item selected' : 'item'} key={item} title={item}>{item}</div>
-                )}
-            />
-            <span className="Icon-filter">
-                <Icon icon="ContentFilterList" size={15} style={{ verticalAlign: 'top' }} />
-            </span>
-            <span className="Icon-clear" onClick={() => this.clearInput()}>
-                <Icon icon="ContentClear" size={15} style={{ verticalAlign: 'top' }} />
-            </span>
-          </div>);
+        return (
+            <div className={`ColumnFilter ${value ? '' : 'empty'} ${focused ? 'focused' : ''}`}>
+                <Autocomplete
+                    wrapperStyle={wrapperStyle}
+                    ref="autocomplete"
+                    value={value}
+                    inputProps={{
+                        className: 'autocomplete',
+                        name: 'Filter',
+                        placeholder: focused ? '' : placeholder,
+                        onMouseDown: e => this.preventStupidInput(e),
+                        onKeyDown: e => this.handleEmptyEnterPressBetter(e),
+                        onFocus: e => this.focus(e),
+                        onBlur: e => this.blur(e),
+                    }}
+                    menuStyle={{
+                        position: 'fixed',
+                        overflow: 'auto',
+                        maxHeight: '50%',
+                    }}
+                    items={options}
+                    autoHighlight
+                    getItemValue={item => item}
+                    shouldItemRender={(item, v) => item.toLowerCase().indexOf(v.toLowerCase()) >= 0}
+                    onChange={(event, v) => this.setState({ value: v }) || this.onChange(event, v)}
+                    onSelect={v => this.setState({ value: v }) || this.onChange({ type: 'select' }, v)}
+                    onMenuVisibilityChange={() => this.setState({ visible: !this.state.visible })}
+                    renderItem={(item, selected) => (
+                        <div className={selected ? 'item selected' : 'item'} key={item} title={item}>
+                            {item}
+                        </div>
+                    )}
+                />
+                <span className="Icon-filter">
+                    <Icon icon="ContentFilterList" size={15} style={{ verticalAlign: 'top' }} />
+                </span>
+                <span className="Icon-clear" onClick={() => this.clearInput()}>
+                    <Icon icon="ContentClear" size={15} style={{ verticalAlign: 'top' }} />
+                </span>
+            </div>
+        );
     }
 }
 

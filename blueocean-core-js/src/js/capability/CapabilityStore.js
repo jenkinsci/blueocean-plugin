@@ -15,7 +15,6 @@ const classesInfoNS = installInfo.subspace('classesInfo');
  * Uses an internal cache to minimize REST API calls.
  */
 export class CapabilityStore {
-
     constructor(capabilityApi) {
         this._localStore = {};
         this._capabilityApi = capabilityApi;
@@ -48,8 +47,7 @@ export class CapabilityStore {
         }
 
         // fetch the capabilities and then merge that with the values already in the cache
-        return this._fetchCapabilities(classesToFetch)
-            .then(fetchedCapabilities => Object.assign(result, fetchedCapabilities));
+        return this._fetchCapabilities(classesToFetch).then(fetchedCapabilities => Object.assign(result, fetchedCapabilities));
     }
 
     /**
@@ -60,8 +58,7 @@ export class CapabilityStore {
      * @private
      */
     _fetchCapabilities(classNames) {
-        return this._capabilityApi.fetchCapabilities(classNames)
-            .then(data => this._storeCapabilities(data.map));
+        return this._capabilityApi.fetchCapabilities(classNames).then(data => this._storeCapabilities(data.map));
     }
 
     /**

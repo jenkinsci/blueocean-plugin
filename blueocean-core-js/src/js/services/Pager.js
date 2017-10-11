@@ -14,7 +14,6 @@ export function paginateUrl(url) {
     return (start, limit) => `${url}${sep}start=${start}&limit=${limit}`;
 }
 
-
 /**
  * The pager fetches pages of data from the BlueOcean api. It fetches pages of data, then
  * inserts them into the [@link BunkerService], and stores the href from the data.
@@ -92,24 +91,29 @@ export class Pager {
         this.pending = true;
 
         return Fetch.fetchJSON(url)
-            .then(action('Process pager data', data => {
-                // Store item in bunker.
-                const saved = this.bunker.setItems(data);
+            .then(
+                action('Process pager data', data => {
+                    // Store item in bunker.
+                    const saved = this.bunker.setItems(data);
 
-                // 1 extra item is fetched because need to know if there are more packages. So
-                // slice off the last item, then map all items to just be hrefs.
-                const trimmedHrefs = saved.slice(0, this.pageSize).map(item => item._links.self.href);
+                    // 1 extra item is fetched because need to know if there are more packages. So
+                    // slice off the last item, then map all items to just be hrefs.
+                    const trimmedHrefs = saved.slice(0, this.pageSize).map(item => item._links.self.href);
 
-                // Append the new Hrefs to the existing ones.
-                this.hrefs = this.hrefs.concat(trimmedHrefs);
+                    // Append the new Hrefs to the existing ones.
+                    this.hrefs = this.hrefs.concat(trimmedHrefs);
 
-                // True if we fetch more items than the page size.
-                this.hasMore = data.length > this.pageSize;
-                this.currentPage = this.currentPage + 1;
-                this.pending = false;
-            })).catch(err => {
+                    // True if we fetch more items than the page size.
+                    this.hasMore = data.length > this.pageSize;
+                    this.currentPage = this.currentPage + 1;
+                    this.pending = false;
+                })
+            )
+            .catch(err => {
                 console.error('Error fetching page', err);
-                action('set error', () => { this.error = err; });
+                action('set error', () => {
+                    this.error = err;
+                });
             });
     }
 
@@ -125,13 +129,16 @@ export class Pager {
         const url = this.pagedUrl(0, this.currentPage * this.pageSize + 1);
         this.pending = true;
         return Fetch.fetchJSON(url) // Fetch data
-            .then(action('set data', data => {
-                this.bunker.setItems(data);
-                this.hrefs = data.slice(0, this.pageSize).map(x => x._links.self.href);
-                this.hasMore = data.length > this.pageSize;
-                this.currentPage = this.currentPage + 1;
-                this.pending = false;
-            })).catch(err => {
+            .then(
+                action('set data', data => {
+                    this.bunker.setItems(data);
+                    this.hrefs = data.slice(0, this.pageSize).map(x => x._links.self.href);
+                    this.hasMore = data.length > this.pageSize;
+                    this.currentPage = this.currentPage + 1;
+                    this.pending = false;
+                })
+            )
+            .catch(err => {
                 console.error('Error fetching page', err);
                 this.err = err;
             });

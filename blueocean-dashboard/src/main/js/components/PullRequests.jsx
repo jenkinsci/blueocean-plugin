@@ -13,7 +13,6 @@ import Extensions from '@jenkins-cd/js-extensions';
 
 @observer
 export class PullRequests extends Component {
-
     state = {
         actionExtensionCount: 0,
     };
@@ -28,7 +27,7 @@ export class PullRequests extends Component {
     // Figure out how many extensions we have for the action buttons column so we can size it appropriately
     _countExtensions() {
         Extensions.store.getExtensions('jenkins.pipeline.pullrequests.list.action', extensions => {
-            const count = extensions && typeof(extensions.length) === 'number' ? extensions.length : 0;
+            const count = extensions && typeof extensions.length === 'number' ? extensions.length : 0;
             if (count !== this.state.actionExtensionCount) {
                 this.setState({ actionExtensionCount: count });
             }
@@ -48,7 +47,7 @@ export class PullRequests extends Component {
                 linkHref: t('pipelinedetail.placeholder.unsupported.pullrequests.linkhref'),
             };
 
-            return (<UnsupportedPlaceholder {...childProps} />);
+            return <UnsupportedPlaceholder {...childProps} />;
         }
         const pullRequests = this.pager.data;
 
@@ -83,14 +82,7 @@ export class PullRequests extends Component {
                 <article>
                     <JTable columns={columns}>
                         <TableHeaderRow />
-                        { runRecords.map((result, index) =>
-                            <PullRequestRow t={t}
-                                            locale={locale}
-                                            pipeline={pipeline}
-                                            key={index}
-                                            pr={result}
-                            />,
-                        )}
+                        {runRecords.map((result, index) => <PullRequestRow t={t} locale={locale} pipeline={pipeline} key={index} pr={result} />)}
                     </JTable>
                     <ShowMoreButton pager={this.pager} />
                 </article>

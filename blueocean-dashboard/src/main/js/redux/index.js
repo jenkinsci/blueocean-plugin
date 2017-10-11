@@ -18,10 +18,6 @@ export {
     isMultiBranch,
     currentBranches,
 } from './reducer';
-export {
-  ACTION_TYPES,
-  actionHandlers,
-  actions,
-} from './actions';
+export { ACTION_TYPES, actionHandlers, actions } from './actions';
 export { connect } from 'react-redux';
 export { createSelector } from 'reselect';
