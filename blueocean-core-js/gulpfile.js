@@ -22,7 +22,7 @@ const minimist = require('minimist');
 const config = {
     clean: ["dist", "licenses", "target"],
     react: {
-        sources: "src/**/*.{js,jsx}",
+        sources: ["src/**/*.{js,jsx}", "!**/__mocks__/**"],
         dest: "dist"
     },
     less: {
@@ -70,7 +70,7 @@ gulp.task("clean", () =>
 // Testing
 
 gulp.task("lint", () => (
-    gulp.src([config.react.sources, config.test.sources])
+    gulp.src([...config.react.sources, config.test.sources])
         .pipe(lint())
         .pipe(lint.format())
         .pipe(lint.failAfterError())
