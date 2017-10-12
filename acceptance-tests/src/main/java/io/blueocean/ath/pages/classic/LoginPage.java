@@ -1,18 +1,18 @@
 package io.blueocean.ath.pages.classic;
 
 import io.blueocean.ath.BaseUrl;
-import io.blueocean.ath.WaitUtil;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import static io.blueocean.ath.LocalDriverElement.find;
+import static io.blueocean.ath.LocalDriverElement.go;
 
 @Singleton
 public class LoginPage{
@@ -35,36 +35,24 @@ public class LoginPage{
     }
 
     public static String getUsername() {
-        return "alice";
+        return System.getProperty("adminUsername", "alice");
     }
 
     public static String getPassword() {
-        return "alice";
+        return System.getProperty("adminPassword", "alice");
     }
 
-    @Inject
-    WaitUtil wait;
     public void open() {
-        driver.get(base + "/login");
+        go(base + "/login");
         Assert.assertEquals(base + "/login", driver.getCurrentUrl());
     }
 
     public void login() {
         open();
-
-
-        WebElement usernameField = wait.until(By.id("j_username"));
-        usernameField.sendKeys(getUsername());
-
-        wait.until(By.name("j_password")).sendKeys(getPassword());
-
-        wait.until(By.xpath("//*/button[contains(text(), 'log')]")).click();
-        wait.until(driver -> {
-            if(driver.getCurrentUrl().contains("loginError")) {
-                throw new RuntimeException("Error logging in");
-            }
-            return ExpectedConditions.urlToBe(base + "/").apply(driver);
-        });
-        logger.info("Logged in as alice");
+        find("input[name=j_username]").sendKeys(getUsername());
+        find("input[name=j_password]").sendKeys(getPassword());
+        find("//button[contains(text(), 'log')]").click();
+        find("//a[contains(@href, 'logout')]").isVisible();
+        logger.info("Logged in as " + getUsername());
     }
 }

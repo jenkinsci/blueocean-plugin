@@ -161,6 +161,14 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
             eachNotifier.addFailure(e);
         } finally {
             eachNotifier.fireTestFinished();
+            WebDriver driver = LocalDriverElement.CURRENT_WEB_DRIVER.get();
+            if (driver != null) {
+                try {
+                    driver.close();
+                } catch(Exception e) {
+                    // ignore, this happens when running individual tests sometimes
+                }
+            }
         }
     }
 

@@ -27,7 +27,7 @@ public class WebElementUtils {
      */
     public static void setText(WebElement element, String text) {
         checkTextElement(element);
-        element.sendKeys(Keys.chord(Keys.CONTROL, "a"));
+        element.clear();//sendKeys(Keys.chord(Keys.CONTROL, "a"));
         element.sendKeys(text);
     }
 

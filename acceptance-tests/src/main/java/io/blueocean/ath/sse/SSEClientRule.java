@@ -10,6 +10,7 @@ import com.mashape.unirest.http.JsonNode;
 import com.mashape.unirest.http.Unirest;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.blueocean.ath.BaseUrl;
+import io.blueocean.ath.pages.classic.LoginPage;
 import org.apache.log4j.Logger;
 import org.glassfish.jersey.media.sse.EventListener;
 import org.glassfish.jersey.media.sse.EventSource;
@@ -93,7 +94,7 @@ public class SSEClientRule extends ExternalResource {
     public void connect() throws UnirestException, InterruptedException {
         SecureRandom rnd = new SecureRandom();
         String clientId = "ath-" + rnd.nextLong();
-        HttpResponse<JsonNode> httpResponse = Unirest.get(baseUrl + "/sse-gateway/connect?clientId=" + clientId).asJson();
+        HttpResponse<JsonNode> httpResponse = Unirest.get(baseUrl + "/sse-gateway/connect?clientId=" + clientId).basicAuth(LoginPage.getUsername(), LoginPage.getPassword()).asJson();
         JsonNode body = httpResponse.getBody();
         Client client = ClientBuilder.newBuilder().register(SseFeature.class).build();
         WebTarget target = client.target(baseUrl + "/sse-gateway/listen/" + clientId + ";jsessionid="+body.getObject().getJSONObject("data").getString("jsessionid"));
@@ -109,6 +110,7 @@ public class SSEClientRule extends ExternalResource {
             .put("unsubscribe", new JSONArray());
 
         Unirest.post(baseUrl + "/sse-gateway/configure?batchId=1")
+            .basicAuth(LoginPage.getUsername(), LoginPage.getPassword())
             .body(req).asJson();
 
         logger.info("SSE Connected " + clientId);

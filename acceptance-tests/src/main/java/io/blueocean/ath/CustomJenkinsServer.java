@@ -20,10 +20,14 @@ public class CustomJenkinsServer extends JenkinsServer {
     protected final JenkinsHttpClient client;
 
     public CustomJenkinsServer(URI serverUri) {
-        super(serverUri);
+        this(serverUri, LoginPage.getUsername(), LoginPage.getPassword());
+    }
+
+    public CustomJenkinsServer(URI serverUri, String username, String password) {
+        super(serverUri, username, password);
         // since JenkinsServer's "client" is private, we must create another one
         // use authenticated client so that user's credentials can be accessed
-        client = new JenkinsHttpClient(serverUri, LoginPage.getUsername(), LoginPage.getPassword());
+        client = new JenkinsHttpClient(serverUri, username, password);
     }
 
     /**
