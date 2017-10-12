@@ -425,7 +425,7 @@ class PipelineLoader extends React.Component {
         const { scmSource } = pipeline;
 
         if (!scmSource || !scmSource.id || (scmSource.id === 'git' && !isSshRepositoryUrl(scmSource.apiUrl))) {
-            this.showLoadingError('', 'This repository does not support saving', 'No save access');
+            this.showLoadingError('', 'Saving Pipelines is unsupported using http/https repositories. Please use SSH instead.', 'No save access');
             return;
         }
 
