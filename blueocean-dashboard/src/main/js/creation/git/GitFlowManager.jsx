@@ -49,8 +49,6 @@ export default class GitFlowManager extends FlowManager {
 
     _sseSubscribeId = null;
 
-    _sseTimeoutId = null;
-
     constructor(createApi, credentialsApi) {
         super();
 
@@ -198,17 +196,9 @@ export default class GitFlowManager extends FlowManager {
     }
 
     _cleanupListeners() {
-        if (this._sseSubscribeId || this._sseTimeoutId) {
-            LOGGER.debug('cleaning up existing SSE listeners');
-        }
-
         if (this._sseSubscribeId) {
             sseService.removeHandler(this._sseSubscribeId);
             this._sseSubscribeId = null;
-        }
-        if (this._sseTimeoutId) {
-            clearTimeout(this._sseTimeoutId);
-            this._sseTimeoutId = null;
         }
     }
 
