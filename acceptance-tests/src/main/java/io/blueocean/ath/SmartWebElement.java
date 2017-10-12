@@ -13,58 +13,25 @@ import java.util.concurrent.TimeUnit;
  *
  * Accepts expressions for css and xpath, if the provided lookup starts with a /, XPath is used
  */
-public class LocalDriverElement implements WebElement {
-    private static ThreadLocal<WebDriver> CURRENT_WEB_DRIVER = new ThreadLocal<>();
-
+public class SmartWebElement implements WebElement {
+    private WebDriver driver;
     protected String expr;
+    protected By by;
 
-    public LocalDriverElement(String expr) {
+    public SmartWebElement(WebDriver driver, String expr) {
+        this.driver = driver;
         this.expr = expr;
-    }
-
-    public static void setCurrent(WebDriver driver) {
-        CURRENT_WEB_DRIVER.set(driver);
-    }
-
-    public static void close() {
-        WebDriver driver = CURRENT_WEB_DRIVER.get();
-        if (driver != null) {
-            try {
-                driver.close();
-            } catch(Exception e) {
-                // ignore, this happens when running individual tests sometimes
-            }
+        if (expr.startsWith("/")) {
+            by = By.xpath(expr);
+        } else {
+            by = By.cssSelector(expr);
         }
     }
 
-    /**
-     * Finds an element by the provided expression {@see LocalDriverElement}
-     * @param expr css or xpath; if it starts with a /, XPath is used
-     * @return a new LocalDriverElement
-     */
-    public static LocalDriverElement find(String expr) {
-        return new LocalDriverElement(expr);
-    }
-
-    /**
-     * Executes javascript, returns the result
-     * @param script javascript to execute
-     * @return the result
-     */
-    public static Object eval(String script) {
-        return new FluentWait<>(CURRENT_WEB_DRIVER.get())
-            .pollingEvery(100, TimeUnit.MILLISECONDS)
-            .withTimeout(WaitUtil.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
-            .ignoring(NoSuchElementException.class)
-            .until(ExpectedConditions.jsReturnsValue(script));
-    }
-
-    /**
-     * Navigates to a specified url
-     * @param url where to go
-     */
-    public static void go(String url) {
-        CURRENT_WEB_DRIVER.get().get(url);
+    public SmartWebElement(WebDriver driver, By by) {
+        this.driver = driver;
+        this.expr = by.toString();
+        this.by = by;
     }
 
     /**
@@ -72,7 +39,7 @@ public class LocalDriverElement implements WebElement {
      * @return from threadlocal
      */
     protected WebDriver getDriver() {
-        return CURRENT_WEB_DRIVER.get();
+        return driver;
     }
 
     /**
@@ -80,17 +47,10 @@ public class LocalDriverElement implements WebElement {
      * @return the elements found
      */
     public List<WebElement> getElements() {
-        By by;
-        if (expr.startsWith("/")) {
-            by = By.xpath(expr);
-        } else {
-            by = By.cssSelector(expr);
-        }
         return new FluentWait<>(getDriver())
             .pollingEvery(100, TimeUnit.MILLISECONDS)
             .withTimeout(WaitUtil.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
             .ignoring(NoSuchElementException.class)
-            //.until(ExpectedConditions.visibilityOfAllElementsLocatedBy(by));
             .until(ExpectedConditions.numberOfElementsToBeMoreThan(by, 0));
     }
 
@@ -129,6 +89,17 @@ public class LocalDriverElement implements WebElement {
     @Override
     public void sendKeys(CharSequence... charSequences) {
         forEach(e -> e.sendKeys(charSequences));
+    }
+
+    /**
+     * Sets the matched inputs to the given text
+     * @param text text to use
+     */
+    public void setText(CharSequence... text) {
+        forEach(e -> {
+            e.clear();
+            e.sendKeys(text);
+        });
     }
 
     @Override

@@ -44,7 +44,7 @@ public class AthModule extends AbstractModule {
 
         try {
             WebDriver driver = new RemoteWebDriver(new URL(webDriverUrl), capability);
-            LocalDriverElement.setCurrent(driver);
+            LocalDriver.setCurrent(driver);
 
             driver = new Augmenter().augment(driver);
             if (webDriverBrowserSize == null) {
@@ -84,7 +84,7 @@ public class AthModule extends AbstractModule {
             }
             bind(Properties.class).annotatedWith(Names.named("live")).toInstance(properties);
         } catch (Exception e) {
-            LocalDriverElement.close();
+            LocalDriver.destroy();
             throw new RuntimeException(e);
         }
 
