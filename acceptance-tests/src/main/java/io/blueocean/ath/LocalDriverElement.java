@@ -14,12 +14,27 @@ import java.util.concurrent.TimeUnit;
  * Accepts expressions for css and xpath, if the provided lookup starts with a /, XPath is used
  */
 public class LocalDriverElement implements WebElement {
-    static ThreadLocal<WebDriver> CURRENT_WEB_DRIVER = new ThreadLocal<>();
+    private static ThreadLocal<WebDriver> CURRENT_WEB_DRIVER = new ThreadLocal<>();
 
     protected String expr;
 
     public LocalDriverElement(String expr) {
         this.expr = expr;
+    }
+
+    public static void setCurrent(WebDriver driver) {
+        CURRENT_WEB_DRIVER.set(driver);
+    }
+
+    public static void close() {
+        WebDriver driver = CURRENT_WEB_DRIVER.get();
+        if (driver != null) {
+            try {
+                driver.close();
+            } catch(Exception e) {
+                // ignore, this happens when running individual tests sometimes
+            }
+        }
     }
 
     /**
