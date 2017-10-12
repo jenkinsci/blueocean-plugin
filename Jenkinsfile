@@ -45,14 +45,14 @@ node() {
           sh "node ./bin/checkshrinkwrap.js"
         }
 
-        stage('ATH - Jenkins 2.60.3') {
-          sh "cd acceptance-tests && ./run.sh -v=2.60.3 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+        stage('ATH - Jenkins 2.73.2') {
+          sh "cd acceptance-tests && ./run.sh -v=2.73.2 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
           junit 'acceptance-tests/target/surefire-reports/*.xml'
           archive 'acceptance-tests/target/screenshots/*'
         }
 
         if (env.JOB_NAME =~ 'blueocean-weekly-ath') {
-          stage('ATH - Jenkins 2.73.1') {
+          stage('ATH - Jenkins 2.73.2') {
             sh "cd acceptance-tests && ./run.sh -v=2.73.2 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
             junit 'acceptance-tests/target/surefire-reports/*.xml'
           }
