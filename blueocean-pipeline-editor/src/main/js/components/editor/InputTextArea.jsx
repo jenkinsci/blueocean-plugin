@@ -1,4 +1,3 @@
-// @flow
 import React from 'react';
 
 function cn(...args) {
@@ -25,7 +24,7 @@ function autoResizeHeight() {
     }
 }
 
-export default function InputText({ defaultValue, onChange, isRequired, hasError, onBlur }) {
+export default function InputTextArea({ defaultValue, onChange, isRequired, hasError, onBlur }) {
     return (
         <div className={cn('FormElement', hasError && 'u-error-state', isRequired && 'required')}>
             <div className="FormElement-children">
