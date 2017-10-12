@@ -179,7 +179,7 @@ class RunDetails extends Component {
         const base = { base: baseUrl };
 
         const failureCount = Math.min(99, currentRun.testSummary && parseInt(currentRun.testSummary.failed) || 0);
-        const testsBadge = failureCount && (
+        const testsBadge = failureCount > 0 && (
             <div className="TabBadgeIcon">{ failureCount }</div>
         );
 

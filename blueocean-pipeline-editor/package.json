@@ -11,15 +11,15 @@
     "test:watch": "jjsbuilder --tasks test:watch",
     "bundle": "jjsbuilder --tasks bundle",
     "bundle:watch": "jjsbuilder --tasks bundle:watch",
-    "mvnbuild": "jjsbuilder --tasks bundle",
-    "mvntest": "jjsbuilder --tasks test,lint"
+    "mvnbuild": "jjsbuilder --tasks lint,bundle",
+    "mvntest": "jjsbuilder --tasks test"
   },
   "author": "Josh McDonald <josh@joshmcdonald.info> (https://github.com/sophistifunk)",
   "license": "MIT",
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/blueocean-core-js": "0.0.166",
-    "@jenkins-cd/design-language": "0.0.155",
+    "@jenkins-cd/blueocean-core-js": "0.0.168",
+    "@jenkins-cd/design-language": "0.0.157",
     "@jenkins-cd/js-extensions": "0.0.39-kz-1",
     "@jenkins-blueocean/js-builder": "0.0.62",
     "@kadira/storybook": "2.20.1",
@@ -41,7 +41,7 @@
     "jsdom": "7.2.2",
     "mocha": "2.4.5",
     "nock": "8.0.0",
-    "react-addons-test-utils": "15.3.2"
+    "react-addons-test-utils": "15.4.2"
   },
   "dependencies": {
     "@jenkins-cd/js-modules": "0.0.10",
@@ -49,9 +49,9 @@
     "mobx": "2.6.0",
     "mobx-react": "3.5.7",
     "mobx-utils": "1.1.2",
-    "react": "15.3.2",
-    "react-addons-css-transition-group": "15.3.2",
-    "react-dom": "15.3.2",
+    "react": "15.4.2",
+    "react-addons-css-transition-group": "15.4.2",
+    "react-dom": "15.4.2",
     "react-router": "2.8.1"
   },
   "jenkinscd": {
