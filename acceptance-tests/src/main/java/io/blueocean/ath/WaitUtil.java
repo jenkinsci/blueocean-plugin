@@ -82,4 +82,12 @@ public class WaitUtil {
         };
     }
 
+    public void click(By by) {
+        until(ExpectedConditions.elementToBeClickable(by));
+    }
+
+    public void click(WebElement element) {
+        until(ExpectedConditions.elementToBeClickable(element));
+    }
+
 }
