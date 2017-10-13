@@ -241,7 +241,7 @@ gulp.task("validate", () => {
     }
 });
 
-var builder = require('@jenkins-blueocean/js-builder');
+var builder = require('@jenkins-cd/js-builder');
 
 builder.src([
     'src/js',
