@@ -33,6 +33,7 @@ class SvgIcon extends Component {
     onMouseEnter: () => {},
     onMouseLeave: () => {},
     viewBox: '0 0 24 24',
+    focusable: false,
   }; 
 
   state = {
@@ -50,6 +51,7 @@ class SvgIcon extends Component {
   render() {
     const {
       children,
+      focusable,
       onMouseEnter, // eslint-disable-line no-unused-vars
       onMouseLeave, // eslint-disable-line no-unused-vars
       size,
@@ -68,6 +70,7 @@ class SvgIcon extends Component {
     return (
       <svg
         {...other}
+        focusable={focusable}
         className="svg-icon"
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
