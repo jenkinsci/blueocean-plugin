@@ -25,6 +25,7 @@ export default class Pipeline extends Component {
         this.karaoke = KaraokeConfig.getPreference('runDetails.pipeline.karaoke').value === 'never' ? false : props.augmenter.karaoke; // initial karaoke state
         this.updateOnFinish = KaraokeConfig.getPreference('runDetails.pipeline.updateOnFinish').value;
         this.stopOnClick = KaraokeConfig.getPreference('runDetails.pipeline.stopKaraokeOnAnyNodeClick').value === 'always';
+        this.state = { tailLogs: false };
     }
     componentWillMount() {
         // starting pipeline service when we have an augmenter
@@ -98,6 +99,24 @@ export default class Pipeline extends Component {
         this.pager.clear();
         this.karaoke = false;
     }
+
+    /**
+     * User has explicitly opened a step log
+     */
+    userExpandedStep = (step) => {
+        if (step.isFocused !== undefined && step.isFocused) {
+            this.setState({ tailLogs: true });
+        }
+    };
+
+    /**
+     * User has explicitly opened a step log
+     */
+    userCollapsedStep = (step) => {
+        if (step.isFocused !== undefined && step.isFocused) {
+            this.setState({ tailLogs: false });
+        }
+    };
 
     /**
      * Listen for pipeline flow node events. We need to re-fetch in case of some events.
@@ -257,20 +276,20 @@ export default class Pipeline extends Component {
                     title={title}
                 />
             }
-            { this.pager.steps && !noResultsToDisplay &&
-                <Steps
-                    {...{
-                        key: this.pager.currentStepsUrl,
-                        nodeInformation: this.pager.steps.data,
-                        followAlong: augmenter.karaoke,
-                        augmenter,
-                        t,
-                        scrollToBottom,
-                        router,
-                        location,
-                    }}
+            {this.pager.steps && !noResultsToDisplay && (
+                <Steps onUserExpand={this.userExpandedStep}
+                       onUserCollapse={this.userCollapsedStep}
+                       tailLogs={this.state.tailLogs}
+                       key={this.pager.currentStepsUrl}
+                       nodeInformation={this.pager.steps.data}
+                       followAlong={augmenter.karaoke}
+                       augmenter={augmenter}
+                       t={t}
+                       scrollToBottom={scrollToBottom}
+                       router={router}
+                       location={location}
                 />
-            }
+            )}
 
             { !this.pager.pending && !isPipelineQueued && noResultsToDisplay &&
                 <NoSteps
