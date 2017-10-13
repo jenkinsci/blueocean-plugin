@@ -7,6 +7,8 @@ class SvgIcon extends Component {
      * Elements passed into the SVG Icon.
      */
     children: PropTypes.node,
+    /** normally you do not want to have the svg focusable */
+    focusable: PropTypes.bool,      
     /** @ignore */
     onMouseEnter: PropTypes.func,
     /** @ignore */
