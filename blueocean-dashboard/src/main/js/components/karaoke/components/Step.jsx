@@ -72,7 +72,8 @@ export class Step extends Component {
         const { step, location: { hash: anchorName } } = props;
         const stepFocus = step.isFocused !== undefined && step.isFocused;
         const stateFocus = this.state ? this.state.expanded : undefined;
-        let isFocused = stateFocus || (stepFocus && props.tailLogs);
+        const isInputStep = step && step.isInputStep;
+        let isFocused = isInputStep || stateFocus || (stepFocus && props.tailLogs);
         // e.g. #step-10-log-1 or #step-10
         if (anchorName) {
             logger.debug('expandAnchor', anchorName);
