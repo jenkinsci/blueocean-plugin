@@ -86,7 +86,7 @@ export class TimeDuration extends Component {
     }
 
     static format(value, t, locale) {
-        const displayFormat = t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' });
+        const displayFormat = t('common.date.duration.display.format', { defaultValue: 'd[d] h[h] m[m] s[s]' });
 
         moment.locale(locale);
 
@@ -122,14 +122,10 @@ export class TimeDuration extends Component {
                 t,
             } = this.props;
 
-            const liveFormat = t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' });
+            const duration = TimeDuration.format(millis, t, locale);
             const hintFormat = t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' });
 
             moment.locale(locale);
-            // in case we are in live update we are interested in seconds
-            const duration = this.props.liveUpdate ?
-                moment.duration(millis).format(liveFormat) : TimeDuration.format(millis, t, locale);
-
             const hint = this.props.hint ?
                 this.props.hint : moment.duration(millis).format(hintFormat);
 
