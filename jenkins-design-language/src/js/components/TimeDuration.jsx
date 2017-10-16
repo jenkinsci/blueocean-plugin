@@ -44,8 +44,8 @@ export class TimeDuration extends Component {
         super(props);
         // track how much time has elapsed since live updating tracking started
         this.state = { elapsed: 0 };
-        const {updatePeriod = 30000} = this.props;
-        this.timerPeriodMillis = typeof updatePeriod !== 'number' || isNaN(updatePeriod) ? 30000 : updatePeriod;
+        const {updatePeriod = 5000} = this.props;
+        this.timerPeriodMillis = typeof updatePeriod !== 'number' || isNaN(updatePeriod) ? 5000 : updatePeriod;
         this.clearIntervalId = 0;
 
     }
@@ -85,6 +85,21 @@ export class TimeDuration extends Component {
         });
     }
 
+    static format(value, t, locale) {
+        const displayFormat = t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' });
+
+        moment.locale(locale);
+
+        if (!isNaN(value)) {
+            if(value < 1000) {
+                return '<1s';
+            }
+            return moment.duration(millis).format(displayFormat);
+        } else {
+            return '-';
+        }
+    }
+
     componentWillUnmount() {
         if (this.clearIntervalId) {
             clearInterval(this.clearIntervalId);
@@ -101,16 +116,19 @@ export class TimeDuration extends Component {
                     <span title={this.props.hint ? this.props.hint : '<1s'}>&#x3C;1s</span>
                 );
             }
+
             const {
                 locale = 'en',
-                displayFormat = 'd[d] h[h] m[m] s[s]',
-                liveFormat = 'd[d] h[h] m[m] s[s]',
-                hintFormat = 'M [months], d [days], h [hours], m [minutes], s [seconds]',
+                t,
             } = this.props;
+
+            const liveFormat = t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' });
+            const hintFormat = t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' });
+
             moment.locale(locale);
             // in case we are in live update we are interested in seconds
             const duration = this.props.liveUpdate ?
-                moment.duration(millis).format(liveFormat) : moment.duration(millis).format(displayFormat);
+                moment.duration(millis).format(liveFormat) : this.format(millis, t, locale);
 
             const hint = this.props.hint ?
                 this.props.hint : moment.duration(millis).format(hintFormat);
@@ -130,7 +148,5 @@ TimeDuration.propTypes = {
     hint: PropTypes.string,
     liveUpdate: PropTypes.bool,
     locale: PropTypes.string,
-    displayFormat: PropTypes.string,
-    liveFormat: PropTypes.string,
-    hintFormat: PropTypes.string,
+    t: PropTypes.func,
 };
