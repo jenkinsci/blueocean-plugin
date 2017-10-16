@@ -94,7 +94,7 @@ export class TimeDuration extends Component {
             if(value < 1000) {
                 return '<1s';
             }
-            return moment.duration(millis).format(displayFormat);
+            return moment.duration(value).format(displayFormat);
         } else {
             return '-';
         }
@@ -128,7 +128,7 @@ export class TimeDuration extends Component {
             moment.locale(locale);
             // in case we are in live update we are interested in seconds
             const duration = this.props.liveUpdate ?
-                moment.duration(millis).format(liveFormat) : this.format(millis, t, locale);
+                moment.duration(millis).format(liveFormat) : TimeDuration.format(millis, t, locale);
 
             const hint = this.props.hint ?
                 this.props.hint : moment.duration(millis).format(hintFormat);
