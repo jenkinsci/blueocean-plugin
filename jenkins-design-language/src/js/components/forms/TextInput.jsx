@@ -8,7 +8,7 @@ import { TextControl } from './TextControl';
 function NestedIcon(props) {
     return (
         <div className={`TextInput-icon ${props.className}`}>
-            <Icon icon={props.icon} color="#999999" />
+            <Icon icon={props.icon} />
         </div>
     );
 }
@@ -24,11 +24,12 @@ export class TextInput extends React.Component {
     render() {
         const classLeft = this.props.iconLeft ? 'u-icon-left' : '';
         const classRight = this.props.iconRight ? 'u-icon-right': '';
+        const ariaLabel = this.props['aria-label'] || this.props.placeholder;
 
         return (
             <TextControl {...this.props} className={`TextInput ${this.props.className} ${classLeft} ${classRight}`}>
                 { classLeft && <NestedIcon className={classLeft} icon={this.props.iconLeft} /> }
-                <input type="text" className="TextInput-control" { ...{ name: this.props.name } } />
+                <input aria-label={ ariaLabel } type="text" className="TextInput-control" { ...{ name: this.props.name } } />
                 { classRight && <NestedIcon className={classRight} icon={this.props.iconRight} /> }
             </TextControl>
         );
@@ -46,6 +47,7 @@ TextInput.propTypes = {
     iconRight: PropTypes.string,
     onChange: PropTypes.func,
     onBlur: PropTypes.func,
+    'aria-label': PropTypes.string
 };
 
 TextInput.defaultProps = {

@@ -4,6 +4,7 @@ import com.google.common.io.Resources;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.CustomJenkinsServer;
 import io.blueocean.ath.Login;
+import io.blueocean.ath.Retry;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.pages.blue.EditorPage;
 import io.blueocean.ath.pages.blue.GithubCreationPage;
@@ -116,9 +117,9 @@ public class GithubCreationTest{
      * TODO: Add PR coverage.
      */
     @Test
+   // @Retry(3)
     public void testCreatePipelineFull() throws IOException {
-        URL jenkinsFileUrl = Resources.getResource(this.getClass(), "Jenkinsfile");
-        byte[] content = Resources.toByteArray(jenkinsFileUrl);
+        byte[] content = "stage('build') { echo 'yes' }".getBytes("UTF-8");
         GHContentUpdateResponse updateResponse = ghRepository.createContent(content, "Jenkinsfile", "Jenkinsfile", "master");
         ghRepository.createRef("refs/heads/branch1", updateResponse.getCommit().getSHA1());
         logger.info("Created master and branch1 branches in " + repo);
@@ -128,6 +129,7 @@ public class GithubCreationTest{
     }
 
     @Test
+    @Retry(3)
     public void testTokenValidation_failed() throws IOException {
         jenkins.deleteUserDomainCredential("alice", "blueocean-github-domain", "github");
         creationPage.navigateToCreation();

@@ -2,6 +2,7 @@ import 'babel-polyfill';
 import React from 'react';
 import { assert } from 'chai';
 import { mount } from 'enzyme';
+import '../utils/rAf';
 
 import { Dropdown } from '../../../src/js/components';
 

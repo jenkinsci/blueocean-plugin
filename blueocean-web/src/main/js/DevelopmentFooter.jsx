@@ -14,17 +14,11 @@ export class DevelopmentFooter extends Component {
             return null;
         }
 
-        let includeBranch = true;
-
-        if(!revisionInfo.branch.includes('(no branch)')) {
-            includeBranch = false;
-        }
         return (
           <div className="development-footer">
               <span> {AppConfig.getConfig().version}&nbsp;</span>
               <span> &#183; Core {AppConfig.getJenkinsConfig().version}&nbsp;</span>
               <span> &#183; {revisionInfo.sha.substring(0,7)}&nbsp; </span>
-              { includeBranch && <span> &#183; {revisionInfo.branch}&nbsp;</span> }
               <span> &#183; {moment(revisionInfo.timestamp).format('Do MMMM YYYY hh:mm A')}</span>
               
           </div>

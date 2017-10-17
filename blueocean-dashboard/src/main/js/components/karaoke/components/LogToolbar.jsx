@@ -24,7 +24,7 @@ export default class LogToolbar extends Component {
                     href: logUrl,
                 }}
                 >
-                    <Icon size={24} {...{ color: '#4a4a4a', icon: 'ActionLaunch' }} />
+                    <Icon icon="ActionLaunch" size={24} />
                 </a>
                 <a
                 {...{
@@ -32,7 +32,7 @@ export default class LogToolbar extends Component {
                     href: `${logUrl}&download=true`,
                 }}
                 >
-                    <Icon size={24} {...{ color: '#4a4a4a', icon: 'FileFileDownload' }} />
+                    <Icon icon="FileFileDownload" size={24} />
                 </a>
             </div>
         </div>);

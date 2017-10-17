@@ -1,0 +1,6 @@
+# Lines starting with '#' are comments.
+# Each line is a file pattern followed by one or more owners.
+# See: https://github.com/blog/2392-introducing-code-owners for details
+
+# We need to keep tight control on dependencies
+pom.xml    @vivek @michaelneale @kzantow

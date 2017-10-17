@@ -12,7 +12,7 @@
   "rules": {
     "eol-last": 1,
     "no-unused-vars": [2, {"varsIgnorePattern": "^React$"}],
-    "max-len": [1, 160, 4],
+    "max-len": 0,
     "no-underscore-dangle": [0],
     "object-shorthand": [0, "always"],
     "quote-props": [0, "as-needed"],

@@ -12,7 +12,7 @@ function OrgRenderer(props) {
     return (
         <div className="org-list-item">
             { avatar && <img className="avatar" width="30" height="30" src={`${avatar}&s=50`} /> }
-            { !avatar && <Icon className="avatar" icon="ActionGroupWork" size={30} color="#4a4a4a" /> }
+            { !avatar && <Icon className="avatar" icon="ActionGroupWork" size={30} /> }
             <span>{name}</span>
         </div>
     );

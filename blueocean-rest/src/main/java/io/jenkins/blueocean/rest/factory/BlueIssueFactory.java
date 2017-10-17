@@ -14,9 +14,13 @@ import java.util.LinkedHashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public abstract class BlueIssueFactory implements ExtensionPoint {
 
+
+    private static final Logger LOGGER = Logger.getLogger(BlueIssueFactory.class.getName());
     /**
      * @see #resolve(Job)
      * @param job job
@@ -42,17 +46,21 @@ public abstract class BlueIssueFactory implements ExtensionPoint {
     public static Collection<BlueIssue> resolve(Job job) {
         LinkedHashSet<BlueIssue> allIssues = Sets.newLinkedHashSet();
         for (BlueIssueFactory factory : ExtensionList.lookup(BlueIssueFactory.class)) {
-            Collection<BlueIssue> issues = factory.getIssues(job);
-            if (issues == null) {
-                continue;
+            try {
+                Collection<BlueIssue> issues = factory.getIssues(job);
+                if (issues == null) {
+                    continue;
+                }
+                allIssues.addAll(issues);
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING,"Unable to fetch issues for job " + e.getMessage(), e);
             }
-            allIssues.addAll(issues);
         }
         return allIssues;
     }
 
     /**
-     * Finds any JIRA tickets associated with the changeset
+     * Finds any issues associated with the changeset
      * e.g. a commit message could be "TICKET-123 fix all the things" and be associated with TICKET-123 in JIRA
      * @param changeSetEntry entry
      * @return issues representing the change
@@ -60,11 +68,15 @@ public abstract class BlueIssueFactory implements ExtensionPoint {
     public static Collection<BlueIssue> resolve(ChangeLogSet.Entry changeSetEntry) {
         LinkedHashSet<BlueIssue> allIssues = Sets.newLinkedHashSet();
         for (BlueIssueFactory factory : ExtensionList.lookup(BlueIssueFactory.class)) {
-            Collection<BlueIssue> issues = factory.getIssues(changeSetEntry);
-            if (issues == null) {
-                continue;
+            try {
+                Collection<BlueIssue> issues = factory.getIssues(changeSetEntry);
+                if (issues == null) {
+                    continue;
+                }
+                allIssues.addAll(issues);
+            } catch (Exception e) {
+                LOGGER.log(Level.WARNING,"Unable to fetch issues for changeSetEntry " + e.getMessage(), e);
             }
-            allIssues.addAll(issues);
         }
         return allIssues;
     }

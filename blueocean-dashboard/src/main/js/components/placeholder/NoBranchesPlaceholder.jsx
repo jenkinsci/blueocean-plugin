@@ -7,7 +7,7 @@ import Icon from './Icon';
 
 
 export function NoBranchesPlaceholder(props) {
-    const { t } = props;
+    const { t, primaryAction } = props;
 
     const columns = [
         { width: 40, head: { text: 40 }, cell: { icon: 20 } },
@@ -20,12 +20,29 @@ export function NoBranchesPlaceholder(props) {
         { width: 20, head: {}, cell: { icon: 20 } },
     ];
 
+    let actions;
+    if (primaryAction) {
+        actions = (
+            <div>
+                {primaryAction}
+                <a href={t('pipelinedetail.placeholder.nobranches.linkhref')} className="btn-secondary" target="_blank">
+                    {t('pipelinedetail.placeholder.nobranches.linktext')}
+                </a>
+            </div>
+        );
+    } else {
+        actions = (
+            <a href={t('pipelinedetail.placeholder.nobranches.linkhref')} className="btn" target="_blank">
+                {t('pipelinedetail.placeholder.nobranches.linktext')}
+            </a>
+        );
+    }
+
     const content = {
         icon: Icon.PULL_REQUEST,
         title: t('pipelinedetail.placeholder.nobranches.title'),
         message: t('pipelinedetail.placeholder.nobranches.message'),
-        linkText: t('pipelinedetail.placeholder.nobranches.linktext'),
-        linkHref: t('pipelinedetail.placeholder.nobranches.linkhref'),
+        linkElement: actions,
     };
 
     return (
@@ -37,5 +54,6 @@ export function NoBranchesPlaceholder(props) {
 }
 
 NoBranchesPlaceholder.propTypes = {
+    primaryAction: PropTypes.object,
     t: PropTypes.func,
 };

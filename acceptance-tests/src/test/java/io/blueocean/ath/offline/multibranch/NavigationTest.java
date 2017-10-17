@@ -1,7 +1,7 @@
 package io.blueocean.ath.offline.multibranch;
 
 import io.blueocean.ath.ATHJUnitRunner;
-import io.blueocean.ath.BaseTest;
+import io.blueocean.ath.BlueOceanAcceptanceTest;
 import io.blueocean.ath.GitRepositoryRule;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.Folder;
@@ -21,7 +21,7 @@ import java.io.IOException;
  * This class is for testing anything to do with click on links in Mulitbranch pipelines.
  */
 @RunWith(ATHJUnitRunner.class)
-public class NavigationTest extends BaseTest {
+public class NavigationTest extends BlueOceanAcceptanceTest {
 
     @Rule @Inject
     public GitRepositoryRule git;

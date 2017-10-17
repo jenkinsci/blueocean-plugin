@@ -9,12 +9,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.introspect.VisibilityChecker;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.model.User;
 import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.ErrorMessage;
-import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
 import io.jenkins.blueocean.rest.Reachable;
@@ -39,18 +37,15 @@ import org.kohsuke.github.HttpException;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
-import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.json.JsonBody;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import javax.servlet.ServletException;
 import java.io.IOException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -258,7 +253,7 @@ public class GithubScm extends AbstractScm {
 
             HttpURLConnection connection = connect(String.format("%s/%s", getUri(), "user"),accessToken);
             validateAccessTokenScopes(connection);
-            String data = IOUtils.toString(connection.getInputStream());
+            String data = IOUtils.toString(HttpRequest.getInputStream(connection));
             GHUser user = GithubScm.om.readValue(data, GHUser.class);
 
             if(user.getEmail() != null){
@@ -300,14 +295,7 @@ public class GithubScm extends AbstractScm {
     }
 
     protected static HttpURLConnection connect(String apiUrl, String accessToken) throws IOException {
-        HttpURLConnection connection = (HttpURLConnection) new URL(apiUrl).openConnection();
-
-        connection.setDoOutput(true);
-        connection.setRequestMethod("GET");
-        connection.setRequestProperty("Content-type", "application/json");
-        connection.setRequestProperty("Authorization", "token "+accessToken);
-        connection.connect();
-
+        HttpURLConnection connection = HttpRequest.get(apiUrl).withAuthorizationToken(accessToken).connect();
         int status = connection.getResponseCode();
         if(status == 401){
             throw new ServiceException.PreconditionRequired("Invalid accessToken");

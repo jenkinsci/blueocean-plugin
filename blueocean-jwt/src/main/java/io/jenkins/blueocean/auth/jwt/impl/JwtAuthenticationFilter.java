@@ -4,7 +4,6 @@ import hudson.Extension;
 import hudson.init.Initializer;
 import hudson.util.PluginServletFilter;
 import io.jenkins.blueocean.auth.jwt.JwtTokenVerifier;
-import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import org.acegisecurity.Authentication;
 import org.acegisecurity.context.SecurityContext;
 import org.acegisecurity.context.SecurityContextHolder;
@@ -21,6 +20,8 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import java.io.IOException;
 
+import static io.jenkins.blueocean.commons.BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION_PROPERTY;
+
 /**
  * {@link Filter} that processes JWT token
  *
@@ -32,6 +33,7 @@ public class JwtAuthenticationFilter implements Filter {
      * Used to mark requests that had a valid JWT token.
      */
     private static final String JWT_TOKEN_VALIDATED = JwtAuthenticationFilter.class.getName()+".validated";
+    private boolean isJwtEnabled;
 
     @Initializer(fatal=false)
     public static void init() throws ServletException {
@@ -40,7 +42,15 @@ public class JwtAuthenticationFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
-        // noop
+        /**
+         * Initialize jwt enabled flag by reading BLUEOCEAN_FEATURE_JWT_AUTHENTICATION_PROPERTY jvm property
+         *
+         * {@link io.jenkins.blueocean.commons.BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION} doesn't
+         * work in certain test scenario - specially when test sets this JVM property to enable JWT but this class has
+         * already been loaded setting it to false.
+         *
+         */
+        this.isJwtEnabled = Boolean.getBoolean(BLUEOCEAN_FEATURE_JWT_AUTHENTICATION_PROPERTY);
     }
 
     @Override
@@ -94,7 +104,7 @@ public class JwtAuthenticationFilter implements Filter {
      * Returns true for requests that JWT token processing should apply.
      */
     protected boolean shouldApply(HttpServletRequest req) {
-        if (!BlueOceanConfigProperties.BLUEOCEAN_FEATURE_JWT_AUTHENTICATION)
+        if (!isJwtEnabled)
             return false;
 
         String path = req.getRequestURI().substring(req.getContextPath().length());

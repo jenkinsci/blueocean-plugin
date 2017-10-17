@@ -69,25 +69,12 @@ export default class ResourceLoadTracker {
      *
      * @param extensionPointName The extension point name.
      */
-    onMount(extensionPointName, callback) {
+    onMount(extensionPointName) {
         const pointCSS = this.pointCSSs[extensionPointName];
         if (pointCSS) {
-            let counter = 0;
-
-            function onLoad() {
-                counter++;
-                if (counter === pointCSS.length) {
-                    callback();
-                }
-            }
-
             for (var i = 0; i < pointCSS.length; i++) {
-                this._requireCSS(pointCSS[i], () => {
-                    onLoad();
-                });
+                this._requireCSS(pointCSS[i]);
             }
-        } else {
-            callback();
         }
     }
 

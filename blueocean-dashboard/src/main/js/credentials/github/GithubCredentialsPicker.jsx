@@ -17,7 +17,7 @@ function getCreateTokenUrl(apiUrl) {
         baseUrl = GithubApiUtils.extractProtocolHost(apiUrl);
     }
 
-    return `${baseUrl}/settings/tokens/new?scopes=repo,read:user,user:email`;
+    return `${baseUrl}/settings/tokens/new?scopes=repo,read:user,user:email,write:repo_hook`;
 }
 
 

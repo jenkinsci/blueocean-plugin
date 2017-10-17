@@ -147,11 +147,9 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
         return false;
     }
 
+    @SuppressWarnings("unchecked")
     protected boolean isItemUsingGithubScm(@Nonnull Item item) {
-        if (item instanceof OrganizationFolder) {
-            List<SCMNavigator> navigators = ((OrganizationFolder) item).getSCMNavigators();
-            return (!navigators.isEmpty() && navigators.get(0) instanceof GitHubSCMNavigator);
-        } else if (item instanceof MultiBranchProject) {
+        if (item instanceof MultiBranchProject) {
             List<SCMSource> sources = ((MultiBranchProject) item).getSCMSources();
             return (!sources.isEmpty() && sources.get(0) instanceof GitHubSCMSource);
         }

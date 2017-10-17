@@ -5,7 +5,7 @@ import com.google.inject.assistedinject.AssistedInject;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.factory.BranchPageFactory;
-import io.blueocean.ath.model.Pipeline;
+import io.blueocean.ath.model.AbstractPipeline;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.annotations.Nullable;
 import org.junit.Assert;
@@ -17,13 +17,12 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import javax.inject.Inject;
 import java.net.URLEncoder;
-import java.util.List;
 
 public class ActivityPage {
     private Logger logger = Logger.getLogger(ActivityPage.class);
 
     private WebDriver driver;
-    private Pipeline pipeline;
+    private AbstractPipeline pipeline;
     @Inject
     @BaseUrl
     String base;
@@ -41,7 +40,7 @@ public class ActivityPage {
     }
 
     @AssistedInject
-    public ActivityPage(WebDriver driver, @Assisted @Nullable Pipeline pipeline) {
+    public ActivityPage(WebDriver driver, @Assisted @Nullable AbstractPipeline pipeline) {
         this.pipeline = pipeline;
         this.driver = driver;
         PageFactory.initElements(driver, this);
@@ -54,7 +53,7 @@ public class ActivityPage {
     }
 
     public void checkPipeline() {
-        Assert.assertNotNull("Pipeline is null", pipeline);
+        Assert.assertNotNull("AbstractPipeline is null", pipeline);
     }
 
     public ActivityPage checkUrl() {

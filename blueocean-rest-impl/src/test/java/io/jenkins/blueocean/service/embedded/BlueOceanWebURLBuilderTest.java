@@ -63,7 +63,7 @@ public class BlueOceanWebURLBuilderTest {
     private BlueOceanUrlMapper urlMapper;
 
     @Rule
-    public JenkinsRule jenkinsRule = new JenkinsRule();
+    public JenkinsRule jenkinsRule = new BaseTest.BaseTestJenkinsRule();
 
     @Before
     public void setup(){

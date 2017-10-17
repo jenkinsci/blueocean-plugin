@@ -7,7 +7,7 @@ export class PageTabs extends Component {
         const { base, children } = this.props;
         return (
             <nav className="Header-pageTabs">
-                {React.Children.map(children, child => React.cloneElement(child, {base}))}
+                {React.Children.map(children, child => child && React.cloneElement(child, {base}))}
             </nav>
         );
     }

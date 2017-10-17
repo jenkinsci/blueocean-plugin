@@ -8,6 +8,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineScm;
+import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
 import org.acegisecurity.Authentication;
 import org.kohsuke.stapler.StaplerRequest;
@@ -59,7 +60,12 @@ public class ScmResourceImpl extends BluePipelineScm {
     }
 
     private @Nonnull User checkPermission(){
-        ACL acl = Jenkins.getInstance().getACL();
+        ACL acl;
+        if(item.getParent() != null && item.getParent() instanceof OrganizationFolder){
+            acl = ((OrganizationFolder) item.getParent()).getACL();
+        }else{
+            acl = item.getACL();
+        }
         Authentication a = Jenkins.getAuthentication();
         User user = User.get(a);
         if(user == null){

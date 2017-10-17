@@ -15,6 +15,7 @@ import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueInputStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
 import io.jenkins.blueocean.service.embedded.rest.LogAppender;
 import io.jenkins.blueocean.service.embedded.rest.LogResource;
@@ -101,6 +102,11 @@ public class PipelineStepImpl extends BluePipelineStep {
     @Override
     public Long getDurationInMillis() {
         return node.getTiming().getTotalDurationMillis();
+    }
+
+    @Override
+    public String getStartTimeString(){
+        return AbstractRunImpl.DATE_FORMAT.print(getStartTime().getTime());
     }
 
     @Override

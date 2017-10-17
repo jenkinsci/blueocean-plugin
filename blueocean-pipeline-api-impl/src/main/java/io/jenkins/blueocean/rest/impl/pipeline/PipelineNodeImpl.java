@@ -22,6 +22,7 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
 import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
+import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
 import io.jenkins.blueocean.service.embedded.rest.BlueJUnitTestResult;
 import io.jenkins.blueocean.service.embedded.rest.BlueTestResultContainerImpl;
@@ -102,6 +103,13 @@ public class PipelineNodeImpl extends BluePipelineNode {
             return null;
         }
         return new Date(nodeTime);
+    }
+
+    public String getStartTimeString(){
+        if(getStartTime() == null) {
+            return null;
+        }
+        return AbstractRunImpl.DATE_FORMAT.print(getStartTime().getTime());
     }
 
     @Override

@@ -20,6 +20,7 @@ export class PipelineRecord extends Record({
     numberOfSuccessfulBranches: 0,
     numberOfSuccessfulPullRequests: 0,
     organization: '',
+    scmSource: {},
     totalNumberOfBranches: 0,
     totalNumberOfPullRequests: 0,
     weatherScore: 0,

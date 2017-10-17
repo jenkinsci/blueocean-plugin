@@ -1,0 +1,23 @@
+{
+  "id" : "d24751e6-9915-30ad-8609-770b25c18588",
+  "request" : {
+    "url" : "/rest/api/1.0/projects/~vivek/repos/?start=0&limit=100",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-_vivek-repos-ah0x0.json",
+    "headers" : {
+      "X-AREQUESTID" : "@1VAZMAQx824x462x0",
+      "X-AUSERID" : "52",
+      "X-AUSERNAME" : "VIVEK",
+      "Cache-Control" : "no-cache, no-transform",
+      "Vary" : "X-AUSERNAME,Accept-Encoding",
+      "Transfer-Encoding" : "chunked",
+      "X-Content-Type-Options" : "nosniff",
+      "Content-Type" : "application/json;charset=UTF-8",
+      "Date" : "Fri, 25 Aug 2017 20:44:02 GMT"
+    }
+  },
+  "uuid" : "d24751e6-9915-30ad-8609-770b25c18588"
+}

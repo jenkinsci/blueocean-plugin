@@ -1,0 +1,158 @@
+package io.jenkins.blueocean.blueocean_git_pipeline;
+
+import com.cloudbees.plugins.credentials.CredentialsMatchers;
+import com.cloudbees.plugins.credentials.CredentialsProvider;
+import com.cloudbees.plugins.credentials.common.StandardCredentials;
+import com.cloudbees.plugins.credentials.domains.DomainRequirement;
+import hudson.Extension;
+import hudson.model.User;
+import hudson.util.HttpResponses;
+import io.jenkins.blueocean.commons.ErrorMessage;
+import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.AbstractScm;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmFactory;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmOrganization;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
+import io.jenkins.blueocean.rest.model.Container;
+import jenkins.model.Jenkins;
+import jenkins.plugins.git.AbstractGitSCMSource;
+import jenkins.plugins.git.GitSCMFileSystem;
+import jenkins.scm.api.SCMSourceOwner;
+import net.sf.json.JSONException;
+import net.sf.json.JSONObject;
+import org.eclipse.jgit.lib.Repository;
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.json.JsonBody;
+
+import javax.annotation.Nonnull;
+import java.io.IOException;
+import java.util.List;
+
+public class GitScm extends AbstractScm {
+    public static final String ID = "git";
+
+    protected final Reachable parent;
+
+    public GitScm(Reachable parent) {
+        this.parent = parent;
+    }
+
+    @Override
+    public Link getLink() {
+        return parent.getLink().rel("git");
+    }
+
+    @Override
+    @Nonnull
+    public String getId() {
+        return ID;
+    }
+
+    @Override
+    @Nonnull
+    public String getUri() {
+        return "";
+    }
+
+    @Override
+    public String getCredentialId() {
+        return null;
+    }
+
+    @Override
+    public Container<ScmOrganization> getOrganizations() {
+        return null;
+    }
+
+    @Override
+    public ScmServerEndpointContainer getServers() {
+        return null;
+    }
+
+    @Override
+    public HttpResponse validateAndCreate(@JsonBody JSONObject request) {
+        boolean requirePush = request.has("requirePush");
+        final String repositoryUrl;
+        final AbstractGitSCMSource scmSource;
+        if (request.has("repositoryUrl")) {
+            scmSource = null;
+            repositoryUrl = request.getString("repositoryUrl");
+        } else {
+            try {
+                String fullName = request.getJSONObject("pipeline").getString("fullName");
+                SCMSourceOwner item = Jenkins.getInstance().getItemByFullName(fullName, SCMSourceOwner.class);
+                if (item != null) {
+                    scmSource = (AbstractGitSCMSource) item.getSCMSources().iterator().next();
+                    repositoryUrl = scmSource.getRemote();
+                } else {
+                    return HttpResponses.errorJSON("No repository found for: " + fullName);
+                }
+            } catch(JSONException e) {
+                return HttpResponses.errorJSON("No repositoryUrl or pipeline.fullName specified in request.");
+            } catch(RuntimeException e) {
+                return HttpResponses.errorWithoutStack(ServiceException.INTERNAL_SERVER_ERROR, e.getMessage());
+            }
+        }
+
+        try {
+            String credentialId = request.getString("credentialId");
+            User user = User.current();
+            if (user == null) {
+                throw new ServiceException.UnauthorizedException("Not authenticated");
+            }
+            final StandardCredentials creds = CredentialsMatchers.firstOrNull(
+                CredentialsProvider.lookupCredentials(
+                    StandardCredentials.class,
+                    Jenkins.getInstance(),
+                    Jenkins.getAuthentication(),
+                    (List<DomainRequirement>) null),
+                CredentialsMatchers.allOf(CredentialsMatchers.withId(credentialId))
+            );
+
+            if (creds == null) {
+                throw new ServiceException.NotFoundException("No credentials found for: " + credentialId);
+            }
+
+            if (requirePush) {
+                String branch = request.getString("branch");
+                new GitBareRepoReadSaveRequest(scmSource, branch, null, branch, null, null)
+                    .invokeOnScm(new GitSCMFileSystem.FSFunction<Void>() {
+                         @Override
+                         public Void invoke(Repository repository) throws IOException, InterruptedException {
+                             GitUtils.validatePushAccess(repository, repositoryUrl, creds);
+                             return null;
+                         }
+                     });
+            } else {
+                List<ErrorMessage.Error> errors = GitUtils.validateCredentials(repositoryUrl, creds);
+                if (!errors.isEmpty()) {
+                    throw new ServiceException.UnauthorizedException(errors.get(0).getMessage());
+                }
+            }
+        } catch(Exception e) {
+            return HttpResponses.errorWithoutStack(ServiceException.PRECONDITION_REQUIRED, e.getMessage());
+        }
+
+        return HttpResponses.okJSON();
+    }
+
+    @Extension
+    public static class GitScmFactory extends ScmFactory {
+        @Override
+        public Scm getScm(@Nonnull String id, @Nonnull Reachable parent) {
+            if(id.equals(ID)){
+                return new GitScm(parent);
+            }
+            return null;
+        }
+
+        @Nonnull
+        @Override
+        public Scm getScm(Reachable parent) {
+            return new GitScm(parent);
+        }
+    }
+}

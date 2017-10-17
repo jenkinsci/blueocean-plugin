@@ -6,6 +6,8 @@ import io.jenkins.blueocean.auth.jwt.JwtToken;
 import io.jenkins.blueocean.auth.jwt.SigningKey;
 import io.jenkins.blueocean.auth.jwt.SigningPublicKey;
 import io.jenkins.blueocean.commons.ServiceException;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 
 import java.io.IOException;
 import java.security.interfaces.RSAPublicKey;
@@ -27,12 +29,13 @@ import static java.util.logging.Level.*;
 public class SigningKeyProviderImpl extends JwtSigningKeyProvider {
     private static final Logger LOGGER = Logger.getLogger(SigningKeyProviderImpl.class.getName());
     private static final Pattern YYYYMM = Pattern.compile("[0-9]{6}");
+    private static final DateTimeFormatter DATE_FORMAT = DateTimeFormat.forPattern("yyyyMM");
 
     private final AtomicReference<JwtRsaDigitalSignatureKey> key = new AtomicReference<>();
 
     @Override
     public SigningKey select(JwtToken token) {
-        String id = new SimpleDateFormat("yyyyMM").format(new Date());
+        String id = DATE_FORMAT.print(new Date().getTime());
         JwtRsaDigitalSignatureKey k = key.get();
         if (k==null || !k.getId().equals(id))
             key.set(k=new JwtRsaDigitalSignatureKey(id));

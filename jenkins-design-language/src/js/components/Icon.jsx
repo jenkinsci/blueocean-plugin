@@ -1,13 +1,17 @@
 import React, { PropTypes } from 'react';
 import * as IconId from './material-ui/svg-icons';
 
-export const Icon = props => {
-    const Icon = IconId[props.icon];
+export function Icon(props) {
+    const ChildIcon = IconId[props.icon];
+
+    if (!ChildIcon) {
+        return null;
+    }
 
     return (
-        <Icon {...props} />
+        <ChildIcon {...props} />
     );
-};
+}
 
 Icon.propTypes = {
     children: PropTypes.element,

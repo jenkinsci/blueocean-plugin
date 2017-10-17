@@ -75,9 +75,9 @@ export default class BbRepositoryStep extends React.Component {
                 { flowManager.repositories.length === 0 &&
                 <div className="container">
                     <p className="instructions">
-                        {t('creation.bitbucket.repository.no_repository', { 0: orgName })}
+                        {t('creation.core.repository.no_repository', { 0: orgName })}
 
-                        {t('creation.bitbucket.organization.pick_different')}
+                        {t('creation.core.organization.pick_different')}
                     </p>
 
                     <button onClick={() => this._exit()}>{t('creation.core.intro.invalid_permission_button')}</button>

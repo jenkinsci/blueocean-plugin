@@ -1,5 +1,5 @@
 import { assert } from 'chai';
-import { Promise } from 'es6-promise';
+import Promise from 'bluebird';
 
 import GitFlowManager from '../../../../main/js/creation/git/GitFlowManager';
 

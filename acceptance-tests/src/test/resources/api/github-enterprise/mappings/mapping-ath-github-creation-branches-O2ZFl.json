@@ -1,0 +1,37 @@
+{
+  "id" : "0a7a37ba-2ff8-3f12-a97b-e9d6e47dcdb1",
+  "request" : {
+    "url" : "/repos/cliffmeyers/ath-github-creation/branches",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-ath-github-creation-branches-O2ZFl.json",
+    "headers" : {
+      "Server" : "GitHub.com",
+      "Date" : "Thu, 24 Aug 2017 22:05:30 GMT",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Transfer-Encoding" : "chunked",
+      "Status" : "200 OK",
+      "X-RateLimit-Limit" : "5000",
+      "X-RateLimit-Remaining" : "4982",
+      "X-RateLimit-Reset" : "1503615892",
+      "Cache-Control" : "private, max-age=60, s-maxage=60",
+      "Vary" : "Accept, Authorization, Cookie, X-GitHub-OTP",
+      "ETag" : "W/\"332f9d38f28be2a2d37377a3c27a2443\"",
+      "X-OAuth-Scopes" : "delete_repo, repo, user",
+      "X-Accepted-OAuth-Scopes" : "",
+      "X-GitHub-Media-Type" : "github.v3; format=json",
+      "Access-Control-Expose-Headers" : "ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval",
+      "Access-Control-Allow-Origin" : "*",
+      "Content-Security-Policy" : "default-src 'none'",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "deny",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Runtime-rack" : "0.028702",
+      "X-GitHub-Request-Id" : "F7A4:6AC6:1398161:2D5DC53:599F4DA9"
+    }
+  },
+  "uuid" : "0a7a37ba-2ff8-3f12-a97b-e9d6e47dcdb1"
+}

@@ -20,6 +20,8 @@ exports.SandboxedComponent = require('./dist/SandboxedComponent.js').SandboxedCo
 
 exports.ErrorUtils = require('./dist/ErrorUtils.js').default;
 
+exports.Utils = require('./dist/ExtensionUtils.js').default;
+
 exports.dataType = function dataType(dataType) { return exports.classMetadataStore.dataType(dataType); };
 
 exports.untyped = function untyped() { return exports.classMetadataStore.untyped(); };

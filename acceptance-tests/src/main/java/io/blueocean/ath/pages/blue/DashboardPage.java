@@ -3,10 +3,8 @@ package io.blueocean.ath.pages.blue;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.WebElementUtils;
-import io.blueocean.ath.model.Pipeline;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -68,9 +66,9 @@ public class DashboardPage {
         favorite.click();
 
         if (isFavorite(job)) {
-            logger.info(String.format("Pipeline %s was favorited", job));
+            logger.info(String.format("AbstractPipeline %s was favorited", job));
         } else {
-            logger.info(String.format("Pipeline %s was unfavorited", job));
+            logger.info(String.format("AbstractPipeline %s was unfavorited", job));
         }
     }
 
@@ -103,7 +101,7 @@ public class DashboardPage {
             ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".search-pipelines-input input"))
         );
         element.sendKeys(searchText);
-        logger.info("entered search text =" + searchText);
+        logger.info("entered search text = " + searchText);
     }
 
     public void clearSearchText() {

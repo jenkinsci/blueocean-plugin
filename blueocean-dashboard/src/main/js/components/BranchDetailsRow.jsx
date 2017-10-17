@@ -9,24 +9,12 @@ import {
 import { LiveStatusIndicator, RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
-import RunMessageCell from './RunMessageCell';
 
+import RunMessageCell from './RunMessageCell';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import RunHistoryButton from './RunHistoryButton';
 
-// For sorting the extensions in the actions column
-function sortByOrdinal(extensions, done) {
-    const sorted = extensions.sort((a, b) => {
-        if (a.ordinal || b.ordinal) {
-            if (!a.ordinal) return 1;
-            if (!b.ordinal) return -1;
-            if (a.ordinal < b.ordinal) return -1;
-            return 1;
-        }
-        return a.pluginId.localeCompare(b.pluginId);
-    });
-    done(sorted);
-}
+const { sortByOrdinal } = Extensions.Utils;
 
 function noRun(branch, openRunDetails, t, store, columns) {
     const cleanBranchName = decodeURIComponent(branch.name);
@@ -156,7 +144,7 @@ export class BranchDetailsRow extends Component {
         );
 
         const runMessage = (
-            <RunMessageCell run={latestRun} t={t} />
+            <RunMessageCell linkTo={runDetailsUrl} run={latestRun} t={t} />
         );
 
         const completed = (
@@ -174,15 +162,11 @@ export class BranchDetailsRow extends Component {
                 runnable={branch}
                 latestRun={branch.latestRun}
                 onNavigation={openRunDetails}
-                iconColor="rgba(53, 64, 82, 0.25)"
-                hoverIconColor="#4a90e2"
             />,
             <RunHistoryButton
                 pipeline={pipeline}
                 branchName={branch.name}
                 t={t}
-                iconColor="rgba(53, 64, 82, 0.25)"
-                hoverIconColor="#4a90e2"
             />,
             <Extensions.Renderer
                 extensionPoint="jenkins.pipeline.branches.list.action"

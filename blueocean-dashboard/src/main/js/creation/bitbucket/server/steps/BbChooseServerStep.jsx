@@ -90,7 +90,7 @@ class BbChooseServerStep extends React.Component {
         const disabledNext = !this.state.selectedServer || this.state.urlErrorMsg;
         const url = this.state.selectedServer ? this.state.selectedServer.apiUrl : null;
         return (
-            <FlowStep {...this.props} className="github-enterprise-choose-server-step" disabled={disabled} title={title}>
+            <FlowStep {...this.props} className="bitbucket-server-add-server-dialog" disabled={disabled} title={title}>
                 <FormElement title={t('creation.bbserver.choose_server.instructions')}>
                     <Dropdown
                         ref={dropdown => { this.dropdown = dropdown; }}

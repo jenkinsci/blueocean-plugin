@@ -1,0 +1,37 @@
+{
+  "id" : "04383e13-5223-399f-909c-683a9f35d205",
+  "request" : {
+    "url" : "/user",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-user-4arQt.json",
+    "headers" : {
+      "Server" : "GitHub.com",
+      "Date" : "Thu, 24 Aug 2017 22:05:25 GMT",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Status" : "200 OK",
+      "X-RateLimit-Limit" : "5000",
+      "X-RateLimit-Remaining" : "4994",
+      "X-RateLimit-Reset" : "1503615892",
+      "Cache-Control" : "private, max-age=60, s-maxage=60",
+      "Vary" : "Accept, Authorization, Cookie, X-GitHub-OTP",
+      "ETag" : "\"b5c84865ca106e043156c3b6cad7390a\"",
+      "Last-Modified" : "Sun, 20 Aug 2017 11:04:10 GMT",
+      "X-OAuth-Scopes" : "delete_repo, repo, user",
+      "X-Accepted-OAuth-Scopes" : "",
+      "X-GitHub-Media-Type" : "unknown, github.v3",
+      "Access-Control-Expose-Headers" : "ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval",
+      "Access-Control-Allow-Origin" : "*",
+      "Content-Security-Policy" : "default-src 'none'",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "deny",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Runtime-rack" : "0.051568",
+      "X-GitHub-Request-Id" : "F7A4:6AC6:1397F3B:2D5D70A:599F4DA5"
+    }
+  },
+  "uuid" : "04383e13-5223-399f-909c-683a9f35d205"
+}

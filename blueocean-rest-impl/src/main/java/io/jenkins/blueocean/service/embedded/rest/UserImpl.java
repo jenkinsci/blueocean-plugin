@@ -1,26 +1,17 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import java.util.Collections;
-import java.util.Map;
-
-import javax.annotation.Nonnull;
-
-import org.acegisecurity.Authentication;
-import org.apache.commons.lang.StringUtils;
-
 import com.cloudbees.plugins.credentials.CredentialsProvider;
 import com.google.common.collect.ImmutableMap;
-
+import hudson.ExtensionList;
 import hudson.model.Item;
 import hudson.model.User;
 import hudson.security.AccessControlled;
 import hudson.tasks.Mailer;
 import hudson.tasks.UserAvatarResolver;
-import hudson.util.HttpResponses;
-import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.commons.ServiceException.ForbiddenException;
 import io.jenkins.blueocean.rest.ApiHead;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.UserRoute;
 import io.jenkins.blueocean.rest.factory.organization.AbstractOrganization;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueFavoriteContainer;
@@ -28,18 +19,16 @@ import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueUser;
 import io.jenkins.blueocean.rest.model.BlueUserPermission;
-import io.jenkins.blueocean.service.embedded.util.UserSSHKeyManager;
-import java.io.IOException;
+import io.jenkins.blueocean.rest.model.GenericResource;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
+import org.acegisecurity.Authentication;
 import org.apache.commons.lang.StringUtils;
+import org.kohsuke.stapler.export.ExportedBean;
 
+import javax.annotation.Nonnull;
 import java.util.Collections;
 import java.util.Map;
-import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.WebMethod;
-import org.kohsuke.stapler.verb.DELETE;
-import org.kohsuke.stapler.verb.GET;
 
 /**
  * {@link BlueUser} implementation backed by in-memory {@link User}
@@ -169,46 +158,19 @@ public class UserImpl extends BlueUser {
     }
 
     /**
-     * Gets or creates the user's private Jenkins-managed key and returns the
-     * public key to the user
-     * @return JSON response
-     * @throws IOException 
+     * Give plugins chance to handle this API route.
+     *
+     * @param route URL path that needs handling. e.g. for requested url /rest/organizations/:id/users/:user/xyz,  route param value will be 'xyz'
+     * @return stapler object that can handle give route. Could be null
      */
-    @GET
-    @WebMethod(name="publickey")
-    public HttpResponse publicKey() throws IOException {
-        User authenticatedUser =  User.current();
-        if (authenticatedUser == null) {
-            throw new ServiceException.UnauthorizedException("Not authorized");
+    public Object getDynamic(String route){
+        // Try to find any UserRoutes
+        for(UserRoute userRoute: ExtensionList.lookup(UserRoute.class)){
+            if(userRoute.getUrlName() != null && userRoute.getUrlName().equals(route)){
+                return userRoute.get(this);
+            }
         }
-        if (!StringUtils.equals(getId(), authenticatedUser.getId())) {
-            throw new ServiceException.ForbiddenException("Not authorized");
-        }
-        
-        String publicKey = UserSSHKeyManager.getReadablePublicKey(authenticatedUser, 
-            UserSSHKeyManager.getOrCreate(authenticatedUser));
-        
-        return HttpResponses.okJSON(ImmutableMap.of("key", publicKey));
-    }
-
-    /**
-     * Deletes the user's private Jenkins-managed key
-     * @return
-     * @throws IOException 
-     */
-    @DELETE
-    @WebMethod(name="publickey")
-    public HttpResponse resetPublicKey() throws IOException {
-        User authenticatedUser =  User.current();
-        if (authenticatedUser == null) {
-            throw new ServiceException.UnauthorizedException("Not authorized");
-        }
-        if (!StringUtils.equals(getId(), authenticatedUser.getId())) {
-            throw new ServiceException.ForbiddenException("Not authorized");
-        }
-        
-        UserSSHKeyManager.reset(authenticatedUser);
-        return HttpResponses.ok();
+        return null;
     }
 
     private boolean isAdmin(){

@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.collect.ImmutableMap;
+import hudson.model.User;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
@@ -31,12 +32,13 @@ public class BranchContainerImplTest extends PipelineBaseTest {
     public void setup() throws Exception{
         super.setup();
         setupScm();
+        Caches.BRANCH_METADATA.invalidateAll();
     }
 
     @Test
     public void testBranchOrdering() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        hudson.model.User user = j.jenkins.getUser("alice");
+        hudson.model.User user = User.get("alice");
         user.setFullName("Alice Cooper");
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
@@ -69,7 +71,6 @@ public class BranchContainerImplTest extends PipelineBaseTest {
         Assert.assertEquals(4,l.size());
         Map o = (Map)l.get(1);
         Map o2 = (Map)l.get(0);
-        Assert.assertTrue(o.get("name").equals("feature2") || o.get("name").equals("feature4"));
 
         WorkflowJob j1 = findBranchProject(mp, (String)o.get("name"));
         j.waitForCompletion(j1.getLastBuild());

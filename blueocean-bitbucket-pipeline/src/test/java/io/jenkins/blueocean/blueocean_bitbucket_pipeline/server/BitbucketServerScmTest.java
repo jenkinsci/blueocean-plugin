@@ -87,11 +87,13 @@ public class BitbucketServerScmTest extends BbServerWireMock {
             .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
             .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/organizations/?apiUrl="+apiUrl+"&credentialId="+credentialId)
             .build(List.class);
-        assertEquals(2, orgs.size());
-        assertEquals("test1", ((Map)orgs.get(0)).get("name"));
-        assertEquals("TEST", ((Map)orgs.get(0)).get("key"));
-        assertEquals("testproject1", ((Map)orgs.get(1)).get("name"));
-        assertEquals("TESTP", ((Map)orgs.get(1)).get("key"));
+        assertEquals(3, orgs.size());
+        assertEquals("Vivek Pandey", ((Map)orgs.get(0)).get("name"));
+        assertEquals("~vivek", ((Map)orgs.get(0)).get("key"));
+        assertEquals("test1", ((Map)orgs.get(1)).get("name"));
+        assertEquals("TEST", ((Map)orgs.get(1)).get("key"));
+        assertEquals("testproject1", ((Map)orgs.get(2)).get("name"));
+        assertEquals("TESTP", ((Map)orgs.get(2)).get("key"));
     }
 
     @Test
@@ -102,11 +104,13 @@ public class BitbucketServerScmTest extends BbServerWireMock {
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
                 .get("/organizations/jenkins/scm/"+BitbucketServerScm.ID+"/organizations/?apiUrl="+apiUrl)
                 .build(List.class);
-        assertEquals(2, orgs.size());
-        assertEquals("test1", ((Map)orgs.get(0)).get("name"));
-        assertEquals("TEST", ((Map)orgs.get(0)).get("key"));
-        assertEquals("testproject1", ((Map)orgs.get(1)).get("name"));
-        assertEquals("TESTP", ((Map)orgs.get(1)).get("key"));
+        assertEquals(3, orgs.size());
+        assertEquals("Vivek Pandey", ((Map)orgs.get(0)).get("name"));
+        assertEquals("~vivek", ((Map)orgs.get(0)).get("key"));
+        assertEquals("test1", ((Map)orgs.get(1)).get("name"));
+        assertEquals("TEST", ((Map)orgs.get(1)).get("key"));
+        assertEquals("testproject1", ((Map)orgs.get(2)).get("name"));
+        assertEquals("TESTP", ((Map)orgs.get(2)).get("key"));
     }
 
     @Test

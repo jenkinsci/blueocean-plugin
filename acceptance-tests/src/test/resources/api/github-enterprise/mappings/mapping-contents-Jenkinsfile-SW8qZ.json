@@ -1,0 +1,34 @@
+{
+  "id" : "34e3ce60-1460-32b3-b25b-22f13c82e760",
+  "request" : {
+    "url" : "/repos/cliffmeyers/ath-github-creation/contents/Jenkinsfile",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 404,
+    "bodyFileName" : "body-contents-Jenkinsfile-SW8qZ.json",
+    "headers" : {
+      "Server" : "GitHub.com",
+      "Date" : "Mon, 11 Sep 2017 21:09:29 GMT",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Transfer-Encoding" : "chunked",
+      "Status" : "404 Not Found",
+      "X-RateLimit-Limit" : "5000",
+      "X-RateLimit-Remaining" : "4994",
+      "X-RateLimit-Reset" : "1505167725",
+      "X-OAuth-Scopes" : "delete_repo, repo, user",
+      "X-Accepted-OAuth-Scopes" : "",
+      "X-GitHub-Media-Type" : "unknown, github.v3",
+      "Access-Control-Expose-Headers" : "ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval",
+      "Access-Control-Allow-Origin" : "*",
+      "Content-Security-Policy" : "default-src 'none'",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "deny",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Runtime-rack" : "0.037084",
+      "X-GitHub-Request-Id" : "FF55:7D00:96E1BF:136EF78:59B6FB88"
+    }
+  },
+  "uuid" : "34e3ce60-1460-32b3-b25b-22f13c82e760"
+}

@@ -106,10 +106,10 @@ export class ColumnFilter extends Component {
                 )}
             />
             <span className="Icon-filter">
-                <Icon icon="ContentFilterList" size={15} color="#bbcdd5" style={{ verticalAlign: 'top' }} />
+                <Icon icon="ContentFilterList" size={15} style={{ verticalAlign: 'top' }} />
             </span>
             <span className="Icon-clear" onClick={() => this.clearInput()}>
-                <Icon icon="ContentClear" size={15} color="#bbcdd5" style={{ verticalAlign: 'top' }} />
+                <Icon icon="ContentClear" size={15} style={{ verticalAlign: 'top' }} />
             </span>
           </div>);
     }

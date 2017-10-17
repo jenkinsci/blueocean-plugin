@@ -23,9 +23,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
-import jenkins.scm.api.SCMNavigator;
 import jenkins.scm.api.SCMSource;
-import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.junit.After;
 import org.junit.Rule;
@@ -161,43 +159,25 @@ public abstract class GithubMockBase extends PipelineBaseTest {
         perTestStubMappings.add(mapping);
     }
 
-    protected OrganizationFolder mockOrgFolder(String credentialId){
-        OrganizationFolder orgFolder = mock(OrganizationFolder.class);
-
-        //mock GithubSCMNavigator
-        GitHubSCMNavigator navigator = mock(GitHubSCMNavigator.class);
-        when(navigator.getApiUri()).thenReturn(githubApiUrl);
-        when(navigator.getScanCredentialsId()).thenReturn(credentialId);
-        when(navigator.getRepoOwner()).thenReturn("cloudbeers");
-
-
-        when((orgFolder).getSCMNavigators()).thenReturn(Lists.<SCMNavigator>newArrayList(navigator));
-
-        //mock blueocean credential provider stuff
-        BlueOceanCredentialsProvider.FolderPropertyImpl folderProperty = mock(BlueOceanCredentialsProvider.FolderPropertyImpl.class);
-        DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor> properties = new DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor>(orgFolder);
-        properties.add(new BlueOceanCredentialsProvider.FolderPropertyImpl(
-                user.getId(), credentialId,
-                BlueOceanCredentialsProvider.createDomain(githubApiUrl)
-        ));
-        when(orgFolder.getProperties()).thenReturn(properties);
-        Domain domain = mock(Domain.class);
-        when(domain.getName()).thenReturn(GithubScm.DOMAIN_NAME);
-        when(folderProperty.getDomain()).thenReturn(domain);
-        return orgFolder;
-    }
-
-    protected MultiBranchProject mockMbp(OrganizationFolder orgFolder, String credentialId){
+    protected MultiBranchProject mockMbp(String credentialId,User user, String credentialDomainName){
         MultiBranchProject mbp = mock(MultiBranchProject.class);
         when(mbp.getName()).thenReturn("PR-demo");
-        when(mbp.getParent()).thenReturn(orgFolder);
+        when(mbp.getParent()).thenReturn(j.jenkins);
         GitHubSCMSource scmSource = mock(GitHubSCMSource.class);
         when(scmSource.getApiUri()).thenReturn(githubApiUrl);
-        when(scmSource.getScanCredentialsId()).thenReturn(credentialId);
+        when(scmSource.getCredentialsId()).thenReturn(credentialId);
         when(scmSource.getRepoOwner()).thenReturn("cloudbeers");
         when(scmSource.getRepository()).thenReturn("PR-demo");
         when(mbp.getSCMSources()).thenReturn(Lists.<SCMSource>newArrayList(scmSource));
-        DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor> mbpProperties = new DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor>(orgFolder);
+        BlueOceanCredentialsProvider.FolderPropertyImpl folderProperty = mock(BlueOceanCredentialsProvider.FolderPropertyImpl.class);
+        DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor> mbpProperties = new DescribableList<AbstractFolderProperty<?>,AbstractFolderPropertyDescriptor>(mbp);
+        mbpProperties.add(new BlueOceanCredentialsProvider.FolderPropertyImpl(
+                user.getId(), credentialId,
+                BlueOceanCredentialsProvider.createDomain(githubApiUrl)
+        ));
+        Domain domain = mock(Domain.class);
+        when(domain.getName()).thenReturn(credentialDomainName);
+        when(folderProperty.getDomain()).thenReturn(domain);
         when(mbp.getProperties()).thenReturn(mbpProperties);
         return mbp;
     }

@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.config;
 
 import hudson.Extension;
+import hudson.Plugin;
 import hudson.security.AuthorizationStrategy;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import hudson.security.SecurityRealm;
@@ -53,7 +54,7 @@ public class BlueOceanConfigStatePreloader extends PageStatePreloader {
         if(jwtTokenServiceEndpoint != null){
             jwtTokenEndpointHostUrl = jwtTokenServiceEndpoint.getHostUrl();
         }
-        new JSONBuilder(writer)
+        addFeatures(new JSONBuilder(writer)
             .object()
                 .key("version").value(getBlueOceanPluginVersion())
                 .key("jenkinsConfig")
@@ -70,18 +71,34 @@ public class BlueOceanConfigStatePreloader extends PageStatePreloader {
                         .key("jwtServiceHostUrl").value(jwtTokenEndpointHostUrl)
                     .endObject()
                 .endObject()
-                // If more "features" vars are added, we could just iterate the system props
-                // and add any starting with "blueocean.features.". However, lets not do that
-                // unless there are more than a few.
-                               .key("features").object().key(BlueOceanConfig.ORGANIZATION_ENABLED).value(BlueOceanConfigFactory.getConfig(BlueOceanConfig.ORGANIZATION_ENABLED, Boolean.class))
-                .endObject()
+                ) // addFeatures here
             .endObject();
 
         return writer.toString();
     }
+    
+    /**
+     * Adds all features from all BlueOceanConfig objects
+     * @param builder JSON builder to use
+     * @return same JSON builder
+     */
+    private JSONBuilder addFeatures(JSONBuilder builder) {
+        JSONBuilder features = builder.key("features").object();
+        for (BlueOceanConfigFactory factory : BlueOceanConfigFactory.all()) {
+            BlueOceanConfig config = factory.getConfig();
+            for (String key : config.keys()) {
+                features.key(key).value(config.get(key, Object.class));
+            }
+        }
+        return features.endObject();
+    }
 
     /** gives Blueocean plugin version. blueocean-web being core module is looked at to determine the version */
     private String getBlueOceanPluginVersion(){
-        return Jenkins.getInstance().getPlugin("blueocean-web").getWrapper().getVersion();
+        Plugin plugin = Jenkins.getInstance().getPlugin("blueocean-web");
+        if(plugin == null) {
+            return null;
+        }
+        return plugin.getWrapper().getVersion();
     }
 }

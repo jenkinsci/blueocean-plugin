@@ -68,7 +68,7 @@ Note to run the live tests there needs to be a `live.properties` file in the acc
 ```properties
 github.repo=<name of repository to be created
 github.org=<org or user name to create repo in.>
-github.token=<personal access token>  
+github.token=<personal access token (roles: repo, user:email, and optionally delete_repo)>  
 github.deleteRepo=<true/false should the code delete repo once test is done>
 github.randomSuffix=<true/false - add a random suffix to repo name (ie must have for CI> 
 ```

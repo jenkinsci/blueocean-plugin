@@ -4,6 +4,8 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbOrg;
 import org.apache.http.client.utils.URIBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URISyntaxException;
 import java.util.List;
@@ -13,10 +15,12 @@ import java.util.Map;
  * @author Vivek Pandey
  */
 public class BbServerProject extends BbOrg {
+    private static final Logger logger = LoggerFactory.getLogger(BbServerProject.class);
+
     private final String key;
     private final String name;
     private final boolean publicProject;
-    private final String selfLink;
+    private final String avatar;
 
     @JsonCreator
     public BbServerProject(@JsonProperty("key") String key, @JsonProperty("name") String name, @JsonProperty("public") boolean publicProject, @JsonProperty("links") Map<String, List<Map<String,String>>> links) {
@@ -24,15 +28,26 @@ public class BbServerProject extends BbOrg {
         this.name = name;
         this.publicProject = publicProject;
         List<Map<String,String>> hrefs = links.get("self");
-        String link=null;
+        String a=null;
         for(Map<String,String> hrefLink: hrefs){
             String href = hrefLink.get("href");
             if(href != null){
-                link = href;
+                try {
+                    a = new URIBuilder(href + "/avatar.png").addParameter("s", "50").build().toString();
+                } catch (URISyntaxException e) {
+                    logger.warn("Failed to construct Bitbucket server avatar URL: "+e.getMessage(), e);
+                }
                 break;
             }
         }
-        this.selfLink = link;
+        this.avatar = a;
+    }
+
+    public BbServerProject(String key, String name, String avatar) {
+        this.key = key;
+        this.name = name;
+        this.publicProject = false;
+        this.avatar = avatar;
     }
 
     @Override
@@ -50,11 +65,7 @@ public class BbServerProject extends BbOrg {
     @Override
     @JsonProperty("avatar")
     public String getAvatar(){
-        try {
-            return new URIBuilder(selfLink+"/avatar.png").addParameter("s", "50").build().toString();
-        } catch (URISyntaxException e) {
-            return null;
-        }
+        return avatar;
     }
 
     @Override

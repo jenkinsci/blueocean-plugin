@@ -37,6 +37,7 @@ import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.BuildWatcher;
@@ -94,35 +95,6 @@ public class MultiBranchTest extends PipelineBaseTest {
      */
     private boolean runAllTests() {
         return System.getenv("RUN_MULTIBRANCH_TESTS") != null;
-    }
-
-    @Test
-    public void testGetURL() {
-        BlueOrganization org = mock(BlueOrganization.class);
-        Job job = mock(Job.class);
-        BranchImpl branch = new BranchImpl(org, job, new Link("foo"));
-        assertNotNull(branch.getBranch());
-        assertNull(branch.getBranch().getUrl());
-        assertFalse(branch.getBranch().isPrimary());
-        ObjectMetadataAction oma = new ObjectMetadataAction("My Branch", "A feature branch", "https://path/to/branch");
-        when(job.getAction(ObjectMetadataAction.class)).thenReturn(oma);
-        assertEquals("https://path/to/branch", branch.getBranch().getUrl());
-    }
-
-    @Test
-    public void testBranchInfo() {
-        BlueOrganization org = mock(BlueOrganization.class);
-        Job job = mock(Job.class);
-        BranchImpl branch = new BranchImpl(org, job, new Link("foo"));
-        assertNotNull(branch.getBranch());
-        assertNull(branch.getBranch().getUrl());
-        assertFalse(branch.getBranch().isPrimary());
-        ObjectMetadataAction oma = new ObjectMetadataAction("My Branch", "A feature branch", "https://path/to/branch");
-        when(job.getAction(ObjectMetadataAction.class)).thenReturn(oma);
-        assertEquals("https://path/to/branch", branch.getBranch().getUrl());
-        assertFalse(branch.getBranch().isPrimary());
-        when(job.getAction(PrimaryInstanceMetadataAction.class)).thenReturn(new PrimaryInstanceMetadataAction());
-        assertTrue(branch.getBranch().isPrimary());
     }
 
     @Test
@@ -594,7 +566,7 @@ public class MultiBranchTest extends PipelineBaseTest {
     @Test
     public void createUserFavouriteMultibranchTopLevelTest() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        hudson.model.User user = j.jenkins.getUser("alice");
+        hudson.model.User user = User.get("alice");
         user.setFullName("Alice Cooper");
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
@@ -667,7 +639,7 @@ public class MultiBranchTest extends PipelineBaseTest {
     @Test
     public void createUserFavouriteMultibranchBranchTest() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        hudson.model.User user = j.jenkins.getUser("alice");
+        hudson.model.User user = User.get("alice");
         user.setFullName("Alice Cooper");
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
@@ -741,7 +713,7 @@ public class MultiBranchTest extends PipelineBaseTest {
     @Test
     public void favoritedFromClassicTest() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-        hudson.model.User user = j.jenkins.getUser("alice");
+        hudson.model.User user = User.get("alice");
         user.setFullName("Alice Cooper");
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         mp.getSourcesList().add(new BranchSource(new GitSCMSource(null, sampleRepo.toString(), "", "*", "", false),
@@ -1049,7 +1021,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
 
     //Disabled test for now as I can't get it to work. Tested manually.
-    //@Test
+    @Test @Ignore
     public void getPipelineJobrRuns() throws Exception {
         WorkflowMultiBranchProject mp = j.jenkins.createProject(WorkflowMultiBranchProject.class, "p");
         sampleRepo1.init();

@@ -1,15 +1,12 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
-import com.google.common.base.Predicates;
 import com.google.common.collect.ImmutableMap;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
 import org.apache.commons.lang3.StringUtils;
-import org.kohsuke.github.GHBranch;
 import org.kohsuke.github.GHContent;
-import org.kohsuke.github.GHRepository;
-import org.kohsuke.github.GitHub;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import javax.annotation.Nonnull;
@@ -152,22 +149,22 @@ public class GithubScmSaveFileRequest{
             String sha = content.getSha();
             //branch doesn't exist, lets create new one
             //1. Find commit sha off which this branch will be created
-            GHRepoEx repo = HttpRequest.get(String.format("%s/repos/%s/%s", apiUrl,
+            Map repo = HttpRequest.get(String.format("%s/repos/%s/%s", apiUrl,
                     owner, repoName))
-                    .withAuthorizationToken(accessToken).to(GHRepoEx.class);
+                    .withAuthorizationToken(accessToken).to(Map.class);
 
             //2. Check the source branch or use default if not provided
             String sourceBranch = content.getSourceBranch();
             if (sourceBranch == null) {
-                sourceBranch = repo.getDefaultBranch();
+                sourceBranch = (String) repo.get("default_branch");
             }
 
             //3. Get source branch's commit sha
-            GHBranch branch = HttpRequest.get(String.format("%s/repos/%s/%s/branches/%s",
+            GithubBranch branch = HttpRequest.get(String.format("%s/repos/%s/%s/branches/%s",
                     apiUrl,
                     owner,
                     repoName,
-                    sourceBranch)).withAuthorizationToken(accessToken).to(GHBranch.class);
+                    sourceBranch)).withAuthorizationToken(accessToken).to(GithubBranch.class);
 
             //4. create this missing branch. We ignore the response, if no error branch was created
             HttpRequest.post(String.format("%s/repos/%s/%s/git/refs",
@@ -176,7 +173,7 @@ public class GithubScmSaveFileRequest{
                     repoName))
                     .withAuthorizationToken(accessToken)
                     .withBody(ImmutableMap.of("ref", "refs/heads/" + content.getBranch(),
-                            "sha", branch.getSHA1()))
+                            "sha", branch.commit.sha))
                     .to(Map.class);
 
             //5. If request doesn't have sha get one from github
@@ -215,5 +212,14 @@ public class GithubScmSaveFileRequest{
             return true;
         }
         return false;
+    }
+
+    //use it to deserialize github branch response
+    private static class GithubBranch{
+        private Commit commit;
+        @SuppressFBWarnings(value = "UWF_UNWRITTEN_FIELD", justification = "Used to deserialize JSON to Java")
+        static class Commit{
+            private String sha;
+        }
     }
 }

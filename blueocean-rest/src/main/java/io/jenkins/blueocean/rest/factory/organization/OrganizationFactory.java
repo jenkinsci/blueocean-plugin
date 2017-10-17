@@ -106,4 +106,12 @@ public abstract class OrganizationFactory implements ExtensionPoint {
         }
         return null;
     }
+
+    @CheckForNull
+    public static ModifiableTopLevelItemGroup getItemGroup(BlueOrganization blueOrganization) {
+        if (blueOrganization instanceof AbstractOrganization) {
+            return ((AbstractOrganization) blueOrganization).getGroup();
+        }
+        return null;
+    }
 }

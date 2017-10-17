@@ -1,0 +1,36 @@
+{
+  "id" : "f954231a-8619-3510-b659-797044130e41",
+  "request" : {
+    "url" : "/user/repos?type=owner&per_page=100&page=1",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-user-repos-AFmRL.json",
+    "headers" : {
+      "Server" : "GitHub.com",
+      "Date" : "Thu, 24 Aug 2017 22:05:28 GMT",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Status" : "200 OK",
+      "X-RateLimit-Limit" : "5000",
+      "X-RateLimit-Remaining" : "4987",
+      "X-RateLimit-Reset" : "1503615892",
+      "Cache-Control" : "private, max-age=60, s-maxage=60",
+      "Vary" : "Accept, Authorization, Cookie, X-GitHub-OTP",
+      "ETag" : "\"9c0e5ac74bff4bac2ab3c4efd69fcb77\"",
+      "X-OAuth-Scopes" : "delete_repo, repo, user",
+      "X-Accepted-OAuth-Scopes" : "",
+      "X-GitHub-Media-Type" : "unknown, github.v3",
+      "Access-Control-Expose-Headers" : "ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval",
+      "Access-Control-Allow-Origin" : "*",
+      "Content-Security-Policy" : "default-src 'none'",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "deny",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Runtime-rack" : "0.132298",
+      "X-GitHub-Request-Id" : "F7A4:6AC6:1398080:2D5D9EC:599F4DA7"
+    }
+  },
+  "uuid" : "f954231a-8619-3510-b659-797044130e41"
+}

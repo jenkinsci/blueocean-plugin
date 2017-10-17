@@ -1,0 +1,22 @@
+{
+  "request" : {
+    "url" : "/notgithub",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "_empty.json",
+    "headers" : {
+      "Server" : "NotGitHub.com",
+      "Date" : "Fri, 05 May 2017 00:25:31 GMT",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Status" : "200 OK",
+      "Access-Control-Allow-Origin" : "*",
+      "Content-Security-Policy" : "default-src 'none'",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "deny",
+      "X-XSS-Protection" : "1; mode=block"
+    }
+  }
+}

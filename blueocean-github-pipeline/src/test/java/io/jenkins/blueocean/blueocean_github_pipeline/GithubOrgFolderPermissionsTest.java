@@ -1,8 +1,6 @@
 package io.jenkins.blueocean.blueocean_github_pipeline;
 
 import com.cloudbees.hudson.plugins.folder.Folder;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.ImmutableMap;
 import hudson.model.Item;
 import hudson.model.ItemGroup;
 import hudson.model.TopLevelItem;
@@ -10,9 +8,9 @@ import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.service.embedded.OrganizationFactoryImpl;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
-import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
 import jenkins.model.ModifiableTopLevelItemGroup;
+import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hudson.test.MockAuthorizationStrategy;
@@ -24,7 +22,6 @@ import java.util.Collections;
 import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 
 
 public class GithubOrgFolderPermissionsTest extends GithubMockBase {
@@ -36,7 +33,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         j.jenkins.setAuthorizationStrategy(authz);
         // refresh the JWT token otherwise all hell breaks loose.
         jwtToken = getJwtToken(j.jenkins, "vivek", "vivek");
-        createGithubOrgFolder(true);
+        createGithubPipeline(true);
     }
 
     @Test
@@ -46,7 +43,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         j.jenkins.setAuthorizationStrategy(authz);
         // refresh the JWT token otherwise all hell breaks loose.
         jwtToken = getJwtToken(j.jenkins, "vivek", "vivek");
-        createGithubOrgFolder(false);
+        createGithubPipeline(false);
     }
 
     @Test
@@ -57,7 +54,7 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         j.jenkins.setAuthorizationStrategy(authz);
         // refresh the JWT token otherwise all hell breaks loose.
         jwtToken = getJwtToken(j.jenkins, user.getId(), user.getId());
-        createGithubOrgFolder(true);
+        createGithubPipeline(true);
     }
 
     @Test
@@ -67,40 +64,33 @@ public class GithubOrgFolderPermissionsTest extends GithubMockBase {
         j.jenkins.setAuthorizationStrategy(authz);
         // refresh the JWT token otherwise all hell breaks loose.
         jwtToken = getJwtToken(j.jenkins, "vivek", "vivek");
-        createGithubOrgFolder(false);
+        createGithubPipeline(false);
     }
 
-    private void createGithubOrgFolder(boolean shouldSuceed) throws Exception {
+    private void createGithubPipeline(boolean shouldSuceed) throws Exception {
         String credentialId = createGithubCredential(user);
-        String orgFolderName = "cloudbeers1";
+        String pipelineName = "cloudbeers";
         Map resp = new RequestBuilder(baseUrl)
                 .status(shouldSuceed ? 201 : 403)
                 .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
                 .post("/organizations/" + getOrgName() + "/pipelines/")
-                .data(ImmutableMap.of("name", orgFolderName,
-                        "$class", "io.jenkins.blueocean.blueocean_github_pipeline.GithubPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("config",
-                                ImmutableMap.of("repos", ImmutableList.of("PR-demo"), "orgName","cloudbeers"),
-                                "id", GithubScm.ID,
-                                "uri", githubApiUrl)
-                ))
+                .data(GithubTestUtils.buildRequestBody(GithubScm.ID,null, githubApiUrl, pipelineName, "PR-demo"))
                 .build(Map.class);
 
-        TopLevelItem item = getOrgRoot().getItem(orgFolderName);
+        TopLevelItem item = getOrgRoot().getItem(pipelineName);
         if (shouldSuceed) {
-            assertEquals(orgFolderName, resp.get("name"));
-            assertEquals("io.jenkins.blueocean.blueocean_github_pipeline.GithubOrganizationFolder", resp.get("_class"));
+            assertEquals(pipelineName, resp.get("name"));
+            assertEquals("io.jenkins.blueocean.rest.impl.pipeline.MultiBranchPipelineImpl", resp.get("_class"));
 
-            Assert.assertTrue(item instanceof OrganizationFolder);
-            Map r = get("/organizations/"+ getOrgName() + "/pipelines/"+orgFolderName+"/");
-            assertEquals(orgFolderName, r.get("name"));
-            assertFalse((Boolean) r.get("scanAllRepos"));
+            Assert.assertTrue(item instanceof WorkflowMultiBranchProject);
+            Map r = get("/organizations/"+ getOrgName() + "/pipelines/"+pipelineName+"/");
+            assertEquals(pipelineName, r.get("name"));
         }
         else {
             assertEquals(403, resp.get("code"));
             assertEquals("User vivek doesn't have Job create permission", resp.get("message"));
             Assert.assertNull(item);
-            String r = get("/organizations/"+ getOrgName() + "/pipelines/"+orgFolderName+"/", 404, String.class);
+            String r = get("/organizations/"+ getOrgName() + "/pipelines/"+pipelineName+"/", 404, String.class);
         }
     }
 

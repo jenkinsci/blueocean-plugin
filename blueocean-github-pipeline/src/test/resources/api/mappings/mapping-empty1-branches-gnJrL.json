@@ -1,0 +1,31 @@
+{
+  "id" : "055c08bc-256f-33be-bda6-b39151ec791b",
+  "request" : {
+    "url" : "/repos/vivek/empty1/branches",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-empty1-branches-gnJrL.json",
+    "headers" : {
+      "Server" : "GitHub.com",
+      "Date" : "Tue, 22 Aug 2017 23:35:22 GMT",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Status" : "401 Unauthorized",
+      "X-GitHub-Media-Type" : "github.v3; format=json",
+      "X-RateLimit-Limit" : "60",
+      "X-RateLimit-Remaining" : "59",
+      "X-RateLimit-Reset" : "1503448522",
+      "Access-Control-Expose-Headers" : "ETag, Link, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval",
+      "Access-Control-Allow-Origin" : "*",
+      "Content-Security-Policy" : "default-src 'none'",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "deny",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Runtime-rack" : "0.066655",
+      "X-GitHub-Request-Id" : "CE52:277AB:D7B60B:1DAA684:599CBFBA"
+    }
+  },
+  "uuid" : "055c08bc-256f-33be-bda6-b39151ec791b"
+}

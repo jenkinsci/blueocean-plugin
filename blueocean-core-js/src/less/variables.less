@@ -57,3 +57,25 @@
         }
     }
 }
+
+.run-button-component {
+    .run-button {
+        &.btn-secondary {
+            svg {
+                fill: @brand-primary;
+            }
+        }
+
+        svg {
+            fill: #ffffff;
+        }
+    }
+}
+
+.multibranch-table .run-button svg {
+    fill: @action-button;
+
+    &:hover {
+        fill: @action-button--hover;
+    }
+}

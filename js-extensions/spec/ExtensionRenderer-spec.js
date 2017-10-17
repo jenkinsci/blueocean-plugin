@@ -27,8 +27,8 @@ const mockExtensionStore = {
 };
 
 const mockResourceLoadTracker = {
-    onMount: function(extensionPoint, readyCallback) {
-        readyCallback();  // Invoke immediately, just like an extension with no CSS to load
+    onMount: function() {
+        // Don't care
     },
 
     onUnmount: function() {

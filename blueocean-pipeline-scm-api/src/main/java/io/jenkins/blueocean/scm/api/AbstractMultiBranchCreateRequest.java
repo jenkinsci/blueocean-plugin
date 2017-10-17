@@ -18,14 +18,19 @@ import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanCredentialsProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainRequirement;
+import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import jenkins.branch.BranchSource;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.MultiBranchProjectDescriptor;
 import jenkins.model.Jenkins;
+import jenkins.model.ModifiableTopLevelItemGroup;
 import jenkins.scm.api.SCMFile;
+import jenkins.scm.api.SCMHead;
+import jenkins.scm.api.SCMHeadObserver;
 import jenkins.scm.api.SCMProbeStat;
+import jenkins.scm.api.SCMRevision;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.SCMSourceCriteria;
 import jenkins.scm.api.SCMSourceEvent;
@@ -34,6 +39,8 @@ import org.jenkinsci.plugins.pubsub.MessageException;
 import org.jenkinsci.plugins.pubsub.PubsubBus;
 import org.jenkinsci.plugins.pubsub.SimpleMessage;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -48,6 +55,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * Creates {@link MultiBranchProject}s with a single {@link SCMSource}
  */
 public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineCreateRequest {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractMultiBranchCreateRequest.class);
+
     private static final String DESCRIPTOR_NAME = "org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject";
 
     private static final String ERROR_FIELD_SCM_CONFIG_URI = "scmConfig.uri";
@@ -61,9 +70,9 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
 
     @Override
     @SuppressWarnings("unchecked")
-    public BluePipeline create(Reachable parent) throws IOException {
-        validateInternal(getName(), scmConfig);
-        MultiBranchProject project = createMultiBranchProject();
+    public BluePipeline create(@Nonnull BlueOrganization organization, @Nonnull Reachable parent) throws IOException {
+        validateInternal(getName(), scmConfig, organization);
+        MultiBranchProject project = createMultiBranchProject(organization);
         assignCredentialToProject(scmConfig, project);
         SCMSource source = createSource(project, scmConfig);
         project.setSourcesList(ImmutableList.of(new BranchSource(source)));
@@ -129,7 +138,27 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
      * @return true as default. false if it can determine there is no Jenkinsfile in all branches
      */
     protected boolean repoHasJenkinsFile(@Nonnull SCMSource scmSource) {
-        return true; //default
+        final AbstractMultiBranchCreateRequest.JenkinsfileCriteria criteria = new AbstractMultiBranchCreateRequest.JenkinsfileCriteria();
+        try {
+            scmSource.fetch(criteria, new SCMHeadObserver() {
+                @Override
+                public void observe(@Nonnull SCMHead head, @Nonnull SCMRevision revision) throws IOException, InterruptedException {
+                    //do nothing
+                }
+
+                @Override
+                public boolean isObserving() {
+                    //if jenkinsfile is found stop observing
+                    return !criteria.isJekinsfileFound();
+
+                }
+            }, TaskListener.NULL);
+        } catch (IOException | InterruptedException e) {
+            logger.warn("Error detecting Jenkinsfile: "+e.getMessage(), e);
+        }
+
+        return criteria.isJekinsfileFound();
+
     }
 
     private void sendMultibranchIndexingCompleteEvent(final MultiBranchProject mbp, final int iterations) {
@@ -164,8 +193,8 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
         }
     }
 
-    private MultiBranchProject createMultiBranchProject() throws IOException {
-        TopLevelItem item = createProject(getName(), DESCRIPTOR_NAME, MultiBranchProjectDescriptor.class);
+    private MultiBranchProject createMultiBranchProject(BlueOrganization organization) throws IOException {
+        TopLevelItem item = createProject(getName(), DESCRIPTOR_NAME, MultiBranchProjectDescriptor.class, organization);
         if (!(item instanceof WorkflowMultiBranchProject)) {
             try {
                 item.delete(); // we don't know about this project type
@@ -200,9 +229,9 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
         }
     }
 
-    private void validateInternal(String name, BlueScmConfig scmConfig) {
+    private void validateInternal(String name, BlueScmConfig scmConfig, BlueOrganization organization) {
 
-        checkUserIsAuthenticatedAndHasItemCreatePermission();
+        checkUserIsAuthenticatedAndHasItemCreatePermission(organization);
 
         // If scmConfig is empty then we are missing the uri and name
         if (scmConfig == null) {
@@ -226,7 +255,9 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
             errors.add(new Error(ERROR_FIELD_SCM_CONFIG_NAME, Error.ErrorCodes.INVALID.toString(),  getName() + " in not a valid name"));
         }
 
-        if(getParent().getItem(name)!=null) {
+        ModifiableTopLevelItemGroup parent = getParent(organization);
+
+        if (parent.getItem(name) != null) {
             errors.add(new Error(ERROR_NAME, Error.ErrorCodes.ALREADY_EXISTS.toString(), getName() + " already exists"));
         }
 

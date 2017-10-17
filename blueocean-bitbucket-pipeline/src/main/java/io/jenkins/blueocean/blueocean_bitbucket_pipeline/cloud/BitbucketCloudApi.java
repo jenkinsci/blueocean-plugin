@@ -268,7 +268,7 @@ public class BitbucketCloudApi extends BitbucketApi {
     }
 
     @Override
-    public boolean isEmptyRepo(String orgId, @Nonnull String repoSlug) {
+    public boolean isEmptyRepo(@Nonnull String orgId, @Nonnull String repoSlug) {
         throw new NotImplementedException("Not implemented");
     }
 

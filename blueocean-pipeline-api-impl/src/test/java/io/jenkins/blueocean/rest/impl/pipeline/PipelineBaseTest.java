@@ -18,6 +18,9 @@ import jenkins.model.Jenkins;
 import org.acegisecurity.adapters.PrincipalAcegiUserToken;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UserDetails;
+import org.eclipse.jetty.security.HashLoginService;
+import org.eclipse.jetty.security.LoginService;
+import org.eclipse.jetty.util.security.Password;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.graphanalysis.ForkScanner;
@@ -65,7 +68,19 @@ public abstract class PipelineBaseTest{
     }
 
     @Rule
-    public JenkinsRule j = new JenkinsRule();
+    public JenkinsRule j = new PipelineBaseJenkinsRule();
+
+    public static class PipelineBaseJenkinsRule extends JenkinsRule{
+        @Override
+        protected LoginService configureUserRealm() {
+            HashLoginService realm = new HashLoginService();
+            realm.setName("default");   // this is the magic realm name to make it effective on everywhere
+            realm.update("alice", new Password("alice"), new String[]{"user","female"});
+            realm.update("bob", new Password("bob"), new String[]{"user","male"});
+            realm.update("charlie", new Password("charlie"), new String[]{"user","male"});
+            return realm;
+        }
+    }
 
     protected  String baseUrl;
 
@@ -599,7 +614,7 @@ public abstract class PipelineBaseTest{
     protected User login(String userId, String fullName, String email) throws IOException {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
 
-        hudson.model.User bob = j.jenkins.getUser(userId);
+        hudson.model.User bob = User.get(userId);
 
         bob.setFullName(fullName);
         bob.addProperty(new Mailer.UserProperty(email));

@@ -3,7 +3,7 @@ package io.blueocean.ath.offline.multibranch;
 
 import com.google.common.io.Files;
 import io.blueocean.ath.ATHJUnitRunner;
-import io.blueocean.ath.BaseTest;
+import io.blueocean.ath.BlueOceanAcceptanceTest;
 import io.blueocean.ath.GitRepositoryRule;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.MultiBranchPipeline;
@@ -27,7 +27,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
 @RunWith(ATHJUnitRunner.class)
-public class CommitMessagesTest extends BaseTest{
+public class CommitMessagesTest extends BlueOceanAcceptanceTest {
     private Logger logger = Logger.getLogger(CommitMessagesTest.class);
 
     @Rule
