@@ -75,8 +75,8 @@ public class AthModule extends AbstractModule {
 
             CustomJenkinsServer server = new CustomJenkinsServer(new URI(launchUrl), admin);
 
-            bind(JenkinsServer.class).to(CustomJenkinsServer.class);
-            bind(CustomJenkinsServer.class).to(CustomJenkinsServer.class);
+            bind(JenkinsServer.class).toInstance(server);
+            bind(CustomJenkinsServer.class).toInstance(server);
 
             if(server.getComputerSet().getTotalExecutors() < 10) {
                 server.runScript(
