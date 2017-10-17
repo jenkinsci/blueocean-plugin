@@ -1,6 +1,7 @@
 package io.blueocean.ath;
 
 import com.google.inject.AbstractModule;
+import com.google.inject.Provides;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 import com.offbytwo.jenkins.JenkinsServer;
@@ -29,9 +30,14 @@ import java.util.Properties;
 public class AthModule extends AbstractModule {
     @Override
     protected void configure() {
-        // Can run this locally with system properties, e.g.:
-        // -DwebDriverType=chrome -DwebDriverUrl=http://localhost:4444 -DwebDriverBrowserSize=800x600 -DjenkinsUrl=http://localhost:8080/jenkins
-        String webDriverType = System.getProperty("webDriverType");
+        Config cfg = new Config();
+        File userConfig = new File(new File(System.getProperty("user.home")), ".blueocean-ath-config");
+        if (userConfig.canRead()) {
+            cfg.loadProps(userConfig);
+        }
+        bind(Config.class).toInstance(cfg);
+
+        String webDriverType = cfg.getString("webDriverType");
         DesiredCapabilities capability;
         if ("chrome".equals(webDriverType)) {
             capability = DesiredCapabilities.chrome();
@@ -39,8 +45,8 @@ public class AthModule extends AbstractModule {
             capability = DesiredCapabilities.firefox();
         }
 
-        String webDriverUrl = System.getProperty("webDriverUrl", "http://localhost:4444/wd/hub");
-        String webDriverBrowserSize = System.getProperty("webDriverBrowserSize");
+        String webDriverUrl = cfg.getString("webDriverUrl", "http://localhost:4444/wd/hub");
+        String webDriverBrowserSize = cfg.getString("webDriverBrowserSize");
 
         try {
             WebDriver driver = new RemoteWebDriver(new URL(webDriverUrl), capability);
@@ -56,15 +62,15 @@ public class AthModule extends AbstractModule {
             driver.manage().deleteAllCookies();
             bind(WebDriver.class).toInstance(driver);
 
-            String launchUrl = System.getProperty("jenkinsUrl");
+            String launchUrl = cfg.getString("jenkinsUrl");
             if (launchUrl == null) {
                 launchUrl = new String(Files.readAllBytes(Paths.get("runner/.blueocean-ath-jenkins-url")));
             }
             bindConstant().annotatedWith(BaseUrl.class).to(launchUrl);
 
             CustomJenkinsServer server;
-            if (System.getProperty("adminUsername") != null) {
-                server = new CustomJenkinsServer(new URI(launchUrl), System.getProperty("adminUsername"), System.getProperty("adminPassword"));
+            if (cfg.getString("adminUsername") != null) {
+                server = new CustomJenkinsServer(new URI(launchUrl), cfg.getString("adminUsername"), cfg.getString("adminPassword"));
             } else {
                 server = new CustomJenkinsServer(new URI(launchUrl));
             }

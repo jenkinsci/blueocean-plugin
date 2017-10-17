@@ -47,6 +47,9 @@ public class SSEClientRule extends ExternalResource {
     @Inject @BaseUrl
     String baseUrl;
 
+    @Inject
+    LoginPage lp;
+
     public SSEClientRule() {
         mapper = new ObjectMapper();
     }
@@ -94,7 +97,7 @@ public class SSEClientRule extends ExternalResource {
     public void connect() throws UnirestException, InterruptedException {
         SecureRandom rnd = new SecureRandom();
         String clientId = "ath-" + rnd.nextLong();
-        HttpResponse<JsonNode> httpResponse = Unirest.get(baseUrl + "/sse-gateway/connect?clientId=" + clientId).basicAuth(LoginPage.getUsername(), LoginPage.getPassword()).asJson();
+        HttpResponse<JsonNode> httpResponse = Unirest.get(baseUrl + "/sse-gateway/connect?clientId=" + clientId).basicAuth(lp.getUsername(), lp.getPassword()).asJson();
         JsonNode body = httpResponse.getBody();
         Client client = ClientBuilder.newBuilder().register(SseFeature.class).build();
         WebTarget target = client.target(baseUrl + "/sse-gateway/listen/" + clientId + ";jsessionid="+body.getObject().getJSONObject("data").getString("jsessionid"));
@@ -110,7 +113,7 @@ public class SSEClientRule extends ExternalResource {
             .put("unsubscribe", new JSONArray());
 
         Unirest.post(baseUrl + "/sse-gateway/configure?batchId=1")
-            .basicAuth(LoginPage.getUsername(), LoginPage.getPassword())
+            .basicAuth(lp.getUsername(), lp.getPassword())
             .body(req).asJson();
 
         logger.info("SSE Connected " + clientId);

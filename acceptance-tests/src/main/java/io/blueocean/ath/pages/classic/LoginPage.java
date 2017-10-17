@@ -1,21 +1,26 @@
 package io.blueocean.ath.pages.classic;
 
 import io.blueocean.ath.BasePage;
+import io.blueocean.ath.Config;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 
+import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
 public class LoginPage extends BasePage {
+    @Inject
+    Config cfg;
+
     Logger logger = Logger.getLogger(LoginPage.class);
 
-    public static String getUsername() {
-        return System.getProperty("adminUsername", "alice");
+    public String getUsername() {
+        return cfg.getString("adminUsername", "alice");
     }
 
-    public static String getPassword() {
-        return System.getProperty("adminPassword", "alice");
+    public String getPassword() {
+        return cfg.getString("adminPassword", "alice");
     }
 
     public void open() {
