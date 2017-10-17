@@ -8,6 +8,7 @@ export default class RunMessageCell extends Component {
         run: PropTypes.object,
         t: PropTypes.func,
         linkTo: PropTypes.string,
+        changesUrl: PropTypes.string,
     };
 
     render() {
@@ -32,7 +33,7 @@ export default class RunMessageCell extends Component {
             message = (
                 <span className="RunMessageCell" title={run.description}>
                     <span className="RunMessageCellInner">
-                        <Link to={linkTo} className="unstyled-link" >
+                        <Link to={linkTo} className="unstyled-link">
                             {run.description}
                         </Link>
                     </span>
@@ -42,16 +43,19 @@ export default class RunMessageCell extends Component {
             const commitMsg = run.changeSet[run.changeSet.length - 1].msg;
 
             if (run.changeSet.length > 1) {
+
+                const { changesUrl } = this.props;
+
                 return (
                     <span className="RunMessageCell" title={commitMsg}>
                         <span className="RunMessageCellInner">
                             <LinkifiedText text={commitMsg} textLink={linkTo} partialTextLinks={run.changeSet[run.changeSet.length - 1].issues} />
                         </span>
-                        <Lozenge title={t('lozenge.commit', { 0: run.changeSet.length })} />
+                        <Lozenge title={t('lozenge.commit', { 0: run.changeSet.length })} linkTo={changesUrl} />
                     </span>
                 );
             }
-            
+
             return (
                 <span className="RunMessageCell" title={commitMsg}>
                     <span className="RunMessageCellInner">
@@ -62,7 +66,7 @@ export default class RunMessageCell extends Component {
         } else if (showCauses) {
             // Last cause is always more significant than the first
             const cause = run.causes[run.causes.length - 1].shortDescription;
-            const linkedCauseMsg = (<Link to={linkTo} className="unstyled-link" >{ cause }</Link>);
+            const linkedCauseMsg = (<Link to={linkTo} className="unstyled-link">{cause}</Link>);
             return (
                 <span className="RunMessageCell" title={cause}>
                     <span className="RunMessageCellInner">

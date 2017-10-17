@@ -2,16 +2,16 @@ import React from 'react';
 import { action, computed, observable } from 'mobx';
 import Promise from 'bluebird';
 
-import { i18nTranslator, logging } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, logging, sseService, pipelineService } from '@jenkins-cd/blueocean-core-js';
 const translate = i18nTranslator('blueocean-dashboard');
 
-import FlowManager from '../flow2/FlowManager';
+import FlowManager from '../CreationFlowManager';
 import waitAtLeast from '../flow2/waitAtLeast';
 import { CreatePipelineOutcome } from './GitCreationApi';
 import { CredentialsManager } from '../credentials/CredentialsManager';
 import { UnknownErrorStep } from './steps/UnknownErrorStep';
 import { LoadingStep } from './steps/LoadingStep';
-import GitConnectStep from './GitConnectStep';
+import GitConnectStep, { isSshRepositoryUrl } from './GitConnectStep';
 import GitCompletedStep from './GitCompletedStep';
 import GitRenameStep from './steps/GitRenameStep';
 import STATE from './GitCreationState';
@@ -47,6 +47,8 @@ export default class GitFlowManager extends FlowManager {
 
     pipeline = null;
 
+    _sseSubscribeId = null;
+
     constructor(createApi, credentialsApi) {
         super();
 
@@ -57,6 +59,7 @@ export default class GitFlowManager extends FlowManager {
 
     @action
     _initalize() {
+        this._sseSubscribeId = sseService.registerHandler(event => this._onSseEvent(event));
         this.noCredentialsOption = {
             displayName: translate('creation.git.step1.credentials_placeholder'),
         };
@@ -161,8 +164,8 @@ export default class GitFlowManager extends FlowManager {
         this.outcome = result.outcome;
 
         if (result.outcome === CreatePipelineOutcome.SUCCESS) {
-            this.changeState(STATE.COMPLETE);
             this.pipeline = result.pipeline;
+            // wait for SSE events - need to finish indexing
         } else if (result.outcome === CreatePipelineOutcome.INVALID_NAME) {
             this.renderStep({
                 stateId: STATE.STEP_RENAME,
@@ -192,4 +195,51 @@ export default class GitFlowManager extends FlowManager {
         return lastSlashToken.split('.').slice(0, 1).join('');
     }
 
+    _cleanupListeners() {
+        if (this._sseSubscribeId) {
+            sseService.removeHandler(this._sseSubscribeId);
+            this._sseSubscribeId = null;
+        }
+    }
+
+    _finishListening(state) {
+        this.changeState(state);
+        this._cleanupListeners();
+
+    }
+
+    _onSseEvent(event) {
+        if (LOGGER.isDebugEnabled()) {
+            this._logEvent(event);
+        }
+
+        if (event.blueocean_job_pipeline_name !== this.pipelineName) {
+            return;
+        }
+
+        if (event.blueocean_job_pipeline_name === this.pipelineName
+            && event.jenkins_object_type === 'org.jenkinsci.plugins.workflow.job.WorkflowRun'
+            && (event.job_run_status === 'ALLOCATED' || event.job_run_status === 'RUNNING' ||
+                event.job_run_status === 'SUCCESS' || event.job_run_status === 'FAILURE')) {
+
+            // set pipeline details thats needed later on in BbCompleteStep.navigatePipeline()
+            this.pipeline = { organization: event.jenkins_org, fullName: this.pipelineName };
+            this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+            return;
+        }
+
+        if (event.job_multibranch_indexing_result) {
+            pipelineService.fetchPipeline(event.blueocean_job_rest_url, { useCache: false })
+                .then(pipeline => {
+                    if (!pipeline.branchNames.length && isSshRepositoryUrl(this.repositoryUrl)) {
+                        this._finishListening(STATE.STEP_COMPLETE_MISSING_JENKINSFILE);
+                    } else {
+                        this._finishListening(STATE.STEP_COMPLETE_SUCCESS);
+                    }
+                })
+                .catch(() => {
+                    this._finishListening(STATE.STEP_COMPLETE_EVENT_ERROR);
+                });
+        }
+    }
 }

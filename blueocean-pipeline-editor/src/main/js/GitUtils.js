@@ -8,11 +8,11 @@ export function isSshRepositoryUrl(url) {
         return false;
     }
 
-    if (/ssh:\/\/.*/.test(url)) {
+    if (/^ssh:\/\/.*/.test(url)) {
         return true;
     }
 
-    if (/[^@:]+@.*/.test(url)) {
+    if (/^[^@:]+@.*/.test(url)) {
         return true;
     }
 
