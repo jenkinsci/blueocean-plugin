@@ -4,6 +4,7 @@ var directModuleReplacements = {
     '@jenkins-cd/logging': 'jenkins-cd-logging:jenkins-cd-logging@any',
     '@jenkins-cd/js-extensions': 'jenkins-cd-js-extensions:jenkins-cd-js-extensions@any',
     '@jenkins-cd/blueocean-core-js': 'jenkins-cd-blueocean-core-js:jenkins-cd-blueocean-core-js@any',
+    '@jenkins-cd/design-language': 'jenkins-cd-design-language:jenkins-cd-design-language@any',
     'mobx': 'mobx:mobx@any',
     'mobx-react': 'mobx-react:mobx-react@any',
     'react': 'react:react@any',
