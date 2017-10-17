@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { observer } from 'mobx-react';
-import { ResultItem, StatusIndicator } from '@jenkins-cd/design-language';
-import moment from 'moment';
+import { ResultItem, StatusIndicator, TimeDuration } from '@jenkins-cd/design-language';
 import TestDetails from './TestDetails';
 
 @observer
@@ -23,8 +22,7 @@ export default class TestCaseResultRow extends Component {
 
     render() {
         const { testCase: t, translation, locale = 'en' } = this.props;
-        moment.locale(locale);
-        const duration = moment.duration(Number(t.duration), 'milliseconds').humanize();
+        const duration = TimeDuration.format(t.duration, translation, locale);
         const showTestCase = (t.errorStackTrace || t.errorDetails || this.stdout || this.stderr);
         let statusIndicator = null;
         switch (t.status) {
