@@ -1,5 +1,6 @@
 package io.blueocean.ath;
 
+import com.google.common.base.Preconditions;
 import org.openqa.selenium.*;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
@@ -91,12 +92,22 @@ public class SmartWebElement implements WebElement {
         forEach(e -> e.sendKeys(charSequences));
     }
 
+    private static void validateTextElement(WebElement element) {
+        String tagName = element.getTagName().toLowerCase();
+        Preconditions.checkArgument(
+            "input".equals(tagName) || "textarea".equals(tagName),
+            "element must should be input or textarea but was %s",
+            tagName
+        );
+    }
+
     /**
      * Sets the matched inputs to the given text
      * @param text text to use
      */
     public void setText(CharSequence... text) {
         forEach(e -> {
+            validateTextElement(e);
             e.clear();
             e.sendKeys(text);
         });
