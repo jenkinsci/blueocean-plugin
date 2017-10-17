@@ -31,7 +31,7 @@ export default class LogToolbar extends Component {
                     href: logUrl,
                 }}
                 >
-                    <Icon size={24} {...{ style, icon: 'launch' }} />
+                    <Icon icon="ActionLaunch" size={24} />
                 </a>
                 <a
                 {...{
@@ -39,7 +39,7 @@ export default class LogToolbar extends Component {
                     href: `${logUrl}&download=true`,
                 }}
                 >
-                    <Icon size={24} {...{ style, icon: 'file_download' }} />
+                    <Icon icon="FileFileDownload" size={24} />
                 </a>
             </div>
         </div>);
