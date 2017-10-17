@@ -721,6 +721,12 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>junit</artifactId>
             <version>1.22-beta-1</version> <!-- TODO: Switch to 1.22 post-beta -->
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jenkins-ci.plugins</groupId>
+                    <artifactId>script-security</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- used in blueocean-rest-impl test -->
