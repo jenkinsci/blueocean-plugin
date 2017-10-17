@@ -68,12 +68,23 @@ export class Step extends Component {
      * Calculate whether we need to expand the step due to linking.
      * When we trigger a log-0 that means we want to see the full log
      */
-    isFocused(props) {
+    isFocused(props, state = {}) {
         const { step, location: { hash: anchorName } } = props;
-        const stepFocus = step.isFocused !== undefined && step.isFocused;
-        const stateFocus = this.state ? this.state.expanded : undefined;
-        const isInputStep = step && step.isInputStep;
-        let isFocused = isInputStep || stateFocus || (stepFocus && props.tailLogs);
+        const stateFocus = state.expanded;
+
+        let isFocused = false;
+
+        if (stateFocus !== undefined) {
+            // Setting the state via interaction overrides any defaults
+            isFocused = stateFocus;
+        } else if (step && (step.isInputStep || step.result === 'FAILURE')) {
+            // Input and failure steps should be opened by default
+            isFocused = true;
+        } else if (props.tailLogs && step && step.isFocused) {
+            // In karaoke + log tailing mode + currently running step
+            isFocused = true;
+        }
+
         // e.g. #step-10-log-1 or #step-10
         if (anchorName) {
             logger.debug('expandAnchor', anchorName);
@@ -100,7 +111,7 @@ export class Step extends Component {
             return null;
         }
         const { durationInMillis } = this.durationHarmonize(step);
-        const isFocused = this.isFocused(this.props);
+        const isFocused = this.isFocused(this.props, this.state);
         const { data: logArray, hasMore } = this.pager.log || {};
         let children = null;
         if (logArray && !step.isInputStep) {

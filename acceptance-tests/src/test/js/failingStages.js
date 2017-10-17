@@ -74,9 +74,6 @@ module.exports = {
     'Step 05' : function(browser) {
         const blueRunDetailPage = browser.page.bluePipelineRunDetail().forRun(JOB, 'jenkins', 1);
 
-        // Open resultitem
-        blueRunDetailPage.clickFirstResultItem();
-
         //click the re run button
         blueRunDetailPage.waitForElementVisible('.result-item.failure.expanded');
         blueRunDetailPage.clickReRunButton();
