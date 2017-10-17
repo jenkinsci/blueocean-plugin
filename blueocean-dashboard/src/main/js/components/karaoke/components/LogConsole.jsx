@@ -11,7 +11,7 @@ const INITIAL_RENDER_DELAY = 300;
 const RENDER_CHUNK_SIZE = 500;
 const RERENDER_DELAY = 17;
 
-const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.LogConsole');
+const logger = logging.logger('io.jenkins.blueocean.dashboard.following.LogConsole');
 
 const LogLine = ({ prefix, line, index, router, location }) => {
     const tokenized = tokenizeANSIString(line);
@@ -56,18 +56,10 @@ export class LogConsole extends Component {
         super(props);
         this.queuedLines = [];
         this.state = {
-            lines: [],
             isLoading: false,
         };
         // we have different timeouts in this component, each will take its own workspace
         this.timeouts = {};
-    }
-
-    componentWillMount() {
-        // We need a shallow copy of the ObservableArray to "cast" it down to normal array
-        const lineArray = this.props.logArray !== undefined && this.props.logArray.slice();
-        logger.debug('isArray props', Array.isArray(this.props.logArray), 'isArray after', Array.isArray(lineArray));
-        this._processLines(lineArray);
     }
 
     // componentWillReceiveProps does not return anything and return null is an early out, so disable lint complaining
@@ -155,8 +147,10 @@ export class LogConsole extends Component {
     }
 
     render() {
-        const { isLoading, lines } = this.state;
-        const { prefix = '', hasMore = false, router, location, t, currentLogUrl } = this.props; // if hasMore true then show link to full log
+        // const { isLoading, lines } = this.state;
+        const { prefix = '', hasMore = false, router, location, t, currentLogUrl, isLoading, logArray } = this.props; // if hasMore true then show link to full log
+        // We need a shallow copy of the ObservableArray to "cast" it down to normal array
+        const lines = logArray !== undefined && logArray.slice();
         if (!lines) {
             logger.debug('no lines passed');
             return null;
@@ -186,8 +180,7 @@ export class LogConsole extends Component {
                              router={router}
                              location={location} />
                 ))}
-            </pre>
-            </div>}
+            </pre></div> }
 
         </div>);
     }
@@ -196,6 +189,7 @@ export class LogConsole extends Component {
 const { array, bool, string, func, shape } = PropTypes;
 LogConsole.propTypes = {
     scrollToBottom: bool, // in case of long logs you can scroll to the bottom
+    isLoading: bool,
     logArray: array,
     currentLogUrl: string,
     scrollToAnchorTimeOut: func,

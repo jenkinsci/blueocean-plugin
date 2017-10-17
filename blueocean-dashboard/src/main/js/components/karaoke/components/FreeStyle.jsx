@@ -1,11 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { logging } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
-import { KaraokeService } from '../index';
 import LogConsole from './LogConsole';
 import LogToolbar from './LogToolbar';
+import { LogStore } from '../services/LogStore';
 
-const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.FreeStyle');
+const logger = logging.logger('io.jenkins.blueocean.dashboard.following.FreeStyle');
 
 @observer
 export default class FreeStyle extends Component {
@@ -14,7 +14,7 @@ export default class FreeStyle extends Component {
      * - we need to fetch the log to display it
      */
     componentWillMount() {
-        if (this.props.augmenter) {
+        if (this.props.pipelineView) {
             this.fetchData(this.props);
         }
     }
@@ -26,41 +26,38 @@ export default class FreeStyle extends Component {
     componentWillReceiveProps(nextProps) {
         const nextStart = nextProps.location && nextProps.location.query ? nextProps.location.query.start : undefined;
         const currentStart = this.props.location && this.props.location.query ? this.props.location.query.start : undefined;
-        logger.debug('newProps mate', nextProps, currentStart);
-        if (!nextProps.augmenter.karaoke) {
-            this.stopKaraoke();
-        }
         if (
             (currentStart !== nextStart && nextStart !== undefined) ||
             (nextProps.run.isCompleted() && !this.props.run.isCompleted())
         ) {
-            logger.debug('re-fetching since result changed and we want to display the full log');
-            this.pager.fetchGeneralLog({ start: nextStart });
+            logger.debug('re-fetching the full log', this.props, nextProps);
+            this.componentWillUnmount();
+            this.fetchData(nextProps);
         }
     }
     componentWillUnmount() {
-        this.stopKaraoke();
-    }
-    stopKaraoke() {
-        logger.debug('stopping karaoke mode, by removing the timeouts on the pager.');
-        this.pager.clear();
+        logger.debug('stopping following mode, by removing the timeouts on the logStore.');
+        this.props.liveUpdate.removeUpdater(this._updater);
     }
     fetchData(props) {
-        const { augmenter, location } = props;
-        this.pager = KaraokeService.generalLogPager(augmenter, location);
+        const { pipelineView, location } = props;
+        const start = location && location.query ? location.query.start : undefined;
+        this.logStore = new LogStore(pipelineView.generalLogUrl, start);
+        this.logStore.fetch();
+        this.props.liveUpdate.addUpdater(this._updater = () => this.logStore.fetch());
     }
     render() {
-        if (this.pager.pending) {
-            logger.debug('abort due to pager pending');
+        const { data: logArray, hasMore } = this.logStore.log;
+        if (this.logStore.pending && logArray.length === 0) {
+            logger.debug('abort due to logStore pending');
             return null;
         }
-        const { t, router, location, scrollToBottom, augmenter } = this.props;
-        const { data: logArray, hasMore } = this.pager.log;
-        logger.debug('props', scrollToBottom, this.pager.log.newStart, augmenter.generalLogUrl);
+        const { t, router, location, pipelineView } = this.props;
+        logger.debug('props', pipelineView.scrollToBottom, this.logStore.log.start, pipelineView.generalLogUrl);
         return (<div>
             <LogToolbar
-                fileName={augmenter.generalLogFileName}
-                url={augmenter.generalLogUrl}
+                fileName={pipelineView.generalLogFileName}
+                url={pipelineView.generalLogUrl}
                 title={t('rundetail.pipeline.logs', { defaultValue: 'Logs' })}
             />
             <LogConsole {...{
@@ -68,10 +65,10 @@ export default class FreeStyle extends Component {
                 router,
                 location,
                 hasMore,
-                scrollToBottom,
+                scrollToBottom: pipelineView.scrollToBottom,
                 logArray,
-                currentLogUrl: augmenter.generalLogUrl,
-                key: augmenter.generalLogUrl,
+                currentLogUrl: pipelineView.generalLogUrl,
+                key: pipelineView.generalLogUrl,
             }}
             />
         </div>);
@@ -79,7 +76,8 @@ export default class FreeStyle extends Component {
 }
 
 FreeStyle.propTypes = {
-    augmenter: PropTypes.object,
+    pipelineView: PropTypes.object,
+    liveUpdate: PropTypes.object,
     pipeline: PropTypes.object,
     branch: PropTypes.string,
     run: PropTypes.object,

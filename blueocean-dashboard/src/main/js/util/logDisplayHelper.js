@@ -18,6 +18,8 @@ function isRunningNode(item) {
 }
 
 export const getNodesInformation = (nodes) => {
+    // console.log('getNodesInformation called with nodes:', nodes);
+
     // calculation of information about stages
     // nodes in Runing state
     const runningNodes = nodes
@@ -34,7 +36,6 @@ export const getNodesInformation = (nodes) => {
     const hasResultsForSteps = nodes
             .filter((item) => item.state === null && item.result === null).length !== nodes.length;
     // principal model mapper
-    let wasFocused = false; // we only want one node to be focused if any
     let parallelNodes = [];
     let parent;
     // a job that is in queue would be marked as finished since
@@ -42,9 +43,6 @@ export const getNodesInformation = (nodes) => {
     const finished = runningNodes.length === 0 && queuedNodes.length !== nodes.length;
     const error = !(errorNodes.length === 0);
     const model = nodes.map((item, index) => {
-        const hasFailingNode = item.edges && item.edges.length >= 2 ? item.edges
-            .filter((itemError) => errorNodes.indexOf(itemError.id) > -1).length > 0 : false;
-        const isFailingNode = errorNodes.indexOf(item.id) > -1;
         const isRunning = runningNodes.indexOf(item.id) > -1;
         /*
          * are we in a node that indicates that we have parallel nodes?
@@ -87,6 +85,9 @@ export const getNodesInformation = (nodes) => {
             isCompleted,
             computedResult,
             isInputStep,
+            hasFailingNode: item.edges && item.edges.length >= 2 ? item.edges
+                    .filter((itemError) => errorNodes.indexOf(itemError.id) > -1).length > 0 : false,
+            isFailingNode: errorNodes.indexOf(item.id) > -1,
         };
         // do not set the parent node in parallel, since we already have this information
         if (!isParallel) {
@@ -96,20 +97,11 @@ export const getNodesInformation = (nodes) => {
             modelItem.estimatedDurationInMillis = item.estimatedDurationInMillis;
             modelItem.isMultiBranch = true;
         }
-        if ((isRunning || (isFailingNode && !hasFailingNode && finished)) && !wasFocused) {
-            wasFocused = true;
-            modelItem.isFocused = true;
-        }
         if (isInputStep) {
             modelItem.input = item.input;
         }
         return modelItem;
     });
-    // in case we have all null we will focuse the first node since we assume that this would
-    // be the next node to be started
-    if (queuedNodes.length === nodes.length && !wasFocused && model[0]) {
-        model[0].isFocused = true;
-    }
     // creating the response object
     const information = {
         isFinished: finished,

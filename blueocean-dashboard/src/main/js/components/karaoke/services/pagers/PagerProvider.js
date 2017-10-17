@@ -1,14 +1,14 @@
 import { BunkerService, logging } from '@jenkins-cd/blueocean-core-js';
-import { GeneralLogPager, LogPager, PipelinePager } from './pagers';
-const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Service');
+import { GeneralLogPager, LogPager, PipelinePager } from '.';
+const logger = logging.logger('io.jenkins.blueocean.dashboard.following.Service');
 /*
- * This class provides karaoke pager.
+ * This class provides live update pagers
  *
  * @export
- * @class KaraokeService
+ * @class PagerProvider
  * @extends {BunkerService}
  */
-export class KaraokePagerService extends BunkerService {
+export class PagerProvider extends BunkerService {
     /**
      * Generates a pager key for [@link PagerService] to store the [@link Pager] under.
      *
@@ -23,19 +23,19 @@ export class KaraokePagerService extends BunkerService {
         return key;
     }
     /**
-     * Gets the karaoke pager
+     * Gets the log pager
      *
-     * @param { object } augmenter
+     * @param { object } pipelineView
      * @returns {Pager} Pager for this pipelne.
      */
-    generalLogPager(augmenter, location) {
-        const { pipeline, branch, run } = augmenter;
+    generalLogPager(pipelineView, location) {
+        const { pipeline, branch, run } = pipelineView;
         return this.pagerService.getPager({
             key: this.generalLogPagerKey(pipeline, branch, run.id),
             /**
              * Lazily generate the pager in case its needed.
              */
-            lazyPager: () => new GeneralLogPager(this, augmenter, location),
+            lazyPager: () => new GeneralLogPager(this, pipelineView, location),
         });
     }
     /**
@@ -52,19 +52,19 @@ export class KaraokePagerService extends BunkerService {
         return key;
     }
     /**
-     * Gets the karaoke pager
+     * Gets the log pager
      *
-     * @param { object } augmenter
+     * @param { object } pipelineView
      * @returns {Pager} Pager for this pipelne.
      */
-    logPager(augmenter, step) {
-        const { pipeline, branch, run } = augmenter;
+    logPager(pipelineView, step) {
+        const { pipeline, branch, run } = pipelineView;
         return this.pagerService.getPager({
             key: this.logPagerKey(pipeline, branch, run.id, step.id),
             /**
              * Lazily generate the pager in case its needed.
              */
-            lazyPager: () => new LogPager(this, augmenter, step),
+            lazyPager: () => new LogPager(this, pipelineView, step),
         });
     }
     /**
@@ -81,21 +81,21 @@ export class KaraokePagerService extends BunkerService {
         return key;
     }
     /**
-     * Gets the karaoke pager
+     * Gets the pipeline pager
      *
-     * @param {object} augmenter
+     * @param {object} pipelineView
      * @param {boolean} followAlong
      * @param {object} node
      * @returns {Pager} Pager for this pipelne.
      */
-    pipelinePager(augmenter, { node }) {
-        const { pipeline, branch, run } = augmenter;
+    pipelinePager(pipelineView, { node }) {
+        const { pipeline, branch, run } = pipelineView;
         return this.pagerService.getPager({
             key: this.pipelinePagerKey(pipeline, branch, run.id),
             /**
              * Lazily generate the pager in case its needed.
              */
-            lazyPager: () => new PipelinePager(this, augmenter, { node }),
+            lazyPager: () => new PipelinePager(this, pipelineView, node),
         });
     }
 }

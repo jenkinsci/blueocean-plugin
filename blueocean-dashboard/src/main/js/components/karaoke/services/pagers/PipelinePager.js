@@ -1,10 +1,9 @@
-import { action, computed, observable } from 'mobx';
-import { logging } from '@jenkins-cd/blueocean-core-js';
+import { action, observable } from 'mobx';
+import { Logger } from '../../../../util/Logger';
 
-import { prefixIfNeeded } from '../../urls/prefixIfNeeded';
 import { KaraokeApi } from '../../index';
 
-const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pager.Pipeline');
+const log = new Logger('pipeline.run.pager');
 
 /**
  * The pager fetches pages of data from the BlueOcean api. It fetches pages of data, then
@@ -23,9 +22,6 @@ export class PipelinePager {
      */
     @observable pending = false;
 
-    @observable currentNode = {};
-    @observable currentStepsUrl;
-    polling = false;
     /**
      * Will be set in an error occurs.
      * @type {object|null}
@@ -40,158 +36,108 @@ export class PipelinePager {
      * @readonly
      * @type {object}
      */
-    @computed
-    get nodes() {
-        return this.bunker.getItem(this.augmenter.nodesUrl);
+    getNodes(pipelineView) {
+        return this.bunker.getItem(pipelineView.nodesUrl);
     }
-    @computed
-    get steps() {
-        return this.bunker.getItem(this.currentStepsUrl);
+
+    getSteps(pipelineView) {
+        return this.stepsUrl && this.bunker.getItem(pipelineView.stepsUrl);
     }
+
     /**
      * Creates an instance of Pager and fetches the first page.
      *
      * @param {BunkerService} bunker - Data store
-     * @param {object} augmenter augmenter that this pager belongs to.
-     * @param {object} props Properies that this pager belongs to.
      */
-    constructor(bunker, augmenter, props) {
+    constructor(bunker, nodesUrl) {
         this.bunker = bunker;
-        this.augmenter = augmenter;
-        this.fetchNodes({ ...props });
+        this.nodesUrl = nodesUrl;
     }
+
+    /**
+     * Gets the default focused node
+     * @returns {object} the node
+     */
+    getDefaultFocusedNode(pipelineView) {
+        const nodeData = this.bunker.getItem(pipelineView.nodesUrl);
+        if (!nodeData) {
+            throw new Error('No node:');
+        }
+        // set either the active node determined by the script or the last node
+        for (const node of nodeData.data.model) {
+            if (node.isFailingNode || (!node.isCompleted && node.edges.length === 0)) {
+                return node;
+            }
+        }
+        return nodeData.data.model[nodeData.data.model.length - 1];
+    }
+
     /**
      * Fetches the detail from the backend and set the data
      *
      * @returns {Promise}
      */
     @action
-    fetchNodes({ node }) {
-        logger.debug('Fetching now nodes url and further process it');
+    fetchNodes(pipelineView) {
+        log.debug('fetchNodes for', pipelineView.nodesUrl);
         // while fetching we are pending
         this.pending = true;
-        // log is text and not json, further it does not has _link in the response
-        const logData = {
-            _links: {
-                self: {
-                    href: this.augmenter.nodesUrl,
-                },
-            },
-        };
         // get api data and further process it
-        return KaraokeApi.getNodes(this.augmenter.nodesUrl)
-            .then(action('Process node data', result => {
-                if (result.model.length === 0) {
-                    logger.debug('Seems we do not have any nodes for this run.');
-                    this.currentStepsUrl = this.augmenter.stepsUrl;
-                    // we need now to fetch the steps
-                    return this.fetchCurrentStepUrl();
-                }
+        return KaraokeApi.getNodes(pipelineView.nodesUrl)
+            .then(result => {
+                const nodeData = {
+                    _links: {
+                        self: {
+                            href: pipelineView.nodesUrl,
+                        },
+                    },
+                };
                 // get information about the result
-                logData.data = result;
-                // compare whether we really need to
-                // update the bunker
-                const cached = this.bunker.getItem(logData._links.self.href);
-                if (cached !== logData) { // calculate which node we need to focus
-                    logger.debug('objects are different - updating store');
-                    this.bunker.setItem(logData);
-                }
-                const focused = logData.data.model.filter((item) => {
-                    if (node) {
-                        logger.debug('check whether the node we are requesting is same', node, item);
-                        return item.id === node;
-                    }
-                    return item.isFocused;
-                })[0];
-                // set either the focused node determined by the script or the last node
-                if (focused) {
-                    this.currentNode = focused;
-                } else {
-                    // Actually we should only come here on a not running job
-                    logger.debug('Actually we should only come here on a not running job');
-                    const lastNode = (logData.data.model[logData.data.model.length - 1]);
-                    this.currentNode = lastNode;
-                }
-                this.currentStepsUrl = prefixIfNeeded(this.currentNode._links.steps.href);
-                logger.debug('saved data', logData);
-                return this.fetchCurrentStepUrl();
-            })).catch(err => {
-                logger.error('Error fetching page', err);
+                nodeData.data = result;
+                this.setNodeData(nodeData);
+                return nodeData._links.self.href;
+            }).catch(err => {
+                log.error('Error fetching page', err);
                 action('set error', () => { this.error = err; });
             });
     }
-    /**
-     * Fetches the detail from the backend but only the nodes part
-     *
-     * @returns {Promise}
-     */
+
     @action
-    fetchNodesOnly() {
-        logger.debug('Fetching now nodes url and further process it');
-        // while fetching we are pending
-        this.pending = true;
-        // log is text and not json, further it does not has _link in the response
-        const logData = {
-            _links: {
-                self: {
-                    href: this.augmenter.nodesUrl,
-                },
-            },
-        };
-        // get api data and further process it
-        return KaraokeApi.getNodes(this.augmenter.nodesUrl)
-            .then(action('Process node data', result => {
-                // get information about the result
-                logData.data = result;
-                // compare whether we really need to
-                // update the bunker
-                const cached = this.bunker.getItem(logData._links.self.href);
-                if (cached !== logData) { // calculate which node we need to focus
-                    logger.debug('objects are different - updating store');
-                    this.bunker.setItem(logData);
-                }
-                this.pending = false;
-            })).catch(err => {
-                logger.error('Error fetching page', err);
-                action('set error', () => { this.error = err; });
-            });
+    setNodeData(nodeData) {
+        log.debug('setNodeData', nodeData);
+        this.bunker.setItem(nodeData);
     }
+
     @action
-    fetchCurrentStepUrl() {
+    fetchCurrentSteps() {
         this.pending = true;
-        logger.debug('Fetching now current step url and further process it');
+        log.info('fetchCurrentSteps', this.stepsUrl);
         clearTimeout(this.timeout);
-        // log is text and not json, further it does not has _link in the response
-        const logData = {
-            _links: {
-                self: {
-                    href: this.currentStepsUrl,
-                },
-            },
-        };
         // get api data and further process it
-        return KaraokeApi.getSteps(this.currentStepsUrl)
+        return KaraokeApi.getSteps(this.stepsUrl)
             .then(action('Process steps data', result => {
-                logData.data = result;
-                const cached = this.bunker.getItem(logData._links.self.href);
-                if (cached !== logData) { // calculate which node we need to focus
-                    logger.debug('objects are different - updating store');
-                    this.bunker.setItem(logData);
-                    logger.debug('saved data');
+                // log is text and not json, further it does not has _link in the response
+                const stepData = {
+                    _links: {
+                        self: {
+                            href: this.stepsUrl,
+                        },
+                    },
+                };
+                stepData.data = result;
+                const cached = this.bunker.getItem(stepData._links.self.href);
+                if (cached !== stepData) { // calculate which node we need to focus
+                    log.info('objects are different - updating store');
+                    this.bunker.setItem(stepData);
+                    log.info('saved data');
                 }
                 this.pending = false;
-                // we need to get more input from the log stream
-                if (this.polling) {
-                    logger.debug('follow along polling mode');
-                    this.timeout = setTimeout(() => {
-                        this.fetchCurrentStepUrl();
-                    }, 1000);
-                }
             })).catch(err => {
-                logger.error('Error fetching page', err);
+                log.error('Error fetching page', err);
                 action('set error', () => { this.error = err; });
             });
     }
+
     clear() {
         clearTimeout(this.timeout);
     }

@@ -1,16 +1,68 @@
+console.log('pds');
+
 import { action, computed, observable } from 'mobx';
-import { capable, logging } from '@jenkins-cd/blueocean-core-js';
+import { capable } from '@jenkins-cd/blueocean-core-js';
+import { Logger } from '../../util/Logger';
+import { prefixIfNeeded } from './urls/prefixIfNeeded';
+import { FREESTYLE_JOB, MULTIBRANCH_PIPELINE, PIPELINE_JOB } from '../../Capabilities';
 
-import { prefixIfNeeded } from '../urls/prefixIfNeeded';
-import { FREESTYLE_JOB, MULTIBRANCH_PIPELINE, PIPELINE_JOB } from '../../../Capabilities';
-
-const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Augmenter');
+const log = new Logger('io.jenkins.blueocean.dashboard.following.PipelineView');
 
 /**
- * @export
- * @class Augmenter
+ * Current view of a pipeline
  */
-export class Augmenter {
+export class PipelineView {
+    @observable following = false;
+    @observable run;
+    @observable branch;
+    @observable pipeline;
+    @observable currentNode;
+
+    /**
+     * Creates an instance of PipelineView
+     *
+     * @param {object} pipeline Pipeline that this pager belongs to.
+     * @param {string} branch the name of the branch we are requesting
+     * @param {string} run Run that this pager belongs to.
+     * @param {boolean} followAlong should we follow along
+     */
+    constructor(pipeline, branch, run, followAlong) {
+        this.setPipeline(pipeline);
+        this.setBranch(branch);
+        this.setFollowing(followAlong);
+        this.setRun(run);
+    }
+
+    @action
+    setFollowing(followAlong) {
+        this.following = followAlong;
+    }
+
+    @action
+    setRun(run) {
+        this.run = run;
+    }
+
+    @action
+    setPipeline(pipeline) {
+        this.pipeline = pipeline;
+    }
+
+    @action
+    setBranch(branch) {
+        this.branch = branch;
+    }
+
+    @action
+    setLogActive(isLogActive) {
+        this.isLogActive = isLogActive;
+    }
+
+    @action
+    setCurrentNode(currentNode) {
+        this.currentNode = currentNode;
+    }
+
     /**
      * The detail pager
      */
@@ -25,7 +77,7 @@ export class Augmenter {
         if (this.run._links && this.run._links.log && this.run._links.log.href) {
             return prefixIfNeeded(this.run._links.log.href);
         }
-        logger.debug('returning undefined as generalLogUrl');
+        log.debug('returning undefined as generalLogUrl');
         return undefined;
     }
     /**
@@ -38,18 +90,18 @@ export class Augmenter {
         } else if (this.run._links.self.href) {
             return `${prefixIfNeeded(this.run._links.self.href)}nodes/`;
         }
-        logger.debug('returning undefined as nodeUrl');
+        log.debug('returning undefined as nodeUrl');
         return undefined;
     }
     /**
      * calculate the logs url of the node
      * @type {string | undefined}
      */
-    getNodesLogUrl(currentNode) {
-        if (currentNode) {
-            return `${prefixIfNeeded(currentNode._links.self.href)}log/`;
+    getNodesLogUrl() {
+        if (this.currentNode && this.currentNode._links) {
+            return `${prefixIfNeeded(this.currentNode._links.self.href)}log/`;
         }
-        logger.debug('returning undefined as currentNode');
+        log.debug('returning undefined as currentNode');
         return undefined;
     }
     /**
@@ -57,14 +109,18 @@ export class Augmenter {
      * @type {string | undefined}
      */
     @computed get stepsUrl() {
+        if (this.currentNode && this.currentNode._links && this.currentNode._links.steps) {
+            return prefixIfNeeded(this.currentNode._links.steps.href);
+        }
         if (this.run._links.steps) {
             return prefixIfNeeded(this.run._links.steps.href);
         } else if (this.run._links.self.href) {
             return `${prefixIfNeeded(this.run._links.self.href)}steps/`;
         }
-        logger.debug('returning undefined as stepUrl');
+        log.warning('no steps url!');
         return undefined;
     }
+
     /**
      * Do we have a free style job?
      * @type {boolean}
@@ -97,6 +153,12 @@ export class Augmenter {
         return `${this.run.id}.txt`;
     }
     /**
+     * Indicates the UI should scroll to the bottom of the log
+     */
+    @computed get scrollToBottom() {
+        return this.following || (this.run && this.run.result === 'FAILURE');
+    }
+    /**
      * calculate the file name of the node based log
      * @type {string | undefined}
      */
@@ -105,45 +167,5 @@ export class Augmenter {
             return `${this.branch}-${this.run.id}-${currentNode.displayName}.txt`;
         }
         return `${this.run.id}-${currentNode.displayName}.txt`;
-    }
-
-    @observable karaoke = false;
-    @observable run;
-    @observable branch;
-    @observable pipeline;
-
-    /**
-     * Creates an instance of Augmenter
-     *
-     * @param {object} pipeline Pipeline that this pager belongs to.
-     * @param {string} branch the name of the branch we are requesting
-     * @param {string} run Run that this pager belongs to.
-     * @param {boolean} followAlong should we follow along
-     */
-    constructor(pipeline, branch, run, followAlong) {
-        this.setPipeline(pipeline);
-        this.setBranch(branch);
-        this.setKaraoke(followAlong);
-        this.setRun(run);
-    }
-
-    @action
-    setKaraoke(followAlong) {
-        this.karaoke = followAlong;
-    }
-
-    @action
-    setRun(run) {
-        this.run = run;
-    }
-
-    @action
-    setPipeline(pipeline) {
-        this.pipeline = pipeline;
-    }
-
-    @action
-    setBranch(branch) {
-        this.branch = branch;
     }
 }

@@ -1,15 +1,11 @@
-import { PagerService } from '@jenkins-cd/blueocean-core-js';
 import { preferences } from '@jenkins-cd/preferences';
-const pagerService = new PagerService();
 import { KaraokeApi } from './rest/KaraokeApi';
-const karaokeApi = new KaraokeApi();
-export { karaokeApi as KaraokeApi };
+const followingApi = new KaraokeApi();
+export { followingApi as KaraokeApi };
+export const KaraokeSpeed = 1000;
 
-import { KaraokePagerService } from './services/KaraokeService';
-const karaokeService = new KaraokePagerService(pagerService);
-export { karaokeService as KaraokeService };
 /**
- * Preferences that we support in karaoke and detail view
+ * Preferences that we support in following and detail view
  * @type {[{key: string,
  *       defaultValue: string,
  *       allowedValues: ['classic', 'pipeline'],
@@ -31,7 +27,7 @@ export const preferencesArray = [{
         allowedValues: ['always', 'never'],
     },
     {
-        key: 'runDetails.pipeline.karaoke',
+        key: 'runDetails.pipeline.following',
         defaultValue: 'default',
         allowedValues: ['default', 'never'],
     },
@@ -42,6 +38,6 @@ export const preferencesArray = [{
     },
 ];
 
-const karaokeConfig = preferences.newPreferences(preferencesArray);
+const followingConfig = preferences.newPreferences(preferencesArray);
 
-export { karaokeConfig as KaraokeConfig };
+export { followingConfig as KaraokeConfig };

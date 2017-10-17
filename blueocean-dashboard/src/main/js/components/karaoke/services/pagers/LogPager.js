@@ -1,9 +1,9 @@
 import { action, computed, observable } from 'mobx';
 import { logging } from '@jenkins-cd/blueocean-core-js';
 
-import { KaraokeApi } from '../../index';
+import { KaraokeApi, KaraokeSpeed } from '../../index';
 
-const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pager.Step');
+const logger = logging.logger('io.jenkins.blueocean.dashboard.following.Pager.Step');
 
 /**
  * The pager fetches pages of data from the BlueOcean api. It fetches pages of data, then
@@ -49,13 +49,12 @@ export class LogPager {
      * @param {string} branch the name of the branch we are requesting
      * @param {string} run Run that this pager belongs to.
      */
-    constructor(bunker, augmenter, step) {
+    constructor(bunker, pipelineView, step) {
         this.bunker = bunker;
-        this.augmenter = augmenter;
+        this.pipelineView = pipelineView;
         this.step = step;
         if (step.isFocused && !step.isInputStep) { // we do not want to fetch when we have an input step
             this.fetchLog({
-                followAlong: augmenter.karaoke,
                 url: step.logUrl,
             });
         }
@@ -67,7 +66,7 @@ export class LogPager {
      * @returns {Promise}
      */
     @action
-    fetchLog({ start, followAlong, url }) {
+    fetchLog({ start, url }) {
         clearTimeout(this.timeout);
         // while fetching we are pending
         this.pending = true;
@@ -93,18 +92,19 @@ export class LogPager {
                     logData.data = text.trim().split('\n');
                     // Store item in bunker.
                     this.bunker.setItem(logData);
-                    logger.debug('saved data', url, logData.newStart, followAlong);
+                    logger.debug('saved data', url, logData.newStart, this.pipelineView.following);
                 }
                 this.currentLogUrl = url;
+                console.log('setting currentLogUrl:', url);
                 this.pending = false;
                 this.used = true;
-                if (Number(logData.newStart) > 0 && followAlong) {
+                if (Number(logData.newStart) > 0 && this.pipelineView.following) {
                     // kill current  timeout if any
                     clearTimeout(this.timeout);
                     // we need to get more input from the log stream
                     this.timeout = setTimeout(() => {
                         this.followLog(logData);
-                    }, 1000);
+                    }, KaraokeSpeed);
                 }
             })).catch(err => {
                 logger.error('Error fetching page - fetch log', err);
@@ -141,7 +141,7 @@ export class LogPager {
                     // we need to get mpre input from the log stream
                     this.timeout = setTimeout(() => {
                         this.followLog(logData);
-                    }, 1000);
+                    }, KaraokeSpeed);
                 }
             })).catch(err => {
                 logger.error('Error fetching page - follow log', err);
