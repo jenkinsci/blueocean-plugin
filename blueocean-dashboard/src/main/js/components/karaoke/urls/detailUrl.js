@@ -7,7 +7,7 @@ import {
 
 import { MULTIBRANCH_PIPELINE } from '../../../Capabilities';
 
-const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.detailUrl');
+const logger = logging.logger('io.jenkins.blueocean.dashboard.following.detailUrl');
 /**
  * Generates the detail Url of a run
  * @param {object} pipeline Pipeline that this pager belongs to.

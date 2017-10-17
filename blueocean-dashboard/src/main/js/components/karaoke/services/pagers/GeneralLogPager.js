@@ -1,9 +1,9 @@
-import { action, computed, observable } from 'mobx';
+import { action, observable } from 'mobx';
 import { logging } from '@jenkins-cd/blueocean-core-js';
 
-import { KaraokeApi } from '../../index';
+import { KaraokeApi, KaraokeSpeed } from '../../index';
 
-const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pager.General');
+const logger = logging.logger('io.jenkins.blueocean.dashboard.following.Pager.General');
 
 /**
  * The pager fetches pages of data from the BlueOcean api. It fetches pages of data, then
@@ -27,18 +27,8 @@ export class GeneralLogPager {
      */
     @observable error = null;
 
-    /**
-     * Mobx computed value that creates an object. If either the  bunker changes,
-     * or the href change, this is recalculated and will trigger a react reaction.
-     *
-     * If item does not exist in bunker, then we just ignore it.
-     * @readonly
-     * @type {object}
-     */
-    @computed
-    get log() {
-        return this.bunker.getItem(this.augmenter.generalLogUrl);
-    }
+    @observable log = null;
+
     /**
      * Creates an instance of Pager and fetches the first page.
      *
@@ -47,11 +37,15 @@ export class GeneralLogPager {
      * @param {string} branch the name of the branch we are requesting
      * @param {string} run Run that this pager belongs to.
      */
-    constructor(bunker, augmenter, location) {
-        this.bunker = bunker;
-        this.augmenter = augmenter;
+    constructor(bunker, pipelineView, location) {
+        this.pipelineView = pipelineView;
         const start = location && location.query ? location.query.start : undefined;
-        this.fetchGeneralLog({ start, followAlong: augmenter.karaoke });
+        this.fetchGeneralLog({ start, followAlong: pipelineView.following });
+    }
+
+    @action
+    setLog(log) {
+        this.log = log;
     }
 
     /**
@@ -60,7 +54,7 @@ export class GeneralLogPager {
      * @returns {Promise}
      */
     @action
-    fetchGeneralLog({ start, followAlong }) {
+    fetchGeneralLog({ start }) {
         clearTimeout(this.timeout);
         // while fetching we are pending
         this.pending = true;
@@ -68,12 +62,12 @@ export class GeneralLogPager {
         const logData = {
             _links: {
                 self: {
-                    href: this.augmenter.generalLogUrl,
+                    href: this.pipelineView.generalLogUrl,
                 },
             },
         };
         // get api data and further process it
-        return KaraokeApi.getGeneralLog(this.augmenter.generalLogUrl, { start })
+        return KaraokeApi.getGeneralLog(this.pipelineView.generalLogUrl, { start })
             .then(response => {
                 const { newStart, hasMore } = response;
                 logger.warn({ newStart, hasMore });
@@ -84,18 +78,17 @@ export class GeneralLogPager {
             .then(action('Process pager data', text => {
                 if (text && text.trim) {
                     logData.data = text.trim().split('\n');
-                    // Store item in bunker.
-                    this.bunker.setItem(logData);
-                    logger.debug('saved data', this.augmenter.generalLogUrl, logData.newStart, followAlong);
+                    this.setLog(logData);
+                    logger.debug('saved data', this.pipelineView.generalLogUrl, logData.newStart);
                 }
                 this.pending = false;
-                if (Number(logData.newStart) > 0 && followAlong) {
+                if (Number(logData.newStart) > 0) {
                     // kill current  timeout if any
                     clearTimeout(this.timeout);
                     // we need to get more input from the log stream
                     this.timeout = setTimeout(() => {
                         this.followGeneralLog(logData);
-                    }, 1000);
+                    }, KaraokeSpeed);
                 }
             })).catch(err => {
                 logger.error('Error fetching page', err);
@@ -112,7 +105,7 @@ export class GeneralLogPager {
     followGeneralLog(logDataOrg) {
         clearTimeout(this.timeout);
         const logData = { ...logDataOrg };
-        return KaraokeApi.getGeneralLog(this.augmenter.generalLogUrl, { start: logData.newStart })
+        return KaraokeApi.getGeneralLog(this.pipelineView.generalLogUrl, { start: logData.newStart })
             .then(action('Process pager data following 1', response => {
                 const { newStart, hasMore } = response;
                 logger.warn({ newStart, hasMore });
@@ -125,14 +118,14 @@ export class GeneralLogPager {
                     logData.data = logData.data.concat(items);
                     // Store item in bunker.
                     this.bunker.setItem(logData);
-                    logger.debug('saved data', this.augmenter.generalLogUrl, logData.newStart);
+                    logger.debug('saved data', this.pipelineView.generalLogUrl, logData.newStart);
                 }
                 if (logData.newStart !== null) {
                     // kill current  timeout if any
                     // we need to get mpre input from the log stream
                     this.timeout = setTimeout(() => {
                         this.followGeneralLog(logData);
-                    }, 1000);
+                    }, KaraokeSpeed);
                 }
             })).catch(err => {
                 logger.error('Error fetching page', err);

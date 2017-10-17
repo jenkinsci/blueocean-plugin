@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react';
+import ReactDOM from 'react-dom';
 import { logging } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import Extensions from '@jenkins-cd/js-extensions';
-import { Augmenter } from './karaoke/services/Augmenter';
+import { PipelineView } from './karaoke/PipelineView';
 
 import { KaraokeConfig } from './karaoke';
 
@@ -11,7 +12,6 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.RunDetails
 export class RunDetailsPipeline extends Component {
     constructor(props) {
         super(props);
-        this._handleKeys = this._handleKeys.bind(this);
         this._onScrollHandler = this._onScrollHandler.bind(this);
     }
     componentWillMount() {
@@ -22,9 +22,14 @@ export class RunDetailsPipeline extends Component {
     }
     componentDidMount() {
         const { result } = this.props;
-        if (!result.isQueued()) {
-            document.addEventListener('wheel', this._onScrollHandler, false);
-            document.addEventListener('keydown', this._handleKeys, false);
+        if (!result.isCompleted()) {
+            document.addEventListener('scroll', this._onScrollHandler, true);
+            const thisEl = ReactDOM.findDOMNode(this);
+            const fullscreenContents = thisEl.parentElement.parentElement; // this is the actual div that scrolls
+            this._scrollElement = fullscreenContents;
+            // need to focus on something within the popup to handle keyboard scroll input
+            fullscreenContents.setAttribute('tabindex', '-1'); // -1 so can't actually tab to it
+            fullscreenContents.focus();
         }
     }
     componentWillReceiveProps(nextProps) {
@@ -40,36 +45,36 @@ export class RunDetailsPipeline extends Component {
         }
     }
     componentWillUnmount() {
-        document.removeEventListener('keydown', this._handleKeys);
-        document.removeEventListener('wheel', this._onScrollHandler);
+        document.removeEventListener('scroll', this._onScrollHandler);
     }
- // we bail out on arrow_up key
-    _handleKeys(event) {
-        if (event.keyCode === 38 && this.augmenter.karaoke) {
-            logger.debug('stop follow along by key up');
-            this.augmenter.setKaraoke(false);
+    _onScrollHandler() {
+        if (this.props.result.isCompleted()) {
+            return;
         }
-    }
-    // need to register handler to step out of karaoke mode
-    // we bail out on scroll up
-    _onScrollHandler(elem) {
-        if (elem.deltaY < 0 && this.augmenter.karaoke) {
-            logger.debug('stop follow along by scroll up');
-            this.augmenter.setKaraoke(false);
+        const el = this._scrollElement;
+        const isAtBottom = el.scrollHeight - el.scrollTop - el.clientHeight < 1;
+        if (isAtBottom && !this.pipelineView.following) {
+            console.log('resuming following, pipelineView is', this.pipelineView.following ? 'active' : 'disabled');
+            this.pipelineView.setFollowing(true);
+        } else if (!isAtBottom && this.pipelineView.following) {
+            console.log('stopping following, pipelineView is', this.pipelineView.following ? 'active' : 'disabled');
+            this.pipelineView.setFollowing(false);
         }
     }
     augment(props) {
         // we do not want to follow any builds that are finished
         const { result: run, pipeline, params: { branch } } = props;
         const followAlong = props && props.result && props.result.state !== 'FINISHED' || false;
-        this.augmenter = new Augmenter(pipeline, branch, run, followAlong);
+        if (!this.pipelineView) {
+            this.pipelineView = new PipelineView(pipeline, branch, run, followAlong);
+            this.pipelineView.setLogActive(followAlong); // default to active, as the component will focus on the first active element
+        }
     }
     render() {
         const { result: run, pipeline, params: { branch }, t } = this.props;
         const { router, location } = this.context;
         const commonProps = {
-            scrollToBottom: this.augmenter.karaoke || (run && run.result === 'FAILURE'),
-            augmenter: this.augmenter,
+            pipelineView: this.pipelineView,
             t,
             run,
             pipeline,
@@ -79,8 +84,7 @@ export class RunDetailsPipeline extends Component {
             params: this.props.params,
         };
         let provider;
-        const stepScrollAreaClass = `step-scroll-area ${this.augmenter.karaoke ? 'follow-along-on' : 'follow-along-off'}`;
-        if (this.augmenter.isFreeStyle) {
+        if (this.pipelineView.isFreeStyle) {
             provider = (<Extensions.Renderer {
                     ...{
                         extensionPoint: 'jenkins.pipeline.karaoke.freestyle.provider',
@@ -89,7 +93,7 @@ export class RunDetailsPipeline extends Component {
                 }
             />);
         }
-        if (!this.classicLog && this.augmenter.isPipeline) {
+        if (!this.classicLog && this.pipelineView.isPipeline) {
             provider = (<Extensions.Renderer {
                     ...{
                         extensionPoint: 'jenkins.pipeline.karaoke.pipeline.provider',
@@ -98,6 +102,7 @@ export class RunDetailsPipeline extends Component {
                 }
             />);
         }
+        const stepScrollAreaClass = `step-scroll-area ${this.pipelineView.following ? 'follow-along-on' : 'follow-along-off'}`;
         return (<div className={stepScrollAreaClass} >
             { provider }
         </div>);

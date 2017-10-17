@@ -4,20 +4,25 @@ import { Step } from './Step';
 
 export default class Steps extends Component {
     render() {
-        const { t, nodeInformation } = this.props;
+        const { t, nodeInformation, followAlong } = this.props;
         // Early out
         if (!nodeInformation) {
             const queuedMessage = t('rundetail.pipeline.pending.message',
                 { defaultValue: 'Waiting for backend to response' });
             return <QueuedState message={queuedMessage} />;
         }
+
+        // console.log('re-rendering Steps.jsx', followAlong);
+
         const { model } = nodeInformation;
         return (<div className="Steps">
-            { model.map((item) => <Step
+            { model.map((step, idx) => <Step
                 { ...
                     { ...this.props,
-                        key: item.key,
-                        step: item,
+                        key: step.id,
+                        step,
+                        isFocused: followAlong && step.isRunning,
+                        scrollToBottom: followAlong && idx === model.length - 1,
                     }
                 }
             />) }
@@ -28,5 +33,7 @@ export default class Steps extends Component {
 Steps.propTypes = {
     nodeInformation: PropTypes.object.isRequired,
     t: PropTypes.func,
+    followAlong: PropTypes.bool,
+    // scrollToNode: PropTypes.object,
 };
 

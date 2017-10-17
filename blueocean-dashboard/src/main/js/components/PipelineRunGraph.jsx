@@ -1,15 +1,16 @@
 import React, { Component, PropTypes } from 'react';
 import { PipelineGraph } from '@jenkins-cd/design-language';
-import { TimeManager, i18nTranslator, logging } from '@jenkins-cd/blueocean-core-js';
+import { TimeManager, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { Logger } from '../util/Logger';
 
 const timeManager = new TimeManager();
 const { array, any, func, object, string } = PropTypes;
-const logger = logging.logger('io.jenkins.blueocean.dashboard.PipelineRunGraph');
 const translate = i18nTranslator('blueocean-web');
+const log = new Logger('pipeline.run.graph');
 
 function badNode(jenkinsNode) {
     // eslint-disable-next-line
-    console.error('Malformed / missing Jenkins run node:', jenkinsNode);
+    log.error('Malformed / missing Jenkins run node:', jenkinsNode);
     return new Error('convertJenkinsNodeDetails: malformed / missing Jenkins run node.');
 }
 
@@ -18,7 +19,7 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
         || !jenkinsNode.id) {
         throw badNode(jenkinsNode);
     }
-    logger.debug('jenkinsNode', jenkinsNode);
+    log.trace('jenkinsNode', jenkinsNode);
     const isRunning = () => {
         switch (jenkinsNode.state) {
         case 'RUNNING':
@@ -83,7 +84,7 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
         id: jenkinsNode.id,
         title,
     };
-    logger.debug('converted node', converted);
+    log.trace('converted node', converted);
     return converted;
 }
 
@@ -205,6 +206,7 @@ export default class PipelineRunGraph extends Component {
     }
 
     processData(newData, run) {
+        log.info('processData', run.id);
         this.lastData = newData;
         const isCompleted = run.state.toUpperCase() === 'FINISHED';
         const skewMillis = this.context.config.getServerBrowserTimeSkewMillis();
@@ -223,6 +225,8 @@ export default class PipelineRunGraph extends Component {
     };
 
     render() {
+        // log.info('re-rendering PipelineRunGraph.jsx');
+
         const { graphNodes, t } = this.state;
 
         if (!graphNodes) {
