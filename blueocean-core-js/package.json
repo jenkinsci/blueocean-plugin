@@ -49,7 +49,6 @@
     "jsonwebtoken": "7.1.9",
     "mobx": "2.6.0",
     "mobx-utils": "1.1.2",
-    "moment": "2.15.1",
     "pem-jwk": "1.5.1",
     "react-remarkable": "1.1.1"
   },
@@ -86,6 +85,7 @@
     "jest-junit": "1.5.1",
     "less": "2.7.2",
     "minimist": "1.2.0",
+    "moment": "2.15.1",
     "nock": "9.0.14",
     "react": "15.4.2",
     "react-addons-test-utils": "15.4.2",
@@ -95,5 +95,10 @@
     "run-sequence": "1.2.2",
     "sinon": "1.17.6",
     "watchify": "3.7.0"
+  },
+  "jenkinscd": {
+    "import": [
+      "moment@any"
+    ]
   }
 }

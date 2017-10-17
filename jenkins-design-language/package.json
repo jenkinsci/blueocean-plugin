@@ -94,5 +94,10 @@
     "react-router": "2.8.1",
     "run-sequence": "1.2.2",
     "watchify": "3.7.0"
+  },
+  "jenkinscd": {
+    "export": [
+      "moment"
+    ]
   }
 }
