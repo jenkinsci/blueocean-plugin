@@ -12,13 +12,17 @@ import io.jenkins.blueocean.service.embedded.BaseTest;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.junit.Assert;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
+import org.jvnet.hudson.test.BuildWatcher;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import java.net.URL;
 
 public class BlueJUnitTestResultTest {
+    @ClassRule
+    public static BuildWatcher buildWatcher = new BuildWatcher();
 
     @Rule
     public JenkinsRule j = new BaseTest.BaseTestJenkinsRule();

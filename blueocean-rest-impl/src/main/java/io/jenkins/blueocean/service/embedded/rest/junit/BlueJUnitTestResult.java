@@ -6,15 +6,11 @@ import com.google.common.collect.Iterables;
 import hudson.Extension;
 import hudson.model.Run;
 import hudson.tasks.junit.CaseResult;
-import hudson.tasks.junit.TestResult;
 import hudson.tasks.junit.TestResultAction;
 import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.model.BluePipelineNode;
-import io.jenkins.blueocean.rest.model.BluePipelineStep;
-import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -136,7 +132,7 @@ public class BlueJUnitTestResult extends BlueTestResult {
         public Result getBlueTestResults(Run<?, ?> run, final Reachable parent) {
             Iterable<BlueTestResult> results = null;
             TestResultAction action = run.getAction(TestResultAction.class);
-            if (action != null && parent instanceof BlueRun) {
+            if (action != null) {
                 List<CaseResult> testsToTransform = new ArrayList<>();
 
                 testsToTransform.addAll(action.getFailedTests());
