@@ -1,7 +1,6 @@
 package io.blueocean.ath;
 
 import com.google.inject.AbstractModule;
-import com.google.inject.Provides;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 import com.offbytwo.jenkins.JenkinsServer;
@@ -68,14 +67,16 @@ public class AthModule extends AbstractModule {
             }
             bindConstant().annotatedWith(BaseUrl.class).to(launchUrl);
 
-            CustomJenkinsServer server;
-            if (cfg.getString("adminUsername") != null) {
-                server = new CustomJenkinsServer(new URI(launchUrl), cfg.getString("adminUsername"), cfg.getString("adminPassword"));
-            } else {
-                server = new CustomJenkinsServer(new URI(launchUrl));
-            }
-            bind(JenkinsServer.class).toInstance(server);
-            bind(CustomJenkinsServer.class).toInstance(server);
+            JenkinsUser admin = new JenkinsUser(
+                cfg.getString("adminUsername", "alice"),
+                cfg.getString("adminPassword", "alice")
+            );
+            bind(JenkinsUser.class).toInstance(admin);
+
+            CustomJenkinsServer server = new CustomJenkinsServer(new URI(launchUrl), admin);
+
+            bind(JenkinsServer.class).to(CustomJenkinsServer.class);
+            bind(CustomJenkinsServer.class).to(CustomJenkinsServer.class);
 
             if(server.getComputerSet().getTotalExecutors() < 10) {
                 server.runScript(

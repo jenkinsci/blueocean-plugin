@@ -5,7 +5,6 @@ import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -64,10 +63,7 @@ public class GithubCreationPage {
      * Navigate to the creation page via dashboard
      */
     public void navigateToCreation() {
-        dashboardPage.open();
-        wait.until(ExpectedConditions.visibilityOf(dashboardPage.newPipelineButton))
-            .click();;
-        logger.info("Clicked on new pipeline button");
+        dashboardPage.clickNewPipelineBtn();
     }
 
     public void selectGithubCreation() {

@@ -2,7 +2,6 @@ package io.blueocean.ath;
 
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.client.JenkinsHttpClient;
-import io.blueocean.ath.pages.classic.LoginPage;
 import org.apache.http.client.HttpResponseException;
 import org.apache.log4j.Logger;
 
@@ -19,18 +18,11 @@ public class CustomJenkinsServer extends JenkinsServer {
 
     protected final JenkinsHttpClient client;
 
-    public CustomJenkinsServer(URI serverUri) {
-        super(serverUri);
+    public CustomJenkinsServer(URI serverUri, JenkinsUser admin) {
+        super(serverUri, admin.username, admin.password);
         // since JenkinsServer's "client" is private, we must create another one
         // use authenticated client so that user's credentials can be accessed
-        client = new JenkinsHttpClient(serverUri);
-    }
-
-    public CustomJenkinsServer(URI serverUri, String username, String password) {
-        super(serverUri, username, password);
-        // since JenkinsServer's "client" is private, we must create another one
-        // use authenticated client so that user's credentials can be accessed
-        client = new JenkinsHttpClient(serverUri, username, password);
+        client = new JenkinsHttpClient(serverUri, admin.username, admin.password);
     }
 
     /**

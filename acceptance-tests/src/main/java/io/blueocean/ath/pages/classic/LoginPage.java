@@ -1,7 +1,7 @@
 package io.blueocean.ath.pages.classic;
 
 import io.blueocean.ath.BasePage;
-import io.blueocean.ath.Config;
+import io.blueocean.ath.JenkinsUser;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
 
@@ -11,17 +11,10 @@ import javax.inject.Singleton;
 @Singleton
 public class LoginPage extends BasePage {
     @Inject
-    Config cfg;
+    JenkinsUser admin;
 
-    Logger logger = Logger.getLogger(LoginPage.class);
-
-    public String getUsername() {
-        return cfg.getString("adminUsername", "alice");
-    }
-
-    public String getPassword() {
-        return cfg.getString("adminPassword", "alice");
-    }
+    @Inject
+    Logger logger;
 
     public void open() {
         go("/login");
@@ -30,10 +23,10 @@ public class LoginPage extends BasePage {
 
     public void login() {
         open();
-        find("input[name=j_username]").sendKeys(getUsername());
-        find("input[name=j_password]").sendKeys(getPassword());
+        find("input[name=j_username]").sendKeys(admin.username);
+        find("input[name=j_password]").sendKeys(admin.password);
         find("//button[contains(text(), 'log')]").click();
         find("//a[contains(@href, 'logout')]").isVisible();
-        logger.info("Logged in as " + getUsername());
+        logger.info("Logged in as " + admin.username);
     }
 }
