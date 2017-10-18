@@ -49,7 +49,7 @@ node() {
           sh "cd acceptance-tests && ./run.sh -v=2.46.3 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
           junit 'acceptance-tests/target/surefire-reports/*.xml'
           archive 'acceptance-tests/target/screenshots/*'
-          archive 'acceptance-tests/**/*'
+          archive 'acceptance-tests/runner/runtime/target/jenkins*/**/*'
         }
 
         if (env.JOB_NAME =~ 'blueocean-weekly-ath') {
