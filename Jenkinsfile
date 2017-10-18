@@ -46,13 +46,10 @@ node() {
         }
 
         stage('ATH - Jenkins 2.46.3') {
-          try {
-            sh "cd acceptance-tests && ./run.sh -v=2.46.3 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
-            junit 'acceptance-tests/target/surefire-reports/*.xml'
-          } finally {
-            archive 'acceptance-tests/target/screenshots/*'
-            archive 'acceptance-tests/runner/runtime/target/jenkins*.log'
-          }
+          sh "cd acceptance-tests && ./run.sh -v=2.46.3 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+          junit 'acceptance-tests/target/surefire-reports/*.xml'
+          archive 'acceptance-tests/target/screenshots/*'
+          archive 'acceptance-tests/runner/runtime/target/jenkins*.log'
         }
 
         if (env.JOB_NAME =~ 'blueocean-weekly-ath') {
