@@ -13,8 +13,7 @@ public class LoginPage extends BasePage {
     @Inject
     JenkinsUser admin;
 
-    @Inject
-    Logger logger;
+    Logger logger = Logger.getLogger(LoginPage.class);
 
     public void open() {
         go("/login");
