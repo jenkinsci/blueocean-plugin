@@ -13,7 +13,7 @@ import static org.junit.Assert.assertThat;
 
 public class BlueOceanConfigFactoryTest {
     @Rule
-    public JenkinsRule j = new JenkinsRule();;
+    public JenkinsRule j = new JenkinsRule();
 
     @Test
     public void smokesTest() {
