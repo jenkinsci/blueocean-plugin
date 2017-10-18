@@ -260,7 +260,9 @@ export default class Pipeline extends Component {
                     fileName={logFileName}
                     url={logUrl}
                     title={title}
-                    duration={!this.pager.currentNode.isRunning ? this.pager.currentNode.durationInMillis : ''}
+                    duration={this.pager.currentNode.durationInMillis}
+                    running={this.pager.currentNode.isRunning}
+                    t={t}
                 />
             }
             { this.pager.steps && !noResultsToDisplay &&
