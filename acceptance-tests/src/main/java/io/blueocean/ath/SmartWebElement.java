@@ -150,7 +150,8 @@ public class SmartWebElement implements WebElement {
             e.sendKeys(text);
             // If setting the text empty,
             if (text.length == 1 && "".equals(text[0])) {
-                sendInputEvent(e); // B'cuz React
+                // b'cuz React, see: https://github.com/facebook/react/issues/8004
+                sendInputEvent(e);
             }
         });
     }
@@ -159,7 +160,8 @@ public class SmartWebElement implements WebElement {
     public void clear() {
         forEach(e -> {
             e.clear();
-            sendInputEvent(e); // B'cuz React
+            // b'cuz React, see: https://github.com/facebook/react/issues/8004
+            sendInputEvent(e);
         });
     }
 

@@ -22,7 +22,7 @@ public class LoginPage extends BasePage {
 
     public void login() {
         open();
-        find("input[name=j_username]").sendKeys(admin.username);
+        find("#j_username").sendKeys(admin.username);
         find("input[name=j_password]").sendKeys(admin.password);
         find("//button[contains(text(), 'log')]").click();
         find("//a[contains(@href, 'logout')]").isVisible();
