@@ -32,6 +32,9 @@ module.exports = {
         // follow-on turned on.
         blueRunDetailPage.waitForElementVisible('@followAlongOn');
 
+        // Expand a step so we can click on the <pre> inside, any one will do for this test
+        blueRunDetailPage.waitForElementVisible('.result-item-title').click('.result-item-title');
+
         // The log appears in the <code> window, of which there an be only one.
         // Click on it to focus it so we make sure the key up is fired on the page and
         // not directly on the browser

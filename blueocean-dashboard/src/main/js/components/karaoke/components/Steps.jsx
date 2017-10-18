@@ -3,6 +3,7 @@ import { QueuedState } from './QueuedState';
 import { Step } from './Step';
 
 export default class Steps extends Component {
+
     render() {
         const { t, nodeInformation } = this.props;
         // Early out
@@ -13,14 +14,14 @@ export default class Steps extends Component {
         }
         const { model } = nodeInformation;
         return (<div className="Steps">
-            { model.map((item) => <Step
-                { ...
-                    { ...this.props,
-                        key: item.key,
-                        step: item,
-                    }
-                }
-            />) }
+            {
+                model.map(item => (
+                    <Step key={item.key}
+                          step={item}
+                          {...this.props}
+                    />
+                ))
+            }
         </div>);
     }
 }
@@ -28,5 +29,8 @@ export default class Steps extends Component {
 Steps.propTypes = {
     nodeInformation: PropTypes.object.isRequired,
     t: PropTypes.func,
+    onUserExpand: PropTypes.func,
+    onUserCollapse: PropTypes.func,
+    tailLogs: PropTypes.bool,
 };
 

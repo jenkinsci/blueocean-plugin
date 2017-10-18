@@ -27,14 +27,17 @@ function createStepLabel(step) {
 export class Step extends Component {
     constructor(props) {
         super(props);
+
         const { augmenter, step } = props;
-        const focused = this.isFocused(props);
+        const oldIsFocused = step.isFocused;
+        const newIsFocused = this.isFocused(props);
+
         // if we are called with anchor that means that we need to fetch the log to display it
-        const { isFocused, ...rest } = step; // this will remove isFocused from the rest, so we can pass the updated state
-        this.pager = KaraokeService.logPager(augmenter, { ...rest, isFocused: focused });
-        logger.debug('isFocused initial', isFocused, 'after', focused);
+        this.pager = KaraokeService.logPager(augmenter, { ...step, isFocused: newIsFocused });
+        logger.debug('isFocused initial', oldIsFocused, 'after', newIsFocused);
+
         this.state = {
-            expanded: focused,
+            expanded: newIsFocused,
         };
     }
 
@@ -65,11 +68,23 @@ export class Step extends Component {
      * Calculate whether we need to expand the step due to linking.
      * When we trigger a log-0 that means we want to see the full log
      */
-    isFocused(props) {
+    isFocused(props, state = {}) {
         const { step, location: { hash: anchorName } } = props;
-        const stepFocus = step.isFocused !== undefined && step.isFocused;
-        const stateFocus = this.state ? this.state.expanded : undefined;
-        let isFocused = stateFocus !== undefined ? stateFocus : stepFocus;
+        const stateFocus = state.expanded;
+
+        let isFocused = false;
+
+        if (stateFocus !== undefined) {
+            // Setting the state via interaction overrides any defaults
+            isFocused = stateFocus;
+        } else if (step && (step.isInputStep || step.result === 'FAILURE')) {
+            // Input and failure steps should be opened by default
+            isFocused = true;
+        } else if (props.tailLogs && step && step.isFocused) {
+            // In karaoke + log tailing mode + currently running step
+            isFocused = true;
+        }
+
         // e.g. #step-10-log-1 or #step-10
         if (anchorName) {
             logger.debug('expandAnchor', anchorName);
@@ -96,7 +111,7 @@ export class Step extends Component {
             return null;
         }
         const { durationInMillis } = this.durationHarmonize(step);
-        const isFocused = this.isFocused(this.props);
+        const isFocused = this.isFocused(this.props, this.state);
         const { data: logArray, hasMore } = this.pager.log || {};
         let children = null;
         if (logArray && !step.isInputStep) {
@@ -127,6 +142,9 @@ export class Step extends Component {
                 // we are now want to expand the result item
                 this.setState({ expanded: true });
             }
+            if (this.props.onUserExpand) {
+                this.props.onUserExpand(step);
+            }
         };
         const removeFocus = () => {
             this.setState({ expanded: false });
@@ -134,6 +152,9 @@ export class Step extends Component {
             if (location.hash) {
                 delete location.hash;
                 router.push(location);
+            }
+            if (this.props.onUserCollapse) {
+                this.props.onUserCollapse(step);
             }
         };
         // some ATH hook enhancements
@@ -174,4 +195,7 @@ Step.propTypes = {
     locale: PropTypes.object,
     t: PropTypes.func,
     scrollToBottom: PropTypes.bool,
+    onUserExpand: PropTypes.func,
+    onUserCollapse: PropTypes.func,
+    tailLogs: PropTypes.bool,
 };
