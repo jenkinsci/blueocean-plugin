@@ -133,11 +133,11 @@ public class LocalDriver implements WebDriver {
     }
 
     /**
-     * Navigates to a specified url
+     * Navigates to a specified url, if it doesn't start with http(s), will be relative to the base
      * @param url where to go
      */
-    public static void goTo(String url) {
-        new BasePage(getDriver()).goTo(url);
+    public static void go(String url) {
+        new BasePage(getDriver()).go(url);
     }
 
     /**

@@ -7,11 +7,14 @@ import org.openqa.selenium.support.ui.FluentWait;
 import javax.inject.Inject;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.regex.Pattern;
 
 /**
  * Provides utility methods to downstream test classes
  */
 public class BasePage {
+    private static Pattern URL_WITH_PROTOCOL = Pattern.compile("^[a-zA-Z]+://.*");
+
     @Inject
     protected WebDriver driver;
 
@@ -50,19 +53,15 @@ public class BasePage {
     }
 
     /**
-     * Navigates to a specified url
-     * @param url where to go
-     */
-    public void goTo(String url) {
-        getDriver().get(url);
-    }
-
-    /**
      * Navigates to a relative url to the base url
      * @param url where to go
      */
     public void go(String url) {
-        getDriver().get(base + url);
+        String addr = url;
+        if (!URL_WITH_PROTOCOL.matcher(url).matches()) {
+            addr = base + url;
+        }
+        getDriver().get(addr);
     }
 
     /**
