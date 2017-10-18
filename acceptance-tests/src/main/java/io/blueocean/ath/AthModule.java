@@ -74,6 +74,7 @@ public class AthModule extends AbstractModule {
                 launchUrl = new String(Files.readAllBytes(Paths.get("runner/.blueocean-ath-jenkins-url")));
             }
             bindConstant().annotatedWith(BaseUrl.class).to(launchUrl);
+            LocalDriver.setUrlBase(launchUrl);
 
             JenkinsUser admin = new JenkinsUser(
                 cfg.getString("adminUsername", "alice"),

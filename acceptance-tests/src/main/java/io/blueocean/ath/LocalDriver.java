@@ -35,6 +35,16 @@ public class LocalDriver implements WebDriver {
         }
     }
 
+    private static String urlBase;
+
+    public static String getUrlBase() {
+        return urlBase;
+    }
+
+    public static void setUrlBase(String base) {
+        urlBase = base;
+    }
+
     /**
      * Used for callbacks in a specific browser context
      */
@@ -112,32 +122,6 @@ public class LocalDriver implements WebDriver {
     @Override
     public Options manage() {
         return getDriver().manage();
-    }
-
-    /**
-     * Finds an element by the provided expression {@see SmartWebElement}
-     * @param expr css or xpath; if it starts with a /, XPath is used
-     * @return a new SmartWebElement
-     */
-    public static SmartWebElement find(String expr) {
-        return new BasePage(getDriver()).find(expr);
-    }
-
-    /**
-     * Executes javascript, returns the result
-     * @param script javascript to execute
-     * @return the result
-     */
-    public static <T> T eval(String script) {
-        return new BasePage(getDriver()).eval(script);
-    }
-
-    /**
-     * Navigates to a specified url, if it doesn't start with http(s), will be relative to the base
-     * @param url where to go
-     */
-    public static void go(String url) {
-        new BasePage(getDriver()).go(url);
     }
 
     /**

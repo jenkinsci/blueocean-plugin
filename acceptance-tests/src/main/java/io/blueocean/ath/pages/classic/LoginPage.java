@@ -1,6 +1,6 @@
 package io.blueocean.ath.pages.classic;
 
-import io.blueocean.ath.BasePage;
+import io.blueocean.ath.WebDriverMixin;
 import io.blueocean.ath.JenkinsUser;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
@@ -9,7 +9,7 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class LoginPage extends BasePage {
+public class LoginPage implements WebDriverMixin {
     @Inject
     JenkinsUser admin;
 

@@ -1,6 +1,6 @@
 package io.blueocean.ath.pages.blue;
 
-import io.blueocean.ath.BasePage;
+import io.blueocean.ath.WebDriverMixin;
 import io.blueocean.ath.CustomExpectedConditions;
 import io.blueocean.ath.WaitUtil;
 import org.apache.log4j.Logger;
@@ -12,7 +12,7 @@ import javax.inject.Singleton;
 import java.util.regex.Pattern;
 
 @Singleton
-public class GithubAddServerDialogPage extends BasePage {
+public class GithubAddServerDialogPage implements WebDriverMixin {
     private Logger logger = Logger.getLogger(GithubAddServerDialogPage.class);
 
     @Inject

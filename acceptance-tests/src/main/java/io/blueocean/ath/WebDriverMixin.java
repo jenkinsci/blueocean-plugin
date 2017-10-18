@@ -12,35 +12,24 @@ import java.util.regex.Pattern;
 /**
  * Provides utility methods to downstream test classes
  */
-public class BasePage {
-    private static Pattern URL_WITH_PROTOCOL = Pattern.compile("^[a-zA-Z]+://.*");
-
-    @Inject
-    protected WebDriver driver;
-
-    @Inject @BaseUrl
-    protected String base;
-
-    public BasePage() {
-    }
-
-    public BasePage(WebDriver driver) {
-        this.driver = driver;
+public interface WebDriverMixin {
+    class Const {
+        private static Pattern URL_WITH_PROTOCOL = Pattern.compile("^[a-zA-Z]+://.*");
     }
 
     /**
      * Gets the provided WebDriver instance
      * @return from driver
      */
-    protected WebDriver getDriver() {
-        return driver;
+    default WebDriver getDriver() {
+        return LocalDriver.getDriver();
     }
 
     /**
      * Gets the current browser URL
      * @return current url
      */
-    public String getCurrentUrl() {
+    default String getCurrentUrl() {
         return getDriver().getCurrentUrl();
     }
 
@@ -48,18 +37,18 @@ public class BasePage {
      * Gets the browser url relative to the base
      * @return relative url
      */
-    public String getRelativeUrl() {
-        return getCurrentUrl().substring(base.length());
+    default String getRelativeUrl() {
+        return getCurrentUrl().substring(LocalDriver.getUrlBase().length());
     }
 
     /**
      * Navigates to a relative url to the base url
      * @param url where to go
      */
-    public void go(String url) {
+    default void go(String url) {
         String addr = url;
-        if (!URL_WITH_PROTOCOL.matcher(url).matches()) {
-            addr = base + url;
+        if (!Const.URL_WITH_PROTOCOL.matcher(url).matches()) {
+            addr = LocalDriver.getUrlBase() + url;
         }
         getDriver().get(addr);
     }
@@ -69,7 +58,7 @@ public class BasePage {
      * @param expr css or xpath; if it starts with a /, XPath is used
      * @return a new SmartWebElement
      */
-    public SmartWebElement find(String expr) {
+    default SmartWebElement find(String expr) {
         return new SmartWebElement(getDriver(), expr);
     }
 
@@ -77,7 +66,7 @@ public class BasePage {
      * Utility to click based on provided expression
      * @param expr css or xpath; if it starts with a /, XPath is used
      */
-    public void click(String expr) {
+    default void click(String expr) {
         find(expr).click();
     }
 
@@ -86,7 +75,7 @@ public class BasePage {
      * @param script javascript to execute
      * @return the result
      */
-    public <T> T eval(String script, Object... env) {
+    default <T> T eval(String script, Object... env) {
         return (T)((JavascriptExecutor)getDriver()).executeScript(script, env);
     }
 }

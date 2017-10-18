@@ -1,27 +1,24 @@
 package io.blueocean.ath.pages.blue;
 
-import io.blueocean.ath.BasePage;
 import io.blueocean.ath.WaitUtil;
+import io.blueocean.ath.WebDriverMixin;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
-import org.openqa.selenium.Keys;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class DashboardPage extends BasePage {
+public class DashboardPage implements WebDriverMixin {
     private Logger logger = Logger.getLogger(DashboardPage.class);
 
     @Inject
     public WaitUtil wait;
 
     public void open() {
-        driver.get(base + "/blue/");
+        go("/blue/");
         logger.info("Navigated to dashboard page");
     }
 
@@ -61,7 +58,7 @@ public class DashboardPage extends BasePage {
     }
 
     public int getJobCount() {
-        return driver.findElements(getSelectorForAllJobRows()).size();
+        return getDriver().findElements(getSelectorForAllJobRows()).size();
     }
 
     public void testJobCountEqualTo(int numberOfJobs) {
