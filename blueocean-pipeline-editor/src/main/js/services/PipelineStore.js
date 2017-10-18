@@ -251,6 +251,7 @@ class PipelineStore {
             let onlyChild = newChildren[0];
             newChildren = [];
             moveStageProperties(onlyChild, parentStage);
+            parentStage.name = onlyChild.name;
         }
 
         // Update the parent with new children list

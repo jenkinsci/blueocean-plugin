@@ -25,6 +25,7 @@ export default class Pipeline extends Component {
         this.karaoke = KaraokeConfig.getPreference('runDetails.pipeline.karaoke').value === 'never' ? false : props.augmenter.karaoke; // initial karaoke state
         this.updateOnFinish = KaraokeConfig.getPreference('runDetails.pipeline.updateOnFinish').value;
         this.stopOnClick = KaraokeConfig.getPreference('runDetails.pipeline.stopKaraokeOnAnyNodeClick').value === 'always';
+        this.state = { tailLogs: false };
     }
     componentWillMount() {
         // starting pipeline service when we have an augmenter
@@ -100,6 +101,24 @@ export default class Pipeline extends Component {
     }
 
     /**
+     * User has explicitly opened a step log
+     */
+    userExpandedStep = (step) => {
+        if (step.isFocused !== undefined && step.isFocused) {
+            this.setState({ tailLogs: true });
+        }
+    };
+
+    /**
+     * User has explicitly opened a step log
+     */
+    userCollapsedStep = (step) => {
+        if (step.isFocused !== undefined && step.isFocused) {
+            this.setState({ tailLogs: false });
+        }
+    };
+
+    /**
      * Listen for pipeline flow node events. We need to re-fetch in case of some events.
      * @param event sse event coming from the backende
      */
@@ -168,15 +187,6 @@ export default class Pipeline extends Component {
         // Queue magic since a pipeline is only showing queued state a short time even if still waiting for executors
         const isPipelineQueued = (run.isQueued() || run.isRunning()) && noResultsToDisplay;
         logger.debug('isQueued', run.isQueued(), 'noResultsToDisplay', noResultsToDisplay, 'isPipelineQueued', isPipelineQueued);
-        if (isPipelineQueued) { // if queued we are saying that we are waiting to start
-            logger.debug('EarlyOut - abort due to run queued.');
-            return (<QueuedState
-                translation={t}
-                titleKey="rundetail.pipeline.waiting.message.title"
-                messageKey="rundetail.pipeline.waiting.message.description"
-                message={run.causeOfBlockage}
-            />);
-        }
         const supportsNodes = this.pager.nodes === undefined;
         if (!this.pager.pending && (this.classicLog || (noResultsToDisplay && supportsNodes))) { // no information? fallback to freeStyle
             logger.debug('EarlyOut - We do not have any information we can display or we opt-out by preference, falling back to freeStyle rendering');
@@ -257,20 +267,20 @@ export default class Pipeline extends Component {
                     title={title}
                 />
             }
-            { this.pager.steps && !noResultsToDisplay &&
-                <Steps
-                    {...{
-                        key: this.pager.currentStepsUrl,
-                        nodeInformation: this.pager.steps.data,
-                        followAlong: augmenter.karaoke,
-                        augmenter,
-                        t,
-                        scrollToBottom,
-                        router,
-                        location,
-                    }}
+            {this.pager.steps && !noResultsToDisplay && (
+                <Steps onUserExpand={this.userExpandedStep}
+                       onUserCollapse={this.userCollapsedStep}
+                       tailLogs={this.state.tailLogs}
+                       key={this.pager.currentStepsUrl}
+                       nodeInformation={this.pager.steps.data}
+                       followAlong={augmenter.karaoke}
+                       augmenter={augmenter}
+                       t={t}
+                       scrollToBottom={scrollToBottom}
+                       router={router}
+                       location={location}
                 />
-            }
+            )}
 
             { !this.pager.pending && !isPipelineQueued && noResultsToDisplay &&
                 <NoSteps

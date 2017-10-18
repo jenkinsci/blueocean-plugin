@@ -27,6 +27,20 @@ class BBAddServerDialog extends React.Component {
         t = props.flowManager.translate;
     }
 
+    componentDidMount() {
+        document.addEventListener('keydown', this.handleKeyDownEvent);
+    }
+
+    componentWillUnmount() {
+        document.removeEventListener('keydown', this.handleKeyDownEvent);
+    }
+
+    handleKeyDownEvent = (event) => {
+        if (event.key === 'Enter') {
+            this._onCreateClick();
+        }
+    }
+
     _nameChange(value) {
         this.setState({
             nameValue: value,

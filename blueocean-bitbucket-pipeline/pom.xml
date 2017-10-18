@@ -44,11 +44,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.jenkins-ci.plugins</groupId>
-      <artifactId>apache-httpcomponents-client-4-api</artifactId>
-    </dependency>
-
-    <dependency>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>pubsub-light</artifactId>
     </dependency>
@@ -56,6 +51,15 @@
     <dependency>
       <groupId>commons-codec</groupId>
       <artifactId>commons-codec</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>fluent-hc</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpmime</artifactId>
     </dependency>
 
     <!-- test dependencies -->
