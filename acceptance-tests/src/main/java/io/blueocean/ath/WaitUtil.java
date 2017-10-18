@@ -19,9 +19,9 @@ import java.util.concurrent.TimeUnit;
 @Singleton
 public class WaitUtil {
     public static int DEFAULT_TIMEOUT = Integer.getInteger("webDriverDefaultTimeout", 20000);
+    public static final int RETRY_COUNT = 2;
 
     private Logger logger = Logger.getLogger(WaitUtil.class);
-    private static final int RETRY_COUNT = 2;
 
     private WebDriver driver;
 

@@ -1,7 +1,17 @@
 package io.blueocean.ath;
 
 import com.google.common.base.Preconditions;
-import org.openqa.selenium.*;
+import org.apache.log4j.Logger;
+import org.openqa.selenium.By;
+import org.openqa.selenium.Dimension;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.NoSuchElementException;
+import org.openqa.selenium.OutputType;
+import org.openqa.selenium.Point;
+import org.openqa.selenium.Rectangle;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 
@@ -9,30 +19,42 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
- * Wrapper around an underlying WebDriver that
- * consistently handles waits automatically.
+ * Wrapper around an underlying WebDriver that automatically handles waits and common gotchas
+ * within blueocean.
  *
  * Accepts expressions for css and xpath, if the provided lookup starts with a /, XPath is used
  */
 public class SmartWebElement implements WebElement {
+    private static Logger logger = Logger.getLogger(SmartWebElement.class);
+    public static final int DEFAULT_TIMEOUT = Integer.getInteger("webDriverDefaultTimeout", 3000);
+    public static final int RETRY_COUNT = 3;
+
     private WebDriver driver;
     protected String expr;
     protected By by;
 
     public SmartWebElement(WebDriver driver, String expr) {
+        this(driver, expr, exprToBy(expr));
+    }
+
+    public SmartWebElement(WebDriver driver, By by) {
+        this(driver, by.toString(), by);
+    }
+
+    public SmartWebElement(WebDriver driver, String expr, By by) {
         this.driver = driver;
         this.expr = expr;
+        this.by = by;
+    }
+
+    private static By exprToBy(String expr) {
+        By by;
         if (expr.startsWith("/")) {
             by = By.xpath(expr);
         } else {
             by = By.cssSelector(expr);
         }
-    }
-
-    public SmartWebElement(WebDriver driver, By by) {
-        this.driver = driver;
-        this.expr = by.toString();
-        this.by = by;
+        return by;
     }
 
     /**
@@ -50,7 +72,7 @@ public class SmartWebElement implements WebElement {
     public List<WebElement> getElements() {
         return new FluentWait<>(getDriver())
             .pollingEvery(100, TimeUnit.MILLISECONDS)
-            .withTimeout(WaitUtil.DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
+            .withTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
             .ignoring(NoSuchElementException.class)
             .until(ExpectedConditions.numberOfElementsToBeMoreThan(by, 0));
     }
@@ -59,8 +81,15 @@ public class SmartWebElement implements WebElement {
      * Gets the first matching element
      * @return see description
      */
-    public WebElement getElement() {
-        return getElements().iterator().next();
+    public WebElement getElement() throws NoSuchElementException {
+        List<WebElement> elements = getElements();
+        if (elements == null || elements.isEmpty()) {
+            throw new NoSuchElementException("Nothing matched to click on for: " + expr);
+        }
+        if (elements.size() > 1) {
+            throw new NoSuchElementException("Too many elements returned for: " + expr);
+        }
+        return elements.get(0);
     }
 
     /**
@@ -73,23 +102,66 @@ public class SmartWebElement implements WebElement {
         }
     }
 
+    /**
+     * Determines if the element is visible
+     * @return true if visible, false if not
+     */
     public boolean isVisible() {
         return getElement().isDisplayed();
     }
 
+    /**
+     * Determines if the element is present
+     * @return true if present, false if not
+     */
+    public boolean isPresent() {
+        try {
+            if (getDriver().findElement(by) == null) {
+                return false;
+            }
+            return true;
+        } catch(NoSuchElementException e) {
+            return false;
+        }
+    }
+
     @Override
     public void click() {
-        forEach(e -> e.click());
+        for (int i = 0; i < RETRY_COUNT; i++) {
+            try {
+                WebElement e = getElement();
+                e.click();
+                if (i > 0) {
+                    logger.info(String.format("retry click successful for %s", by.toString()));
+                }
+                return;
+            } catch (WebDriverException ex) {
+                if (ex.getMessage().contains("is not clickable at point")) {
+                    logger.warn(String.format("%s not clickable: will retry click", by.toString()));
+                    logger.debug("exception: " + ex.getMessage());
+                    try {
+                        // typically this is during an animation, which should not take long
+                        Thread.sleep(500);
+                    } catch(InterruptedException ie) {
+                        // ignore
+                    }
+                } else {
+                    throw ex;
+                }
+            }
+        }
     }
 
     @Override
     public void submit() {
-        forEach(e -> e.submit());
+        WebElement e = getElement();
+        e.submit();
     }
 
     @Override
     public void sendKeys(CharSequence... charSequences) {
-        forEach(e -> e.sendKeys(charSequences));
+        WebElement e = getElement();
+        e.sendKeys(charSequences);
     }
 
     /**
@@ -109,7 +181,8 @@ public class SmartWebElement implements WebElement {
      * @param type
      */
     public void sendEvent(String type) {
-        forEach(e -> sendEvent(e, type));
+        WebElement e = getElement();
+        sendEvent(e, type);
     }
 
     protected void sendEvent(WebElement el, String type) {
@@ -128,6 +201,10 @@ public class SmartWebElement implements WebElement {
         sendEvent(el, "input");
     }
 
+    /**
+     * Asserts the element is an input or textarea
+     * @param element
+     */
     private static void validateTextElement(WebElement element) {
         String tagName = element.getTagName().toLowerCase();
         Preconditions.checkArgument(
@@ -138,147 +215,106 @@ public class SmartWebElement implements WebElement {
     }
 
     /**
-     * Sets the matched inputs to the given text, if setting to empty string
+     * Sets the matched input to the given text, if setting to empty string
      * there is some special handling to clear the input such that events are
      * properly handled across platforms by sending an additional 'oninput' event
      * @param text text to use
      */
     public void setText(CharSequence... text) {
-        forEach(e -> {
-            validateTextElement(e);
-            e.clear();
-            e.sendKeys(text);
-            // If setting the text empty,
-            if (text.length == 1 && "".equals(text[0])) {
-                // b'cuz React, see: https://github.com/facebook/react/issues/8004
-                sendInputEvent(e);
-            }
-        });
+        WebElement e = getElement();
+        validateTextElement(e);
+        e.clear();
+        e.sendKeys(text);
+        // If setting the text empty, also send input event
+        if (text.length == 1 && "".equals(text[0])) {
+            // b'cuz React, see: https://github.com/facebook/react/issues/8004
+            sendInputEvent(e);
+        }
     }
 
     @Override
     public void clear() {
-        forEach(e -> {
-            e.clear();
-            // b'cuz React, see: https://github.com/facebook/react/issues/8004
-            sendInputEvent(e);
-        });
+        WebElement e = getElement();
+        e.clear();
+        // b'cuz React, see: https://github.com/facebook/react/issues/8004
+        sendInputEvent(e);
     }
 
     @Override
     public String getTagName() {
-        WebElement el = getElement();
-        if (el == null) {
-            return null;
-        }
-        return el.getTagName();
+        WebElement e = getElement();
+        return e.getTagName();
     }
 
     @Override
     public String getAttribute(String s) {
-        WebElement el = getElement();
-        if (el == null) {
-            return null;
-        }
-        return el.getAttribute(s);
+        WebElement e = getElement();
+        return e.getAttribute(s);
     }
 
     @Override
     public boolean isSelected() {
-        WebElement el = getElement();
-        if (el == null) {
-            return false;
-        }
-        return el.isSelected();
+        WebElement e = getElement();
+        return e.isSelected();
     }
 
     @Override
     public boolean isEnabled() {
-        WebElement el = getElement();
-        if (el == null) {
-            return false;
-        }
-        return el.isEnabled();
+        WebElement e = getElement();
+        return e.isEnabled();
     }
 
     @Override
     public String getText() {
-        WebElement el = getElement();
-        if (el == null) {
-            return null;
-        }
-        return el.getText();
+        WebElement e = getElement();
+        return e.getText();
     }
 
     @Override
     public List<WebElement> findElements(By by) {
-        WebElement el = getElement();
-        if (el == null) {
-            return null;
-        }
-        return el.findElements(by);
+        WebElement e = getElement();
+        return e.findElements(by);
     }
 
     @Override
     public WebElement findElement(By by) {
-        WebElement el = getElement();
-        if (el == null) {
-            return null;
-        }
-        return el.findElement(by);
+        WebElement e = getElement();
+        return e.findElement(by);
     }
 
     @Override
     public boolean isDisplayed() {
-        WebElement el = getElement();
-        if (el == null) {
-            return false;
-        }
-        return el.isDisplayed();
+        WebElement e = getElement();
+        return e.isDisplayed();
     }
 
     @Override
     public Point getLocation() {
-        WebElement el = getElement();
-        if (el == null) {
-            return null;
-        }
-        return el.getLocation();
+        WebElement e = getElement();
+        return e.getLocation();
     }
 
     @Override
     public Dimension getSize() {
-        WebElement el = getElement();
-        if (el == null) {
-            return null;
-        }
-        return el.getSize();
+        WebElement e = getElement();
+        return e.getSize();
     }
 
     @Override
     public Rectangle getRect() {
-        WebElement el = getElement();
-        if (el == null) {
-            return null;
-        }
-        return el.getRect();
+        WebElement e = getElement();
+        return e.getRect();
     }
 
     @Override
     public String getCssValue(String s) {
-        WebElement el = getElement();
-        if (el == null) {
-            return null;
-        }
-        return el.getCssValue(s);
+        WebElement e = getElement();
+        return e.getCssValue(s);
     }
 
     @Override
     public <X> X getScreenshotAs(OutputType<X> outputType) throws WebDriverException {
-        WebElement el = getElement();
-        if (el == null) {
-            return null;
-        }
-        return el.getScreenshotAs(outputType);
+        WebElement e = getElement();
+        return e.getScreenshotAs(outputType);
     }
 }
