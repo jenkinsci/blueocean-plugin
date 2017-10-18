@@ -33,7 +33,8 @@ module.exports = {
     multibranchCreate.createBranch(jobName, pathToRepo);
 
     const blueActivityPage = browser.page.bluePipelineActivity().forJob(jobName, 'jenkins');
-    blueActivityPage.click('.branches');
+    blueActivityPage.waitForElementVisible('.Header-pageTabs .branches');
+    blueActivityPage.click('.Header-pageTabs .branches');
     blueActivityPage.waitForElementVisible('.JTable-row[data-branch="master"]');
     blueActivityPage.waitForElementVisible('a.run-button');
     blueActivityPage.click('a.run-button');

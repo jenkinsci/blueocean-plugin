@@ -5,7 +5,6 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueRun;
-import io.jenkins.blueocean.service.embedded.BaseTest;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,7 +15,7 @@ import static org.mockito.Mockito.when;
 
 public class DefaultRunImplTest {
     @Rule
-    public JenkinsRule j = new BaseTest.BaseTestJenkinsRule();
+    public JenkinsRule j = new JenkinsRule();
 
     @Test
     public void unknownRunTypeResolvesToDefaultRunImpl() throws Exception {

@@ -95,9 +95,7 @@ class ActivityDetailsRow extends Component {
                                   updatePeriod={1000}
                                   liveUpdate={isRunning}
                                   locale={locale}
-                                  displayFormat={t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' })}
-                                  liveFormat={t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' })}
-                                  hintFormat={t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' })}
+                                  t={t}
                     />
                 </TableCell>
                 <TableCell linkTo={runDetailsUrl}>

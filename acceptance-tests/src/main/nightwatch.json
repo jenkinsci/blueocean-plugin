@@ -30,7 +30,7 @@
       "selenium_port": 4444,
       "selenium_host": "localhost",
       "desiredCapabilities": {
-        "browserName": "firefox",
+        "browserName": "chrome",
         "javascriptEnabled": true,
         "acceptSslCerts": true
       }

@@ -5,7 +5,7 @@ import { logging, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 import waitAtLeast from '../flow2/waitAtLeast';
 
-import FlowManager from '../flow2/FlowManager';
+import FlowManager from '../CreationFlowManager';
 
 import STATE from './GithubCreationState';
 
