@@ -4,6 +4,7 @@ import io.blueocean.ath.BasePage;
 import io.blueocean.ath.WaitUtil;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
+import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
@@ -17,15 +18,7 @@ public class DashboardPage extends BasePage {
     private Logger logger = Logger.getLogger(DashboardPage.class);
 
     @Inject
-    public DashboardPage(WebDriver driver) {
-        PageFactory.initElements(driver, this);
-    }
-
-    @Inject
     public WaitUtil wait;
-
-    @Inject
-    public WebDriver driver;
 
     public void open() {
         driver.get(base + "/blue/");

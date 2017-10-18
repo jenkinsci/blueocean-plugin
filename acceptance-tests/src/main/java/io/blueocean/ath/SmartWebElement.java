@@ -92,6 +92,42 @@ public class SmartWebElement implements WebElement {
         forEach(e -> e.sendKeys(charSequences));
     }
 
+    /**
+     * Executes a script with 'el' bound to the first element and 'elements'
+     * to all found elements, returns the result
+     * @param script js to execute
+     */
+    public <T> T eval(String script) {
+        String js = "return (function(el,elements){" + script + "})(arguments[0],arguments[1])";
+        List<WebElement> elements = getElements();
+        WebElement el = elements.iterator().next();
+        return (T)((JavascriptExecutor)getDriver()).executeScript(script, el, elements);
+    }
+
+    /**
+     * Send an event to the matched elements - e.g. 'blur' or 'change'
+     * @param type
+     */
+    public void sendEvent(String type) {
+        forEach(e -> sendEvent(e, type));
+    }
+
+    protected void sendEvent(WebElement el, String type) {
+        StringBuilder script = new StringBuilder(
+            "return (function(a,b,c,d){" +
+                "c=document," +
+                "c.createEvent" +
+                "?(d=c.createEvent('HTMLEvents'),d.initEvent(b,!0,!0),a.dispatchEvent(d))" +
+                ":(d=c.createEventObject(),a.fireEvent('on'+b,d))})"
+        );
+        script.append("(arguments[0],'").append(type.replace("'", "\\'")).append("');");
+        ((JavascriptExecutor)getDriver()).executeScript(script.toString(), el);
+    }
+
+    protected void sendInputEvent(WebElement el) {
+        sendEvent(el, "input");
+    }
+
     private static void validateTextElement(WebElement element) {
         String tagName = element.getTagName().toLowerCase();
         Preconditions.checkArgument(
@@ -102,7 +138,9 @@ public class SmartWebElement implements WebElement {
     }
 
     /**
-     * Sets the matched inputs to the given text
+     * Sets the matched inputs to the given text, if setting to empty string
+     * there is some special handling to clear the input such that events are
+     * properly handled across platforms by sending an additional 'oninput' event
      * @param text text to use
      */
     public void setText(CharSequence... text) {
@@ -110,12 +148,19 @@ public class SmartWebElement implements WebElement {
             validateTextElement(e);
             e.clear();
             e.sendKeys(text);
+            // If setting the text empty,
+            if (text.length == 1 && "".equals(text[0])) {
+                sendInputEvent(e); // B'cuz React
+            }
         });
     }
 
     @Override
     public void clear() {
-        forEach(e -> e.clear());
+        forEach(e -> {
+            e.clear();
+            sendInputEvent(e); // B'cuz React
+        });
     }
 
     @Override
