@@ -434,9 +434,8 @@ module.exports.commands = [{
    */
   clickReRunButton: function () {
     var self = this;
-    const browser = this.api;
-    self.waitForElementVisible('.replay-button');
-    self.click('.replay-button');
+    self.waitForElementVisible('.ResultPageHeader-run .replay-button');
+    self.click('.ResultPageHeader-run .replay-button');
     return self;
   }
 

@@ -6,6 +6,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.NotFoundException;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
@@ -20,7 +21,7 @@ public class WaitUtil {
     public static int DEFAULT_TIMEOUT = Integer.getInteger("webDriverDefaultTimeout", 20000);
 
     private Logger logger = Logger.getLogger(WaitUtil.class);
-
+    private static final int RETRY_COUNT = 2;
 
     private WebDriver driver;
 
@@ -82,6 +83,30 @@ public class WaitUtil {
 
             throw new NotFoundException();
         };
+    }
+
+    /**
+     * Click the element specified by the locator.
+     * Will retry click for 'element not clickable' exceptions
+     * @param by
+     */
+    public void click(By by) {
+        for (int i = 0; i < RETRY_COUNT + 1; i++) {
+            try {
+                until(ExpectedConditions.elementToBeClickable(by)).click();
+                if (i > 0) {
+                    logger.info(String.format("retry click successful for %s", by.toString()));
+                }
+                return;
+            } catch (WebDriverException ex) {
+                if (ex.getMessage().contains("is not clickable at point")) {
+                    logger.warn(String.format("%s not clickable: will retry click", by.toString()));
+                    logger.debug("exception: " + ex.getMessage());
+                } else {
+                    throw ex;
+                }
+            }
+        }
     }
 
 }

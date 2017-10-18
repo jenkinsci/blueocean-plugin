@@ -14,7 +14,10 @@ import io.blueocean.ath.pages.blue.RunDetailsArtifactsPage;
 import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.logging.LogType;
+import org.openqa.selenium.logging.LoggingPreferences;
 import org.openqa.selenium.remote.Augmenter;
+import org.openqa.selenium.remote.CapabilityType;
 import org.openqa.selenium.remote.DesiredCapabilities;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
@@ -25,6 +28,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Properties;
+import java.util.logging.Level;
 
 public class AthModule extends AbstractModule {
     @Override
@@ -38,11 +42,15 @@ public class AthModule extends AbstractModule {
 
         String webDriverType = cfg.getString("webDriverType");
         DesiredCapabilities capability;
-        if ("chrome".equals(webDriverType)) {
-            capability = DesiredCapabilities.chrome();
-        } else {
+        if ("firefox".equals(webDriverType)) {
             capability = DesiredCapabilities.firefox();
+        } else {
+            capability = DesiredCapabilities.chrome();
         }
+
+        LoggingPreferences logPrefs = new LoggingPreferences();
+        logPrefs.enable(LogType.BROWSER, Level.ALL);
+        capability.setCapability(CapabilityType.LOGGING_PREFS, logPrefs);
 
         String webDriverUrl = cfg.getString("webDriverUrl", "http://localhost:4444/wd/hub");
         String webDriverBrowserSize = cfg.getString("webDriverBrowserSize");

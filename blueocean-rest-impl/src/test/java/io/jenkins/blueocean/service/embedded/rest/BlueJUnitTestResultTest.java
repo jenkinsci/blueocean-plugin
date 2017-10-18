@@ -8,7 +8,6 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueRun;
-import io.jenkins.blueocean.service.embedded.BaseTest;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.junit.Assert;
@@ -21,7 +20,7 @@ import java.net.URL;
 public class BlueJUnitTestResultTest {
 
     @Rule
-    public JenkinsRule j = new BaseTest.BaseTestJenkinsRule();
+    public JenkinsRule j = new JenkinsRule();
 
     @Test
     public void createsTestResult() throws Exception {
