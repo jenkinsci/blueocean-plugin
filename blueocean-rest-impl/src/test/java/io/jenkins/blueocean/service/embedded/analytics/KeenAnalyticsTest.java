@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.service.embedded.analytics;
 
 import hudson.ExtensionList;
-import io.jenkins.blueocean.service.embedded.BaseTest;
 import io.jenkins.blueocean.service.embedded.analytics.KeenConfiguration.DefaultKeenConfiguration;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -12,7 +11,7 @@ import org.jvnet.hudson.test.TestExtension;
 public class KeenAnalyticsTest {
 
     @Rule
-    public JenkinsRule j = new BaseTest.BaseTestJenkinsRule();
+    public JenkinsRule j = new JenkinsRule();
 
     @Test
     public void keenConfigCanBeOverridden() {
