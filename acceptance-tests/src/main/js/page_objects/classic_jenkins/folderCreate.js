@@ -54,7 +54,9 @@ module.exports.commands = [{
             self.click('@submit');
 
             // We should now be on the config page
-            self.waitForElementPresent('@configForm');
+            self.waitForElementPresent('@configForm', 30000,() => {
+                console.log(`Config form is visible for folder: ${folderName}`);
+            }, "Element %s was not in the page for %d ms");
             // Need to explicitly move the form buttons because we didn't
             // "navigate" to this page via nightwatch navigate.
             self.moveClassicBottomStickyButtons();
