@@ -71,9 +71,6 @@ class RunDetailsHeader extends Component {
             t('rundetail.header.pullRequest', { defaultValue: 'Pull Request' }) :
             t('rundetail.header.branch', { defaultValue: 'Branch' });
         const commitLabel = t('rundetail.header.commit', { defaultValue: 'Commit' });
-        const durationDisplayFormat = t('common.date.duration.display.format', { defaultValue: 'M[ month] d[ days] h[ hours] m[ minutes] s[ seconds]' });
-        const durationFormat = t('common.date.duration.format', { defaultValue: 'm[ minutes] s[ seconds]' });
-        const durationHintFormat = t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' });
         const dateFormatShort = t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' });
         const dateFormatLong = t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' });
 
@@ -140,9 +137,7 @@ class RunDetailsHeader extends Component {
                     liveUpdate={ isRunning() }
                     updatePeriod={ 1000 }
                     locale={ locale }
-                    displayFormat={ durationDisplayFormat }
-                    liveFormat={ durationFormat }
-                    hintFormat={ durationHintFormat }
+                    t={ t }
                 />
             </div>
         );

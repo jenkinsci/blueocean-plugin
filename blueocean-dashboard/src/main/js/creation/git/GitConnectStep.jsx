@@ -18,7 +18,7 @@ function validateUrl(url) {
     return !!url && !!url.trim();
 }
 
-function isSshRepositoryUrl(url) {
+export function isSshRepositoryUrl(url) {
     if (!validateUrl(url)) {
         return false;
     }

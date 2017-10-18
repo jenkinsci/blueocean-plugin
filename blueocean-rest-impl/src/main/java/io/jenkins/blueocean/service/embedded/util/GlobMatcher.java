@@ -18,8 +18,8 @@ public final class GlobMatcher {
     public GlobMatcher(String patternStr) {
         try {
             this.pattern = GLOB_COMPILER.compile(patternStr, GlobCompiler.CASE_INSENSITIVE_MASK);
-        } catch (MalformedPatternException e) {
-            throw new IllegalArgumentException("bad pattern", e);
+        } catch (Throwable e) {
+            throw new IllegalArgumentException(String.format("bad pattern '%s'", patternStr), e);
         }
     }
 
