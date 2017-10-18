@@ -3,9 +3,6 @@ package io.jenkins.blueocean.config;
 import com.google.common.collect.ImmutableSet;
 import io.jenkins.blueocean.rest.factory.BlueOceanConfigFactory;
 import io.jenkins.blueocean.rest.model.BlueOceanConfig;
-import org.eclipse.jetty.security.HashLoginService;
-import org.eclipse.jetty.security.LoginService;
-import org.eclipse.jetty.util.security.Password;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
@@ -16,17 +13,7 @@ import static org.junit.Assert.assertThat;
 
 public class BlueOceanConfigFactoryTest {
     @Rule
-    public JenkinsRule j = new JenkinsRule() {
-        @Override
-        protected LoginService configureUserRealm() {
-            HashLoginService realm = new HashLoginService();
-            realm.setName("default");   // this is the magic realm name to make it effective on everywhere
-            realm.update("alice", new Password("alice"), new String[]{"user","female"});
-            realm.update("bob", new Password("bob"), new String[]{"user","male"});
-            realm.update("charlie", new Password("charlie"), new String[]{"user","male"});
-            return realm;
-        }
-    };
+    public JenkinsRule j = new JenkinsRule();;
 
     @Test
     public void smokesTest() {
