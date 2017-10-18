@@ -88,8 +88,9 @@ module.exports = {
         blueRunDetailPage.waitForElementVisible('.pipeline-node-selected');
         blueRunDetailPage.waitForElementVisible('.download-log-button');
         blueRunDetailPage.waitForElementVisible('.pipeline-selection-highlight');
-        blueRunDetailPage.waitForElementVisible('.pipeline-connector');
-        blueRunDetailPage.waitForElementVisible('.pipeline-node-hittarget');
+        // in Chrome, 'Visible' seems to fail but 'Present' works ok
+        blueRunDetailPage.waitForElementPresent('.pipeline-connector');
+        blueRunDetailPage.waitForElementPresent('.pipeline-node-hittarget');
 
         // this will show up when it has finished replaying
         blueRunDetailPage.waitForElementVisible('.replay-button');
