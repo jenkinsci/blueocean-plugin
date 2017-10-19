@@ -73,12 +73,11 @@ export class ReplayButton extends Component {
         const isReplayable = this.props.latestRun.replayable;
         const hasPermission = permit(this.props.runnable).start();
 
-        const replayLabel = translate('run.rerun');
+        const replayLabel = translate('run.rerun', { defaultValue: 'Rerun' });
 
         if (!isFinished || !isReplayable || !hasPermission) {
             return null;
         }
-
 
         return (
             <div className={`replay-button-component ${outerClass}`} onClick={(event => stopProp(event))}>
