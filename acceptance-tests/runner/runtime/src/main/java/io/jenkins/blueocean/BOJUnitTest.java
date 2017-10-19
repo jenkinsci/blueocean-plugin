@@ -54,14 +54,12 @@ public abstract class BOJUnitTest extends AbstractJUnitTest {
             jenkinsUrl = jenkinsUrl.replace("127.0.0.1", host);
             jenkinsUrl = jenkinsUrl.replace("localhost", host);
         } else {
-            try {
-                String ip = InetAddress.getLocalHost().getHostAddress();
+            
+                String ip = "172.17.0.1";
                 jenkinsUrl = jenkinsUrl.replace("127.0.0.1", ip);
                 jenkinsUrl = jenkinsUrl.replace("localhost", ip);
 
-            } catch (UnknownHostException e) {
-
-            }
+            
         }
 
         return jenkinsUrl;
