@@ -233,7 +233,7 @@ export default class Pipeline extends Component {
 
         let title = this.pager.nodes !== undefined ? this.pager.currentNode.displayName : '';
 
-        title = stepName ? `${stepName}/${title}` : title;
+        title = stepName ? `${stepName} / ${title}` : title;
 
         // JENKINS-40526 node can provide logs only related to that node
         const logUrl = this.pager.nodes !== undefined ? augmenter.getNodesLogUrl(this.pager.currentNode) : augmenter.generalLogUrl;
