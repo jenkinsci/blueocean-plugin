@@ -24,8 +24,8 @@ import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
-import io.jenkins.blueocean.service.embedded.rest.BlueJUnitTestResult;
 import io.jenkins.blueocean.service.embedded.rest.BlueTestResultContainerImpl;
+import io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -51,14 +51,16 @@ public class PipelineNodeImpl extends BluePipelineNode {
     private final NodeRunStatus status;
     private final Link self;
     private final WorkflowRun run;
+    private final Reachable parent;
 
-    public PipelineNodeImpl(FlowNodeWrapper node, Link parentLink, WorkflowRun run) {
+    public PipelineNodeImpl(FlowNodeWrapper node, Reachable parent, WorkflowRun run) {
         this.node = node;
         this.run = run;
         this.edges = buildEdges(node.edges);
         this.status = node.getStatus();
         this.durationInMillis = node.getTiming().getTotalDurationMillis();
-        this.self = parentLink.rel(node.getId());
+        this.self = parent.getLink().rel(node.getId());
+        this.parent = parent;
     }
 
     @Override
@@ -93,7 +95,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     @Override
     public BlueTestSummary getTestSummary() {
-        return BlueTestResultFactory.resolve(run, this).summary;
+        return BlueTestResultFactory.resolve(run, this, parent).summary;
     }
 
     @Override
@@ -192,37 +194,6 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     FlowNodeWrapper getFlowNodeWrapper(){
         return node;
-    }
-
-    @Extension
-    public static class NodeFactoryImpl extends BlueTestResultFactory {
-        @Override
-        public Result getBlueTestResults(Run<?, ?> run, final Reachable parent) {
-            Iterable<BlueTestResult> results = null;
-            TestResultAction action = run.getAction(TestResultAction.class);
-            if (action != null && parent instanceof BluePipelineNode) {
-                List<CaseResult> testsToTransform = new ArrayList<>();
-
-                TestResult.BlocksWithChildren block = action.getResult().getBlockWithChildren(run.getExternalizableId(), ((BluePipelineNode) parent).getId());
-                if (block != null) {
-                    TestResult testsForNode = block.toTestResult(run.getExternalizableId(), action.getResult());
-                    testsToTransform.addAll(testsForNode.getFailedTests());
-                    testsToTransform.addAll(testsForNode.getSkippedTests());
-                    testsToTransform.addAll(testsForNode.getPassedTests());
-                }
-
-                results = Iterables.transform(testsToTransform, new Function<CaseResult, BlueTestResult>() {
-                    @Override
-                    public BlueTestResult apply(@Nullable CaseResult input) {
-                        return new BlueJUnitTestResult(input, parent.getLink());
-                    }
-                });
-            }
-            if (results == null) {
-                results = ImmutableList.of();
-            }
-            return Result.of(results);
-        }
     }
 
 }
