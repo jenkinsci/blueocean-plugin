@@ -20,15 +20,6 @@
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>blueocean-pipeline-api-impl</artifactId>
-      <exclusions>
-        <!-- Upper bound fix: credentials plugin is bringing its own version of antlr4-runtime,
-             wiremock uses later version
-        -->
-        <exclusion>
-          <groupId>org.antlr</groupId>
-          <artifactId>antlr4-runtime</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
@@ -71,18 +62,13 @@
       <scope>test</scope>
     </dependency>
 
-    <!--Needed to preempt wiremock from loading older version and breaking, that breaking serialization -->
-    <dependency>
-      <groupId>com.fasterxml.jackson.core</groupId>
-      <artifactId>jackson-core</artifactId>
-    </dependency>
     <dependency>
       <groupId>org.apache.maven</groupId>
       <artifactId>maven-artifact</artifactId>
     </dependency>
     <dependency>
       <groupId>com.github.tomakehurst</groupId>
-      <artifactId>wiremock</artifactId>
+      <artifactId>wiremock-standalone</artifactId>
       <scope>test</scope>
     </dependency>
   </dependencies>

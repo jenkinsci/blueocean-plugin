@@ -47,13 +47,13 @@ function newPluginXHR(pluginName) {
             });
             /* FIXME:: there was a change to this!
             let status;
-            // eslint-disable-next-line
             return Fetch.fetch(url, { disableLoadingIndicator: true, ignoreRefreshHeader: true })
                 .then(response => {
                     // i18n xhr-backend needs the status
                     status = response.status;
-                    // now return the raw data
-                    return response.text();
+                    // make a clone to prevent "TypeError: already ready" when text() is called
+                    const cloned = response.clone();
+                    return cloned.text();
                 })
                 .then((data) => {
                     if (callback) {

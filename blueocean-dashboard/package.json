@@ -18,7 +18,7 @@
     "mvntest": "gulp test"
   },
   "devDependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.169",
+    "@jenkins-cd/blueocean-core-js": "0.0.170",
     "@jenkins-cd/design-language": "0.0.158",
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
     "@jenkins-cd/js-builder": "0.0.60-kz-1",

@@ -55,7 +55,7 @@ public class EditorPage {
         wait.until(By.cssSelector("button.btn-primary.add")).click();
         wait.until(By.xpath("//*[text()='Print Message']")).click();
         wait.until(By.cssSelector("input.TextInput-control")).sendKeys("hi there");
-        wait.until(By.xpath("(//span[@class='back-from-sheet'])[2]")).click();
+        wait.click(By.xpath("(//a[@class='back-from-sheet'])[2]"));
         wait.until(By.xpath("//*[text()='Save']")).click();
         wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("Simple pipeline");
         if(!Strings.isNullOrEmpty(newBranch)) {

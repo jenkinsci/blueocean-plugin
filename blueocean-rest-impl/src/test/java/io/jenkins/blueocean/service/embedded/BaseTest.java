@@ -19,9 +19,6 @@ import net.sf.json.JSONObject;
 import org.acegisecurity.adapters.PrincipalAcegiUserToken;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UserDetails;
-import org.eclipse.jetty.security.HashLoginService;
-import org.eclipse.jetty.security.LoginService;
-import org.eclipse.jetty.util.security.Password;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -45,22 +42,9 @@ import static io.jenkins.blueocean.auth.jwt.JwtToken.X_BLUEOCEAN_JWT;
 public abstract class BaseTest {
     private static  final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
 
-
-
     @Rule
-    public JenkinsRule j = new BaseTestJenkinsRule();
+    public JenkinsRule j = new JenkinsRule();
 
-    public static class BaseTestJenkinsRule extends JenkinsRule{
-        @Override
-        protected LoginService configureUserRealm() {
-            HashLoginService realm = new HashLoginService();
-            realm.setName("default");   // this is the magic realm name to make it effective on everywhere
-            realm.update("alice", new Password("alice"), new String[]{"user","female"});
-            realm.update("bob", new Password("bob"), new String[]{"user","male"});
-            realm.update("charlie", new Password("charlie"), new String[]{"user","male"});
-            return realm;
-        }
-    }
     protected  String baseUrl;
 
     protected String getContextPath(){
