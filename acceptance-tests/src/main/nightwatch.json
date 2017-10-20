@@ -31,7 +31,7 @@
       "screenshots": {
         "enabled": true,
         "on_failure": true,
-        "on_error": true,
+        "on_error": false,
         "path": "target/screenshots"
       }
     }
