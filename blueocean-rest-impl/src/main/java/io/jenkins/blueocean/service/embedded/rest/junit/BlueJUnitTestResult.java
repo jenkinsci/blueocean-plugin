@@ -6,11 +6,13 @@ import com.google.common.collect.Iterables;
 import hudson.Extension;
 import hudson.model.Run;
 import hudson.tasks.junit.CaseResult;
+import hudson.tasks.junit.TestResult;
 import hudson.tasks.junit.TestResultAction;
 import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
@@ -132,24 +134,41 @@ public class BlueJUnitTestResult extends BlueTestResult {
         public Result getBlueTestResults(Run<?, ?> run, final Reachable parent) {
             Iterable<BlueTestResult> results = null;
             TestResultAction action = run.getAction(TestResultAction.class);
-            if (action != null) {
-                List<CaseResult> testsToTransform = new ArrayList<>();
-
-                testsToTransform.addAll(action.getFailedTests());
-                testsToTransform.addAll(action.getSkippedTests());
-                testsToTransform.addAll(action.getPassedTests());
-
-                results = Iterables.transform(testsToTransform, new Function<CaseResult, BlueTestResult>() {
-                    @Override
-                    public BlueTestResult apply(@Nullable CaseResult input) {
-                        return new BlueJUnitTestResult(input, parent.getLink());
-                    }
-                });
+            if (action == null) {
+                return Result.notFound();
             }
-            if (results == null) {
-                results = ImmutableList.of();
+            List<CaseResult> testsToTransform = new ArrayList<>();
+            testsToTransform.addAll(action.getFailedTests());
+            testsToTransform.addAll(action.getSkippedTests());
+            testsToTransform.addAll(action.getPassedTests());
+            return Result.of(Iterables.transform(testsToTransform, new Function<CaseResult, BlueTestResult>() {
+                @Override
+                public BlueTestResult apply(@Nullable CaseResult input) {
+                    return new BlueJUnitTestResult(input, parent.getLink());
+                }
+            }));
+        }
+
+        @Override
+        public Result getBlueTestResults(Run<?, ?> run, BluePipelineNode node, final Reachable parent) {
+            List<CaseResult> testsToTransform = new ArrayList<>();
+            TestResultAction action = run.getAction(TestResultAction.class);
+            if (action == null) {
+                return Result.notFound();
             }
-            return Result.of(results);
+            TestResult.BlocksWithChildren block = action.getResult().getBlockWithChildren(run.getExternalizableId(), node.getId());
+            if (block != null) {
+                TestResult testsForNode = block.toTestResult(run.getExternalizableId(), action.getResult());
+                testsToTransform.addAll(testsForNode.getFailedTests());
+                testsToTransform.addAll(testsForNode.getSkippedTests());
+                testsToTransform.addAll(testsForNode.getPassedTests());
+            }
+            return Result.of(Iterables.transform(testsToTransform, new Function<CaseResult, BlueTestResult>() {
+                @Override
+                public BlueTestResult apply(@Nullable CaseResult input) {
+                    return new BlueJUnitTestResult(input, parent.getLink());
+                }
+            }));
         }
     }
 }
