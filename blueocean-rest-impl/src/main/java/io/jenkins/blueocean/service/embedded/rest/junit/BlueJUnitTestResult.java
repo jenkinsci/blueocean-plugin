@@ -132,7 +132,6 @@ public class BlueJUnitTestResult extends BlueTestResult {
     public static class FactoryImpl extends BlueTestResultFactory {
         @Override
         public Result getBlueTestResults(Run<?, ?> run, final Reachable parent) {
-            Iterable<BlueTestResult> results = null;
             TestResultAction action = run.getAction(TestResultAction.class);
             if (action == null) {
                 return Result.notFound();
@@ -156,13 +155,11 @@ public class BlueJUnitTestResult extends BlueTestResult {
             if (action == null) {
                 return Result.notFound();
             }
-            TestResult.BlocksWithChildren block = action.getResult().getBlockWithChildren(run.getExternalizableId(), node.getId());
-            if (block != null) {
-                TestResult testsForNode = block.toTestResult(run.getExternalizableId(), action.getResult());
-                testsToTransform.addAll(testsForNode.getFailedTests());
-                testsToTransform.addAll(testsForNode.getSkippedTests());
-                testsToTransform.addAll(testsForNode.getPassedTests());
-            }
+            TestResult testsForNode = action.getResult().getResultForPipelineBlock(node.getId());
+            testsToTransform.addAll(testsForNode.getFailedTests());
+            testsToTransform.addAll(testsForNode.getSkippedTests());
+            testsToTransform.addAll(testsForNode.getPassedTests());
+
             return Result.of(Iterables.transform(testsToTransform, new Function<CaseResult, BlueTestResult>() {
                 @Override
                 public BlueTestResult apply(@Nullable CaseResult input) {

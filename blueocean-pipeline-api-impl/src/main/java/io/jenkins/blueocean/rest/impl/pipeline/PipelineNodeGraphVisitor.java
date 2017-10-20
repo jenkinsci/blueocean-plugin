@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Predicate;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
@@ -384,10 +385,15 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     }
 
     @Override
-    public List<BluePipelineNode> getPipelineNodes(Link parent) {
+    public List<BluePipelineNode> getPipelineNodes(final Link parent) {
         List<BluePipelineNode> nodes = new ArrayList<>();
         for(FlowNodeWrapper n: this.nodes){
-            nodes.add(new PipelineNodeImpl(n,parent, run));
+            nodes.add(new PipelineNodeImpl(n,new Reachable() {
+                @Override
+                public Link getLink() {
+                    return parent;
+                }
+            }, run));
         }
         return nodes;
     }
@@ -452,7 +458,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     }
 
     @Override
-    public List<BluePipelineNode> union(List<FlowNodeWrapper> that, Link parent) {
+    public List<BluePipelineNode> union(List<FlowNodeWrapper> that, final Link parent) {
         List<FlowNodeWrapper> currentNodes = new ArrayList<>(nodes);
         int currentNodeSize = nodes.size();
         int futureNodeSize = that.size();
@@ -522,7 +528,12 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
         List<BluePipelineNode> newNodes = new ArrayList<>();
         for(FlowNodeWrapper n: currentNodes){
-            newNodes.add(new PipelineNodeImpl(n,parent,run));
+            newNodes.add(new PipelineNodeImpl(n,new Reachable() {
+                @Override
+                public Link getLink() {
+                    return parent;
+                }
+            },run));
         }
         return newNodes;
     }
