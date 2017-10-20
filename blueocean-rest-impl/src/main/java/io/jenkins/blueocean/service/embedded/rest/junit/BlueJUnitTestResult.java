@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest.junit;
 
 import com.google.common.base.Function;
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import hudson.Extension;
 import hudson.model.Run;
