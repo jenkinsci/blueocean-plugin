@@ -144,18 +144,6 @@
   </pluginRepositories>
 
   <dependencies>
-      <!-- Needed for jenkins-test-harness -->
-      <dependency>
-          <groupId>org.eclipse.jetty</groupId>
-          <artifactId>jetty-webapp</artifactId>
-          <scope>test</scope>
-      </dependency>
-      <dependency>
-          <groupId>org.eclipse.jetty</groupId>
-          <artifactId>jetty-security</artifactId>
-          <scope>test</scope>
-      </dependency>
-
       <dependency>
           <groupId>org.mockito</groupId>
           <artifactId>mockito-core</artifactId>
@@ -561,21 +549,6 @@
             <artifactId>jenkins-test-harness</artifactId>
             <version>${jenkins-test-harness.version}</version>
             <scope>test</scope>
-            <!-- jenkins-test-harness depends on jetty 9.4.5 that doesn't play well with wiremock (uses jetty 9.2.22) -->
-            <exclusions>
-                <exclusion>
-                    <groupId>org.eclipse.jetty</groupId>
-                    <artifactId>jetty-webapp</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.eclipse.jetty</groupId>
-                    <artifactId>jetty-server</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.eclipse.jetty</groupId>
-                    <artifactId>jetty-security</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -809,66 +782,8 @@
         </dependency>
         <dependency>
             <groupId>com.github.tomakehurst</groupId>
-            <artifactId>wiremock</artifactId>
-            <version>2.8.0</version>
-            <scope>test</scope>
-            <exclusions>
-                <!--Upper bound fix, pick one from the core -->
-                <exclusion>
-                    <groupId>org.ow2.asm</groupId>
-                    <artifactId>asm</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!--
-            wiremock jetty, depends on 9.2.22.v20170606, jenkins-test-harness on jetty 9.4.5.
-
-            jetty-util 9.4.5 breaks backward compatibility, where
-
-            SslContextFactory.selectCipherSuites([Ljava/lang/String;[Ljava/lang/String;)[Ljava/lang/String;
-
-            was removed in 9.4.5. This causes Wiremock to fail with NoSuchMethodError.
-        -->
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-security</artifactId>
-            <version>9.2.22.v20170606</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-webapp</artifactId>
-            <version>9.2.22.v20170606</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-server</artifactId>
-            <version>9.2.22.v20170606</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-servlet</artifactId>
-            <version>9.2.22.v20170606</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-http</artifactId>
-            <version>9.2.22.v20170606</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-io</artifactId>
-            <version>9.2.22.v20170606</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.eclipse.jetty</groupId>
-            <artifactId>jetty-util</artifactId>
-            <version>9.2.22.v20170606</version>
+            <artifactId>wiremock-standalone</artifactId>
+            <version>2.9.0</version>
             <scope>test</scope>
         </dependency>
         <dependency>

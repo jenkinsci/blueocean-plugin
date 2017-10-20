@@ -12,9 +12,9 @@ export class Sheet extends React.Component {
         return (<div className="sheet">
             <div className="sheet-header">
                 {child.props.onClose &&
-                    <span className="back-from-sheet" onClick={e => this.onClose()}>
+                    <a className="back-from-sheet" onClick={e => this.onClose()}>
                         <Icon icon="NavigationArrowBack" />
-                    </span>
+                    </a>
                 }
                 {child.getTitle && child.getTitle() || child.props.title}
             </div>
