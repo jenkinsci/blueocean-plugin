@@ -177,5 +177,13 @@ export const TableHeaderRow = (props: $PropertyType<TableRow, 'props'> ) => {
     return React.createElement(TableRow, props, ...children);
 };
 
-TableHeaderRow.propTypes = TableRow.propTypes;
-
+TableHeaderRow.propTypes = {
+    onClick: PropTypes.func,
+    className: PropTypes.string,
+    children: PropTypes.node,
+    onClick: PropTypes.func,
+    href: PropTypes.string,
+    linkTo: PropTypes.string,
+    columns: PropTypes.array,
+    useRollover: PropTypes.bool
+};
