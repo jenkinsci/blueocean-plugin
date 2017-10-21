@@ -11,7 +11,7 @@ import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.POST;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
+import java.io.InputStream;
 
 @Extension
 @Restricted(NoExternalUse.class)
@@ -26,8 +26,8 @@ public class AnalyticsRoute implements ApiRoutable {
     @WebMethod(name = "track")
     public void track(StaplerRequest staplerRequest) throws IOException {
         TrackRequest req;
-        try (InputStreamReader reader = new InputStreamReader(staplerRequest.getInputStream(), "UTF-8")) {
-            req = JsonConverter.toJava(reader, TrackRequest.class);
+        try (InputStream is = staplerRequest.getInputStream()) {
+            req = JsonConverter.toJava(is, TrackRequest.class);
         }
         Analytics.get().track(req);
     }
