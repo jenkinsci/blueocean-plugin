@@ -101,10 +101,7 @@ function isRemovePersistedBackgroundRoute(prevState, nextState) {
  * due to the fact react router will have already changed the background context.
  */
 function persistBackgroundOnNavigationChange(prevState, nextState, replace, callback, delay = 200) {
-
-    // Track page view
-    analyticsService.track('page_view', { mode: 'blueocean' });
-
+    trackPageView();
     if (isPersistBackgroundRoute(prevState, nextState)) {
         persistModalBackground();
     } else if (isRemovePersistedBackgroundRoute(prevState, nextState)) {
@@ -120,10 +117,15 @@ function onLeaveCheckBackground() {
     persistBackgroundOnNavigationChange({ params: { runId: true } }, { params: {} }, null, null, 0);
 }
 
+function trackPageView() {
+    // Track page view
+    analyticsService.track('pageview', { mode: 'blueocean' });
+}
+
 const trends = AppConfig.isFeatureEnabled('trends');
 
 export default (
-    <Route component={Dashboard} onChange={persistBackgroundOnNavigationChange}>
+    <Route component={Dashboard} onEnter={trackPageView} onChange={persistBackgroundOnNavigationChange}>
         <Route path="organizations/:organization/pipelines" component={Pipelines} />
         <Route path="organizations/:organization/create-pipeline" component={CreatePipeline} />
         <Redirect from="organizations/:organization(/*)" to="organizations/:organization/pipelines" />
