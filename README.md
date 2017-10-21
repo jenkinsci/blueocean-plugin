@@ -59,7 +59,9 @@ Core Web infrastructure that bootstraps BlueOcean UI and integrates REST API cor
     
 ## Building and running
 
-At a minimum you will need JVM and Maven installed, if you are doing active JavaScript development, installing NodeJS is a good idea too. 
+At a minimum you will need a JVM and Maven installed, if you are doing active JavaScript development, 
+you may want to install NodeJS, but it is not a requirement as the `frontent-maven-plugin` will install
+the correct version of Node locally for each plugin to build and develop with.
 
 ## Build everything (from root directory)
 Builds all maven modules (run this the first time you check things out, at least)
@@ -83,6 +85,11 @@ $ mvn -f blueocean/pom.xml hpi:run
 Then open http://localhost:8080/jenkins/blue to start using Blue Ocean.
 
 The Jenkins Classic UI exists side-by-side at its usual place at http://localhost:8080/jenkins.
+
+NOTE: while running in this mode, Jenkins will automatically re-compile your Javascript files
+and LESS files for all local plugins (including those linked with `hpi:hpl`) where a `package.json` is found
+that contains a `mvnbuild` script. If you would like to disable this behavior, you may set
+the system property: `-Dblueocean.features.BUNDLE_WATCH_SKIP=true`
 
 ## Browser compatibility
 
@@ -132,6 +139,8 @@ __NOTE__: look in the README.md of the respective modules for more detailed dev 
 
 #### NPM and shrinkwrap
 
+- NOTE: after running `npm install` you will have some copies of Node you can use without installing it globally on your system,
+e.g. from the repository root: `PATH=blueocean-web/node:$PATH npm <do-stuff>`
 - Ensure your npm is 3.10.8+ as this release fixes some important bugs with shrinkwrap, notably #11735 in [notes](https://github.com/npm/npm/releases/tag/v3.10.8)
 - Don't edit package.json directly; use npm install to ensure that both package.json and npm-shrinkwrap.json are updated.
 - To add or update a dependency:
