@@ -52,19 +52,6 @@
                     </excludes>
                 </configuration>
             </plugin>
-            <plugin>
-                <groupId>io.jenkins.blueocean</groupId>
-                <artifactId>blueocean-maven-plugin</artifactId>
-                <version>0.0.1</version>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>process-node-dependencies</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
         </plugins>
     </build>
     <profiles>

@@ -45,30 +45,8 @@ function newPluginXHR(pluginName) {
             Fetch.fetchJSON(url, { disableCapabilites: true, disableLoadingIndicator: true, ignoreRefreshHeader: true }).then(data => {
                 callback(data, { status: 200 });
             });
-            /* FIXME:: there was a change to this!
-            let status;
-            return Fetch.fetch(url, { disableLoadingIndicator: true, ignoreRefreshHeader: true })
-                .then(response => {
-                    // i18n xhr-backend needs the status
-                    status = response.status;
-                    // make a clone to prevent "TypeError: already ready" when text() is called
-                    const cloned = response.clone();
-                    return cloned.text();
-                })
-                .then((data) => {
-                    if (callback) {
-                        const xhr = { status };
-                        if (logger.isDebugEnabled()) {
-                            logger.debug('calling now callback with xhr and data', xhr, data);
-                        }
-                        callback(data, xhr);
-                    }
-                });
-            */
         },
-        parse: (data) => {
-            // we need to parse the response and then extract the data since the rest is garbage for us
-            const response = data;
+        parse: (response) => {
             if (logger.isDebugEnabled()) {
                 logger.debug('Received i18n resource bundle for plugin "%s".', pluginName, response.data);
             }

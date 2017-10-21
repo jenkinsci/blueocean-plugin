@@ -28,19 +28,6 @@
         </resources>
         <plugins>
             <plugin>
-                <groupId>io.jenkins.blueocean</groupId>
-                <artifactId>blueocean-maven-plugin</artifactId>
-                <version>0.0.1</version>
-                <executions>
-                    <execution>
-                        <phase>validate</phase>
-                        <goals>
-                            <goal>process-node-dependencies</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <configuration>
