@@ -4,12 +4,10 @@ import hudson.Extension;
 import io.jenkins.blueocean.analytics.Analytics.TrackRequest;
 import io.jenkins.blueocean.commons.JsonConverter;
 import io.jenkins.blueocean.rest.ApiRoutable;
-import net.sf.json.JSONObject;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.WebMethod;
-import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.POST;
 
 import java.io.IOException;
