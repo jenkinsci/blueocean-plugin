@@ -94,9 +94,9 @@ function isRemovePersistedBackgroundRoute(prevState, nextState) {
     return isLeavingRunDetails(prevState, nextState);
 }
 
-function onRouteChange(prevState, nextState, replace, callback, delay = 200) {
-    trackPageView(); // Tracks page view as the route changes
-    persistBackgroundOnNavigationChange(prevState, nextState, replace, callback, delay);
+function trackPageView() {
+    // Track page view
+    analyticsService.track('pageview', { mode: 'blueocean' });
 }
 
 function onTopLevelRouteEnter() {
@@ -122,13 +122,13 @@ function persistBackgroundOnNavigationChange(prevState, nextState, replace, call
     }
 }
 
-function onLeaveCheckBackground() {
-    persistBackgroundOnNavigationChange({ params: { runId: true } }, { params: {} }, null, null, 0);
+function onRouteChange(prevState, nextState, replace, callback, delay = 200) {
+    trackPageView(); // Tracks page view as the route changes
+    persistBackgroundOnNavigationChange(prevState, nextState, replace, callback, delay);
 }
 
-function trackPageView() {
-    // Track page view
-    analyticsService.track('pageview', { mode: 'blueocean' });
+function onLeaveCheckBackground() {
+    persistBackgroundOnNavigationChange({ params: { runId: true } }, { params: {} }, null, null, 0);
 }
 
 const trends = AppConfig.isFeatureEnabled('trends');
