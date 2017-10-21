@@ -1,6 +1,6 @@
 import { Route, Redirect, IndexRedirect } from 'react-router';
 import React from 'react';
-import { AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { AppConfig, analyticsService } from '@jenkins-cd/blueocean-core-js';
 
 import Dashboard from './Dashboard';
 import {
@@ -101,6 +101,10 @@ function isRemovePersistedBackgroundRoute(prevState, nextState) {
  * due to the fact react router will have already changed the background context.
  */
 function persistBackgroundOnNavigationChange(prevState, nextState, replace, callback, delay = 200) {
+
+    // Track page view
+    analyticsService.track('page_view', { mode: 'blueocean' });
+
     if (isPersistBackgroundRoute(prevState, nextState)) {
         persistModalBackground();
     } else if (isRemovePersistedBackgroundRoute(prevState, nextState)) {

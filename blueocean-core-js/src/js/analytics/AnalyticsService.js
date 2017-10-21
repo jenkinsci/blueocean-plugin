@@ -11,10 +11,10 @@ export class AnalyticsService {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: {
+            body: JSON.stringify({
                 name: eventName,
                 properties: { properties },
-            },
+            }),
         };
         return Fetch.fetch(url, { fetchOptions });
     }
