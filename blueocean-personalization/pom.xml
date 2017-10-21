@@ -12,4 +12,11 @@
     <packaging>hpi</packaging>
 
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Blue+Ocean+Plugin</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-dashboard</artifactId>
+        </dependency>
+    </dependencies>
 </project>

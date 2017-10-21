@@ -27,8 +27,8 @@ const mockExtensionStore = {
 };
 
 const mockResourceLoadTracker = {
-    onMount: function() {
-        // Don't care
+    onMount: function(_, onload) {
+        onload();
     },
 
     onUnmount: function() {

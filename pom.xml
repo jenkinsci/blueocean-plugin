@@ -110,6 +110,8 @@
   </developers>
 
   <modules>
+    <module>jenkins-design-language</module>
+    <module>blueocean-core-js</module>
     <module>blueocean-commons</module>
     <module>blueocean-i18n</module>
     <module>blueocean-web</module>
@@ -198,6 +200,18 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-i18n</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>jenkins-design-language</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-core-js</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -981,4 +995,100 @@
         </plugin>
     </plugins>
   </build>
+
+    <profiles>
+        <profile>
+            <id>node-execution</id>
+            <activation>
+                <file>
+                    <exists>.mvn_exec_node</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+                    <!-- run upstream dependency fetches for all js plugins -->
+                    <plugin>
+                        <groupId>io.jenkins.blueocean</groupId>
+                        <artifactId>blueocean-maven-plugin</artifactId>
+                        <version>0.0.2</version>
+                        <executions>
+                            <execution>
+                                <id>upstream-dependencies</id>
+                                <phase>process-resources</phase>
+                                <goals>
+                                    <goal>process-node-dependencies</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>package</id>
+                                <goals>
+                                    <goal>package-blueocean-resources</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>${frontend-version}</version>
+
+                        <executions>
+
+                            <execution>
+                                <phase>initialize</phase>
+                                <id>install node and npm</id>
+                                <goals>
+                                    <goal>install-node-and-npm</goal>
+                                </goals>
+                                <configuration>
+                                    <nodeVersion>v${node.version}</nodeVersion>
+                                    <npmVersion>${npm.version}</npmVersion>
+                                    <nodeDownloadRoot>https://repo.jenkins-ci.org/nodejs-dist/</nodeDownloadRoot>
+                                    <npmDownloadRoot>https://repo.jenkins-ci.org/npm-dist/</npmDownloadRoot>
+                                </configuration>
+                            </execution>
+
+                            <execution>
+                                <phase>process-resources</phase>
+                                <id>npm install</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- Note that this may not be omitted lest maven-release-plugin be confused (frontend-maven-plugin #109): -->
+                                    <arguments>install ${npm.loglevel}</arguments>
+                                </configuration>
+                            </execution>
+
+                            <execution>
+                                <phase>compile</phase>
+                                <id>npm mvnbuild</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- The package.json must define an "mvnbuild" script -->
+                                    <arguments>run mvnbuild</arguments>
+                                </configuration>
+                            </execution>
+
+                            <execution>
+                                <phase>test</phase>
+                                <id>npm mvntest</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- The package.json must define an "mvntest" script -->
+                                    <arguments>run mvntest</arguments>
+                                </configuration>
+                            </execution>
+
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

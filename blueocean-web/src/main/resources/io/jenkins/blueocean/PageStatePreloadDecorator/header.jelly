@@ -1,10 +1,11 @@
 <j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler">
   <script>
+    // construct the state object parent path inside window.$blueocean.
+    var stateRoot = window.$blueocean = (window.$blueocean || {});
     (function () {
-      // construct the state object parent path inside window.$$blueocean.
       function setState(statePropertyPath, state) {
-        var pathTokens = ('$blueocean.' + statePropertyPath).split('.');
-        var contextObj = window;
+        var pathTokens = statePropertyPath.split('.');
+        var contextObj = stateRoot;
 
         // Basically an Array shift
         function nextToken() {
