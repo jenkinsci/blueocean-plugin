@@ -28,7 +28,7 @@ public class AnalyticsRoute implements ApiRoutable {
     @WebMethod(name = "track")
     public void track(StaplerRequest staplerRequest) throws IOException {
         TrackRequest req;
-        try (InputStreamReader reader = new InputStreamReader(staplerRequest.getInputStream())) {
+        try (InputStreamReader reader = new InputStreamReader(staplerRequest.getInputStream(), "UTF-8")) {
             req = JsonConverter.toJava(reader, TrackRequest.class);
         }
         Analytics.get().track(req);
