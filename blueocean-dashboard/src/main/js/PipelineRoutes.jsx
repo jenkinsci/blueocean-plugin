@@ -94,6 +94,15 @@ function isRemovePersistedBackgroundRoute(prevState, nextState) {
     return isLeavingRunDetails(prevState, nextState);
 }
 
+function onRouteChange(prevState, nextState, replace, callback, delay = 200) {
+    trackPageView(); // Tracks page view as the route changes
+    persistBackgroundOnNavigationChange(prevState, nextState, replace, callback, delay);
+}
+
+function onTopLevelRouteEnter() {
+    trackPageView(); // Tracks the page view on load of window
+}
+
 /**
  * Persists the application's DOM as a "background" when navigating to a route w/ a modal or dialog.
  * Also removes the "background" when navigating away.
@@ -125,7 +134,7 @@ function trackPageView() {
 const trends = AppConfig.isFeatureEnabled('trends');
 
 export default (
-    <Route component={Dashboard} onEnter={trackPageView} onChange={persistBackgroundOnNavigationChange}>
+    <Route component={Dashboard} onEnter={onTopLevelRouteEnter} onChange={onRouteChange}>
         <Route path="organizations/:organization/pipelines" component={Pipelines} />
         <Route path="organizations/:organization/create-pipeline" component={CreatePipeline} />
         <Redirect from="organizations/:organization(/*)" to="organizations/:organization/pipelines" />
