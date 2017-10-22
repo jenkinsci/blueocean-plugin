@@ -18,6 +18,7 @@ import {
     NoRunsForBranchPlaceholder,
     NoRunsMultibranchPlaceholder,
 } from './placeholder/NoRunsPlaceholder';
+import { analytics } from '../analytics.js';
 
 import Extensions from '@jenkins-cd/js-extensions';
 
@@ -49,6 +50,7 @@ export class Activity extends Component {
             this.pager = this.context.activityService.activityPager(organization, pipeline, branch);
         }
         this._countExtensions();
+        analytics.trackPipelineActivity();
     }
 
     componentWillReceiveProps(newProps) {

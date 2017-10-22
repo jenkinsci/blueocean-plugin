@@ -1,6 +1,7 @@
 import { Route, Redirect, IndexRedirect } from 'react-router';
 import React from 'react';
-import { AppConfig, analyticsService } from '@jenkins-cd/blueocean-core-js';
+import { AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { analytics } from './analytics';
 
 import Dashboard from './Dashboard';
 import {
@@ -94,13 +95,8 @@ function isRemovePersistedBackgroundRoute(prevState, nextState) {
     return isLeavingRunDetails(prevState, nextState);
 }
 
-function trackPageView() {
-    // Track page view
-    analyticsService.track('pageview', { mode: 'blueocean' });
-}
-
 function onTopLevelRouteEnter() {
-    trackPageView(); // Tracks the page view on load of window
+    analytics.trackPageView(); // Tracks the page view on load of window
 }
 
 /**
@@ -110,7 +106,6 @@ function onTopLevelRouteEnter() {
  * due to the fact react router will have already changed the background context.
  */
 function persistBackgroundOnNavigationChange(prevState, nextState, replace, callback, delay = 200) {
-    trackPageView();
     if (isPersistBackgroundRoute(prevState, nextState)) {
         persistModalBackground();
     } else if (isRemovePersistedBackgroundRoute(prevState, nextState)) {
@@ -123,7 +118,7 @@ function persistBackgroundOnNavigationChange(prevState, nextState, replace, call
 }
 
 function onRouteChange(prevState, nextState, replace, callback, delay = 200) {
-    trackPageView(); // Tracks page view as the route changes
+    analytics.trackPageView(); // Tracks page view as the route changes
     persistBackgroundOnNavigationChange(prevState, nextState, replace, callback, delay);
 }
 

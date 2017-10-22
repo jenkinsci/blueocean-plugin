@@ -2,6 +2,7 @@ package io.jenkins.blueocean.config;
 
 import hudson.Extension;
 import hudson.Plugin;
+import hudson.model.UsageStatistics;
 import hudson.security.AuthorizationStrategy;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import hudson.security.SecurityRealm;
@@ -59,6 +60,7 @@ public class BlueOceanConfigStatePreloader extends PageStatePreloader {
                 .key("version").value(getBlueOceanPluginVersion())
                 .key("jenkinsConfig")
                 .object()
+                    .key("analytics").value(!UsageStatistics.DISABLED)
                     .key("version").value(version)
                     .key("security")
                     .object()
@@ -76,7 +78,7 @@ public class BlueOceanConfigStatePreloader extends PageStatePreloader {
 
         return writer.toString();
     }
-    
+
     /**
      * Adds all features from all BlueOceanConfig objects
      * @param builder JSON builder to use

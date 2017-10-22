@@ -13,6 +13,7 @@ import { UnsupportedPlaceholder } from './placeholder/UnsupportedPlaceholder';
 import { BranchDetailsRow } from './BranchDetailsRow';
 
 import Extensions from '@jenkins-cd/js-extensions';
+import { analytics } from '../analytics.js';
 
 // TODO: Rename this
 @observer
@@ -28,6 +29,7 @@ export class MultiBranch extends Component {
             this.pager = this.context.pipelineService.branchPager(organization, pipeline);
         }
         this._countExtensions();
+        analytics.trackPipelineBranches();
     }
 
     // Figure out how many extensions we have for the action buttons column so we can size it appropriately

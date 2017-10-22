@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { pipelineService, activityService } from '@jenkins-cd/blueocean-core-js';
+import { analytics } from './analytics';
 
 import {
     actions,
@@ -28,6 +29,7 @@ class Dashboard extends Component {
 
     componentWillMount() {
         navState.setActive();
+        analytics.trackDashboardVisited();
     }
 
     componentWillUnmount() {
