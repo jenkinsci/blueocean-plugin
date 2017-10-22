@@ -10,6 +10,9 @@ USER root
 
 RUN apt-get update
 
+# Set utf-8 locale
+ENV LANG en_US.UTF-8
+
 #========================
 # Miscellaneous packages
 #========================

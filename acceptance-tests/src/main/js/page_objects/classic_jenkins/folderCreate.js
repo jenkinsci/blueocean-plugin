@@ -54,9 +54,7 @@ module.exports.commands = [{
             self.click('@submit');
 
             // We should now be on the config page
-            self.waitForElementPresent('@configForm', 60000,() => {
-                console.log(`Finished waiting for element 'form[name="config"]', folder: ${folderName}`);
-            }, "Element %s was not in the page for %d ms");
+            self.waitForElementPresent('@configForm');
             // Need to explicitly move the form buttons because we didn't
             // "navigate" to this page via nightwatch navigate.
             self.moveClassicBottomStickyButtons();
