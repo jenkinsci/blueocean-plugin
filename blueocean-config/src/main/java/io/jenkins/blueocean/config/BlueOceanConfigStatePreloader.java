@@ -7,6 +7,7 @@ import hudson.security.AuthorizationStrategy;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import hudson.security.SecurityRealm;
 import hudson.util.VersionNumber;
+import io.jenkins.blueocean.analytics.Analytics;
 import io.jenkins.blueocean.auth.jwt.JwtTokenServiceEndpoint;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import io.jenkins.blueocean.commons.PageStatePreloader;
@@ -60,7 +61,7 @@ public class BlueOceanConfigStatePreloader extends PageStatePreloader {
                 .key("version").value(getBlueOceanPluginVersion())
                 .key("jenkinsConfig")
                 .object()
-                    .key("analytics").value(!UsageStatistics.DISABLED)
+                    .key("analytics").value(Analytics.get() != null)
                     .key("version").value(version)
                     .key("security")
                     .object()

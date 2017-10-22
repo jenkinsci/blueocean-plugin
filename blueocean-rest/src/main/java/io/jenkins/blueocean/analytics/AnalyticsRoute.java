@@ -25,10 +25,14 @@ public class AnalyticsRoute implements ApiRoutable {
     @POST
     @WebMethod(name = "track")
     public void track(StaplerRequest staplerRequest) throws IOException {
+        Analytics analytics = Analytics.get();
+        if (analytics == null) {
+            return;
+        }
         TrackRequest req;
         try (InputStream is = staplerRequest.getInputStream()) {
             req = JsonConverter.toJava(is, TrackRequest.class);
         }
-        Analytics.get().track(req);
+        analytics.track(req);
     }
 }

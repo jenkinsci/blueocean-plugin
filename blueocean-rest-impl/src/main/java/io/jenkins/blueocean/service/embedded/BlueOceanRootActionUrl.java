@@ -2,6 +2,8 @@ package io.jenkins.blueocean.service.embedded;
 
 import hudson.Extension;
 import hudson.model.RootAction;
+import hudson.model.UsageStatistics;
+import io.jenkins.blueocean.analytics.Analytics;
 import io.jenkins.blueocean.rest.factory.BlueOceanUrlObjectFactory;
 import jenkins.model.Jenkins;
 
@@ -39,6 +41,10 @@ public final class BlueOceanRootActionUrl implements RootAction {
             return factory.get(Jenkins.getInstance()).getUrl();
         }
         return BlueOceanUrlMapperImpl.getLandingPagePath();
+    }
+
+    public boolean isAnalyticsEnabled() {
+        return Analytics.get() != null;
     }
 
     //lazy initialization in thread safe way

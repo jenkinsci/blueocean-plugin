@@ -1,6 +1,8 @@
 <?jelly escape-by-default='true'?>
 <j:jelly xmlns:j="jelly:core" xmlns:l="/lib/layout">
-    <script src="${rootURL}/plugin/blueocean-rest-impl/scripts/analytics.js"></script>
+    <j:if test="${action.analyticsEnabled}">
+        <script src="${rootURL}/plugin/blueocean-rest-impl/scripts/analytics.js"></script>
+    </j:if>
     <l:task icon="${h.getIconFilePath(action)}" title="${action.displayName}"
             href="${rootURL}/${action.urlName}"
             permission="${app.READ}"

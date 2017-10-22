@@ -8,6 +8,7 @@ import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import org.kohsuke.stapler.DataBoundConstructor;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
@@ -40,17 +41,14 @@ public abstract class Analytics implements ExtensionPoint {
     /**
      * @return analytics instance
      */
+    @CheckForNull
     public static Analytics get() {
-        Analytics analytics = Iterables.find(ExtensionList.lookup(Analytics.class), new Predicate<Analytics>() {
+        return Iterables.find(ExtensionList.lookup(Analytics.class), new Predicate<Analytics>() {
             @Override
             public boolean apply(@Nullable Analytics input) {
                 return input != null && input.isEnabled();
             }
         }, null);
-        if (analytics == null) {
-            throw new IllegalStateException("No analytics instance available");
-        }
-        return analytics;
     }
 
     /** Is this analytics instance enabled */
