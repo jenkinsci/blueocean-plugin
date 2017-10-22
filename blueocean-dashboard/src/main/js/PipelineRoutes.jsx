@@ -143,7 +143,6 @@ export default (
 
         </Route>
         <Route path="/pipelines" component={Pipelines} />
-
         <Route path="/create-pipeline" component={CreatePipeline} />
         <IndexRedirect to="pipelines" />
     </Route>
