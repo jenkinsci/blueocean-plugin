@@ -7,8 +7,6 @@ class SvgIcon extends Component {
      * Elements passed into the SVG Icon.
      */
     children: PropTypes.node,
-    /** normally you do not want to have the svg focusable */
-    focusable: PropTypes.bool,      
     /** @ignore */
     onMouseEnter: PropTypes.func,
     /** @ignore */
@@ -33,7 +31,6 @@ class SvgIcon extends Component {
     onMouseEnter: () => {},
     onMouseLeave: () => {},
     viewBox: '0 0 24 24',
-    focusable: false,
   }; 
 
   state = {
@@ -51,7 +48,6 @@ class SvgIcon extends Component {
   render() {
     const {
       children,
-      focusable,
       onMouseEnter, // eslint-disable-line no-unused-vars
       onMouseLeave, // eslint-disable-line no-unused-vars
       size,
@@ -70,7 +66,7 @@ class SvgIcon extends Component {
     return (
       <svg
         {...other}
-        focusable={focusable}
+        focusable={false}
         className="svg-icon"
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}
