@@ -108,7 +108,8 @@ public class GithubCreationPage {
     }
 
     public void clickCreatePipelineButton() {
-        wait.until(ExpectedConditions.elementToBeClickable(createPipelineButton)).click();
+        wait.until(ExpectedConditions.elementToBeClickable(createPipelineButton));
+        wait.until(ExpectedConditions.visibilityOf(createPipelineButton)).click();
     }
 
     public By emptyRepositoryCreateButton = By.cssSelector(".jenkins-pipeline-create-missing-jenkinsfile > div > button");
