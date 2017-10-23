@@ -134,9 +134,9 @@ export default (
         <Route path="organizations/:organization/create-pipeline" component={CreatePipeline} onEnter={analytics.trackPipelineCreationVisited} />
         <Redirect from="organizations/:organization(/*)" to="organizations/:organization/pipelines" />
         <Route path="organizations/:organization" component={PipelinePage}>
-            <Route path=":pipeline/branches" component={MultiBranch} />
-            <Route path=":pipeline/activity" component={Activity} onEnter={analytics.trackPipelineActivity} />
-            <Route path=":pipeline/pr" component={PullRequests} onEnter={analytics.trackPipelinePullRequests} />
+            <Route path=":pipeline/branches" component={MultiBranch} onEnter={analytics.trackPipelineBranchesVisited} />
+            <Route path=":pipeline/activity" component={Activity} onEnter={analytics.trackPipelineActivityVisited} />
+            <Route path=":pipeline/pr" component={PullRequests} onEnter={analytics.trackPipelinePullRequestsVisited} />
             { trends && <Route path=":pipeline/trends" component={PipelineTrends} /> }
 
             <Route path=":pipeline/detail/:branch/:runId" component={RunDetails} onLeave={onLeaveCheckBackground} >

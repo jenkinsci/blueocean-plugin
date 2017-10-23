@@ -6,15 +6,15 @@ class Analytics {
         analyticsService.track('pageview', { mode: 'blueocean' });
     }
 
-    trackPipelineActivity() {
+    trackPipelineActivityVisited() {
         analyticsService.track('pipeline_activity_visited');
     }
 
-    trackPipelineBranches() {
+    trackPipelineBranchesVisited() {
         analyticsService.track('pipeline_branches_visited');
     }
 
-    trackPipelinePullRequests() {
+    trackPipelinePullRequestsVisited() {
         analyticsService.track('pipeline_pull_requests_visited');
     }
 
