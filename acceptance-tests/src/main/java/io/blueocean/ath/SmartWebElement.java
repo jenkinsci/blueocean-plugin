@@ -84,7 +84,7 @@ public class SmartWebElement implements WebElement {
     public WebElement getElement() throws NoSuchElementException {
         List<WebElement> elements = getElements();
         if (elements == null || elements.isEmpty()) {
-            throw new NoSuchElementException("Nothing matched to click on for: " + expr);
+            throw new NoSuchElementException("Nothing matched for: " + expr);
         }
         if (elements.size() > 1) {
             throw new NoSuchElementException("Too many elements returned for: " + expr);
