@@ -13,6 +13,10 @@ import { capabilityAugmenter } from './capability/index';
 
 let refreshToken = null;
 
+function isGetRequest(fetchOptions) {
+    return !fetchOptions || !fetchOptions.method || "get".localeCompare(fetchOptions.method) === 0;
+}
+
 export const FetchFunctions = {
     /**
      * Ensures the URL starts with jenkins path if not an absolute URL.
@@ -200,7 +204,7 @@ export const FetchFunctions = {
 
             return future;
         };
-        if (disableDedupe) {
+        if (disableDedupe || !isGetRequest(fetchOptions)) {
             return request();
         }
 
@@ -247,7 +251,7 @@ export const FetchFunctions = {
             return future;
         };
 
-        if (disableDedupe) {
+        if (disableDedupe || !isGetRequest(fetchOptions)) {
             return request();
         }
 
