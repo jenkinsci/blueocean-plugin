@@ -3,15 +3,14 @@
   "version": "0.0.1",
   "license": "MIT",
   "scripts": {
-    "lint": "jjsbuilder --tasks lint",
-    "lint:fix": "jjsbuilder --tasks lint --fixLint",
-    "lint:watch": "jjsbuilder --tasks lint:watch --continueOnLint",
-    "test": "jjsbuilder --tasks test",
-    "test:watch": "jjsbuilder --tasks test:watch",
-    "bundle": "jjsbuilder --tasks bundle",
-    "bundle:watch": "jjsbuilder --tasks bundle:watch",
-    "mvnbuild": "jjsbuilder --tasks bundle",
-    "mvntest": "jjsbuilder --tasks test,lint"
+    "lint": "gulp lint",
+    "lint:fix": "gulp lint --fixLint",
+    "test": "gulp test",
+    "test:watch": "gulp test:watch",
+    "bundle": "gulp bundle",
+    "bundle:watch": "gulp bundle:watch",
+    "mvnbuild": "gulp lint bundle",
+    "mvntest": "gulp test"
   },
   "devDependencies": {
     "@jenkins-cd/blueocean-core-js": "0.0.170",
