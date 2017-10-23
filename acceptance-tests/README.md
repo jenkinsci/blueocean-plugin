@@ -38,7 +38,8 @@ nightwatch and java ATH tests in one shot.
 ### Run tests against a local instance
 
 ATH looks for a properties file at `~/.blueocean-ath-config` (or any combination of similar command line options).
-These options will allow you to run a local ChromeDriver and execute the ATH against a local development instance
+These options will allow you to run a local [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/),
+ for example, and execute the ATH against a local development instance
 that you can debug/etc.. Currently these properties are supported and/or necessary:
 ```webDriverType=chrome
 webDriverUrl=http://localhost:9515
@@ -148,7 +149,7 @@ public class LoginTest implements WebDriverMixin {
         find("input[name=j_password]") // just a CSS selector
             .setText("admin");
         // click: handles animation, failures will retry up to 2 times
-        click("//button[contains(text(), 'log')]"); // XPath selector
+        click("//form[@name='login']//button"); // XPath selector
         // other utilities, see io.blueocean.ath.WebDriverMixin
         assert find("//a[contains(@href, 'logout')]").isVisible() : "Not logged in";
     }
