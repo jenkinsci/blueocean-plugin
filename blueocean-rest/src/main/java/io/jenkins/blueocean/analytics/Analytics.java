@@ -51,6 +51,7 @@ public abstract class Analytics implements ExtensionPoint {
         }, null);
     }
 
+    /** Is analytics enabled on Jenkins or not **/
     public static boolean isAnalyticsEnabled() {
         return get() != null;
     }

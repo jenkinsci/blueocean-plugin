@@ -29,6 +29,18 @@ class Analytics {
     trackPipelineRunVisited() {
         analyticsService.track('pipeline_run_visited');
     }
+
+    trackPipelineRunChangesVisited() {
+        analyticsService.track('pipeline_run_changes_visited');
+    }
+
+    trackPipelineRunTestsVisited() {
+        analyticsService.track('pipeline_run_tests_visited');
+    }
+
+    trackPipelineRunArtifactsVisited() {
+        analyticsService.track('pipeline_run_artifacts_visited');
+    }
 }
 
 const analytics = new Analytics();

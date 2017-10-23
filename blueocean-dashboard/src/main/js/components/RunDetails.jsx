@@ -4,7 +4,6 @@ import { i18nTranslator, ReplayButton, RunButton, LoginButton, logging } from '@
 import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 
 import { Icon } from '@jenkins-cd/design-language';
-import { analytics } from '../analytics.js';
 
 import {
     rootPath,
@@ -67,7 +66,6 @@ class RunDetails extends Component {
         this._fetchRun(this.props);
         this.opener = locationService.previous;
         this.initialHistoryLength = history.length;
-        analytics.trackPipelineRunVisited();
     }
 
     componentWillReceiveProps(nextProps) {

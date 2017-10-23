@@ -10,7 +10,6 @@ import { NoPullRequestsPlaceholder } from './placeholder/NoPullRequestsPlacehold
 import { UnsupportedPlaceholder } from './placeholder/UnsupportedPlaceholder';
 
 import Extensions from '@jenkins-cd/js-extensions';
-import { analytics } from '../analytics.js';
 
 @observer
 export class PullRequests extends Component {
@@ -24,7 +23,6 @@ export class PullRequests extends Component {
             this.pager = this.context.pipelineService.prPager(this.props.params.organization, this.props.params.pipeline);
         }
         this._countExtensions();
-        analytics.trackPipelinePullRequests();
     }
 
     // Figure out how many extensions we have for the action buttons column so we can size it appropriately
