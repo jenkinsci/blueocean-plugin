@@ -51,6 +51,10 @@ public abstract class Analytics implements ExtensionPoint {
         }, null);
     }
 
+    public static boolean isAnalyticsEnabled() {
+        return get() != null;
+    }
+
     /** Is this analytics instance enabled */
     public abstract boolean isEnabled();
 

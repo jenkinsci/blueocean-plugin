@@ -39,6 +39,6 @@ public final class BlueOceanUrlAction implements Action {
     }
 
     public boolean isAnalyticsEnabled() {
-        return Analytics.get() != null;
+        return Analytics.isAnalyticsEnabled();
     }
 }

@@ -44,7 +44,7 @@ public final class BlueOceanRootActionUrl implements RootAction {
     }
 
     public boolean isAnalyticsEnabled() {
-        return Analytics.get() != null;
+        return Analytics.isAnalyticsEnabled();
     }
 
     //lazy initialization in thread safe way
