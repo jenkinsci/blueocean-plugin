@@ -14,7 +14,7 @@ import { capabilityAugmenter } from './capability/index';
 let refreshToken = null;
 
 function isGetRequest(fetchOptions) {
-    return !fetchOptions || !fetchOptions.method || "get".localeCompare(fetchOptions.method) === 0;
+    return !fetchOptions || !fetchOptions.method || 'get'.localeCompare(fetchOptions.method) === 0;
 }
 
 export const FetchFunctions = {
