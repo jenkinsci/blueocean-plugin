@@ -42,6 +42,7 @@ public class CustomJenkinsServer extends JenkinsServer {
             logger.info("found credential at " + path);
         } catch (HttpResponseException e) {
             if (e.getStatusCode() != 404) {
+                logger.error("error getting credential at " + path);
                 throw e;
             }
             // credential doesn't exist; nothing to do
