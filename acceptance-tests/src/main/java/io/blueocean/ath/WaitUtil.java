@@ -18,8 +18,10 @@ import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class WaitUtil {
+    public static int DEFAULT_TIMEOUT = Integer.getInteger("webDriverDefaultTimeout", 20000);
+    public static final int RETRY_COUNT = 2;
+
     private Logger logger = Logger.getLogger(WaitUtil.class);
-    private static final int RETRY_COUNT = 2;
 
     private WebDriver driver;
 
@@ -44,11 +46,11 @@ public class WaitUtil {
         return until(function, timeoutInMS, "Error while waiting for something");
     }
     public <T> T until(Function<WebDriver, T> function) {
-        return until(function, 20000);
+        return until(function, DEFAULT_TIMEOUT);
     }
 
     public <T> T until(Function<WebDriver, T> function, String errorMessage) {
-        return until(function, 20000);
+        return until(function, DEFAULT_TIMEOUT);
     }
 
     public WebElement until(WebElement element) {
