@@ -10,6 +10,10 @@ export default class GithubScmProvider extends ScmProvider {
 
     manager = null;
 
+    getId() {
+        return 'github';
+    }
+
     getDefaultOption() {
         return <GithubDefaultOption />;
     }

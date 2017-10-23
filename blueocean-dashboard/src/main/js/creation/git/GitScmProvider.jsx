@@ -10,6 +10,10 @@ import { CredentialsApi } from '../credentials/CredentialsApi';
  */
 export default class GitScmProvider extends ScmProvider {
 
+    getId() {
+        return 'git';
+    }
+
     getDefaultOption() {
         return <GitDefaultOption />;
     }

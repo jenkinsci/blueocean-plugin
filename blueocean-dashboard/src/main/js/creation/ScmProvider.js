@@ -9,6 +9,13 @@
 export default class ScmProvider {
 
     /**
+     * The id of scm provider e.g. 'github', 'bitbucket', 'git', etc
+     */
+    getId() {
+        throw new Error('must implement getId');
+    }
+
+    /**
      * Return a React element (button) that when selected will start the "creation flow"
      * Call props.onSelect to initiate the creation flow.
      */

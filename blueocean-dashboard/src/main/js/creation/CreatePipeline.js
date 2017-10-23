@@ -9,6 +9,7 @@ import { CreatePipelineStepsRenderer } from './CreatePipelineStepsRenderer';
 import VerticalStep from './flow2/VerticalStep';
 import StepStatus from './flow2/FlowStepStatus';
 import creationUtils from './creation-status-utils';
+import { analytics } from '../analytics';
 
 
 const Sandbox = Extensions.SandboxedComponent;
@@ -39,6 +40,8 @@ export default class CreatePipeline extends React.Component {
         if (this.state.selectedProvider) {
             this.state.selectedProvider.destroyFlowManager();
         }
+
+        analytics.trackPipelineCreationProviderClicked(selectedProvider.getId());
 
         this.setState({
             selectedProvider,

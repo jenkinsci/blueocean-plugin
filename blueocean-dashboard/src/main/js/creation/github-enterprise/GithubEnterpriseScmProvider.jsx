@@ -12,6 +12,10 @@ export default class GithubEnterpriseScmProvider extends GithubScmProvider {
 
     manager = null;
 
+    getId() {
+        return 'github-enterprise';
+    }
+
     getDefaultOption() {
         return <GithubDefaultOption className="github-enterprise-creation" label="GitHub Enterprise" />;
     }

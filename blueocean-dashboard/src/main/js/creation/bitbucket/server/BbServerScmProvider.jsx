@@ -11,6 +11,10 @@ export default class BbServerScmProvider extends ScmProvider {
 
     manager = null;
 
+    getId() {
+        return 'bitbucket-server';
+    }
+
     getDefaultOption() {
         return <BbDefaultOption label="Bitbucket Server" />;
     }

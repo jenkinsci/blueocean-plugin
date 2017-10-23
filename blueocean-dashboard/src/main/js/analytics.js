@@ -1,3 +1,4 @@
+/* eslint-disable object-shorthand */
 import { analyticsService } from '@jenkins-cd/blueocean-core-js';
 
 /** codifies all events send to analytics service in this module */
@@ -26,6 +27,11 @@ class Analytics {
         analyticsService.track('pipeline_creation_started');
     }
 
+    trackPipelineCreationProviderClicked(type) {
+        const props = { type: type };
+        analyticsService.track('pipeline_creation_provider_clicked', props);
+    }
+
     trackPipelineRunVisited() {
         analyticsService.track('pipeline_run_visited');
     }
@@ -36,3 +42,5 @@ const analytics = new Analytics();
 export {
     analytics,
 };
+
+/* eslint-enable object-shorthand */

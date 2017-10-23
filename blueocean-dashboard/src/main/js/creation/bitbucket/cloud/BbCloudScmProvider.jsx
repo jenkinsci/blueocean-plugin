@@ -10,6 +10,10 @@ export default class BbCloudScmProvider extends ScmProvider {
 
     manager = null;
 
+    getId() {
+        return 'bitbucket-cloud';
+    }
+
     getDefaultOption() {
         return <BbDefaultOption label="Bitbucket Cloud" />;
     }
