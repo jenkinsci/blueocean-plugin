@@ -69,6 +69,10 @@ export default {
         return this.getJenkinsConfig().security || {};
     },
 
+    getAnalyticsEnabled() {
+        return this.getJenkinsConfig().analytics || false;
+    },
+
     isJWTEnabled() {
         return !!this.getSecurityConfig().enableJWT;
     },
