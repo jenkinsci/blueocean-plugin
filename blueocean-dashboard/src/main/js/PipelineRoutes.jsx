@@ -131,7 +131,7 @@ const trends = AppConfig.isFeatureEnabled('trends');
 export default (
     <Route component={Dashboard} onEnter={onTopLevelRouteEnter} onChange={onRouteChange}>
         <Route path="organizations/:organization/pipelines" component={Pipelines} onEnter={analytics.trackDashboardVisited} />
-        <Route path="organizations/:organization/create-pipeline" component={CreatePipeline} onEnter={analytics.trackPipelineCreationStarted} />
+        <Route path="organizations/:organization/create-pipeline" component={CreatePipeline} onEnter={analytics.trackPipelineCreationVisited} />
         <Redirect from="organizations/:organization(/*)" to="organizations/:organization/pipelines" />
         <Route path="organizations/:organization" component={PipelinePage}>
             <Route path=":pipeline/branches" component={MultiBranch} />
@@ -153,7 +153,7 @@ export default (
 
         </Route>
         <Route path="/pipelines" component={Pipelines} onEnter={analytics.trackDashboardVisited} />
-        <Route path="/create-pipeline" component={CreatePipeline} onEnter={analytics.trackPipelineCreationStarted} />
+        <Route path="/create-pipeline" component={CreatePipeline} onEnter={analytics.trackPipelineCreationVisited} />
         <IndexRedirect to="pipelines" />
     </Route>
 );

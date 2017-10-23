@@ -22,8 +22,8 @@ class Analytics {
         analyticsService.track('dashboard_visited');
     }
 
-    trackPipelineCreationStarted() {
-        analyticsService.track('pipeline_creation_started');
+    trackPipelineCreationVisited() {
+        analyticsService.track('pipeline_creation_visited');
     }
 
     trackPipelineRunVisited() {
