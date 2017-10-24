@@ -2,7 +2,6 @@ package io.jenkins.blueocean.service.embedded;
 
 import hudson.Extension;
 import hudson.model.RootAction;
-import hudson.model.UsageStatistics;
 import io.jenkins.blueocean.analytics.Analytics;
 import io.jenkins.blueocean.rest.factory.BlueOceanUrlObjectFactory;
 import jenkins.model.Jenkins;

@@ -2,7 +2,6 @@ package io.jenkins.blueocean.service.embedded;
 
 import com.google.common.base.Preconditions;
 import hudson.model.Action;
-import hudson.model.UsageStatistics;
 import io.jenkins.blueocean.analytics.Analytics;
 import io.jenkins.blueocean.rest.model.BlueOceanUrlObject;
 

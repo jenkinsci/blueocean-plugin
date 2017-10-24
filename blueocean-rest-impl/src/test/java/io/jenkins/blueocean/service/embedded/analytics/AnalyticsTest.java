@@ -6,6 +6,7 @@ import hudson.model.UsageStatistics;
 import hudson.model.User;
 import io.jenkins.blueocean.analytics.Analytics;
 import io.jenkins.blueocean.analytics.Analytics.TrackRequest;
+import io.jenkins.blueocean.analytics.NullAnalytics;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
 import org.junit.Assert;
@@ -102,7 +103,7 @@ public class AnalyticsTest {
         }
     }
 
-    class MyAnalytics extends AbstractAnalytics {
+    class MyAnalytics extends Analytics {
 
         String lastName;
         Map<String, Object> lastProps;

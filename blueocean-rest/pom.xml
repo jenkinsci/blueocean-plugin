@@ -63,6 +63,7 @@
                                     </allowedImports>
                                     <excludedClasses>
                                         <excludedClass>io.jenkins.blueocean.rest.factory.**</excludedClass>
+                                        <excludedClass>io.jenkins.blueocean.analytics.**</excludedClass>
                                     </excludedClasses>
                                 </restrictImports>
                                 <!-- Factory package is allowed to import Jenkins models -->
@@ -91,7 +92,7 @@
                                     </allowedImports>
                                 </restrictImports>
                                 <restrictImports implementation="de.skuzzle.enforcer.restrictimports.RestrictImports">
-                                    <basePackage>io.jenkins.blueocean.rest.analytics.**</basePackage>
+                                    <basePackage>io.jenkins.blueocean.analytics.**</basePackage>
                                     <bannedImports>
                                         <bannedImport>jenkins.**</bannedImport>
                                         <bannedImport>hudson.**</bannedImport>
@@ -100,6 +101,8 @@
                                         <allowedImport>hudson.Extension</allowedImport>
                                         <allowedImport>hudson.ExtensionPoint</allowedImport>
                                         <allowedImport>hudson.ExtensionList</allowedImport>
+                                        <allowedImport>hudson.model.User</allowedImport>
+                                        <allowedImport>hudson.model.UsageStatistics</allowedImport>
                                     </allowedImports>
                                 </restrictImports>
                             </rules>
