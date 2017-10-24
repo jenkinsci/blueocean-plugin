@@ -20,7 +20,7 @@
     "@jenkins-cd/blueocean-core-js": "0.0.170",
     "@jenkins-cd/design-language": "0.0.158",
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.61-IE1",
+    "@jenkins-cd/js-builder": "0.0.61-IE2",
     "@jenkins-cd/js-extensions": "0.0.39-kz-2",
     "@kadira/storybook": "2.20.1",
     "babel": "6.5.2",
