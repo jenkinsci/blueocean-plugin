@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded.analytics;
 import hudson.Extension;
 import hudson.ProxyConfiguration;
 import hudson.model.UsageStatistics;
+import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import io.keen.client.java.JavaKeenClientBuilder;
 import io.keen.client.java.KeenClient;
 import io.keen.client.java.KeenProject;
@@ -20,7 +21,7 @@ import java.util.Map;
 @Restricted(NoExternalUse.class)
 public class KeenAnalyticsImpl extends AbstractAnalytics {
 
-    static final KeenClient CLIENT = new JavaKeenClientBuilder().build();
+    private static final KeenClient CLIENT = new JavaKeenClientBuilder().build();
 
     static {
         KeenClient.initialize(CLIENT);
@@ -30,7 +31,7 @@ public class KeenAnalyticsImpl extends AbstractAnalytics {
 
     @Override
     public boolean isEnabled() {
-        return !UsageStatistics.DISABLED;
+        return !BlueOceanConfigProperties.isDevelopmentMode() || !UsageStatistics.DISABLED;
     }
 
     @Override

@@ -4,6 +4,7 @@ import hudson.PluginWrapper;
 import hudson.init.InitMilestone;
 import hudson.init.Initializer;
 import io.jenkins.blueocean.BlueOceanUI;
+import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.FileUtils;
@@ -24,7 +25,6 @@ import java.util.regex.Pattern;
 
 @SuppressWarnings("all")
 public class RunBundleWatches {
-    public final static boolean isEnabled = (new BlueOceanUI().isDevelopmentMode());
     final static List<BundleBuild> builds = new CopyOnWriteArrayList<>();
     final static long DEFAULT_BACK_OFF = 10000;
     final static Pattern EXTENSIONS_TO_CAUSE_REBUILD = Pattern.compile(".*[.](js|jsx|less|css|json|yaml)");
@@ -79,7 +79,7 @@ public class RunBundleWatches {
 
     @Initializer(after = InitMilestone.JOB_LOADED)
     public static void startBundleWatches() {
-        if (!isEnabled || Boolean.getBoolean("blueocean.features.BUNDLE_WATCH_SKIP")) {
+        if (!BlueOceanConfigProperties.isDevelopmentMode() || Boolean.getBoolean("blueocean.features.BUNDLE_WATCH_SKIP")) {
             return;
         }
 
@@ -386,7 +386,7 @@ public class RunBundleWatches {
     }
 
     public static void waitForScriptBuilds() {
-        if (!isEnabled) return;
+        if (!BlueOceanConfigProperties.isDevelopmentMode()) return;
 
         for (BundleBuild build : builds) {
             while (build.isBuilding()) {

@@ -1,7 +1,9 @@
 package io.jenkins.blueocean.service.embedded.analytics;
 
+import com.google.common.base.Objects;
 import hudson.Extension;
 import hudson.model.UsageStatistics;
+import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
@@ -10,7 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Used when {@link UsageStatistics#DISABLED} is true
+ * Used when usage statistics is disabled or in development mode
  */
 @Extension
 @Restricted(NoExternalUse.class)
@@ -20,11 +22,13 @@ public class NullAnalytics extends AbstractAnalytics {
 
     @Override
     public boolean isEnabled() {
-        return UsageStatistics.DISABLED;
+        return BlueOceanConfigProperties.isDevelopmentMode() || UsageStatistics.DISABLED;
     }
 
     @Override
     protected void doTrack(String name, Map<String, Object> allProps) {
-        LOGGER.log(Level.FINE, "Analytics are disabled");
+        if (BlueOceanConfigProperties.isDevelopmentMode()) {
+            LOGGER.log(Level.INFO, Objects.toStringHelper(this).add("name", name).add("props", allProps).toString());
+        }
     }
 }
