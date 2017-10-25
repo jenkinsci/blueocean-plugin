@@ -22,6 +22,9 @@ case $i in
     -v=*|--version=*)
     JENKINS_VERSION="${i#*=}"
     ;;
+    -w=*|--war=*)
+    export JENKINS_WAR="${i#*=}"
+    ;;
     -s|--snaps|--snapshots)
     LOCAL_SNAPSHOTS=true
     ;;
@@ -108,6 +111,7 @@ fi
 echo "------------------------------------------------"
 echo "Running with switches:"
 echo "    --version=${JENKINS_VERSION}"
+echo "    --war=${JENKINS_WAR}"
 echo "    --snapshots=${LOCAL_SNAPSHOTS}"
 echo "    --aggregator=${AGGREGATOR_DIR}"
 echo "    --dev=${DEV_JENKINS}"
