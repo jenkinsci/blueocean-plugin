@@ -2,9 +2,7 @@ package io.jenkins.blueocean;
 
 import hudson.ExtensionList;
 import hudson.Main;
-import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import io.jenkins.blueocean.dev.RunBundleWatches;
-import io.jenkins.blueocean.rest.model.BlueOceanConfig;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
 import org.slf4j.Logger;
@@ -35,7 +33,7 @@ public class BlueOceanUI {
      */
     public Object getDynamic(String route) {
         // JVM will optimize this branch out typically:
-        if (BlueOceanConfigProperties.isDevelopmentMode()) {
+        if (RunBundleWatches.isEnabled) {
             RunBundleWatches.waitForScriptBuilds();
         }
         for (RootRoutable r : ExtensionList.lookup(RootRoutable.class)) {
@@ -55,6 +53,13 @@ public class BlueOceanUI {
             return null;
         }
         return provider.getUrlBasePrefix();
+    }
+
+    /**
+     * Have some slightly different behavior in development mode
+     */
+    public boolean isDevelopmentMode() {
+        return Main.isDevelopmentMode || System.getProperty("hudson.hpi.run") != null; // TODO why isDevelopmentMode == false
     }
 
     /**
