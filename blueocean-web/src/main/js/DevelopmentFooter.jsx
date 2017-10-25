@@ -20,7 +20,7 @@ export class DevelopmentFooter extends Component {
               <span> &#183; Core {AppConfig.getJenkinsConfig().version}&nbsp;</span>
               <span> &#183; {revisionInfo.sha.substring(0,7)}&nbsp; </span>
               <span> &#183; {moment(revisionInfo.timestamp).format('Do MMMM YYYY hh:mm A')}</span>
-              
+
           </div>
         );
     }

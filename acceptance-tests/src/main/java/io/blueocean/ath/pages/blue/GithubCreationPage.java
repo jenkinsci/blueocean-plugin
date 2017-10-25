@@ -2,10 +2,10 @@ package io.blueocean.ath.pages.blue;
 
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
+import io.blueocean.ath.WebDriverMixin;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.util.regex.Pattern;
 
 @Singleton
-public class GithubCreationPage {
+public class GithubCreationPage implements WebDriverMixin {
     private Logger logger = Logger.getLogger(GithubCreationPage.class);
 
     @Inject
@@ -35,14 +35,8 @@ public class GithubCreationPage {
     @FindBy(css = ".button-connect")
     public WebElement connectButton;
 
-    @FindBy(css = ".button-single-repo")
-    public WebElement singlePipelineBtn;
-
     @FindBy(css = ".repo-list input")
     public WebElement pipelineSearchInput;
-
-    @FindBy(css = ".button-create")
-    public WebElement createBtn;
 
     @Inject
     @BaseUrl
@@ -64,10 +58,7 @@ public class GithubCreationPage {
      * Navigate to the creation page via dashboard
      */
     public void navigateToCreation() {
-        dashboardPage.open();
-        wait.until(ExpectedConditions.visibilityOf(dashboardPage.newPipelineButton))
-            .click();;
-        logger.info("Clicked on new pipeline button");
+        dashboardPage.clickNewPipelineBtn();
     }
 
     public void selectGithubCreation() {
@@ -111,18 +102,26 @@ public class GithubCreationPage {
         logger.info("Selected pipeline to create");
     }
 
+    public void clickCreatePipelineButton() {
+        click(".button-create");
+    }
+
     public By emptyRepositoryCreateButton = By.cssSelector(".jenkins-pipeline-create-missing-jenkinsfile > div > button");
 
     public void createPipeline(String apikey, String org, String pipeline) throws IOException {
         createPipeline(apikey, org, pipeline, false);
     }
     public void createPipeline(String apiKey, String org, String pipeline, boolean createJenkinsFile) throws IOException {
-        beginCreationFlow(org);
+        beginCreationFlow(pipeline);
         completeCreationFlow(apiKey, org, pipeline, createJenkinsFile);
     }
 
-    public void beginCreationFlow(String org) throws IOException {
-        jobApi.deletePipeline(org);
+    /**
+     * @param jobName name of job to be created
+     * @throws IOException
+     */
+    public void beginCreationFlow(String jobName) throws IOException {
+        jobApi.deletePipeline(jobName);
         navigateToCreation();
         selectGithubCreation();
     }
@@ -139,13 +138,9 @@ public class GithubCreationPage {
         logger.info("Select a repo to create");
 
         selectPipelineToCreate(pipeline);
-
-        wait.until(createBtn).click();
+        clickCreatePipelineButton();
 
         if(createJenkinsFile) {
-            WebElement createJenkinsFileButton = wait
-                .until(ExpectedConditions.visibilityOfElementLocated(emptyRepositoryCreateButton));
-            createJenkinsFileButton.click();
             wait.until(ExpectedConditions.urlContains("pipeline-editor"), 30000);
             logger.info("AbstractPipeline created - now editing");
         } else {

@@ -16,7 +16,7 @@ import java.util.Map;
 /**
  * Tracks events using Keen.io
  */
-@Extension
+@Extension(ordinal = -1)
 @Restricted(NoExternalUse.class)
 public class KeenAnalyticsImpl extends AbstractAnalytics {
 

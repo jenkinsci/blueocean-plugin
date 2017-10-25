@@ -87,6 +87,7 @@ module.exports = {
         blueRunDetailPage.waitForElementPresent('.stop-button');
 
         // this will show up when it has finished replaying
+        // TODO: this assertion is flaky since sometimes run details header state doesn't transition from running-> failed
         blueRunDetailPage.waitForElementVisible('.replay-button');
 
     }

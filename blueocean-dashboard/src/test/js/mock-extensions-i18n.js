@@ -15,8 +15,10 @@
  */
 
 import { store, classMetadataStore } from '@jenkins-cd/js-extensions';
+import { DEBUG } from '@jenkins-cd/blueocean-core-js';
 
 export function mockExtensionsForI18n() {
+    DEBUG.enableMocksForI18n();
     store.init({
         extensionData: [
             {

@@ -42,7 +42,7 @@ public class GitCreationPage {
     }
 
     public GitCreationPage clickGitCreationOption() {
-        wait.until(By.xpath("//span[text()='Git']")).click();
+        wait.until(By.cssSelector(".scm-provider-list .git-creation")).click();
         logger.info("Selected git creation");
         return this;
     }

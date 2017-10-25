@@ -134,13 +134,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
             if(cause != null) {
                 // TODO: This should probably be changed (elsewhere?) to instead just render this directly, not via a fake step.
                 //Now add a step that indicates bloackage cause
-                FlowNode step = new AtomNode(chunk.getFirstNode().getExecution(), UUID.randomUUID().toString(), chunk.getFirstNode()) {
-
-                    @Override
-                    protected String getTypeDisplayName() {
-                            return cause;
-                        }
-                };
+                FlowNode step = new LocalAtomNode(chunk, cause);
 
                 FlowNodeWrapper stepNode = new FlowNodeWrapper(step, new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.QUEUED),new TimingInfo(), run);
                 steps.push(stepNode);
@@ -251,4 +245,17 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
         stepMap.clear();
     }
 
+    static class LocalAtomNode extends AtomNode {
+        private final String cause;
+
+        public LocalAtomNode(MemoryFlowChunk chunk, String cause) {
+            super(chunk.getFirstNode().getExecution(), UUID.randomUUID().toString(), chunk.getFirstNode());
+            this.cause = cause;
+        }
+
+        @Override
+        protected String getTypeDisplayName() {
+            return cause;
+        }
+    }
 }

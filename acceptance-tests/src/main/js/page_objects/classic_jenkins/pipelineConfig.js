@@ -10,6 +10,7 @@ var fs = require('fs');
 
 exports.elements = {
     scriptInput: '#workflow-editor-1 .ace_text-input',
+    scriptContent: '#workflow-editor-1 .ace_content',
     configForm: 'form[name="config"]',
     save: '#newFormSubmitButtonForATH'
 };
@@ -32,16 +33,20 @@ exports.commands = [
          * @returns {Object} self - nightwatch page object
          */
         setPipelineScript: function (script) {
+            var self = this;
             var scriptText = readTestScript(script);
-    
+
             // Need to wait for the ACE Editor to fully render on the page
             this.waitForElementPresent('@scriptInput');
+            // give focus to avoid bug in Chrome when using setValue below
+            this.click('@scriptContent');
+
             this.api.execute(function (selector, scriptText) {
                 var targets = document.getElementsBySelector(selector);
                 targets[0].aceEditor.setValue(scriptText);
                 return true;
             }, ['#workflow-editor-1', scriptText]);
-            
+
             return this;
         }
     }
@@ -53,12 +58,12 @@ exports.commands = [
  */
 function readTestScript(script) {
     var fileName = 'src/test/resources/test_scripts/' + script;
-    
+
     if (!fs.existsSync(fileName)) {
         // It's not a script file.
         // Must be a raw script text.
         return script;
     }
-    
+
     return fs.readFileSync(fileName, 'utf8');
 }

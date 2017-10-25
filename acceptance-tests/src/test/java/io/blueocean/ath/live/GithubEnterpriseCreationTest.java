@@ -65,7 +65,7 @@ public class GithubEnterpriseCreationTest extends WireMockBase {
         String serverName = getServerNameUnique("My Server");
         String serverUrl = getServerUrl(mockServer);
 
-        creationPage.beginCreationFlow(config.getOrganization());
+        creationPage.beginCreationFlow(config.getRepository());
         creationPage.clickAddServerButton();
 
         // "empty form" validation

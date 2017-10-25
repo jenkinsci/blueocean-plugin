@@ -1,9 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import hudson.model.Item;
 import hudson.model.Queue;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
@@ -25,24 +23,25 @@ import java.util.Date;
  */
 public class QueueItemImpl extends BlueQueueItem {
     private final Queue.Item item;
-    private final String pipelineName;
     private final Link self;
     private final Link parent;
     private final int expectedBuildNumber;
     private final BlueOrganization organization;
+    private final BluePipeline pipeline;
 
     public QueueItemImpl(BlueOrganization organization, Queue.Item item, BluePipeline pipeline, int expectedBuildNumber) {
         this(organization,
             item,
-            pipeline.getName(),expectedBuildNumber,
+            pipeline,
+            expectedBuildNumber,
             pipeline.getQueue().getLink().rel(Long.toString(item.getId())),
             pipeline.getLink());
     }
 
-    QueueItemImpl(BlueOrganization organization, Queue.Item item, String name, int expectedBuildNumber, Link self, Link parent) {
+    QueueItemImpl(BlueOrganization organization, Queue.Item item, BluePipeline pipeline, int expectedBuildNumber, Link self, Link parent) {
         this.organization = organization;
         this.item = item;
-        this.pipelineName = name;
+        this.pipeline = pipeline;
         this.expectedBuildNumber = expectedBuildNumber;
         this.self = self;
         this.parent = parent;
@@ -60,7 +59,7 @@ public class QueueItemImpl extends BlueQueueItem {
 
     @Override
     public String getPipeline() {
-        return pipelineName;
+        return pipeline.getName();
     }
 
     @Override
@@ -99,7 +98,11 @@ public class QueueItemImpl extends BlueQueueItem {
 
     @Override
     public BlueRun toRun() {
-        return new QueuedBlueRun(BlueRunState.QUEUED, BlueRunResult.UNKNOWN, this, parent);
+        if (pipeline instanceof FreeStylePipeline) {
+            return new QueuedFreeStyleRun(BlueRunState.QUEUED, BlueRunResult.UNKNOWN, this, parent);
+        } else {
+            return new QueuedBlueRun(BlueRunState.QUEUED, BlueRunResult.UNKNOWN, this, parent);
+        }
     }
 
     @Override

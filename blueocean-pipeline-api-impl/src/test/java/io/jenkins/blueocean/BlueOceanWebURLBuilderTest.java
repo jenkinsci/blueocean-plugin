@@ -25,7 +25,6 @@ package io.jenkins.blueocean;
 
 import hudson.Util;
 import io.jenkins.blueocean.rest.factory.BlueOceanUrlMapper;
-import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import jenkins.branch.BranchProperty;
 import jenkins.branch.BranchSource;
 import jenkins.branch.DefaultBranchPropertyStrategy;
@@ -53,7 +52,7 @@ public class BlueOceanWebURLBuilderTest {
     private BlueOceanUrlMapper urlMapper;
 
     @Rule
-    public JenkinsRule jenkinsRule = new PipelineBaseTest.PipelineBaseJenkinsRule();
+    public JenkinsRule jenkinsRule = new JenkinsRule();
 
     @Rule
     public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();

@@ -3,6 +3,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import hudson.Extension;
 import hudson.model.Queue;
 import hudson.model.Run;
+import hudson.model.queue.CauseOfBlockage;
 import hudson.scm.ChangeLogSet;
 import hudson.scm.ChangeLogSet.Entry;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -39,7 +40,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import java.io.IOException;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -245,8 +245,9 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
                 Run r = task.runForDisplay();
                 if (r != null && r.equals(run)) {
                     String cause = i.getCauseOfBlockage().getShortDescription();
-                    if (task.getCauseOfBlockage() != null) {
-                        cause = task.getCauseOfBlockage().getShortDescription();
+                    CauseOfBlockage causeOfBlockage = task.getCauseOfBlockage();
+                    if ( causeOfBlockage != null) {
+                        return causeOfBlockage.getShortDescription();
                     }
                     return cause;
                 }
