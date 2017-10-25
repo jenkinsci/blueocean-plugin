@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.dev;
 
+import hudson.PluginManager;
 import hudson.PluginWrapper;
 import hudson.init.InitMilestone;
 import hudson.init.Initializer;
@@ -86,8 +87,12 @@ public class RunBundleWatches {
         System.out.println("Running in development mode, watching bundles...");
 
         int buildNumber = 0;
-        List<PluginWrapper> plugins = Jenkins.getInstance().pluginManager.getPlugins();;
+        PluginManager pluginManager = Jenkins.getInstance().pluginManager;
+        List<PluginWrapper> plugins = pluginManager.getPlugins();
         for (final PluginWrapper p : plugins) {
+            if (!isBlueoceanPlugin(pluginManager, p)) {
+                continue;
+            }
             try {
                 final File projectDir = findPluginWorkDir(new File(p.baseResourceURL.getPath()));
                 if (projectDir != null) {
@@ -368,6 +373,21 @@ public class RunBundleWatches {
                 e.printStackTrace();
             }
         }
+    }
+
+    private static boolean isBlueoceanPlugin(PluginManager pluginManager, PluginWrapper p) {
+        if (p == null) {
+            return false;
+        }
+        if (p.getShortName().contains("blueocean")) {
+            return true;
+        }
+        for (PluginWrapper.Dependency dep : p.getDependencies()) {
+            if (isBlueoceanPlugin(pluginManager, pluginManager.getPlugin(dep.shortName))) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
