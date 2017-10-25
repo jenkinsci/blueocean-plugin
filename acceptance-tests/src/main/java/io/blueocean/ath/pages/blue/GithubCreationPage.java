@@ -2,6 +2,7 @@ package io.blueocean.ath.pages.blue;
 
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
+import io.blueocean.ath.WebDriverMixin;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
@@ -17,7 +18,7 @@ import java.io.IOException;
 import java.util.regex.Pattern;
 
 @Singleton
-public class GithubCreationPage {
+public class GithubCreationPage implements WebDriverMixin {
     private Logger logger = Logger.getLogger(GithubCreationPage.class);
 
     @Inject
@@ -36,9 +37,6 @@ public class GithubCreationPage {
 
     @FindBy(css = ".repo-list input")
     public WebElement pipelineSearchInput;
-
-    @FindBy(css = ".button-create")
-    public WebElement createPipelineButton;
 
     @Inject
     @BaseUrl
@@ -60,10 +58,7 @@ public class GithubCreationPage {
      * Navigate to the creation page via dashboard
      */
     public void navigateToCreation() {
-        dashboardPage.open();
-        wait.until(ExpectedConditions.visibilityOf(dashboardPage.newPipelineButton))
-            .click();;
-        logger.info("Clicked on new pipeline button");
+        dashboardPage.clickNewPipelineBtn();
     }
 
     public void selectGithubCreation() {
@@ -108,7 +103,7 @@ public class GithubCreationPage {
     }
 
     public void clickCreatePipelineButton() {
-        wait.until(ExpectedConditions.elementToBeClickable(createPipelineButton)).click();
+        click(".button-create");
     }
 
     public By emptyRepositoryCreateButton = By.cssSelector(".jenkins-pipeline-create-missing-jenkinsfile > div > button");

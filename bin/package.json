@@ -10,9 +10,9 @@
   "license": "ISC",
   "devDependencies": {
     "async": "^2.0.1",
+    "graceful-fs": "4.1.11",
+    "prettier": "1.7.4",
     "prompt": "^1.0.0"
   },
-  "dependencies": {
-    "@jenkins-cd/design-language": "0.0.79-unpublishedthor1"
-  }
+  "dependencies": {}
 }

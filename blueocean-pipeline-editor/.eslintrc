@@ -46,10 +46,7 @@
         "react/self-closing-comp": 2,
         "react/wrap-multilines": 2,
         "quotes": [0, "single"],
-        "space-before-function-paren": [2, {
-            "anonymous": "always",
-            "named": "never"
-        }],
+        "space-before-function-paren": 0,
         "strict": [2, "global"]
     },
     "plugins": [

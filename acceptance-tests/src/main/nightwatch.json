@@ -11,12 +11,6 @@
     "src/main/js/page_objects/classic_jenkins",
     "src/main/js/page_objects/blueocean"
   ],
-  "screenshots": {
-    "enabled": true,
-    "on_failure": true,
-    "on_error": true,
-    "path": "target/screenshots"
-  },
   "selenium": {
     "start_process": false,
     "server_path": "bin/selenium-server-standalone-2.53.1.jar",
@@ -33,6 +27,12 @@
         "browserName": "chrome",
         "javascriptEnabled": true,
         "acceptSslCerts": true
+      },
+      "screenshots": {
+        "enabled": true,
+        "on_failure": true,
+        "on_error": false,
+        "path": "target/screenshots"
       }
     }
   }

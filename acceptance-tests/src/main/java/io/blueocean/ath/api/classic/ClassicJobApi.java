@@ -13,6 +13,7 @@ import com.offbytwo.jenkins.model.Job;
 import com.offbytwo.jenkins.model.JobWithDetails;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.GitRepositoryRule;
+import io.blueocean.ath.JenkinsUser;
 import io.blueocean.ath.model.Folder;
 import org.apache.http.client.HttpResponseException;
 import org.apache.log4j.Logger;
@@ -36,6 +37,9 @@ public class ClassicJobApi {
 
     @Inject
     public JenkinsServer jenkins;
+
+    @Inject
+    JenkinsUser admin;
 
     public void deletePipeline(String pipeline) throws IOException {
         deletePipeline(null, pipeline);
@@ -89,7 +93,7 @@ public class ClassicJobApi {
         ImmutableMap<String, Object> params = ImmutableMap.of("mode", "com.cloudbees.hudson.plugins.folder.Folder",
             "name",   folderName, "from", "", "Submit", "OK");
         try {
-            Unirest.post(path).fields(params).asString();
+            Unirest.post(path).basicAuth(admin.username, admin.password).fields(params).asString();
         } catch (UnirestException e) {
             throw new IOException(e);
         }

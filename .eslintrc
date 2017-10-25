@@ -12,7 +12,7 @@
   "rules": {
     "eol-last": 1,
     "no-unused-vars": [1],
-    "max-len": [1, 160, 4],
+    "max-len": [0],
     "no-underscore-dangle": [0],
     "object-shorthand": [0, "always"],
     "quote-props": [0, "as-needed"],
@@ -24,7 +24,7 @@
     "semi": [2],
     "no-extra-semi": 2,
     "no-console": 1,
-    "prefer-template": 1,
+    "prefer-template": 0,
     "react/display-name": 0,
     "react/jsx-boolean-value": 2,
     "jsx-quotes": 2,
@@ -47,10 +47,7 @@
     "one-var": 0,
     "radix": 0,
     "quotes": [0, "single"],
-    "space-before-function-paren": [2, {
-      "anonymous": "always",
-      "named": "never"
-    }],
+    "space-before-function-paren": [0],
     "strict": [2, "global"]
   },
   "plugins": [
