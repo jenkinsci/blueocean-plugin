@@ -11,7 +11,6 @@ import hudson.model.UsageStatistics;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.BlueOceanConfigProperties;
 import io.jenkins.blueocean.commons.ServiceException;
-import org.apache.commons.lang.ObjectUtils;
 import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.main.modules.instance_identity.InstanceIdentity;
 
@@ -53,9 +52,6 @@ public abstract class Analytics implements ExtensionPoint {
      */
     @CheckForNull
     public static Analytics get() {
-        if (!isAnalyticsEnabled()) {
-            return NullAnalytics.INSTANCE;
-        }
         return ExtensionList.lookup(Analytics.class)
             .stream()
             .filter(input -> input != null && input.isEnabled()).findFirst().orElse(NullAnalytics.INSTANCE);
@@ -63,7 +59,7 @@ public abstract class Analytics implements ExtensionPoint {
 
     /** Is analytics enabled on Jenkins or not **/
     public static boolean isAnalyticsEnabled() {
-        return !BlueOceanConfigProperties.isDevelopmentMode() || !UsageStatistics.DISABLED;
+        return !BlueOceanConfigProperties.isDevelopmentMode() && !UsageStatistics.DISABLED;
     }
 
     /** Is this analytics instance enabled */
