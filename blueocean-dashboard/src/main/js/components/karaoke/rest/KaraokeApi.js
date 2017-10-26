@@ -1,5 +1,6 @@
-import { capabilityAugmenter, Fetch, logging } from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter, Fetch, FetchFunctions, logging } from '@jenkins-cd/blueocean-core-js';
 import debounce from 'lodash.debounce';
+import parse_link_header from 'parse-link-header';
 import { generateDetailUrl } from '../urls/detailUrl';
 import { getNodesInformation } from '../../../util/logDisplayHelper';
 
@@ -47,6 +48,30 @@ function parseNewStart(response) {
     const hasMore = contentLength > maxLength;
     response.hasMore = hasMore; // eslint-disable-line
     return response;
+}
+
+function fetchAndParseNodes(href, fetchOptions) {
+  return Fetch.fetch(href, { fetchOptions })
+      .then(result => {
+        const links = parse_link_header(result.headers.get('Link'));
+        return FetchFunctions.parseJSON(result).then(data => {
+          return { rawNodes: data, links: links };
+        });
+      });
+}
+
+function recursivelyFetchNodes(href, fetchOptions) {
+  return fetchAndParseNodes(href, fetchOptions).then(result => {
+    if (!result.links.next || result.rawNodes.length < 1)
+      return result;
+
+    logger.debug("Fetching next node batch from", result.links.next.url);
+    return new Promise(resolve => {
+      recursivelyFetchNodes(result.links.next.url, fetchOptions).then(nextBatch => {
+        resolve({ rawNodes: result.rawNodes.concat(nextBatch.rawNodes) });
+      });
+    });
+  });
 }
 
 export class KaraokeApi {
@@ -103,6 +128,25 @@ export class KaraokeApi {
                     .then(getNodesInformation));
             }, 200)();
         });
+    }
+
+    getAllNodes(href) {
+      // creating a new promise to be able to debounce the fetching
+      return new Promise((resolve) => {
+          debounce(() => {
+              const fetchOptions = prepareOptions();
+              logger.debug('Fetching with json enabled parsing the following href', href);
+              if (!href || href === undefined) {
+                  // leave a logger warning and abort
+                  logger.warn('could not fetch with empty href');
+                  resolve();
+              }
+              resolve(recursivelyFetchNodes(href, { fetchOptions })
+                  .then(data => capabilityAugmenter.augmentCapabilities(data.rawNodes))
+                  .then(getNodesInformation)
+              );
+          }, 200)();
+      });
     }
 
     getSteps(href) {
