@@ -2,7 +2,6 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline.cloud;
 
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.fasterxml.jackson.core.type.TypeReference;
-import com.google.common.base.Preconditions;
 import hudson.Extension;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApiFactory;
@@ -23,11 +22,8 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.pageable.PagedResponse;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
-import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -253,16 +249,8 @@ public class BitbucketCloudApi extends BitbucketApi {
     @Extension
     public static class BitbucketCloudApiFactory extends BitbucketApiFactory {
         @Override
-        public boolean handles(@Nonnull String apiUrl) {
-            //We test using wiremock, where api url is always localhost:PORT, so we want to check for
-            // X_BB_API_MODE parameter during test.
-            //X_BB_API_MODE == "cloud" then its cloud  api mode otherwise its server
-
-            StaplerRequest request = Stapler.getCurrentRequest();
-            Preconditions.checkNotNull(request);
-            String mode=request.getHeader(X_BB_API_TEST_MODE_HEADER);
-            boolean isCloudMode =  StringUtils.isNotBlank(mode) && mode.equals("cloud");
-            return isCloudMode || apiUrl.startsWith("https://bitbucket.org") || apiUrl.startsWith("https://api.bitbucket.org");
+        public boolean handles(@Nonnull String scmId) {
+            return scmId.equals(BitbucketCloudScm.ID);
         }
 
         @Nonnull

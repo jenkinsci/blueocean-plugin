@@ -29,10 +29,6 @@ public abstract class BitbucketApi {
     protected final String userName;
     protected final HttpRequest request;
 
-    //XXX: To be used for testing to resolve correct factory
-    public static final String X_BB_API_TEST_MODE_HEADER="X_BB_API_TEST_MODE_HEADER";
-
-
     protected BitbucketApi(@Nonnull String apiUrl, @Nonnull StandardUsernamePasswordCredentials credentials) {
         this.apiUrl = ensureTrailingSlash(apiUrl);
         this.request = new HttpRequest.HttpRequestBuilder(apiUrl).credentials(credentials).build();

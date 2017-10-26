@@ -5,7 +5,6 @@ import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredenti
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.google.common.base.Function;
 import com.google.common.base.Joiner;
-import com.google.common.base.Preconditions;
 import com.google.common.collect.Lists;
 import hudson.Extension;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi;
@@ -33,8 +32,6 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
-import org.kohsuke.stapler.Stapler;
-import org.kohsuke.stapler.StaplerRequest;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
@@ -359,12 +356,8 @@ public class BitbucketServerApi extends BitbucketApi {
     @Extension
     public static class BitbucketServerApiFactory extends BitbucketApiFactory{
         @Override
-        public boolean handles(@Nonnull String apiUrl) {
-            StaplerRequest request = Stapler.getCurrentRequest();
-            Preconditions.checkNotNull(request);
-            String mode=request.getHeader(X_BB_API_TEST_MODE_HEADER);
-            boolean isCloudMode =  StringUtils.isNotBlank(mode) && mode.equals("cloud"); //used for testing
-            return !isCloudMode && !apiUrl.startsWith("https://bitbucket.org") && !apiUrl.startsWith("https://api.bitbucket.org");
+        public boolean handles(@Nonnull String scmId) {
+            return scmId.equals(BitbucketServerScm.ID);
         }
 
         @Nonnull
