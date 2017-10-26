@@ -50,28 +50,25 @@ function parseNewStart(response) {
     return response;
 }
 
-function fetchAndParseNodes(href, fetchOptions) {
-  return Fetch.fetch(href, { fetchOptions })
-      .then(result => {
-        const links = parse_link_header(result.headers.get('Link'));
-        return FetchFunctions.parseJSON(result).then(data => {
-          return { rawNodes: data, links: links };
-        });
-      });
-}
-
 function recursivelyFetchNodes(href, fetchOptions) {
-  return fetchAndParseNodes(href, fetchOptions).then(result => {
-    if (!result.links.next || result.rawNodes.length < 1)
-      return result;
+  return Fetch
+        .fetch(href, { fetchOptions })
+        .then(result => {
+            const links = parse_link_header(result.headers.get('Link'));
+            return FetchFunctions
+                .parseJSON(result)
+                .then(rawNodes => {
+                    if (!links.next || rawNodes.length < 1)
+                        return { rawNodes: rawNodes };
 
-    logger.debug("Fetching next node batch from", result.links.next.url);
-    return new Promise(resolve => {
-      recursivelyFetchNodes(result.links.next.url, fetchOptions).then(nextBatch => {
-        resolve({ rawNodes: result.rawNodes.concat(nextBatch.rawNodes) });
-      });
-    });
-  });
+                    logger.debug("Fetching next node batch from", links.next.url);
+                    return new Promise(resolve => {
+                        recursivelyFetchNodes(links.next.url, fetchOptions).then(nextBatch => {
+                            resolve({ rawNodes: rawNodes.concat(nextBatch.rawNodes) });
+                        });
+                    });
+                });
+        });
 }
 
 export class KaraokeApi {
