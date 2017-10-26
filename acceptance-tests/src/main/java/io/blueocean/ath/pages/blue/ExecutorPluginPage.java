@@ -31,7 +31,7 @@ public class ExecutorPluginPage {
     public WebDriver driver;
 
     public void open() {
-        driver.get(base + "/blue/organizations/jenkins/executor-info");
+        driver.get(base + "/blue/executor-info");
         logger.info("Navigated to executor page");
     }
 

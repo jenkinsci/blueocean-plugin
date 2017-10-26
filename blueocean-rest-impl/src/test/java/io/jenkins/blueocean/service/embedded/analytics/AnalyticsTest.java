@@ -7,7 +7,6 @@ import hudson.model.User;
 import io.jenkins.blueocean.analytics.Analytics;
 import io.jenkins.blueocean.analytics.Analytics.TrackRequest;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.service.embedded.BaseTest;
 import jenkins.model.Jenkins;
 import org.junit.Assert;
 import org.junit.Before;
@@ -19,7 +18,7 @@ import java.util.Map;
 
 public class AnalyticsTest {
     @Rule
-    public JenkinsRule j = new BaseTest.BaseTestJenkinsRule();
+    public JenkinsRule j = new JenkinsRule();
 
     MyAnalytics analytics;
 

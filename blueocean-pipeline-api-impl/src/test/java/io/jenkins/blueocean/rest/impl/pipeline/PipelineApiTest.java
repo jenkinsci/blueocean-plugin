@@ -13,6 +13,7 @@ import hudson.tasks.Shell;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.test.steps.SemaphoreStep;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
@@ -36,20 +37,20 @@ public class PipelineApiTest extends PipelineBaseTest {
 
         job1.setDefinition(new CpsFlowDefinition("" +
             "node {" +
-            "   stage ('Build1'); " +
-            "   sh('sleep 60') " +
-            "   stage ('Test1'); " +
+            "   stage ('Build'); " +
+            "   semaphore 's' " +
+            "   stage ('Test'); " +
             "   echo ('Testing'); " +
-            "}"));
+            "}", false));
 
         WorkflowRun b1 = job1.scheduleBuild2(0).waitForStart();
-        Map r=null;
-
+        SemaphoreStep.waitForStart("s/1", b1);
+        Map r = null;
         for (int i = 0; i < 10; i++) {
              r = request().put("/organizations/jenkins/pipelines/pipeline1/runs/1/stop")
                 .build(Map.class);
-             if(((String) r.get("state")).equalsIgnoreCase("FINISHED"))
-                continue;
+             if(((String) r.get("state")).equals("FINISHED"))
+                break;
             Thread.sleep(1000);
         }
         Assert.assertEquals(r.get("state"), "FINISHED");
@@ -63,8 +64,8 @@ public class PipelineApiTest extends PipelineBaseTest {
 
         for (int i = 0; i < 10; i++) {
             r = put("/organizations/jenkins/pipelines/pipeline5/runs/1/stop",null);
-            if(((String) r.get("state")).equalsIgnoreCase("finished"))
-                continue;
+            if(((String) r.get("state")).equals("FINISHED"))
+                break;
             Thread.sleep(1000);
         }
         Assert.assertEquals(r.get("state"), "FINISHED");

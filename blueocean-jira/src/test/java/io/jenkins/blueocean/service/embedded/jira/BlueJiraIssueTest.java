@@ -35,7 +35,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 public class BlueJiraIssueTest {
 
     @Rule
-    public JenkinsRule j = new JiraPluginJenkinsRule();
+    public JenkinsRule j = new JenkinsRule();
 
     @Test
     public void findIssueKeys() throws MalformedURLException {

@@ -32,7 +32,7 @@ import static org.powermock.api.mockito.PowerMockito.mockStatic;
 public class JiraSCMListenerTest {
 
     @Rule
-    public JenkinsRule j = new JiraPluginJenkinsRule();
+    public JenkinsRule j = new JenkinsRule();
 
     @Test
     public void onChangeLogParsed() throws Exception {

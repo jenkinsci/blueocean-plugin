@@ -2,8 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { observer } from 'mobx-react';
 import { TestSummary } from './TestSummary';
 import TestSection from './TestSection';
-// needs to be loaded since the moment lib will use require which in run time will fail
-import 'moment/min/locales.min';
 
 /* eslint-disable max-len */
 

@@ -7,9 +7,10 @@ import hudson.model.BuildableItem;
 import hudson.model.Job;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
+import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueQueueItem;
 import jenkins.model.Jenkins;
 
@@ -55,18 +56,18 @@ public class QueueUtil {
      * @return List of items newest first
      */
     public static List<BlueQueueItem> getQueuedItems(BlueOrganization organization, Job job) {
-        Link pipelineLink = LinkResolver.resolveLink(job);
-        if(job instanceof BuildableItem) {
+        BluePipeline pipeline = (BluePipeline) BluePipelineFactory.resolve(job);
+        if(job instanceof BuildableItem && pipeline != null) {
             BuildableItem task = (BuildableItem)job;
             List<hudson.model.Queue.Item> items = Jenkins.getInstance().getQueue().getItems(task);
             List<BlueQueueItem> items2 = Lists.newArrayList();
             for (int i = 0; i < items.size(); i++) {
-                Link self = pipelineLink.rel("queue").rel(Long.toString(items.get(i).getId()));
+                Link self = pipeline.getLink().rel("queue").rel(Long.toString(items.get(i).getId()));
                 items2.add(0, new QueueItemImpl(
                     organization,
                     items.get(i),
-                    job.getName(),
-                    (items.size() == 1 ? job.getNextBuildNumber() : job.getNextBuildNumber() + i), self, pipelineLink));
+                    pipeline,
+                    (items.size() == 1 ? job.getNextBuildNumber() : job.getNextBuildNumber() + i), self, pipeline.getLink()));
             }
 
             return items2;

@@ -1,6 +1,7 @@
 import { Route, Redirect, IndexRedirect } from 'react-router';
 import React from 'react';
 import { AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { analytics } from './analytics';
 
 import Dashboard from './Dashboard';
 import {
@@ -94,6 +95,10 @@ function isRemovePersistedBackgroundRoute(prevState, nextState) {
     return isLeavingRunDetails(prevState, nextState);
 }
 
+function onTopLevelRouteEnter() {
+    analytics.trackPageView(); // Tracks the page view on load of window
+}
+
 /**
  * Persists the application's DOM as a "background" when navigating to a route w/ a modal or dialog.
  * Also removes the "background" when navigating away.
@@ -112,6 +117,11 @@ function persistBackgroundOnNavigationChange(prevState, nextState, replace, call
     }
 }
 
+function onRouteChange(prevState, nextState, replace, callback, delay = 200) {
+    analytics.trackPageView(); // Tracks page view as the route changes
+    persistBackgroundOnNavigationChange(prevState, nextState, replace, callback, delay);
+}
+
 function onLeaveCheckBackground() {
     persistBackgroundOnNavigationChange({ params: { runId: true } }, { params: {} }, null, null, 0);
 }
@@ -119,32 +129,31 @@ function onLeaveCheckBackground() {
 const trends = AppConfig.isFeatureEnabled('trends');
 
 export default (
-    <Route component={Dashboard} onChange={persistBackgroundOnNavigationChange}>
-        <Route path="organizations/:organization/pipelines" component={Pipelines} />
-        <Route path="organizations/:organization/create-pipeline" component={CreatePipeline} />
+    <Route component={Dashboard} onEnter={onTopLevelRouteEnter} onChange={onRouteChange}>
+        <Route path="organizations/:organization/pipelines" component={Pipelines} onEnter={analytics.trackDashboardVisited} />
+        <Route path="organizations/:organization/create-pipeline" component={CreatePipeline} onEnter={analytics.trackPipelineCreationVisited} />
         <Redirect from="organizations/:organization(/*)" to="organizations/:organization/pipelines" />
         <Route path="organizations/:organization" component={PipelinePage}>
-            <Route path=":pipeline/branches" component={MultiBranch} />
-            <Route path=":pipeline/activity" component={Activity} />
-            <Route path=":pipeline/pr" component={PullRequests} />
+            <Route path=":pipeline/branches" component={MultiBranch} onEnter={analytics.trackPipelineBranchesVisited} />
+            <Route path=":pipeline/activity" component={Activity} onEnter={analytics.trackPipelineActivityVisited} />
+            <Route path=":pipeline/pr" component={PullRequests} onEnter={analytics.trackPipelinePullRequestsVisited} />
             { trends && <Route path=":pipeline/trends" component={PipelineTrends} /> }
 
-            <Route path=":pipeline/detail/:branch/:runId" component={RunDetails} onLeave={onLeaveCheckBackground}>
+            <Route path=":pipeline/detail/:branch/:runId" component={RunDetails} onLeave={onLeaveCheckBackground} >
                 <IndexRedirect to="pipeline" />
-                <Route path="pipeline" component={RunDetailsPipeline}>
+                <Route path="pipeline" component={RunDetailsPipeline} onEnter={analytics.trackPipelineRunVisited}>
                     <Route path=":node" component={RunDetailsPipeline} />
                 </Route>
-                <Route path="changes" component={RunDetailsChanges} />
-                <Route path="tests" component={RunDetailsTests} />
-                <Route path="artifacts" component={RunDetailsArtifacts} />
+                <Route path="changes" component={RunDetailsChanges} onEnter={analytics.trackPipelineRunChangesVisited} />
+                <Route path="tests" component={RunDetailsTests} onEnter={analytics.trackPipelineRunTestsVisited} />
+                <Route path="artifacts" component={RunDetailsArtifacts} onEnter={analytics.trackPipelineRunArtifactsVisited} />
             </Route>
 
             <Redirect from=":pipeline(/*)" to=":pipeline/activity" />
 
         </Route>
-        <Route path="/pipelines" component={Pipelines} />
-
-        <Route path="/create-pipeline" component={CreatePipeline} />
+        <Route path="/pipelines" component={Pipelines} onEnter={analytics.trackDashboardVisited} />
+        <Route path="/create-pipeline" component={CreatePipeline} onEnter={analytics.trackPipelineCreationVisited} />
         <IndexRedirect to="pipelines" />
     </Route>
 );

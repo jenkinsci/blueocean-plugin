@@ -63,7 +63,7 @@ export class RunButton extends Component {
         const text = translate('toast.run.stopping', {
             0: name,
             1: runId,
-            defaultValue: 'Stoppping "{0}" #{1}',
+            defaultValue: 'Stopping "{0}" #{1}',
         });
 
         toastService.newToast({ text });

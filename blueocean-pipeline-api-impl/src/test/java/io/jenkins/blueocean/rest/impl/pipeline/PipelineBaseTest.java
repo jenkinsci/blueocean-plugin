@@ -18,9 +18,6 @@ import jenkins.model.Jenkins;
 import org.acegisecurity.adapters.PrincipalAcegiUserToken;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UserDetails;
-import org.eclipse.jetty.security.HashLoginService;
-import org.eclipse.jetty.security.LoginService;
-import org.eclipse.jetty.util.security.Password;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.graphanalysis.ForkScanner;
@@ -68,19 +65,7 @@ public abstract class PipelineBaseTest{
     }
 
     @Rule
-    public JenkinsRule j = new PipelineBaseJenkinsRule();
-
-    public static class PipelineBaseJenkinsRule extends JenkinsRule{
-        @Override
-        protected LoginService configureUserRealm() {
-            HashLoginService realm = new HashLoginService();
-            realm.setName("default");   // this is the magic realm name to make it effective on everywhere
-            realm.update("alice", new Password("alice"), new String[]{"user","female"});
-            realm.update("bob", new Password("bob"), new String[]{"user","male"});
-            realm.update("charlie", new Password("charlie"), new String[]{"user","male"});
-            return realm;
-        }
-    }
+    public JenkinsRule j = new JenkinsRule();
 
     protected  String baseUrl;
 

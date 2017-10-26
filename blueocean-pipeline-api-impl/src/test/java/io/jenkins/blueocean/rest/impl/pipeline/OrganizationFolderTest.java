@@ -46,7 +46,7 @@ import static org.mockito.Mockito.when;
 @PrepareForTest({OrganizationFactory.class, OrganizationFolder.class, StaplerRequest.class})
 public class OrganizationFolderTest{
     @Rule
-    JenkinsRule j = new PipelineBaseTest.PipelineBaseJenkinsRule();
+    JenkinsRule j = new JenkinsRule();
 
     private BlueOrganization organization;
     private OrganizationFolder orgFolder;

@@ -140,7 +140,7 @@ public class RunContainerImpl extends BlueRunContainer {
                 return new QueueItemImpl(
                     pipeline.getOrganization(),
                     item,
-                    job.getName(),
+                    pipeline,
                     expectedBuildNumber, pipeline.getLink().rel("queue").rel(Long.toString(item.getId())),
                     pipeline.getLink()
                 ).toRun();

@@ -24,6 +24,14 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>variant</artifactId>
         </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>jenkins-design-language</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-core-js</artifactId>
+        </dependency>
 
         <!-- test scope deps -->
         <dependency>

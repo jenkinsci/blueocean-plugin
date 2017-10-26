@@ -162,11 +162,10 @@
                             if (theHpl.file) {
                                 workPluginsDir.mkdirs();
                                 ant.copy(file: theHpl, tofile: new File(workPluginsDir, pluginId + '.hpl'), overwrite: true, verbose: true);
-                                println('Automatically linking ' + pluginId)
                             } else {
                                 println('Warning: no such file ' + theHpl);
                             }
-                        }
+                        };
 
                         println('Automatically linking HPIs for submodules...')
 

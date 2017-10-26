@@ -27,6 +27,7 @@ public class KnownCapabilities {
     public static final String JENKINS_ABSTRACT_FOLDER ="com.cloudbees.hudson.plugins.folder.AbstractFolder";
     public static final String JENKINS_JOB ="hudson.model.Job";
     public static final String JENKINS_MATRIX_PROJECT="hudson.matrix.MatrixProject";
+    public static final String JENKINS_FREESTYLE_PROJECT="hudson.model.FreeStyleProject";
     public static final String JENKINS_MULTI_BRANCH_PROJECT="jenkins.branch.MultiBranchProject";
     public static final String JENKINS_FREE_STYLE_BUILD="hudson.model.FreeStyleBuild";
     public static final String JENKINS_ORGANIZATION_FOLDER = "jenkins.branch.OrganizationFolder";
