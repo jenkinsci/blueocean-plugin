@@ -57,11 +57,11 @@ public class ParallelNavigationTest {
         pipeline.getRunDetailsPipelinePage().open(1);
 
         // at first we see branch one
-        wait.until(By.xpath("//*[text()=\"Steps firstBranch\"]"));
+        wait.until(By.xpath("//*[text()=\"firstBranch\"]"));
 
         // and clicking on the unselected node will yield us the second branch
         wait.until(By.xpath("//*[contains(@class, 'pipeline-node')][3]")).click();
-        wait.until(By.xpath("//*[text()=\"Steps secondBranch\"]"));
+        wait.until(By.xpath("//*[text()=\"secondBranch\"]"));
 
         pipeline.stopAllRuns();
     }
@@ -85,12 +85,12 @@ public class ParallelNavigationTest {
         pipeline.getRunDetailsPipelinePage().open(1);
 
         // at first we see branch one
-        wait.until(By.xpath("//*[text()=\"Steps firstBranch\"]"));
+        wait.until(By.xpath("//*[text()=\"firstBranch\"]"));
         wait.until(By.cssSelector(".btn.inputStepSubmit")).click();
 
         // and clicking on the unselected node will yield us the second branch
         wait.until(By.xpath("//*[contains(@class, 'pipeline-node')][3]")).click();
-        wait.until(By.xpath("//*[text()=\"Steps secondBranch\"]"));
+        wait.until(By.xpath("//*[text()=\"secondBranch\"]"));
         wait.until(By.cssSelector(".btn.inputStepSubmit")).click();
     }
 

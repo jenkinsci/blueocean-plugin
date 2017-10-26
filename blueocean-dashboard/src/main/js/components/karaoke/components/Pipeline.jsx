@@ -237,14 +237,19 @@ export default class Pipeline extends Component {
             logger.debug('redirecting now to:', location.pathname);
             router.push(location);
         };
-        const title = this.pager.nodes !== undefined ? t('rundetail.pipeline.steps', {
-            defaultValue: 'Steps {0}',
-            0: this.pager.currentNode.displayName,
-        }) : '';
+
+        let stepName = this.pager.nodes !== undefined ? this.pager.nodes.data.model.filter((item) => item.id === this.pager.currentNode.parent)[0] : '';
+        stepName = stepName && this.pager.currentNode.isParallel ? stepName.displayName : '';
+
+        let title = this.pager.nodes !== undefined ? this.pager.currentNode.displayName : '';
+
+        title = stepName ? `${stepName} / ${title}` : title;
+
         // JENKINS-40526 node can provide logs only related to that node
         const logUrl = this.pager.nodes !== undefined ? augmenter.getNodesLogUrl(this.pager.currentNode) : augmenter.generalLogUrl;
         const logFileName = this.pager.nodes !== undefined ? augmenter.getNodesLogFileName(this.pager.currentNode) : augmenter.generalLogFileName;
         logger.debug('displayName', this.pager.currentNode.displayName, 'logging info', logUrl, logFileName);
+
         return (<div>
             { <RunDescription run={this.props.run} t={t} /> }
             { this.pager.nodes !== undefined &&
@@ -265,6 +270,9 @@ export default class Pipeline extends Component {
                     fileName={logFileName}
                     url={logUrl}
                     title={title}
+                    duration={this.pager.currentNode.durationInMillis}
+                    running={this.pager.currentNode.isRunning}
+                    t={t}
                 />
             }
             {this.pager.steps && !noResultsToDisplay && (
