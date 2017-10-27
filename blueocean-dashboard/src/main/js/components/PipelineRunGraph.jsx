@@ -82,6 +82,7 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
         completePercent,
         id: jenkinsNode.id,
         title,
+        type: jenkinsNode.type,
     };
     logger.debug('converted node', converted);
     return converted;
@@ -139,15 +140,19 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
         let nextNode = null;
         const originalNode = originalNodeForId[currentNode.id];
         const edges = originalNode.edges || [];
+        let parallelNodes = [];
+        if (edges.length > 0) {
+            parallelNodes = edges.filter(edge => edge.type === 'PARALLEL');
+        }
 
-        if (edges.length === 1) {
+        if (edges.length === 1 && parallelNodes.length === 0) {
             // Single following (sibling) node
             nextNode = convertedNodeForId[edges[0].id];
-        } else if (edges.length > 1) {
+        } else if (parallelNodes.length > 0) {
             // Multiple following nodes are child nodes (parallel branch) not siblings
 
             // Put the first node of each branch into the children
-            currentNode.children = edges
+            currentNode.children = parallelNodes
                 .map(edge => convertedNodeForId[edge.id])
                 .filter(node => !!node);
 
@@ -164,7 +169,7 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
 
                         // If followingNode has several edges pointing to it....
 
-                        if (edgeCountToNode[followingNode.id] > 1) {
+                        if (branchNodeEdges[0].type === 'STAGE') {
                             // ... then it's the next top-level stage so we're done following this parallel branch...
                             nextNode = followingNode;
                         } else {

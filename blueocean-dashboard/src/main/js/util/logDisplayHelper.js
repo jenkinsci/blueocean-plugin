@@ -49,9 +49,10 @@ export const getNodesInformation = (nodes) => {
         /*
          * are we in a node that indicates that we have parallel nodes?
          */
-        if (item.edges && item.edges.length >= 2) {
-            parallelNodes = item.edges.map((itemParallel) => itemParallel.id);
+        if (item.edges) {
+            parallelNodes = item.edges.filter((edge) => edge.type === 'PARALLEL');
         }
+
         // in case we had been in a parallel node before, we will indicate it and remove the id of the parallel array
         const indexParallel = parallelNodes.indexOf(item.id);
         const isParallel = indexParallel !== -1;
@@ -72,6 +73,7 @@ export const getNodesInformation = (nodes) => {
             key: key || undefined,
             id: item.id,
             edges: item.edges,
+            type: item.type,
             displayName: item.displayName,
             displayDescription: item.displayDescription,
             title: title || `runId: ${item.id}`,
