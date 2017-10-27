@@ -47,6 +47,15 @@ export class ResultItem extends Component {
         });
     }
 
+    componentDidMount() {
+        const resultClean = decodeResultValue(this.props.result);
+
+        if (resultClean === 'running') {
+            requestAnimationFrame(this.infiniteLoadingTimer);
+            this.infiniteRotationRunning = true;
+        }
+    }
+
     infiniteLoadingTimer = () => {
         let infiniteRotateDegrees = this.state.infiniteRotateDegrees;
         
@@ -69,9 +78,15 @@ export class ResultItem extends Component {
 
     handleProps(props: Props, oldProps: Props) {
         const resultClean = decodeResultValue(props.result);
+        const oldResultClean = decodeResultValue(oldProps.result);
+
         if (resultClean !== this.state.resultClean) {
             const statusGlyph = getGlyphFor(resultClean);
             this.setState({ resultClean, statusGlyph });
+
+            if (oldResultClean === 'running' && resultClean !== 'running') {
+                cancelAnimationFrame(this.requestAnimationFrameId);
+            }
         }
 
         const newExpanded = !!props.expanded;
@@ -133,11 +148,6 @@ export class ResultItem extends Component {
                 onClick: this.urlClicked,
             },
         };
-
-        if (resultClean === "running" && !this.infiniteRotationRunning) {
-            requestAnimationFrame(this.infiniteLoadingTimer);
-            this.infiniteRotationRunning = true;
-        }
 
         return (
             <div className={outerClassName}>
