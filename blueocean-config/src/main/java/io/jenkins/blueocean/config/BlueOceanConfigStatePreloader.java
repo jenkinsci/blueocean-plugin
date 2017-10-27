@@ -2,7 +2,6 @@ package io.jenkins.blueocean.config;
 
 import hudson.Extension;
 import hudson.Plugin;
-import hudson.model.UsageStatistics;
 import hudson.security.AuthorizationStrategy;
 import hudson.security.FullControlOnceLoggedInAuthorizationStrategy;
 import hudson.security.SecurityRealm;

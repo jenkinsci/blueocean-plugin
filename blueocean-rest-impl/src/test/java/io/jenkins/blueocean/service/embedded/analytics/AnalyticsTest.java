@@ -6,6 +6,7 @@ import hudson.model.UsageStatistics;
 import hudson.model.User;
 import io.jenkins.blueocean.analytics.Analytics;
 import io.jenkins.blueocean.analytics.Analytics.TrackRequest;
+import io.jenkins.blueocean.analytics.NullAnalytics;
 import io.jenkins.blueocean.commons.ServiceException;
 import jenkins.model.Jenkins;
 import org.junit.Assert;
@@ -50,7 +51,7 @@ public class AnalyticsTest {
             "prop1", "value1",
             "prop2", 2,
             "jenkinsVersion", j.jenkins.getVersion().toString(),
-            "blueoceanVersion", Jenkins.getInstance().getPlugin("blueocean-commons").getWrapper().getVersion()
+            "blueoceanVersion", j.jenkins.getPlugin("blueocean-commons").getWrapper().getVersion()
         );
         analytics.track(new TrackRequest("test", props));
 
@@ -73,7 +74,7 @@ public class AnalyticsTest {
         expectedProps.put("jenkins", analytics.getServer());
         expectedProps.put("userId", analytics.getIdentity());
         expectedProps.put("jenkinsVersion", j.jenkins.getVersion().toString());
-        expectedProps.put("blueoceanVersion", Jenkins.getInstance().getPlugin("blueocean-commons").getWrapper().getVersion());
+        expectedProps.put("blueoceanVersion", j.jenkins.getPlugin("blueocean-commons").getWrapper().getVersion());
 
         Assert.assertEquals("test", analytics.lastName);
         Assert.assertEquals( expectedProps, analytics.lastProps);
@@ -102,7 +103,7 @@ public class AnalyticsTest {
         }
     }
 
-    class MyAnalytics extends AbstractAnalytics {
+    class MyAnalytics extends Analytics {
 
         String lastName;
         Map<String, Object> lastProps;

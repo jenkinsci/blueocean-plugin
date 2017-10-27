@@ -1,5 +1,7 @@
 package io.jenkins.blueocean.commons;
 
+import hudson.Main;
+
 /**
  * Common place put system properties that are used by blueocean modules.
  *
@@ -12,4 +14,7 @@ public class BlueOceanConfigProperties {
     public static final boolean ROLLBAR_ENABLED = Boolean.getBoolean(BLUEOCEAN_ROLLBAR_ENABLED_PROPERTY);
     public static final boolean BLUEOCEAN_FEATURE_JWT_AUTHENTICATION = Boolean.getBoolean(BLUEOCEAN_FEATURE_JWT_AUTHENTICATION_PROPERTY);
 
+    public static boolean isDevelopmentMode() {
+        return Main.isDevelopmentMode || System.getProperty("hudson.hpi.run") != null; // TODO why isDevelopmentMode == false
+    }
 }
