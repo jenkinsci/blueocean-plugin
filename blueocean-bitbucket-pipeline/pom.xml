@@ -46,8 +46,9 @@
 
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
-      <artifactId>fluent-hc</artifactId>
+      <artifactId>httpclient</artifactId>
     </dependency>
+
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
       <artifactId>httpmime</artifactId>

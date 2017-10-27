@@ -2,6 +2,7 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import hudson.ExtensionList;
+import io.jenkins.blueocean.rest.impl.pipeline.scm.Scm;
 import org.apache.tools.ant.ExtensionPoint;
 
 import javax.annotation.CheckForNull;
@@ -15,9 +16,9 @@ import javax.annotation.Nonnull;
  */
 public abstract class BitbucketApiFactory extends ExtensionPoint{
     /**
-     * @return true if this factory can handle this API url
+     * @return true if this factory can handle this scmId
      */
-    public abstract boolean handles(@Nonnull String apiUrl);
+    public abstract boolean handles(@Nonnull String scmId);
 
     /**
      * Create {@link BitbucketApi} instance.
@@ -30,9 +31,14 @@ public abstract class BitbucketApiFactory extends ExtensionPoint{
      */
     public abstract @Nonnull BitbucketApi create(@Nonnull String apiUrl, @Nonnull StandardUsernamePasswordCredentials credentials);
 
-    public static @CheckForNull BitbucketApiFactory resolve(@Nonnull String apiUrl){
+    /**
+     * Resolves a {@link BitbucketApiFactory}
+     * @param scmId id {@link Scm#getId()} of Bitbucket SCM provider
+     * @return {@link BitbucketApiFactory} instance, could be null
+     */
+    public static @CheckForNull BitbucketApiFactory resolve(@Nonnull String scmId){
         for(BitbucketApiFactory api: ExtensionList.lookup(BitbucketApiFactory.class)){
-            if(api.handles(apiUrl)){
+            if(api.handles(scmId)){
                 return api;
             }
         }
