@@ -5,6 +5,7 @@ import { Link } from 'react-router';
 import { Icon } from '@jenkins-cd/design-language';
 import { Paths, pipelineService } from '@jenkins-cd/blueocean-core-js';
 import Security from './services/Security';
+import { isSshRepositoryUrl } from './GitUtils';
 
 class PipelineEditorLink extends React.Component {
     state = {};

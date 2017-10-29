@@ -1,0 +1,13 @@
+# .prettierrc
+printWidth: 160
+parser: babylon
+tabWidth: 4
+trailingComma: es5
+singleQuote: true
+jenkins:
+    extensions:
+        - .js
+        - .jsx
+    ignoreGlobs:
+        - "**/material-ui/svg-icons/**"
+        - "**/stories/**"

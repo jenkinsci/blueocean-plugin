@@ -1,24 +1,24 @@
 package io.blueocean.rest.pipeline.editor;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Set;
-
+import hudson.Extension;
+import hudson.ExtensionList;
 import hudson.FilePath;
 import hudson.Launcher;
 import hudson.model.Describable;
+import hudson.model.Descriptor;
+import hudson.security.csrf.CrumbIssuer;
 import hudson.tasks.Builder;
 import hudson.tasks.Publisher;
 import hudson.tools.ToolDescriptor;
 import hudson.tools.ToolInstallation;
+import io.jenkins.blueocean.commons.stapler.TreeResponse;
+import io.jenkins.blueocean.rest.ApiRoutable;
+import jenkins.model.Jenkins;
 import jenkins.tasks.SimpleBuildStep;
 import org.jenkinsci.plugins.pipeline.modeldefinition.agent.DeclarativeAgent;
 import org.jenkinsci.plugins.pipeline.modeldefinition.agent.DeclarativeAgentDescriptor;
-import org.jenkinsci.plugins.pipeline.modeldefinition.ast.ModelASTStep;
 import org.jenkinsci.plugins.pipeline.modeldefinition.model.BuildCondition;
+import org.jenkinsci.plugins.pipeline.modeldefinition.validator.BlockedStepsAndMethodCalls;
 import org.jenkinsci.plugins.structs.SymbolLookup;
 import org.jenkinsci.plugins.structs.describable.DescribableModel;
 import org.jenkinsci.plugins.workflow.steps.Step;
@@ -26,15 +26,13 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.kohsuke.stapler.NoStaplerConstructorException;
 import org.kohsuke.stapler.verb.GET;
 
-import hudson.Extension;
-import hudson.ExtensionList;
-import hudson.model.Descriptor;
-import hudson.security.csrf.CrumbIssuer;
-import io.jenkins.blueocean.commons.stapler.TreeResponse;
-import io.jenkins.blueocean.rest.ApiRoutable;
-import jenkins.model.Jenkins;
-
 import javax.annotation.CheckForNull;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Set;
 
 /**
  * This provides and Blueocean REST API endpoint to obtain pipeline step metadata.
@@ -186,7 +184,7 @@ public class PipelineMetadataService implements ApiRoutable {
 
     private boolean includeStep(StepDescriptor d) {
         boolean include = true;
-        if (ModelASTStep.getBlockedSteps().containsKey(d.getFunctionName())) {
+        if (BlockedStepsAndMethodCalls.blockedInSteps().containsKey(d.getFunctionName())) {
             include = false;
         } else if (d.isAdvanced()
                 && !INCLUDED_ADVANCED_STEPS.contains(d.getFunctionName())) {

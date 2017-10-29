@@ -97,7 +97,7 @@ module.exports.commands = [{
         this.waitForRunVisible(pipeline, runId);
         const resultRowSelector = activityRowSelector(pipeline, runId);
         this.waitForElementVisible(`${resultRowSelector} .failure`);
-    },    
+    },
 
     /**
      * Wait for a specific run to appear in the activity table as unstable
@@ -133,19 +133,19 @@ module.exports.commands = [{
      * Inspect that result screen runs, shows a stage graph, and completes.
      */
     assertStageGraphShows: function() {
-      //check results look kosher:
-      this.waitForElementVisible('.progress-spinner.running');                           
-      this.waitForElementVisible('.BasicHeader--running');
-      
-      this.waitForElementVisible('.pipeline-node-selected');                  
-      this.waitForElementVisible('.download-log-button');                  
-      this.waitForElementVisible('.pipeline-selection-highlight');                    
-      this.waitForElementVisible('.pipeline-connector');     
-      this.waitForElementVisible('.pipeline-node-hittarget');     
-      this.waitForElementVisible('.BasicHeader--success');  
+        //check results look kosher:
+        this.waitForElementVisible('.progress-spinner.running');
+        this.waitForElementVisible('.BasicHeader--running');
 
+        this.waitForElementVisible('.pipeline-node-selected');
+        this.waitForElementVisible('.download-log-button');
+        this.waitForElementVisible('.pipeline-selection-highlight');
+        // in Chrome, 'Visible' seems to fail but 'Present' works ok
+        this.waitForElementPresent('.pipeline-connector');
+        this.waitForElementPresent('.pipeline-node-hittarget');
+        this.waitForElementVisible('.BasicHeader--success');
     },
-    
+
     /**
     * Click css selector of a specific tab
     * @param tab {string} the tab we want to select

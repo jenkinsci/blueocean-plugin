@@ -1,4 +1,4 @@
-import es6Promise from 'es6-promise'; es6Promise.polyfill();
+import Promise from 'bluebird';
 import fetch from 'isomorphic-fetch';
 import jwt from 'jsonwebtoken';
 import { FetchFunctions } from './fetch';
@@ -18,7 +18,7 @@ export default {
     fetchJWT() {
         if (storedToken && storedToken.exp) {
             const diff = storedToken.exp - Math.trunc(new Date().getTime() / 1000);
-            
+
             // refetch token if we are within 60s of it exp
             if (diff < CLOCK_SKEW_SECONDS) {
                 tokenFetchPromise = null;
@@ -33,7 +33,7 @@ export default {
                     if (token) {
                         return token;
                     }
-                    
+
                     throw new Error('Could not fetch jwt_token');
                 });
         }

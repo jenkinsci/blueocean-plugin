@@ -14,9 +14,7 @@ import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueOrganizationFolder;
 import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
-import jenkins.model.Jenkins;
 import jenkins.scm.api.metadata.AvatarMetadataAction;
-
 import org.acegisecurity.Authentication;
 import org.junit.Before;
 import org.junit.Rule;

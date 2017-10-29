@@ -58,15 +58,20 @@ class GitCredentialsPicker extends React.Component {
     }
 
     testCredentialAndCloseDialog() {
-        const { onComplete, repositoryUrl, pipeline } = this.props;
+        const { onComplete, repositoryUrl, pipeline, requirePush, branch } = this.props;
+        const body = {
+            repositoryUrl,
+            pipeline,
+            credentialId: this.state.credential.id,
+        };
+        if (requirePush) {
+            body.requirePush = true;
+            body.branch = branch || 'master';
+        }
         const fetchOptions = {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-                repositoryUrl,
-                pipeline,
-                credentialId: this.state.credential.id,
-            }),
+            body: JSON.stringify(body),
         };
         this.setState({ connectStatus: { result: 'running' } });
         return Fetch.fetchJSON(this.restOrgPrefix + '/scm/git/validate', { fetchOptions })
@@ -125,6 +130,8 @@ class GitCredentialsPicker extends React.Component {
 GitCredentialsPicker.propTypes = {
     onStatus: PropTypes.func,
     onComplete: PropTypes.func,
+    requirePush: PropTypes.bool,
+    branch: PropTypes.string,
     scmId: PropTypes.string,
     dialog: PropTypes.bool,
     repositoryUrl: PropTypes.string,

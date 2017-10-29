@@ -45,11 +45,15 @@ public abstract class AbstractAnalytics extends Analytics {
         }
         allProps.put("jenkins", server());
         allProps.put("userId", identity());
-        String msg = Objects.toStringHelper(this).add("name", req.name).add("props", allProps).toString();
+        Objects.ToStringHelper eventHelper = Objects.toStringHelper(this).add("name", req.name).add("props", allProps);
         try {
             doTrack(req.name, allProps);
-            LOGGER.log(Level.FINE, msg);
+            if (LOGGER.isLoggable(Level.FINE)) {
+                String msg = eventHelper.toString();
+                LOGGER.log(Level.FINE, msg);
+            }
         } catch (Throwable throwable) {
+            String msg = eventHelper.toString();
             LOGGER.log(Level.WARNING, "Failed to send event: " + msg);
         }
     }

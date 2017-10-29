@@ -144,7 +144,7 @@ export class BranchDetailsRow extends Component {
         );
 
         const runMessage = (
-            <RunMessageCell run={latestRun} t={t} />
+            <RunMessageCell linkTo={runDetailsUrl} run={latestRun} t={t} />
         );
 
         const completed = (

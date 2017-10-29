@@ -7,6 +7,7 @@ import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import javax.inject.Inject;
 
@@ -37,7 +38,9 @@ public class EditorPage {
         if(!Strings.isNullOrEmpty(branch)) {
             wait.until(By.xpath("//span[text()='Commit to new branch']")).click();
             wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys(branch);
-            logger.info("Using branch " + branch);
+            logger.info("Testing removal of spaces in branch name");
+            wait.until(ExpectedConditions.textToBePresentInElementValue(By.cssSelector("input[placeholder='my-new-branch']:enabled"), branch.replaceAll("\\s","")));
+            logger.info("Using branch " + branch.replaceAll("\\s",""));
         } else {
             logger.info("Using branch master");
         }
@@ -52,7 +55,7 @@ public class EditorPage {
         wait.until(By.cssSelector("button.btn-primary.add")).click();
         wait.until(By.xpath("//*[text()='Print Message']")).click();
         wait.until(By.cssSelector("input.TextInput-control")).sendKeys("hi there");
-        wait.until(By.xpath("(//span[@class='back-from-sheet'])[2]")).click();
+        wait.click(By.xpath("(//a[@class='back-from-sheet'])[2]"));
         wait.until(By.xpath("//*[text()='Save']")).click();
         wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("Simple pipeline");
         if(!Strings.isNullOrEmpty(newBranch)) {

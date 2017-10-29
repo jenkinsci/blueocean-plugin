@@ -219,7 +219,7 @@ export function convertStepFromJson(s: PipelineStep) {
         for (let k = 0; k < args.length; k++) {
             const arg = args[k];
             if (arg.key) {
-                step.data[arg.key] = arg.value.value;
+                step.data[arg.key] = arg.value;
             } else {
                 if (!meta.parameters) {
                     throw new Error('No parameters for: ' + s.name);
@@ -230,7 +230,7 @@ export function convertStepFromJson(s: PipelineStep) {
                 if (!param) {
                     throw new Error('Unable to find required parameter for: ' + s.name);
                 }
-                step.data[param.name] = arg.value;
+                step.data[param.name] = arg;
             }
         }
     }
@@ -243,29 +243,14 @@ export function convertStepFromJson(s: PipelineStep) {
     return step;
 }
 
-function _lit(value: any): PipelineValueDescriptor {
-    if (value instanceof Object) {
-        if ('isLiteral' in value) {
-            return value;
-        }
-        if ('value' in value) {
-            return _lit(value.value);
-        }
-    }
-    return {
-        isLiteral: true,
-        value: value,
-    };
-}
-
 function _convertStepArguments(step: StepInfo): PipelineNamedValueDescriptor[] {
     const out: PipelineNamedValueDescriptor[] = [];
     for (const arg of Object.keys(step.data)) {
         const val = step.data[arg];
-        if (val) {
+        if (val && val.value) {
             out.push({
                 key: arg,
-                value: _lit(val),
+                value: val,
             });
         }
     }

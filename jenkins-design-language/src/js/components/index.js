@@ -3,7 +3,6 @@
 export { WeatherIcon } from './weather-icon';
 export { Page } from './page';
 export { TabLink } from './TabLink';
-export { Table, TableDivider } from './Table';
 export {
     JTable,
     TableRow,
@@ -70,3 +69,4 @@ export {
     PlaceholderTextCell,
     PlaceholderIconCell,
 } from './Placeholder';
+export { Linkify } from './Linkify';

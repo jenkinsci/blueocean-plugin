@@ -35,6 +35,20 @@ mvn clean install -DskipTests -DcleanNode
 This is mainly for CI servers. It starts the selenium docker container and runs all 
 nightwatch and java ATH tests in one shot.
 
+### Run tests against a local instance
+
+ATH looks for a properties file at `~/.blueocean-ath-config` (or any combination of similar command line options).
+These options will allow you to run a local [ChromeDriver](https://sites.google.com/a/chromium.org/chromedriver/),
+ for example, and execute the ATH against a local development instance
+that you can debug/etc.. Currently these properties are supported and/or necessary:
+```webDriverType=chrome
+webDriverUrl=http://localhost:9515
+webDriverBrowserSize=1024x768
+jenkinsUrl=http://localhost:8080/jenkins
+adminUsername=admin
+adminPassword=admin
+```
+
 ### Run tests in DEV mode
 
 DEV mode starts Jenkins and the selenium docker container running in a standalone mode.
@@ -68,7 +82,7 @@ Note to run the live tests there needs to be a `live.properties` file in the acc
 ```properties
 github.repo=<name of repository to be created
 github.org=<org or user name to create repo in.>
-github.token=<personal access token>  
+github.token=<personal access token (roles: repo, user:email, and optionally delete_repo)>  
 github.deleteRepo=<true/false should the code delete repo once test is done>
 github.randomSuffix=<true/false - add a random suffix to repo name (ie must have for CI> 
 ```
@@ -78,6 +92,8 @@ github.randomSuffix=<true/false - add a random suffix to repo name (ie must have
 Running tests via the IDE works as expected as long as the standalone part of the ATH is running.
 
 To start a test in Intellij the easiest way is to right click on the test class or method and click Run test.
+
+NOTE: if you have a `~/.blueocean-ath-config` it will be used when running tests this way.
 
 #### JavaScript [nightwatch] tests.
 
@@ -107,6 +123,38 @@ nightwatch src/test/js/
 
 Make sure you add the acceptance-tests to your intellij blueocean project by right-clicking on `acceptance-tests/pom.xml`
 and adding it to the project.
+
+### WebDriverMixin
+
+There is a `WebDriverMixin` that can help simplify writing tests significantly. It offers a number of
+utility methods for the most common operations, all which have logic added to deal with common problems
+in Blue Ocean such as animation.
+
+It is recommended you use this when writing tests.
+
+A simple example:
+
+```java
+import io.blueocean.ath.WebDriverMixin;
+
+public class LoginTest implements WebDriverMixin {
+    @Test
+    public void login() {
+        // go: goes to a relative jenkins path or absolute if starts with http(s)://
+        go("/login");
+        // find: waits for elements to be preset, if starts with / uses xpath, otherwise CSS selectors
+        find("#j_username") // find by ID when starts with #, this is just a CSS selector
+            // setText: clears, sets text on an input
+            .setText("admin");
+        find("input[name=j_password]") // just a CSS selector
+            .setText("admin");
+        // click: handles animation, failures will retry up to 2 times
+        click("//form[@name='login']//button"); // XPath selector
+        // other utilities, see io.blueocean.ath.WebDriverMixin
+        assert find("//a[contains(@href, 'logout')]").isVisible() : "Not logged in";
+    }
+}
+```
 
 #### JUnit4 Tests
 

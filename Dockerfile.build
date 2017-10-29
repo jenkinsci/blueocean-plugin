@@ -24,8 +24,14 @@ RUN apt-get update -qqy \
     build-essential \
     python \
     iputils-ping \
+    locales \
   && rm -rf /var/lib/apt/lists/* \
   && sed -i 's/securerandom\.source=file:\/dev\/random/securerandom\.source=file:\/dev\/urandom/' ./usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/java.security
+
+# Set utf-8 locale
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
 
 #==========
 # Maven
@@ -42,8 +48,12 @@ ENV MAVEN_HOME /usr/share/maven
 RUN wget --no-verbose https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz -O /opt/nodejs.tar.xz
 RUN tar -C /usr/local --strip-components 1 -xJf /opt/nodejs.tar.xz
 RUN mkdir /.npm && chmod 777 /.npm
+# Fix bug https://github.com/npm/npm/issues/9863
+RUN cd $(npm root -g)/npm \
+  && npm install fs-extra \
+  && sed -i -e s/graceful-fs/fs-extra/ -e s/fs\.rename/fs.move/ ./lib/utils/rename.js
 # Update to latest version so optional dependancies + shrinkwrap work
-RUN npm install -g npm@4.3.0
+RUN npm install -g npm@3.10.3
 
 #=============================================
 # Misc packages needed by the ATH

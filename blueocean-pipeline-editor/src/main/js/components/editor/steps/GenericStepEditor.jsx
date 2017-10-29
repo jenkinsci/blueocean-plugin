@@ -1,7 +1,7 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import pipelineMetadataService from '../../../services/PipelineMetadataService';
+import pipelineMetadataService, { getArg, setArg } from '../../../services/PipelineMetadataService';
 import debounce from 'lodash.debounce';
 import { FormElement, TextInput } from '@jenkins-cd/design-language';
 
@@ -71,8 +71,8 @@ export default class GenericStepEditorPanel extends Component<DefaultProps, Prop
                         return React.createElement(propTypeEditor, { step: step, type: p, propName: p.name, onChange: () => this.updateStepData() });
                     }
                     return (
-                        <FormElement title={p.capitalizedName + (p.isRequired ? '*' : '')} errorMessage={!step.pristine && !step.data[p.name] && (p.capitalizedName + ' is required')}>
-                            <TextInput key={p.name} defaultValue={step.data[p.name]} onChange={val => { step.data[p.name] = val; this.updateStepData(); }} />
+                        <FormElement title={p.capitalizedName + (p.isRequired ? '*' : '')} errorMessage={!step.pristine && !getArg(step, p.name).value && (p.capitalizedName + ' is required')}>
+                            <TextInput key={p.name} defaultValue={getArg(step, p.name).value} onChange={val => { setArg(step, p.name, val); this.updateStepData(); }} />
                         </FormElement>
                     );
                 })}

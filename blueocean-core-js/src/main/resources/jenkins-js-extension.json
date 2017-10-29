@@ -1,0 +1,7 @@
+{
+    "hpiPluginId": "blueocean-core-js",
+    "i18nBundles": [
+        "jenkins.plugins.blueocean.web.Messages"
+    ],
+    "extensions": []
+}

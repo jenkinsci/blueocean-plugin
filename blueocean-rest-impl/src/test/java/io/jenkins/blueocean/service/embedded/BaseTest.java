@@ -16,6 +16,9 @@ import hudson.tasks.Mailer;
 import io.jenkins.blueocean.commons.JsonConverter;
 import jenkins.model.Jenkins;
 import net.sf.json.JSONObject;
+import org.acegisecurity.adapters.PrincipalAcegiUserToken;
+import org.acegisecurity.context.SecurityContextHolder;
+import org.acegisecurity.userdetails.UserDetails;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -32,9 +35,6 @@ import java.util.Map;
 import java.util.logging.LogManager;
 
 import static io.jenkins.blueocean.auth.jwt.JwtToken.X_BLUEOCEAN_JWT;
-import org.acegisecurity.adapters.PrincipalAcegiUserToken;
-import org.acegisecurity.context.SecurityContextHolder;
-import org.acegisecurity.userdetails.UserDetails;
 
 /**
  * @author Vivek Pandey
@@ -42,12 +42,8 @@ import org.acegisecurity.userdetails.UserDetails;
 public abstract class BaseTest {
     private static  final Logger LOGGER = LoggerFactory.getLogger(BaseTest.class);
 
-    public BaseTest() {
-        //System.setProperty("BLUEOCEAN_FEATURE_JWT_AUTHENTICATION", "true");
-        j = new JenkinsRule();
-    }
     @Rule
-    public JenkinsRule j;
+    public JenkinsRule j = new JenkinsRule();
 
     protected  String baseUrl;
 

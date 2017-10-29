@@ -5,7 +5,7 @@ import pipelineStore from './PipelineStore';
 import pipelineMetadataService from './PipelineMetadataService';
 import type { PipelineInfo, StageInfo, StepInfo } from './PipelineStore';
 import { convertInternalModelToJson } from './PipelineSyntaxConverter';
-import idgen from './IdGenerator';
+import { isObservableArray } from 'mobx';
 import debounce from 'lodash.debounce';
 
 const validationTimeout = 500;
@@ -18,6 +18,10 @@ export function isValidEnvironmentKey(key: string): boolean {
         return true;
     }
     return false;
+}
+
+function _isArray(o) {
+    return o instanceof Array || typeof o === 'array' || isObservableArray(o);
 }
 
 function _hasValidationErrors(node) {
@@ -272,7 +276,7 @@ export class PipelineValidator {
                     }
                 } else if (error.jenkinsfileErrors) {
                     for (const globalError of error.jenkinsfileErrors.errors) {
-                        if (globalError.error.length) {
+                        if (_isArray(globalError.error)) {
                             for (const errorText of globalError.error) {
                                 _appendValidationError(pipeline, errorText);
                                 error.applied = true;
@@ -303,7 +307,7 @@ export class PipelineValidator {
         if (node.validationErrors) {
             delete node.validationErrors;
         }
-        if (node instanceof Array || typeof node === 'array') {
+        if (_isArray(node)) {
             for (const v of node) {
                 this.clearValidationMarkers(v, visited);
             }

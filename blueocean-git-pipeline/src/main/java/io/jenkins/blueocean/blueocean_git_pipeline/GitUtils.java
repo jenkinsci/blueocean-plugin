@@ -22,6 +22,7 @@ import org.eclipse.jgit.api.FetchCommand;
 import org.eclipse.jgit.api.MergeCommand;
 import org.eclipse.jgit.api.MergeResult;
 import org.eclipse.jgit.api.PushCommand;
+import org.eclipse.jgit.api.TransportCommand;
 import org.eclipse.jgit.api.TransportConfigCallback;
 import org.eclipse.jgit.api.errors.ConcurrentRefUpdateException;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -48,6 +49,7 @@ import org.eclipse.jgit.transport.JschConfigSessionFactory;
 import org.eclipse.jgit.transport.OpenSshConfig;
 import org.eclipse.jgit.transport.PushResult;
 import org.eclipse.jgit.transport.RefSpec;
+import org.eclipse.jgit.transport.RemoteRefUpdate;
 import org.eclipse.jgit.transport.SshSessionFactory;
 import org.eclipse.jgit.transport.SshTransport;
 import org.eclipse.jgit.transport.Transport;
@@ -56,6 +58,7 @@ import org.eclipse.jgit.treewalk.TreeWalk;
 import org.eclipse.jgit.util.FS;
 import org.jenkinsci.plugins.gitclient.Git;
 import org.jenkinsci.plugins.gitclient.GitClient;
+import org.jenkinsci.plugins.gitclient.trilead.SmartCredentialsProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -125,6 +128,45 @@ class GitUtils {
         return errors;
     }
 
+    /**
+     *  Attempts to push to a non-existent branch to validate the user actually has push access
+     *
+     * @param repo local repository
+     * @param remoteUrl git repo url
+     * @param credential credential to use when accessing git
+     */
+    public static void validatePushAccess(@Nonnull Repository repo, @Nonnull String remoteUrl, @Nullable StandardCredentials credential) throws GitException {
+        try (org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(repo)) {
+            // we need to perform an actual push, so we try a deletion of a very-unlikely-to-exist branch
+            // which needs to have push permissions in order to get a 'branch not found' message
+            String pushSpec = ":this-branch-is-only-to-test-if-jenkins-has-push-access";
+            PushCommand pushCommand = git.push();
+
+            addCredential(repo, pushCommand, credential);
+
+            Iterable<PushResult> resultIterable = pushCommand
+                .setRefSpecs(new RefSpec(pushSpec))
+                .setRemote(remoteUrl)
+                .setDryRun(true) // we only want to test
+                .call();
+            PushResult result = resultIterable.iterator().next();
+            if (result.getRemoteUpdates().isEmpty()) {
+                System.out.println("No remote updates occurred");
+            } else {
+                for (RemoteRefUpdate update : result.getRemoteUpdates()) {
+                    if (!RemoteRefUpdate.Status.NON_EXISTING.equals(update.getStatus()) && !RemoteRefUpdate.Status.OK.equals(update.getStatus())) {
+                        throw new ServiceException.UnexpectedErrorException("Expected non-existent ref but got: " + update.getStatus().name() + ": " + update.getMessage());
+                    }
+                }
+            }
+        } catch (GitAPIException e) {
+            if (e.getMessage().toLowerCase().contains("auth")) {
+                throw new ServiceException.UnauthorizedException(e.getMessage(), e);
+            }
+            throw new ServiceException.UnexpectedErrorException("Unable to access and push to: " + remoteUrl + " - " + e.getMessage(), e);
+        }
+    }
+
     private static final Pattern SSH_URL_PATTERN = Pattern.compile("(\\Qssh://\\E.*|[^@:]+@.*)");
 
     /**
@@ -134,6 +176,15 @@ class GitUtils {
      */
     static boolean isSshUrl(@Nullable String remote) {
         return remote != null && SSH_URL_PATTERN.matcher(remote).matches();
+    }
+
+    /**
+     * Determines this is a local *NIX file URL, e.g. /Users/me/repo
+     * @param remote remote url
+     * @return true if this starts with a forward slash
+     */
+    static boolean isLocalUnixFileUrl(@Nullable String remote) {
+        return remote != null && remote.startsWith("/");
     }
 
     /**
@@ -203,9 +254,7 @@ class GitUtils {
         try (org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(repo)) {
             FetchCommand fetchCommand = git.fetch();
 
-            if (isSshUrl(repo) && credential instanceof BasicSSHUserPrivateKey) {
-                fetchCommand.setTransportConfigCallback(getSSHKeyTransport((BasicSSHUserPrivateKey)credential));
-            }
+            addCredential(repo, fetchCommand, credential);
 
             fetchCommand.setRemote("origin")
                 .setRemoveDeletedRefs(true)
@@ -216,6 +265,22 @@ class GitUtils {
                 throw new ServiceException.UnauthorizedException("Not authorized", ex);
             }
             throw new RuntimeException(ex);
+        }
+    }
+
+    /**
+     * Tries to set proper credentials for the command
+     * @param repo repo to test for url
+     * @param command command that needs credentials
+     * @param credential credential to use
+     */
+    private static void addCredential(Repository repo, TransportCommand command, StandardCredentials credential) {
+        if (isSshUrl(repo) && credential instanceof BasicSSHUserPrivateKey) {
+            command.setTransportConfigCallback(getSSHKeyTransport((BasicSSHUserPrivateKey)credential));
+        } else  if (credential != null) {
+            SmartCredentialsProvider credentialsProvider = new SmartCredentialsProvider(null);
+            credentialsProvider.addDefaultCredentials(credential);
+            command.setCredentialsProvider(credentialsProvider);
         }
     }
 
@@ -374,14 +439,16 @@ class GitUtils {
     static byte[] readFile(Repository repository, String ref, String filePath) {
         try (ObjectReader reader = repository.newObjectReader()) {
             ObjectId branchRef = repository.resolve(ref); // repository.exactRef(ref);
-            RevWalk revWalk = new RevWalk(repository);
-            RevCommit commit = revWalk.parseCommit(branchRef);
-            // and using commit's tree find the path
-            RevTree tree = commit.getTree();
-            TreeWalk treewalk = TreeWalk.forPath(reader, filePath, tree);
-            if (treewalk != null) {
-                // use the blob id to read the file's data
-                return reader.open(treewalk.getObjectId(0)).getBytes();
+            if (branchRef != null) { // for empty repositories, branchRef may be null
+                RevWalk revWalk = new RevWalk(repository);
+                RevCommit commit = revWalk.parseCommit(branchRef);
+                // and using commit's tree find the path
+                RevTree tree = commit.getTree();
+                TreeWalk treewalk = TreeWalk.forPath(reader, filePath, tree);
+                if (treewalk != null) {
+                    // use the blob id to read the file's data
+                    return reader.open(treewalk.getObjectId(0)).getBytes();
+                }
             }
         } catch (IOException ex) {
             throw new RuntimeException(ex);
@@ -393,9 +460,9 @@ class GitUtils {
         try (org.eclipse.jgit.api.Git git = new org.eclipse.jgit.api.Git(repo)) {
             String pushSpec = "+" + localBranchRef + ":" + remoteBranchRef;
             PushCommand pushCommand = git.push();
-            if (isSshUrl(remoteUrl) && credential instanceof BasicSSHUserPrivateKey) {
-                pushCommand.setTransportConfigCallback(getSSHKeyTransport((BasicSSHUserPrivateKey)credential));
-            }
+
+            addCredential(repo, pushCommand, credential);
+
             Iterable<PushResult> resultIterable = pushCommand
                 .setRefSpecs(new RefSpec(pushSpec))
                 .setRemote(remoteUrl)
@@ -403,9 +470,18 @@ class GitUtils {
             PushResult result = resultIterable.iterator().next();
             if (result.getRemoteUpdates().isEmpty()) {
                 throw new RuntimeException("No remote updates occurred");
+            } else {
+                for (RemoteRefUpdate update : result.getRemoteUpdates()) {
+                    if (!RemoteRefUpdate.Status.OK.equals(update.getStatus())) {
+                        throw new ServiceException.UnexpectedErrorException("Remote update failed: " + update.getStatus().name() + ": " + update.getMessage());
+                    }
+                }
             }
-        } catch (GitAPIException ex) {
-            throw new ServiceException.UnexpectedErrorException("Unable to save and push to: " + remoteUrl + " - " + ex.getMessage(), ex);
+        } catch (GitAPIException e) {
+            if (e.getMessage().toLowerCase().contains("auth")) {
+                throw new ServiceException.UnauthorizedException(e.getMessage(), e);
+            }
+            throw new ServiceException.UnexpectedErrorException("Unable to save and push to: " + remoteUrl + " - " + e.getMessage(), e);
         }
     }
 }

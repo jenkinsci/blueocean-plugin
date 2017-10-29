@@ -1,8 +1,7 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import { getAddIconGroup, getGrabIconGroup } from './common';
-import pipelineMetadataService from '../../services/PipelineMetadataService';
+import pipelineMetadataService, { getArg } from '../../services/PipelineMetadataService';
 import type { StepInfo } from '../../services/PipelineStore';
 import { Icon } from '@jenkins-cd/design-language';
 import pipelineValidator from '../../services/PipelineValidator';
@@ -105,7 +104,7 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
                             <span className="editor-step-label">{step.label}</span>
                             {!errors && <span className="editor-step-summary">
                                 {thisMeta && thisMeta.parameters.filter(p => p.isRequired).map(p =>
-                                    <span>{step.data[p.name]} </span>
+                                    <span>{getArg(step, p.name).value} </span>
                                 )}
                                 </span>
                             }

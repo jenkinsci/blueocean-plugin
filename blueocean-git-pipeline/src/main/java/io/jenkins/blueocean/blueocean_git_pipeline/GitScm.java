@@ -19,13 +19,16 @@ import io.jenkins.blueocean.rest.impl.pipeline.scm.ScmServerEndpointContainer;
 import io.jenkins.blueocean.rest.model.Container;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.AbstractGitSCMSource;
+import jenkins.plugins.git.GitSCMFileSystem;
 import jenkins.scm.api.SCMSourceOwner;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
+import org.eclipse.jgit.lib.Repository;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.json.JsonBody;
 
 import javax.annotation.Nonnull;
+import java.io.IOException;
 import java.util.List;
 
 public class GitScm extends AbstractScm {
@@ -71,15 +74,18 @@ public class GitScm extends AbstractScm {
 
     @Override
     public HttpResponse validateAndCreate(@JsonBody JSONObject request) {
-        String repositoryUrl;
+        boolean requirePush = request.has("requirePush");
+        final String repositoryUrl;
+        final AbstractGitSCMSource scmSource;
         if (request.has("repositoryUrl")) {
+            scmSource = null;
             repositoryUrl = request.getString("repositoryUrl");
         } else {
             try {
                 String fullName = request.getJSONObject("pipeline").getString("fullName");
                 SCMSourceOwner item = Jenkins.getInstance().getItemByFullName(fullName, SCMSourceOwner.class);
                 if (item != null) {
-                    AbstractGitSCMSource scmSource = (AbstractGitSCMSource) item.getSCMSources().iterator().next();
+                    scmSource = (AbstractGitSCMSource) item.getSCMSources().iterator().next();
                     repositoryUrl = scmSource.getRemote();
                 } else {
                     return HttpResponses.errorJSON("No repository found for: " + fullName);
@@ -97,7 +103,7 @@ public class GitScm extends AbstractScm {
             if (user == null) {
                 throw new ServiceException.UnauthorizedException("Not authenticated");
             }
-            StandardCredentials creds = CredentialsMatchers.firstOrNull(
+            final StandardCredentials creds = CredentialsMatchers.firstOrNull(
                 CredentialsProvider.lookupCredentials(
                     StandardCredentials.class,
                     Jenkins.getInstance(),
@@ -110,9 +116,21 @@ public class GitScm extends AbstractScm {
                 throw new ServiceException.NotFoundException("No credentials found for: " + credentialId);
             }
 
-            List<ErrorMessage.Error> errors = GitUtils.validateCredentials(repositoryUrl, creds);
-            if (!errors.isEmpty()) {
-                throw new ServiceException.UnauthorizedException(errors.get(0).getMessage());
+            if (requirePush) {
+                String branch = request.getString("branch");
+                new GitBareRepoReadSaveRequest(scmSource, branch, null, branch, null, null)
+                    .invokeOnScm(new GitSCMFileSystem.FSFunction<Void>() {
+                         @Override
+                         public Void invoke(Repository repository) throws IOException, InterruptedException {
+                             GitUtils.validatePushAccess(repository, repositoryUrl, creds);
+                             return null;
+                         }
+                     });
+            } else {
+                List<ErrorMessage.Error> errors = GitUtils.validateCredentials(repositoryUrl, creds);
+                if (!errors.isEmpty()) {
+                    throw new ServiceException.UnauthorizedException(errors.get(0).getMessage());
+                }
             }
         } catch(Exception e) {
             return HttpResponses.errorWithoutStack(ServiceException.PRECONDITION_REQUIRED, e.getMessage());

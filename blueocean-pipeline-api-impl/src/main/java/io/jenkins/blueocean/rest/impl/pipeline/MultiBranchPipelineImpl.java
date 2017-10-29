@@ -30,6 +30,7 @@ import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.BlueScmSource;
+import io.jenkins.blueocean.rest.model.BlueTrendContainer;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
@@ -303,5 +304,10 @@ public class MultiBranchPipelineImpl extends BlueMultiBranchPipeline {
     @Override
     public BlueScmSource getScmSource() {
         return new ScmSourceImpl(mbp);
+    }
+
+    @Override
+    public BlueTrendContainer getTrends() {
+        return null;
     }
 }

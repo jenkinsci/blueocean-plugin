@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Progress } from '@jenkins-cd/design-language';
+import { Progress, Linkify } from '@jenkins-cd/design-language';
 import { logging } from '@jenkins-cd/blueocean-core-js';
 
 import { scrollHelper } from '../../ScrollHelper';
@@ -35,7 +35,7 @@ const LogLine = ({ prefix, line, index, router, location }) => {
                 >
                 </a>
                 {
-                    React.createElement('span', { className: 'line ansi-color' }, ...lineChunks)
+                    React.createElement(Linkify, { className: 'line ansi-color' }, ...lineChunks)
                 }
             </div>
         </p>

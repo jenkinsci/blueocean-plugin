@@ -1,18 +1,15 @@
 package io.jenkins.blueocean.config;
 
 import com.google.common.collect.ImmutableSet;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.not;
-import static org.hamcrest.Matchers.notNullValue;
-import static org.junit.Assert.assertThat;
-
+import io.jenkins.blueocean.rest.factory.BlueOceanConfigFactory;
+import io.jenkins.blueocean.rest.model.BlueOceanConfig;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 import org.jvnet.hudson.test.TestExtension;
 
-import io.jenkins.blueocean.rest.factory.BlueOceanConfigFactory;
-import io.jenkins.blueocean.rest.model.BlueOceanConfig;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.assertThat;
 
 public class BlueOceanConfigFactoryTest {
     @Rule

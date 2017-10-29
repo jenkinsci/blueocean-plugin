@@ -28,7 +28,7 @@
     <parent>
         <groupId>org.jenkins-ci.plugins</groupId>
         <artifactId>plugin</artifactId>
-        <version>2.10</version>
+        <version>2.35</version>
         <relativePath />
     </parent>
     <groupId>org.jenkins-ci.plugins.blueocean</groupId>
@@ -56,7 +56,9 @@
         </pluginRepository>
     </pluginRepositories>
     <properties>
-        <jenkins.version>2.46.3</jenkins.version>
+        <jenkins.version>2.73.2</jenkins.version>
+        <jenkins-test-harness.version>2.30</jenkins-test-harness.version>
+        <java.level>8</java.level>
     </properties>
     <dependencies>
         <dependency>
@@ -84,7 +86,28 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>structs</artifactId>
-            <version>1.9</version>
+            <version>1.10</version>
+        </dependency>
+
+        <dependency>
+          <groupId>org.jenkins-ci.plugins</groupId>
+          <artifactId>blueocean-executor-info</artifactId>
+          <version>0.1-beta-3-SNAPSHOT</version>
+          <exclusions>
+            <exclusion>  <!-- declare the exclusion here -->
+              <groupId>io.jenkins.blueocean</groupId>
+              <artifactId>blueocean</artifactId>
+            </exclusion>
+            <exclusion>  <!-- declare the exclusion here -->
+              <groupId>io.jenkins.blueocean</groupId>
+              <artifactId>blueocean-rest</artifactId>
+            </exclusion>
+            <exclusion>  <!-- declare the exclusion here -->
+              <groupId>io.jenkins.blueocean</groupId>
+              <artifactId>blueocean-web</artifactId>
+            </exclusion>
+
+          </exclusions>
         </dependency>
     </dependencies>
     <profiles>

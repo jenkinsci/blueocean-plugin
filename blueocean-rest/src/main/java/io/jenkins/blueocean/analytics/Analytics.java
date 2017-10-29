@@ -1,11 +1,14 @@
 package io.jenkins.blueocean.analytics;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.google.common.base.Predicate;
 import com.google.common.collect.Iterables;
 import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import org.kohsuke.stapler.DataBoundConstructor;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nullable;
 import java.util.Map;
 
@@ -19,12 +22,17 @@ public abstract class Analytics implements ExtensionPoint {
      */
     public static class TrackRequest {
         /** event name **/
+        @JsonProperty("name")
         public final String name;
         /** properties to track with event */
+        @JsonProperty("properties")
         public final Map<String, Object> properties;
 
-        @DataBoundConstructor
-        public TrackRequest(String name, Map<String, Object> properties) {
+        @JsonCreator
+        public TrackRequest(
+            @JsonProperty("name") String name,
+            @JsonProperty("properties") Map<String, Object> properties
+        ) {
             this.name = name;
             this.properties = properties;
         }
@@ -33,17 +41,19 @@ public abstract class Analytics implements ExtensionPoint {
     /**
      * @return analytics instance
      */
+    @CheckForNull
     public static Analytics get() {
-        Analytics analytics = Iterables.find(ExtensionList.lookup(Analytics.class), new Predicate<Analytics>() {
+        return Iterables.find(ExtensionList.lookup(Analytics.class), new Predicate<Analytics>() {
             @Override
             public boolean apply(@Nullable Analytics input) {
                 return input != null && input.isEnabled();
             }
         }, null);
-        if (analytics == null) {
-            throw new IllegalStateException("No analytics instance available");
-        }
-        return analytics;
+    }
+
+    /** Is analytics enabled on Jenkins or not **/
+    public static boolean isAnalyticsEnabled() {
+        return get() != null;
     }
 
     /** Is this analytics instance enabled */

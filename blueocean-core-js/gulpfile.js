@@ -1,5 +1,7 @@
 "use strict";
 
+process.env.SKIP_BLUE_IMPORTS = 'YES';
+
 /*
  Build file for Jenkins Blue Ocean Commons JavaScript.
  */
@@ -22,7 +24,7 @@ const minimist = require('minimist');
 const config = {
     clean: ["dist", "licenses", "target"],
     react: {
-        sources: "src/**/*.{js,jsx}",
+        sources: ["src/**/*.{js,jsx}", "!**/__mocks__/**"],
         dest: "dist"
     },
     less: {
@@ -70,7 +72,7 @@ gulp.task("clean", () =>
 // Testing
 
 gulp.task("lint", () => (
-    gulp.src([config.react.sources, config.test.sources])
+    gulp.src([...config.react.sources, config.test.sources])
         .pipe(lint())
         .pipe(lint.format())
         .pipe(lint.failAfterError())
@@ -171,3 +173,25 @@ gulp.task("validate", () => {
         }
     }
 });
+
+
+var builder = require('@jenkins-cd/js-builder');
+
+builder.src([
+    'src/js',
+    'less']);
+
+//
+// Create the main bundle.
+//
+builder.bundle('src/js/index.js', 'blueocean-core-js.js')
+    .inDir('target/classes/io/jenkins/blueocean')
+    .less('src/less/blueocean-core-js.less')
+    .import('react@any', {
+        aliases: ['react/lib/React'] // in case a module requires react through the back door
+    })
+    .import('react-dom@any')
+    .import("react-router@any")
+    .export("@jenkins-cd/js-extensions")
+    .export("@jenkins-cd/logging")
+    .export('mobx')

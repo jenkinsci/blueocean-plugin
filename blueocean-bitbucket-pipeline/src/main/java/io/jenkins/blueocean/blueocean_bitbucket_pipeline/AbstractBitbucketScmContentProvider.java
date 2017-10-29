@@ -43,7 +43,7 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
 
     @Override
     protected Object getContent(ScmGetRequest request) {
-        BitbucketApi api = BitbucketServerScm.getApi(request.getApiUrl(), request.getCredentials());
+        BitbucketApi api = BitbucketServerScm.getApi(request.getApiUrl(), this.getScmId(), request.getCredentials());
         BbBranch branch=null;
         String branchName = request.getBranch();
 
@@ -110,7 +110,7 @@ public abstract class AbstractBitbucketScmContentProvider extends AbstractScmCon
         String owner = scmParamsFromItem.getOwner();
         String repo = scmParamsFromItem.getRepo();
         String commitId = StringUtils.isNotBlank(gitContent.getCommitId()) ? gitContent.getCommitId() : gitContent.getSha();
-        BitbucketApi api = BitbucketServerScm.getApi(scmParamsFromItem.getApiUrl(), scmParamsFromItem.getCredentials());
+        BitbucketApi api = BitbucketServerScm.getApi(scmParamsFromItem.getApiUrl(), this.getScmId(), scmParamsFromItem.getCredentials());
 
         String content;
         try {

@@ -1,5 +1,8 @@
 "use strict";
 
+process.env.SKIP_BLUE_IMPORTS = 'YES';
+process.env.NODE_ENV = 'production';
+
 /*
  Build file for Jenkins Design Language theme.
  */
@@ -42,7 +45,7 @@ const config = {
         },
         octicons: {
             sources: "node_modules/octicons/build/font/octicons.{eot,woff,woff2,ttf,svg}",
-            dest: "dist/assets/css/"
+            dest: "target/classes/io/jenkins/blueocean/"
         },
         fonts: {
             sources: "fonts/*.woff",
@@ -237,3 +240,22 @@ gulp.task("validate", () => {
         }
     }
 });
+
+var builder = require('@jenkins-cd/js-builder');
+
+builder.src([
+    'src/js',
+    'less',
+    'dist' // for icons & fonts
+]);
+
+//
+// Create the main bundle.
+//
+builder.bundle('src/js/components/index.js', 'jenkins-design-language.js')
+    .inDir('target/classes/io/jenkins/blueocean')
+    .less('less/jenkins-design-language.less')
+    .export('react')
+    .export('react-dom')
+    .export("react-router")
+    .export('react-addons-css-transition-group');

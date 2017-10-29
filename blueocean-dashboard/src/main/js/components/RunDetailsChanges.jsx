@@ -10,6 +10,7 @@ import {
 } from '@jenkins-cd/design-language';
 import Icon from './placeholder/Icon';
 import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
+import LinkifiedText from './LinkifiedText';
 
 
 function NoChangesPlaceholder(props) {
@@ -37,6 +38,7 @@ function NoChangesPlaceholder(props) {
 NoChangesPlaceholder.propTypes = {
     t: PropTypes.func,
 };
+
 
 export default class RunDetailsChanges extends Component {
 
@@ -72,7 +74,7 @@ export default class RunDetailsChanges extends Component {
                     <TableRow key={commit.commitId}>
                         <TableCell><CommitId commitId={commit.commitId} url={commit.url} /></TableCell>
                         <TableCell>{commit.author.fullName}</TableCell>
-                        <TableCell className="multipleLines">{commit.msg}</TableCell>
+                        <TableCell className="multipleLines"><LinkifiedText text={commit.msg} partialTextLinks={commit.issues} /></TableCell>
                         <TableCell>
                             <ReadableDate date={commit.timestamp}
                                           liveUpdate

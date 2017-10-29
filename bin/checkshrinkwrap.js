@@ -19,7 +19,7 @@
 
 const fs = require('fs');
 // match "1.2.3" or "1.2.3-beta5"
-const PRECISE_VERSION_CHARS_PATTERN = /^\d+\.\d+\.\d+(-[A-Za-z0-9]+)*$/;
+const PRECISE_VERSION_CHARS_PATTERN = /^\d+\.\d+\.\d+(-[A-Za-z0-9.]+)*$/;
 
 const start = new Date().getTime();
 
@@ -39,6 +39,11 @@ function checkProject(pathToProject) {
     const resolvedPath = buildPath(`${__dirname}/${pathToProject}`);
     console.log(`validating dependencies in ${resolvedPath}`);
     const packageJsonPath = buildPath(`${resolvedPath}/package.json`);
+    try {
+        fs.realpathSync(`${resolvedPath}/npm-shrinkwrap.json`);
+    } catch (error) {
+        return; // no shrinkwrap file, is ok for now
+    }
     const shrinkwrapJsonPath = buildPath(`${resolvedPath}/npm-shrinkwrap.json`);
 
     const packages = require(packageJsonPath);
