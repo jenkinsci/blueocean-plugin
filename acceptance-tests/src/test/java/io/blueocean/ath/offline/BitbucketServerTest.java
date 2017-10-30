@@ -6,6 +6,7 @@ import com.google.inject.Inject;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.Login;
 import io.blueocean.ath.WaitUtil;
+import io.blueocean.ath.WebDriverMixin;
 import io.blueocean.ath.pages.blue.DashboardPage;
 import org.apache.log4j.Logger;
 import org.junit.Test;
@@ -17,7 +18,8 @@ import java.io.IOException;
 
 @Login
 @RunWith(ATHJUnitRunner.class)
-public class BitbucketServerTest {
+public class BitbucketServerTest implements WebDriverMixin {
+
 
     private static Logger LOGGER = Logger.getLogger(BitbucketServerTest.class);
 
@@ -28,7 +30,7 @@ public class BitbucketServerTest {
     DashboardPage dashboardPage;
 
     @Test
-    public void testJenkinsfileCreate() {
+    public void testJenkinsfileCreate() throws InterruptedException {
         BitbucketClient client = BitbucketClient.builder()
             .endPoint("http://127.0.0.1:7990/")
             .credentials("admin:admin").build();
@@ -43,21 +45,27 @@ public class BitbucketServerTest {
         wait.until(By.xpath("//span[text()='Bitbucket Server']")).click();
         LOGGER.info("Selected bitbucket server");
 
-        wait.until(By.xpath("//span[text()='Bitbucket Server']")).click();
-        LOGGER.info("Selected bitbucket server");
-
         wait.until(By.cssSelector(".button-add-server")).click();
         LOGGER.info("Clicked addserver");
+
 
         wait.until(By.xpath("//input[@placeholder='My Bitbucket Server']")).sendKeys("bitbucketserver");
         wait.until(By.xpath("//input[@placeholder='https://mybitbucket.example.com']")).sendKeys("http://127.0.0.1:7990");
         wait.until(By.cssSelector(".button-create-server")).click();
-        wait.until(By.cssSelector(".button-next-step")).click();
-        LOGGER.info("Entered server details");
+        Thread.sleep(2000);
+        if (getDriver().findElements(By.cssSelector(".FormElement.u-error-state")).isEmpty()) {
+            LOGGER.info("Entered server details");
+            wait.until(By.xpath("(//input[ @class='TextInput-control'])[1]")).sendKeys("admin");
+            wait.until(By.xpath("(//input[ @class='TextInput-control'])[2]")).sendKeys("admin");
+            wait.until(By.cssSelector(".button-create-credental")).click();
+            LOGGER.info("Entered credentials");
+        } else {
+            click("//button[text()='Cancel']");
+            click(".Dropdown-button.Dropdown-placeholder");
+            click("//a[text()='bitbucketserver']");
+            LOGGER.info("Server already exists");
+        }
 
-        wait.until(By.xpath("(//input[ @class='TextInput-control'])[1]")).sendKeys("admin");
-        wait.until(By.xpath("(//input[ @class='TextInput-control'])[2]")).sendKeys("admin");
-        wait.until(By.cssSelector(".button-create-credental")).click();
-        LOGGER.info("Entered credentials");
+        wait.until(By.cssSelector(".button-next-step")).click();
     }
 }
