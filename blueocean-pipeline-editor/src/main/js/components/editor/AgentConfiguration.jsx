@@ -111,22 +111,22 @@ export class AgentConfiguration extends Component<DefaultProps, Props, State> {
         };
         this.setState({ selectedAgent: selectedAgent, pristine: true });
         this.props.onChange(selectedAgent);
-        focusOnElement('.agent-select .required input');
+        focusOnElement('.agent-select .required input'); 
     }
 
     _getAgentInputControl(param, pristine, val) {
+        const inputProps = {
+            hasError: param.isRequired && !pristine && !val,
+            isRequired: param.isRequired,
+            defaultValue: val,
+            onChange: val => { this.setAgentValue(param.name, val); param.isRequired && this.setState({ pristine: false }); },
+            onBlur: e => param.isRequired && this.setState({ pristine: false }),
+        };
+
         if (param.name === 'args') {
-            return <InputTextArea hasError={param.isRequired && !pristine && !val}
-                isRequired={param.isRequired}
-                defaultValue={val}
-                onChange={val => { this.setAgentValue(param.name, val); param.isRequired && this.setState({ pristine: false }); }}
-                onBlur={e => param.isRequired && this.setState({ pristine: false })} />
+            return (<InputTextArea {...inputProps} />);
         } else {
-            return <InputText hasError={param.isRequired && !pristine && !val}
-                isRequired={param.isRequired}
-                defaultValue={val}
-                onChange={val => { this.setAgentValue(param.name, val); param.isRequired && this.setState({ pristine: false }); }}
-                onBlur={e => param.isRequired && this.setState({ pristine: false })} />
+            return (<InputText {...inputProps} />);
         }
     }
 

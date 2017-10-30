@@ -1,17 +1,7 @@
 import React from 'react';
 
-function cn(...args) {
-    let out = null;
-    for (let i = 0; i < args.length; i++) {
-        if (args[i]) {
-            if (!out) {
-                out = args[i];
-            } else {
-                out += ' ' + args[i];
-            }
-        }
-    }
-    return out;
+function generateClassNames(...args) {
+    return args.filter(arg => !!arg).join(' ');
 }
 
 function autoResizeHeight() {
@@ -26,7 +16,7 @@ function autoResizeHeight() {
 
 export default function InputTextArea({ defaultValue, onChange, isRequired, hasError, onBlur }) {
     return (
-        <div className={cn('FormElement', hasError && 'u-error-state', isRequired && 'required')}>
+        <div className={generateClassNames('FormElement', hasError && 'u-error-state', isRequired && 'required')}>
             <div className="FormElement-children">
                 <div className="TextArea">
                     <textarea className="TextArea-control"
