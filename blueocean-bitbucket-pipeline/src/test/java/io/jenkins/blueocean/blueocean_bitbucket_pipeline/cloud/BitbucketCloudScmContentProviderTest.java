@@ -9,7 +9,6 @@ import com.mashape.unirest.http.exceptions.UnirestException;
 import hudson.model.User;
 import hudson.tasks.Mailer;
 import hudson.util.DescribableList;
-import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketScmSaveFileRequest;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.BitbucketServerScmContentProvider;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -170,7 +169,6 @@ public class BitbucketCloudScmContentProviderTest extends BbCloudWireMock{
         when(staplerRequest.getParameter("path")).thenReturn("Jenkinsfile");
         when(staplerRequest.getParameter("repo")).thenReturn("demo1");
         when(staplerRequest.getParameter("scmId")).thenReturn(BitbucketCloudScm.ID);
-        when(staplerRequest.getHeader(BitbucketApi.X_BB_API_TEST_MODE_HEADER)).thenReturn("cloud");
         return staplerRequest;
     }
 
