@@ -30,18 +30,15 @@ public class BitbucketServerTest {
     @Test
     public void testJenkinsfileCreate() {
         BitbucketClient client = BitbucketClient.builder()
-            .endPoint("http://127.0.0.1:7990/bitbucket")
+            .endPoint("http://127.0.0.1:7990/")
             .credentials("admin:admin").build();
 
-        String project = "PROJECT_1";
+        String project = "BLUE";
         String repo = "testJenkinsfileCreate";
         client.api().repositoryApi().delete(project, repo);
         client.api().repositoryApi().create(project, CreateRepository.create(repo, true));
 
-        dashboardPage.open();
-        wait.until(ExpectedConditions.visibilityOf(dashboardPage.newPipelineButton))
-            .click();;
-        LOGGER.info("Clicked on new pipeline button");
+        dashboardPage.clickNewPipelineBtn();
 
         wait.until(By.xpath("//span[text()='Bitbucket Server']")).click();
         LOGGER.info("Selected bitbucket server");
@@ -53,7 +50,7 @@ public class BitbucketServerTest {
         LOGGER.info("Clicked addserver");
 
         wait.until(By.xpath("//input[@placeholder='My Bitbucket Server']")).sendKeys("bitbucketserver");
-        wait.until(By.xpath("//input[@placeholder='https://mybitbucket.example.com']")).sendKeys("http://127.0.0.1:7990/bitbucket");
+        wait.until(By.xpath("//input[@placeholder='https://mybitbucket.example.com']")).sendKeys("http://127.0.0.1:7990");
         wait.until(By.cssSelector(".button-create-server")).click();
         wait.until(By.cssSelector(".button-next-step")).click();
         LOGGER.info("Entered server details");
