@@ -1024,7 +1024,7 @@
                         <executions>
                             <execution>
                                 <id>upstream-dependencies</id>
-                                <phase>process-resources</phase>
+                                <phase>initialize</phase>
                                 <goals>
                                     <goal>process-node-dependencies</goal>
                                 </goals>
@@ -1060,7 +1060,7 @@
                             </execution>
 
                             <execution>
-                                <phase>process-resources</phase>
+                                <phase>initialize</phase>
                                 <id>npm install</id>
                                 <goals>
                                     <goal>npm</goal>
@@ -1072,7 +1072,7 @@
                             </execution>
 
                             <execution>
-                                <phase>compile</phase>
+                                <phase>generate-sources</phase>
                                 <id>npm mvnbuild</id>
                                 <goals>
                                     <goal>npm</goal>
