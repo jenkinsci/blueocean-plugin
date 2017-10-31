@@ -1,5 +1,6 @@
 import moment from 'moment';
 import logging from '../logging';
+import 'moment-duration-format';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.harmonizeTimes');
 /**
