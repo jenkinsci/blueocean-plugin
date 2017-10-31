@@ -4,24 +4,17 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>org.jenkins-ci.plugins</groupId>
-        <artifactId>plugin</artifactId>
-        <version>2.26</version>
+        <artifactId>blueocean-parent</artifactId>
+        <groupId>io.jenkins.blueocean</groupId>
+        <version>1.4.0-beta-1-SNAPSHOT</version>
     </parent>
 
-    <groupId>io.jenkins.blueocean</groupId>
     <artifactId>jenkins-design-language</artifactId>
-    <version>1.4.0-beta-1-SNAPSHOT</version>
     <packaging>hpi</packaging>
 
     <name>Jenkins Design Language</name>
 
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+Design+Language</url>
-
-    <properties>
-        <node.version>6.4.0</node.version>
-        <npm.version>3.10.3</npm.version>
-    </properties>
 
     <build>
         <resources>
