@@ -37,6 +37,9 @@ node() {
           }
           junit '**/target/surefire-reports/TEST-*.xml'
           junit '**/target/jest-reports/*.xml'
+          sh 'echo JEST STUFF'
+          sh 'ls -lah blueocean-dashboard/target/jest-reports/'
+          archive 'blueocean-dashboard/target/jest-reports/junit.xml'
           archive '*/target/*.hpi'
         }
 
