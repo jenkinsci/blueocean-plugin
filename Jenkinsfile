@@ -30,11 +30,9 @@ node() {
 
         stage('Building BlueOcean') {
           try {
-            sh "mvn clean install -B -DcleanNode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -s settings.xml -Dmaven.artifact.threads=30"
+            sh "mvn clean install -B -DcleanNode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
           } catch(e) {
             archive '*/target/code-coverage/**/*.html'
-            sh 'find blueocean-core-js/dist'
-            sh 'find blueocean-dashboard/node_modules/\\@jenkins-cd/blueocean-core-js/'
             throw e;
           }
           junit '**/target/surefire-reports/TEST-*.xml'
