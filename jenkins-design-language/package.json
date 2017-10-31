@@ -9,7 +9,6 @@
     "build-storybook": "build-storybook --static-dir dist/assets/ --output-dir website/storybook",
     "flow": "flow",
     "gulp": "gulp build",
-    "prepublish": "gulp test",
     "mvnbuild": "gulp build bundle",
     "mvnbuild:fast": "gulp bundle",
     "mvntest": "gulp test",
