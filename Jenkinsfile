@@ -23,6 +23,11 @@ node() {
   docker.image('blueocean_build_env').inside("--net=container:blueo-selenium") {
     withEnv(['GIT_COMMITTER_EMAIL=me@hatescake.com','GIT_COMMITTER_NAME=Hates','GIT_AUTHOR_NAME=Cake','GIT_AUTHOR_EMAIL=hates@cake.com']) {
       try {
+        stage('Sanity check dependencies') {
+          sh "node ./bin/checkdeps.js"
+          sh "node ./bin/checkshrinkwrap.js"
+        }
+
         stage('Building JS Libraries') {
           sh 'node -v && npm -v'
           sh 'npm --prefix ./js-extensions run build'
@@ -38,11 +43,6 @@ node() {
           junit '**/target/surefire-reports/TEST-*.xml'
           junit '**/target/jest-reports/*.xml'
           archive '*/target/*.hpi'
-        }
-
-        stage('Sanity check dependencies') {
-          sh "node ./bin/checkdeps.js"
-          sh "node ./bin/checkshrinkwrap.js"
         }
 
         stage('ATH - Jenkins 2.73.2') {

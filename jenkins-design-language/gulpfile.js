@@ -255,7 +255,9 @@ builder.src([
 builder.bundle('src/js/components/index.js', 'jenkins-design-language.js')
     .inDir('target/classes/io/jenkins/blueocean')
     .less('less/jenkins-design-language.less')
+    .export('moment')
+    .export('moment-duration-format')
     .export('react')
     .export('react-dom')
-    .export("react-router")
+    .export('react-router')
     .export('react-addons-css-transition-group');
