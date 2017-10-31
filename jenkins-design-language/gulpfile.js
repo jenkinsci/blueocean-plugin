@@ -101,15 +101,6 @@ gulp.task("clean", () =>
     gulp.src(config.clean, {read: false})
         .pipe(clean()));
 
-// Testing
-
-gulp.task("lint", () => (
-    gulp.src([config.react.sources, config.test.sources])
-        .pipe(lint())
-        .pipe(lint.format())
-        .pipe(lint.failAfterError())
-));
-
 // Build all
 
 gulp.task("build", ["compile-react", "less", "copy"]);
@@ -196,6 +187,15 @@ builder.src([
 ]);
 
 builder.tests('test/js');
+
+// redefine 'lint' to check only react and test sources (avoid dist)
+builder.defineTask("lint", () => (
+    gulp.src([config.react.sources, config.test.sources])
+        .pipe(lint())
+        .pipe(lint.format())
+        .pipe(lint.failAfterError())
+));
+
 
 //
 // Create the main bundle.
