@@ -44,6 +44,9 @@
     "type": "git",
     "url": "https://github.com/jenkinsci/jenkins-design-language.git"
   },
+  "jest": {
+      "collectCoverageFrom": ["!src/js/components/material-ui/**", "src/js/**/*.{js,jsx}"]
+  },
   "dependencies": {
     "linkifyjs": "2.1.4",
     "lodash.debounce": "4.0.8",
