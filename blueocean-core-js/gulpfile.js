@@ -14,7 +14,6 @@ const rename = require('gulp-rename');
 const copy = require('gulp-copy');
 const del = require('del');
 const runSequence = require('run-sequence');
-const lint = require('gulp-eslint');
 const fs = require('fs');
 
 // Options, src/dest folders, etc
@@ -66,15 +65,6 @@ gulp.task("clean-build", () =>
 
 gulp.task("clean", () =>
     del(config.clean));
-
-// Testing
-
-gulp.task("lint", () => (
-    gulp.src([...config.react.sources, config.test.sources])
-        .pipe(lint())
-        .pipe(lint.format())
-        .pipe(lint.failAfterError())
-));
 
 // Build all
 
