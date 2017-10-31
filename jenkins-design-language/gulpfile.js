@@ -183,7 +183,7 @@ var builder = require('@jenkins-cd/js-builder');
 builder.src([
     'src/js',
     'less',
-    'dist' // for icons & fonts
+    'dist' // for icons & fonts; NOTE: would be nice to find another way to do this as files in dist creates issues for jest & eslint
 ]);
 
 builder.tests('test/js');
