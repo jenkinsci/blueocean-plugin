@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import React, { Component, PureComponent, PropTypes } from 'react';
 import { Progress, Linkify } from '@jenkins-cd/design-language';
 import { logging } from '@jenkins-cd/blueocean-core-js';
 
@@ -13,34 +13,39 @@ const RERENDER_DELAY = 17;
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.LogConsole');
 
-const LogLine = ({ prefix, line, index, router, location }) => {
-    const tokenized = tokenizeANSIString(line);
-    const lineChunks = makeReactChildren(tokenized);
+class LogLine extends PureComponent {
+    onClick = () => {
+        const { prefix, index, router, location } = this.props;
 
-    const onClick = () => {
         const loc2 = location; // For eslint 🙄
         loc2.hash = `#${prefix || ''}log-${index + 1}`;
         router.push(loc2);
     };
 
-    return (
-        <p key={index + 1} id={`${prefix}log-${index + 1}`}>
-            <div className="log-boxes">
-                <a
-                    className="linenumber"
-                    key={index + 1}
-                    href={`#${prefix || ''}log-${index + 1}`}
-                    name={`${prefix}log-${index + 1}`}
-                    onClick={onClick}
-                >
-                </a>
-                {
-                    React.createElement(Linkify, { className: 'line ansi-color' }, ...lineChunks)
-                }
-            </div>
-        </p>
-    );
-};
+    render() {
+        const { prefix, line, index } = this.props;
+        const tokenized = tokenizeANSIString(line);
+        const lineChunks = makeReactChildren(tokenized);
+
+        return (
+            <p id={`${prefix}log-${index + 1}`}>
+                <div className="log-boxes">
+                    <a
+                        className="linenumber"
+                        key={index + 1}
+                        href={`#${prefix || ''}log-${index + 1}`}
+                        name={`${prefix}log-${index + 1}`}
+                        onClick={this.onClick}
+                    >
+                    </a>
+                    {
+                        React.createElement(Linkify, { className: 'line ansi-color' }, ...lineChunks)
+                    }
+                </div>
+            </p>
+        );
+    }
+}
 
 LogLine.propTypes = {
     prefix: PropTypes.string,
@@ -170,7 +175,7 @@ export class LogConsole extends Component {
             </div>}
 
             {!isLoading && <div className="log-body"><pre>
-                {hasMore && <div key={0} id={`${prefix}log-${0}`} className="fullLog">
+                {hasMore && <div id={`${prefix}log-${0}`} className="fullLog">
                     <a className="btn-link inverse"
                        key={0}
                        target="_blank"
@@ -180,7 +185,8 @@ export class LogConsole extends Component {
                     </a>
                 </div>}
                 {!isLoading && lines.map((line, index) => (
-                    <LogLine prefix={prefix}
+                    <LogLine key={index}
+                             prefix={prefix}
                              index={index}
                              line={line}
                              router={router}
