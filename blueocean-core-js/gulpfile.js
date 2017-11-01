@@ -19,7 +19,7 @@ const fs = require('fs');
 // Options, src/dest folders, etc
 
 const config = {
-    clean: ["dist", "licenses", "target"],
+    clean: ["dist", "target"],
     react: {
         sources: ["src/**/*.{js,jsx}", "!**/__mocks__/**"],
         dest: "dist"
@@ -34,12 +34,6 @@ const config = {
             sources: "src/less/**/*.svg",
             dest: "dist/assets/css"
         },
-    },
-    test: {
-        sources: '.',
-        match: ['**/?(*-)(spec|test).js?(x)'],
-        reports: 'target/jest-reports/junit.xml',
-        coverage: 'target/jest-coverage',
     },
 };
 

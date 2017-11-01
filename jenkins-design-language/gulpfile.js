@@ -23,6 +23,7 @@ const lint = require('gulp-eslint');
 // Options, src/dest folders, etc
 
 const config = {
+    clean: ["dist", "target"],
     react: {
         sources: "src/**/*.{js,jsx}",
         dest: "dist"
@@ -62,13 +63,8 @@ const config = {
             dest: "licenses/"
         }
     },
-    clean: ["dist", "licenses", "reports"],
     test: {
-        sources: '.',
-        match: ['**/?(*-)(spec|test).js?(x)'],
-        reports: 'target/jest-reports/junit.xml',
-        coverage: 'target/jest-coverage',
-        coveragePathIgnorePatterns: ['/material-ui/']
+        sources: 'test/js',
     },
 };
 
@@ -186,7 +182,7 @@ builder.src([
     'dist' // for icons & fonts; NOTE: would be nice to find another way to do this as files in dist creates issues for jest & eslint
 ]);
 
-builder.tests('test/js');
+builder.tests(config.test.sources);
 
 // redefine 'lint' to check only react and test sources (avoid dist)
 builder.defineTask("lint", () => (
