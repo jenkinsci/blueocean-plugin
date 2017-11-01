@@ -1016,15 +1016,17 @@
             </activation>
             <build>
                 <plugins>
-                    <!-- run upstream dependency fetches for all js plugins -->
+
                     <plugin>
                         <groupId>io.jenkins.blueocean</groupId>
                         <artifactId>blueocean-maven-plugin</artifactId>
                         <version>0.0.2</version>
                         <executions>
                             <execution>
+                                <!-- unpack package.json + JS into node_modules for any deps with JS files -->
+                                <!-- NOTE: must use 'initialize' and be declared before frontend-plugin so this occurs before npm install -->
                                 <id>upstream-dependencies</id>
-                                <phase>process-resources</phase>
+                                <phase>initialize</phase>
                                 <goals>
                                     <goal>process-node-dependencies</goal>
                                 </goals>
@@ -1060,7 +1062,19 @@
                             </execution>
 
                             <execution>
-                                <phase>process-resources</phase>
+                                <phase>initialize</phase>
+                                <id>gulp clean</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- The package.json must define an "mvnclean" script -->
+                                    <arguments>run mvnclean</arguments>
+                                </configuration>
+                            </execution>
+
+                            <execution>
+                                <phase>initialize</phase>
                                 <id>npm install</id>
                                 <goals>
                                     <goal>npm</goal>
@@ -1072,7 +1086,7 @@
                             </execution>
 
                             <execution>
-                                <phase>compile</phase>
+                                <phase>generate-sources</phase>
                                 <id>npm mvnbuild</id>
                                 <goals>
                                     <goal>npm</goal>
