@@ -6,7 +6,7 @@ describe('UrlUtils', () => {
     it('toClassicJobPage - Non Multibranch', () => {
         assert.equal(toClassicJobPage(
             '/jenkins/blue/organizations/jenkins/freestyleA/detail/freestyleA/activity', false),
-            '/job/freestyleA!');
+            '/job/freestyleA');
         assert.equal(toClassicJobPage(
             '/jenkins/blue/organizations/jenkins/freestyleA/detail/freestyleA/2/pipeline', false),
             '/job/freestyleA/2');

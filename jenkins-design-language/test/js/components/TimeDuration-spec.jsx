@@ -18,7 +18,7 @@ describe("TimeDuration", () => {
         const wrapper = shallow(<TimeDuration />);
 
         assert.isTrue(wrapper.equals(
-            <span>!</span>
+            <span>-</span>
         ));
     });
 
