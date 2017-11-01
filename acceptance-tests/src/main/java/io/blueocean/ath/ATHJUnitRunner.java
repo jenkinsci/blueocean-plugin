@@ -18,7 +18,6 @@ import org.junit.runners.model.Statement;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.remote.ScreenshotException;
 
@@ -121,12 +120,9 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
     }
 
     private void outputConsoleLogs() {
-        logger.info("browser console output below:");
         WebDriver driver = injector.getInstance(WebDriver.class);
-        LogEntries logs = driver.manage().logs().get("browser");
-        for (LogEntry entry : logs) {
-            LogEntryLogger.recordLogEntry(entry);
-        }
+        List<LogEntry> allEntries = driver.manage().logs().get("browser").getAll();
+        LogEntryLogger.recordLogEntries(allEntries);
     }
 
 

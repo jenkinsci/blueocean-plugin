@@ -7,7 +7,9 @@ import org.openqa.selenium.logging.LogEntry;
 
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * Writes a Selenium LogEntry to log4j
@@ -18,11 +20,31 @@ class LogEntryLogger {
     private static final ObjectMapper jsonMapper = new ObjectMapper();
     private static final TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};
 
-    static void recordLogEntry(LogEntry entry) {
-        if (!logger.isInfoEnabled() || isSuperfluousLogEntry(entry)) {
+    static void recordLogEntries(List<LogEntry> entries) {
+        if (!logger.isInfoEnabled()) {
             return;
         }
 
+        if (entries.size() == 0) {
+            logger.info("nothing written to browser console");
+            return;
+        }
+
+        List<LogEntry> usefulEntries = entries.stream()
+            .filter(entry -> !isSuperfluousLogEntry(entry))
+            .collect(Collectors.toList());
+
+        if (usefulEntries.iterator().hasNext()) {
+            logger.info("browser console output below:");
+            for (LogEntry entry : usefulEntries) {
+                LogEntryLogger.recordLogEntry(entry);
+            }
+        } else {
+            logger.info(String.format("nothing useful written to browser console; %s entries were hidden", entries.size()));
+        }
+    }
+
+    private static void recordLogEntry(LogEntry entry) {
         String time;
         String level;
         String text;
@@ -49,7 +71,7 @@ class LogEntryLogger {
     private static final String MESSAGE_CHROME_CONSOLE = "Chrome displays console errors";
     private static final String MESSAGE_PASSWORD_INSECURE = "page includes a password or credit card input";
 
-    static boolean isSuperfluousLogEntry(LogEntry entry) {
+    private static boolean isSuperfluousLogEntry(LogEntry entry) {
         String message = entry.getMessage();
         return message.contains(MESSAGE_JS_LOGGING) || message.contains(MESSAGE_CHROME_CONSOLE) ||
             message.contains(MESSAGE_PASSWORD_INSECURE);
