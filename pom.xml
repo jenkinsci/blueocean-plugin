@@ -1048,18 +1048,6 @@
                         <executions>
 
                             <execution>
-                                <phase>clean</phase>
-                                <id>run clean</id>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <configuration>
-                                    <!-- The package.json must define an "mvnclean" script -->
-                                    <arguments>run mvnclean</arguments>
-                                </configuration>
-                            </execution>
-
-                            <execution>
                                 <phase>initialize</phase>
                                 <id>install node and npm</id>
                                 <goals>
@@ -1070,6 +1058,18 @@
                                     <npmVersion>${npm.version}</npmVersion>
                                     <nodeDownloadRoot>https://repo.jenkins-ci.org/nodejs-dist/</nodeDownloadRoot>
                                     <npmDownloadRoot>https://repo.jenkins-ci.org/npm-dist/</npmDownloadRoot>
+                                </configuration>
+                            </execution>
+
+                            <execution>
+                                <phase>initialize</phase>
+                                <id>gulp clean</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- The package.json must define an "mvnclean" script -->
+                                    <arguments>run mvnclean</arguments>
                                 </configuration>
                             </execution>
 
