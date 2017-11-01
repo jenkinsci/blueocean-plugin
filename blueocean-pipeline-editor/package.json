@@ -11,6 +11,7 @@
     "test:watch": "jjsbuilder --tasks test:watch",
     "bundle": "jjsbuilder --tasks bundle",
     "bundle:watch": "jjsbuilder --tasks bundle:watch",
+    "mvnclean": "echo 'clean'",
     "mvnbuild": "jjsbuilder --tasks lint,bundle",
     "mvntest": "jjsbuilder --tasks test"
   },

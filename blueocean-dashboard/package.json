@@ -14,6 +14,7 @@
     "test:watch": "gulp test:debug",
     "bundle": "gulp bundle",
     "bundle:watch": "gulp bundle:watch",
+    "mvnclean": "echo 'clean'",
     "mvnbuild": "gulp lint bundle",
     "mvntest": "gulp test"
   },

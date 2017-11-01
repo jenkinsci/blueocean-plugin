@@ -9,6 +9,7 @@
     "test:watch": "gulp test:watch",
     "bundle": "gulp bundle",
     "bundle:watch": "gulp bundle:watch",
+    "mvnclean": "echo 'clean'",
     "mvnbuild": "gulp lint bundle",
     "mvntest": "gulp test"
   },
