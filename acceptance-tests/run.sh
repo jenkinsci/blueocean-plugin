@@ -35,10 +35,11 @@ fi
 
 if [ "${RUN_SELENIUM}" == "true" ]; then
     ./runner/scripts/start-selenium.sh
+    ./runner/scripts/start-bitbucket-server.sh
+
 fi
 
 
-./runner/scripts/start-bitbucket-server.sh
 
 EXECUTION="env JENKINS_JAVA_OPTS=\"${JENKINS_JAVA_OPTS}\" ${ATH_SERVER_HOST} ${ATH_SERVER_PORT} BROWSER=phantomjs LOCAL_SNAPSHOTS=${LOCAL_SNAPSHOTS} ${PLUGINS} PLUGINS_DIR=../runtime-plugins/runtime-deps/target/plugins-combined PATH=./node:./node/npm/bin:./node_modules/.bin:${PATH} mvn -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -B -Dmaven.test.failure.ignore ${MAVEN_SETTINGS} test ${PROFILES} ${TEST_TO_RUN}"
 
@@ -60,8 +61,9 @@ popd
 
 if [ "${RUN_SELENIUM}" == "true" ]; then
     ./runner/scripts/stop-selenium.sh
+    ./runner/scripts/stop-bitbucket-server.sh
+
 fi
 
-./runner/scripts/stop-bitbucket-server.sh
 
 exit $EXIT_CODE

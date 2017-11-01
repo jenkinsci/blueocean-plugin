@@ -18,6 +18,7 @@ node() {
       sh 'mv $FILE acceptance-tests/bo-ath.key'
     }
     sh "./acceptance-tests/runner/scripts/start-selenium.sh"
+    sh "./acceptance-tests/runner/scripts/start-bitbucket-server.sh"
   }
 
   docker.image('blueocean_build_env').inside("--net=container:blueo-selenium") {
