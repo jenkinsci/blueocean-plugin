@@ -70,8 +70,7 @@
       "react-dom@any",
       "react-redux@any",
       "react-router@any",
-      "redux-thunk@any",
-      "reselect@any"
+      "redux-thunk@any"
     ]
   }
 }
