@@ -36,8 +36,17 @@ fi
 if [ "${RUN_SELENIUM}" == "true" ]; then
     ./runner/scripts/start-selenium.sh
     ./runner/scripts/start-bitbucket-server.sh
-
 fi
+
+ while true; do
+    curl -v http://localhost:7990 2>&1 | grep 'Location: http://localhost:7990/dashboard' > /dev/null
+
+    if [ "$?" -eq "0" ]; then
+        break;
+    fi
+    echo Waiting for bitbucket server to start
+    sleep 10
+done
 
 
 
