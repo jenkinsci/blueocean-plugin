@@ -27,7 +27,7 @@ public class FlowNodeWrapper {
     private final FlowNode node;
     private final NodeRunStatus status;
     private final TimingInfo timingInfo;
-    public final List<String> edges = new ArrayList<>();
+    public final List<FlowNodeWrapper> edges = new ArrayList<>();
     public final NodeType type;
     private final String displayName;
     private final InputStep inputStep;
@@ -104,11 +104,15 @@ public class FlowNodeWrapper {
         return node;
     }
 
-    public void addEdge(String id){
-        this.edges.add(id);
+    public NodeType getType() {
+        return type;
     }
 
-    public void addEdges(List<String> edges){
+    public void addEdge(FlowNodeWrapper edge){
+        this.edges.add(edge);
+    }
+
+    public void addEdges(List<FlowNodeWrapper> edges){
         this.edges.addAll(edges);
     }
 

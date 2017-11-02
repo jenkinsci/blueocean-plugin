@@ -231,11 +231,12 @@ function createSmallLabels(columns: Array<NodeColumn>) {
     const labels = [];
 
     for (const column of columns) {
-        if (column.rows.length === 1) {
-            continue; // No small labels for single-row (single node) columns
-        }
         for (const row of column.rows) {
             for (const node of row) {
+                // We add small labels to parallel nodes only so skip others
+                if (!node.stage || node.stage.type !== 'PARALLEL'){
+                    continue;
+                }
                 const label: LabelInfo = {
                     x: node.x,
                     y: node.y,
