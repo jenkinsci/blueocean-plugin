@@ -50,7 +50,7 @@ export const getNodesInformation = (nodes) => {
          * are we in a node that indicates that we have parallel nodes?
          */
         if (item.edges) {
-            parallelNodes = item.edges.filter((edge) => edge.type === 'PARALLEL');
+            parallelNodes = item.edges.filter((edge) => edge.type === 'PARALLEL').map((edge) => edge.id);
         }
 
         // in case we had been in a parallel node before, we will indicate it and remove the id of the parallel array
