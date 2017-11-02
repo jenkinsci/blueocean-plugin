@@ -38,7 +38,7 @@ if [ "${RUN_SELENIUM}" == "true" ]; then
     ./runner/scripts/start-bitbucket-server.sh
 fi
 
- while true; do
+while true; do
     curl -v http://localhost:7990 2>&1 | grep 'Location: http://localhost:7990/dashboard' > /dev/null
 
     if [ "$?" -eq "0" ]; then
