@@ -52,7 +52,7 @@ public class BitbucketServerTest implements WebDriverMixin {
         wait.until(By.xpath("//input[@placeholder='My Bitbucket Server']")).sendKeys("bitbucketserver");
         wait.until(By.xpath("//input[@placeholder='https://mybitbucket.example.com']")).sendKeys("http://127.0.0.1:7990");
         wait.until(By.cssSelector(".button-create-server")).click();
-        Thread.sleep(2000);
+        Thread.sleep(      10000);
         if (getDriver().findElements(By.cssSelector(".FormElement.u-error-state")).isEmpty()) {
             LOGGER.info("Entered server details");
             wait.until(By.xpath("(//input[ @class='TextInput-control'])[1]")).sendKeys("admin");
