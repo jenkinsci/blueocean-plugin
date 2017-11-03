@@ -151,7 +151,7 @@ public class LoginTest implements WebDriverMixin {
         // click: handles animation, failures will retry up to 2 times
         click("//form[@name='login']//button"); // XPath selector
         // other utilities, see io.blueocean.ath.WebDriverMixin
-        assert find("//a[contains(@href, 'logout')]").isVisible() : "Not logged in";
+        assert find("//a[contains(@href, 'logout')]").isDisplayed() : "Not logged in";
     }
 }
 ```
