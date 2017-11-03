@@ -4,7 +4,7 @@ import { storiesOf } from '@kadira/storybook';
 import { IconButton } from '../components';
 import { CustomIcons } from './IconButtonStoryHelpers';
 
-import * as IconId from '../components/material-ui/svg-icons';
+import * as IconId from '@jenkins-cd/blueocean-material-icons';
 
 /* eslint-disable max-len, react/self-closing-comp */
 

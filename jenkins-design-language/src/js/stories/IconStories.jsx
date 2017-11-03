@@ -2,7 +2,7 @@ import React from 'react';
 import { storiesOf } from '@kadira/storybook';
 
 import { Icon } from '../components/Icon';
-import * as IconId from '../components/material-ui/svg-icons';
+import * as IconId from '@jenkins-cd/blueocean-material-icons';
 
 /* eslint-disable max-len, react/self-closing-comp */
 
@@ -16,6 +16,10 @@ const style = {
     padding: 10,
 };
 
+const iconStyle = {
+    fill: "#4A90E2",
+};
+
 function AllIcons() {
     return (
         <div>
@@ -25,7 +29,7 @@ function AllIcons() {
                 <div style={{ display: 'flex', flexFlow: 'row wrap', marginTop: '20px' }}>
                     { Object.keys(IconId).sort().map(shape => (
                         <div key={shape} style={{marginTop: '20px', textAlign: 'center', width: '19%'}}>
-                            <Icon icon={shape} color="#4A90E2" />
+                            <Icon icon={shape} style={iconStyle} />
                             <div>{shape}</div>
                         </div>
                     ) )}
@@ -48,7 +52,7 @@ function VerticalPositioning() {
                 <div style={{ display: 'flex', flexFlow: 'row wrap' }}>
                     { Object.keys(IconId).slice(50, 75).sort().map(shape => (
                         <div key={shape} style={{marginTop: '20px', width: '19%'}}>
-                            <Icon icon={shape} color="#4A90E2" />
+                            <Icon icon={shape} style={iconStyle} />
                             <span> {shape}</span>
                         </div>
                     ) )}
@@ -60,7 +64,7 @@ function VerticalPositioning() {
                 <div style={{ display: 'flex', flexFlow: 'row wrap' }}>
                     { Object.keys(IconId).slice(50, 75).sort().map(shape => (
                         <div key={shape} style={{marginTop: '20px', width: '19%'}}>
-                            <Icon icon={shape} color="#4A90E2" style={{verticalAlign: 'bottom'}} />
+                            <Icon icon={shape} style={{verticalAlign: 'bottom', fill: "#4A90E2"}} />
                             <span> {shape}</span>
                         </div>
                     ) )}
@@ -84,15 +88,15 @@ function Sizing() {
             <div key={shape} style={buttonRow}>
                 <div className="layout-small" style={cellStyle}>
                     Small &nbsp;
-                    <Icon icon={shape} color="#4A90E2" label="Small" />
+                    <Icon icon={shape} style={iconStyle} label="Small" />
                 </div>
                 <div style={cellStyle}>
                     Medium &nbsp;
-                    <Icon icon={shape} color="#4A90E2" label="Medium" />
+                    <Icon icon={shape} style={iconStyle} label="Medium" />
                 </div>
                 <div className="layout-large" style={cellStyle}>
                     Large &nbsp;
-                    <Icon icon={shape} color="#4A90E2" label="Large" />
+                    <Icon icon={shape} style={iconStyle} label="Large" />
                 </div>
             </div>
             )) }

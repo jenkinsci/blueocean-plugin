@@ -1,13 +1,9 @@
 {
-  "name": "@jenkins-cd/design-language",
-  "jdlName": "jenkins-design-language",
-  "version": "0.0.158",
-  "description": "Styles, assets, and React classes for Jenkins Design Language",
+  "name": "@jenkins-cd/blueocean-material-icons",
+  "version": "0.0.2",
+  "description": "Material icons for the Jenkins Design Language",
   "main": "dist/js/components/index.js",
   "scripts": {
-    "storybook": "npm run gulp build && start-storybook -p 9001 --static-dir dist/assets/",
-    "build-storybook": "build-storybook --static-dir dist/assets/ --output-dir website/storybook",
-    "flow": "flow",
     "lint": "gulp lint",
     "gulp": "gulp build",
     "mvnclean": "gulp clean",
@@ -17,51 +13,22 @@
     "bundle:watch": "gulp bundle:watch",
     "test": "gulp test",
     "test:debug": "node --debug-brk ./node_modules/.bin/gulp test:debug",
-    "test:fast": "gulp test:fast",
-    "site-build": "harp compile website/ website-build/",
-    "site-server": "harp server website --port 3000",
-    "site-publish": "./site-publish.sh"
+    "test:fast": "gulp test:fast"
   },
-  "author": "Josh McDonald <jmcdonald@cloudbees.com> (https://www.cloudbees.com/)",
-  "contributors": [
-    "James Dumay <jameswdumay@gmail.com>",
-    "Josh McDonald <josh@joshmcdonald.info>",
-    "Michael Neale <michael.neale@gmail.com>",
-    "Thorsten Scherler <scherler@gmail.com>",
-    "Tom Fennelly <tom.fennelly@gmail.com>",
-    "Cliff Meyers <cliff.meyers@gmail.com>",
-    "Ivan Meredith <ivan@ivan.net.nz>",
-    "Kohsuke Kawaguchi <kk@kohsuke.org>",
-    "Yuta Hiroto <git@about-hiroppy.com>"
-  ],
+  "author": "Nicolae Pascu <npascu@cloudbees.com> (https://www.cloudbees.com/)",
   "license": "MIT",
-  "files": [
-    "LICENSE",
-    "README.md",
-    "licenses",
-    "dist"
-  ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/jenkinsci/jenkins-design-language.git"
-  },
-  "jest": {
-    "collectCoverageFrom": [
-      "!src/js/components/material-ui/**",
-      "src/js/**/*.{js,jsx}"
-    ]
+    "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
     "linkifyjs": "2.1.4",
     "lodash.debounce": "4.0.8",
-    "moment": "2.15.1",
-    "moment-duration-format": "1.3.0",
     "react": "15.4.2",
     "react-addons-css-transition-group": "15.4.2",
     "react-dom": "15.4.2"
   },
   "devDependencies": {
-    "@jenkins-cd/blueocean-material-icons": "0.0.2",
     "@jenkins-cd/js-builder": "0.0.62",
     "@jenkins-cd/js-builder-jest": "0.0.4",
     "@jenkins-cd/js-modules": "0.0.10",
@@ -97,10 +64,5 @@
     "react-router": "2.8.1",
     "run-sequence": "1.2.2",
     "watchify": "3.7.0"
-  },
-  "jenkinscd": {
-    "export": [
-      "moment"
-    ]
   }
 }
