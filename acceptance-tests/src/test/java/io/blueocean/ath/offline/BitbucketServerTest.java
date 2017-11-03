@@ -48,24 +48,22 @@ public class BitbucketServerTest implements WebDriverMixin {
         wait.until(By.cssSelector(".button-add-server")).click();
         LOGGER.info("Clicked addserver");
 
-
         wait.until(By.xpath("//input[@placeholder='My Bitbucket Server']")).sendKeys("bitbucketserver");
         wait.until(By.xpath("//input[@placeholder='https://mybitbucket.example.com']")).sendKeys("http://127.0.0.1:7990");
-        wait.until(By.cssSelector(".button-create-server")).click();
-        Thread.sleep(      10000);
-        if (getDriver().findElements(By.cssSelector(".FormElement.u-error-state")).isEmpty()) {
-            LOGGER.info("Entered server details");
-            wait.until(By.xpath("(//input[ @class='TextInput-control'])[1]")).sendKeys("admin");
-            wait.until(By.xpath("(//input[ @class='TextInput-control'])[2]")).sendKeys("admin");
-            wait.until(By.cssSelector(".button-create-credental")).click();
-            LOGGER.info("Entered credentials");
-        } else {
+        click(".button-create-server");
+        Thread.sleep(      3000);
+        if (!getDriver().findElements(By.cssSelector(".FormElement.u-error-state")).isEmpty()) {
             click("//button[text()='Cancel']");
             click(".Dropdown-button.Dropdown-placeholder");
             click("//a[text()='bitbucketserver']");
             LOGGER.info("Server already exists");
         }
 
-        wait.until(By.cssSelector(".button-next-step")).click();
+        click(".button-next-step");
+
+        wait.until(By.xpath("(//input[ @class='TextInput-control'])[1]")).sendKeys("admin");
+        wait.until(By.xpath("(//input[ @class='TextInput-control'])[2]")).sendKeys("admin");
+        wait.until(By.cssSelector(".button-create-credental")).click();
+
     }
 }
