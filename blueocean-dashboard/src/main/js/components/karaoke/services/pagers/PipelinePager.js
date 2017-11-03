@@ -79,7 +79,7 @@ export class PipelinePager {
             },
         };
         // get api data and further process it
-        return KaraokeApi.getNodes(this.augmenter.nodesUrl)
+        return KaraokeApi.getAllNodes(this.augmenter.nodesUrl)
             .then(action('Process node data', result => {
                 if (result.model.length === 0) {
                     logger.debug('Seems we do not have any nodes for this run.');

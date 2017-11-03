@@ -1,5 +1,6 @@
 import { capabilityAugmenter, Fetch, FetchFunctions, logging } from '@jenkins-cd/blueocean-core-js';
 import debounce from 'lodash.debounce';
+import parse_link_header from 'parse-link-header';
 import { generateDetailUrl } from '../urls/detailUrl';
 import { getNodesInformation } from '../../../util/logDisplayHelper';
 
@@ -49,6 +50,27 @@ function parseNewStart(response) {
     return response;
 }
 
+function recursivelyFetchNodes(href, fetchOptions) {
+  return Fetch
+        .fetch(href, { fetchOptions })
+        .then(result => {
+            const links = parse_link_header(result.headers.get('Link'));
+            return FetchFunctions
+                .parseJSON(result)
+                .then(rawNodes => {
+                    if (!links.next || rawNodes.length < 1)
+                        return { rawNodes: rawNodes };
+
+                    logger.debug("Fetching next node batch from", links.next.url);
+                    return new Promise(resolve => {
+                        recursivelyFetchNodes(links.next.url, fetchOptions).then(nextBatch => {
+                            resolve({ rawNodes: rawNodes.concat(nextBatch.rawNodes) });
+                        });
+                    });
+                });
+        });
+}
+
 export class KaraokeApi {
 
     /**
@@ -62,9 +84,7 @@ export class KaraokeApi {
         const fetchOptions = prepareOptions();
         const href = generateDetailUrl(pipeline, branch, runId);
         logger.debug('Fetching href', href);
-        return Fetch.fetchJSON(href, { fetchOptions })
-            .then(FetchFunctions.checkStatus)
-            .then(data => capabilityAugmenter.augmentCapabilities(data));
+        return Fetch.fetchJSON(href, { fetchOptions });
     }
 
     /**
@@ -84,7 +104,6 @@ export class KaraokeApi {
                     resolve();
                 }
                 resolve(Fetch.fetch(finalHref, { fetchOptions })
-                    .then(FetchFunctions.checkStatus)
                     .then(parseMoreDataHeader)
                     .then(parseNewStart));
             }, 200)();
@@ -103,11 +122,28 @@ export class KaraokeApi {
                     resolve();
                 }
                 resolve(Fetch.fetchJSON(href, { fetchOptions })
-                    .then(FetchFunctions.checkStatus)
-                    .then(data => capabilityAugmenter.augmentCapabilities(data))
                     .then(getNodesInformation));
             }, 200)();
         });
+    }
+
+    getAllNodes(href) {
+      // creating a new promise to be able to debounce the fetching
+      return new Promise((resolve) => {
+          debounce(() => {
+              const fetchOptions = prepareOptions();
+              logger.debug('Fetching with json enabled parsing the following href', href);
+              if (!href || href === undefined) {
+                  // leave a logger warning and abort
+                  logger.warn('could not fetch with empty href');
+                  resolve();
+              }
+              resolve(recursivelyFetchNodes(href, { fetchOptions })
+                  .then(data => capabilityAugmenter.augmentCapabilities(data.rawNodes))
+                  .then(getNodesInformation)
+              );
+          }, 200)();
+      });
     }
 
     getSteps(href) {
