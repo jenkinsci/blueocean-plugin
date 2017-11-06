@@ -19,7 +19,7 @@ import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbRepo;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbSaveContentResponse;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbUser;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.pageable.PagedResponse;
+import io.jenkins.blueocean.rest.pageable.Pageable;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.NotImplementedException;
 import org.apache.http.HttpEntity;
@@ -86,7 +86,7 @@ public class BitbucketCloudApi extends BitbucketApi {
             }
 
             if(pageSize <=0){
-                pageSize = PagedResponse.DEFAULT_LIMIT;
+                pageSize = Pageable.DEFAULT_LIMIT;
             }
             InputStream inputStream = request.get(String.format("%s&page=%s&pagelen=%s",baseUrl+"teams/?role=contributor",
                     pageNumber,pageSize)).getContent();

@@ -158,7 +158,7 @@ public class BranchContainerImpl extends BluePipelineContainer {
 
     @Override
     public Iterator<BluePipeline> iterator() {
-        return iterator(0, PagedResponse.DEFAULT_LIMIT);
+        return iterator(0, defaultLimit());
     }
 
     @Override

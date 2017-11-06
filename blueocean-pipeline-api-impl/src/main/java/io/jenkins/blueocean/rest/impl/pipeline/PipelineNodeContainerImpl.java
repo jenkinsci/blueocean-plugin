@@ -46,6 +46,10 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
         }
     }
 
+    public int defaultLimit() {
+      return 10000;
+    }
+
     @Override
     public BluePipelineNode get(String name) {
         if(nodeMap.get(name) != null){
