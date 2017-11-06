@@ -16,6 +16,7 @@ const revisionInfo = '// Do not edit, it is generated and will be on each build.
 // Java src is compiled, so it's not already created for
 // the revisionInfo stuff below to work without write failures.
 builder.paths.mkdirp('target/classes/io/jenkins/blueocean');
+builder.paths.mkdirp('target/classes/org/jenkins/ui/jsmodules/blueocean-web');
 
 fs.writeFile('target/classes/io/jenkins/blueocean/revisionInfo.js', revisionInfo, err => {
   if (err) throw err;
