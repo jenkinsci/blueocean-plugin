@@ -4,19 +4,15 @@ process.env.SKIP_BLUE_IMPORTS = 'YES';
 process.env.NODE_ENV = 'production';
 
 /*
- Build file for Jenkins Design Language theme.
+ Build file for BlueOcean Material Icons.
  */
 
 const gulp = require('gulp');
-const gutil = require('gulp-util');
 const fs = require('fs');
 const sourcemaps = require('gulp-sourcemaps');
 const babel = require('gulp-babel');
 const clean = require('gulp-clean');
 const runSequence = require('run-sequence');
-const rename = require('gulp-rename');
-const copy = require('gulp-copy');
-const svgmin = require('gulp-svgmin');
 const lint = require('gulp-eslint');
 
 // Options, src/dest folders, etc
