@@ -24,7 +24,7 @@ import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerRe
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerSaveContentResponse;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerUser;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.rest.pageable.PagedResponse;
+import io.jenkins.blueocean.rest.pageable.Pageable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.utils.URIBuilder;
@@ -103,7 +103,7 @@ public class BitbucketServerApi extends BitbucketApi {
             }
 
             if(pageSize <=0){
-                pageSize = PagedResponse.DEFAULT_LIMIT;
+                pageSize = Pageable.DEFAULT_LIMIT;
             }
             InputStream inputStream = request.get(String.format("%s?start=%s&limit=%s",baseUrl+"projects/",
                     toStart(pageNumber, pageSize), pageSize))
