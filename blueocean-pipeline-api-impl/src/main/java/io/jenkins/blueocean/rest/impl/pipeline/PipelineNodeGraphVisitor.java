@@ -215,12 +215,12 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             while(branches.hasNext()){
                 FlowNodeWrapper p = branches.next();
                 p.addParent(stage);
-                stage.addEdge(p.getId());
+                stage.addEdge(p);
             }
         }else{
             if(nextStage != null) {
                 nextStage.addParent(stage);
-                stage.addEdge(nextStage.getId());
+                stage.addEdge(nextStage);
             }
         }
         parallelBranches.clear();
@@ -286,7 +286,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             FlowNodeWrapper branch = new FlowNodeWrapper(branchStartNode, status, times, run);
 
             if(nextStage!=null) {
-                branch.addEdge(nextStage.getId());
+                branch.addEdge(nextStage);
             }
             parallelBranches.push(branch);
         }
@@ -465,11 +465,11 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                     FlowNodeWrapper latestNode = currentNodes.get(i-1);
                     if(latestNode.type == FlowNodeWrapper.NodeType.STAGE){
                         if(futureNode.type == FlowNodeWrapper.NodeType.STAGE){
-                            latestNode.addEdge(futureNode.getId());
+                            latestNode.addEdge(futureNode);
                         }else if(futureNode.type == FlowNodeWrapper.NodeType.PARALLEL){
                             FlowNodeWrapper thatStage = futureNode.getFirstParent();
                             if(thatStage != null && thatStage.equals(latestNode)){
-                                for(String edge:thatStage.edges){
+                                for(FlowNodeWrapper edge:thatStage.edges){
                                     if(!latestNode.edges.contains(edge)){
                                         latestNode.addEdge(edge);
                                     }
@@ -477,33 +477,33 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                             }
                         }
                     }else if(latestNode.type == FlowNodeWrapper.NodeType.PARALLEL){
-                        String futureNodeId = null;
+                        FlowNodeWrapper futureStage = null;
                         FlowNodeWrapper thatStage = null;
                         FlowNodeWrapper futureNodeParent = futureNode.getFirstParent();
                         if(futureNode.type == FlowNodeWrapper.NodeType.STAGE){
                             thatStage = futureNode;
-                            futureNodeId = futureNode.getId();
+                            futureStage = futureNode;
                         }else if(futureNode.type == FlowNodeWrapper.NodeType.PARALLEL &&
                                 futureNodeParent != null &&
                                 futureNodeParent.equals(latestNode.getFirstParent())){
                             thatStage = futureNode.getFirstParent();
                             if(futureNode.edges.size() > 0){
-                                futureNodeId = futureNode.edges.get(0);
+                                futureStage = futureNode.edges.get(0);
                             }
                         }
                         FlowNodeWrapper stage = latestNode.getFirstParent();
                         if(stage != null){
                             //Add future node as edge to all edges of last stage
-                            for(String id:stage.edges){
-                                FlowNodeWrapper node = nodeMap.get(id);
-                                if(node != null && futureNodeId != null) {
-                                    node.addEdge(futureNodeId);
+                            for(FlowNodeWrapper edge:stage.edges){
+                                FlowNodeWrapper node = nodeMap.get(edge.getId());
+                                if(node != null && futureStage != null) {
+                                    node.addEdge(futureStage);
                                 }
                             }
 
                             //now patch edges in case its partial
                             if(thatStage != null && futureNode.type == FlowNodeWrapper.NodeType.PARALLEL) {
-                                for (String edge : thatStage.edges) {
+                                for (FlowNodeWrapper edge : thatStage.edges) {
                                     if (!stage.edges.contains(edge)) {
                                         stage.addEdge(edge);
                                     }
@@ -607,7 +607,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         while(sortedBranches.hasNext()){
             FlowNodeWrapper p = sortedBranches.next();
             p.addParent(synStage);
-            synStage.addEdge(p.getId());
+            synStage.addEdge(p);
         }
         return synStage;
     }
