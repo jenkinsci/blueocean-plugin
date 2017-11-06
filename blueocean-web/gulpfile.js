@@ -61,9 +61,3 @@ builder.bundle('src/main/js/blueocean.js')
     .import("@jenkins-cd/blueocean-core-js@any")
     .import('@jenkins-cd/design-language@any')
     .generateNoImportsBundle();
-
-//
-// An Internet Explorer specific polyfill.
-// Go IE ... you never fail to make me smile :(
-//
-builder.bundle('src/main/js/ie/iepolyfills.js');

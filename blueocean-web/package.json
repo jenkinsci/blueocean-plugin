@@ -10,7 +10,7 @@
     "bundle": "gulp bundle",
     "bundle:watch": "gulp bundle:watch",
     "mvnclean": "echo 'clean'",
-    "mvnbuild": "gulp lint bundle",
+    "mvnbuild": "gulp lint bundle && browserify src/main/js/ie/iepolyfills.js > target/classes/org/jenkins/ui/jsmodules/blueocean-web/iepolyfills.js",
     "mvnbuild:fast": "gulp bundle",
     "mvntest": "gulp test"
   },
