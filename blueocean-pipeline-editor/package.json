@@ -62,8 +62,9 @@
       "@jenkins-cd/design-language@any",
       "@jenkins-cd/js-extensions@any",
       "react@any",
-      "react-router@any",
-      "react-addons-css-transition-group@any"
+      "react-addons-css-transition-group@any",
+      "react-dom@any",
+      "react-router@any"
     ]
   }
 }

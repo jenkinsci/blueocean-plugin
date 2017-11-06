@@ -67,6 +67,7 @@
       "moment@any",
       "moment-duration-format@any",
       "react@any",
+      "react-addons-css-transition-group@any",
       "react-dom@any",
       "react-redux@any",
       "react-router@any",
