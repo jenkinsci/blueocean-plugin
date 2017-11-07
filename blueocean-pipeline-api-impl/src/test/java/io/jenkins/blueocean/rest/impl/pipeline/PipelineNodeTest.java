@@ -322,6 +322,9 @@ public class PipelineNodeTest extends PipelineBaseTest {
             "  stage ('dev') {\n" +
             "    junit('*.xml')\n" +
             "  }\n" +
+            "  stage ('prod') {\n" +
+            "    junit('*.xml')\n" +
+            "  }\n" +
             "}\n";
 
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
@@ -337,15 +340,21 @@ public class PipelineNodeTest extends PipelineBaseTest {
         NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
         List<FlowNode> stages = getStages(builder);
 
-        Assert.assertEquals(1, stages.size());
+        Assert.assertEquals(2, stages.size());
+        for (FlowNode n: stages) {
+            System.err.println("n: " + n.getId());
+        }
 
         List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
-        Assert.assertEquals(1, resp.size());
+        Assert.assertEquals(2, resp.size());
 
         resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/tests/", List.class);
-        Assert.assertEquals(1, resp.size());
+        Assert.assertEquals(2, resp.size());
 
         resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/6/tests/", List.class);
+        Assert.assertEquals(1, resp.size());
+
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/11/tests/", List.class);
         Assert.assertEquals(1, resp.size());
     }
 

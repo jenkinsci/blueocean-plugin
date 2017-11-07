@@ -27,17 +27,21 @@ import java.util.Iterator;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 public class BlueTestResultContainerImpl extends BlueTestResultContainer {
-    private final Run<?, ?> run;
+    protected final Run<?, ?> run;
 
     public BlueTestResultContainerImpl(Reachable parent, Run<?, ?> run) {
         super(parent);
         this.run = run;
     }
 
+    protected Result resolve() {
+        return BlueTestResultFactory.resolve(run, parent);
+    }
+
     @Override
     @SuppressWarnings("unchecked")
     public BlueTestResult get(final String name) {
-        Result resolved = BlueTestResultFactory.resolve(run, parent);
+        Result resolved = resolve();
 
         if (resolved.summary == null || resolved.results == null) {
             throw new NotFoundException("no tests");
@@ -57,7 +61,7 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
     @Nonnull
     @Override
     public Iterator<BlueTestResult> iterator() {
-        Result resolved = BlueTestResultFactory.resolve(run, parent);
+        Result resolved = resolve();
         if (resolved.summary == null || resolved.results == null) {
             throw new NotFoundException("no tests");
         }

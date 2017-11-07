@@ -24,6 +24,7 @@ import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
+import io.jenkins.blueocean.service.embedded.rest.BlueNodeTestResultContainerImpl;
 import io.jenkins.blueocean.service.embedded.rest.BlueTestResultContainerImpl;
 import io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
@@ -91,7 +92,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     @Override
     public BlueTestResultContainer getTests() {
-        return new BlueTestResultContainerImpl(this, run);
+        return new BlueNodeTestResultContainerImpl(parent, run, this);
     }
 
     @Override
