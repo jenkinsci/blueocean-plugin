@@ -325,6 +325,14 @@ public class PipelineNodeTest extends PipelineBaseTest {
             "  stage ('prod') {\n" +
             "    junit('*.xml')\n" +
             "  }\n" +
+            "  stage ('testing') {\n" +
+            "    parallel(first: {\n" +
+            "        junit('*.xml')\n" +
+            "      },\n" +
+            "      second: {\n" +
+            "        junit('*.xml')\n" +
+            "      })\n" +
+            "  }\n" +
             "}\n";
 
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
@@ -340,22 +348,32 @@ public class PipelineNodeTest extends PipelineBaseTest {
         NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
         List<FlowNode> stages = getStages(builder);
 
-        Assert.assertEquals(2, stages.size());
-        for (FlowNode n: stages) {
-            System.err.println("n: " + n.getId());
-        }
+        Assert.assertEquals(3, stages.size());
 
         List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
-        Assert.assertEquals(2, resp.size());
+        Assert.assertEquals(5, resp.size());
 
         resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/tests/", List.class);
-        Assert.assertEquals(2, resp.size());
+        Assert.assertEquals(4, resp.size());
 
         resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/6/tests/", List.class);
         Assert.assertEquals(1, resp.size());
+        Assert.assertEquals("dev / testDummyMethod – DummyTest", resp.get(0).get("name"));
 
         resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/11/tests/", List.class);
         Assert.assertEquals(1, resp.size());
+        Assert.assertEquals("prod / testDummyMethod – DummyTest", resp.get(0).get("name"));
+
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/16/tests/", List.class);
+        Assert.assertEquals(2, resp.size());
+
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/19/tests/", List.class);
+        Assert.assertEquals(1, resp.size());
+        Assert.assertEquals("testing / first / testDummyMethod – DummyTest", resp.get(0).get("name"));
+
+        resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/20/tests/", List.class);
+        Assert.assertEquals(1, resp.size());
+        Assert.assertEquals("testing / second / testDummyMethod – DummyTest", resp.get(0).get("name"));
     }
 
     @Test
