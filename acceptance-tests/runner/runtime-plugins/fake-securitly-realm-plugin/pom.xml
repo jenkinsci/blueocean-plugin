@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>2.11</version>
+    <version>2.35</version>
     <relativePath/>
   </parent>
   <groupId>org.jenkins-ci.plugins</groupId>
@@ -16,13 +16,14 @@
 
   <properties>
     <!-- Baseline Jenkins version you use to build the plugin. Users must have this version or newer to run. -->
-    <jenkins.version>2.46.3</jenkins.version>
+    <jenkins.version>2.73.2</jenkins.version>
     <!-- Other properties you may want to use:
          ~ java.level: set to 6 if your jenkins.version <= 1.611
          ~ jenkins-test-harness.version: Jenkins Test Harness version you use to test the plugin. For Jenkins version >= 1.580.1 use JTH 2.0 or higher.
          ~ hpi-plugin.version: The HPI Maven Plugin version used by the plugin..
          ~ stapler-plugin.version: The Stapler Maven plugin version required by the plugin.
     -->
+    <java.level>8</java.level>
   </properties>
 
   <name>Fake realm plugin</name>
@@ -66,12 +67,12 @@
       <url>https://repo.jenkins-ci.org/public/</url>
     </pluginRepository>
   </pluginRepositories>
- <dependencies>
-   <dependency>
-     <groupId>org.jenkins-ci.main</groupId>
-     <artifactId>jenkins-test-harness</artifactId>
-     <version>2.15</version>
-   </dependency>
- </dependencies>
+   <dependencies>
+     <dependency>
+       <groupId>org.jenkins-ci.main</groupId>
+       <artifactId>jenkins-test-harness</artifactId>
+       <version>2.30</version>
+     </dependency>
+   </dependencies>
 
 </project>

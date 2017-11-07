@@ -8,6 +8,7 @@ import { Dropdown, TextInput } from '@jenkins-cd/design-language';
 import { Split } from './Split';
 import focusOnElement from './focusOnElement';
 import InputText from './InputText';
+import InputTextArea from './InputTextArea';
 import { ValidationMessageList } from './ValidationMessageList';
 
 type Props = {
@@ -110,7 +111,23 @@ export class AgentConfiguration extends Component<DefaultProps, Props, State> {
         };
         this.setState({ selectedAgent: selectedAgent, pristine: true });
         this.props.onChange(selectedAgent);
-        focusOnElement('.agent-select .required input');
+        focusOnElement('.agent-select .required input'); 
+    }
+
+    _getAgentInputControl(param, pristine, val) {
+        const inputProps = {
+            hasError: param.isRequired && !pristine && !val,
+            isRequired: param.isRequired,
+            defaultValue: val,
+            onChange: val => { this.setAgentValue(param.name, val); param.isRequired && this.setState({ pristine: false }); },
+            onBlur: e => param.isRequired && this.setState({ pristine: false }),
+        };
+
+        if (param.name === 'args') {
+            return (<InputTextArea {...inputProps} />);
+        } else {
+            return (<InputText {...inputProps} />);
+        }
     }
 
     render() {
@@ -142,15 +159,12 @@ export class AgentConfiguration extends Component<DefaultProps, Props, State> {
             {selectedAgent && selectedAgentMetadata && <div className="agent-parameters">
                 {selectedAgentMetadata.parameters.filter(agentConfigParamFilter(selectedAgent)).map(param => {
                     const val = this.getRealOrEmptyArg(param.name).value.value;
+                    
                     return (<div className="agent-param">
                         <label key={selectedAgent.type + '/' + param.name}>
                             <div>{param.capitalizedName}{param.isRequired ? '*' : ''}</div>
                             <div>
-                                <InputText hasError={param.isRequired && !pristine && !val}
-                                    isRequired={param.isRequired}
-                                    defaultValue={val}
-                                    onChange={val => { this.setAgentValue(param.name, val); param.isRequired && this.setState({ pristine: false }); }}
-                                    onBlur={e => param.isRequired && this.setState({ pristine: false })} />
+                                {this._getAgentInputControl(param, pristine, val)}
                             </div>
                         </label>
                     </div>);

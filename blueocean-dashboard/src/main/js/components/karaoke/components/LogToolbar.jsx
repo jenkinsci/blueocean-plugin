@@ -1,21 +1,35 @@
 import React, { Component, PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/design-language';
+import { Icon, TimeDuration } from '@jenkins-cd/design-language';
 import { fetchAllSuffix as suffix } from '../../../util/UrlUtils';
 
 const { string } = PropTypes;
 
 export default class LogToolbar extends Component {
     render() {
-        const { url, title } = this.props;
+        const { url, title, duration, t, running } = this.props;
+
         // early out
         if (!url) {
             return null;
         }
         const logUrl = url.includes(suffix) ? url : `${url}${suffix}`;
-        
+
         return (<div className="log-header">
             <div className="log-header__section selected">
-                {title}
+                <span>
+                    {title}
+                </span>
+                {duration &&
+                    <span>
+                        <span>&nbsp;-&nbsp;</span>
+                        <TimeDuration
+                            millis={ duration }
+                            liveUpdate={ running }
+                            updatePeriod={ 1000 }
+                            t={ t }
+                        />
+                    </span>
+                }
             </div>
             <div className="log-header__section download-log-button">
                 <a {...{
@@ -44,4 +58,7 @@ LogToolbar.propTypes = {
     title: string,
     fileName: string,
     url: string.isRequired,
+    duration: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
+    t: PropTypes.func,
+    running: PropTypes.bool,
 };

@@ -82,12 +82,31 @@ public abstract class BluePipelineNode extends BluePipelineStep{
     @Exported(name = TEST_SUMMARY, inline = true, skipNull = true)
     public abstract BlueTestSummary getTestSummary();
 
+    /**
+     * Represents edge of pipeline flow graph
+     */
     @ExportedBean
     public abstract static class Edge{
+        /**
+         * Id of {@link BluePipelineNode#getId()} destination node
+         * @return node id
+         */
         @Exported
         public abstract String getId();
+
+        /**
+         * Type of {@link BluePipelineNode#getType()} destination node
+         * @return type
+         */
+        @Exported
+        public abstract String getType();
+
     }
 
+    /**
+     * All the outgoing edges from this node
+     * @return edges
+     */
     @Exported(name = EDGES, inline = true)
     public abstract List<Edge> getEdges();
 

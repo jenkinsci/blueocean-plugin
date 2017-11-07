@@ -98,4 +98,12 @@ export const TableHeader = (props: $PropertyType<TableCell, 'props'> ) => {
     return <TableCell {...newProps}>{children}</TableCell>;
 };
 
-TableHeader.propTypes = TableCell.propTypes;
+TableHeader.propTypes = {
+    children: PropTypes.node,
+    className: PropTypes.string,
+    href: PropTypes.string,
+    linkTo: PropTypes.string,
+    onClick: PropTypes.func,
+    style: PropTypes.object,
+    title: PropTypes.string
+};

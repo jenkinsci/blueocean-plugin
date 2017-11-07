@@ -16,6 +16,7 @@ import { DevelopmentFooter } from './DevelopmentFooter';
 import { useStrict } from 'mobx';
 import { Icon } from '@jenkins-cd/design-language';
 import ErrorUtils from './ErrorUtils';
+
 useStrict(true);
 
 const LOGGER = logging.logger('io.jenkins.blueocean.web.routing');
@@ -217,7 +218,6 @@ function startApp(routes, stores) {
     });
 
     sseService._initListeners();
-    ErrorUtils.logBrowserConsoleWarning();
 
     // Start React
     render(

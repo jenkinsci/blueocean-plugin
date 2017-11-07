@@ -16,6 +16,7 @@ const revisionInfo = '// Do not edit, it is generated and will be on each build.
 // Java src is compiled, so it's not already created for
 // the revisionInfo stuff below to work without write failures.
 builder.paths.mkdirp('target/classes/io/jenkins/blueocean');
+builder.paths.mkdirp('target/classes/org/jenkins/ui/jsmodules/blueocean-web');
 
 fs.writeFile('target/classes/io/jenkins/blueocean/revisionInfo.js', revisionInfo, err => {
   if (err) throw err;
@@ -36,9 +37,7 @@ gi(function (err, result) {
 // See https://github.com/jenkinsci/js-builder#setting-src-and-test-spec-paths
 builder.src([
     'src/main/js',
-    'src/main/less',
-    'node_modules/@jenkins-cd/design-language/dist',
-    'node_modules/@jenkins-cd/blueocean-core-js/dist']);
+    'src/main/less']);
 
 //
 // Create the main "App" bundle.
@@ -48,74 +47,18 @@ builder.bundle('src/main/js/blueocean.js')
     .inDir('target/classes/io/jenkins/blueocean')
     .less('src/main/less/blueocean.less')
     .onStartup('./src/main/js/init')
-    .export("@jenkins-cd/blueocean-core-js")
-    .export('@jenkins-cd/blueocean-core-js/dist/js/i18n/bundle-startup') // remove once JENKINS-39646 fixes back-door bundle module leakage
-    .export("@jenkins-cd/design-language")
-    .export("@jenkins-cd/js-extensions")
-    .export('react')
-    .export('react-dom')
     .export('redux')
-    .export('mobx')
     .export('mobx-react')
+    .export("immutable")
+	.export("keymirror")
+    .export("react-redux")
+    .export("redux-thunk")
+    .import('react@any', {
+        aliases: ['react/lib/React'] // in case a module requires react through the back door
+    })
+    .import('react-dom@any')
+    .import('mobx@any')
+    .import("@jenkins-cd/js-extensions@any")
+    .import("@jenkins-cd/blueocean-core-js@any")
+    .import('@jenkins-cd/design-language@any')
     .generateNoImportsBundle();
-
-//
-// An Internet Explorer specific polyfill.
-// Go IE ... you never fail to make me smile :(
-//
-builder.bundle('src/main/js/ie/iepolyfills.js');
-
-// Copy/link library assests into the src/main/webapp/assets dir, making them available at runtime.
-linkAssets('jdl', '@jenkins-cd/design-language/dist/assets');
-linkAssets('corejs', '@jenkins-cd/blueocean-core-js/dist/assets');
-
-/**
- * Link (or copy) the specified module's subdir to a dir within /src/main/webapp/assets
- * @param {string} dirName name of directory link
- * @param {string} modulePath path within module, e.g. '@org-name/module/name/some/path
- */
-function linkAssets(dirName, modulePath) {
-    var isWindows = /^win/.test(process.platform);
-    var assetsDstPath = './src/main/webapp/assets/' + dirName;
-
-    if (isWindows) {
-        var assestsCopyDone = false;
-        builder.onPreBundle(function() {
-            if (!assestsCopyDone) {
-                assestsCopyDone = true;
-                var ncp = require('ncp').ncp;
-
-                // wipe the destination directory and recreate.
-                if (fs.existsSync(assetsDstPath)) {
-                    rmdir(assetsDstPath);
-                }
-                fs.mkdirSync(assetsDstPath);
-                // copy assets from stc to dsy.
-                var assetsSrcPath = './node_modules/' + modulePath;
-                ncp(assetsSrcPath, assetsDstPath, function (err) {
-                    if (err) {
-                        return logger.logError(err);
-                    }
-                });
-            }
-        });
-    } else if (!fs.existsSync(assetsDstPath)) {
-        // Just need a symlink for non-windows platforms.
-        var assetsSrcPath = '../../../../node_modules/' + modulePath;
-        fs.symlinkSync(assetsSrcPath, assetsDstPath);
-    }
-}
-
-function rmdir(path) {
-    if (fs.existsSync(path)) {
-        fs.readdirSync(path).forEach(function (file) {
-            var curPath = path + "/" + file;
-            if (fs.lstatSync(curPath).isDirectory()) {
-                rmdir(curPath);
-            } else {
-                fs.unlinkSync(curPath);
-            }
-        });
-        fs.rmdirSync(path);
-    }
-}

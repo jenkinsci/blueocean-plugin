@@ -636,11 +636,30 @@
         margin: 0 -5px;
 
         .agent-param {
-            flex: 0 0 50%;
+            flex: 0 0 100%;
             padding: 0 5px;
 
             label > div:first-child {
                 margin: 6px 0 0 1px;
+            }
+
+            .FormElement {
+                margin-bottom: 0;
+            }
+
+            .TextInput {
+                width: 100%;
+            }
+
+            .TextArea {
+                min-height: 102px;
+                height: auto;
+
+                textarea {
+                    min-height: 102px;
+                    resize: none;
+                    overflow-y:hidden;
+                }
             }
         }
     }

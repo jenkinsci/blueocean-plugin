@@ -11,10 +11,10 @@ const validResultValues = StatusIndicator.validResultValues;
 // Data creation helpers Lifted from stories
 let __id = 1111;
 
-function makeNode(name, children = [], state = validResultValues.not_built, completePercent) {
+function makeNode(name, children = [], state = validResultValues.not_built, type='STAGE', completePercent) {
     completePercent = completePercent || ((state == validResultValues.running) ? Math.floor(Math.random() * 60 + 20) : 50);
     const id = __id++;
-    return {name, children, state, completePercent, id};
+    return {name, children, state, completePercent, id, type};
 }
 
 function makeSequence(...stages) {
@@ -84,22 +84,22 @@ describe('PipelineGraph', () => {
             const stages = [
                 makeNode('Build', [], validResultValues.success),
                 makeNode('Test', [
-                    makeNode('JUnit', [], validResultValues.success),
-                    makeNode('DBUnit', [], validResultValues.success),
-                    makeNode('Jasmine', [], validResultValues.success),
+                    makeNode('JUnit', [], validResultValues.success, 'PARALLEL'),
+                    makeNode('DBUnit', [], validResultValues.success, 'PARALLEL'),
+                    makeNode('Jasmine', [], validResultValues.success, 'PARALLEL'),
                 ]),
                 makeNode('Browser Tests', [
-                    makeNode('Firefox', [], validResultValues.success),
-                    makeNode('Edge', [], validResultValues.failure),
-                    makeNode('Safari', [], validResultValues.running, 60),
-                    makeNode('Chrome', [], validResultValues.running, 120),
+                    makeNode('Firefox', [], validResultValues.success, 'PARALLEL'),
+                    makeNode('Edge', [], validResultValues.failure, 'PARALLEL'),
+                    makeNode('Safari', [], validResultValues.running, 'PARALLEL', 60),
+                    makeNode('Chrome', [], validResultValues.running, 'PARALLEL', 120),
                 ]),
                 makeNode('Skizzled', [], validResultValues.skipped),
                 makeNode('Foshizzle', [], validResultValues.skipped),
                 makeNode('Dev', [
-                    makeNode('US-East', [], validResultValues.success),
-                    makeNode('US-West', [], validResultValues.success),
-                    makeNode('APAC', [], validResultValues.success),
+                    makeNode('US-East', [], validResultValues.success, 'PARALLEL'),
+                    makeNode('US-West', [], validResultValues.success, 'PARALLEL'),
+                    makeNode('APAC', [], validResultValues.success, 'PARALLEL'),
                 ], validResultValues.success),
                 makeNode('Staging', [], validResultValues.skipped),
                 makeNode('Production'),
@@ -271,15 +271,15 @@ describe('PipelineGraph', () => {
             const stages = [
                 makeNode("Alpha"),
                 makeNode("Bravo", [
-                    makeNode("Echo"),
+                    makeNode("Echo", [], validResultValues.not_built, 'PARALLEL'),
                     makeSequence(
-                        makeNode("Foxtrot"),
-                        makeNode("Golf"),
-                        makeNode("Hotel"),
+                        makeNode("Foxtrot", [], validResultValues.not_built, 'PARALLEL'),
+                        makeNode("Golf", [], validResultValues.not_built, 'PARALLEL'),
+                        makeNode("Hotel", [], validResultValues.not_built, 'PARALLEL'),
                     ),
                     makeSequence(
-                        makeNode("India"),
-                        makeNode("Juliet"),
+                        makeNode("India", [], validResultValues.not_built, 'PARALLEL'),
+                        makeNode("Juliet", [], validResultValues.not_built, 'PARALLEL'),
                     )
                 ]),
                 makeNode("Charlie"),
@@ -376,6 +376,84 @@ describe('PipelineGraph', () => {
             assertConnection(connections, 'Juliet', 'Charlie');
 
             assertConnection(connections, 'Charlie', 'End');
-        })
+        });
+
+        it('lays out a single node parallel graph', () => {
+            const stages = [
+                makeNode('Build', [], validResultValues.success),
+                makeNode('Test', [
+                    makeNode('JUnit', [], validResultValues.success, 'PARALLEL'),
+                ]),
+                makeNode('Deploy'),
+            ];
+
+            const {
+                nodeColumns,
+                connections,
+                bigLabels,
+                smallLabels,
+                measuredWidth,
+                measuredHeight,
+            } = layoutGraph(stages, defaultLayout);
+
+            // Basic stuff
+
+            assert.equal(nodeColumns.length, 5, 'column count');
+            assert.equal(measuredWidth, 528, 'measuredWidth');
+            assert.equal(measuredHeight, 200, 'measuredHeight');
+            assert.equal(smallLabels.length, 1, 'small label count');
+            assert.equal(bigLabels.length, 5, 'big label count');
+
+            // Start col
+            let col = nodeColumns[0];
+            assert.equal(undefined, col.topStage, 'topStage');
+            assert.equal(1, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'Start', 60, 55);
+
+            // End col
+            col = nodeColumns[4];
+            assert.equal(undefined, col.topStage, 'topStage');
+            assert.equal(1, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'End', 468, 55);
+
+            // Col 1
+            col = nodeColumns[1];
+            assert.ok(col.topStage, 'topStage');
+            assert.equal(col.topStage.name, 'Build', 'top stage name');
+            assert.equal(1, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'Build', 144, 55);
+
+            // Col 2
+            col = nodeColumns[2];
+            assert.ok(col.topStage, 'topStage');
+            assert.equal(col.topStage.name, 'Test', 'top stage name');
+            assert.equal(1, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'JUnit', 264, 55);
+
+            // Col 3
+            col = nodeColumns[3];
+            assert.ok(col.topStage, 'topStage');
+            assert.equal(col.topStage.name, 'Deploy', 'top stage name');
+            assert.equal(1, col.rows.length);
+            assertSingleNodeRow(col.rows[0], 'Deploy', 384, 55);
+
+            // Big Labels
+            assertLabel(bigLabels, 'Start', 60, 55);
+            assertLabel(bigLabels, 'Build', 144, 55);
+            assertLabel(bigLabels, 'Test', 264, 55);
+            assertLabel(bigLabels, 'Deploy', 384, 55);
+            assertLabel(bigLabels, 'End', 468, 55);
+
+            // Small Labels - Test
+            assertLabel(smallLabels, 'JUnit', 264, 55);
+
+            // Connections
+            assertConnection(connections, 'Start', 'Build');
+            assertConnection(connections, 'Build', 'JUnit');
+            assertConnection(connections, 'JUnit', 'Deploy');
+            assertConnection(connections, 'Deploy', 'End');
+
+            assert.equal(connections.length, 4, 'Total composite connections');
+        });
     });
 });

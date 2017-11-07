@@ -174,6 +174,7 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
             eachNotifier.addFailure(e);
         } finally {
             eachNotifier.fireTestFinished();
+            LocalDriver.destroy();
         }
     }
 

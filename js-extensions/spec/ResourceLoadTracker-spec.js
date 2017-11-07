@@ -3,6 +3,8 @@ var expect = require('chai').expect;
 
 var ResourceLoadTracker = new (require('../dist/ResourceLoadTracker').default)();
 
+var noop = () => {};
+
 describe("ResourceLoadTracker.js", function () {
 
     // Looking at './javaScriptExtensionInfo-02.json' you'll see that there are a few extension
@@ -37,7 +39,7 @@ describe("ResourceLoadTracker.js", function () {
 
             // Mounting ep-1 should result in the CSS for both plugins being
             // loaded ...
-            ResourceLoadTracker.onMount('ep-1');
+            ResourceLoadTracker.onMount('ep-1', noop);
             cssElements = document.getElementsByTagName('link');
             expect(cssElements.length).to.equal(2);
             expect(cssElements[0].getAttribute('href')).to.include('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
@@ -66,7 +68,7 @@ describe("ResourceLoadTracker.js", function () {
 
             // Mounting ep-2 should result in the CSS for plugin-1 only being
             // loaded ...
-            ResourceLoadTracker.onMount('ep-2');
+            ResourceLoadTracker.onMount('ep-2', noop);
             cssElements = document.getElementsByTagName('link');
             expect(cssElements.length).to.equal(1);
             expect(cssElements[0].getAttribute('href')).to.include('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
@@ -93,9 +95,9 @@ describe("ResourceLoadTracker.js", function () {
 
             // Mounting ep-* should result in the CSS for both plugins being
             // loaded ...
-            ResourceLoadTracker.onMount('ep-1');
-            ResourceLoadTracker.onMount('ep-2');
-            ResourceLoadTracker.onMount('ep-3');
+            ResourceLoadTracker.onMount('ep-1', noop);
+            ResourceLoadTracker.onMount('ep-2', noop);
+            ResourceLoadTracker.onMount('ep-3', noop);
             cssElements = document.getElementsByTagName('link');
             expect(cssElements.length).to.equal(2);
             expect(cssElements[0].getAttribute('href')).to.include('/adjuncts/908d75c1/org/jenkins/ui/jsmodules/plugin-1/extensions.css');
@@ -131,9 +133,9 @@ describe("ResourceLoadTracker.js", function () {
 
             // Mounting ep-* should result in the CSS for both plugins being
             // loaded ...
-            ResourceLoadTracker.onMount('ep-1');
-            ResourceLoadTracker.onMount('ep-2');
-            ResourceLoadTracker.onMount('ep-3');
+            ResourceLoadTracker.onMount('ep-1', noop);
+            ResourceLoadTracker.onMount('ep-2', noop);
+            ResourceLoadTracker.onMount('ep-3', noop);
             cssElements = document.getElementsByTagName('link');
             expect(cssElements.length).to.equal(2);
             expect(cssElements[0].getAttribute('href')).to.equal('http://resources.acme.com/javascript/org/jenkins/ui/jsmodules/plugin-1/extensions.css');

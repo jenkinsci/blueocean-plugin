@@ -49,6 +49,13 @@
       <artifactId>git</artifactId>
       <classifier>tests</classifier>
       <scope>test</scope>
+      <exclusions>
+        <!-- Upper dependency fix: annotation-indexer comes from core, exclude from git -->
+        <exclusion>
+          <groupId>org.jenkins-ci</groupId>
+          <artifactId>annotation-indexer</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.jenkins-ci.plugins</groupId>

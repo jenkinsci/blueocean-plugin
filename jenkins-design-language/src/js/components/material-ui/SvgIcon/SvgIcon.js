@@ -66,6 +66,7 @@ class SvgIcon extends Component {
     return (
       <svg
         {...other}
+        focusable={false}
         className="svg-icon"
         onMouseEnter={this.handleMouseEnter}
         onMouseLeave={this.handleMouseLeave}

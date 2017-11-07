@@ -2,7 +2,6 @@ package io.blueocean.ath;
 
 import com.offbytwo.jenkins.JenkinsServer;
 import com.offbytwo.jenkins.client.JenkinsHttpClient;
-import io.blueocean.ath.pages.classic.LoginPage;
 import org.apache.http.client.HttpResponseException;
 import org.apache.log4j.Logger;
 
@@ -19,11 +18,11 @@ public class CustomJenkinsServer extends JenkinsServer {
 
     protected final JenkinsHttpClient client;
 
-    public CustomJenkinsServer(URI serverUri) {
-        super(serverUri);
+    public CustomJenkinsServer(URI serverUri, JenkinsUser admin) {
+        super(serverUri, admin.username, admin.password);
         // since JenkinsServer's "client" is private, we must create another one
         // use authenticated client so that user's credentials can be accessed
-        client = new JenkinsHttpClient(serverUri, LoginPage.getUsername(), LoginPage.getPassword());
+        client = new JenkinsHttpClient(serverUri, admin.username, admin.password);
     }
 
     /**
@@ -42,6 +41,7 @@ public class CustomJenkinsServer extends JenkinsServer {
             logger.info("found credential at " + path);
         } catch (HttpResponseException e) {
             if (e.getStatusCode() != 404) {
+                logger.error("error getting credential at " + path);
                 throw e;
             }
             // credential doesn't exist; nothing to do

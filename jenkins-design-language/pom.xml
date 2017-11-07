@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <artifactId>blueocean-parent</artifactId>
+        <groupId>io.jenkins.blueocean</groupId>
+        <version>1.4.0-beta-1-SNAPSHOT</version>
+    </parent>
+
+    <artifactId>jenkins-design-language</artifactId>
+    <packaging>hpi</packaging>
+
+    <name>Jenkins Design Language</name>
+
+    <url>https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+Design+Language</url>
+
+    <build>
+        <resources>
+            <resource>
+                <directory>.</directory>
+                <includes>
+                    <include>package.json</include>
+                    <include>dist/**/*</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>src/main/resources/io/jenkins/blueocean</directory>
+                <targetPath>io/jenkins/blueocean</targetPath>
+                <includes>
+                    <include>.adjunct</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>icons</directory>
+                <targetPath>io/jenkins/icons</targetPath>
+            </resource>
+            <resource>
+                <directory>fonts</directory>
+                <targetPath>io/jenkins/fonts</targetPath>
+            </resource>
+        </resources>
+    </build>
+
+    <repositories>
+        <repository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </repository>
+    </repositories>
+    <pluginRepositories>
+        <pluginRepository>
+            <id>repo.jenkins-ci.org</id>
+            <url>http://repo.jenkins-ci.org/public/</url>
+        </pluginRepository>
+    </pluginRepositories>
+
+</project>

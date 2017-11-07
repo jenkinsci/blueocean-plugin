@@ -1,5 +1,8 @@
 "use strict";
 
+process.env.SKIP_BLUE_IMPORTS = 'YES';
+process.env.NODE_ENV = 'production';
+
 /*
  Build file for Jenkins Design Language theme.
  */
@@ -16,12 +19,11 @@ const rename = require('gulp-rename');
 const copy = require('gulp-copy');
 const svgmin = require('gulp-svgmin');
 const lint = require('gulp-eslint');
-const jest = require('gulp-jest').default;
-const minimist = require('minimist');
 
 // Options, src/dest folders, etc
 
 const config = {
+    clean: ["dist", "target"],
     react: {
         sources: "src/**/*.{js,jsx}",
         dest: "dist"
@@ -42,7 +44,7 @@ const config = {
         },
         octicons: {
             sources: "node_modules/octicons/build/font/octicons.{eot,woff,woff2,ttf,svg}",
-            dest: "dist/assets/css/"
+            dest: "target/classes/io/jenkins/blueocean/"
         },
         fonts: {
             sources: "fonts/*.woff",
@@ -61,13 +63,8 @@ const config = {
             dest: "licenses/"
         }
     },
-    clean: ["dist", "licenses", "reports"],
     test: {
-        sources: '.',
-        match: ['**/?(*-)(spec|test).js?(x)'],
-        reports: 'target/jest-reports/junit.xml',
-        coverage: 'target/jest-coverage',
-        coveragePathIgnorePatterns: ['/material-ui/']
+        sources: 'test/js',
     },
 };
 
@@ -99,67 +96,6 @@ gulp.task("clean-build", () =>
 gulp.task("clean", () =>
     gulp.src(config.clean, {read: false})
         .pipe(clean()));
-
-// Testing
-
-gulp.task("lint", () => (
-    gulp.src([config.react.sources, config.test.sources])
-        .pipe(lint())
-        .pipe(lint.format())
-        .pipe(lint.failAfterError())
-));
-
-gulp.task("test", ['test-jest']);
-
-gulp.task("test-debug", ['test-jest-debug']);
-
-gulp.task("test-fast", ['test-jest-fast']);
-
-function runJest(options) {
-    const argv = minimist(process.argv.slice(2));
-    options.testPathPattern = argv.test || null;
-
-    return gulp.src(config.test.sources)
-        .pipe(jest(options))
-        .on('error', () => {
-            process.exit(1);
-        });
-}
-
-gulp.task('test-jest', () => {
-    if (!process.env.JEST_JUNIT_OUTPUT) {
-        process.env.JEST_JUNIT_OUTPUT = config.test.reports;
-    }
-
-    return runJest({
-        config: {
-            collectCoverage: true,
-            coverageDirectory: config.test.coverage,
-            coveragePathIgnorePatterns: config.test.coveragePathIgnorePatterns,
-            testMatch: config.test.match,
-            testResultsProcessor: 'jest-junit',
-        },
-    });
-});
-
-gulp.task('test-jest-fast', () =>
-    runJest({
-        forceExit: true,
-        config: {
-            testMatch: config.test.match,
-        },
-    })
-);
-
-gulp.task('test-jest-debug', () =>
-    runJest({
-        runInBand: true,
-        forceExit: true,
-        config: {
-            testMatch: config.test.match,
-        },
-    })
-);
 
 // Build all
 
@@ -237,3 +173,35 @@ gulp.task("validate", () => {
         }
     }
 });
+
+var builder = require('@jenkins-cd/js-builder');
+
+builder.src([
+    'src/js',
+    'less',
+    'dist' // for icons & fonts; NOTE: would be nice to find another way to do this as files in dist creates issues for jest & eslint
+]);
+
+builder.tests(config.test.sources);
+
+// redefine 'lint' to check only react and test sources (avoid dist)
+builder.defineTask("lint", () => (
+    gulp.src([config.react.sources, config.test.sources])
+        .pipe(lint())
+        .pipe(lint.format())
+        .pipe(lint.failAfterError())
+));
+
+
+//
+// Create the main bundle.
+//
+builder.bundle('src/js/components/index.js', 'jenkins-design-language.js')
+    .inDir('target/classes/io/jenkins/blueocean')
+    .less('less/jenkins-design-language.less')
+    .export('moment')
+    .export('moment-duration-format')
+    .export('react')
+    .export('react-dom')
+    .export('react-router')
+    .export('react-addons-css-transition-group');
