@@ -78,14 +78,3 @@ builder.defineTask("lint", () => (
         .pipe(lint.format())
         .pipe(lint.failAfterError())
 ));
-
-
-//
-// Create the main bundle.
-//
-builder.bundle('src/js/components/index.js', 'blueocean-material-icons.js')
-    .inDir('target/classes/io/jenkins/blueocean')
-    .export('react')
-    .export('react-dom')
-    .export("react-router")
-    .export('react-addons-css-transition-group');

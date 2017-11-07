@@ -58,7 +58,7 @@
     "react": "15.4.2",
     "react-addons-css-transition-group": "15.4.2",
     "react-dom": "15.4.2",
-    "@jenkins-cd/blueocean-material-icons": "0.0.3"
+    "@jenkins-cd/blueocean-material-icons": "0.0.4"
   },
   "devDependencies": {
     "@jenkins-cd/js-builder": "0.0.62",

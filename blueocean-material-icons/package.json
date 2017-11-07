@@ -1,6 +1,6 @@
 {
   "name": "@jenkins-cd/blueocean-material-icons",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Material icons for the Jenkins Design Language",
   "main": "dist/js/components/index.js",
   "scripts": {
@@ -46,8 +46,6 @@
     "gulp-concat": "2.6.0",
     "gulp-eslint": "3.0.1",
     "gulp-sourcemaps": "2.1.1",
-    "react-addons-test-utils": "15.4.2",
-    "react-router": "2.8.1",
     "run-sequence": "1.2.2",
     "watchify": "3.7.0"
   }
