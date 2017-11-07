@@ -1,4 +1,5 @@
 import moment from 'moment';
+import 'moment-duration-format';
 import logging from '../logging';
 import 'moment-duration-format';
 
