@@ -34,7 +34,7 @@ public class EditorPage {
     public void saveBranch(String branch) {
         logger.info("Editing pipeline - saving now");
         wait.until(By.xpath("//*[text()='Save']")).click();
-        wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("Simple pipeline");
+        wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("We changed some things.");
         if(!Strings.isNullOrEmpty(branch)) {
             wait.until(By.xpath("//span[text()='Commit to new branch']")).click();
             wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys(branch);
@@ -59,7 +59,7 @@ public class EditorPage {
         wait.until(By.xpath("//*[text()='Save']")).click();
         wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("Simple pipeline");
         if(!Strings.isNullOrEmpty(newBranch)) {
-            wait.until(By.xpath("//span[@text='Commit to new branch'")).click();
+            wait.until(By.xpath("//*[text()='Commit to new branch']")).click();
             wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys(newBranch);
             logger.info("Using branch " + newBranch);
         } else {
@@ -69,7 +69,7 @@ public class EditorPage {
         logger.info("Simple pipeline saved");
     }
 
-    // Creates a parallel pipeline
+    // Creates a pipeline with parallel stages in it.
     public void parallelPipeline(String newBranch, int numberOfParallels) {
         logger.info("Editing a parallel pipeline");
         /*
@@ -92,7 +92,6 @@ public class EditorPage {
         wait.click(By.cssSelector("div.pipeline-big-label.top-level-parallel"));
         wait.until(By.cssSelector("input.stage-name-edit")).clear();
         wait.until(By.cssSelector("input.stage-name-edit")).sendKeys("Top Level Parallel Wrapper Stage");
-        // Here's where we save the pipeline.
         wait.until(By.xpath("//*[text()='Save']")).click();
         wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("Parallel pipeline");
         if(!Strings.isNullOrEmpty(newBranch)) {
@@ -101,9 +100,8 @@ public class EditorPage {
             logger.info("Using branch " + newBranch);
         } else {
             /*
-            I don't know that this particular code path ever gets executed, TBH.
-            But if it does, we now click the "Commit to new branch" option, and
-            then change our minds to "Commit to master."
+            This mimics the user changing picking a new branch, and then
+            changing their mind and committing to master after all.
             */
             wait.until(By.xpath("//*[text()='Commit to new branch']")).click();
             wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys("i-am-changing-my-mind");
