@@ -7,7 +7,6 @@ import org.kohsuke.stapler.export.ExportedBean;
 
 import java.util.List;
 
-import static io.jenkins.blueocean.rest.model.BlueRun.TEST_SUMMARY;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE_NODE;
 
 /**
