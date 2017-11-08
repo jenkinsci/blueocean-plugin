@@ -145,7 +145,7 @@ public class GithubEditorTest {
     public void testEditorParallel() throws IOException {
         creationPage.createPipeline(token, organization, repo, true);
         MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
-        editorPage.parallelPipeline("branch-with-parallels");
+        editorPage.parallelPipeline("branch-with-parallels", 3);
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
         driver.navigate().refresh();
         sseClient.untilEvents(pipeline.buildsFinished);

@@ -70,28 +70,26 @@ public class EditorPage {
     }
 
     // Creates a parallel pipeline
-    public void parallelPipeline(String newBranch) {
+    public void parallelPipeline(String newBranch, int numberOfParallels) {
         logger.info("Editing a parallel pipeline");
-        // Creating first parallel stage
-        logger.info("Create our first parallel stage");
-        wait.until(By.xpath("(//*[@class='pipeline-node-hittarget'])[2]")).click();
-        wait.until(By.cssSelector("input.stage-name-edit")).sendKeys("Parallel-1");
-        wait.until(By.cssSelector("button.btn-primary.add")).click();
-        wait.until(By.xpath("//*[text()='Shell Script']")).click();
-        wait.until(By.cssSelector("textarea.editor-step-detail-script")).sendKeys("netstat -a");
-        wait.click(By.xpath("(//a[@class='back-from-sheet'])[2]"));
-        // Now let's create the next one.
-        logger.info("Create our second parallel stage");
-        wait.until(By.xpath("(//*[@class='pipeline-node-hittarget'])[2]")).click();
-        wait.until(By.cssSelector("input.stage-name-edit")).sendKeys("Parallel-2");
-        wait.until(By.cssSelector("button.btn-primary.add")).click();
-        wait.until(By.xpath("//*[text()='Shell Script']")).click();
-        wait.until(By.cssSelector("textarea.editor-step-detail-script")).sendKeys("whoami");
-        wait.click(By.xpath("(//a[@class='back-from-sheet'])[2]"));
-        // Now we need to name the "wrapper" stage to something other than what
-        // got automatically put in.
+        /*
+        We'll create as many parallel stages as we were told to
+        via int numberOfParallels when we were called.
+        */
+        for (int i = 0; i < numberOfParallels; i++) {
+            logger.info("Create stage Parallel-" + i);
+            wait.until(By.xpath("(//*[@class='pipeline-node-hittarget'])[2]")).click();
+            wait.until(By.cssSelector("input.stage-name-edit")).sendKeys("Parallel-" + i);
+            wait.until(By.cssSelector("button.btn-primary.add")).click();
+            wait.until(By.xpath("//*[text()='Shell Script']")).click();
+            wait.until(By.cssSelector("textarea.editor-step-detail-script")).sendKeys("netstat -a");
+            wait.click(By.xpath("(//a[@class='back-from-sheet'])[2]"));
+        }
+        /*
+        Now we need to name the "wrapper" stage to something other than what
+        got automatically put in.
+        */
         wait.click(By.cssSelector("div.pipeline-big-label.top-level-parallel"));
-        // Need to clear it first.
         wait.until(By.cssSelector("input.stage-name-edit")).clear();
         wait.until(By.cssSelector("input.stage-name-edit")).sendKeys("Top Level Parallel Wrapper Stage");
         // Here's where we save the pipeline.
@@ -102,9 +100,11 @@ public class EditorPage {
             wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys(newBranch);
             logger.info("Using branch " + newBranch);
         } else {
-            // Maybe we should click on the Commit to new branch button first, then
-            // have the automation 'change its mind' so to speak, just to make
-            // sure that works.
+            /*
+            I don't know that this particular code path ever gets executed, TBH.
+            But if it does, we now click the "Commit to new branch" option, and
+            then change our minds to "Commit to master."
+            */
             wait.until(By.xpath("//*[text()='Commit to new branch']")).click();
             wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys("i-am-changing-my-mind");
             wait.until(By.xpath("//*[text()='Commit to master']")).click();
