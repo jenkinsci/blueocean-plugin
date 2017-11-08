@@ -146,25 +146,5 @@ public class BlueJUnitTestResult extends BlueTestResult {
                 }
             }));
         }
-
-        @Override
-        public Result getBlueTestResults(Run<?, ?> run, BluePipelineNode node, final Reachable parent) {
-            List<CaseResult> testsToTransform = new ArrayList<>();
-            TestResultAction action = run.getAction(TestResultAction.class);
-            if (action == null) {
-                return Result.notFound();
-            }
-            TestResult testsForNode = action.getResult().getResultForPipelineBlock(node.getId());
-            testsToTransform.addAll(testsForNode.getFailedTests());
-            testsToTransform.addAll(testsForNode.getSkippedTests());
-            testsToTransform.addAll(testsForNode.getPassedTests());
-
-            return Result.of(Iterables.transform(testsToTransform, new Function<CaseResult, BlueTestResult>() {
-                @Override
-                public BlueTestResult apply(@Nullable CaseResult input) {
-                    return new BlueJUnitTestResult(input, parent.getLink());
-                }
-            }));
-        }
     }
 }

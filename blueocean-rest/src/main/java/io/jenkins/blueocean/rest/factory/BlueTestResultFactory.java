@@ -28,16 +28,6 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
     }
 
     /**
-     * @param run to find tests for
-     * @param node to find tests for
-     * @param parent run or node that this belongs to
-     * @return implementation of BlueTestResult matching your TestResult or {@link Result#notFound()}
-     */
-    public Result getBlueTestResults(Run<?,?> run, BluePipelineNode node, final Reachable parent) {
-        return Result.notFound();
-    }
-
-    /**
      * Result of {@link #getBlueTestResults(Run, Reachable)} that holds summary and iterable of BlueTestResult
      */
     public static final class Result {
@@ -118,19 +108,6 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
         public static Result notFound() {
             return NOT_FOUND;
         }
-    }
-
-    public static Result resolve(Run<?,?> run, BluePipelineNode node, Reachable parent) {
-        Iterable<BlueTestResult> results = ImmutableList.of();
-        BlueTestSummary summary = new BlueTestSummary(0, 0, 0, 0, 0, 0, 0);
-        for (BlueTestResultFactory factory : allFactories()) {
-            Result result = factory.getBlueTestResults(run, node, parent);
-            if (result != null && result.results != null && result.summary != null) {
-                results = Iterables.concat(result.results, results);
-                summary = summary.tally(result.summary);
-            }
-        }
-        return getResult(results, summary);
     }
 
     public static Result resolve(Run<?,?> run, Reachable parent) {

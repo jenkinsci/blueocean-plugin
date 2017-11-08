@@ -71,18 +71,6 @@ public abstract class BluePipelineNode extends BluePipelineStep{
     public abstract BluePipelineStepContainer getSteps();
 
     /**
-     * @return Gives tests in this node.
-     */
-    @Navigable
-    public abstract BlueTestResultContainer getTests();
-
-    /**
-     * @return Gives the test summary for this node.
-     */
-    @Exported(name = TEST_SUMMARY, inline = true, skipNull = true)
-    public abstract BlueTestSummary getTestSummary();
-
-    /**
      * Represents edge of pipeline flow graph
      */
     @ExportedBean

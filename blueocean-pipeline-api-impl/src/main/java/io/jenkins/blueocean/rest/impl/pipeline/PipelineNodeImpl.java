@@ -1,17 +1,8 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.base.Function;
 import com.google.common.base.Predicate;
-import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-import hudson.Extension;
 import hudson.model.Action;
-import hudson.model.Run;
-import hudson.tasks.junit.CaseResult;
-import hudson.tasks.junit.TestResult;
-import hudson.tasks.junit.TestResultAction;
 import io.jenkins.blueocean.rest.Reachable;
-import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueInputStep;
@@ -19,14 +10,8 @@ import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
-import io.jenkins.blueocean.rest.model.BlueTestResult;
-import io.jenkins.blueocean.rest.model.BlueTestResultContainer;
-import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
-import io.jenkins.blueocean.service.embedded.rest.BlueNodeTestResultContainerImpl;
-import io.jenkins.blueocean.service.embedded.rest.BlueTestResultContainerImpl;
-import io.jenkins.blueocean.service.embedded.rest.junit.BlueJUnitTestResult;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -88,16 +73,6 @@ public class PipelineNodeImpl extends BluePipelineNode {
     @Override
     public BlueRun.BlueRunState getStateObj() {
         return status.getState();
-    }
-
-    @Override
-    public BlueTestResultContainer getTests() {
-        return new BlueNodeTestResultContainerImpl(parent, run, this);
-    }
-
-    @Override
-    public BlueTestSummary getTestSummary() {
-        return BlueTestResultFactory.resolve(run, this, parent).summary;
     }
 
     @Override
