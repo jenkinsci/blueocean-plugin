@@ -59,6 +59,7 @@
     counter-reset: log;
     .line {
       color: #eee;
+      position: relative;
       display: block;
       text-decoration: none;
       white-space: pre;
@@ -75,11 +76,18 @@
         counter-increment: log;
         content: counter(log);
         min-width: 2em;
+        position: absolute;
         display: inline-block;
         text-align: right;
-        padding: 0 1em;
+        padding-left: 1em;
         margin-left: -3em;
         color: #777
+      }
+
+      .line-content {
+        display: inline-block;
+        white-space: normal;
+        margin-left: 1em;
       }
     }
   }
