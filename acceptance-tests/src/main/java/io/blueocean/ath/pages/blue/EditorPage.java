@@ -95,7 +95,9 @@ public class EditorPage {
         wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("Parallel pipeline");
         if(!Strings.isNullOrEmpty(newBranch)) {
             // This isn't working. It's not finding the Commit to new branch thing to click on.
-            wait.until(By.xpath("//span[@text='Commit to new branch'")).click();
+            // wait.until(By.xpath("//span[@text='Commit to new branch'")).click();
+            // mine
+            wait.until(By.xpath("//*[text()='Commit to new branch']")).click();
             wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys(newBranch);
             logger.info("Using branch " + newBranch);
         } else {
