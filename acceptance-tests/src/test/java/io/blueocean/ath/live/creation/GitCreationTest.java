@@ -27,7 +27,7 @@ import java.util.Properties;
 
 @Login
 @RunWith(ATHJUnitRunner.class)
-public class GitCreationTest extends BlueOceanAcceptanceTest {
+public class    GitCreationTest extends BlueOceanAcceptanceTest {
     private Logger logger = Logger.getLogger(GitCreationTest.class);
 
     @Inject @Named("live")

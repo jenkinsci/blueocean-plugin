@@ -135,4 +135,27 @@ public class GithubEditorTest {
 
         sseClient.untilEvents(pipeline.buildsFinished);
     }
+
+    /**
+     * This test covers e2e usage of the editor. Does so with a parallel pipeline.
+     *
+     * Creates a blank github repo, and then uses editor to create a parallel pipeline.
+     */
+    @Test
+    public void testEditorParallel() throws IOException {
+        creationPage.createPipeline(token, organization, repo, true);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
+        editorPage.parallelPipeline("branch-with-parallels");
+        ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
+        driver.navigate().refresh();
+        sseClient.untilEvents(pipeline.buildsFinished);
+        sseClient.clear();
+        BranchPage branchPage = activityPage.clickBranchTab();
+        branchPage.openEditor("master");
+        editorPage.saveBranch("new - branch");
+        activityPage.checkUrl();
+        activityPage.getRunRowForBranch("branch-with-parallels");
+
+        sseClient.untilEvents(pipeline.buildsFinished);
+    }
 }
