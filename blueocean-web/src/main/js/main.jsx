@@ -217,12 +217,16 @@ function startApp(routes, stores) {
         locationService.setCurrent(newLocation);
     });
 
+    locationService.navCount = 0;
+    window.addEventListener('popstate', e => locationService.navCount-=2); // gets a route change AND popstate
+    const onRouteChange = () => locationService.navCount++;
+
     sseService._initListeners();
 
     // Start React
     render(
         <Provider store={store}>
-            <Router history={history}>{ makeRoutes(routes) }</Router>
+            <Router history={history}><Route onChange={onRouteChange}>{ makeRoutes(routes) }</Route></Router>
         </Provider>
       , rootElement);
 }

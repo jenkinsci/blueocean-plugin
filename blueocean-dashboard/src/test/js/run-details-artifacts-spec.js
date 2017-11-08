@@ -3,7 +3,7 @@ import React from 'react';
 import { shallow, mount } from 'enzyme';
 
 import { latestRuns } from './data/runs/latestRuns';
-import RunDetailsArtifacts from '../../main/js/components/RunDetailsArtifacts';
+import { RunDetailsArtifacts } from '../../main/js/components/RunDetailsArtifacts';
 
 const runs = latestRuns.map(run => (run.latestRun));
 

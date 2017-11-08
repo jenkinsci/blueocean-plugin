@@ -5,10 +5,12 @@ import TestResults from './testing/TestResults';
 import TestService from './testing/TestService';
 import NoTestsPlaceholder from './testing/NoTestsPlaceholder';
 
+const t = require('@jenkins-cd/blueocean-core-js').i18nTranslator('blueocean-dashboard');
+
 /**
  * Displays a list of tests from the supplied build run property.
  */
-export default class RunDetailsTests extends Component {
+export class RunDetailsTests extends Component {
 
     propTypes = {
         params: PropTypes.object,
@@ -16,7 +18,6 @@ export default class RunDetailsTests extends Component {
         isMultiBranch: PropTypes.bool,
         result: PropTypes.object,
         fetchTypeInfo: PropTypes.func,
-        t: PropTypes.func,
         locale: PropTypes.string,
     };
 
@@ -29,7 +30,7 @@ export default class RunDetailsTests extends Component {
     }
 
     render() {
-        const { t, locale } = this.props;
+        const { locale } = this.props;
 
         let result;
         if (this.props.result.testSummary.total || this.props.result.testSummary.total > 0) {
@@ -51,3 +52,9 @@ export default class RunDetailsTests extends Component {
     }
 }
 
+export default {
+    name: "tests",
+    title: t('rundetail.header.tab.tests'),
+    component: RunDetailsTests,
+    getBadgeText: run => Math.min(99, run.testSummary && parseInt(run.testSummary.failed) || 0) || null,
+};

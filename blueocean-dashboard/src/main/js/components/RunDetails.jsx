@@ -59,13 +59,16 @@ class RunDetails extends Component {
 
     constructor(props) {
         super(props);
-        this.state = { isVisible: true };
+        this.state = { isVisible: true, actions: [] };
     }
 
     componentWillMount() {
         this._fetchRun(this.props);
         this.opener = locationService.previous;
-        this.initialHistoryLength = history.length;
+        this.initialHistoryLength = locationService.navCount;
+        Extensions.store.getExtensions(['jenkins.run.actions'], Extensions.Utils.sortByOrdinal, (actions = []) => {
+            this.setState({ actions });
+        });
     }
 
     componentWillReceiveProps(nextProps) {
@@ -138,9 +141,14 @@ class RunDetails extends Component {
     afterClose = () => {
         const { router, params } = this.context;
         if (this.opener) {
-            // step back in the history to the item that's prior to initial load of RunDetails
-            const offsetToInitialRoute = this.initialHistoryLength - history.length;
+            // move back in the history to the item that's prior to initial load of RunDetails
+            const offsetToInitialRoute = this.initialHistoryLength - locationService.navCount;
             router.go(offsetToInitialRoute - 1);
+            setTimeout(() => {
+                if (locationService.current !== this.opener) {
+                    router.replace(this.opener);
+                }
+            }, 50);
         } else {
             // back to the 'Activity' tab (using 'replace' to discard history item for RunDetails)
             const fallbackUrl = buildPipelineUrl(params.organization, params.pipeline);
@@ -158,7 +166,7 @@ class RunDetails extends Component {
 
         const { router, location, params } = this.context;
         const { pipeline, setTitle, t, locale } = this.props;
-        const { isVisible } = this.state;
+        const { isVisible, actions } = this.state;
 
         if (!run || !pipeline) {
             this.props.setTitle(translate('common.pager.loading', { defaultValue: 'Loading...' }));
@@ -178,26 +186,19 @@ class RunDetails extends Component {
 
         const base = { base: baseUrl };
 
-        const failureCount = Math.min(99, currentRun.testSummary && parseInt(currentRun.testSummary.failed) || 0);
-        const testsBadge = failureCount > 0 && (
-            <div className="TabBadgeIcon">{ failureCount }</div>
-        );
-
         const tabs = [
             <TabLink to="/pipeline" { ...base }>{ t('rundetail.header.tab.pipeline', {
                 defaultValue: 'Pipeline',
             }) }</TabLink>,
-            <TabLink to="/changes" { ...base }>{ t('rundetail.header.tab.changes', {
-                defaultValue: 'Changes',
-            }) }</TabLink>,
-            <TabLink to="/tests" { ...base }>
-                { t('rundetail.header.tab.tests', { defaultValue: 'Tests' }) }
-                { testsBadge }
-            </TabLink>,
-            <TabLink to="/artifacts" { ...base }>{ t('rundetail.header.tab.artifacts', {
-                defaultValue: 'Artifacts',
-            }) }</TabLink>,
         ];
+
+        actions.map(action => {
+            const badgeText = action.getBadgeText && action.getBadgeText(currentRun);
+            const badge = badgeText && <div className="TabBadgeIcon">{ badgeText }</div>;
+            tabs.push(
+                <TabLink to={'/' + action.name} { ...base }>{action.title}{badge}</TabLink>
+            );
+        });
 
         const iconButtons = [
             <ReplayButton className="icon-button dark"

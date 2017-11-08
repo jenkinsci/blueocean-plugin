@@ -6,6 +6,7 @@ import { observable, action } from 'mobx';
 export class LocationService {
     @observable current;
     @observable previous;
+    navCount = 0;
 
     @action setCurrent(newLocation) {
         if (newLocation.action !== 'REPLACE') {

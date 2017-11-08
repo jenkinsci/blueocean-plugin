@@ -11,11 +11,10 @@ import {
 import Icon from './placeholder/Icon';
 import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
 import LinkifiedText from './LinkifiedText';
+const t = require('@jenkins-cd/blueocean-core-js').i18nTranslator('blueocean-dashboard');
 
 
 function NoChangesPlaceholder(props) {
-    const { t } = props;
-
     const columns = [
         { width: 750, isFlexible: true, head: { text: 40 }, cell: { text: 150 } },
         { width: 90, head: { text: 50 }, cell: { text: 60 } },
@@ -35,15 +34,11 @@ function NoChangesPlaceholder(props) {
     );
 }
 
-NoChangesPlaceholder.propTypes = {
-    t: PropTypes.func,
-};
 
-
-export default class RunDetailsChanges extends Component {
+export class RunDetailsChanges extends Component {
 
     render() {
-        const { result, t, locale } = this.props;
+        const { result, locale } = this.props;
 
         if (!result) {
             return null;
@@ -95,5 +90,10 @@ const { func, object, string } = PropTypes;
 RunDetailsChanges.propTypes = {
     result: object,
     locale: string,
-    t: func,
+};
+
+export default {
+    name: 'changes',
+    title: t('rundetail.header.tab.changes'),
+    component: RunDetailsChanges,
 };

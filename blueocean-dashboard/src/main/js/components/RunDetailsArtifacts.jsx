@@ -6,9 +6,10 @@ import mobxUtils from 'mobx-utils';
 import { logging, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.artifacts');
+const t = require('@jenkins-cd/blueocean-core-js').i18nTranslator('blueocean-dashboard');
 
 const ZipFileDownload = (props) => {
-    const { zipFile, t } = props;
+    const { zipFile } = props;
     if (!zipFile) {
         return null;
     }
@@ -25,13 +26,10 @@ const ZipFileDownload = (props) => {
 
 ZipFileDownload.propTypes = {
     zipFile: PropTypes.string,
-    t: PropTypes.func,
 };
 
 
 function ArtifactListingLimited(props) {
-    const { t } = props;
-
     return (
         <div className="artifacts-info-container">
             <div className="artifacts-info">
@@ -42,16 +40,12 @@ function ArtifactListingLimited(props) {
     );
 }
 
-ArtifactListingLimited.propTypes = {
-    t: PropTypes.func,
-};
-
 
 /**
  * Displays a list of artifacts from the supplied build run property.
  */
 @observer
-export default class RunDetailsArtifacts extends Component {
+export class RunDetailsArtifacts extends Component {
     componentWillMount() {
         this._fetchArtifacts(this.props);
     }
@@ -73,7 +67,7 @@ export default class RunDetailsArtifacts extends Component {
     }
 
     render() {
-        const { result, t } = this.props;
+        const { result } = this.props;
 
         const promise = this.artifactsPromise;
         if (!result || !promise || promise.state === mobxUtils.PENDING || promise.state === mobxUtils.REJECTED) {
@@ -168,5 +162,10 @@ RunDetailsArtifacts.contextTypes = {
 
 RunDetailsArtifacts.propTypes = {
     result: PropTypes.object,
-    t: PropTypes.func,
+};
+
+export default {
+    name: "artifacts",
+    title: t('rundetail.header.tab.artifacts'),
+    component: RunDetailsArtifacts,
 };
