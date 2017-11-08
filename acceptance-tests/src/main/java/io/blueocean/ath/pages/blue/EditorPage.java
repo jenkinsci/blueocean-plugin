@@ -83,20 +83,21 @@ public class EditorPage {
         // Now let's create the next one.
         logger.info("Create our second parallel stage");
         wait.until(By.xpath("(//*[@class='pipeline-node-hittarget'])[2]")).click();
-        logger.info("\n--> KS NAME PARALLEL 2 --> click cssSelector input.stage-name-edit\n");
         wait.until(By.cssSelector("input.stage-name-edit")).sendKeys("Parallel-2");
         wait.until(By.cssSelector("button.btn-primary.add")).click();
         wait.until(By.xpath("//*[text()='Shell Script']")).click();
         wait.until(By.cssSelector("textarea.editor-step-detail-script")).sendKeys("whoami");
         wait.click(By.xpath("(//a[@class='back-from-sheet'])[2]"));
-
-        // Here's where we save the pipeline. This comes later.
+        // Now we need to name the "wrapper" stage to something other than what
+        // got automatically put in.
+        wait.click(By.cssSelector("div.pipeline-big-label.top-level-parallel"));
+        // Need to clear it first.
+        wait.until(By.cssSelector("input.stage-name-edit")).clear();
+        wait.until(By.cssSelector("input.stage-name-edit")).sendKeys("Top Level Parallel Wrapper Stage");
+        // Here's where we save the pipeline.
         wait.until(By.xpath("//*[text()='Save']")).click();
         wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("Parallel pipeline");
         if(!Strings.isNullOrEmpty(newBranch)) {
-            // This isn't working. It's not finding the Commit to new branch thing to click on.
-            // wait.until(By.xpath("//span[@text='Commit to new branch'")).click();
-            // mine
             wait.until(By.xpath("//*[text()='Commit to new branch']")).click();
             wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys(newBranch);
             logger.info("Using branch " + newBranch);
@@ -104,11 +105,13 @@ public class EditorPage {
             // Maybe we should click on the Commit to new branch button first, then
             // have the automation 'change its mind' so to speak, just to make
             // sure that works.
-
+            wait.until(By.xpath("//*[text()='Commit to new branch']")).click();
+            wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys("i-am-changing-my-mind");
+            wait.until(By.xpath("//*[text()='Commit to master']")).click();
             logger.info("Using branch master");
         }
         wait.until(By.xpath("//*[text()=\"Save & run\"]")).click();
-        logger.info("Simple pipeline saved");
+        logger.info("Parallel pipeline saved");
     }
 
 }

@@ -151,7 +151,8 @@ public class GithubEditorTest {
         sseClient.untilEvents(pipeline.buildsFinished);
         sseClient.clear();
         BranchPage branchPage = activityPage.clickBranchTab();
-        branchPage.openEditor("master");
+        // We need to open editor on our branch
+        branchPage.openEditor("branch-with-parallels");
         editorPage.saveBranch("new - branch");
         activityPage.checkUrl();
         activityPage.getRunRowForBranch("branch-with-parallels");
