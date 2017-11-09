@@ -1,7 +1,6 @@
 package io.blueocean.rest.pipeline.editor;
 
 import hudson.model.JDK;
-import io.jenkins.blueocean.rest.impl.pipeline.PipelineBaseTest;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.hamcrest.Matcher;
@@ -26,7 +25,7 @@ import static org.junit.Assert.*;
  */
 public class PipelineMetadataServiceTest {
     @Rule
-    public JenkinsRule j = new PipelineBaseTest.PipelineBaseJenkinsRule();
+    public JenkinsRule j = new JenkinsRule();
 
     @Test
     public void testBasicStepsReturned() throws IOException {
