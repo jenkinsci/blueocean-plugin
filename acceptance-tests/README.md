@@ -270,7 +270,7 @@ Any new Page Object classes need to be bound in `ATHModule#configure` to be able
 
 #### Pipeline Helper
 
-These are a series of helpers to deal with pipelines. The started life to deal with pipelines being in folders. It offes a way 
+These are a series of helpers to deal with pipelines. They started life to deal with pipelines being in folders. It offes a way 
 to give PageObjects more contextual information about what they are operating on without having to be explicit about it in every method call.
 
 ```java
