@@ -103,7 +103,7 @@ public class GithubCreationPage implements WebDriverMixin {
     }
 
     public void clickCreatePipelineButton() {
-        click(".button-create");
+        wait.click(By.cssSelector(".button-create"));
     }
 
     public By emptyRepositoryCreateButton = By.cssSelector(".jenkins-pipeline-create-missing-jenkinsfile > div > button");
