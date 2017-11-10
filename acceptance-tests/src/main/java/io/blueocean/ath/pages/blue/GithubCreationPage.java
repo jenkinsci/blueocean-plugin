@@ -105,7 +105,7 @@ public class GithubCreationPage implements WebDriverMixin {
     public void clickCreatePipelineButton() {
         wait.retryAction("click create pipeline button", 3, driver -> {
             wait.click(By.cssSelector(".button-create"));
-            return wait.until(By.cssSelector(".all-i-do-is-fail-fail-fail"), 5000);
+            return wait.until(By.cssSelector(".github-complete-step"), 5000);
         });
     }
 
