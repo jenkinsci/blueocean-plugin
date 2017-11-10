@@ -103,10 +103,11 @@ public class GithubCreationPage implements WebDriverMixin {
     }
 
     public void clickCreatePipelineButton() {
-        wait.click(By.cssSelector(".button-create"));
+        wait.retryAction("click create pipeline button", 3, driver -> {
+            wait.click(By.cssSelector(".button-create"));
+            return wait.until(By.cssSelector(".github-complete-step"), 5000);
+        });
     }
-
-    public By emptyRepositoryCreateButton = By.cssSelector(".jenkins-pipeline-create-missing-jenkinsfile > div > button");
 
     public void createPipeline(String apikey, String org, String pipeline) throws IOException {
         createPipeline(apikey, org, pipeline, false);
