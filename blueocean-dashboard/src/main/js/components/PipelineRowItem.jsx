@@ -103,7 +103,7 @@ export class PipelineRowItem extends Component {
         return (
             <TableRow useRollover data-pipeline={name} data-organization={organization} columns={columns}>
                 <TableCell className="TableCell--pipelineLink" {...linkProps}>
-                    <ExpandablePath path={fullDisplayPath} showIcon={false} />
+                    <ExpandablePath path={fullDisplayPath} />
                     { matrixRedirectURL && <Icon size={24} icon="ActionExitToApp" /> }
                 </TableCell>
                 <TableCell {...linkProps}>

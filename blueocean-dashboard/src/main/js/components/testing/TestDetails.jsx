@@ -6,7 +6,11 @@ import { observer } from 'mobx-react';
 const ConsoleLog = ({ text, className, key = 'console' }) =>
     <div className={`${className} console-log insert-line-numbers`}>
         {text.trim().split('\n').map((line, idx) =>
-            <div className="line" id={`#${key}-L${idx}`} key={`#${key}-L${idx}`}>{line}</div>
+            <div className="line" id={`#${key}-L${idx}`} key={`#${key}-L${idx}`}>
+                <span className="line-content">
+                    {line}
+                </span>
+            </div>
         )}
     </div>;
 

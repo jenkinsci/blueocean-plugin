@@ -1,4 +1,4 @@
-import { capabilityAugmenter, Fetch, FetchFunctions, logging } from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter, Fetch, logging } from '@jenkins-cd/blueocean-core-js';
 import debounce from 'lodash.debounce';
 import { generateDetailUrl } from '../urls/detailUrl';
 import { getNodesInformation } from '../../../util/logDisplayHelper';
@@ -62,9 +62,7 @@ export class KaraokeApi {
         const fetchOptions = prepareOptions();
         const href = generateDetailUrl(pipeline, branch, runId);
         logger.debug('Fetching href', href);
-        return Fetch.fetchJSON(href, { fetchOptions })
-            .then(FetchFunctions.checkStatus)
-            .then(data => capabilityAugmenter.augmentCapabilities(data));
+        return Fetch.fetchJSON(href, { fetchOptions });
     }
 
     /**
@@ -84,7 +82,6 @@ export class KaraokeApi {
                     resolve();
                 }
                 resolve(Fetch.fetch(finalHref, { fetchOptions })
-                    .then(FetchFunctions.checkStatus)
                     .then(parseMoreDataHeader)
                     .then(parseNewStart));
             }, 200)();
@@ -103,8 +100,6 @@ export class KaraokeApi {
                     resolve();
                 }
                 resolve(Fetch.fetchJSON(href, { fetchOptions })
-                    .then(FetchFunctions.checkStatus)
-                    .then(data => capabilityAugmenter.augmentCapabilities(data))
                     .then(getNodesInformation));
             }, 200)();
         });

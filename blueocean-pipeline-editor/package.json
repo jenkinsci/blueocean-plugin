@@ -11,16 +11,15 @@
     "test:watch": "jjsbuilder --tasks test:watch",
     "bundle": "jjsbuilder --tasks bundle",
     "bundle:watch": "jjsbuilder --tasks bundle:watch",
+    "mvnclean": "echo 'clean'",
     "mvnbuild": "jjsbuilder --tasks lint,bundle",
+    "mvnbuild:fast": "jjsbuilder --tasks bundle",
     "mvntest": "jjsbuilder --tasks test"
   },
   "author": "Josh McDonald <josh@joshmcdonald.info> (https://github.com/sophistifunk)",
   "license": "MIT",
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/blueocean-core-js": "0.0.170",
-    "@jenkins-cd/design-language": "0.0.158",
-    "@jenkins-cd/js-extensions": "0.0.41",
     "@jenkins-cd/js-builder": "0.0.62",
     "@kadira/storybook": "2.20.1",
     "babel": "6.5.2",
@@ -44,6 +43,9 @@
     "react-addons-test-utils": "15.4.2"
   },
   "dependencies": {
+    "@jenkins-cd/blueocean-core-js": "0.0.170",
+    "@jenkins-cd/design-language": "0.0.158",
+    "@jenkins-cd/js-extensions": "0.0.42",
     "@jenkins-cd/js-modules": "0.0.10",
     "lodash.debounce": "4.0.8",
     "mobx": "2.6.0",
@@ -56,9 +58,13 @@
   },
   "jenkinscd": {
     "import": [
-      "react",
-      "react-router",
-      "react-addons-css-transition-group"
+      "@jenkins-cd/blueocean-core-js@any",
+      "@jenkins-cd/design-language@any",
+      "@jenkins-cd/js-extensions@any",
+      "react@any",
+      "react-addons-css-transition-group@any",
+      "react-dom@any",
+      "react-router@any"
     ]
   }
 }

@@ -4,17 +4,18 @@
   "description": "Configuration injected in BlueOcean UI",
   "scripts": {
     "build": "jjsbuilder",
+    "mvnclean": "echo 'clean'",
     "mvnbuild": "jjsbuilder --tasks bundle",
     "mvntest": "jjsbuilder --tasks test,lint"
   },
   "author": "Vivek Pandey <vivek.pandey@gmail.com> (https://github.com/vivek)",
   "license": "MIT",
   "dependencies": {
+    "@jenkins-cd/js-modules": "0.0.10",
     "rollbar-browser": "1.9.2"
   },
   "devDependencies": {
     "@jenkins-cd/js-builder": "0.0.62",
-    "@jenkins-cd/js-modules": "0.0.10",
     "babel-eslint": "6.1.2",
     "create-hmac": "1.1.4",
     "eslint-plugin-react": "4.3.0",
