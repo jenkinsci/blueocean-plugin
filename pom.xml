@@ -593,7 +593,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.86</version>
+            <version>1.90</version>
             <exclusions>
                 <!-- Upper bound fix
                      TODO: Remove when PR https://github.com/jenkinsci/github-api-plugin/pull/15 is merged and released
