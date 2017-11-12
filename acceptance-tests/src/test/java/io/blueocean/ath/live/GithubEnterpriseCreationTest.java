@@ -23,7 +23,7 @@ import java.io.IOException;
 
 @Login
 @RunWith(ATHJUnitRunner.class)
-public class GithubEnterpriseCreationTest extends WireMockBase {
+public class    GithubEnterpriseCreationTest extends WireMockBase {
 
     private GithubConfig config;
 

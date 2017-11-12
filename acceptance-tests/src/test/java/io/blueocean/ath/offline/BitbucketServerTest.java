@@ -15,6 +15,8 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.io.IOException;
+import java.security.SecureRandom;
+import java.util.Random;
 
 @Login
 @RunWith(ATHJUnitRunner.class)
@@ -42,28 +44,21 @@ public class BitbucketServerTest implements WebDriverMixin {
 
         dashboardPage.clickNewPipelineBtn();
 
-        wait.until(By.xpath("//span[text()='Bitbucket Server']")).click();
+        click("//span[text()='Bitbucket Server']");
         LOGGER.info("Selected bitbucket server");
 
-        wait.until(By.cssSelector(".button-add-server")).click();
+        click(".button-add-server");
         LOGGER.info("Clicked addserver");
 
-        wait.until(By.xpath("//input[@placeholder='My Bitbucket Server']")).sendKeys("bitbucketserver");
-        wait.until(By.xpath("//input[@placeholder='https://mybitbucket.example.com']")).sendKeys("http://127.0.0.1:7990");
+        wait.until(By.cssSelector(".text-name input")).sendKeys("bitbucketserver");
+        wait.until(By.cssSelector(".text-url input")).sendKeys("http://127.0.0.1:7990");
         click(".button-create-server");
-        Thread.sleep(      3000);
-        if (!getDriver().findElements(By.cssSelector(".FormElement.u-error-state")).isEmpty()) {
-            click("//button[text()='Cancel']");
-            click(".Dropdown-button.Dropdown-placeholder");
-            click("//a[text()='bitbucketserver']");
-            LOGGER.info("Server already exists");
-        }
 
         click(".button-next-step");
 
-        wait.until(By.xpath("(//input[ @class='TextInput-control'])[1]")).sendKeys("admin");
-        wait.until(By.xpath("(//input[ @class='TextInput-control'])[2]")).sendKeys("admin");
-        wait.until(By.cssSelector(".button-create-credental")).click();
+        wait.until(By.cssSelector(".text-username input")).sendKeys("admin");
+        wait.until(By.cssSelector(".text-password input")).sendKeys("admin");
+        click(".button-create-credental");
 
     }
 }
