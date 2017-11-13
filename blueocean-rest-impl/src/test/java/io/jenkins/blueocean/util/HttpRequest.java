@@ -26,6 +26,7 @@ import java.util.Map;
 import static io.jenkins.blueocean.util.HttpRequest.Method.GET;
 
 /**
+ * TODO: needs javadoc once API is final
  * @author cliffmeyers
  */
 public class HttpRequest {
