@@ -128,6 +128,10 @@ public class HttpRequest {
     }
 
     public <T> T as(Class<T> clazz) throws IOException {
+        if (Void.class.equals(clazz)) {
+            executeInternal();
+            return null;
+        }
         return JsonConverter.toJava(asInputStream(), clazz);
     }
 
@@ -145,10 +149,6 @@ public class HttpRequest {
 
     public byte[] asBytes() throws IOException {
         return executeInternal().asBytes();
-    }
-
-    public void execute() throws IOException {
-        executeInternal();
     }
 
     private Content executeInternal() throws IOException {

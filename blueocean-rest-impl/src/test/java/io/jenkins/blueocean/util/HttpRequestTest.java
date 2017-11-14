@@ -72,7 +72,7 @@ public class HttpRequestTest {
 
         request.Get(urlPath)
             .status(404)
-            .execute();
+            .as(Void.class);
     }
 
     @Test
@@ -98,7 +98,7 @@ public class HttpRequestTest {
             .willReturn(aResponse().withStatus(403)));
 
         try {
-            request.Get(urlPath).execute();
+            request.Get(urlPath).as(Void.class);
             Assert.fail("should not succeed");
         } catch (Exception ex) {
             Assert.assertTrue("should contain 403", ex.getMessage().contains("403"));
@@ -114,7 +114,7 @@ public class HttpRequestTest {
 
         request.Get(urlPath)
             .auth("user1", "user1")
-            .execute();
+            .as(Void.class);
 
         verify(getRequestedFor(urlEqualTo(urlPath))
             .withHeader("Authorization", containing("Basic")));
@@ -129,7 +129,7 @@ public class HttpRequestTest {
 
         request.Post(urlPath)
             .bodyJson(ImmutableMap.of("foo", "bar"))
-            .execute();
+            .as(Void.class);
 
         verify(postRequestedFor(urlEqualTo(urlPath))
             .withRequestBody(containing("\"foo\" : \"bar\"")));
@@ -144,7 +144,7 @@ public class HttpRequestTest {
 
         request.Get(urlPath)
             .header("Foo", "Baz")
-            .execute();
+            .as(Void.class);
 
         verify(getRequestedFor(urlEqualTo(urlPath))
             .withHeader("Foo", equalTo("Baz")));
@@ -178,7 +178,7 @@ public class HttpRequestTest {
 
         new HttpRequest()
             .Get(requestUrl)
-            .execute();
+            .as(Void.class);
 
         verify(getRequestedFor(urlEqualTo(requestPath)));
     }
