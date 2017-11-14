@@ -65,7 +65,7 @@ public class LocalDriver {
         if (element instanceof SmartWebElement) {
             return element;
         }
-        return new SmartWebElement(driver, element, locator.toString());
+        return new SmartWebElement(driver, element, locator != null ? locator.toString() : null);
     }
 
     /**

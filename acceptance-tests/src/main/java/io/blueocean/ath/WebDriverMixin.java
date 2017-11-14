@@ -1,15 +1,14 @@
 package io.blueocean.ath;
 
-import org.openqa.selenium.*;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedCondition;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-import org.openqa.selenium.support.ui.FluentWait;
 
-import javax.inject.Inject;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 /**
  * Provides utility methods to downstream test classes
@@ -117,12 +116,31 @@ public interface WebDriverMixin {
         return LocalDriver.wrapElements(getDriver(), elements, locator);
     }
 
+    /**
+     * Wait until the supplied condition becomes true, or throw an exception if it times out.
+     * If any WebElements are returned by the condition they will be wrapped in SmartWebElement.
+     * @param condition
+     * @param <T>
+     * @return result of the condition, wrapped in SmartWebELement if necessary
+     */
     default <T> T untilCondition(ExpectedCondition<T> condition) {
-        // TODO: convert smart web element??
-        return LocalDriver.buildWait().until(condition);
-    }
+        T returned = LocalDriver.buildWait().until(condition);
 
-    // TODO: implement until(Function ...)
+        try {
+            if (returned instanceof WebElement) {
+                return (T) LocalDriver.wrapElement(getDriver(), ((WebElement) returned), null);
+            } else if (List.class.isAssignableFrom(returned.getClass())) {
+                List list = (List) returned;
+                if (list.stream().allMatch(item -> item instanceof WebElement)) {
+                    return (T) LocalDriver.wrapElements(getDriver(), ((List<WebElement>) returned), null);
+                }
+            }
+        } catch (Exception ex) {
+            // TODO: log an error from within a mixin?
+        }
+
+        return returned;
+    }
 
     /**
      * Finds elements by the provided expression with no implicit waits.

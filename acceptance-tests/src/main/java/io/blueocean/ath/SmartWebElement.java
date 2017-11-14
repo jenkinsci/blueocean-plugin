@@ -1,6 +1,7 @@
 package io.blueocean.ath;
 
 import com.google.common.base.Preconditions;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
@@ -30,7 +31,7 @@ public class SmartWebElement implements WebElement {
     SmartWebElement(WebDriver driver, WebElement element, String expr) {
         this.driver = driver;
         this.element = element;
-        this.expr = expr;
+        this.expr = StringUtils.defaultIfBlank(expr, "<not set>");
     }
 
     private WebElement getElement() {
