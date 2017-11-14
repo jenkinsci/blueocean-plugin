@@ -717,7 +717,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>junit</artifactId>
-            <version>1.22-beta-2-20171108.151353-4</version> <!-- TODO: Switch to 1.22 post-beta -->
+            <version>1.22</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.jenkins-ci.plugins</groupId>
