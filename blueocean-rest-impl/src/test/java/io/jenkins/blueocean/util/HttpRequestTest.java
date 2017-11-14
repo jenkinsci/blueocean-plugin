@@ -83,7 +83,7 @@ public class HttpRequestTest {
             .willReturn(aResponse().withBodyFile("body-organizations-jenkins-BiWX8.json")));
 
         Map map = request.Get(urlPath)
-            .asObject(Map.class);
+            .as(Map.class);
 
         Assert.assertNotNull(map);
         Assert.assertEquals("jenkins", map.get("name"));

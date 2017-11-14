@@ -127,7 +127,7 @@ public class HttpRequest {
         return this;
     }
 
-    public <T> T asObject(Class<T> clazz) throws IOException {
+    public <T> T as(Class<T> clazz) throws IOException {
         return JsonConverter.toJava(asInputStream(), clazz);
     }
 
