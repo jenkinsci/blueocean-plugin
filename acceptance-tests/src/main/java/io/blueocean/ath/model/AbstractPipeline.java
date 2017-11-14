@@ -52,6 +52,14 @@ public abstract class AbstractPipeline {
         return name;
     }
 
+    public String getFullName() {
+        if (folder.getPath() != null) {
+            return folder.getPath().concat("/").concat(name);
+        }
+
+        return name;
+    }
+
     public String getUrlPart() {
         String part = "";
 
