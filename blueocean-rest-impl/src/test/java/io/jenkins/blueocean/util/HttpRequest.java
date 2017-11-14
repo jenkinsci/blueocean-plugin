@@ -26,7 +26,34 @@ import java.util.Map;
 import static io.jenkins.blueocean.util.HttpRequest.Method.GET;
 
 /**
- * TODO: needs javadoc once API is final
+ * Utility for making requests (usually in the context of JUnit tests).
+ * There are two key methods:
+ * - One of the "HTTP method" methods (Get, Post, etc) which support uri template syntax,
+ * - One of the "as" methods (as(Void.class), as(Map.class), asText(), etc) to execute.
+ *
+ * Sample usages:
+ *
+ * Map org = new HttpRequest("http://localhost:8080/jenkins/blue/rest")
+ *     .Get("/organizations/{org}")
+ *     .urlPart("org", "jenkins")
+ *     .as(Map.class);
+ *
+ * new HttpRequest("...")
+ *     .Post("/organizations/jenkins/pipelines")
+ *     .auth("username", "password")
+ *     .header("X-Foo", "Bar")
+ *     .bodyJson(ImmutableMap.of("name", "my-pipeline"))
+ *     .as(Void.class);
+ *
+ * Map error = new HttpRequest("...")
+ *      .Post("organizations/jenkins/pipelines")
+ *      .status(401)
+ *      .as(Map.class)
+ *
+ * To use it, add "blueocean-rest-impl" as a dep with <type>test-jar</type>
+ * then add fluent-hc, handy-uri-templates and stapler as deps.
+ *
+ * @see <a href="https://github.com/damnhandy/Handy-URI-Templates">https://github.com/damnhandy/Handy-URI-Templates</a>
  * @author cliffmeyers
  */
 public class HttpRequest {
@@ -50,67 +77,129 @@ public class HttpRequest {
 
     public HttpRequest() {}
 
+    /**
+     * Create an instance that will prepend "baseUrl" to the url specified in Get, Post, etc.
+     * @param baseUrl
+     */
     public HttpRequest(@Nonnull String baseUrl) {
         Preconditions.checkState(StringUtils.isNotBlank(baseUrl), "baseUrl is required");
         this.baseUrl = baseUrl;
     }
 
+    /**
+     * Specify a baseUrl to prepend to the url specified in Get, Post, etc.
+     * @param baseUrl url to prepend
+     * @return builder
+     */
     public HttpRequest baseUrl(@Nonnull String baseUrl) {
         this.baseUrl = baseUrl;
         return this;
     }
 
+    /**
+     * Specify a GET request to the specified URL (absolute, or relative if "baseUrl" was specified)
+     * @param url
+     * @return builder
+     */
     public HttpRequest Get(String url) {
         this.method = GET;
         this.requestUrl = url;
         return this;
     }
 
+    /**
+     * Specify a POST request to the specified URL (absolute, or relative if "baseUrl" was specified)
+     * @param url
+     * @return builder
+     */
     public HttpRequest Post(String url) {
         this.method = Method.POST;
         this.requestUrl = url;
         return this;
     }
 
+    /**
+     * Specify a PUT request to the specified URL (absolute, or relative if "baseUrl" was specified)
+     * @param url
+     * @return builder
+     */
     public HttpRequest Put(String url) {
         this.method = Method.PUT;
         this.requestUrl = url;
         return this;
     }
 
+    /**
+     * Specify a PATCH request to the specified URL (absolute, or relative if "baseUrl" was specified)
+     * @param url
+     * @return builder
+     */
     public HttpRequest Patch(String url) {
         this.method = Method.PATCH;
         this.requestUrl = url;
         return this;
     }
 
+    /**
+     * Specify a DELETE request to the specified URL (absolute, or relative if "baseUrl" was specified)
+     * @param url string which can contain embedded
+     * @return builder
+     */
     public HttpRequest Delete(String url) {
         this.method = Method.DELETE;
         this.requestUrl = url;
         return this;
     }
 
+    /**
+     * Specify the value to be bound to uri template syntax.
+     * @param key tempalte variable name
+     * @param value value to bind
+     * @return builder
+     */
     public HttpRequest urlPart(String key, String value) {
         urlParts.put(key, value);
         return this;
     }
 
+    /**
+     * Attach a request header.
+     * @param name name of header
+     * @param value value of header
+     * @return builder
+     */
     public HttpRequest header(String name, String value) {
         headers.put(name, value);
         return this;
     }
 
+    /**
+     * Set a username+password for basic authentication.
+     * @param username
+     * @param password
+     * @return builder
+     */
     public HttpRequest auth(String username, String password) {
         this.username = username;
         this.password = password;
         return this;
     }
 
+    /**
+     * Set contentType of request body.
+     * @param contentType
+     * @return builder
+     */
     public HttpRequest contentType(String contentType) {
         this.contentType = contentType;
         return this;
     }
 
+    /**
+     * Set an object to be JSON-encoded in request body. Sets content type automatically.
+     * @param object
+     * @return builder
+     */
     public HttpRequest bodyJson(Object object) {
         if (object != null) {
             contentType(JSON);
@@ -122,11 +211,25 @@ public class HttpRequest {
         return this;
     }
 
+    /**
+     * Set an expected status code to be sent in response; an exception will be thrown if not matched.
+     * If not set, assumes 200.
+     * @param statusCode
+     * @return builder
+     */
     public HttpRequest status(int statusCode) {
         this.expectedStatus = statusCode;
         return this;
     }
 
+    /**
+     * Execute the request and transform JSON response body to the specified type.
+     * Use as(Void.class) if you wish to ignore the response body.
+     * @param clazz
+     * @param <T>
+     * @return response body as instance of specified class/type
+     * @throws IOException
+     */
     public <T> T as(Class<T> clazz) throws IOException {
         if (Void.class.equals(clazz)) {
             executeInternal();
@@ -135,18 +238,39 @@ public class HttpRequest {
         return JsonConverter.toJava(asInputStream(), clazz);
     }
 
+    /**
+     * Execute the request and return the response body as a string.
+     * @return response body as string.
+     * @throws IOException
+     */
     public String asText() throws IOException {
         return executeInternal().asString();
     }
 
+    /**
+     * Execute the request and return the response body as a string of specified charset.
+     * @param charset character set of string
+     * @return response body as string of specified charset.
+     * @throws IOException
+     */
     public String asText(String charset) throws IOException {
         return executeInternal().asString(Charset.forName(charset));
     }
 
+    /**
+     * Execute the request and return the response as an InputStream
+     * @return response body as InputStream
+     * @throws IOException
+     */
     public InputStream asInputStream() throws IOException {
         return executeInternal().asStream();
     }
 
+    /**
+     * Execute the request and return the response as a byte array
+     * @return response body as byte array
+     * @throws IOException
+     */
     public byte[] asBytes() throws IOException {
         return executeInternal().asBytes();
     }
