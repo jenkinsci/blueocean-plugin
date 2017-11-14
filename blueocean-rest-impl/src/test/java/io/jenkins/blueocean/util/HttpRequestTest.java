@@ -60,7 +60,7 @@ public class HttpRequestTest {
 
     @Before
     public void setUp() {
-        request = HttpRequest.build(String.format("http://%s:%s", "localhost", rule.port()));
+        request = HttpRequest.build(getBaseUrl());
     }
 
     @Test
@@ -165,6 +165,26 @@ public class HttpRequestTest {
             .asText();
 
         Assert.assertEquals(expectedBody, actualBody);
+    }
+
+    @Test
+    public void testNoDefaultBaseUrl() throws IOException {
+        String requestPath = "/test/no/baseurl/";
+        String requestUrl = getBaseUrl() + requestPath;
+
+        // NOTE: urlEqualTo doesn't appear to work correctly w/ absolute URL's; passing 'requestPath' works
+        stubFor(get(urlEqualTo(requestPath))
+            .willReturn(aResponse()));
+
+        HttpRequest.build()
+            .Get(requestUrl)
+            .execute();
+
+        verify(getRequestedFor(urlEqualTo(requestPath)));
+    }
+
+    private String getBaseUrl() {
+        return String.format("http://%s:%s", "localhost", rule.port());
     }
 
 }

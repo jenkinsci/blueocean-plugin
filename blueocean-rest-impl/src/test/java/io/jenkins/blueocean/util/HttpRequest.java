@@ -50,7 +50,11 @@ public class HttpRequest {
 
     private HttpRequest() {}
 
-    public static HttpRequest build(String baseUrl) {
+    public static HttpRequest build() {
+        return new HttpRequest();
+    }
+
+    public static HttpRequest build(@Nonnull String baseUrl) {
         Preconditions.checkState(StringUtils.isNotBlank(baseUrl), "baseUrl is required");
         HttpRequest builder = new HttpRequest();
         builder.baseUrl(baseUrl);
