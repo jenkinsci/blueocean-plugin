@@ -1,11 +1,11 @@
 package io.blueocean.ath;
 
 import com.google.common.base.Preconditions;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.Point;
 import org.openqa.selenium.Rectangle;
@@ -16,45 +16,26 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.FluentWait;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 /**
- * Wrapper around an underlying WebDriver that automatically handles waits and common gotchas
- * within blueocean.
- *
- * Accepts expressions for css and xpath, if the provided lookup starts with a /, XPath is used
+ * Wrapper around an underlying WebDriver that automatically handles waits and common gotchas.
  */
 public class SmartWebElement implements WebElement {
     private static Logger logger = Logger.getLogger(SmartWebElement.class);
-    public static final int DEFAULT_TIMEOUT = Integer.getInteger("webDriverDefaultTimeout", 3000);
     public static final int RETRY_COUNT = 3;
 
     private WebDriver driver;
+    protected WebElement element;
     protected String expr;
-    protected By by;
 
-    public SmartWebElement(WebDriver driver, String expr) {
-        this(driver, expr, exprToBy(expr));
-    }
-
-    public SmartWebElement(WebDriver driver, By by) {
-        this(driver, by.toString(), by);
-    }
-
-    public SmartWebElement(WebDriver driver, String expr, By by) {
+    SmartWebElement(WebDriver driver, WebElement element, String expr) {
         this.driver = driver;
-        this.expr = expr;
-        this.by = by;
+        this.element = element;
+        this.expr = StringUtils.defaultIfBlank(expr, "<not set>");
     }
 
-    private static By exprToBy(String expr) {
-        By by;
-        if (expr.startsWith("/")) {
-            by = By.xpath(expr);
-        } else {
-            by = By.cssSelector(expr);
-        }
-        return by;
+    private WebElement getElement() {
+        return element;
     }
 
     /**
@@ -66,78 +47,25 @@ public class SmartWebElement implements WebElement {
     }
 
     /**
-     * Gets elements
-     * @return the elements found
+     * @return a FluentWait with default polling / timeout / exception handling
      */
-    public List<WebElement> getElements() {
-        return new FluentWait<>(getDriver())
-            .pollingEvery(100, TimeUnit.MILLISECONDS)
-            .withTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
-            .ignoring(NoSuchElementException.class)
-            .until(ExpectedConditions.numberOfElementsToBeMoreThan(by, 0));
-    }
-
-    /**
-     * Gets the first matching element
-     * @return see description
-     */
-    public WebElement getElement() throws NoSuchElementException {
-        List<WebElement> elements = getElements();
-        if (elements == null || elements.isEmpty()) {
-            throw new NoSuchElementException("Nothing matched for: " + expr);
-        }
-        if (elements.size() > 1) {
-            throw new NoSuchElementException("Too many elements returned for: " + expr);
-        }
-        return elements.get(0);
-    }
-
-    /**
-     * Iterates over all found elements with the given function
-     * @param fn to perform on the elements
-     */
-    public void forEach(java.util.function.Consumer<WebElement> fn) {
-        for (WebElement e : getElements()) {
-            fn.accept(e);
-        }
-    }
-
-    /**
-     * Determines if the element is visible
-     * @return true if visible, false if not
-     */
-    public boolean isVisible() {
-        return getElement().isDisplayed();
-    }
-
-    /**
-     * Determines if the element is present
-     * @return true if present, false if not
-     */
-    public boolean isPresent() {
-        try {
-            if (getDriver().findElement(by) == null) {
-                return false;
-            }
-            return true;
-        } catch(NoSuchElementException e) {
-            return false;
-        }
+    private FluentWait<WebDriver> buildWait() {
+        return LocalDriver.buildWait();
     }
 
     @Override
     public void click() {
         for (int i = 0; i < RETRY_COUNT; i++) {
             try {
-                WebElement e = getElement();
+                WebElement e = buildWait().until(ExpectedConditions.elementToBeClickable(element));
                 e.click();
                 if (i > 0) {
-                    logger.info(String.format("retry click successful for %s", by.toString()));
+                    logger.info(String.format("retry click successful for %s", expr));
                 }
                 return;
             } catch (WebDriverException ex) {
                 if (ex.getMessage().contains("is not clickable at point")) {
-                    logger.warn(String.format("%s not clickable: will retry click", by.toString()));
+                    logger.warn(String.format("%s not clickable: will retry click", expr));
                     logger.debug("exception: " + ex.getMessage());
                     try {
                         // typically this is during an animation, which should not take long
@@ -171,9 +99,9 @@ public class SmartWebElement implements WebElement {
      */
     public <T> T eval(String script) {
         String js = "return (function(el,elements){" + script + "})(arguments[0],arguments[1])";
-        List<WebElement> elements = getElements();
-        WebElement el = elements.iterator().next();
-        return (T)((JavascriptExecutor)getDriver()).executeScript(script, el, elements);
+        // TODO: validate this change is correct
+        WebElement el = getElement();
+        return (T)((JavascriptExecutor)getDriver()).executeScript(script, el);
     }
 
     /**
@@ -271,20 +199,24 @@ public class SmartWebElement implements WebElement {
     }
 
     @Override
-    public List<WebElement> findElements(By by) {
-        WebElement e = getElement();
-        return e.findElements(by);
+    public List<WebElement> findElements(By locator) {
+        return buildWait().until((WebDriver driver) -> {
+            List<WebElement> elements = getElement().findElements(locator);
+            return LocalDriver.wrapElements(driver, elements, locator);
+        });
     }
 
     @Override
-    public WebElement findElement(By by) {
-        WebElement e = getElement();
-        return e.findElement(by);
+    public WebElement findElement(By locator) {
+        return buildWait().until((WebDriver driver) -> {
+            WebElement matchedElement = getElement().findElement(locator);
+            return LocalDriver.wrapElement(getDriver(), matchedElement, locator);
+        });
     }
 
     @Override
     public boolean isDisplayed() {
-        WebElement e = getElement();
+        WebElement e = buildWait().until(ExpectedConditions.visibilityOf(element));
         return e.isDisplayed();
     }
 

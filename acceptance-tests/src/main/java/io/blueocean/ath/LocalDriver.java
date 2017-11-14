@@ -1,20 +1,23 @@
 package io.blueocean.ath;
 
 import org.openqa.selenium.By;
+import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.FluentWait;
 
 import java.util.List;
-import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
- * Wrapper around an underlying WebDriver that
- * consistently handles waits automatically.
- *
- * Accepts expressions for css and xpath, if the provided lookup starts with a /, XPath is used
+ * Provides access to the current WebDriver instance.
+ * Contains some utility methods for working with waits and SmartWebElement.
+ * TODO: rename this class as it's *not* a WebDriver but rather more of a DriverHolder.
  */
-public class LocalDriver implements WebDriver {
+public class LocalDriver {
     private static ThreadLocal<WebDriver> CURRENT_WEB_DRIVER = new ThreadLocal<>();
+    public static final int DEFAULT_TIMEOUT = Integer.getInteger("webDriverDefaultTimeout", 3000);
 
     public static void setCurrent(WebDriver driver) {
         CURRENT_WEB_DRIVER.set(driver);
@@ -46,106 +49,31 @@ public class LocalDriver implements WebDriver {
     }
 
     /**
-     * Used for callbacks in a specific browser context
+     * @return a FluentWait with default polling / timeout / exception handling
      */
-    public interface Procedure {
-        void execute() throws Exception;
-    }
-
-    @Override
-    public void get(String s) {
-        getDriver().get(s);
-    }
-
-    @Override
-    public String getCurrentUrl() {
-        return getDriver().getCurrentUrl();
-    }
-
-    @Override
-    public String getTitle() {
-        return getDriver().getTitle();
-    }
-
-    @Override
-    public List<WebElement> findElements(By by) {
-        return new SmartWebElement(getDriver(), by).getElements();
-    }
-
-    @Override
-    public WebElement findElement(By by) {
-        return new SmartWebElement(getDriver(), by).getElement();
-    }
-
-    @Override
-    public String getPageSource() {
-        return getDriver().getPageSource();
-    }
-
-    @Override
-    public void close() {
-        WebDriver driver = getDriver();
-        if (driver != null) {
-            try {
-                driver.close();
-            } catch(Exception e) {
-                // ignore, this happens when running individual tests sometimes
-            }
-        }
-    }
-
-    @Override
-    public void quit() {
-        getDriver().quit();
-    }
-
-    @Override
-    public Set<String> getWindowHandles() {
-        return getDriver().getWindowHandles();
-    }
-
-    @Override
-    public String getWindowHandle() {
-        return getDriver().getWindowHandle();
-    }
-
-    @Override
-    public TargetLocator switchTo() {
-        return getDriver().switchTo();
-    }
-
-    @Override
-    public Navigation navigate() {
-        return getDriver().navigate();
-    }
-
-    @Override
-    public Options manage() {
-        return getDriver().manage();
+    static FluentWait<WebDriver> buildWait() {
+        return new FluentWait<>(getDriver())
+            .pollingEvery(100, TimeUnit.MILLISECONDS)
+            .withTimeout(DEFAULT_TIMEOUT, TimeUnit.MILLISECONDS)
+            .ignoring(NoSuchElementException.class);
     }
 
     /**
-     * Push a specific driver into context and execute the proc
-     * @param driver new driver in context
-     * @param proc procedure to execute
+     * Wraps the supplied element in SmartWebElement if not already a SWE
      */
-    public static void use(WebDriver driver, Procedure proc) {
-        WebDriver previous = CURRENT_WEB_DRIVER.get();
-        try {
-            CURRENT_WEB_DRIVER.set(driver);
-            try {
-                proc.execute();
-            } catch(RuntimeException e) {
-                throw e;
-            } catch(Exception e) {
-                throw new RuntimeException(e);
-            }
-        } finally {
-            if (previous == null) {
-                CURRENT_WEB_DRIVER.remove();
-            } else {
-                CURRENT_WEB_DRIVER.set(previous);
-            }
+    static WebElement wrapElement(WebDriver driver, WebElement element, By locator) {
+        if (element instanceof SmartWebElement) {
+            return element;
         }
+        return new SmartWebElement(driver, element, locator != null ? locator.toString() : null);
+    }
+
+    /**
+     * Wraps the supplied elements in SmartWebElement if not already a SWE
+     */
+    static List<WebElement> wrapElements(WebDriver driver, List<WebElement> elements, By locator) {
+        return elements.stream()
+            .map(element -> wrapElement(driver, element, locator) )
+            .collect(Collectors.toList());
     }
 }
