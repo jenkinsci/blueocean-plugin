@@ -60,7 +60,7 @@ public class HttpRequestTest {
 
     @Before
     public void setUp() {
-        request = HttpRequest.build(getBaseUrl());
+        request = new HttpRequest(getBaseUrl());
     }
 
     @Test
@@ -176,7 +176,7 @@ public class HttpRequestTest {
         stubFor(get(urlEqualTo(requestPath))
             .willReturn(aResponse()));
 
-        HttpRequest.build()
+        new HttpRequest()
             .Get(requestUrl)
             .execute();
 

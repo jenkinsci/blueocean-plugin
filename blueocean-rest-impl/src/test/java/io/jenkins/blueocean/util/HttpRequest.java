@@ -48,17 +48,11 @@ public class HttpRequest {
     private String password;
 
 
-    private HttpRequest() {}
+    public HttpRequest() {}
 
-    public static HttpRequest build() {
-        return new HttpRequest();
-    }
-
-    public static HttpRequest build(@Nonnull String baseUrl) {
+    public HttpRequest(@Nonnull String baseUrl) {
         Preconditions.checkState(StringUtils.isNotBlank(baseUrl), "baseUrl is required");
-        HttpRequest builder = new HttpRequest();
-        builder.baseUrl(baseUrl);
-        return builder;
+        this.baseUrl = baseUrl;
     }
 
     public HttpRequest baseUrl(@Nonnull String baseUrl) {
