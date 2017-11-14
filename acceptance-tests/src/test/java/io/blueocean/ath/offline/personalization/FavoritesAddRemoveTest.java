@@ -35,6 +35,9 @@ public class FavoritesAddRemoveTest implements WebDriverMixin {
     private static final Logger logger = Logger.getLogger(FavoritesAddRemoveTest.class);
     private static final Folder FOLDER = new Folder("personalization-folder");
 
+    @Rule @Inject
+    public GitRepositoryRule git;
+
     @Inject
     FavoritesDashboardPage dashboard;
 
@@ -46,9 +49,6 @@ public class FavoritesAddRemoveTest implements WebDriverMixin {
 
     @Inject
     MultiBranchPipelineFactory multibranchFactory;
-
-    @Rule @Inject
-    GitRepositoryRule git;
 
     @Inject @BaseUrl
     String base;
