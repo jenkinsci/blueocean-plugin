@@ -1,10 +1,10 @@
 package io.blueocean.ath.offline.personalization;
 
-import io.blueocean.ath.SmartWebElement;
 import io.blueocean.ath.pages.blue.DashboardPage;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import javax.inject.Singleton;
 import java.util.List;
@@ -34,6 +34,11 @@ public class FavoritesDashboardPage extends DashboardPage {
             .collect(Collectors.toList());
     }
 
+    WebElement getFavoriteCard(String fullName) {
+        return find(".favorites-card-stack")
+            .findElement(By.cssSelector(".pipeline-card[data-full-name="+fullName.replace("/", "\\/")+"]"));
+    }
+
     public boolean isPipelineListItemFavorited(String jobName) {
         return getFavoriteItem(jobName)
             .findElement(By.cssSelector("input"))
@@ -51,12 +56,15 @@ public class FavoritesDashboardPage extends DashboardPage {
         }
     }
 
-    /*
-    public WebElement failIntentionally(String jobName) {
-        WebElement parentItem = getFavoriteItem(jobName);
-        // WebElement parentItem = getPipelineListItem(jobName);
-        WebElement result = parentItem.findElement(By.cssSelector(".foo"));
-        return result;
+    public void removeFavoriteCard(String jobName) {
+        getFavoriteCard(jobName)
+            .findElement(By.cssSelector(".Checkbox.Favorite > label"))
+            .click();
     }
-    */
+
+    public void checkFavoriteCardCount(int quantity) {
+        logger.info("checking favorite count = " + quantity);
+        untilCondition(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".favorites-card-stack .pipeline-card"), quantity));
+    }
+
 }
