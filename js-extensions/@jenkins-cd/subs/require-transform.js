@@ -1,19 +1,38 @@
 var transformTools = require('browserify-transform-tools');
 
+function getExported(name) {
+    var importName = name.replace(/\@/,'').replace('/','-');
+    var out = "require('@jenkins-cd/js-modules').requireModule('" + importName + ':' + importName + "@any')";
+    return out;
+}
+
 var directModuleReplacements = {
-    '@jenkins-cd/logging': 'jenkins-cd-logging:jenkins-cd-logging@any',
-    '@jenkins-cd/js-extensions': 'jenkins-cd-js-extensions:jenkins-cd-js-extensions@any',
-    '@jenkins-cd/blueocean-core-js': 'jenkins-cd-blueocean-core-js:jenkins-cd-blueocean-core-js@any',
-    '@jenkins-cd/design-language': 'jenkins-cd-design-language:jenkins-cd-design-language@any',
-    'mobx': 'mobx:mobx@any',
-    'mobx-react': 'mobx-react:mobx-react@any',
-    'react': 'react:react@any',
-    'react-dom': 'react-dom:react-dom@any',
-    'react-router': 'react-router:react-router@any',
-    'react-addons-css-transition-group': 'react-addons-css-transition-group:react-addons-css-transition-group@any',
+    '@jenkins-cd/js-extensions': 0,
+    '@jenkins-cd/blueocean-core-js': 0,
+    '@jenkins-cd/design-language': 0,
+    'react': 0,
+    'react-dom': 0,
 };
 
-var makeTransform = function (file, exports) {
+var replacementKeys = Object.keys(directModuleReplacements);
+for (var i = 0; i < replacementKeys.length; i++) {
+    var k = replacementKeys[i];
+    directModuleReplacements[k] = getExported(k);
+}
+
+function getImports(packageJson) {
+    if (!packageJson || !packageJson.jenkinscd || !packageJson.jenkinscd.import) {
+        return {};
+    }
+    var out = {};
+    packageJson.jenkinscd.import.map(function(imp) {
+        var name = imp.replace(/\@any/,'');
+        out[name] = getExported(name);
+    });
+    return out;
+}
+
+var makeTransform = function (file, exports, imports) {
     return transformTools.makeFunctionTransform('exclude-upstream-requires', {
         jsFilesOnly: true,
         global: true,
@@ -23,10 +42,9 @@ var makeTransform = function (file, exports) {
         if (exports.indexOf(name) !== -1) {
             return done();
         }
-        var replacement = directModuleReplacements[name];
+        var replacement = imports[name];
         if (replacement) {
-            result = "require('@jenkins-cd/js-modules').requireModule('" + replacement + "')";
-            return done(null, result);
+            return done(null, replacement);
         }
         if (exports.indexOf('react') === -1 && name.indexOf('react/') !== -1) {
             console.error(" stray react library: ", name, 'in', opts.file);
@@ -35,9 +53,12 @@ var makeTransform = function (file, exports) {
     });
 };
 
-module.exports = function (file, config) {
-    var wrappedTransform = makeTransform(file, config.exports);
-    return wrappedTransform(file, config);
+module.exports = function(packageJson) {
+    var imports = Object.assign(getImports(packageJson), directModuleReplacements);
+    return function (file, config) {
+        var wrappedTransform = makeTransform(file, config.exports, imports);
+        return wrappedTransform(file, config);
+    }
 };
 
 module.exports.configure = function (config) {

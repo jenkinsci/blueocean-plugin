@@ -2435,6 +2435,24 @@ public class PipelineNodeTest extends PipelineBaseTest {
         assertEquals("echo \"\u001B[32m some text \u001B[0m\"", resp.get(1).get("displayDescription"));
     }
 
+    @Test
+    public void testDynamicInnerStage() throws Exception {
+        WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, "p");
+        URL resource = Resources.getResource(getClass(), "testDynamicInnerStage.jenkinsfile");
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        job.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+
+        WorkflowRun build = job.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.SUCCESS, build);
+
+        List<Map> nodes = get("/organizations/jenkins/pipelines/p/runs/1/nodes/", List.class);
+        assertEquals(4, nodes.size());
+        assertEquals(FlowNodeWrapper.NodeType.STAGE.name(),nodes.get(0).get("type"));
+        assertEquals(FlowNodeWrapper.NodeType.STAGE.name(),nodes.get(1).get("type"));
+        assertEquals(FlowNodeWrapper.NodeType.PARALLEL.name(),nodes.get(2).get("type"));
+        assertEquals(FlowNodeWrapper.NodeType.STAGE.name(),nodes.get(3).get("type"));
+    }
+
     private void setupScm(String script) throws Exception {
         // create git repo
         sampleRepo.init();

@@ -4,12 +4,14 @@
         "edges": [
             {
                 "durationInMillis": 694,
-                "id": "9"
+                "id": "9",
+                "type": "STAGE"
             }
         ],
         "id": "3",
         "result": "SUCCESS",
         "startTime": "2016-05-02T16:06:28.639+1000",
+        "type": "STAGE",
         "state": "FINISHED"
     },
     {
@@ -17,16 +19,19 @@
         "edges": [
             {
                 "durationInMillis": 2,
-                "id": "12"
+                "id": "12",
+                "type": "PARALLEL"
             },
             {
                 "durationInMillis": 3,
-                "id": "13"
+                "id": "13",
+                "type": "PARALLEL"
             }
         ],
         "id": "9",
         "result": "SUCCESS",
         "startTime": "2016-05-02T16:06:29.333+1000",
+        "type": "STAGE",
         "state": "FINISHED"
     },
     {
@@ -35,6 +40,7 @@
         "id": "12",
         "result": "SUCCESS",
         "startTime": "2016-05-02T16:06:29.335+1000",
+        "type": "PARALLEL",
         "state": "FINISHED"
     },
     {
@@ -43,6 +49,7 @@
         "id": "13",
         "result": "SUCCESS",
         "startTime": "2016-05-02T16:06:29.336+1000",
+        "type": "PARALLEL",
         "state": "FINISHED"
     }
 ]

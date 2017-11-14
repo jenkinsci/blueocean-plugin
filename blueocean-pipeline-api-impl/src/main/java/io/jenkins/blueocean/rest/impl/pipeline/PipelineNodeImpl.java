@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import org.kohsuke.stapler.export.Exported;
 
 /**
  * Implementation of {@link BluePipelineNode}.
@@ -108,6 +109,11 @@ public class PipelineNodeImpl extends BluePipelineNode {
     }
 
     @Override
+    public String getType(){
+        return node.getType().name();
+    }
+
+    @Override
     public String getCauseOfBlockage() {
         return node.getCauseOfFailure();
     }
@@ -144,22 +150,29 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     public static class EdgeImpl extends Edge{
         private final String id;
+        private final String type;
 
-        public EdgeImpl(String id) {
-            this.id = id;
+        public EdgeImpl(FlowNodeWrapper edge) {
+            this.id = edge.getId();
+            this.type = edge.getType().name();
         }
 
         @Override
         public String getId() {
             return id;
         }
+
+        @Exported
+        public String getType() {
+            return type;
+        }
     }
 
-    private List<Edge> buildEdges(List<String> nodes){
+    private List<Edge> buildEdges(List<FlowNodeWrapper> nodes){
         List<Edge> edges  = new ArrayList<>();
         if(!nodes.isEmpty()) {
-            for (String id:nodes) {
-                edges.add(new EdgeImpl(id));
+            for (FlowNodeWrapper edge:nodes) {
+                edges.add(new EdgeImpl(edge));
             }
         }
         return edges;

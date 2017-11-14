@@ -34,7 +34,7 @@ public class EditorPage {
     public void saveBranch(String branch) {
         logger.info("Editing pipeline - saving now");
         wait.until(By.xpath("//*[text()='Save']")).click();
-        wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("Simple pipeline");
+        wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("We changed some things.");
         if(!Strings.isNullOrEmpty(branch)) {
             wait.until(By.xpath("//span[text()='Commit to new branch']")).click();
             wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys(branch);
@@ -59,7 +59,7 @@ public class EditorPage {
         wait.until(By.xpath("//*[text()='Save']")).click();
         wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("Simple pipeline");
         if(!Strings.isNullOrEmpty(newBranch)) {
-            wait.until(By.xpath("//span[@text='Commit to new branch'")).click();
+            wait.until(By.xpath("//*[text()='Commit to new branch']")).click();
             wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys(newBranch);
             logger.info("Using branch " + newBranch);
         } else {
@@ -68,4 +68,48 @@ public class EditorPage {
         wait.until(By.xpath("//*[text()=\"Save & run\"]")).click();
         logger.info("Simple pipeline saved");
     }
+
+    // Creates a pipeline with parallel stages in it.
+    public void parallelPipeline(String newBranch, int numberOfParallels) {
+        logger.info("Editing a parallel pipeline");
+        /*
+        We'll create as many parallel stages as we were told to
+        via int numberOfParallels when we were called.
+        */
+        for (int i = 0; i < numberOfParallels; i++) {
+            logger.info("Create stage Parallel-" + i);
+            wait.until(By.xpath("(//*[@class='pipeline-node-hittarget'])[2]")).click();
+            wait.until(By.cssSelector("input.stage-name-edit")).sendKeys("Parallel-" + i);
+            wait.until(By.cssSelector("button.btn-primary.add")).click();
+            wait.until(By.xpath("//*[text()='Shell Script']")).click();
+            wait.until(By.cssSelector("textarea.editor-step-detail-script")).sendKeys("netstat -a");
+            wait.click(By.xpath("(//a[@class='back-from-sheet'])[2]"));
+        }
+        /*
+        Now we need to name the "wrapper" stage to something other than what
+        got automatically put in.
+        */
+        wait.click(By.cssSelector("div.pipeline-big-label.top-level-parallel"));
+        wait.until(By.cssSelector("input.stage-name-edit")).clear();
+        wait.until(By.cssSelector("input.stage-name-edit")).sendKeys("Top Level Parallel Wrapper Stage");
+        wait.until(By.xpath("//*[text()='Save']")).click();
+        wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("Parallel pipeline");
+        if(!Strings.isNullOrEmpty(newBranch)) {
+            wait.until(By.xpath("//*[text()='Commit to new branch']")).click();
+            wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys(newBranch);
+            logger.info("Using branch " + newBranch);
+        } else {
+            /*
+            This mimics the user changing picking a new branch, and then
+            changing their mind and committing to master after all.
+            */
+            wait.until(By.xpath("//*[text()='Commit to new branch']")).click();
+            wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys("i-am-changing-my-mind");
+            wait.until(By.xpath("//*[text()='Commit to master']")).click();
+            logger.info("Using branch master");
+        }
+        wait.until(By.xpath("//*[text()=\"Save & run\"]")).click();
+        logger.info("Parallel pipeline saved");
+    }
+
 }

@@ -85,6 +85,11 @@ public class PipelineStepImpl extends BluePipelineStep {
     }
 
     @Override
+    public String getType() {
+        return node.getType().name();
+    }
+
+    @Override
     public BlueRun.BlueRunResult getResult() {
         return node.getStatus().getResult();
     }
