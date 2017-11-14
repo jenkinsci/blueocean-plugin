@@ -69,7 +69,7 @@ node() {
       } finally {
         stage('Cleanup') {
           sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
-          sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-bitbucket-serve.sh"
+          sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-bitbucket-server.sh"
           sendhipchat()
           deleteDir()
         }
