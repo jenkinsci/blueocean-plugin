@@ -31,8 +31,8 @@ import static io.jenkins.blueocean.util.HttpRequest.Method.GET;
  */
 public class HttpRequest {
 
-    private Logger logger = Logger.getLogger(getClass());
-    private static String JSON = "application/json";
+    private static final Logger logger = Logger.getLogger(HttpRequest.class);
+    private static final String JSON = "application/json";
 
     enum Method { GET, POST, PUT, PATCH, DELETE };
 
