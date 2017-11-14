@@ -73,7 +73,7 @@ public class ClassicJobApi {
     public void createPipeline(FolderJob folder, String jobName, String script) throws IOException {
         deletePipeline(folder, jobName);
         URL url = Resources.getResource(this.getClass(), "pipeline.xml");
-        jenkins.createJob(null, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{script}}", script));
+        jenkins.createJob(folder, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{script}}", script));
         logger.info("Created pipeline job "+ jobName);
     }
     public void createMultlBranchPipeline(FolderJob folder, String pipelineName, String repositoryPath) throws IOException {
