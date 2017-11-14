@@ -153,7 +153,7 @@ public class HttpRequest {
         executeInternal();
     }
 
-    public Content executeInternal() throws IOException {
+    private Content executeInternal() throws IOException {
         String uriPath = urlParts.size() > 0 ?
             UriTemplate.fromTemplate(requestUrl).expand(urlParts) :
             requestUrl;
