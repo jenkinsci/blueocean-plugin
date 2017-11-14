@@ -70,7 +70,7 @@ public class HttpRequestTest {
         stubFor(get(urlEqualTo(urlPath))
             .willReturn(aResponse().withStatus(404)));
 
-        request.GET(urlPath)
+        request.Get(urlPath)
             .status(404)
             .execute();
     }
@@ -82,7 +82,7 @@ public class HttpRequestTest {
         stubFor(get(urlEqualTo(urlPath))
             .willReturn(aResponse().withBodyFile("body-organizations-jenkins-BiWX8.json")));
 
-        Map map = request.GET(urlPath)
+        Map map = request.Get(urlPath)
             .asObject(Map.class);
 
         Assert.assertNotNull(map);
@@ -98,7 +98,7 @@ public class HttpRequestTest {
             .willReturn(aResponse().withStatus(403)));
 
         try {
-            request.GET(urlPath).execute();
+            request.Get(urlPath).execute();
             Assert.fail("should not succeed");
         } catch (Exception ex) {
             Assert.assertTrue("should contain 403", ex.getMessage().contains("403"));
@@ -112,7 +112,7 @@ public class HttpRequestTest {
         stubFor(get(urlEqualTo(urlPath))
             .willReturn(aResponse().withStatus(200)));
 
-        request.GET(urlPath)
+        request.Get(urlPath)
             .auth("user1", "user1")
             .execute();
 
@@ -127,7 +127,7 @@ public class HttpRequestTest {
         stubFor(post(urlEqualTo(urlPath))
             .willReturn(aResponse().withStatus(200)));
 
-        request.POST(urlPath)
+        request.Post(urlPath)
             .bodyJson(ImmutableMap.of("foo", "bar"))
             .execute();
 
@@ -142,7 +142,7 @@ public class HttpRequestTest {
         stubFor(get(urlEqualTo(urlPath))
             .willReturn(aResponse().withStatus(200)));
 
-        request.GET(urlPath)
+        request.Get(urlPath)
             .header("Foo", "Baz")
             .execute();
 
@@ -159,7 +159,7 @@ public class HttpRequestTest {
         stubFor(get(urlEqualTo(urlPath))
             .willReturn(aResponse().withStatus(200).withBody(expectedBody)));
 
-        String actualBody = request.GET(templatedPath)
+        String actualBody = request.Get(templatedPath)
             .urlPart("fname", "londo")
             .urlPart("lname", "mollari")
             .asText();

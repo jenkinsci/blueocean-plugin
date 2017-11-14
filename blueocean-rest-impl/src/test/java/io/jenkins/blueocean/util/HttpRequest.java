@@ -62,31 +62,31 @@ public class HttpRequest {
         return this;
     }
 
-    public HttpRequest GET(String url) {
+    public HttpRequest Get(String url) {
         this.method = GET;
         this.requestUrl = url;
         return this;
     }
 
-    public HttpRequest POST(String url) {
+    public HttpRequest Post(String url) {
         this.method = Method.POST;
         this.requestUrl = url;
         return this;
     }
 
-    public HttpRequest PUT(String url) {
+    public HttpRequest Put(String url) {
         this.method = Method.PUT;
         this.requestUrl = url;
         return this;
     }
 
-    public HttpRequest PATCH(String url) {
+    public HttpRequest Patch(String url) {
         this.method = Method.PATCH;
         this.requestUrl = url;
         return this;
     }
 
-    public HttpRequest DELETE(String url) {
+    public HttpRequest Delete(String url) {
         this.method = Method.DELETE;
         this.requestUrl = url;
         return this;
