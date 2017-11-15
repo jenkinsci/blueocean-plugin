@@ -25,4 +25,9 @@ public class FreestyleJob extends AbstractPipeline {
         jobApi.createFreeStyleJob(jobApi.getFolder(getFolder(), true), getName(), command);
         return this;
     }
+
+    public FreestyleJob build() throws IOException {
+        jobApi.build(getFolder(), getName());
+        return this;
+    }
 }
