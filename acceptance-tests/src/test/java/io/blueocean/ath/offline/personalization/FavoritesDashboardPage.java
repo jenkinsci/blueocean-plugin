@@ -33,7 +33,7 @@ public class FavoritesDashboardPage extends DashboardPage {
 
     WebElement getFavoriteCard(String fullName) {
         return wait.until(driver ->
-            wait.until(By.cssSelector(".favorites-card-stack"))
+            driver.findElement(By.cssSelector(".favorites-card-stack"))
                 .findElement(By.cssSelector(".pipeline-card[data-full-name="+fullName.replace("/", "\\/")+"]"))
         );
     }
@@ -65,6 +65,17 @@ public class FavoritesDashboardPage extends DashboardPage {
     public void checkFavoriteCardCount(int quantity) {
         logger.info("checking favorite count = " + quantity);
         wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".favorites-card-stack .pipeline-card"), quantity));
+    }
+
+    public void clickFavoriteCardActivityLink(String fullName) {
+        getFavoriteCard(fullName)
+            .findElement(By.cssSelector(".name a"))
+            .click();
+    }
+
+    public void clickFavoriteCardRunDetailsLink(String fullName) {
+        getFavoriteCard(fullName)
+            .click();
     }
 
 }

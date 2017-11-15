@@ -109,4 +109,23 @@ public class ActivityPage {
         wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(selector, atLeast - 1));
         logger.info("At least " + atLeast + " runs are complete");
     }
+
+    public void checkBasicDomElements() {
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("article.activity")));
+    }
+
+    public void checkFavoriteStatus(boolean isFavorited) {
+        wait.until(driver -> {
+            WebElement favorite = driver.findElement(By.cssSelector(".Favorite.Checkbox input"));
+            return isFavorited == favorite.isSelected();
+        });
+    }
+
+    public void toggleFavorite() {
+        wait.until(driver -> {
+            WebElement favorite = driver.findElement(By.cssSelector(".Favorite.Checkbox label"));
+            favorite.click();
+            return favorite;
+        });
+    }
 }

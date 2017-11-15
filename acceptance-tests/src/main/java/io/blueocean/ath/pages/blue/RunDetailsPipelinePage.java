@@ -7,6 +7,7 @@ import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.model.AbstractPipeline;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
@@ -71,6 +72,13 @@ public class RunDetailsPipelinePage {
 
     public RunDetailsPipelinePage open(int runNumber) {
         return open(null, runNumber);
+    }
+
+    public void checkBasicDomElements() {
+        wait.until(ExpectedConditions.or(
+            ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RunDetails-content .log-wrapper")),
+            ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RunDetails-content .Steps .logConsole"))
+        ));
     }
 
 }
