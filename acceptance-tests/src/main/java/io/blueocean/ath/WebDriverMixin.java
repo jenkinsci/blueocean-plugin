@@ -53,6 +53,10 @@ public interface WebDriverMixin {
         getDriver().get(addr);
     }
 
+    default void back() {
+        getDriver().navigate().back();
+    }
+
     /**
      * Finds an element by the provided expression {@see SmartWebElement}
      * @param expr css or xpath; if it starts with a /, XPath is used
