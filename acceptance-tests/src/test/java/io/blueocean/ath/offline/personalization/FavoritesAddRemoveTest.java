@@ -91,11 +91,10 @@ public class FavoritesAddRemoveTest implements WebDriverMixin {
         String fullName = freestyle.getFullName();
 
         dashboard.open();
-        dashboard.togglePipelineListItemFavorite(jobName);
+        dashboard.togglePipelineListFavorite(jobName);
         dashboard.checkFavoriteCardCount(1);
-        dashboard.removeFavoriteCard(fullName);
+        dashboard.togglePipelineListFavorite(jobName);
         dashboard.checkFavoriteCardCount(0);
-        dashboard.isPipelineListItemFavorited(jobName);
         Assert.assertTrue("should not be favorited", !dashboard.isPipelineListItemFavorited(jobName));
     }
 
@@ -107,9 +106,9 @@ public class FavoritesAddRemoveTest implements WebDriverMixin {
         String fullName = pipeline.getFullName();
 
         dashboard.open();
-        dashboard.togglePipelineListItemFavorite(jobName);
+        dashboard.togglePipelineListFavorite(jobName);
         dashboard.checkFavoriteCardCount(1);
-        dashboard.removeFavoriteCard(fullName);
+        dashboard.togglePipelineListFavorite(jobName);
         dashboard.checkFavoriteCardCount(0);
         Assert.assertTrue("should not be favorited", !dashboard.isPipelineListItemFavorited(jobName));
     }
@@ -126,10 +125,10 @@ public class FavoritesAddRemoveTest implements WebDriverMixin {
         String fullName = pipeline.getFullName();
 
         dashboard.open();
-        dashboard.togglePipelineListItemFavorite(jobName);
+        dashboard.togglePipelineListFavorite(jobName);
         dashboard.checkFavoriteCardCount(1);
         dashboard.getFavoriteCard(fullName).findElement(By.cssSelector(".branchText[title=master]"));
-        dashboard.removeFavoriteCard(fullName);
+        dashboard.togglePipelineListFavorite(jobName);
         dashboard.checkFavoriteCardCount(0);
         Assert.assertTrue("should not be favorited", !dashboard.isPipelineListItemFavorited(jobName));
     }
