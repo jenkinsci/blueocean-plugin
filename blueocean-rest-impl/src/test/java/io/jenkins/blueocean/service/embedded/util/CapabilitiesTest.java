@@ -57,133 +57,13 @@ public class CapabilitiesTest {
 
     // Just some useless classes to test with
     @Capability("alpha")
-    private static class AlphaClass extends BaseClass {
-    }
+    private static class AlphaClass extends BaseClass {}
 
     @Capability("bravo")
-    private static class BravoClass extends AlphaClass {
-    }
+    private static class BravoClass extends AlphaClass {}
 
     @Capability("charlie")
-    private static class CharlieClass extends AlphaClass {
-    }
+    private static class CharlieClass extends AlphaClass {}
 
-    private static class BaseClass implements Item {
-
-        @Override
-        public ItemGroup<? extends Item> getParent() {
-            return null;
-        }
-
-        @Override
-        public Collection<? extends Job> getAllJobs() {
-            return null;
-        }
-
-        @Override
-        public String getName() {
-            return null;
-        }
-
-        @Override
-        public String getFullName() {
-            return null;
-        }
-
-        @Override
-        public String getDisplayName() {
-            return null;
-        }
-
-        @Override
-        public String getFullDisplayName() {
-            return null;
-        }
-
-        @Override
-        public String getRelativeNameFrom(ItemGroup itemGroup) {
-            return null;
-        }
-
-        @Override
-        public String getRelativeNameFrom(Item item) {
-            return null;
-        }
-
-        @Override
-        public String getUrl() {
-            return null;
-        }
-
-        @Override
-        public String getShortUrl() {
-            return null;
-        }
-
-        @Override
-        public String getAbsoluteUrl() {
-            return null;
-        }
-
-        @Override
-        public void onLoad(ItemGroup<? extends Item> itemGroup, String s) throws IOException {
-
-        }
-
-        @Override
-        public void onCopiedFrom(Item item) {
-
-        }
-
-        @Override
-        public void save() throws IOException {
-
-        }
-
-        @Override
-        public void delete() throws IOException, InterruptedException {
-
-        }
-
-        @Override
-        public File getRootDir() {
-            return null;
-        }
-
-        @Override
-        public Search getSearch() {
-            return null;
-        }
-
-        @Override
-        public String getSearchName() {
-            return null;
-        }
-
-        @Override
-        public String getSearchUrl() {
-            return null;
-        }
-
-        @Override
-        public SearchIndex getSearchIndex() {
-            return null;
-        }
-
-        @Nonnull
-        @Override
-        public ACL getACL() {
-            return null;
-        }
-
-        @Override
-        public void checkPermission(@Nonnull Permission permission) throws AccessDeniedException {
-
-        }
-
-        @Override
-        public boolean hasPermission(@Nonnull Permission permission) {
-            return false;
-        }
-    }
+    private static class BaseClass {}
 }
