@@ -6,6 +6,7 @@ import io.blueocean.ath.GitRepositoryRule;
 import io.blueocean.ath.Login;
 import io.blueocean.ath.ResourceResolver;
 import io.blueocean.ath.WebDriverMixin;
+import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.factory.ClassicPipelineFactory;
 import io.blueocean.ath.factory.FreestyleJobFactory;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
@@ -16,6 +17,7 @@ import io.blueocean.ath.model.MultiBranchPipeline;
 import io.jenkins.blueocean.util.HttpRequest;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -37,6 +39,9 @@ public class FavoritesAddRemoveTest implements WebDriverMixin {
 
     @Rule @Inject
     public GitRepositoryRule git;
+
+    @Inject
+    ClassicJobApi jobApi;
 
     @Inject
     FavoritesDashboardPage dashboard;
@@ -72,6 +77,11 @@ public class FavoritesAddRemoveTest implements WebDriverMixin {
             .auth(user, user)
             .status(204)
             .as(Void.class);
+    }
+
+    @After
+    public void tearDown() throws IOException {
+        jobApi.deleteFolder(FOLDER);
     }
 
     @Test

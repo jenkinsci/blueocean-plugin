@@ -56,6 +56,14 @@ public class ClassicJobApi {
         }
     }
 
+    public void deleteFolder(Folder folder) throws IOException {
+        if (folder.getFolders().size() == 1) {
+            jenkins.deleteJob(folder.getPath());
+        } else {
+            throw new UnsupportedOperationException("deleting a nested folder is not supported");
+        }
+    }
+
     public void createFreeStyleJob(FolderJob folder, String jobName, String command) throws IOException {
         deletePipeline(folder, jobName);
         URL url = Resources.getResource(this.getClass(), "freestyle.xml");
