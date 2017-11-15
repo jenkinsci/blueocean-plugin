@@ -1,11 +1,11 @@
 import React, { Component, PropTypes } from 'react';
-import { pagerService } from '@jenkins-cd/blueocean-core-js';
+import { pagerService, i18nTranslator, ActionLink } from '@jenkins-cd/blueocean-core-js';
 
 import TestResults from './testing/TestResults';
 import TestService from './testing/TestService';
 import NoTestsPlaceholder from './testing/NoTestsPlaceholder';
 
-const t = require('@jenkins-cd/blueocean-core-js').i18nTranslator('blueocean-dashboard');
+const t = i18nTranslator('blueocean-dashboard');
 
 /**
  * Displays a list of tests from the supplied build run property.
@@ -46,15 +46,15 @@ export class RunDetailsTests extends Component {
                 </div>
             );
         } else {
-            result = (<NoTestsPlaceholder t={this.props.t} />);
+            result = (<NoTestsPlaceholder t={t} />);
         }
         return result;
     }
 }
 
-export default {
-    name: "tests",
-    title: t('rundetail.header.tab.tests'),
-    component: RunDetailsTests,
-    getBadgeText: run => Math.min(99, run.testSummary && parseInt(run.testSummary.failed) || 0) || null,
-};
+export default class extends ActionLink {
+    name = 'tests'
+    title = t('rundetail.header.tab.tests')
+    component = RunDetailsTests
+    get badgeText() { return Math.min(99, this.run.testSummary && parseInt(this.run.testSummary.failed) || 0) || null }
+}

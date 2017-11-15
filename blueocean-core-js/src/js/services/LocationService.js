@@ -15,4 +15,9 @@ export class LocationService {
 
         this.current = newLocation.pathname;
     }
+
+    back() {
+        // have to subtract 2 because we add one when the route changes
+        this.navCount -= 2;
+    }
 }

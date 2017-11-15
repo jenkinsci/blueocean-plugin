@@ -3,10 +3,10 @@ import { FileSize, JTable, TableRow, TableCell, TableHeaderRow } from '@jenkins-
 import { Icon } from '@jenkins-cd/design-language';
 import { observer } from 'mobx-react';
 import mobxUtils from 'mobx-utils';
-import { logging, UrlConfig } from '@jenkins-cd/blueocean-core-js';
+import { logging, UrlConfig, i18nTranslator, ActionLink } from '@jenkins-cd/blueocean-core-js';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.artifacts');
-const t = require('@jenkins-cd/blueocean-core-js').i18nTranslator('blueocean-dashboard');
+const t = i18nTranslator('blueocean-dashboard');
 
 const ZipFileDownload = (props) => {
     const { zipFile } = props;
@@ -164,8 +164,8 @@ RunDetailsArtifacts.propTypes = {
     result: PropTypes.object,
 };
 
-export default {
-    name: "artifacts",
-    title: t('rundetail.header.tab.artifacts'),
-    component: RunDetailsArtifacts,
-};
+export default class Descriptor extends ActionLink {
+    name = "artifacts";
+    title = t('rundetail.header.tab.artifacts');
+    component = RunDetailsArtifacts;
+}

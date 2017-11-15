@@ -11,7 +11,9 @@ import {
 import Icon from './placeholder/Icon';
 import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
 import LinkifiedText from './LinkifiedText';
-const t = require('@jenkins-cd/blueocean-core-js').i18nTranslator('blueocean-dashboard');
+import { i18nTranslator, ActionLink } from '@jenkins-cd/blueocean-core-js';
+
+const t = i18nTranslator('blueocean-dashboard');
 
 
 function NoChangesPlaceholder(props) {
@@ -92,8 +94,8 @@ RunDetailsChanges.propTypes = {
     locale: string,
 };
 
-export default {
-    name: 'changes',
-    title: t('rundetail.header.tab.changes'),
-    component: RunDetailsChanges,
+export default class Descriptor extends ActionLink {
+    name = 'changes';
+    title = t('rundetail.header.tab.changes');
+    component = RunDetailsChanges;
 };

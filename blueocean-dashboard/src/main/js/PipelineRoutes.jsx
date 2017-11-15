@@ -126,8 +126,15 @@ function onLeaveCheckBackground() {
 
 const trends = AppConfig.isFeatureEnabled('trends');
 
-class NotFoundAction extends React.Component {
-    render() { return <NotFound/>; }
+function getActions(extensionPoint, params, callback) {
+    Extensions.store.getExtensions([ extensionPoint ], Extensions.Utils.sortByOrdinal, (actions = []) => {
+        const action = actions.map(a => new a()).find(action => action.name === params.action);
+        if (action) {
+            callback(null, action.component);
+        } else {
+            callback(null, NotFound);
+        }
+    });
 }
 
 function getRunDetailsAction({ params }, callback) {
@@ -137,14 +144,15 @@ function getRunDetailsAction({ params }, callback) {
         case 'tests': analytics.trackPipelineRunTestsVisited(); break;
         case 'artifacts': analytics.trackPipelineRunArtifactsVisited(); break;
     }
-    Extensions.store.getExtensions(['jenkins.run.actions'], Extensions.Utils.sortByOrdinal, (actions = []) => {
-        const action = actions.find(action => action.name === params.action);
-        if (action) {
-            callback(null, action.component);
-        } else {
-            callback(null, NotFoundAction);
-        }
-    });
+    getActions('jenkins.run.actions', params, callback);
+}
+
+function getPipelineAction({ params }, callback) {
+    getActions('jenkins.pipeline.actions', params, callback);
+}
+
+function getTopAction({ params }, callback) {
+    getActions('jenkins.top.actions', params, callback);
 }
 
 export default (
@@ -157,6 +165,7 @@ export default (
             <Route path=":pipeline/activity" component={Activity} onEnter={analytics.trackPipelineActivityVisited} />
             <Route path=":pipeline/pr" component={PullRequests} onEnter={analytics.trackPipelinePullRequestsVisited} />
             { trends && <Route path=":pipeline/trends" component={PipelineTrends} /> }
+            <Route path=":pipeline/:action" getComponents={getPipelineAction} />
 
             <Route path=":pipeline/detail/:branch/:runId" component={RunDetails} onLeave={onLeaveCheckBackground} >
                 <IndexRedirect to="pipeline" />
@@ -171,6 +180,7 @@ export default (
         </Route>
         <Route path="/pipelines" component={Pipelines} onEnter={analytics.trackDashboardVisited} />
         <Route path="/create-pipeline" component={CreatePipeline} onEnter={analytics.trackPipelineCreationVisited} />
+        <Route path="/:action" getComponents={getTopAction} />
         <IndexRedirect to="pipelines" />
     </Route>
 );

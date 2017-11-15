@@ -192,8 +192,9 @@ class RunDetails extends Component {
             }) }</TabLink>,
         ];
 
-        actions.map(action => {
-            const badgeText = action.getBadgeText && action.getBadgeText(currentRun);
+        actions.map(descriptor => {
+            const action = new descriptor({pipeline, run: currentRun});
+            const badgeText = action.badgeText;
             const badge = badgeText && <div className="TabBadgeIcon">{ badgeText }</div>;
             tabs.push(
                 <TabLink to={'/' + action.name} { ...base }>{action.title}{badge}</TabLink>
