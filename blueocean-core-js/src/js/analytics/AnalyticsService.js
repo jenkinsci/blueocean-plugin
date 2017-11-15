@@ -18,7 +18,7 @@ export class AnalyticsService {
             },
             body: JSON.stringify({
                 name: eventName,
-                properties: { properties },
+                properties: properties,
             }),
         };
         return Fetch.fetch(url, { fetchOptions });

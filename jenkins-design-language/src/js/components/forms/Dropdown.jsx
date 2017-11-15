@@ -354,9 +354,15 @@ const BORDER_OFFSET:number = 2;
 
 // eslint-disable-next-line max-len, no-unused-vars
 function positionMenu(selfWidth:number, selfHeight:number, targetWidth:number, targetHeight:number, targetLeft:number, targetTop:number, viewportWidth:number, viewportHeight:number) {
+    let newTop = targetTop + targetHeight + BORDER_OFFSET;
+    if (selfHeight + BORDER_OFFSET > viewportHeight) {
+        newTop = 0;
+    } else if (newTop + selfHeight + BORDER_OFFSET > viewportHeight) {
+        newTop = viewportHeight - (selfHeight + BORDER_OFFSET);
+    }
     return {
         newLeft: targetLeft,
-        newTop: targetTop + targetHeight + BORDER_OFFSET,
+        newTop: newTop,
     };
 }
 

@@ -8,17 +8,17 @@
     "storybook": "npm run start-storybook -- -p 9001",
     "storybook:port": "npm run start-storybook -- -p ",
     "flow": "flow",
+    "lint": "gulp lint",
     "gulp": "gulp",
     "gulp:fast": "gulp clean-build",
     "bundle:watch": "gulp bundle:watch",
     "test": "gulp test",
-    "test:debug": "node --debug-brk ./node_modules/.bin/gulp test-debug",
-    "test:fast": "gulp test-fast",
-    "prepublish": "gulp",
-    "mvnbuild": "gulp build bundle",
+    "test:debug": "node --debug-brk ./node_modules/.bin/gulp test:debug",
+    "test:fast": "gulp test:fast",
+    "mvnclean": "gulp clean",
+    "mvnbuild": "gulp lint build bundle",
     "mvnbuild:fast": "gulp bundle",
-    "mvntest": "gulp test",
-    "build": "npm install && npm run gulp"
+    "mvntest": "gulp test"
   },
   "author": "Cliff Meyers <cmeyers@cloudbees.com> (https://www.cloudbees.com/)",
   "contributors": [
@@ -36,6 +36,8 @@
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
   "dependencies": {
+    "@jenkins-cd/design-language": "0.0.158",
+    "@jenkins-cd/js-extensions": "0.0.42",
     "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/logging": "0.0.6",
     "@jenkins-cd/sse-gateway": "0.0.21",
@@ -49,15 +51,18 @@
     "jsonwebtoken": "7.1.9",
     "mobx": "2.6.0",
     "mobx-utils": "1.1.2",
+    "moment": "2.15.1",
+    "moment-duration-format": "1.3.0",
     "pem-jwk": "1.5.1",
-    "react-remarkable": "1.1.1"
+    "react": "15.4.2",
+    "react-dom": "15.4.2",
+    "react-remarkable": "1.1.1",
+    "react-router": "2.8.1"
   },
   "devDependencies": {
-    "@jenkins-cd/design-language": "0.0.158",
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.60-kz-1",
-    "@jenkins-cd/js-extensions": "0.0.39-kz-2",
-    "@jenkins-cd/js-modules": "0.0.10",
+    "@jenkins-cd/js-builder": "0.0.62",
+    "@jenkins-cd/js-builder-jest": "0.0.4",
     "@kadira/storybook": "2.20.1",
     "babel-eslint": "7.0.0",
     "babel-plugin-transform-decorators-legacy": "1.3.4",
@@ -76,29 +81,30 @@
     "gulp-babel": "6.1.2",
     "gulp-copy": "0.0.2",
     "gulp-eslint": "3.0.1",
-    "gulp-jest": "1.0.0",
     "gulp-less": "3.1.0",
     "gulp-rename": "1.2.2",
     "gulp-sourcemaps": "1.6.0",
-    "jest": "19.0.2",
-    "jest-cli": "19.0.2",
-    "jest-junit": "1.5.1",
     "less": "2.7.2",
-    "minimist": "1.2.0",
-    "moment": "2.15.1",
     "nock": "9.0.14",
-    "react": "15.4.2",
     "react-addons-test-utils": "15.4.2",
-    "react-dom": "15.4.2",
-    "react-router": "2.8.1",
     "reactify": "1.1.1",
     "run-sequence": "1.2.2",
     "sinon": "1.17.6",
     "watchify": "3.7.0"
   },
   "jenkinscd": {
+    "export": [
+      "@jenkins-cd/js-extensions",
+      "@jenkins-cd/logging",
+      "mobx"
+    ],
     "import": [
-      "moment@any"
+      "@jenkins-cd/design-language@any",
+      "moment@any",
+      "moment-duration-format@any",
+      "react@any",
+      "react-dom@any",
+      "react-router@any"
     ]
   }
 }
