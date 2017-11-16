@@ -84,6 +84,7 @@ public class FavoritesNavigationTest implements WebDriverMixin {
 
     @After
     public void tearDown() throws IOException {
+        // wipe out all jobs to avoid causing issues w/ SearchTest
         jobApi.deleteFolder(FOLDER);
     }
 
