@@ -34,9 +34,9 @@ export class Augmenter {
      */
     @computed get nodesUrl() {
         if (this.run._links.nodes) {
-            return prefixIfNeeded(this.run._links.nodes.href);
+            return prefixIfNeeded(this.run._links.nodes.href) + '?limit=10000';
         } else if (this.run._links.self.href) {
-            return `${prefixIfNeeded(this.run._links.self.href)}nodes/`;
+            return `${prefixIfNeeded(this.run._links.self.href)}nodes/` + '?limit=10000';
         }
         logger.debug('returning undefined as nodeUrl');
         return undefined;
