@@ -102,7 +102,8 @@ public class HttpRequest {
 
 
     private  HttpClient getHttpClient(@Nonnull String apiUrl) {
-        HttpClientBuilder clientBuilder = HttpClientBuilder.create().disableAutomaticRetries();
+        HttpClientBuilder clientBuilder = HttpClientBuilder.create().disableAutomaticRetries()
+                .disableRedirectHandling();
         setClientProxyParams(apiUrl, clientBuilder);
         return clientBuilder.build();
     }
