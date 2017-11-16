@@ -19,6 +19,7 @@ import io.blueocean.ath.model.FreestyleJob;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.pages.blue.ActivityPage;
 import io.blueocean.ath.pages.blue.BranchPage;
+import io.blueocean.ath.pages.blue.FavoritesDashboardPage;
 import io.blueocean.ath.sse.SSEClientRule;
 import io.blueocean.ath.sse.SSEEvents;
 import io.jenkins.blueocean.util.HttpRequest;

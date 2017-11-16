@@ -14,6 +14,7 @@ import io.blueocean.ath.model.ClassicPipeline;
 import io.blueocean.ath.model.Folder;
 import io.blueocean.ath.model.FreestyleJob;
 import io.blueocean.ath.model.MultiBranchPipeline;
+import io.blueocean.ath.pages.blue.FavoritesDashboardPage;
 import io.jenkins.blueocean.util.HttpRequest;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;

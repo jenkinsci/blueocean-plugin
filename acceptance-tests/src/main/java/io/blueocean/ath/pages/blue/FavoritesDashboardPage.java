@@ -1,4 +1,4 @@
-package io.blueocean.ath.offline.personalization;
+package io.blueocean.ath.pages.blue;
 
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.pages.blue.DashboardPage;
@@ -20,18 +20,7 @@ public class FavoritesDashboardPage extends DashboardPage {
     @Inject
     WaitUtil wait;
 
-    WebElement getPipelineListItem(String jobName) {
-        return wait.until(getSelectorForJob(jobName));
-    }
-
-    WebElement getPipelineListFavorite(String jobName) {
-        return wait.until(driver -> {
-            WebElement pipelineListItem = getPipelineListItem(jobName);
-            return pipelineListItem.findElement(By.cssSelector(".Checkbox.Favorite > label"));
-        });
-    }
-
-    WebElement getFavoriteCard(String fullName) {
+    public WebElement getFavoriteCard(String fullName) {
         return wait.until(driver ->
             driver.findElement(By.cssSelector(".favorites-card-stack"))
                 .findElement(By.cssSelector(".pipeline-card[data-full-name="+fullName.replace("/", "\\/")+"]"))
@@ -76,6 +65,17 @@ public class FavoritesDashboardPage extends DashboardPage {
     public void clickFavoriteCardRunDetailsLink(String fullName) {
         getFavoriteCard(fullName)
             .click();
+    }
+
+    private WebElement getPipelineListItem(String jobName) {
+        return wait.until(getSelectorForJob(jobName));
+    }
+
+    private WebElement getPipelineListFavorite(String jobName) {
+        return wait.until(driver -> {
+            WebElement pipelineListItem = getPipelineListItem(jobName);
+            return pipelineListItem.findElement(By.cssSelector(".Checkbox.Favorite > label"));
+        });
     }
 
 }
