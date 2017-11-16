@@ -167,16 +167,13 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         String url = "/organizations/jenkins/pipelines/project/runs/" + r.getId() + "/";
         Map m = request().get(url).build(Map.class);
 
-        // Wait until we are up and running before continuing with the test. 
-        while (!m.get("state").equals("RUNNING")) {
-            Thread.sleep(1000);
-            m = request().get(url).build(Map.class);
-        }
-
         // While the run has not finished keep checking that the result is unknown
         while (!"FINISHED".equals(m.get("state").toString())) {
-            Assert.assertEquals("RUNNING", m.get("state"));
-            Assert.assertEquals("UNKNOWN", m.get("result"));
+            // when running, check that it is 'UNKNOWN' state
+            if("RUNNING".equals(m.get("state").toString())) {
+                Assert.assertEquals("RUNNING", m.get("state"));
+                Assert.assertEquals("UNKNOWN", m.get("result"));
+            }
             Thread.sleep(1000);
             m = request().get(url).build(Map.class);
         }
