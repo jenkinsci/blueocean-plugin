@@ -82,7 +82,7 @@ public class ActivityPage {
     }
 
     public BranchPage clickBranchTab() {
-        wait.until(By.cssSelector("a.branches")).click();
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("a.branches"))).click();
         logger.info("Clicked on branch tab");
         return branchPageFactory.withPipeline(pipeline).checkUrl();
     }
