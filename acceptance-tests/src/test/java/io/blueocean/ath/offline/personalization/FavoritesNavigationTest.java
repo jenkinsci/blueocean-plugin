@@ -2,6 +2,7 @@ package io.blueocean.ath.offline.personalization;
 
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.BaseUrl;
+import io.blueocean.ath.GitRepositoryRule;
 import io.blueocean.ath.Login;
 import io.blueocean.ath.ResourceResolver;
 import io.blueocean.ath.WebDriverMixin;
@@ -9,16 +10,20 @@ import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.factory.ActivityPageFactory;
 import io.blueocean.ath.factory.ClassicPipelineFactory;
 import io.blueocean.ath.factory.FreestyleJobFactory;
+import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
 import io.blueocean.ath.model.AbstractPipeline;
 import io.blueocean.ath.model.ClassicPipeline;
 import io.blueocean.ath.model.Folder;
 import io.blueocean.ath.model.FreestyleJob;
+import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.pages.blue.ActivityPage;
+import io.blueocean.ath.pages.blue.BranchPage;
 import io.blueocean.ath.sse.SSEClientRule;
 import io.blueocean.ath.sse.SSEEvents;
 import io.jenkins.blueocean.util.HttpRequest;
 import org.apache.log4j.Logger;
+import org.eclipse.jgit.api.errors.GitAPIException;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -36,6 +41,9 @@ import java.io.IOException;
 public class FavoritesNavigationTest implements WebDriverMixin {
     private static final Logger logger = Logger.getLogger(FavoritesNavigationTest.class);
     private static final Folder FOLDER = new Folder("personalization-folder");
+
+    @Rule @Inject
+    public GitRepositoryRule git;
 
     @Inject @Rule
     public SSEClientRule sseClient;
@@ -57,6 +65,9 @@ public class FavoritesNavigationTest implements WebDriverMixin {
 
     @Inject
     ClassicPipelineFactory pipelineFactory;
+
+    @Inject
+    MultiBranchPipelineFactory multibranchFactory;
 
     @Inject @BaseUrl
     String base;
@@ -125,6 +136,49 @@ public class FavoritesNavigationTest implements WebDriverMixin {
         dashboardPage.checkFavoriteCardCount(0);
     }
 
+    @Test
+    public void testMultibranch() throws IOException, GitAPIException {
+        String branchMaster = "master";
+        String branchOther = "feature/1";
+
+        git.writeJenkinsFile(resources.loadJenkinsFile());
+        git.addAll();
+        git.commit("First");
+        git.createBranch(branchOther);
+
+        String jobName = "navigation-multibranch";
+        MultiBranchPipeline pipeline = multibranchFactory.pipeline(FOLDER, jobName).createPipeline(git);
+        String fullName = pipeline.getFullName();
+
+        // the basics
+        addAsFavorite(pipeline);
+        checkRunDetails(pipeline);
+        back();
+        checkActivity(pipeline);
+        back();
+
+        // check the branches tab
+        BranchPage branches = navigateBranches(pipeline)
+            .checkFavoriteStatus(branchMaster, true)
+            .checkFavoriteStatus(branchOther, false)
+            .toggleFavoriteStatus(branchOther);
+
+        // test linking to run details
+        branches
+            .openRunDetails(branchMaster)
+            .checkBasicDomElements()
+            .back();
+
+        branches
+            .openRunDetails(branchOther)
+            .checkBasicDomElements()
+            .back();
+
+        // check dashboard favorites
+        go(-2);
+        dashboardPage.checkFavoriteCardCount(2);
+    }
+
     /**
      * Add pipeline as favorite via dashboard and ensure state is correct
      * @param pipeline
@@ -156,6 +210,11 @@ public class FavoritesNavigationTest implements WebDriverMixin {
         activityPage.checkBasicDomElements();
         activityPage.checkFavoriteStatus(true);
         return activityPage;
+    }
+
+    private BranchPage navigateBranches(MultiBranchPipeline pipeline) {
+        dashboardPage.clickFavoriteCardActivityLink(pipeline.getFullName());
+        return activityPageFactory.withPipeline(pipeline).clickBranchTab();
     }
 
 }
