@@ -49,7 +49,9 @@ public class TryBlueOceanMenu extends TransientActionFactory<ModelObject> {
                     return Collections.emptyList();
                 }
                 try {
-                    ((Actionable) target).replaceAction(a);
+                    // Possibly not needed. Maybe only needed if there is a bug in exists(). Which
+                    // thee was. Unsure exactly how this code works so leaving it in
+                    ((Actionable) target).removeActions(BlueOceanUrlAction.class);
                 }catch (Throwable e){
                     //ignore, replace is not supported
                     //JENKINS-44964 sometimes replaceAction will fail because one of the actions inserted is null
@@ -62,7 +64,7 @@ public class TryBlueOceanMenu extends TransientActionFactory<ModelObject> {
     }
 
     private boolean exists(Actionable actionable, BlueOceanUrlAction blueOceanUrlAction){
-        for(Action a: actionable.getActions()) {
+        for(Action a: actionable.getAllActions()) {
             // JENKINS-44926 only call getURLName on these actions if action is BLueOceanUrlAction
             if (a instanceof BlueOceanUrlAction) {
                 String blueUrl  = blueOceanUrlAction.getUrlName();
