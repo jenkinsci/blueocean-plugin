@@ -1,24 +1,95 @@
-#
-# Before building this Dockerfile, BlueOcean needs to be built locally using Maven
-# You can build everything needed and this Dockerfile by invoking `bin/build-in-docker.sh -m`
-#
+FROM ubuntu:16.04
 
-# Should be kept in sync with jenkins.properties of pom.xml
-# Patch version is not to be considered, we prefer to base the image off the latest LTS of the line
-# and keep the dependency on the baseline in pom.xml
-FROM jenkins:2.73.3
+ENV MAVEN_VERSION 3.3.3
+ENV NODE_VERSION 6.4.0
+ENV PHANTOMJS_VERSION 2.1.1
+ARG UID=1000
+ARG GID=1000
 
 USER root
 
-COPY blueocean/target/plugins /usr/share/jenkins/ref/plugins/
+RUN apt-get update
 
-RUN for f in /usr/share/jenkins/ref/plugins/*.hpi; do mv "$f" "${f%%hpi}jpi"; done
-RUN install-plugins.sh antisamy-markup-formatter matrix-auth # for security, you know
+#========================
+# Miscellaneous packages
+#========================
+RUN apt-get update -qqy \
+  && apt-get -qqy --no-install-recommends install \
+    sudo \
+    openjdk-8-jdk \
+    tar \
+    zip xz-utils \
+    curl wget \
+    git \
+    build-essential \
+    python \
+    iputils-ping \
+    locales \
+  && rm -rf /var/lib/apt/lists/* \
+  && sed -i 's/securerandom\.source=file:\/dev\/random/securerandom\.source=file:\/dev\/urandom/' ./usr/lib/jvm/java-8-openjdk-amd64/jre/lib/security/java.security
 
-# Force use of locally built blueocean plugin
-RUN for f in /usr/share/jenkins/ref/plugins/blueocean-*.jpi; do mv "$f" "$f.override"; done
+# Set utf-8 locale
+RUN locale-gen en_US.UTF-8
+ENV LANG en_US.UTF-8
+ENV LC_ALL en_US.UTF-8
 
-# let scripts customize the reference Jenkins folder. Used in bin/build-in-docker to inject the git build data
-COPY docker/ref /usr/share/jenkins/ref
+#==========
+# Maven
+#==========
+RUN curl -fsSL http://archive.apache.org/dist/maven/maven-3/$MAVEN_VERSION/binaries/apache-maven-$MAVEN_VERSION-bin.tar.gz | tar xzf - -C /usr/share \
+  && mv /usr/share/apache-maven-$MAVEN_VERSION /usr/share/maven \
+  && ln -s /usr/share/maven/bin/mvn /usr/bin/mvn
+ENV MAVEN_HOME /usr/share/maven
 
-USER jenkins
+
+#===============
+# Node and NPM
+#===============
+RUN wget --no-verbose https://nodejs.org/dist/v$NODE_VERSION/node-v$NODE_VERSION-linux-x64.tar.xz -O /opt/nodejs.tar.xz
+RUN tar -C /usr/local --strip-components 1 -xJf /opt/nodejs.tar.xz
+RUN mkdir /.npm && chmod 777 /.npm
+# Fix bug https://github.com/npm/npm/issues/9863
+RUN cd $(npm root -g)/npm \
+  && npm install fs-extra \
+  && sed -i -e s/graceful-fs/fs-extra/ -e s/fs\.rename/fs.move/ ./lib/utils/rename.js
+# Update to latest version so optional dependancies + shrinkwrap work
+RUN npm install -g npm@3.10.3
+
+#=============================================
+# Misc packages needed by the ATH
+#=============================================
+RUN apt-get update -qqy \
+  && apt-get -qqy --no-install-recommends install \
+    libxml2-utils \
+    libssl-dev \
+  && rm -rf /var/lib/apt/lists/*
+
+#=============================================
+# Phantom JS
+#=============================================
+RUN wget --no-verbose -O - -L https://bitbucket.org/ariya/phantomjs/downloads/phantomjs-2.1.1-linux-x86_64.tar.bz2 \
+        | tar -xj --strip-components=1 -C /usr/local
+
+#========================================
+# Add normal user with passwordless sudo
+#========================================
+RUN sudo groupadd -r -g $GID bouser \
+  && sudo useradd bouser -g $GID -u $UID --shell /bin/bash --create-home \
+  && sudo usermod -a -G sudo bouser \
+  && echo 'ALL ALL = (ALL) NOPASSWD: ALL' >> /etc/sudoers \
+  && echo 'bouser:secret' | chpasswd
+
+USER bouser
+WORKDIR /home/bouser
+
+#========================================
+# Configure the local git user.
+#========================================
+RUN git config --global user.name "John Doe"
+RUN git config --global user.email johndoe@example.com
+
+
+#========================================
+# Need ssh
+#========================================
+RUN sudo apt-get update -qqy && sudo apt-get install -y ssh
