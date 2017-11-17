@@ -62,15 +62,27 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
                 LoginPage loginPage = injector.getInstance(LoginPage.class);
 
                 Login methodLogin = method.getAnnotation(Login.class);
-                Login classLogin = test.getClass().getAnnotation(Login.class);
 
+                // determine whether test should login first or not
+                // first check test method, then walk up hierarchy at class level only
                 if(methodLogin != null ) {
                     if(!methodLogin.disable()) {
                         loginPage.login();
                     }
-                } else if(classLogin != null) {
-                    if(!classLogin.disable()){
-                        loginPage.login();
+                } else {
+                    Class<?> clazz = test.getClass();
+
+                    while (clazz != null) {
+                        Login classLogin = clazz.getAnnotation(Login.class);
+
+                        if (classLogin != null) {
+                            if (!classLogin.disable()) {
+                                loginPage.login();
+                            }
+                            break;
+                        }
+
+                        clazz = clazz.getSuperclass();
                     }
                 }
 
