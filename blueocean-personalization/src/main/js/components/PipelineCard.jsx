@@ -270,9 +270,10 @@ export function PipelineCardRenderer(props) {
     } = props;
 
     const bgClass = PipelineCard._getBackgroundClass(status);
+    const fullName = displayPath + (branchText ? `/${branchText}` : '');
 
     return (
-        <div className={`pipeline-card ${bgClass}`} onClick={onClickMain}>
+        <div className={`pipeline-card ${bgClass}`} data-full-name={fullName} onClick={onClickMain}>
             <LiveStatusIndicator result={status}
                                  startTime={startTime}
                                  estimatedDuration={estimatedDuration}

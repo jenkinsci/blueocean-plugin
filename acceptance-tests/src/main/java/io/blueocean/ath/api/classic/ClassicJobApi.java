@@ -56,6 +56,14 @@ public class ClassicJobApi {
         }
     }
 
+    public void deleteFolder(Folder folder) throws IOException {
+        if (folder.getFolders().size() == 1) {
+            jenkins.deleteJob(folder.getPath());
+        } else {
+            throw new UnsupportedOperationException("deleting a nested folder is not supported");
+        }
+    }
+
     public void createFreeStyleJob(FolderJob folder, String jobName, String command) throws IOException {
         deletePipeline(folder, jobName);
         URL url = Resources.getResource(this.getClass(), "freestyle.xml");
@@ -73,7 +81,7 @@ public class ClassicJobApi {
     public void createPipeline(FolderJob folder, String jobName, String script) throws IOException {
         deletePipeline(folder, jobName);
         URL url = Resources.getResource(this.getClass(), "pipeline.xml");
-        jenkins.createJob(null, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{script}}", script));
+        jenkins.createJob(folder, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{script}}", script));
         logger.info("Created pipeline job "+ jobName);
     }
     public void createMultlBranchPipeline(FolderJob folder, String pipelineName, String repositoryPath) throws IOException {
