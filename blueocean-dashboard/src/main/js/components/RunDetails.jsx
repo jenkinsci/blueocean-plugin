@@ -81,12 +81,20 @@ class RunDetails extends Component {
         this.isMultiBranch = capable(this.props.pipeline, MULTIBRANCH_PIPELINE);
 
         if (this.context.config && this.context.params) {
-            this.href = RestPaths.run({
-                organization: props.params.organization,
-                pipeline: props.params.pipeline,
-                branch: this.isMultiBranch && props.params.branch,
-                runId: props.params.runId,
-            });
+            if (props.params.runId !== 'latestRun') {
+                this.href = RestPaths.run({
+                    organization: props.params.organization,
+                    pipeline: props.params.pipeline,
+                    branch: this.isMultiBranch && props.params.branch,
+                    runId: props.params.runId,
+                });
+            } else {
+                this.href = RestPaths.latestRun({
+                    organization: props.params.organization,
+                    pipeline: props.params.pipeline,
+                    branch: this.isMultiBranch && props.params.branch
+                });
+            }
 
             this.context.activityService.fetchActivity(this.href, { useCache: true });
         }
