@@ -74,6 +74,23 @@ export class BunkerService {
     }
 
     /**
+     * Sets an item in the store.
+     *
+     * It uses the given bunker key and [@link bunkerMapper] to generate the value
+     * to be stored.
+     *
+     * @param {any} key Key of item in store.
+     * @param {Object} item Raw data from external source.
+     * @returns {Object} item mapped by [@link bunkerMapper]. It is also a mobx computed value.
+     */
+    @action
+    setItemWithKey(key, item) {
+        const mappedItem = observable(this.bunkerMapper(item));
+        this._data.set(key, mappedItem);
+        return this.getItem(key);
+    }
+
+    /**
      * Sets an array on item in the store. Calls [@link setItem] for even item in array.
      *
      * @param {Object[]} items Array of items to set.

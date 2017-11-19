@@ -26,6 +26,14 @@ export default {
         return `${this.apiRoot()}/organizations/${encodeURIComponent(organization)}/pipelines/${pipeline}/runs/${branchStr}`;
     },
 
+    latestRun({ organization, pipeline, branch}) {
+        if (branch) {
+            return `${this.pipeline(organization, pipeline)}branches/${encodeURIComponent(encodeURIComponent(branch))}/latestRun/`;
+        }
+
+        return `${this.pipeline(organization, pipeline)}latestRun/`;
+    },
+
     run({ organization, pipeline, branch, runId }) {
         if (branch) {
             return `${this.pipeline(organization, pipeline)}branches/${encodeURIComponent(encodeURIComponent(branch))}/runs/${runId}/`;

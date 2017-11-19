@@ -72,7 +72,7 @@ export class ActivityService extends BunkerService {
                 // Should really have dedupe on methods like these, but for now
                 // just clone data so that we dont modify other instances.
                 const run = utils.clone(data);
-                return this.setItem(run);
+                return this.setItemWithKey(href, run);
             })
             .catch(err => {
                 console.log('There has been an error while trying to get the data.', err); // FIXME: Ivan what is the way to return an "error" opbject so underlying component are aware of the problem and can react
