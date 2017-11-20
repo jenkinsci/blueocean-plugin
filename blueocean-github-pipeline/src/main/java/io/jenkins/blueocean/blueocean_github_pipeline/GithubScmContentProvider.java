@@ -82,13 +82,16 @@ public class GithubScmContentProvider extends AbstractScmContentProvider {
                 throw new ServiceException.UnexpectedErrorException("Failed to load file: "+request.getPath());
             }
 
+            String base64Data = (String)ghContent.get("content");
+            // JENKINS-47887 - this content contains \n which breaks IE11
+            base64Data = base64Data == null ? null : base64Data.replace("\n", "");
             return new GithubFile(new GitContent.Builder()
                     .sha((String)ghContent.get("sha"))
                     .name((String)ghContent.get("name"))
                     .repo(request.getRepo())
                     .owner(request.getOwner())
                     .path(request.getPath())
-                    .base64Data((String)ghContent.get("content"))
+                    .base64Data(base64Data)
                     .build());
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException(String.format("Failed to load file %s: %s", request.getPath(),e.getMessage()), e);

@@ -4,16 +4,18 @@ package io.blueocean.ath.pages.blue;
 import com.google.inject.assistedinject.Assisted;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
+import io.blueocean.ath.WebDriverMixin;
 import io.blueocean.ath.model.AbstractPipeline;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import javax.inject.Inject;
 
-public class RunDetailsPipelinePage {
+public class RunDetailsPipelinePage implements WebDriverMixin {
     private Logger logger = Logger.getLogger(RunDetailsPipelinePage.class);
 
     private WebDriver driver;
@@ -71,6 +73,15 @@ public class RunDetailsPipelinePage {
 
     public RunDetailsPipelinePage open(int runNumber) {
         return open(null, runNumber);
+    }
+
+    public RunDetailsPipelinePage checkBasicDomElements() {
+        // check for logs for freestyle job or for pipeline job
+        wait.until(ExpectedConditions.or(
+            ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RunDetails-content .log-wrapper")),
+            ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RunDetails-content .Steps .logConsole"))
+        ));
+        return this;
     }
 
 }
