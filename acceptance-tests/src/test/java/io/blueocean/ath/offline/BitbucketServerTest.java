@@ -4,26 +4,28 @@ import com.cdancy.bitbucket.rest.BitbucketClient;
 import com.cdancy.bitbucket.rest.options.CreateRepository;
 import com.google.inject.Inject;
 import io.blueocean.ath.ATHJUnitRunner;
+import io.blueocean.ath.BaseUrl;
+import io.blueocean.ath.CustomJenkinsServer;
 import io.blueocean.ath.Login;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.WebDriverMixin;
 import io.blueocean.ath.pages.blue.DashboardPage;
+import io.jenkins.blueocean.util.HttpRequest;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import java.io.IOException;
-import java.security.SecureRandom;
-import java.util.Random;
 
 @Login
 @RunWith(ATHJUnitRunner.class)
 public class BitbucketServerTest implements WebDriverMixin {
 
-
     private static Logger LOGGER = Logger.getLogger(BitbucketServerTest.class);
+    private static final String ENDPOINT_URL = "http://127.0.0.1:7990";
 
     @Inject
     WaitUtil wait;
@@ -31,10 +33,22 @@ public class BitbucketServerTest implements WebDriverMixin {
     @Inject
     DashboardPage dashboardPage;
 
+    @Inject @BaseUrl
+    String baseUrl;
+
+    @Inject
+    CustomJenkinsServer jenkins;
+
+    @Before
+    public void setUp() throws IOException {
+        cleanupEndpoint(ENDPOINT_URL);
+        cleanupCredentials(ENDPOINT_URL);
+    }
+
     @Test
     public void testJenkinsfileCreate() throws InterruptedException {
         BitbucketClient client = BitbucketClient.builder()
-            .endPoint("http://127.0.0.1:7990/")
+            .endPoint(ENDPOINT_URL)
             .credentials("admin:admin").build();
 
         String project = "BLUE";
@@ -51,7 +65,7 @@ public class BitbucketServerTest implements WebDriverMixin {
         LOGGER.info("Clicked addserver");
 
         wait.until(By.cssSelector(".text-name input")).sendKeys("bitbucketserver");
-        wait.until(By.cssSelector(".text-url input")).sendKeys("http://127.0.0.1:7990");
+        wait.until(By.cssSelector(".text-url input")).sendKeys(ENDPOINT_URL);
         click(".button-create-server");
 
         click(".button-next-step");
@@ -62,8 +76,31 @@ public class BitbucketServerTest implements WebDriverMixin {
     }
 
     @Test
-    public void testSuccessRunDoesntFail() throws InterruptedException {
+    public void testSecondRunDoesntFail() throws InterruptedException {
         testJenkinsfileCreate();
+    }
 
+    private void cleanupEndpoint(String endpointUrl) throws IOException {
+        String serverId = DigestUtils.sha256Hex(endpointUrl);
+
+        try {
+            httpRequest().Delete("/organizations/jenkins/scm/bitbucket-server/servers/{serverId}/")
+                .urlPart("serverId", serverId)
+                .status(204)
+                .as(Void.class);
+            LOGGER.info("found and deleted bitbucket server: " + serverId);
+        } catch (Exception ex) {
+            LOGGER.debug("server not found while attempting to delete bitbucket server: " + serverId);
+        }
+    }
+
+    private void cleanupCredentials(String endpointUrl) throws IOException {
+        String serverId = DigestUtils.sha256Hex(endpointUrl);
+        String credentialId = "bitbucket-server:" + serverId;
+        jenkins.deleteUserDomainCredential("alice", "blueocean-bitbucket-server-domain", credentialId);
+    }
+
+    private HttpRequest httpRequest() {
+        return new HttpRequest(baseUrl + "/blue/rest");
     }
 }
