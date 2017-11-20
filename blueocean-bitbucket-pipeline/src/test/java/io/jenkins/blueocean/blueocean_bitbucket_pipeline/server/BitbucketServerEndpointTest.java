@@ -3,6 +3,7 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
 import com.google.common.collect.ImmutableMap;
 import com.mashape.unirest.http.exceptions.UnirestException;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.util.HttpRequest;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Assert;
 import org.junit.Before;
@@ -280,11 +281,66 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
 
     }
 
+    // TODO: need a test case as unprivileged user
+
+    @Test
+    public void createThenDelete() throws IOException {
+        String serverId = DigestUtils.sha256Hex(apiUrl);
+
+        httpRequest()
+            .Get(URL+serverId+"/")
+            .status(404)
+            .as(Void.class);
+
+        httpRequest().Post(URL)
+            .bodyJson(ImmutableMap.of(
+                "name", "My Server",
+                "apiUrl", apiUrl
+            ))
+            .as(Map.class);
+
+        Map map = httpRequest()
+            .Get(URL+serverId+"/")
+            .as(Map.class);
+
+        Assert.assertEquals(serverId, map.get("id"));
+
+        httpRequest()
+            .Delete(URL+serverId+"/")
+            .status(204)
+            .as(Void.class);
+
+        httpRequest()
+            .Get(URL+serverId+"/")
+            .status(404)
+            .as(Void.class);
+    }
+
+    @Test
+    public void should404OnDeleteNonexistent() throws IOException {
+        String serverId = DigestUtils.sha256Hex(apiUrl);
+
+        httpRequest()
+            .Get(URL+serverId+"/")
+            .status(404)
+            .as(Void.class);
+
+        httpRequest()
+            .Delete(URL+serverId+"/")
+            .status(404)
+            .as(Void.class);
+    }
+
     private List getServers() {
         return request()
                 .status(200)
                 .jwtToken(token)
                 .get(URL)
                 .build(List.class);
+    }
+
+    private HttpRequest httpRequest() {
+        return new HttpRequest(baseUrl)
+            .header("Authorization", "Bearer "+token);
     }
 }
