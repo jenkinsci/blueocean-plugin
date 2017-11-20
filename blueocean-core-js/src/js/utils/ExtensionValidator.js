@@ -3,7 +3,7 @@ export function getPropTypes(obj) {
         return obj.propTypes;
     }
     if (obj.prototype) {
-        return getPropTypes(obj.prototype)
+        return getPropTypes(obj.prototype);
     }
 }
 
