@@ -59,6 +59,11 @@ public class BitbucketServerTest implements WebDriverMixin {
         wait.until(By.cssSelector(".text-username input")).sendKeys("admin");
         wait.until(By.cssSelector(".text-password input")).sendKeys("admin");
         click(".button-create-credental");
+    }
+
+    @Test
+    public void testSuccessRunDoesntFail() throws InterruptedException {
+        testJenkinsfileCreate();
 
     }
 }
