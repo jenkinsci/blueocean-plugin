@@ -625,18 +625,24 @@
         padding: .3em 0;
     }
 
-    .environment-entry .split-child + .split-child {
-        padding-left: 10px;
+    .environment-entry {
+        .split-child + .split-child {
+            padding-left: 10px;
+        }
+
+        .FormElement {
+            display: block;
+
+            .FormElement-children {
+                display: block;
+            }
+        }
     }
 
     .agent-parameters {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: flex-start;
         margin: 0 -5px;
 
         .agent-param {
-            flex: 0 0 100%;
             padding: 0 5px;
 
             label > div:first-child {
