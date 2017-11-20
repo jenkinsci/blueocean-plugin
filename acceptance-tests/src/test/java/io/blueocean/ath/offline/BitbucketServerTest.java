@@ -6,10 +6,12 @@ import com.google.inject.Inject;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.CustomJenkinsServer;
+import io.blueocean.ath.Locate;
 import io.blueocean.ath.Login;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.WebDriverMixin;
 import io.blueocean.ath.pages.blue.DashboardPage;
+import io.blueocean.ath.pages.blue.GithubCreationPage;
 import io.jenkins.blueocean.util.HttpRequest;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
@@ -32,6 +34,9 @@ public class BitbucketServerTest implements WebDriverMixin {
 
     @Inject
     DashboardPage dashboardPage;
+
+    @Inject
+    GithubCreationPage creationPage;
 
     @Inject @BaseUrl
     String baseUrl;
@@ -73,6 +78,10 @@ public class BitbucketServerTest implements WebDriverMixin {
         wait.until(By.cssSelector(".text-username input")).sendKeys("admin");
         wait.until(By.cssSelector(".text-password input")).sendKeys("admin");
         click(".button-create-credental");
+
+        creationPage.selectOrganization("BlueOcean");
+        creationPage.selectPipelineToCreate("testjenkinsfilecreate");
+        creationPage.clickCreatePipelineButton();
     }
 
     @Test
