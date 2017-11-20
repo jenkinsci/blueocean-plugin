@@ -284,7 +284,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
     // TODO: need a test case as unprivileged user
 
     @Test
-    public void testCreateThenDelete() throws IOException, UnirestException {
+    public void testCreateThenDelete() throws IOException {
         String serverId = DigestUtils.sha256Hex(apiUrl);
 
         httpRequest()
@@ -312,6 +312,21 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
 
         httpRequest()
             .Get(URL+serverId+"/")
+            .status(404)
+            .as(Void.class);
+    }
+
+    @Test
+    public void testDeleteNonexistent() throws IOException {
+        String serverId = DigestUtils.sha256Hex(apiUrl);
+
+        httpRequest()
+            .Get(URL+serverId+"/")
+            .status(404)
+            .as(Void.class);
+
+        httpRequest()
+            .Delete(URL+serverId+"/")
             .status(404)
             .as(Void.class);
     }
