@@ -3,7 +3,7 @@ import { FileSize, JTable, TableRow, TableCell, TableHeaderRow } from '@jenkins-
 import { Icon } from '@jenkins-cd/design-language';
 import { observer } from 'mobx-react';
 import mobxUtils from 'mobx-utils';
-import { logging, UrlConfig, i18nTranslator, ActionLink } from '@jenkins-cd/blueocean-core-js';
+import { logging, UrlConfig, i18nTranslator, ComponentLink } from '@jenkins-cd/blueocean-core-js';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.artifacts');
 const t = i18nTranslator('blueocean-dashboard');
@@ -164,7 +164,7 @@ RunDetailsArtifacts.propTypes = {
     result: PropTypes.object,
 };
 
-export default class Descriptor extends ActionLink {
+export default class RunDetailsArtifactsLink extends ComponentLink {
     name = "artifacts";
     title = t('rundetail.header.tab.artifacts');
     component = RunDetailsArtifacts;

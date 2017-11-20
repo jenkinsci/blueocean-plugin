@@ -37,7 +37,7 @@ export { stringUtil as StringUtil };
 
 export Fullscreen from './Fullscreen';
 export NotFound from './NotFound';
-export { ActionLink } from './utils/ActionLink';
+export { ComponentLink } from './utils/ComponentLink';
 export { validateExtensionProps } from './utils/ExtensionValidator';
 
 export { ShowMoreButton } from './components/ShowMoreButton';

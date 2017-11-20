@@ -11,7 +11,7 @@ import {
 import Icon from './placeholder/Icon';
 import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
 import LinkifiedText from './LinkifiedText';
-import { i18nTranslator, ActionLink } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, ComponentLink } from '@jenkins-cd/blueocean-core-js';
 
 const t = i18nTranslator('blueocean-dashboard');
 
@@ -87,15 +87,15 @@ export class RunDetailsChanges extends Component {
     }
 }
 
-const { func, object, string } = PropTypes;
+const { object, string } = PropTypes;
 
 RunDetailsChanges.propTypes = {
     result: object,
     locale: string,
 };
 
-export default class Descriptor extends ActionLink {
+export default class RunDetailsChangesLink extends ComponentLink {
     name = 'changes';
     title = t('rundetail.header.tab.changes');
     component = RunDetailsChanges;
-};
+}

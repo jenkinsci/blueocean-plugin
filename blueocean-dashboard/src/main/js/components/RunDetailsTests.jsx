@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { pagerService, i18nTranslator, ActionLink } from '@jenkins-cd/blueocean-core-js';
+import { pagerService, i18nTranslator, ComponentLink } from '@jenkins-cd/blueocean-core-js';
 
 import TestResults from './testing/TestResults';
 import TestService from './testing/TestService';
@@ -52,9 +52,9 @@ export class RunDetailsTests extends Component {
     }
 }
 
-export default class extends ActionLink {
-    name = 'tests'
-    title = t('rundetail.header.tab.tests')
-    component = RunDetailsTests
-    get badgeText() { return Math.min(99, this.run.testSummary && parseInt(this.run.testSummary.failed) || 0) || null }
+export default class RunDetailsTestsLink extends ComponentLink {
+    name = 'tests';
+    title = t('rundetail.header.tab.tests');
+    component = RunDetailsTests;
+    get notification() { return Math.min(99, this.run.testSummary && parseInt(this.run.testSummary.failed) || 0) || null }
 }
