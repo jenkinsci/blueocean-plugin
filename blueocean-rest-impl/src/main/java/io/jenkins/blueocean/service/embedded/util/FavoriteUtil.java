@@ -13,6 +13,7 @@ import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteAction;
 import io.jenkins.blueocean.rest.model.BluePipeline;
+import io.jenkins.blueocean.rest.model.KnownCapabilities;
 import io.jenkins.blueocean.service.embedded.rest.FavoriteImpl;
 
 import javax.annotation.Nonnull;
@@ -85,7 +86,7 @@ public class FavoriteUtil {
         }
 
         BluePipeline pipeline = BluePipelineFactory.getPipelineInstance(item, parent);
-        if(pipeline != null){
+        if(pipeline != null && !Capabilities.hasCapability(pipeline, KnownCapabilities.NO_FAVORITE)){
             return new FavoriteImpl(pipeline,pipeline.getLink().rel("favorite"));
         }
 

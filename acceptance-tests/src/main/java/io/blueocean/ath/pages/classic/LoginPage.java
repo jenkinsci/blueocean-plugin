@@ -25,7 +25,7 @@ public class LoginPage implements WebDriverMixin {
         find("#j_username").sendKeys(admin.username);
         find("input[name=j_password]").sendKeys(admin.password);
         find("//button[contains(text(), 'log')]").click();
-        find("//a[contains(@href, 'logout')]").isVisible();
+        find("//a[contains(@href, 'logout')]").isDisplayed();
         logger.info("Logged in as " + admin.username);
     }
 }

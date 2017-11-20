@@ -193,6 +193,7 @@ public class ProfileApiTest extends BaseTest{
         assertEquals("alice@jenkins-ci.org",r.get("email"));
     }
 
+    // TODO: migrate to FavoritesApiTest after PR receives initial approval (trying to cut down on PR noise)
     @Test
     public void createUserFavouriteTest() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
@@ -244,6 +245,7 @@ public class ProfileApiTest extends BaseTest{
 
     }
 
+    // TODO: migrate to FavoritesApiTest after PR receives initial approval (trying to cut down on PR noise)
     @Test
     public void createUserFavouriteFolderTest() throws Exception {
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
