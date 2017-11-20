@@ -22,11 +22,11 @@ public class DashboardPage implements WebDriverMixin {
         logger.info("Navigated to dashboard page");
     }
 
-    public By getSelectorForJob(String job) {
+    public static By getSelectorForJob(String job) {
         return By.xpath("//*[@data-pipeline=\"" + job + "\"]");
     }
 
-    public By getSelectorForAllJobRows() {
+    public static By getSelectorForAllJobRows() {
         return By.xpath("//*[contains(@class, 'pipelines-table')]//*[@data-pipeline]");
     }
 
