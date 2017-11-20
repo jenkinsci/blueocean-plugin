@@ -1,0 +1,23 @@
+{
+  "_class": "io.jenkins.blueocean.service.embedded.rest.OrganizationImpl",
+  "_links": {
+    "pipelines": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/pipelines/"
+    },
+    "self": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/"
+    },
+    "user": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/user/"
+    },
+    "users": {
+      "_class": "io.jenkins.blueocean.rest.hal.Link",
+      "href": "/blue/rest/organizations/jenkins/users/"
+    }
+  },
+  "displayName": "Jenkins",
+  "name": "jenkins"
+}

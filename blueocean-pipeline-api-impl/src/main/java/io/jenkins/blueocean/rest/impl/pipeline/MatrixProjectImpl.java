@@ -18,15 +18,15 @@ import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.Resource;
-import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_MATRIX_PROJECT;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.NO_FAVORITE;
 
 /**
  * @author Vivek Pandey
  */
-@Capability(JENKINS_MATRIX_PROJECT)
+@Capability({JENKINS_MATRIX_PROJECT, NO_FAVORITE})
 public class MatrixProjectImpl extends PipelineFolderImpl {
 
     private final MatrixProject matrixProject;

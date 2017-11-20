@@ -25,6 +25,16 @@ import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerSa
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.server.model.BbServerUser;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.pageable.PagedResponse;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.client.utils.URIBuilder;
@@ -32,17 +42,6 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.ContentType;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.maven.artifact.versioning.DefaultArtifactVersion;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import static io.jenkins.blueocean.commons.JsonConverter.om;
 
 /**
@@ -71,6 +70,21 @@ public class BitbucketServerApi extends BitbucketApi {
 
             HttpRequest request = new HttpRequest.HttpRequestBuilder(apiUrl).build();
             HttpResponse response = request.get(apiUrl+"rest/api/1.0/application-properties");
+            int status = response.getStatus();
+            if((status >= 301 && status <= 303) || status == 307 || status == 308) {
+                String location = response.getHeader("Location");
+                String error = String.format("%s is invalid. Bitbucket server sent redirect response", apiUrl);
+                if(StringUtils.isNotBlank(location)) {
+                    URL url = new URL(location);
+                    String host = url.getHost();
+                    int port = url.getPort();
+                    String protocol = url.getProtocol();
+                    String baseUrl = protocol + "://"+host + ((port == -1) ? "/" : port+"/");
+                    error += " with location at: "+baseUrl;
+                }
+                error += ". \nPlease use correct Bitbucket Server endpoint.";
+                throw new ServiceException(status, error);
+            }
             InputStream inputStream = response.getContent();
             Map<String,String> resp =  om.readValue(inputStream, new TypeReference<Map < String, String >>() {
             });

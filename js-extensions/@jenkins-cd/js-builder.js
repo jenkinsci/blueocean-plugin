@@ -39,13 +39,15 @@ exports.install = function(builder) {
     builder.onPreBundle(function (bundler) { // See https://github.com/jenkinsci/js-builder#onprebundle-listeners
         bundler.transform(require('envify'));
     });
-    
+
     builder.onPreBundle(function (bundler) {
+        var basedir = bundler._mdeps.basedir; // TODO is there a better way to get this info?
+        var packageJson = require(basedir + '/package.json');
         var bundle = this;
         // Process the requires to weed out stuff we know is being provided
-        bundler.transform(require('./subs/require-transform.js'), { global: true, exports: bundle.moduleExports });
+        bundler.transform(require('./subs/require-transform.js')(packageJson), { global: true, exports: bundle.moduleExports });
     });
-    
+
     // This because core-js init is more complex
     builder.onSetupBundle(function(bundle, packageJson) {
         if (packageJson.name === '@jenkins-cd/blueocean-core-js') {
@@ -64,13 +66,13 @@ exports.install = function(builder) {
         builder
             .import('@jenkins-cd/js-extensions@any')
             .import('@jenkins-cd/design-language@any')
-            .import("@jenkins-cd/blueocean-core-js@any")
-            .import("@jenkins-cd/logging")
+            .import('@jenkins-cd/blueocean-core-js@any')
+            .import('@jenkins-cd/logging')
             .import('react@any', {
                 aliases: ['react/lib/React'] // in case a module requires react through the back door
             })
             .import('react-dom@any')
-            .import("react-addons-css-transition-group@any")
+            .import('react-addons-css-transition-group@any')
             .import('redux@any')
         ;
     }
