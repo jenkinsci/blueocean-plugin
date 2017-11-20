@@ -46,4 +46,16 @@ public class MultiBranchPipeline extends AbstractPipeline {
     public boolean isMultiBranch() {
         return true;
     }
+
+    /**
+     * Get the full name to the default branch "master"
+     */
+    @Override
+    public String getFullName() {
+        return getFullName("master");
+    }
+
+    public String getFullName(String branch) {
+        return super.getFullName() + "/" + branch;
+    }
 }
