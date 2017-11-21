@@ -48,24 +48,25 @@ public class EditorPage {
 
         logger.info("Saved new branch");
     }
+
     public void simplePipeline(String newBranch) {
         logger.info("Editing simple pipeline");
-        wait.until(By.xpath("(//*[@class='pipeline-node-hittarget'])[2]")).click();
+        wait.click(By.xpath("(//*[@class='pipeline-node-hittarget'])[2]"));
         wait.until(By.cssSelector("input.stage-name-edit")).sendKeys("Test stage");
-        wait.until(By.cssSelector("button.btn-primary.add")).click();
-        wait.until(By.xpath("//*[text()='Print Message']")).click();
+        wait.click(By.cssSelector("button.btn-primary.add"));
+        wait.click(By.xpath("//*[text()='Print Message']"));
         wait.until(By.cssSelector("input.TextInput-control")).sendKeys("hi there");
         wait.click(By.xpath("(//a[@class='back-from-sheet'])[2]"));
-        wait.until(By.xpath("//*[text()='Save']")).click();
+        wait.click(By.xpath("//*[text()='Save']"));
         wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("Simple pipeline");
         if(!Strings.isNullOrEmpty(newBranch)) {
-            wait.until(By.xpath("//*[text()='Commit to new branch']")).click();
+            wait.click(By.xpath("//*[text()='Commit to new branch']"));
             wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys(newBranch);
             logger.info("Using branch " + newBranch);
         } else {
             logger.info("Using branch master");
         }
-        wait.until(By.xpath("//*[text()=\"Save & run\"]")).click();
+        wait.click(By.xpath("//*[text()=\"Save & run\"]"));
         logger.info("Simple pipeline saved");
     }
 
@@ -78,10 +79,10 @@ public class EditorPage {
         */
         for (int i = 0; i < numberOfParallels; i++) {
             logger.info("Create stage Parallel-" + i);
-            wait.until(By.xpath("(//*[@class='pipeline-node-hittarget'])[2]")).click();
+            wait.click(By.xpath("(//*[@class='pipeline-node-hittarget'])[2]"));
             wait.until(By.cssSelector("input.stage-name-edit")).sendKeys("Parallel-" + i);
-            wait.until(By.cssSelector("button.btn-primary.add")).click();
-            wait.until(By.xpath("//*[text()='Shell Script']")).click();
+            wait.click(By.cssSelector("button.btn-primary.add"));
+            wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"sh\"]"));
             wait.until(By.cssSelector("textarea.editor-step-detail-script")).sendKeys("netstat -a");
             wait.click(By.xpath("(//a[@class='back-from-sheet'])[2]"));
         }
@@ -92,24 +93,24 @@ public class EditorPage {
         wait.click(By.cssSelector("div.pipeline-big-label.top-level-parallel"));
         wait.until(By.cssSelector("input.stage-name-edit")).clear();
         wait.until(By.cssSelector("input.stage-name-edit")).sendKeys("Top Level Parallel Wrapper Stage");
-        wait.until(By.xpath("//*[text()='Save']")).click();
+        wait.click(By.cssSelector("button.btn-primary.inverse"));
         wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("Parallel pipeline");
         if(!Strings.isNullOrEmpty(newBranch)) {
-            wait.until(By.xpath("//*[text()='Commit to new branch']")).click();
+            logger.info("Saving to branch " + newBranch);
+            wait.click(By.xpath("//*[text()='Commit to new branch']"));
             wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys(newBranch);
-            logger.info("Using branch " + newBranch);
         } else {
             /*
             This mimics the user changing picking a new branch, and then
             changing their mind and committing to master after all.
             */
-            wait.until(By.xpath("//*[text()='Commit to new branch']")).click();
+            wait.click(By.xpath("//*[text()='Commit to new branch']"));
             wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys("i-am-changing-my-mind");
-            wait.until(By.xpath("//*[text()='Commit to master']")).click();
+            wait.click(By.xpath("//*[text()='Commit to master']"));
             logger.info("Using branch master");
         }
-        wait.until(By.xpath("//*[text()=\"Save & run\"]")).click();
-        logger.info("Parallel pipeline saved");
+        wait.click(By.xpath("//*[text()=\"Save & run\"]"));
+        logger.info("Save & run clicked, Parallel pipeline saved");
     }
 
 }
