@@ -89,11 +89,6 @@ public class BitbucketServerTest implements WebDriverMixin {
         creationPage.clickCreatePipelineButton();
     }
 
-    @Test
-    public void testSecondRunDoesntFail() throws InterruptedException {
-        testCreationNoJenkinsfile();
-    }
-
     private void cleanupEndpoint(String endpointUrl) throws IOException {
         String serverId = DigestUtils.sha256Hex(endpointUrl);
 
