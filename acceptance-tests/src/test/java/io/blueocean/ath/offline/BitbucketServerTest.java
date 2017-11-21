@@ -58,7 +58,7 @@ public class BitbucketServerTest implements WebDriverMixin {
     }
 
     @Test
-    public void testJenkinsfileCreate() throws InterruptedException {
+    public void testCreationNoJenkinsfile() throws InterruptedException {
         BitbucketClient client = BitbucketClient.builder()
             .endPoint(ENDPOINT_URL)
             .credentials("admin:admin").build();
@@ -91,7 +91,7 @@ public class BitbucketServerTest implements WebDriverMixin {
 
     @Test
     public void testSecondRunDoesntFail() throws InterruptedException {
-        testJenkinsfileCreate();
+        testCreationNoJenkinsfile();
     }
 
     private void cleanupEndpoint(String endpointUrl) throws IOException {
