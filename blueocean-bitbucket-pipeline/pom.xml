@@ -54,6 +54,11 @@
       <artifactId>httpmime</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-artifact</artifactId>
+    </dependency>
+
     <!-- test dependencies -->
     <dependency>
       <groupId>${project.groupId}</groupId>
@@ -64,14 +69,32 @@
     </dependency>
 
     <dependency>
-      <groupId>org.apache.maven</groupId>
-      <artifactId>maven-artifact</artifactId>
-    </dependency>
-    <dependency>
       <groupId>com.github.tomakehurst</groupId>
       <artifactId>wiremock-standalone</artifactId>
       <scope>test</scope>
     </dependency>
+
+    <!-- begin HttpRequest helper -->
+    <dependency>
+      <groupId>io.jenkins.blueocean</groupId>
+      <artifactId>blueocean-rest-impl</artifactId>
+      <version>1.4.0-beta-1-SNAPSHOT</version>
+      <type>test-jar</type>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>fluent-hc</artifactId>
+      <version>4.5.3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.damnhandy</groupId>
+      <artifactId>handy-uri-templates</artifactId>
+      <version>2.1.6</version>
+      <scope>test</scope>
+    </dependency>
+    <!-- end HttpRequest -->
   </dependencies>
 
 </project>

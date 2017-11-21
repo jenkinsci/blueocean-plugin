@@ -95,9 +95,11 @@ export default class BbCompleteStep extends React.Component {
         const content = this._getContent(flowManager.stateId);
         const loading = (flowManager.stateId === STATE.PENDING_CREATION_SAVING ||
                             flowManager.stateId === STATE.PENDING_CREATION_EVENTS);
+        const complete = (flowManager.stateId === STATE.STEP_COMPLETE_SUCCESS ||
+                            flowManager.stateId === STATE.STEP_COMPLETE_MISSING_JENKINSFILE) && 'state-completed';
 
         return (
-            <FlowStep {...this.props} className="github-complete-step" title={title} status={status} loading={loading} error={error}>
+            <FlowStep {...this.props} className={`github-complete-step ${complete}`} title={title} status={status} loading={loading} error={error}>
                 {content}
             </FlowStep>
         );
