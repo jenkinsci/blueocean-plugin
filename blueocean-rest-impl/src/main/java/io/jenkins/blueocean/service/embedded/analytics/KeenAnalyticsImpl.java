@@ -19,7 +19,7 @@ import java.util.Map;
 @Restricted(NoExternalUse.class)
 public class KeenAnalyticsImpl extends AbstractAnalytics {
 
-    static final KeenClient CLIENT = new JavaKeenClientBuilder().build();
+    private static final KeenClient CLIENT = new JavaKeenClientBuilder().build();
 
     static {
         KeenClient.initialize(CLIENT);
