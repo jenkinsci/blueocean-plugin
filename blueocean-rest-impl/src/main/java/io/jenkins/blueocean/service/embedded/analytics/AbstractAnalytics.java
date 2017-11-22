@@ -4,6 +4,7 @@ import com.google.common.base.Objects;
 import com.google.common.collect.Maps;
 import com.google.common.hash.Hashing;
 import hudson.ExtensionList;
+import hudson.model.UsageStatistics;
 import hudson.model.User;
 import io.jenkins.blueocean.analytics.AdditionalAnalyticsProperties;
 import io.jenkins.blueocean.analytics.Analytics;
@@ -26,6 +27,10 @@ import java.util.logging.Logger;
 public abstract class AbstractAnalytics extends Analytics {
 
     private static final Logger LOGGER = Logger.getLogger(AbstractAnalytics.class.getName());
+
+    public boolean isEnabled() {
+        return !UsageStatistics.DISABLED;
+    }
 
     /**
      * @param req to track

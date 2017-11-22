@@ -2,7 +2,6 @@ package io.jenkins.blueocean.service.embedded.analytics;
 
 import hudson.Extension;
 import hudson.ProxyConfiguration;
-import hudson.model.UsageStatistics;
 import io.keen.client.java.JavaKeenClientBuilder;
 import io.keen.client.java.KeenClient;
 import io.keen.client.java.KeenProject;
@@ -27,11 +26,6 @@ public class KeenAnalyticsImpl extends AbstractAnalytics {
     }
 
     public KeenAnalyticsImpl() {}
-
-    @Override
-    public boolean isEnabled() {
-        return !UsageStatistics.DISABLED;
-    }
 
     @Override
     protected void doTrack(String name, Map<String, Object> allProps) {
