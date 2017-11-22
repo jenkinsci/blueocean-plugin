@@ -18,6 +18,7 @@ node() {
       sh 'mv $FILE acceptance-tests/bo-ath.key'
     }
     sh "./acceptance-tests/runner/scripts/start-selenium.sh"
+    sh "./acceptance-tests/runner/scripts/start-bitbucket-server.sh"
   }
 
   docker.image('blueocean_build_env').inside("--net=container:blueo-selenium") {
@@ -72,6 +73,7 @@ node() {
       } finally {
         stage('Cleanup') {
           sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
+          sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-bitbucket-server.sh"
           sendhipchat()
           deleteDir()
         }
