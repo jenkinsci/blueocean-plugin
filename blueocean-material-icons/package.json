@@ -1,10 +1,11 @@
 {
   "name": "@jenkins-cd/blueocean-material-icons",
-  "version": "0.0.5",
+  "version": "0.0.6",
   "description": "Material icons for the Jenkins Design Language",
   "main": "dist/js/components/index.js",
   "scripts": {
-    "babel": "node_modules/.bin/babel src -d dist"
+    "prepublish": "npm test && babel src -d dist",
+    "test": "mocha --compilers js:babel-core/register test/js"
   },
   "author": "Nicolae Pascu <npascu@cloudbees.com> (https://www.cloudbees.com/)",
   "license": "MIT",
@@ -12,13 +13,17 @@
     "type": "git",
     "url": "https://github.com/jenkinsci/blueocean-plugin.git"
   },
-  "dependencies": {
-  },
   "devDependencies": {
     "babel-cli": "6.26.0",
-    "babel-polyfill": "6.16.0",
     "babel-preset-es2015": "6.16.0",
     "babel-preset-react": "6.16.0",
-    "babel-preset-stage-0": "6.16.0"
+    "babel-preset-stage-0": "6.16.0",
+    "react": "15.4.2",
+    "react-dom": "15.4.2",
+    "react-addons-test-utils": "15.4.2",
+    "mocha": "4.0.1",
+    "chai": "4.1.2",
+    "enzyme": "2.5.1",
+    "sinon": "4.1.2"
   }
 }

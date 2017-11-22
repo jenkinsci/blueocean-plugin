@@ -8,9 +8,9 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/eslint-config-jenkins/-/eslint-config-jenkins-0.0.2.tgz"
     },
     "@jenkins-cd/blueocean-material-icons": {
-      "version": "0.0.5",
-      "from": "@jenkins-cd/blueocean-material-icons@0.0.5",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-material-icons/-/blueocean-material-icons-0.0.5.tgz"
+      "version": "0.0.6",
+      "from": "@jenkins-cd/blueocean-material-icons@0.0.6",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-material-icons/-/blueocean-material-icons-0.0.6.tgz"
     },
     "@jenkins-cd/js-builder": {
       "version": "0.0.62",
