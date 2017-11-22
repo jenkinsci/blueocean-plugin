@@ -4,20 +4,25 @@ import hudson.Extension;
 import hudson.model.Item;
 import io.jenkins.blueocean.analytics.JobAnalyticsCheck;
 import jenkins.branch.MultiBranchProject;
+import org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 @Extension
 @Restricted(NoExternalUse.class)
-public final class SinglePipelineAnalyticsCheck extends JobAnalyticsCheck {
+public class ScriptedSinglePipelineCheck extends JobAnalyticsCheck {
     @Override
     public String getName() {
-        return "singlePipeline";
+        return "singlePipelineScripted";
     }
 
     @Override
     public Boolean apply(Item item) {
-        return item instanceof WorkflowJob && !(item.getParent() instanceof MultiBranchProject);
+        if (item instanceof WorkflowJob) {
+            WorkflowJob job = (WorkflowJob)item;
+            return !(job.getParent() instanceof MultiBranchProject) && job.getAction(DeclarativeJobAction.class) == null;
+        }
+        return false;
     }
 }

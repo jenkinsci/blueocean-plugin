@@ -15,6 +15,8 @@ import java.util.concurrent.TimeUnit;
 
 public final class JobAnalytics implements Runnable {
 
+    private static final String JOB_STATS_EVENT_NAME = "job_stats";
+
     private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
 
     public JobAnalytics() {
@@ -40,7 +42,7 @@ public final class JobAnalytics implements Runnable {
             tally.put(check.getName(), count);
         }));
         analytics.track(new TrackRequest(
-            "jobStats",
+            JOB_STATS_EVENT_NAME,
             ImmutableMap.copyOf(tally)
         ));
     }
