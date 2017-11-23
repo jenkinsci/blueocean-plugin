@@ -46,7 +46,9 @@
     "url": "https://github.com/jenkinsci/jenkins-design-language.git"
   },
   "jest": {
-      "collectCoverageFrom": ["!src/js/components/material-ui/**", "src/js/**/*.{js,jsx}"]
+    "collectCoverageFrom": [
+      "src/js/**/*.{js,jsx}"
+    ]
   },
   "dependencies": {
     "@jenkins-cd/js-modules": "0.0.10",
@@ -57,7 +59,9 @@
     "react": "15.4.2",
     "react-addons-css-transition-group": "15.4.2",
     "react-dom": "15.4.2",
-    "react-router": "2.8.1"
+    "react-router": "2.8.1",
+    "@jenkins-cd/blueocean-material-icons": "0.0.6"
+
   },
   "devDependencies": {
     "@jenkins-cd/js-builder": "0.0.62",
