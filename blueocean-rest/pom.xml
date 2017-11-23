@@ -63,6 +63,7 @@
                                     </allowedImports>
                                     <excludedClasses>
                                         <excludedClass>io.jenkins.blueocean.rest.factory.**</excludedClass>
+                                        <excludedClass>io.jenkins.blueocean.rest.analytics.**</excludedClass>
                                     </excludedClasses>
                                 </restrictImports>
                                 <!-- Factory package is allowed to import Jenkins models -->
