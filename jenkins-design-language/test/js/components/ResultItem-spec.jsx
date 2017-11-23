@@ -1,6 +1,7 @@
 import React from 'react';
 import { assert } from 'chai';
 import { shallow, render } from 'enzyme';
+import '../utils/rAf';
 
 import { ResultItem } from '../../../src/js/components';
 
@@ -23,6 +24,15 @@ describe('ResultItem', () => {
             const wrapper = shallow(<ResultItem result="success" label="Label">Contents</ResultItem>);
 
             assert.isFalse(wrapper.contains('Contents'));
+        });
+    });
+
+    describe('icon animation', () => {
+        it('icon is animating while running', () => {
+            const wrapper = shallow(<ResultItem result="running" label="Label" expanded={false}>Contents</ResultItem>);
+
+            wrapper.setState({ infiniteRotateDegrees: '1' });
+            assert.equal(wrapper.find('.result-status-glyph > g').prop('transform'), 'rotate(1)');
         });
     });
 
