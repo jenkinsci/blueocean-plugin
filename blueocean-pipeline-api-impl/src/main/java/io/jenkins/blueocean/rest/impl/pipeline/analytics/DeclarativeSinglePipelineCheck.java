@@ -2,7 +2,7 @@ package io.jenkins.blueocean.rest.impl.pipeline.analytics;
 
 import hudson.Extension;
 import hudson.model.Item;
-import io.jenkins.blueocean.analytics.JobAnalyticsCheck;
+import io.jenkins.blueocean.service.embedded.analytics.JobAnalyticsCheck;
 import jenkins.branch.MultiBranchProject;
 import org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;

@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.analytics;
+package io.jenkins.blueocean.service.embedded.analytics;
 
 import hudson.ExtensionPoint;
 import hudson.model.Item;

@@ -3,7 +3,7 @@ package io.jenkins.blueocean.rest.impl.pipeline.analytics;
 import hudson.Extension;
 import hudson.matrix.MatrixProject;
 import hudson.model.Item;
-import io.jenkins.blueocean.analytics.JobAnalyticsCheck;
+import io.jenkins.blueocean.service.embedded.analytics.JobAnalyticsCheck;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 

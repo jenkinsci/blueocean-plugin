@@ -4,7 +4,6 @@ import com.google.common.collect.ImmutableMap;
 import hudson.ExtensionList;
 import io.jenkins.blueocean.analytics.Analytics;
 import io.jenkins.blueocean.analytics.Analytics.TrackRequest;
-import io.jenkins.blueocean.analytics.JobAnalyticsCheck;
 import jenkins.model.Jenkins;
 
 import java.util.HashMap;

@@ -63,7 +63,6 @@
                                     </allowedImports>
                                     <excludedClasses>
                                         <excludedClass>io.jenkins.blueocean.rest.factory.**</excludedClass>
-                                        <excludedClass>io.jenkins.blueocean.rest.analytics.**</excludedClass>
                                     </excludedClasses>
                                 </restrictImports>
                                 <!-- Factory package is allowed to import Jenkins models -->
@@ -101,7 +100,6 @@
                                         <allowedImport>hudson.Extension</allowedImport>
                                         <allowedImport>hudson.ExtensionPoint</allowedImport>
                                         <allowedImport>hudson.ExtensionList</allowedImport>
-                                        <allowedImport>hudson.model.Item</allowedImport>
                                     </allowedImports>
                                 </restrictImports>
                             </rules>
