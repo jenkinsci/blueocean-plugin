@@ -19,7 +19,7 @@ import java.util.Map;
 @Restricted(NoExternalUse.class)
 public final class JobAnalytics extends AsyncPeriodicWork {
 
-    private static final String JOB_STATS_EVENT_NAME = "job_stats";
+    static final String JOB_STATS_EVENT_NAME = "job_stats";
 
     public JobAnalytics() {
         super("jobAnalytics");
@@ -27,6 +27,10 @@ public final class JobAnalytics extends AsyncPeriodicWork {
 
     @Override
     protected void execute(TaskListener listener) throws IOException, InterruptedException {
+        calculateAndSend();
+    }
+
+    void calculateAndSend() {
         Analytics analytics = Analytics.get();
         if (analytics == null) {
             return;
@@ -34,7 +38,7 @@ public final class JobAnalytics extends AsyncPeriodicWork {
         Jenkins jenkins = Jenkins.getInstance();
         ExtensionList<JobAnalyticsCheck> checks = ExtensionList.lookup(JobAnalyticsCheck.class);
         Map<String, Integer> tally = new HashMap<>();
-        jenkins.getAllItems().forEach(item -> checks.stream().filter(check -> check.apply(item)).findFirst().ifPresent(check -> {
+        jenkins.allItems().forEach(item -> checks.stream().findFirst().ifPresent(check -> {
             Integer count = tally.get(check.getName());
             if (count == null) {
                 count = 1;
