@@ -1,29 +1,32 @@
 package io.jenkins.blueocean.service.embedded.analytics;
 
 import com.google.common.collect.ImmutableMap;
+import hudson.Extension;
 import hudson.ExtensionList;
+import hudson.model.AsyncPeriodicWork;
+import hudson.model.TaskListener;
 import io.jenkins.blueocean.analytics.Analytics;
 import io.jenkins.blueocean.analytics.Analytics.TrackRequest;
 import jenkins.model.Jenkins;
+import org.kohsuke.accmod.Restricted;
+import org.kohsuke.accmod.restrictions.NoExternalUse;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
-public final class JobAnalytics implements Runnable {
+@Extension
+@Restricted(NoExternalUse.class)
+public final class JobAnalytics extends AsyncPeriodicWork {
 
     private static final String JOB_STATS_EVENT_NAME = "job_stats";
 
-    private final ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
-
     public JobAnalytics() {
-        this.service.scheduleAtFixedRate(this, 0, 1, TimeUnit.DAYS);
+        super("jobAnalytics");
     }
 
     @Override
-    public void run() {
+    protected void execute(TaskListener listener) throws IOException, InterruptedException {
         Analytics analytics = Analytics.get();
         if (analytics == null) {
             return;
@@ -44,5 +47,10 @@ public final class JobAnalytics implements Runnable {
             JOB_STATS_EVENT_NAME,
             ImmutableMap.copyOf(tally)
         ));
+    }
+
+    @Override
+    public long getRecurrencePeriod() {
+        return DAY;
     }
 }
