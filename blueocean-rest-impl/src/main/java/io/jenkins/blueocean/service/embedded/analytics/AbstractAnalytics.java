@@ -50,8 +50,9 @@ public abstract class AbstractAnalytics extends Analytics {
                 allProps.putAll(additionalProperties);
             }
         }
-        allProps.put("jenkins", server());
-        String identity = identity();
+        String server = server();
+        allProps.put("jenkins", server);
+        String identity = identity(server);
         if (identity != null) {
             allProps.put("userId", identity);
         }
@@ -74,13 +75,13 @@ public abstract class AbstractAnalytics extends Analytics {
         return Hashing.sha256().hashBytes(InstanceIdentity.get().getPublic().getEncoded()).toString();
     }
 
-    protected final String identity() {
+    protected final String identity(String server) {
         // Background process do not have an identity
         if (Stapler.getCurrentRequest() == null) {
             return null;
         }
         User user = User.current();
         String username = user == null ? "ANONYMOUS" : user.getId();
-        return Hashing.sha256().hashString(username + server()).toString();
+        return Hashing.sha256().hashString(username + server).toString();
     }
 }
