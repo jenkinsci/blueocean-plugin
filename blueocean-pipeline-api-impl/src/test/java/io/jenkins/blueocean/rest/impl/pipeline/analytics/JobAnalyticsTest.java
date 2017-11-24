@@ -1,6 +1,8 @@
-package io.jenkins.blueocean.service.embedded.analytics;
+package io.jenkins.blueocean.rest.impl.pipeline.analytics;
 
 import io.jenkins.blueocean.analytics.Analytics;
+import io.jenkins.blueocean.service.embedded.analytics.AbstractAnalytics;
+import io.jenkins.blueocean.service.embedded.analytics.JobAnalytics;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -26,10 +28,16 @@ public class JobAnalyticsTest {
         jobAnalytics.calculateAndSend();
 
         Assert.assertNotNull(analytics.lastReq);
-        Assert.assertEquals(JobAnalytics.JOB_STATS_EVENT_NAME, analytics.lastReq.name);
+        Assert.assertEquals("job_stats", analytics.lastReq.name);
 
         Map<String, Object> properties = analytics.lastReq.properties;
+        Assert.assertEquals(0, properties.get("singlePipelineDeclarative"));
+        Assert.assertEquals(0, properties.get("singlePipelineScripted"));
+        Assert.assertEquals(0, properties.get("pipelineDeclarative"));
+        Assert.assertEquals(0, properties.get("pipelineScripted"));
         Assert.assertEquals(2, properties.get("freestyle"));
+        Assert.assertEquals(0, properties.get("matrix"));
+        Assert.assertEquals(0, properties.get("other"));
     }
 
     @TestExtension

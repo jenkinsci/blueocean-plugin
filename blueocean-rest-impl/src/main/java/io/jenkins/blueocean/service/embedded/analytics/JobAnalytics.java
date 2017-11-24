@@ -30,7 +30,7 @@ public final class JobAnalytics extends AsyncPeriodicWork {
         calculateAndSend();
     }
 
-    void calculateAndSend() {
+    public void calculateAndSend() {
         Analytics analytics = Analytics.get();
         if (analytics == null) {
             return;
@@ -38,14 +38,15 @@ public final class JobAnalytics extends AsyncPeriodicWork {
         Jenkins jenkins = Jenkins.getInstance();
         ExtensionList<JobAnalyticsCheck> checks = ExtensionList.lookup(JobAnalyticsCheck.class);
         Map<String, Integer> tally = new HashMap<>();
-        jenkins.allItems().forEach(item -> checks.stream().findFirst().ifPresent(check -> {
+
+        jenkins.allItems().forEach(item -> checks.forEach(check -> {
+            Boolean applies = check.apply(item);
+            int incrementBy = applies ? 1 : 0;
             Integer count = tally.get(check.getName());
             if (count == null) {
-                count = 1;
-            } else {
-                count++;
+                count = 0;
             }
-            tally.put(check.getName(), count);
+            tally.put(check.getName(), count + incrementBy);
         }));
         analytics.track(new TrackRequest(
             JOB_STATS_EVENT_NAME,

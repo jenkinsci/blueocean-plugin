@@ -16,7 +16,7 @@ public class DeclarativePipelineAnalyticsCheck extends JobAnalyticsCheck {
 
     @Override
     public String getName() {
-        return "pipeline";
+        return "pipelineDeclarative";
     }
 
     @Override

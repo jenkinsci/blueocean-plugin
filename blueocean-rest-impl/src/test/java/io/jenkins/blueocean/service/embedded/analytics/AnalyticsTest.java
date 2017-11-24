@@ -123,7 +123,7 @@ public class AnalyticsTest {
         }
 
         public String getIdentity() {
-            return identity();
+            return identity(server());
         }
     }
 }
