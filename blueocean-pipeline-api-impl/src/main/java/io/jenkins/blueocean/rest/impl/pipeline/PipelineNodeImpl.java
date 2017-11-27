@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Predicate;
 import hudson.model.Action;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueInputStep;
@@ -37,14 +38,16 @@ public class PipelineNodeImpl extends BluePipelineNode {
     private final NodeRunStatus status;
     private final Link self;
     private final WorkflowRun run;
+    private final Reachable parent;
 
-    public PipelineNodeImpl(FlowNodeWrapper node, Link parentLink, WorkflowRun run) {
+    public PipelineNodeImpl(FlowNodeWrapper node, Reachable parent, WorkflowRun run) {
         this.node = node;
         this.run = run;
         this.edges = buildEdges(node.edges);
         this.status = node.getStatus();
         this.durationInMillis = node.getTiming().getTotalDurationMillis();
-        this.self = parentLink.rel(node.getId());
+        this.self = parent.getLink().rel(node.getId());
+        this.parent = parent;
     }
 
     @Override

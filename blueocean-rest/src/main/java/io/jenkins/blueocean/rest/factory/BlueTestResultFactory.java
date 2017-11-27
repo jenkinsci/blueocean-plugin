@@ -3,23 +3,29 @@ package io.jenkins.blueocean.rest.factory;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import jenkins.model.Jenkins;
 
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 
 public abstract class BlueTestResultFactory implements ExtensionPoint {
 
     /**
      * @param run to find tests for
-     * @param parent run that this belongs to
+     * @param parent run or node that this belongs to
      * @return implementation of BlueTestResult matching your TestResult or {@link Result#notFound()}
      */
-    public abstract Result getBlueTestResults(Run<?, ?> run, final Reachable parent);
+    public Result getBlueTestResults(Run<?,?> run, final Reachable parent) {
+        return Result.notFound();
+    }
 
     /**
      * Result of {@link #getBlueTestResults(Run, Reachable)} that holds summary and iterable of BlueTestResult
@@ -104,21 +110,28 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
         }
     }
 
-    public static Result resolve(Run<?, ?> run, Reachable parent) {
+    public static Result resolve(Run<?,?> run, Reachable parent) {
         Iterable<BlueTestResult> results = ImmutableList.of();
         BlueTestSummary summary = new BlueTestSummary(0, 0, 0, 0, 0, 0, 0);
-        for (BlueTestResultFactory factory : Jenkins.getInstance().getExtensionList(BlueTestResultFactory.class)) {
+        for (BlueTestResultFactory factory : allFactories()) {
             Result result = factory.getBlueTestResults(run, parent);
             if (result != null && result.results != null && result.summary != null) {
                 results = Iterables.concat(result.results, results);
                 summary = summary.tally(result.summary);
             }
         }
-        // Never send back an empty summary
+        return getResult(results, summary);
+    }
+
+    private static Result getResult(Iterable<BlueTestResult> results, BlueTestSummary summary) {
         if (summary.getTotal() == 0) {
             summary = null;
             results = null;
         }
         return Result.of(results, summary);
+    }
+
+    private static Iterable<BlueTestResultFactory> allFactories() {
+        return ExtensionList.lookup(BlueTestResultFactory.class);
     }
 }

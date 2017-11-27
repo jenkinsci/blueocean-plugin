@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.model;
 
-import hudson.Util;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.hal.Link;
 import org.kohsuke.stapler.WebMethod;

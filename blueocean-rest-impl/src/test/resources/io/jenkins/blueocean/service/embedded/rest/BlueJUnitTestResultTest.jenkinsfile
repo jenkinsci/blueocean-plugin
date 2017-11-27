@@ -1,5 +1,5 @@
 node {
-    test = "<testsuite tests=\"3\">\n" +
+    def test = "<testsuite tests=\"3\">\n" +
         "    <testcase classname=\"foo1\" name=\"ASuccessfulTest\"/>\n" +
         "    <testcase classname=\"foo2\" name=\"AnotherSuccessfulTest\"/>\n" +
         "    <testcase classname=\"foo3\" name=\"AFailingTest\">\n" +
