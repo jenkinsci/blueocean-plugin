@@ -37,25 +37,17 @@ public class CustomJenkinsServer extends JenkinsServer {
         String path = "/user/" + userName + "/credentials/store/user/domain/" + domainName + "/credential/" + credentialId;
 
         try {
-            client.get(path);
-            logger.info("found credential at " + path);
+            client.post(path + "/doDelete", false);
+            logger.info("deleted credential at " + path);
         } catch (HttpResponseException e) {
-            if (e.getStatusCode() != 404) {
-                logger.error("error getting credential at " + path);
+            if (e.getStatusCode() == 404) {
+                logger.debug("received 404 while trying to delete redential at " + path);
+            } else {
+                logger.error("error deleting credential at " + path);
+                logger.error("message = " + e.getMessage());
                 throw e;
             }
-            // credential doesn't exist; nothing to do
-            return;
         }
 
-        try {
-            client.post(path + "/doDelete", false);
-        } catch (HttpResponseException e) {
-            logger.error("error deleting credential at " + path);
-            logger.error("message = " + e.getMessage());
-            throw e;
-        }
-
-        logger.info("deleted credential at " + path);
     }
 }

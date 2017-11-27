@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
 
 import com.cloudbees.jenkins.plugins.bitbucket.endpoints.AbstractBitbucketEndpoint;
+import com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketEndpointConfiguration;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.Messages;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
@@ -12,9 +13,11 @@ import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.verb.DELETE;
 import org.kohsuke.stapler.verb.GET;
 
 import javax.servlet.ServletException;
+import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 /**
@@ -72,5 +75,12 @@ public class BitbucketServerEndpoint extends ScmServerEndpoint {
                 rsp.setStatus(200);
             }
         };
+    }
+
+    @WebMethod(name="") @DELETE
+    public void doDelete(StaplerResponse resp) {
+        final BitbucketEndpointConfiguration config = BitbucketEndpointConfiguration.get();
+        config.removeEndpoint(getApiUrl());
+        resp.setStatus(HttpServletResponse.SC_NO_CONTENT);
     }
 }

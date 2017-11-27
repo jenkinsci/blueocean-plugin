@@ -145,6 +145,11 @@ export class SseBus {
                 // that the run's state is stale. force the state to the correct value.
                 if (event.jenkins_event === 'job_run_ended') {
                     updatedRun.state = 'FINISHED';
+                    // in some cases the state is finished but result is still unknown; assume success for now
+                    if (updatedRun.result === 'UNKNOWN') {
+                        console.log('forcing run result from UNKNOWN to SUCCESS for ' + url);
+                        updatedRun.result = 'SUCCESS';
+                    }
                 } else if (event.jenkins_event === 'job_run_paused') {
                     updatedRun.state = 'PAUSED';
                 } else {

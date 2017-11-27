@@ -54,6 +54,37 @@ public interface WebDriverMixin {
     }
 
     /**
+     * Navigate the back in browser history.
+     */
+    default void back() {
+        getDriver().navigate().back();
+    }
+
+    /**
+     * Navigate forward in browser history.
+     */
+    default void forward() {
+        getDriver().navigate().forward();
+    }
+
+    /**
+     * Navigate forward or back in browser history.
+     * Negative input means back, positive is forward.
+     * @param historyCount
+     */
+    default void go(int historyCount) {
+        WebDriver.Navigation nav = getDriver().navigate();
+
+        for (int i = 0; i < Math.abs(historyCount); i++) {
+            if (historyCount > 0) {
+                nav.forward();
+            } else {
+                nav.back();
+            }
+        }
+    }
+
+    /**
      * Finds an element by the provided expression {@see SmartWebElement}
      * @param expr css or xpath; if it starts with a /, XPath is used
      * @return a new SmartWebElement
