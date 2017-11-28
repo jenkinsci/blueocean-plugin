@@ -18,8 +18,10 @@ import java.util.concurrent.TimeUnit;
 
 @Singleton
 public class WaitUtil {
+    public static int DEFAULT_TIMEOUT = Integer.getInteger("webDriverDefaultTimeout", 20000);
+    public static final int RETRY_COUNT = 2;
+
     private Logger logger = Logger.getLogger(WaitUtil.class);
-    private static final int RETRY_COUNT = 2;
 
     private WebDriver driver;
 
@@ -44,11 +46,11 @@ public class WaitUtil {
         return until(function, timeoutInMS, "Error while waiting for something");
     }
     public <T> T until(Function<WebDriver, T> function) {
-        return until(function, 20000);
+        return until(function, DEFAULT_TIMEOUT);
     }
 
     public <T> T until(Function<WebDriver, T> function, String errorMessage) {
-        return until(function, 20000);
+        return until(function, DEFAULT_TIMEOUT);
     }
 
     public WebElement until(WebElement element) {
@@ -107,4 +109,30 @@ public class WaitUtil {
         }
     }
 
+    /**
+     * Try to perform the specified function up to the specified count.
+     *
+     * @param desc textual description of action
+     * @param tryCount number of times to try
+     * @param function action to perform
+     * @return result of action
+     */
+    public <T> T retryAction(String desc, int tryCount, Function<WebDriver, T> function) {
+        for (int i = 1; i <= tryCount; i++) {
+            try {
+                T result = until(function);
+                if (i > 1) {
+                    logger.info(String.format("retry was successful for action '%s' ", desc));
+                }
+                return result;
+            } catch (Exception ex) {
+                if (i < tryCount) {
+                    logger.warn(String.format("action failed for %s; will retry again", desc));
+                } else {
+                    throw ex;
+                }
+            }
+        }
+        return null;
+    }
 }

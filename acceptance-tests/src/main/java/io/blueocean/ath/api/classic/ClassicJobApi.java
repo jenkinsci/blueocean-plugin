@@ -13,6 +13,7 @@ import com.offbytwo.jenkins.model.Job;
 import com.offbytwo.jenkins.model.JobWithDetails;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.GitRepositoryRule;
+import io.blueocean.ath.JenkinsUser;
 import io.blueocean.ath.model.Folder;
 import org.apache.http.client.HttpResponseException;
 import org.apache.log4j.Logger;
@@ -37,6 +38,9 @@ public class ClassicJobApi {
     @Inject
     public JenkinsServer jenkins;
 
+    @Inject
+    JenkinsUser admin;
+
     public void deletePipeline(String pipeline) throws IOException {
         deletePipeline(null, pipeline);
     }
@@ -49,6 +53,14 @@ public class ClassicJobApi {
             if(e.getStatusCode() != 404) {
                 throw e;
             }
+        }
+    }
+
+    public void deleteFolder(Folder folder) throws IOException {
+        if (folder.getFolders().size() == 1) {
+            jenkins.deleteJob(folder.getPath());
+        } else {
+            throw new UnsupportedOperationException("deleting a nested folder is not supported");
         }
     }
 
@@ -69,7 +81,7 @@ public class ClassicJobApi {
     public void createPipeline(FolderJob folder, String jobName, String script) throws IOException {
         deletePipeline(folder, jobName);
         URL url = Resources.getResource(this.getClass(), "pipeline.xml");
-        jenkins.createJob(null, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{script}}", script));
+        jenkins.createJob(folder, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{script}}", script));
         logger.info("Created pipeline job "+ jobName);
     }
     public void createMultlBranchPipeline(FolderJob folder, String pipelineName, String repositoryPath) throws IOException {
@@ -89,7 +101,7 @@ public class ClassicJobApi {
         ImmutableMap<String, Object> params = ImmutableMap.of("mode", "com.cloudbees.hudson.plugins.folder.Folder",
             "name",   folderName, "from", "", "Submit", "OK");
         try {
-            Unirest.post(path).fields(params).asString();
+            Unirest.post(path).basicAuth(admin.username, admin.password).fields(params).asString();
         } catch (UnirestException e) {
             throw new IOException(e);
         }

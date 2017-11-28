@@ -26,12 +26,13 @@ function jenkinsNode(name) {
         input: null,
         causeOfBlockage: null,
         result: 'SUCCESS',
+        type: 'STAGE',
         startTime: new Date(2017, 8, 3, 12, 0, 0, 0).toISOString(),
         state: 'FINISHED',
     };
 }
 
-function connect(left, right) {
+function connect(left, right, type='STAGE') {
     const ms = left.durationInMillis;
     const d1 = new Date(left.startTime);
     const d2 = new Date(right.startTime);
@@ -41,6 +42,7 @@ function connect(left, right) {
     right.startTime = d3.toISOString();
     left.edges.push({
         id: right.id,
+        type: type
     });
 }
 
@@ -405,17 +407,17 @@ describe('pipeline graph data converter /', () => {
             connect(alpha, bravo);
 
             // Split into parallels
-            connect(bravo, delta);
-            connect(bravo, echo);
-            connect(bravo, foxtrot);
-            connect(bravo, hotel);
+            connect(bravo, delta, 'PARALLEL');
+            connect(bravo, echo, 'PARALLEL');
+            connect(bravo, foxtrot, 'PARALLEL');
+            connect(bravo, hotel, 'PARALLEL');
 
             // Two stages in foxtrot row
-            connect(foxtrot, golf);
+            connect(foxtrot, golf, 'PARALLEL');
 
             // Three stages in hotel row
-            connect(hotel, india);
-            connect(india, juliett);
+            connect(hotel, india,'PARALLEL');
+            connect(india, juliett,'PARALLEL');
 
             // Collapse parallel branches to final stage
             connect(delta, charlie);

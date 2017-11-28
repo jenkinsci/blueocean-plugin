@@ -1,3 +1,5 @@
+/* global packageJson */
+
 /**
  * Jenkins js-builder extension plugin. https://github.com/jenkinsci/js-builder
  *
@@ -38,6 +40,23 @@ exports.install = function(builder) {
         bundler.transform(require('envify'));
     });
 
+    builder.onPreBundle(function (bundler) {
+        var basedir = bundler._mdeps.basedir; // TODO is there a better way to get this info?
+        var packageJson = require(basedir + '/package.json');
+        var bundle = this;
+        // Process the requires to weed out stuff we know is being provided
+        bundler.transform(require('./subs/require-transform.js')(packageJson), { global: true, exports: bundle.moduleExports });
+    });
+
+    // This because core-js init is more complex
+    builder.onSetupBundle(function(bundle, packageJson) {
+        if (packageJson.name === '@jenkins-cd/blueocean-core-js') {
+            bundle.onStartup('@jenkins-cd/js-extensions/dist/init/blueocean-core-js');
+        } else if (!packageJson.name.startsWith('@jenkins-cd')) {
+            bundle.onStartup('@jenkins-cd/js-extensions/dist/init/extension');
+        }
+    });
+
     if (!process.env.SKIP_BLUE_IMPORTS) {
         // All Blue Ocean bundles should import the following
         // modules. These are all exported from the main blueocean
@@ -47,13 +66,18 @@ exports.install = function(builder) {
         builder
             .import('@jenkins-cd/js-extensions@any')
             .import('@jenkins-cd/design-language@any')
-            .import("@jenkins-cd/blueocean-core-js@any")
-            .import('@jenkins-cd/blueocean-core-js/dist/js/i18n/bundle-startup@any') // remove once JENKINS-39646 fixes back-door bundle module leakage
+            .import('@jenkins-cd/blueocean-core-js@any')
+            .import('@jenkins-cd/logging')
             .import('react@any', {
                 aliases: ['react/lib/React'] // in case a module requires react through the back door
             })
             .import('react-dom@any')
+            .import('react-addons-css-transition-group@any')
             .import('redux@any')
         ;
+    }
+
+    if (!packageJson.name.startsWith('@jenkins-cd')) {
+        builder.import('jenkins-cd-blueocean-core-js:jenkins-cd-blueocean-core-js@any');
     }
 };

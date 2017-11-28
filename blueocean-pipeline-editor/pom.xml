@@ -48,7 +48,7 @@
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-web</artifactId>
+            <artifactId>blueocean-dashboard</artifactId>
         </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>

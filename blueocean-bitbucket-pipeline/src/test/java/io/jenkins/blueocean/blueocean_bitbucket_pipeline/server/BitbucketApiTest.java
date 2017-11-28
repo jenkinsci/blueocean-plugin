@@ -8,6 +8,8 @@ import com.google.common.collect.ImmutableMap;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.util.Secret;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.HttpRequest;
+import io.jenkins.blueocean.blueocean_bitbucket_pipeline.HttpResponse;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbBranch;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbOrg;
 import io.jenkins.blueocean.blueocean_bitbucket_pipeline.model.BbPage;
@@ -138,6 +140,13 @@ public class BitbucketApiTest extends BbServerWireMock {
         assertEquals("master", branch.getDisplayId());
         assertTrue(branch instanceof BbServerBranch);
         assertEquals("refs/heads/master", ((BbServerBranch)branch).getId());
+    }
+
+    @Test
+    public void testAutoRedirectDisabled() {
+        HttpResponse response = new HttpRequest.HttpRequestBuilder(apiUrl).build().get(apiUrl+"/rest/api/1.0/test-redirect");
+        assertEquals(302, response.getStatus());
+        assertEquals("http://localhost:7990/bitbucket/rest/api/1.0/redirect-test-success", response.getHeader("Location"));
     }
 
     @Test

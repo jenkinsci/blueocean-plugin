@@ -20,6 +20,7 @@ public class KnownCapabilities {
     public static final String BLUE_BRANCH="io.jenkins.blueocean.rest.model.BlueBranch";
     public static final String PULL_REQUEST="io.jenkins.blueocean.rest.model.PullRequest";
     public static final String BLUE_ORGANIZATION_FOLDER = "io.jenkins.blueocean.rest.model.BlueOrganizationFolder";
+    public static final String NO_FAVORITE = "io.jenkins.blueocean.rest.model.NoFavorite"; // Can't be favorite in BO
 
     /** Jenkins core/plugin capabilities */
     public static final String JENKINS_WORKFLOW_JOB ="org.jenkinsci.plugins.workflow.job.WorkflowJob";

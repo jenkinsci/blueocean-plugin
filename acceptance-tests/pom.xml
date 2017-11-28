@@ -21,6 +21,14 @@
         <id>repo.jenkins-ci.org</id>
         <url>http://repo.jenkins-ci.org/public/</url>
       </repository>
+        <repository>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+            <id>jcenter</id>
+            <name>bintray</name>
+            <url>http://jcenter.bintray.com</url>
+        </repository>
     </repositories>
     <pluginRepositories>
       <pluginRepository>
@@ -45,6 +53,29 @@
             <artifactId>selenium-firefox-driver</artifactId>
             <version>2.53.0</version>
         </dependency>
+        <!-- begin HttpRequest helper -->
+        <dependency>
+            <groupId>io.jenkins.blueocean</groupId>
+            <artifactId>blueocean-rest-impl</artifactId>
+            <version>1.4.0-beta-1-SNAPSHOT</version>
+            <type>test-jar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>fluent-hc</artifactId>
+            <version>4.5.3</version>
+        </dependency>
+        <dependency>
+            <groupId>org.kohsuke.stapler</groupId>
+            <artifactId>stapler</artifactId>
+            <version>1.243</version>
+        </dependency>
+        <dependency>
+            <groupId>com.damnhandy</groupId>
+            <artifactId>handy-uri-templates</artifactId>
+            <version>2.1.6</version>
+        </dependency>
+        <!-- end HttpRequest -->
         <dependency>
             <groupId>com.mashape.unirest</groupId>
             <artifactId>unirest-java</artifactId>
@@ -59,11 +90,6 @@
             <groupId>com.offbytwo.jenkins</groupId>
             <artifactId>jenkins-client</artifactId>
             <version>0.3.7</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
-            <version>21.0</version>
         </dependency>
         <dependency>
             <groupId>org.kohsuke</groupId>
@@ -106,6 +132,25 @@
             <artifactId>wiremock</artifactId>
             <version>2.7.1</version>
         </dependency>
+        <!-- end wiremock -->
+        <!-- override guava from bitbucket-rest but ensure UrlEscapers is available -->
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>18.0</version>
+        </dependency>
+        <dependency>
+            <groupId>com.cdancy</groupId>
+            <artifactId>bitbucket-rest</artifactId>
+            <version>1.0.3</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <!-- end guava -->
     </dependencies>
 
     <build>

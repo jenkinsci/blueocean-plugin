@@ -15,10 +15,18 @@
 
   <name>Blue Ocean Parent</name>
 
+  <licenses>
+    <license>
+      <name>MIT License</name>
+      <url>https://opensource.org/licenses/MIT</url>
+      <distribution>repo</distribution>
+    </license>
+  </licenses>
+
   <properties>
-    <java.level>7</java.level>
+    <java.level>8</java.level>
     <jackson.version>2.8.9</jackson.version>
-    <jenkins.version>2.46.3</jenkins.version> <!-- Should be kept in sync with Dockerfile FROM statement-->
+    <jenkins.version>2.73.3</jenkins.version> <!-- Should be kept in sync with Dockerfile FROM statement-->
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.6</frontend-version>
     <node.version>6.4.0</node.version>
@@ -32,9 +40,9 @@
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
-    <jenkins-test-harness.version>2.27</jenkins-test-harness.version>
+    <jenkins-test-harness.version>2.30</jenkins-test-harness.version>
     <scm-api.version>2.2.2</scm-api.version>
-    <git.version>3.5.1</git.version>
+    <git.version>3.6.0</git.version>
   </properties>
 
   <scm>
@@ -110,6 +118,8 @@
   </developers>
 
   <modules>
+    <module>jenkins-design-language</module>
+    <module>blueocean-core-js</module>
     <module>blueocean-commons</module>
     <module>blueocean-i18n</module>
     <module>blueocean-web</module>
@@ -203,6 +213,18 @@
 
         <dependency>
             <groupId>${project.groupId}</groupId>
+            <artifactId>jenkins-design-language</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-core-js</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-web</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -276,7 +298,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-autofavorite</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.0</version>
         </dependency>
 
         <dependency>
@@ -316,7 +338,7 @@
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-model-definition</artifactId>
-            <version>1.2</version>
+            <version>1.2.2</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -331,19 +353,13 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-api</artifactId>
-            <version>2.20</version>
+            <version>2.22</version>
         </dependency>
-
-        <!--
-            workflow-job >= 2.12 requires a Jenkins core >= 2.60.
-            Do not upgrade this dependency without a discussion on jenkinsci-ux@googlegroups.com
-        -->
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-job</artifactId>
-            <version>2.11.1</version>
+            <version>2.14.1</version>
         </dependency>
-
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-graph-analysis</artifactId>
@@ -368,7 +384,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-step-api</artifactId>
-            <version>2.12</version>
+            <version>2.13</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -391,17 +407,11 @@
             <artifactId>workflow-basic-steps</artifactId>
             <version>2.6</version>
         </dependency>
-
-        <!--
-            workflow-scm-step >= 2.6 requires a Jenkins core >= 2.60.
-            Do not upgrade this dependency without a discussion on jenkinsci-ux@googlegroups.com
-        -->
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-scm-step</artifactId>
-            <version>2.5</version>
+            <version>2.6</version>
         </dependency>
-
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-stage-step</artifactId>
@@ -453,7 +463,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-bitbucket-branch-source</artifactId>
-            <version>2.2.3</version>
+            <version>2.2.5</version>
         </dependency>
         <dependency>
             <groupId>org.apache.maven</groupId>
@@ -465,7 +475,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-display-url</artifactId>
-            <version>2.1.0</version>
+            <version>2.1.1</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -476,6 +486,13 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>git</artifactId>
             <version>${git.version}</version>
+            <exclusions>
+                <!-- Upper dependency fix: annotation-indexer comes from core, exclude from git -->
+                <exclusion>
+                    <groupId>org.jenkins-ci</groupId>
+                    <artifactId>annotation-indexer</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -681,6 +698,13 @@
             <groupId>ua_parser</groupId>
             <artifactId>ua-parser</artifactId>
             <version>1.3.0</version>
+            <exclusions>
+              <!-- commons-collections comes from jenkins core -->
+              <exclusion>
+                <groupId>commons-collections</groupId>
+                <artifactId>commons-collections</artifactId>
+              </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -693,7 +717,13 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>junit</artifactId>
-            <version>1.21</version>
+            <version>1.23</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jenkins-ci.plugins</groupId>
+                    <artifactId>script-security</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- used in blueocean-rest-impl test -->
@@ -833,6 +863,11 @@
             <version>4.5.3</version>
         </dependency>
         <dependency>
+            <groupId>com.damnhandy</groupId>
+            <artifactId>handy-uri-templates</artifactId>
+            <version>2.1.6</version>
+        </dependency>
+        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
             <version>4.5.3</version>
@@ -937,42 +972,42 @@
           <skip>true</skip>
         </configuration>
       </plugin>
-        <!-- Disable InjectedTest -->
-        <plugin>
-            <groupId>org.jenkins-ci.tools</groupId>
-            <artifactId>maven-hpi-plugin</artifactId>
-            <configuration>
-                <disabledTestInjection>true</disabledTestInjection>
-                <dependencyResolution>${hpi.dependencyResolution}</dependencyResolution>
-            </configuration>
-        </plugin>
+      <!-- Disable InjectedTest -->
+      <plugin>
+          <groupId>org.jenkins-ci.tools</groupId>
+          <artifactId>maven-hpi-plugin</artifactId>
+          <configuration>
+              <disabledTestInjection>true</disabledTestInjection>
+              <dependencyResolution>${hpi.dependencyResolution}</dependencyResolution>
+          </configuration>
+      </plugin>
 
-        <!--
-        TODO: Remove/review this as part of solving https://issues.jenkins-ci.org/browse/JENKINS-38888
-        See comment below on argLine config.
-        -->
-        <plugin>
-            <artifactId>maven-surefire-plugin</artifactId>
-            <version>2.19.1</version>
-            <configuration>
-                <systemProperties>
-                    <property>
-                        <name>hudson.udp</name>
-                        <value>33849</value>
-                    </property>
-                </systemProperties>
-                <reuseForks>true</reuseForks>
-                <forkCount>${concurrency}</forkCount>
-                <!--
-                The following line is the one that's a must. Without it, with get jacoco complexity failures.
-                -->
-                <argLine>-Djava.awt.headless=true ${argLine}</argLine>
-                <rerunFailingTestsCount>0</rerunFailingTestsCount>
-                <systemPropertyVariables>
-                    <jacoco-agent.destfile>${project.build.directory}/code-coverage/jacoco.exec</jacoco-agent.destfile>
-                </systemPropertyVariables>
-            </configuration>
-        </plugin>
+      <!--
+      TODO: Remove/review this as part of solving https://issues.jenkins-ci.org/browse/JENKINS-38888
+      See comment below on argLine config.
+      -->
+      <plugin>
+          <artifactId>maven-surefire-plugin</artifactId>
+          <version>2.19.1</version>
+          <configuration>
+              <systemProperties>
+                  <property>
+                      <name>hudson.udp</name>
+                      <value>33849</value>
+                  </property>
+              </systemProperties>
+              <reuseForks>true</reuseForks>
+              <forkCount>${concurrency}</forkCount>
+              <!--
+              The following line is the one that's a must. Without it, with get jacoco complexity failures.
+              -->
+              <argLine>-Djava.awt.headless=true ${argLine}</argLine>
+              <rerunFailingTestsCount>0</rerunFailingTestsCount>
+              <systemPropertyVariables>
+                  <jacoco-agent.destfile>${project.build.directory}/code-coverage/jacoco.exec</jacoco-agent.destfile>
+              </systemPropertyVariables>
+          </configuration>
+      </plugin>
 
         <!-- run findbugs on all modules -->
         <plugin>
@@ -981,4 +1016,114 @@
         </plugin>
     </plugins>
   </build>
+
+    <profiles>
+        <profile>
+            <id>node-execution</id>
+            <activation>
+                <file>
+                    <exists>.mvn_exec_node</exists>
+                </file>
+            </activation>
+            <build>
+                <plugins>
+
+                    <plugin>
+                        <groupId>io.jenkins.blueocean</groupId>
+                        <artifactId>blueocean-maven-plugin</artifactId>
+                        <version>0.0.2</version>
+                        <executions>
+                            <execution>
+                                <!-- unpack package.json + JS into node_modules for any deps with JS files -->
+                                <!-- NOTE: must use 'initialize' and be declared before frontend-plugin so this occurs before npm install -->
+                                <id>upstream-dependencies</id>
+                                <phase>initialize</phase>
+                                <goals>
+                                    <goal>process-node-dependencies</goal>
+                                </goals>
+                            </execution>
+                            <execution>
+                                <id>package</id>
+                                <goals>
+                                    <goal>package-blueocean-resources</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>com.github.eirslett</groupId>
+                        <artifactId>frontend-maven-plugin</artifactId>
+                        <version>${frontend-version}</version>
+
+                        <executions>
+
+                            <execution>
+                                <phase>initialize</phase>
+                                <id>install node and npm</id>
+                                <goals>
+                                    <goal>install-node-and-npm</goal>
+                                </goals>
+                                <configuration>
+                                    <nodeVersion>v${node.version}</nodeVersion>
+                                    <npmVersion>${npm.version}</npmVersion>
+                                    <nodeDownloadRoot>https://repo.jenkins-ci.org/nodejs-dist/</nodeDownloadRoot>
+                                    <npmDownloadRoot>https://repo.jenkins-ci.org/npm-dist/</npmDownloadRoot>
+                                </configuration>
+                            </execution>
+
+                            <execution>
+                                <phase>initialize</phase>
+                                <id>gulp clean</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- The package.json must define an "mvnclean" script -->
+                                    <arguments>run mvnclean</arguments>
+                                </configuration>
+                            </execution>
+
+                            <execution>
+                                <phase>initialize</phase>
+                                <id>npm install</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- Note that this may not be omitted lest maven-release-plugin be confused (frontend-maven-plugin #109): -->
+                                    <arguments>install ${npm.loglevel}</arguments>
+                                </configuration>
+                            </execution>
+
+                            <execution>
+                                <phase>generate-sources</phase>
+                                <id>npm mvnbuild</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- The package.json must define an "mvnbuild" script -->
+                                    <arguments>run mvnbuild</arguments>
+                                </configuration>
+                            </execution>
+
+                            <execution>
+                                <phase>test</phase>
+                                <id>npm mvntest</id>
+                                <goals>
+                                    <goal>npm</goal>
+                                </goals>
+                                <configuration>
+                                    <!-- The package.json must define an "mvntest" script -->
+                                    <arguments>run mvntest</arguments>
+                                </configuration>
+                            </execution>
+
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+    </profiles>
 </project>

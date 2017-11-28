@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Predicate;
 import hudson.model.Action;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueInputStep;
@@ -22,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
+import org.kohsuke.stapler.export.Exported;
 
 /**
  * Implementation of {@link BluePipelineNode}.
@@ -36,14 +38,16 @@ public class PipelineNodeImpl extends BluePipelineNode {
     private final NodeRunStatus status;
     private final Link self;
     private final WorkflowRun run;
+    private final Reachable parent;
 
-    public PipelineNodeImpl(FlowNodeWrapper node, Link parentLink, WorkflowRun run) {
+    public PipelineNodeImpl(FlowNodeWrapper node, Reachable parent, WorkflowRun run) {
         this.node = node;
         this.run = run;
         this.edges = buildEdges(node.edges);
         this.status = node.getStatus();
         this.durationInMillis = node.getTiming().getTotalDurationMillis();
-        this.self = parentLink.rel(node.getId());
+        this.self = parent.getLink().rel(node.getId());
+        this.parent = parent;
     }
 
     @Override
@@ -108,6 +112,11 @@ public class PipelineNodeImpl extends BluePipelineNode {
     }
 
     @Override
+    public String getType(){
+        return node.getType().name();
+    }
+
+    @Override
     public String getCauseOfBlockage() {
         return node.getCauseOfFailure();
     }
@@ -144,22 +153,29 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     public static class EdgeImpl extends Edge{
         private final String id;
+        private final String type;
 
-        public EdgeImpl(String id) {
-            this.id = id;
+        public EdgeImpl(FlowNodeWrapper edge) {
+            this.id = edge.getId();
+            this.type = edge.getType().name();
         }
 
         @Override
         public String getId() {
             return id;
         }
+
+        @Exported
+        public String getType() {
+            return type;
+        }
     }
 
-    private List<Edge> buildEdges(List<String> nodes){
+    private List<Edge> buildEdges(List<FlowNodeWrapper> nodes){
         List<Edge> edges  = new ArrayList<>();
         if(!nodes.isEmpty()) {
-            for (String id:nodes) {
-                edges.add(new EdgeImpl(id));
+            for (FlowNodeWrapper edge:nodes) {
+                edges.add(new EdgeImpl(edge));
             }
         }
         return edges;

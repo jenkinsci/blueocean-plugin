@@ -1,4 +1,4 @@
-JENKINS_VERSION=2.46.3
+JENKINS_VERSION=2.73.3
 SELENIUM_VERSION=2.53
 
 MAVEN_SETTINGS=""
@@ -21,6 +21,9 @@ case $i in
     ;;
     -v=*|--version=*)
     JENKINS_VERSION="${i#*=}"
+    ;;
+    -w=*|--war=*)
+    export JENKINS_WAR="${i#*=}"
     ;;
     -s|--snaps|--snapshots)
     LOCAL_SNAPSHOTS=true
@@ -108,6 +111,7 @@ fi
 echo "------------------------------------------------"
 echo "Running with switches:"
 echo "    --version=${JENKINS_VERSION}"
+echo "    --war=${JENKINS_WAR}"
 echo "    --snapshots=${LOCAL_SNAPSHOTS}"
 echo "    --aggregator=${AGGREGATOR_DIR}"
 echo "    --dev=${DEV_JENKINS}"

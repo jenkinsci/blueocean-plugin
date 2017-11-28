@@ -1,6 +1,7 @@
 // @flow
 
 import React from 'react';
+import { PropTypes } from 'react';
 import OriginalLinkify from 'linkifyjs/react';
 
 // Makes sure we only linkify explicit URLs with expected protocols
@@ -36,5 +37,8 @@ export const Linkify = (props: Props) => {
     );
 };
 
-Linkify.propTypes = OriginalLinkify.propTypes;
+Linkify.propTypes = {
+    ...OriginalLinkify.propTypes,
+    options: PropTypes.object,
+};
 Linkify.defaultProps = OriginalLinkify.defaultProps;

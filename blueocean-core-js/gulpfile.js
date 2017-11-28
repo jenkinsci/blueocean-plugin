@@ -1,5 +1,7 @@
 "use strict";
 
+process.env.SKIP_BLUE_IMPORTS = 'YES';
+
 /*
  Build file for Jenkins Blue Ocean Commons JavaScript.
  */
@@ -12,15 +14,12 @@ const rename = require('gulp-rename');
 const copy = require('gulp-copy');
 const del = require('del');
 const runSequence = require('run-sequence');
-const lint = require('gulp-eslint');
-const jest = require('gulp-jest').default;
 const fs = require('fs');
-const minimist = require('minimist');
 
 // Options, src/dest folders, etc
 
 const config = {
-    clean: ["dist", "licenses", "target"],
+    clean: ["dist", "target"],
     react: {
         sources: ["src/**/*.{js,jsx}", "!**/__mocks__/**"],
         dest: "dist"
@@ -35,12 +34,6 @@ const config = {
             sources: "src/less/**/*.svg",
             dest: "dist/assets/css"
         },
-    },
-    test: {
-        sources: '.',
-        match: ['**/?(*-)(spec|test).js?(x)'],
-        reports: 'target/jest-reports/junit.xml',
-        coverage: 'target/jest-coverage',
     },
 };
 
@@ -66,68 +59,6 @@ gulp.task("clean-build", () =>
 
 gulp.task("clean", () =>
     del(config.clean));
-
-// Testing
-
-gulp.task("lint", () => (
-    gulp.src([...config.react.sources, config.test.sources])
-        .pipe(lint())
-        .pipe(lint.format())
-        .pipe(lint.failAfterError())
-));
-
-gulp.task("test", ['test-jest']);
-
-gulp.task("test-debug", ['test-jest-debug']);
-
-gulp.task("test-fast", ['test-jest-fast']);
-
-function runJest(options) {
-    const argv = minimist(process.argv.slice(2));
-    options.testPathPattern = argv.test || null;
-
-    return gulp.src(config.test.sources)
-        .pipe(jest(options))
-        .on('error', () => {
-            process.exit(1);
-        });
-}
-
-gulp.task('test-jest', () => {
-    if (!process.env.JEST_JUNIT_OUTPUT) {
-        process.env.JEST_JUNIT_OUTPUT = config.test.reports;
-    }
-
-    return runJest({
-        config: {
-            collectCoverage: true,
-            coverageDirectory: config.test.coverage,
-            testMatch: config.test.match,
-            testResultsProcessor: 'jest-junit',
-        },
-    });
-});
-
-gulp.task('test-jest-fast', () =>
-    runJest({
-        notify: true,
-        forceExit: true,
-        config: {
-            testMatch: config.test.match,
-        },
-    })
-);
-
-gulp.task('test-jest-debug', () =>
-    runJest({
-        runInBand: true,
-        forceExit: true,
-        config: {
-            testMatch: config.test.match,
-        },
-    })
-);
-
 
 // Build all
 
@@ -171,3 +102,25 @@ gulp.task("validate", () => {
         }
     }
 });
+
+
+var builder = require('@jenkins-cd/js-builder');
+
+builder.src([
+    'src/js',
+    'less']);
+
+//
+// Create the main bundle.
+//
+builder.bundle('src/js/index.js', 'blueocean-core-js.js')
+    .inDir('target/classes/io/jenkins/blueocean')
+    .less('src/less/blueocean-core-js.less')
+    .import('react@any', {
+        aliases: ['react/lib/React'] // in case a module requires react through the back door
+    })
+    .import('react-dom@any')
+    .import("react-router@any")
+    .export("@jenkins-cd/js-extensions")
+    .export("@jenkins-cd/logging")
+    .export('mobx')

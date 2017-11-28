@@ -18,7 +18,6 @@ import org.junit.runners.model.Statement;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.TakesScreenshot;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.remote.ScreenshotException;
 
@@ -63,15 +62,27 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
                 LoginPage loginPage = injector.getInstance(LoginPage.class);
 
                 Login methodLogin = method.getAnnotation(Login.class);
-                Login classLogin = test.getClass().getAnnotation(Login.class);
 
+                // determine whether test should login first or not
+                // first check test method, then walk up hierarchy at class level only
                 if(methodLogin != null ) {
                     if(!methodLogin.disable()) {
                         loginPage.login();
                     }
-                } else if(classLogin != null) {
-                    if(!classLogin.disable()){
-                        loginPage.login();
+                } else {
+                    Class<?> clazz = test.getClass();
+
+                    while (clazz != null) {
+                        Login classLogin = clazz.getAnnotation(Login.class);
+
+                        if (classLogin != null) {
+                            if (!classLogin.disable()) {
+                                loginPage.login();
+                            }
+                            break;
+                        }
+
+                        clazz = clazz.getSuperclass();
                     }
                 }
 
@@ -121,12 +132,9 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
     }
 
     private void outputConsoleLogs() {
-        logger.info("browser console output below:");
         WebDriver driver = injector.getInstance(WebDriver.class);
-        LogEntries logs = driver.manage().logs().get("browser");
-        for (LogEntry entry : logs) {
-            LogEntryLogger.recordLogEntry(entry);
-        }
+        List<LogEntry> allEntries = driver.manage().logs().get("browser").getAll();
+        LogEntryLogger.recordLogEntries(allEntries);
     }
 
 
@@ -174,6 +182,7 @@ public class ATHJUnitRunner extends BlockJUnit4ClassRunner {
             eachNotifier.addFailure(e);
         } finally {
             eachNotifier.fireTestFinished();
+            LocalDriver.destroy();
         }
     }
 

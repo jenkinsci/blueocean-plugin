@@ -40,6 +40,27 @@ export class ResultItem extends Component {
 
     componentWillMount() {
         this.handleProps(this.props, this.props);
+
+        this.infiniteRotationRunning = false;
+        this.setState({
+            infiniteRotateDegrees: 0
+        });
+    }
+
+    infiniteLoadingTimer = () => {
+        let infiniteRotateDegrees = this.state.infiniteRotateDegrees;
+        
+        infiniteRotateDegrees += 1.5;
+
+        if (infiniteRotateDegrees >= 360) {
+            infiniteRotateDegrees = 0;
+        }
+
+        this.setState({
+            infiniteRotateDegrees: infiniteRotateDegrees
+        });
+
+        this.requestAnimationFrameId = requestAnimationFrame(this.infiniteLoadingTimer);
     }
 
     componentWillReceiveProps(nextProps: Props) {
@@ -87,6 +108,10 @@ export class ResultItem extends Component {
         e.stopPropagation();
     };
 
+    componentWillUnmount() {
+        cancelAnimationFrame(this.requestAnimationFrameId);
+    }
+
     render() {
         const { label, extraInfo } = this.props;
         const { resultClean, statusGlyph } = this.state;
@@ -109,12 +134,21 @@ export class ResultItem extends Component {
             },
         };
 
+        if (resultClean === "running" && !this.infiniteRotationRunning) {
+            requestAnimationFrame(this.infiniteLoadingTimer);
+            this.infiniteRotationRunning = true;
+        }
+
         return (
             <div className={outerClassName}>
                 <div className="result-item-head" onClick={this.toggleExpanded}>
                     <span className={iconClassName}>
                         <svg width="28" height="34">
-                            <g transform="translate(14 18)" className="result-status-glyph">{statusGlyph}</g>
+                            <g transform="translate(14 18)" className="result-status-glyph">
+                                <g transform={`rotate(${this.state.infiniteRotateDegrees})`}>
+                                    {statusGlyph}
+                                </g>
+                            </g>
                         </svg>
                     </span>
                     <span className="result-item-title">

@@ -2,6 +2,7 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Predicate;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
@@ -215,12 +216,12 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             while(branches.hasNext()){
                 FlowNodeWrapper p = branches.next();
                 p.addParent(stage);
-                stage.addEdge(p.getId());
+                stage.addEdge(p);
             }
         }else{
             if(nextStage != null) {
                 nextStage.addParent(stage);
-                stage.addEdge(nextStage.getId());
+                stage.addEdge(nextStage);
             }
         }
         parallelBranches.clear();
@@ -286,7 +287,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             FlowNodeWrapper branch = new FlowNodeWrapper(branchStartNode, status, times, run);
 
             if(nextStage!=null) {
-                branch.addEdge(nextStage.getId());
+                branch.addEdge(nextStage);
             }
             parallelBranches.push(branch);
         }
@@ -384,10 +385,15 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     }
 
     @Override
-    public List<BluePipelineNode> getPipelineNodes(Link parent) {
+    public List<BluePipelineNode> getPipelineNodes(final Link parent) {
         List<BluePipelineNode> nodes = new ArrayList<>();
         for(FlowNodeWrapper n: this.nodes){
-            nodes.add(new PipelineNodeImpl(n,parent, run));
+            nodes.add(new PipelineNodeImpl(n,new Reachable() {
+                @Override
+                public Link getLink() {
+                    return parent;
+                }
+            }, run));
         }
         return nodes;
     }
@@ -452,7 +458,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     }
 
     @Override
-    public List<BluePipelineNode> union(List<FlowNodeWrapper> that, Link parent) {
+    public List<BluePipelineNode> union(List<FlowNodeWrapper> that, final Link parent) {
         List<FlowNodeWrapper> currentNodes = new ArrayList<>(nodes);
         int currentNodeSize = nodes.size();
         int futureNodeSize = that.size();
@@ -465,11 +471,11 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                     FlowNodeWrapper latestNode = currentNodes.get(i-1);
                     if(latestNode.type == FlowNodeWrapper.NodeType.STAGE){
                         if(futureNode.type == FlowNodeWrapper.NodeType.STAGE){
-                            latestNode.addEdge(futureNode.getId());
+                            latestNode.addEdge(futureNode);
                         }else if(futureNode.type == FlowNodeWrapper.NodeType.PARALLEL){
                             FlowNodeWrapper thatStage = futureNode.getFirstParent();
                             if(thatStage != null && thatStage.equals(latestNode)){
-                                for(String edge:thatStage.edges){
+                                for(FlowNodeWrapper edge:thatStage.edges){
                                     if(!latestNode.edges.contains(edge)){
                                         latestNode.addEdge(edge);
                                     }
@@ -477,33 +483,33 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                             }
                         }
                     }else if(latestNode.type == FlowNodeWrapper.NodeType.PARALLEL){
-                        String futureNodeId = null;
+                        FlowNodeWrapper futureStage = null;
                         FlowNodeWrapper thatStage = null;
                         FlowNodeWrapper futureNodeParent = futureNode.getFirstParent();
                         if(futureNode.type == FlowNodeWrapper.NodeType.STAGE){
                             thatStage = futureNode;
-                            futureNodeId = futureNode.getId();
+                            futureStage = futureNode;
                         }else if(futureNode.type == FlowNodeWrapper.NodeType.PARALLEL &&
                                 futureNodeParent != null &&
                                 futureNodeParent.equals(latestNode.getFirstParent())){
                             thatStage = futureNode.getFirstParent();
                             if(futureNode.edges.size() > 0){
-                                futureNodeId = futureNode.edges.get(0);
+                                futureStage = futureNode.edges.get(0);
                             }
                         }
                         FlowNodeWrapper stage = latestNode.getFirstParent();
                         if(stage != null){
                             //Add future node as edge to all edges of last stage
-                            for(String id:stage.edges){
-                                FlowNodeWrapper node = nodeMap.get(id);
-                                if(node != null && futureNodeId != null) {
-                                    node.addEdge(futureNodeId);
+                            for(FlowNodeWrapper edge:stage.edges){
+                                FlowNodeWrapper node = nodeMap.get(edge.getId());
+                                if(node != null && futureStage != null) {
+                                    node.addEdge(futureStage);
                                 }
                             }
 
                             //now patch edges in case its partial
                             if(thatStage != null && futureNode.type == FlowNodeWrapper.NodeType.PARALLEL) {
-                                for (String edge : thatStage.edges) {
+                                for (FlowNodeWrapper edge : thatStage.edges) {
                                     if (!stage.edges.contains(edge)) {
                                         stage.addEdge(edge);
                                     }
@@ -522,7 +528,12 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
         List<BluePipelineNode> newNodes = new ArrayList<>();
         for(FlowNodeWrapper n: currentNodes){
-            newNodes.add(new PipelineNodeImpl(n,parent,run));
+            newNodes.add(new PipelineNodeImpl(n,new Reachable() {
+                @Override
+                public Link getLink() {
+                    return parent;
+                }
+            },run));
         }
         return newNodes;
     }
@@ -607,7 +618,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         while(sortedBranches.hasNext()){
             FlowNodeWrapper p = sortedBranches.next();
             p.addParent(synStage);
-            synStage.addEdge(p.getId());
+            synStage.addEdge(p);
         }
         return synStage;
     }

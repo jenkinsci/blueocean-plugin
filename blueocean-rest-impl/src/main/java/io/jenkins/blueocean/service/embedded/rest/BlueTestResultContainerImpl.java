@@ -7,8 +7,10 @@ import com.google.common.collect.Iterables;
 import hudson.model.Run;
 import io.jenkins.blueocean.commons.ServiceException.BadRequestException;
 import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
+import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory.Result;
+import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
 import io.jenkins.blueocean.rest.model.BlueTestResult.State;
@@ -25,17 +27,22 @@ import java.util.Iterator;
 import static org.apache.commons.lang.StringUtils.isEmpty;
 
 public class BlueTestResultContainerImpl extends BlueTestResultContainer {
-    private final Run<?, ?> run;
+    protected final Run<?, ?> run;
 
-    public BlueTestResultContainerImpl(BlueRun parent, Run<?, ?> run) {
+    public BlueTestResultContainerImpl(Reachable parent, Run<?, ?> run) {
         super(parent);
         this.run = run;
+    }
+
+    protected Result resolve() {
+        return BlueTestResultFactory.resolve(run, parent);
     }
 
     @Override
     @SuppressWarnings("unchecked")
     public BlueTestResult get(final String name) {
-        Result resolved = BlueTestResultFactory.resolve(run, parent);
+        Result resolved = resolve();
+
         if (resolved.summary == null || resolved.results == null) {
             throw new NotFoundException("no tests");
         }
@@ -54,7 +61,7 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
     @Nonnull
     @Override
     public Iterator<BlueTestResult> iterator() {
-        Result resolved = BlueTestResultFactory.resolve(run, parent);
+        Result resolved = resolve();
         if (resolved.summary == null || resolved.results == null) {
             throw new NotFoundException("no tests");
         }

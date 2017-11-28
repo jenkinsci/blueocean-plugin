@@ -11,9 +11,43 @@ import javax.annotation.Nonnull;
  */
 public class BlueOceanUrlObjectImpl extends BlueOceanUrlObject {
 
-    private final String mappedUrl;
+    private volatile String mappedUrl;
+    private final ModelObject modelObject;
 
     public BlueOceanUrlObjectImpl(ModelObject modelObject) {
+        this.modelObject = modelObject;
+    }
+
+    @Override
+    public @Nonnull String getDisplayName() {
+        return Messages.BlueOceanUrlAction_DisplayName();
+    }
+
+    @Override
+    public @Nonnull String getUrl() {
+        setUrlIfNeeded();
+        return mappedUrl;
+    }
+
+    @Override
+    public @Nonnull String getIconUrl() {
+        return "/plugin/blueocean-rest-impl/images/48x48/blueocean.png";
+    }
+
+    private void setUrlIfNeeded(){
+        String url = mappedUrl;
+        if(url == null){
+            synchronized (this){
+                url = mappedUrl;
+                if(url == null){
+                    url = computeUrl();
+                    this.mappedUrl = url;
+                }
+            }
+        }
+    }
+
+    private String computeUrl(){
         String url = null;
         for(BlueOceanUrlMapper mapper: BlueOceanUrlMapper.all()){
             url = mapper.getUrl(modelObject);
@@ -24,21 +58,6 @@ public class BlueOceanUrlObjectImpl extends BlueOceanUrlObject {
         if(url == null){
             url = BlueOceanUrlMapperImpl.getLandingPagePath();
         }
-        this.mappedUrl = url;
-    }
-
-    @Override
-    public @Nonnull String getDisplayName() {
-        return Messages.BlueOceanUrlAction_DisplayName();
-    }
-
-    @Override
-    public @Nonnull String getUrl() {
-        return mappedUrl;
-    }
-
-    @Override
-    public @Nonnull String getIconUrl() {
-        return "/plugin/blueocean-rest-impl/images/48x48/blueocean.png";
+        return url;
     }
 }

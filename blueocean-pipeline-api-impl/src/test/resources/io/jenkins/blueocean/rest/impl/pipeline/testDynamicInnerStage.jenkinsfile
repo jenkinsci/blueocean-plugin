@@ -1,0 +1,24 @@
+node {
+    stage('test') {
+        println('pre parallel step')
+    }
+    stage('parallel stage') {
+        def array = ["a_1"]
+        def builds = [:]
+        array.each {
+            test = it
+            builds[it] = {
+                node {
+                    stage(it) {
+                        println(it)
+                        sh 'date'
+                    }
+                }
+            }
+        }
+        parallel builds
+    }
+    stage('test2') {
+        println('post parallel step')
+    }
+}

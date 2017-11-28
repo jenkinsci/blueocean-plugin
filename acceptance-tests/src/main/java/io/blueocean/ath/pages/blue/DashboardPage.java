@@ -1,51 +1,32 @@
 package io.blueocean.ath.pages.blue;
 
-import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
-import io.blueocean.ath.WebElementUtils;
+import io.blueocean.ath.WebDriverMixin;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.support.FindBy;
-import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 @Singleton
-public class DashboardPage {
+public class DashboardPage implements WebDriverMixin {
     private Logger logger = Logger.getLogger(DashboardPage.class);
-
-    @Inject
-    @BaseUrl
-    String base;
-
-    @Inject
-    public DashboardPage(WebDriver driver) {
-        PageFactory.initElements(driver, this);
-    }
-
-    @FindBy(css = ".btn-new-pipeline")
-    public WebElement newPipelineButton;
 
     @Inject
     public WaitUtil wait;
 
-    @Inject
-    public WebDriver driver;
-
     public void open() {
-        driver.get(base + "/blue/");
+        go("/blue/");
         logger.info("Navigated to dashboard page");
     }
 
-    public By getSelectorForJob(String job) {
+    public static By getSelectorForJob(String job) {
         return By.xpath("//*[@data-pipeline=\"" + job + "\"]");
     }
 
-    public By getSelectorForAllJobRows() {
+    public static By getSelectorForAllJobRows() {
         return By.xpath("//*[contains(@class, 'pipelines-table')]//*[@data-pipeline]");
     }
 
@@ -77,7 +58,7 @@ public class DashboardPage {
     }
 
     public int getJobCount() {
-        return driver.findElements(getSelectorForAllJobRows()).size();
+        return getDriver().findElements(getSelectorForAllJobRows()).size();
     }
 
     public void testJobCountEqualTo(int numberOfJobs) {
@@ -105,9 +86,7 @@ public class DashboardPage {
     }
 
     public void clearSearchText() {
-        WebElementUtils.clearText(
-            wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".search-pipelines-input input")))
-        );
+        find(".search-pipelines-input input").clear();
         logger.info("cleared search text");
     }
 
@@ -117,7 +96,7 @@ public class DashboardPage {
 
     public void clickNewPipelineBtn() {
         open();
-        wait.until(newPipelineButton).click();
+        find(".btn-new-pipeline").click();
         wait.until(ExpectedConditions.urlContains("create-pipeline"));
         logger.info("Clicked new pipeline");
     }

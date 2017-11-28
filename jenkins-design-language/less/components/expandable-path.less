@@ -1,3 +1,5 @@
+
+
 .expandable-path {
     display: inline-flex;
     vertical-align: middle;
@@ -38,6 +40,14 @@
             }
 
             svg {
+                fill: rgba(0, 0, 0, 0.5);
+
+                .favorites-card-stack & {
+                    fill: #ffffff;
+                }
+            }
+
+            .BasicHeader & svg {
                 fill: rgba(255, 255, 255, 0.5);
             }
         }

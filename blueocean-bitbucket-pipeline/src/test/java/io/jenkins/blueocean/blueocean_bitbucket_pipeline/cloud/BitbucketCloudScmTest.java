@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static io.jenkins.blueocean.blueocean_bitbucket_pipeline.BitbucketApi.X_BB_API_TEST_MODE_HEADER;
 import static org.junit.Assert.*;
 
 /**
@@ -35,7 +34,6 @@ public class BitbucketCloudScmTest extends BbCloudWireMock {
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
                 .get("/organizations/jenkins/scm/"+BitbucketCloudScm.ID+"/organizations/"+getApiUrlParam()+"&credentialId="+credentialId)
-                .header(X_BB_API_TEST_MODE_HEADER, "cloud")
                 .build(List.class);
         assertEquals(2, orgs.size());
         assertEquals("vivekp7", ((Map)orgs.get(0)).get("key"));
@@ -51,7 +49,6 @@ public class BitbucketCloudScmTest extends BbCloudWireMock {
             .status(200)
             .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
             .get("/organizations/jenkins/scm/"+BitbucketCloudScm.ID+"/organizations/"+getApiUrlParam())
-            .header(X_BB_API_TEST_MODE_HEADER, "cloud")
             .build(List.class);
         assertEquals(2, orgs.size());
         assertEquals("vivekp7", ((Map)orgs.get(0)).get("key"));
@@ -75,7 +72,6 @@ public class BitbucketCloudScmTest extends BbCloudWireMock {
         Map repoResp = new RequestBuilder(baseUrl)
                 .status(200)
                 .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-                .header(X_BB_API_TEST_MODE_HEADER, "cloud")
                 .get("/organizations/jenkins/scm/"+BitbucketCloudScm.ID+"/organizations/vivektestteam/repositories/"+getApiUrlParam()+"&credentialId="+credentialId)
                 .build(Map.class);
         List repos = (List) ((Map)repoResp.get("repositories")).get("items");
@@ -97,7 +93,6 @@ public class BitbucketCloudScmTest extends BbCloudWireMock {
         Map repoResp = new RequestBuilder(baseUrl)
             .status(200)
             .jwtToken(getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId()))
-            .header(X_BB_API_TEST_MODE_HEADER, "cloud")
             .get("/organizations/jenkins/scm/"+BitbucketCloudScm.ID+"/organizations/vivektestteam/repositories/"+getApiUrlParam())
             .build(Map.class);
         List repos = (List) ((Map)repoResp.get("repositories")).get("items");

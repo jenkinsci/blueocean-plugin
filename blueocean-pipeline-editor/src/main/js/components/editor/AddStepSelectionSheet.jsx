@@ -87,7 +87,7 @@ export class AddStepSelectionSheet extends Component<DefaultProps, Props, State>
         const searchTerm = value.toLowerCase();
         this.setState({searchFilter: s => s.displayName.toLowerCase().indexOf(searchTerm) !== -1});
     }, 300);
-    
+
     selectItemByKeyPress(e, step) {
         if (e.key == 'Enter') {
             this.props.onStepSelected(step);
@@ -97,7 +97,7 @@ export class AddStepSelectionSheet extends Component<DefaultProps, Props, State>
 
     render() {
         const { stepMetadata, selectedStep } = this.state;
-        
+
         return (
             <div className="editor-step-selection-dialog">
                 <div className="editor-step-search">
@@ -107,7 +107,7 @@ export class AddStepSelectionSheet extends Component<DefaultProps, Props, State>
                 </div>
                 <div className="editor-step-selector">
                 {stepMetadata && stepMetadata.filter(isStepValidForSelectionUI).filter(this.state.searchFilter).sort(stepSorter).map(step =>
-                    <div tabIndex="0" onKeyPress={e => this.selectItemByKeyPress(e, step)}
+                    <div tabIndex="0" data-functionName={step.functionName} onKeyPress={e => this.selectItemByKeyPress(e, step)}
                         onClick={() => this.addStep(step)}>
                         {step.displayName}
                     </div>

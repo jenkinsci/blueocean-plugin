@@ -39,6 +39,11 @@ function checkProject(pathToProject) {
     const resolvedPath = buildPath(`${__dirname}/${pathToProject}`);
     console.log(`validating dependencies in ${resolvedPath}`);
     const packageJsonPath = buildPath(`${resolvedPath}/package.json`);
+    try {
+        fs.realpathSync(`${resolvedPath}/npm-shrinkwrap.json`);
+    } catch (error) {
+        return; // no shrinkwrap file, is ok for now
+    }
     const shrinkwrapJsonPath = buildPath(`${resolvedPath}/npm-shrinkwrap.json`);
 
     const packages = require(packageJsonPath);
@@ -97,6 +102,9 @@ function checkDuplicateDependencies(depList1, depList2) {
 function validateShrinkwrapResolve(shrinkwrap) {
 
   Object.keys(shrinkwrap.dependencies).forEach(name => {
+    if (!shrinkwrap.dependencies[name].from) {
+        return;
+    }
     if (shrinkwrap.dependencies[name].from.startsWith("..") || shrinkwrap.dependencies[name].resolved.startsWith("file:")) {
         console.error(`Bad shrinkwrap resolution: 'from' or 'resolved' refer to a project relative path not absolute URI from:${shrinkwrap.dependencies[name].from} resolved:${shrinkwrap.dependencies[name].resolved} in ${name}`);
         process.exit(1);
