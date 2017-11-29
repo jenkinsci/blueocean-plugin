@@ -19,7 +19,7 @@ import java.util.Map;
 @Restricted(NoExternalUse.class)
 public final class JobAnalytics extends AsyncPeriodicWork {
 
-    static final String JOB_STATS_EVENT_NAME = "job_stats";
+    private static final String JOB_STATS_EVENT_NAME = "job_stats";
 
     public JobAnalytics() {
         super("jobAnalytics");
@@ -37,21 +37,37 @@ public final class JobAnalytics extends AsyncPeriodicWork {
         }
         Jenkins jenkins = Jenkins.getInstance();
         ExtensionList<JobAnalyticsCheck> checks = ExtensionList.lookup(JobAnalyticsCheck.class);
-        Map<String, Integer> tally = new HashMap<>();
 
-        jenkins.allItems().forEach(item -> checks.forEach(check -> {
-            Boolean applies = check.apply(item);
-            int incrementBy = applies ? 1 : 0;
-            Integer count = tally.get(check.getName());
-            if (count == null) {
-                count = 0;
+        // Initialize the tally
+        Map<String, Integer> tally = new HashMap<>();
+        checks.forEach(check -> tally.put(check.getName(), 0));
+        tally.put("other", 0);
+
+        jenkins.allItems().forEach(item -> {
+            boolean matchFound = false;
+            for (JobAnalyticsCheck check : checks) {
+                if (check.apply(item)) {
+                    addToTally(tally, check.getName());
+                    matchFound = true;
+                    break;
+                }
             }
-            tally.put(check.getName(), count + incrementBy);
-        }));
+            if (!matchFound) {
+                addToTally(tally, "other");
+            }
+        });
         analytics.track(new TrackRequest(
             JOB_STATS_EVENT_NAME,
             ImmutableMap.copyOf(tally)
         ));
+    }
+
+    private void addToTally(Map<String, Integer> tally, String name) {
+        Integer count = tally.get(name);
+        if (count == null) {
+            count = 0;
+        }
+        tally.put(name, count + 1);
     }
 
     @Override
