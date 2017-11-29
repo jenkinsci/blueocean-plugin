@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded.analytics;
 import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.ExtensionList;
+import hudson.model.AbstractProject;
 import hudson.model.AsyncPeriodicWork;
 import hudson.model.TaskListener;
 import io.jenkins.blueocean.analytics.Analytics;
@@ -44,16 +45,21 @@ public final class JobAnalytics extends AsyncPeriodicWork {
         tally.put("other", 0);
 
         jenkins.allItems().forEach(item -> {
-            boolean matchFound = false;
-            for (JobAnalyticsCheck check : checks) {
-                if (check.apply(item)) {
-                    addToTally(tally, check.getName());
-                    matchFound = true;
-                    break;
+            if (item instanceof AbstractProject // must be a project
+                && !item.getClass().getName().equals("hudson.matrix.MatrixConfiguration")  // Individual matrix configurations
+                && !item.getClass().getName().equals("hudson.maven.MavenModule")) // Ignore maven modules)
+            {
+                boolean matchFound = false;
+                for (JobAnalyticsCheck check : checks) {
+                    if (check.apply(item)) {
+                        addToTally(tally, check.getName());
+                        matchFound = true;
+                        break;
+                    }
                 }
-            }
-            if (!matchFound) {
-                addToTally(tally, "other");
+                if (!matchFound) {
+                    addToTally(tally, "other");
+                }
             }
         });
         analytics.track(new TrackRequest(
