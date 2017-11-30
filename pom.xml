@@ -348,7 +348,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-cps</artifactId>
-            <version>2.42-20171107.182521-1</version> <!-- TODO: Switch to release once https://github.com/jenkinsci/workflow-cps-plugin/pull/187 is merged and released -->
+            <version>2.42</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
