@@ -1,6 +1,10 @@
 // @flow
 
 import React, { Component } from 'react';
+import debounce from 'lodash.debounce';
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+
 import { EditorPipelineGraph } from './EditorPipelineGraph';
 import { EditorStepList } from './EditorStepList';
 import { EditorStepDetails } from './EditorStepDetails';
@@ -16,7 +20,7 @@ import { MoreMenu } from '../MoreMenu';
 import pipelineValidator from '../../services/PipelineValidator';
 import { ValidationMessageList } from './ValidationMessageList';
 import focusOnElement from './focusOnElement';
-import debounce from 'lodash.debounce';
+
 
 type Props = {
 };
@@ -66,6 +70,7 @@ function _getStageErrors(stage, ...excludeProps) {
     return pipelineValidator.getAllValidationErrors(stage, excludedNodes);
 }
 
+@DragDropContext(HTML5Backend)
 export class EditorMain extends Component<DefaultProps, Props, State> {
 
     static defaultProps = {};
@@ -203,6 +208,16 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         pipelineValidator.validate();
     }
 
+    hoverOverStep(stepId, pos) {
+
+    }
+
+    dropOnStep(stepId, pos) {
+        const { selectedStage } = this.state;
+        console.log('dropOnStep', stepId, pos);
+        pipelineStore.moveStep(selectedStage, stepId, pos.id, pos.below);
+    }
+
     render() {
         const { selectedStage, selectedSteps, stepMetadata } = this.state;
 
@@ -258,10 +273,14 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                     <Accordion show={sectionErrors.show} key={'stageSections' + selectedStage.id}>
                         {!hasChildStages &&
                         <div title="Steps" key="steps">
-                            <EditorStepList steps={steps}
-                                            onAddStepClick={() => this.openSelectStepDialog()}
-                                            onAddChildStepClick={parent => this.openSelectStepDialog(parent)}
-                                            onStepSelected={(step) => this.selectedStepChanged(step)}/>
+                            <EditorStepList
+                                steps={steps}
+                                onAddStepClick={() => this.openSelectStepDialog()}
+                                onAddChildStepClick={parent => this.openSelectStepDialog(parent)}
+                                onStepSelected={(step) => this.selectedStepChanged(step)}
+                                hoverOverStep={(step, pos) => this.hoverOverStep(step, pos)}
+                                dropOnStep={(step, pos) => this.dropOnStep(step, pos)}
+                            />
                         </div>
                         }
                         <div title="Settings" className="editor-stage-settings" key="settings">

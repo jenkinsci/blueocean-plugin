@@ -332,14 +332,6 @@
         color: @error-highlight;
     }
 
-    .editor-step-grab {
-        background: @grab-color;
-        display: flex;
-        align-items: center;
-        cursor: -webkit-grab;
-        cursor: grab;
-    }
-
     .editor-step-main {
         width: 100%;
         border: 1px solid @hr-color;
@@ -407,10 +399,6 @@
     // updated editor steps in the config panel
     .editor-steps > .editor-step:first-child > .editor-step-main {
         border-top: solid 1px @hr-color;
-    }
-
-    .editor-step-grab {
-        display: none;
     }
 
 
@@ -481,6 +469,22 @@
 
         svg {
             fill: #fff;
+        }
+    }
+
+    .editor-step-drag {
+        position: absolute;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        cursor: -webkit-grab;
+
+        display: flex;
+        align-items: center;
+
+        svg {
+            fill: @grab-color;
+            margin-right: 6px;
         }
     }
 

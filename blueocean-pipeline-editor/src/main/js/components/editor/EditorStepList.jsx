@@ -2,6 +2,7 @@
 
 import React, { Component, PropTypes } from 'react';
 import pipelineMetadataService, { getArg } from '../../services/PipelineMetadataService';
+import { EditorStepItem } from './EditorStepItem';
 import type { StepInfo } from '../../services/PipelineStore';
 import { Icon } from '@jenkins-cd/design-language';
 import pipelineValidator from '../../services/PipelineValidator';
@@ -30,7 +31,7 @@ function ChildStepIcon() {
 export class EditorStepList extends Component<DefaultProps, Props, State> {
 
     static defaultProps = {
-        steps: []
+        steps: [],
     };
 
     //static propTypes = {...}
@@ -89,33 +90,24 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
     }
 
     renderStep(step:StepInfo, parent: StepInfo) {
-        const thisMeta = this.state.stepMetadata.find(step);
+        const thisMeta = this.state.stepMetadata.find(step) || {};
         const classNames = ["editor-step"];
         const errors = pipelineValidator.getNodeValidationErrors(step);
+        const key = 's_' + step.id;
         if (parent) classNames.push('nested');
         if (errors) classNames.push('errors');
 
         return (
-            <div className={classNames.join(' ')} key={'s_' + step.id}>
+            <div className={classNames.join(' ')} key={key}>
                 <div className="editor-step-main" onClick={(e) => this.stepClicked(step, e)}>
-                    <div className="editor-step-content">
-                        {parent && <ChildStepIcon/>}
-                        <div className="editor-step-title">
-                            <span className="editor-step-label">{step.label}</span>
-                            {!errors && <span className="editor-step-summary">
-                                {thisMeta && thisMeta.parameters.filter(p => p.isRequired).map(p =>
-                                    <span>{getArg(step, p.name).value} </span>
-                                )}
-                                </span>
-                            }
-                            {errors && <span className="editor-step-errors">
-                                {errors.map(err =>
-                                    <div>{err.error ? err.error : err}</div>
-                                )}
-                                </span>
-                            }
-                        </div>
-                    </div>
+                    <EditorStepItem
+                        step={step}
+                        parent={parent}
+                        parameters={thisMeta.parameters}
+                        errors={errors}
+                        hoverOverStep={(stepId, pos) => this.hoverOverStep(stepId, pos)}
+                        dropOnStep={(stepId, pos) => this.dropOnStep(stepId, pos)}
+                    />
 
                     {step.isContainer && this.renderSteps(step.children, step)}
                 </div>
@@ -147,6 +139,22 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
         const {onAddChildStepClick} = this.props;
         if (onAddChildStepClick) {
             onAddChildStepClick(parent);
+        }
+    }
+
+    hoverOverStep(stepId, position) {
+        console.log('hover! ', stepId, position);
+
+        if (this.props.hoverOverStep) {
+            this.props.hoverOverStep(stepId, position);
+        }
+    }
+
+    dropOnStep(stepId, position) {
+        console.log('dropped!', stepId, position);
+
+        if (this.props.dropOnStep) {
+            this.props.dropOnStep(stepId, position);
         }
     }
 

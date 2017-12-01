@@ -1,0 +1,151 @@
+{
+  "pipeline": {
+    "stages": [
+      {
+        "name": "One",
+        "branches": [
+          {
+            "name": "default",
+            "steps": [
+              {
+                "name": "sh",
+                "arguments": [
+                  {
+                    "key": "script",
+                    "value": {
+                      "isLiteral": true,
+                      "value": "echo `date`; ping -c 20 localhost"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sh",
+                "arguments": [
+                  {
+                    "key": "script",
+                    "value": {
+                      "isLiteral": true,
+                      "value": "echo `date`; ping -c 20 localhost"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "retry",
+                "arguments": [
+                  {
+                    "key": "count",
+                    "value": {
+                      "isLiteral": true,
+                      "value": 5
+                    }
+                  }
+                ],
+                "children": [
+                  {
+                    "name": "echo",
+                    "arguments": [
+                      {
+                        "key": "message",
+                        "value": {
+                          "isLiteral": true,
+                          "value": "retry-a-1"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "echo",
+                    "arguments": [
+                      {
+                        "key": "message",
+                        "value": {
+                          "isLiteral": true,
+                          "value": "retry-a-2"
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "name": "echo",
+                    "arguments": [
+                      {
+                        "key": "message",
+                        "value": {
+                          "isLiteral": true,
+                          "value": "retry-a-3"
+                        }
+                      }
+                    ]
+                  }
+                ]
+              },
+              {
+                "name": "sh",
+                "arguments": [
+                  {
+                    "key": "script",
+                    "value": {
+                      "isLiteral": true,
+                      "value": "echo `date`; ping -c 20 localhost"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "Two",
+        "branches": [
+          {
+            "name": "default",
+            "steps": [
+              {
+                "name": "sh",
+                "arguments": [
+                  {
+                    "key": "script",
+                    "value": {
+                      "isLiteral": true,
+                      "value": "echo `date`; ping -c 20 localhost"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sh",
+                "arguments": [
+                  {
+                    "key": "script",
+                    "value": {
+                      "isLiteral": true,
+                      "value": "echo `date`; ping -c 20 localhost"
+                    }
+                  }
+                ]
+              },
+              {
+                "name": "sh",
+                "arguments": [
+                  {
+                    "key": "script",
+                    "value": {
+                      "isLiteral": true,
+                      "value": "echo `date`; ping -c 20 localhost"
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "agent": {
+      "type": "any"
+    }
+  }
+}

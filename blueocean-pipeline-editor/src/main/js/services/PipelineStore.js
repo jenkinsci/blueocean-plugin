@@ -335,6 +335,45 @@ class PipelineStore {
         this.notify();
     }
 
+    moveStep(stage, sourceNodeId, targetNodeId, positionBelow) {
+        if (sourceNodeId === targetNodeId) {
+            return;
+        }
+
+        const sourceStep = findStepById(stage.steps, sourceNodeId);
+        const targetStep = findStepById(stage.steps, targetNodeId);
+
+        // remove the step from wherever it was before
+
+        const sourceParentStep = this.findParentStep(sourceStep);
+        const sourceArray = sourceParentStep ? sourceParentStep.children : stage.steps;
+        sourceArray.splice(sourceArray.indexOf(sourceStep), 1);
+
+        // insert the step in the right spot based on where they dragged
+
+        // TODO: make logic better: right now we can't drag a step after a block step if it's last step
+        if (targetStep.isContainer) {
+            // the user dragged to a block step, add it as a child (to beginning)
+            if (!targetStep.children) {
+                targetStep.children = [];
+            }
+            targetStep.children.unshift(sourceStep);
+        } else {
+            const targetParentStep = this.findParentStep(targetStep);
+            // if the target step has no parent step, it's at the stage level
+            const targetArray = !targetParentStep ? stage.steps : targetParentStep.children;
+            let targetIndex = targetArray.indexOf(targetStep);
+
+            if (positionBelow) {
+                targetIndex = Math.min(targetIndex + 1, targetArray.length - 1);
+            }
+
+            targetArray.splice(targetIndex, 0, sourceStep);
+        }
+
+        this.notify();
+    }
+
     setPipeline(pipeline: PipelineInfo) {
         this.pipeline = pipeline;
         this.notify();
