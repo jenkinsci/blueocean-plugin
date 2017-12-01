@@ -3,13 +3,13 @@ import pipelineMetadataService  from '../../../main/js/services/PipelineMetadata
 import { assert } from 'chai';
 
 describe('Pipeline Syntax Converter', () => {
-    before(() => {
+    beforeAll(() => {
         pipelineMetadataService.cache.pipelineStepMetadata = JSON.parse(
             require("fs").readFileSync(
                 require("path").normalize(__dirname + "/../StepMetadata.json", "utf8")));
     });
 
-    after(() => {
+    afterAll(() => {
         delete pipelineMetadataService.stepData;
     });
 
