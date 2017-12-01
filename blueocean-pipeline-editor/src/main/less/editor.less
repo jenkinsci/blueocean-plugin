@@ -351,6 +351,10 @@
         &:hover, &:active, &:focus {
             background: @light-blue-bg;
         }
+
+        &:hover .editor-step-drag {
+            display: flex;
+        }
     }
 
     .editor-step .editor-step .editor-step-main { // nested steps
@@ -479,7 +483,7 @@
         bottom: 0;
         cursor: -webkit-grab;
 
-        display: flex;
+        display: none;
         align-items: center;
 
         svg {
