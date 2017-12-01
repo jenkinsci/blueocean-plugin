@@ -3,10 +3,13 @@ import { findDOMNode } from 'react-dom';
 import { PropTypes } from 'react';
 import { DragSource, DropTarget } from 'react-dnd';
 import { Icon } from '@jenkins-cd/design-language';
+
+import { ChildStepIcon } from "./ChildStepIcon";
 import { getArg } from '../../services/PipelineMetadataService';
 
 const ItemType = 'EditorStepItem';
 
+/*
 class ItemDragPosition {
     id = null;
     below = false;
@@ -27,6 +30,7 @@ function calculateRelativeDragPosition(component, clientOffset) {
     const hoverClientY = clientOffset.y - hoverBoundingRect.top;
     return hoverClientY >= hoverMiddleY;
 }
+*/
 
 function dragSourceCollector(connect, monitor) {
     return {
@@ -38,30 +42,41 @@ function dragSourceCollector(connect, monitor) {
 }
 
 function dropTargetCollector(connect, monitor) {
-    const item = monitor.getItem() || {};
+    // const item = monitor.getItem() || {};
 
     return {
         connectDropTarget: connect.dropTarget(),
         isHovering: monitor.isOver(),
-        hoverBelow: item && item.lastPosition && item.lastPosition.below,
-        lastPosition: item && item.lastPosition,
+        //lastPosition: item && item.lastPosition,
     };
 }
 
-const cardSource = {
+const dragSource = {
     beginDrag(props) {
         const id = props.step && props.step.id || -1;
-
-        return {
+        const dragSource = {
             id,
-            lastPosition: null,
+            sourceId: id,
+            targetId: null,
+            targetType: null,
+            //lastPosition: null,
         };
+
+        // workaround a bug in Chrome where 'dragend' would fire immediately after this 'dragstart' handler was called
+        // occurs when container step 'drop targets' appear which push other steps down and change the drag handle position
+        // see: https://stackoverflow.com/questions/14203734/dragend-dragenter-and-dragleave-firing-off-immediately-when-i-drag
+        setTimeout(() => props.onDragStepBegin(dragSource), 5);
+        return dragSource;
     },
+    endDrag(props) {
+        props.onDragStepEnd();
+    }
 };
 
-const cardTarget = {
+const dragTarget = {
     hover(props, monitor, component) {
-        const { id, lastPosition } = monitor.getItem();
+        /*
+        const { lastPosition } = monitor.getItem();
 
         const below = calculateRelativeDragPosition(component, monitor.getClientOffset());
         const currentPosition = new ItemDragPosition(props.step.id, below);
@@ -69,28 +84,23 @@ const cardTarget = {
         if (currentPosition.equals(lastPosition)) {
             return;
         }
+        */
 
-        props.hoverOverStep(id, currentPosition);
-        monitor.getItem().lastPosition = currentPosition;
+        const item = monitor.getItem();
+        item.targetId = props.step.id;
+        item.targetType = 'beforeItem';
+        // item.lastPosition = currentPosition;
+        props.onDragStepHover(item);
     },
+    // TODO: impl canDrop to block dragging a parent into a descendant
     drop(props, monitor) {
-        const { id, lastPosition } = monitor.getItem();
-        props.dropOnStep(id, lastPosition);
+        props.onDragStepDrop(monitor.getItem());
     }
 };
 
-function ChildStepIcon() {
-    return (<div className="editor-step-child-icon">
-        <svg fill="#000000" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 0h24v24H0V0z" fill="none"/>
-            <path d="M19 15l-6 6-1.42-1.42L15.17 16H4V4h2v10h9.17l-3.59-3.58L13 9l6 6z"/>
-        </svg>
-    </div>);
-}
 
-
-@DragSource(ItemType, cardSource, dragSourceCollector)
-@DropTarget(ItemType, cardTarget, dropTargetCollector)
+@DragSource(ItemType, dragSource, dragSourceCollector)
+@DropTarget(ItemType, dragTarget, dropTargetCollector)
 class EditorStepItem extends React.Component {
 
     static propTypes = {
@@ -98,22 +108,34 @@ class EditorStepItem extends React.Component {
         parent: PropTypes.object,
         parameters: PropTypes.array,
         errors: PropTypes.array,
-
+        onDragStepBegin: PropTypes.func,
+        onDragStepHover: PropTypes.func,
+        onDragStepDrop: PropTypes.func,
+        onDragStepEnd: PropTypes.func,
+        // injected by react-dnd
+        isHovering: PropTypes.bool,
+        isDragging: PropTypes.bool,
         connectDragSource: PropTypes.func,
         connectDragPreview: PropTypes.func,
         connectDropTarget: PropTypes.func,
-        hoverOverStep: PropTypes.func,
-        dropOnStep: PropTypes.func,
+    };
+
+    static defaultProps = {
+        onDragStepBegin: () => {},
+        onDragStepHover: () => {},
+        onDragStepDrop: () => {},
     };
 
     render() {
         const {
-            step, parent, parameters, errors,
+            step, parent, parameters, errors, isHovering, isDragging,
             connectDragSource, connectDragPreview, connectDropTarget,
         } = this.props;
 
+        const hoverClass = isHovering && !isDragging && 'is-dragged-over';
+
         return (connectDragPreview(connectDropTarget(
-            <div className="editor-step-content">
+            <div className={`editor-step-content ${hoverClass}`}>
                 {parent && <ChildStepIcon/>}
                 <div className="editor-step-title">
                     <span className="editor-step-label">{step.label}</span>

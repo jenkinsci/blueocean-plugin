@@ -2,8 +2,6 @@
 
 import React, { Component } from 'react';
 import debounce from 'lodash.debounce';
-import { DragDropContext } from 'react-dnd';
-import HTML5Backend from 'react-dnd-html5-backend';
 
 import { EditorPipelineGraph } from './EditorPipelineGraph';
 import { EditorStepList } from './EditorStepList';
@@ -32,6 +30,7 @@ type State = {
     parentStep: ?StepInfo,
     stepMetadata: ?Object,
     dialog: any,
+    isDragging: ?boolean,
 };
 
 type DefaultProps = typeof EditorMain.defaultProps;
@@ -70,7 +69,6 @@ function _getStageErrors(stage, ...excludeProps) {
     return pipelineValidator.getAllValidationErrors(stage, excludedNodes);
 }
 
-@DragDropContext(HTML5Backend)
 export class EditorMain extends Component<DefaultProps, Props, State> {
 
     static defaultProps = {};
@@ -208,14 +206,28 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         pipelineValidator.validate();
     }
 
-    hoverOverStep(stepId, pos) {
-
+    onDragStepBegin(item) {
+        console.log('onDragStepBegin', item);
+        this.setState({
+            isDragging: true,
+        });
     }
 
-    dropOnStep(stepId, pos) {
+    onDragStepHover(item) {
+        console.log('onDragStepHover', item);
+    }
+
+    onDragStepDrop(item) {
+        console.log('onDragStepDrop', item);
         const { selectedStage } = this.state;
-        console.log('dropOnStep', stepId, pos);
-        pipelineStore.moveStep(selectedStage, stepId, pos.id, pos.below);
+        pipelineStore.moveStep(selectedStage, item.sourceId, item.targetId, item.targetType);
+    }
+
+    onDragStepEnd() {
+        console.log('onDragStepEnd');
+        this.setState({
+            isDragging: false,
+        });
     }
 
     render() {
@@ -248,6 +260,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
 
         // Stage config panel
         if (selectedStage) {
+            const stepListClass = this.state.isDragging ? 'editor-steps-dragging-active' : '';
             // Determine if we need to show a particular configuration page
             // and what errors to display
             const sectionErrors = {};
@@ -272,14 +285,17 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                              }>
                     <Accordion show={sectionErrors.show} key={'stageSections' + selectedStage.id}>
                         {!hasChildStages &&
-                        <div title="Steps" key="steps">
+                        <div key="steps" className={stepListClass} title="Steps">
                             <EditorStepList
+                                stage={selectedStage}
                                 steps={steps}
                                 onAddStepClick={() => this.openSelectStepDialog()}
                                 onAddChildStepClick={parent => this.openSelectStepDialog(parent)}
                                 onStepSelected={(step) => this.selectedStepChanged(step)}
-                                hoverOverStep={(step, pos) => this.hoverOverStep(step, pos)}
-                                dropOnStep={(step, pos) => this.dropOnStep(step, pos)}
+                                onDragStepBegin={(step, pos) => this.onDragStepBegin(step, pos)}
+                                onDragStepHover={(step, pos) => this.onDragStepHover(step, pos)}
+                                onDragStepDrop={(step, pos) => this.onDragStepDrop(step, pos)}
+                                onDragStepEnd={(step, pos) => this.onDragStepEnd(step, pos)}
                             />
                         </div>
                         }

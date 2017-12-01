@@ -1,33 +1,38 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import pipelineMetadataService, { getArg } from '../../services/PipelineMetadataService';
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+
+import pipelineMetadataService from '../../services/PipelineMetadataService';
 import { EditorStepItem } from './EditorStepItem';
-import type { StepInfo } from '../../services/PipelineStore';
+import { ChildStepIcon } from "./ChildStepIcon";
+import { EditorStepListDropZone } from "./EditorStepListDropZone";
+import type { StageInfo, StepInfo } from '../../services/PipelineStore';
 import { Icon } from '@jenkins-cd/design-language';
 import pipelineValidator from '../../services/PipelineValidator';
 
 type Props = {
+    stage: ?StageInfo,
     steps: Array<StepInfo>,
     parent: ?StepInfo,
     onAddStepClick?: () => any,
     onStepSelected?: (step:StepInfo) => any,
     onAddChildStepClick?: (step:StepInfo) => any,
+    onDragStepBegin?: () => any,
+    onDragStepHover?: () => any,
+    onDragStepDrop?: () => any,
+    onDragStepEnd?: () => any,
 }
 
-type State = {};
+type State = {
+    stepMetadata: any,
+};
 
 type DefaultProps = typeof EditorStepList.defaultProps;
 
-function ChildStepIcon() {
-    return (<div className="editor-step-child-icon">
-        <svg fill="#000000" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 0h24v24H0V0z" fill="none"/>
-            <path d="M19 15l-6 6-1.42-1.42L15.17 16H4V4h2v10h9.17l-3.59-3.58L13 9l6 6z"/>
-        </svg>
-    </div>);
-}
 
+@DragDropContext(HTML5Backend)
 export class EditorStepList extends Component<DefaultProps, Props, State> {
 
     static defaultProps = {
@@ -42,7 +47,9 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
 
     constructor(props:Props) {
         super(props);
-        this.state = {};
+        this.state = {
+            stepMetadata: null,
+        };
     }
 
     componentWillMount() {
@@ -105,11 +112,20 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
                         parent={parent}
                         parameters={thisMeta.parameters}
                         errors={errors}
-                        hoverOverStep={(stepId, pos) => this.hoverOverStep(stepId, pos)}
-                        dropOnStep={(stepId, pos) => this.dropOnStep(stepId, pos)}
+                        onDragStepBegin={this.props.onDragStepBegin}
+                        onDragStepHover={this.props.onDragStepHover}
+                        onDragStepDrop={this.props.onDragStepDrop}
+                        onDragStepEnd={this.props.onDragStepEnd}
                     />
 
-                    {step.isContainer && this.renderSteps(step.children, step)}
+                    {step.isContainer && [
+                        this.renderSteps(step.children, step),
+                        <EditorStepListDropZone
+                            parent={step}
+                            onDragStepHover={this.props.onDragStepHover}
+                            onDragStepDrop={this.props.onDragStepDrop}
+                        />,
+                    ]}
                 </div>
             </div>
         );
@@ -142,35 +158,26 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
         }
     }
 
-    hoverOverStep(stepId, position) {
-        console.log('hover! ', stepId, position);
-
-        if (this.props.hoverOverStep) {
-            this.props.hoverOverStep(stepId, position);
-        }
-    }
-
-    dropOnStep(stepId, position) {
-        console.log('dropped!', stepId, position);
-
-        if (this.props.dropOnStep) {
-            this.props.dropOnStep(stepId, position);
-        }
-    }
-
     render() {
         if (!this.state.stepMetadata) {
             return null;
         }
         const { steps, parent } = this.props;
-        return (<div className="editor-steps">
-            {this.renderSteps(steps, parent)}
-            <div className="editor-button-bar">
-                <button className="btn-primary add" onClick={(e) => this.addStepClicked(e)}>
-                    <Icon icon="ContentAdd" size={20} />
-                    Add step
-                </button>
+        return (
+            <div className="editor-steps">
+                {this.renderSteps(steps, parent)}
+                <EditorStepListDropZone
+                    parent={this.props.stage}
+                    onDragStepHover={this.props.onDragStepHover}
+                    onDragStepDrop={this.props.onDragStepDrop}
+                />
+                <div className="editor-button-bar">
+                    <button className="btn-primary add" onClick={(e) => this.addStepClicked(e)}>
+                        <Icon icon="ContentAdd" size={20} />
+                        Add step
+                    </button>
+                </div>
             </div>
-        </div>);
+        );
     }
 }

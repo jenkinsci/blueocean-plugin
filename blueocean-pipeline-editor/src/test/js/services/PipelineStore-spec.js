@@ -28,24 +28,26 @@ describe('PipelineStore', () => {
             const firstStep = firstStage.steps[0];
             const lastStep = firstStage.steps[3];
 
-            pipelineStore.moveStep(firstStage, firstStep.id, lastStep.id, false);
+            pipelineStore.moveStep(firstStage, firstStep.id, lastStep.id, 'beforeItem');
             assert.equal(firstStage.steps.length, stepCount);
             assert.notEqual(firstStage.steps[0].id, firstStep.id);
             assert.equal(firstStage.steps[2].id, firstStep.id);
             assert.equal(firstStage.steps[3].id, lastStep.id);
         });
-        it('should move a step below a later step', () => {
+        it('should move a step to the end of a stage', () => {
             const firstStage = pipelineStore.pipeline.children[0];
             const stepCount = firstStage.steps.length;
             const firstStep = firstStage.steps[0];
             const lastStep = firstStage.steps[3];
 
-            pipelineStore.moveStep(firstStage, firstStep.id, lastStep.id, true);
+            pipelineStore.moveStep(firstStage, firstStep.id, firstStage.id, 'childItem');
             assert.equal(firstStage.steps.length, stepCount);
             assert.notEqual(firstStage.steps[0].id, firstStep.id);
-            assert.equal(firstStage.steps[2].id, firstStep.id);
-            assert.equal(firstStage.steps[3].id, lastStep.id);
+            assert.equal(firstStage.steps[2].id, lastStep.id);
+            assert.equal(firstStage.steps[3].id, firstStep.id);
         });
+
+        // TODO: finish tests
 
         xit('should move a step to ancestor block step', () => {
 

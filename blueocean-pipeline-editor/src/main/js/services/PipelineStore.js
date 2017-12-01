@@ -335,7 +335,7 @@ class PipelineStore {
         this.notify();
     }
 
-    moveStep(stage, sourceNodeId, targetNodeId, positionBelow) {
+    moveStep(stage, sourceNodeId, targetNodeId, targetType) {
         if (sourceNodeId === targetNodeId) {
             return;
         }
@@ -351,24 +351,21 @@ class PipelineStore {
 
         // insert the step in the right spot based on where they dragged
 
-        // TODO: make logic better: right now we can't drag a step after a block step if it's last step
-        if (targetStep.isContainer) {
-            // the user dragged to a block step, add it as a child (to beginning)
-            if (!targetStep.children) {
-                targetStep.children = [];
-            }
-            targetStep.children.unshift(sourceStep);
+        if (targetType === 'childItem') {
+            // if the nodeId didn't resolve to a step, then the target is the stage
+            const targetArray = targetStep ? targetStep.children : stage.steps;
+            targetArray.push(sourceStep);
         } else {
             const targetParentStep = this.findParentStep(targetStep);
             // if the target step has no parent step, it's at the stage level
             const targetArray = !targetParentStep ? stage.steps : targetParentStep.children;
             let targetIndex = targetArray.indexOf(targetStep);
 
-            if (positionBelow) {
-                targetIndex = Math.min(targetIndex + 1, targetArray.length - 1);
+            if (targetType === 'beforeItem') {
+                targetArray.splice(targetIndex, 0, sourceStep);
+            } else {
+                console.warn(`targetType=${targetType} not implemented`);
             }
-
-            targetArray.splice(targetIndex, 0, sourceStep);
         }
 
         this.notify();
