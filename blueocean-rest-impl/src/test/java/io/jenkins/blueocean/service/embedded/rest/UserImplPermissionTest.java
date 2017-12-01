@@ -103,7 +103,7 @@ public class UserImplPermissionTest {
             public boolean isAuthenticated() { return false; }
             public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {}
         };
-        
+
         jenkins = mock(Jenkins.class);
         when(jenkins.getACL()).thenReturn(new ACL() {
             public boolean hasPermission(Authentication a, Permission permission) {
@@ -121,7 +121,7 @@ public class UserImplPermissionTest {
             // TODO remove after core base line is >= 2.77
             Node.class.getDeclaredMethod("hasPermission", Permission.class);
         } catch (NoSuchMethodException e) {
-            when(jenkins.hasPermission(Mockito.any())).thenAnswer(new Answer<Boolean>() {
+            when(jenkins.hasPermission(Mockito.any(Permission.class))).thenAnswer(new Answer<Boolean>() {
                 public Boolean answer(InvocationOnMock invocation) {
                     Permission permission = invocation.getArgumentAt(0, Permission.class);
                     Jenkins j = (Jenkins) invocation.getMock();
