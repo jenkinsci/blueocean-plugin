@@ -1,93 +1,32 @@
 package io.jenkins.blueocean.listeners;
 
 import hudson.Extension;
-import hudson.model.*;
+import hudson.model.Cause;
+import hudson.model.CauseAction;
+import hudson.model.Run;
+import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
 import io.jenkins.blueocean.service.embedded.DownstreamJobAction;
 
-import java.util.logging.Logger;
-
+/**
+ * Listens to creation of jobs that are triggered by an upstream job, much like BuildTriggerListener from
+ * pipeline-build-step. Unlike BuildTriggerListener, here we just add an action to the upstream job for later retrieval
+ * rather than injecting information into its build log, in order to be a little more flexible at the cost of a bit more
+ * work later to retrieve the details.
+ */
 @Extension
 public class DownstreamJobListener extends RunListener<Run<?, ?>> {
 
-    private static final Logger LOGGER = Logger.getLogger(DownstreamJobListener.class.getName());
-
     @Override
     public void onStarted(Run<?, ?> run, TaskListener listener) {
-
-//        synchronized (System.out) {
-//            System.out.println("\n\n\n"); // TODO: RM
-//            System.out.println("*********************************************"); // TODO: RM
-//            System.out.println("  onStarted for run : " + run); // TODO: RM
-//            System.out.println("           listener : " + listener); // TODO: RM
-//            System.out.println("       CauseActions : "); // TODO: RM
-//
-//            for (CauseAction action : run.getActions(CauseAction.class)) {
-//                System.out.println("                    *--| " + action); // TODO: RM
-//                System.out.println("                       |  DisplayName : " + action.getDisplayName()); // TODO: RM
-//                System.out.println("                       | IconFileName : " + action.getIconFileName()); // TODO: RM
-//                System.out.println("                       |      UrlName : " + action.getUrlName()); // TODO: RM
-//                System.out.println("                       | causes : "); // TODO: RM
-//                for (Cause cause : action.getCauses()) {
-//                    System.out.println("                                *--| " + cause); // TODO: RM
-//                    System.out.println("                                   | class : " + cause.getClass()); // TODO: RM
-//                    System.out.println("                                   |  desc : " + cause.getShortDescription()); // TODO: RM
-//                }
-//            }
-//            System.out.println("*********************************************"); // TODO: RM
-//            System.out.println("\n\n\n"); // TODO: RM
-//        }
-
         for (CauseAction action : run.getActions(CauseAction.class)) {
             for (Cause cause : action.getCauses()) {
-                 if (cause instanceof Cause.UpstreamCause) {
-                     Run triggerRun = ((Cause.UpstreamCause) cause).getUpstreamRun();
-                     String dbg = "***** Run " + run + " caused by upstream " + triggerRun + "\n";  // TODO: RM
-
-                     Class cl = triggerRun.getClass();
-
-                     while (cl != null) {
-                         dbg += "        - " + cl.getName() + "\n";
-                         cl = cl.getSuperclass();
-                     }
-
-                     dbg += " triggerRun.getResult : " + triggerRun.getResult() + "\n";
-                     dbg += "triggerRun.isBuilding : " + triggerRun.isBuilding() + "\n";
-
-                     dbg += "About to add the action...";
-                     triggerRun.addAction(new DownstreamJobAction(run));
-                     dbg += "Done!";
-
-                     System.out.println("\n\n" + dbg + "\n\n");  // TODO: RM
-
-
-                 }
+                if (cause instanceof Cause.UpstreamCause) {
+                    Run triggerRun = ((Cause.UpstreamCause) cause).getUpstreamRun();
+                    // Add a link from the upstream job to this newly spawned one, to be retrieved later
+                    triggerRun.addAction(new DownstreamJobAction(run));
+                }
             }
         }
-
-
-//        DisplayURLProvider urls = DisplayURLProvider.get();
-//        System.out.println("                   DisplayURLProvider.get() gave us " + DisplayURLProvider.get()); // TODO: RM
-//        System.out.println("            DisplayURLProvider.getDefault() gave us " + DisplayURLProvider.getDefault()); // TODO: RM
-//        System.out.println("  DisplayURLProvider.getPreferredProvider() gave us " + DisplayURLProvider.getPreferredProvider()); // TODO: RM
-//
-//
-//
-//        if (urls != null) {
-//            for (BuildTriggerAction.Trigger trigger : BuildTriggerAction.triggersFor(run)) {
-//                StepContext stepContext = trigger.context;
-//                if (stepContext != null && stepContext.isReady()) {
-//                    try {
-//                        TaskListener taskListener = stepContext.get(TaskListener.class);
-//                    taskListener.getLogger().println("Downstream build: " + run.getFullDisplayName() + " - " + urls.getRunURL(run));
-//                    } catch (Exception e) {
-//                        LOGGER.log(Level.WARNING, null, e);
-//                    }
-//                } else {
-//                    LOGGER.log(Level.FINE, "{0} unavailable in {1}", new Object[]{stepContext, run});
-//                }
-//            }
-//        }
     }
-
 }

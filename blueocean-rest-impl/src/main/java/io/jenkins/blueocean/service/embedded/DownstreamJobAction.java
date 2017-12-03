@@ -6,15 +6,18 @@ import hudson.model.Run;
 import javax.annotation.CheckForNull;
 import java.util.Objects;
 
-// TODO: Docs
+/**
+ * Added to a job to provide details of downstream jobs triggered by it, as an inverse of Cause.UpstreamCause which
+ * is added to the downstream job during its creation.
+ */
 public class DownstreamJobAction implements Action {
 
     private final String downstreamProject;
     private final int downstreamBuild;
 
-    public DownstreamJobAction(Run<?,?> run) {
-            this.downstreamProject = run.getParent().getName();
-            this.downstreamBuild = run.getNumber();
+    public DownstreamJobAction(Run<?, ?> run) {
+        this.downstreamProject = run.getParent().getName();
+        this.downstreamBuild = run.getNumber();
     }
 
     public DownstreamJobAction(String downstreamProject, int downstreamBuild) {
