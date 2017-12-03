@@ -199,6 +199,11 @@ public class OrganizationFolderRunImpl extends BlueRun {
     }
 
     @Override
+    public Collection<BlueDownstreamRun> getDownstreamRuns() {
+        return null;
+    }
+
+    @Override
     public String getCauseOfBlockage() {
         return null;
     }

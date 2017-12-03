@@ -13,6 +13,7 @@ import org.kohsuke.stapler.verb.PUT;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Objects;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_RUN;
 
@@ -45,6 +46,7 @@ public abstract class BlueRun extends Resource {
     public static final String TEST_SUMMARY = "testSummary";
     public static final String ACTIONS = "actions";
     public static final String CAUSES = "causes";
+    public static final String DOWNSTREAM = "downstreamRuns";
 
     public static final int DEFAULT_BLOCKING_STOP_TIMEOUT_IN_SECS=10;
 
@@ -238,6 +240,12 @@ public abstract class BlueRun extends Resource {
     public abstract Collection<BlueCause> getCauses();
 
     /**
+     * @return details of downstream builds triggered by this run
+     */
+    @Exported(name = DOWNSTREAM, inline = true)
+    public abstract Collection<BlueDownstreamRun> getDownstreamRuns();
+
+    /**
      * @return cause of what is blocking this run
      */
     @Exported(name = CAUSE_OF_BLOCKAGE)
@@ -255,6 +263,45 @@ public abstract class BlueRun extends Resource {
 
         @Exported(name="cause", merge = true)
         public abstract Object getCause();
+    }
+
+    @ExportedBean
+    public static final class BlueDownstreamRun {
+        private final String downstreamProject;
+        private final int downstreamBuild;
+
+        public BlueDownstreamRun(String downstreamProject, int downstreamBuild) {
+            this.downstreamProject = downstreamProject;
+            this.downstreamBuild = downstreamBuild;
+        }
+
+        @Exported(name="downstreamProject")
+        public String getDownstreamProject() {
+            return downstreamProject;
+        }
+
+        @Exported(name="getDownstreamBuild")
+        public Integer getDownstreamBuild() {
+            return downstreamBuild;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) {
+                return true;
+            }
+            if (o == null || getClass() != o.getClass()) {
+                return false;
+            }
+            BlueDownstreamRun that = (BlueDownstreamRun) o;
+            return downstreamBuild == that.downstreamBuild &&
+                Objects.equals(downstreamProject, that.downstreamProject);
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(downstreamProject, downstreamBuild);
+        }
     }
 
     public enum BlueRunState {

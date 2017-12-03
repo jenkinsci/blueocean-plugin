@@ -14,9 +14,12 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 
+import io.jenkins.blueocean.service.embedded.DownstreamJobAction;
 import org.kohsuke.stapler.QueryParameter;
 
 import javax.annotation.Nonnull;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -57,6 +60,17 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
             }
         });
 
+    }
+
+    @Override
+    public Collection<BlueDownstreamRun> getDownstreamRuns() {
+        ArrayList<BlueDownstreamRun> runs = new ArrayList<>();
+
+        for (DownstreamJobAction action : run.getActions(DownstreamJobAction.class)) {
+            runs.add(new BlueDownstreamRun(action.getDownstreamProject(), action.getDownstreamBuild()));
+        }
+
+        return runs;
     }
 
     @Extension
