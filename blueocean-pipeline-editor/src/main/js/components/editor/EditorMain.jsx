@@ -314,6 +314,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         let parentStep = null;
         for (const step of selectedSteps) {
             const stepConfigPanel = (<EditorStepDetails className="editor-config-panel step"
+                    stage={selectedStage}
                     step={step} key={step.id}
                     onDataChange={newValue => this.stepDataChanged(newValue)}
                     onClose={e => cleanPristine(step) || pipelineValidator.validate() || this.selectedStepChanged(null, parentStep)}
