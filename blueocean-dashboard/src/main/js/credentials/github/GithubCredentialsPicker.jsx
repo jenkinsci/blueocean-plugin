@@ -66,7 +66,7 @@ class GithubCredentialsPicker extends React.Component {
     _tokenChange(accessToken) {
         const trimmed = typeof accessToken === 'string' ? accessToken.trim() : accessToken;
         this.setState({
-            accessToken: 'kaboom' + trimmed,
+            accessToken: trimmed,
         });
     }
 
