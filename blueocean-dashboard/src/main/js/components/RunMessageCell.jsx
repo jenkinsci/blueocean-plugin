@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import Lozenge from './Lozenge';
 import { Link } from 'react-router';
 import LinkifiedText from './LinkifiedText';
+import { UrlConfig } from '@jenkins-cd/blueocean-core-js';
 
 export default class RunMessageCell extends Component {
     propTypes = {
@@ -64,13 +65,29 @@ export default class RunMessageCell extends Component {
                 </span>
             );
         } else if (showCauses) {
+            const cause = (run) => {
+
+                const lastCause = (run && run.causes.length > 0 && run.causes[run.causes.length - 1]) || null;
+
+                if(lastCause && lastCause.upstreamProject) {
+                    const activityUrl = `${UrlConfig.getJenkinsRootURL()}/${lastCause.upstreamUrl}display/redirect?provider=blueocean`;
+                    const runUrl = `${UrlConfig.getJenkinsRootURL()}/${lastCause.upstreamUrl}${lastCause.upstreamBuild}/display/redirect?provider=blueocean`;
+
+                    return (<div className="causes" title={ lastCause.shortDescription }>
+                        Started by upstream pipeline "<a href={ activityUrl }>{lastCause.upstreamProject}</a>" build <a href={ runUrl }>#{lastCause.upstreamBuild}</a>
+                    </div>);
+
+                }
+                const causeMessage = (lastCause && lastCause.shortDescription) || null;
+                return (<div className="causes" title={ causeMessage }>{ causeMessage }</div>);
+            };
             // Last cause is always more significant than the first
-            const cause = run.causes[run.causes.length - 1].shortDescription;
-            const linkedCauseMsg = (<Link to={linkTo} className="unstyled-link">{cause}</Link>);
+            //const cause = run.causes[run.causes.length - 1].shortDescription;
+            //const linkedCauseMsg = (<Link to={linkTo} className="unstyled-link">{cause}</Link>);
             return (
                 <span className="RunMessageCell" title={cause}>
                     <span className="RunMessageCellInner">
-                        {linkedCauseMsg}
+                        {cause}
                     </span>
                 </span>
             );
