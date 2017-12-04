@@ -49,6 +49,9 @@ import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.verb.DELETE;
+import org.mockito.Mockito;
+import org.mockito.invocation.InvocationOnMock;
+import org.mockito.stubbing.Answer;
 import org.powermock.core.classloader.annotations.PrepareForTest;
 import org.powermock.modules.junit4.PowerMockRunner;
 
@@ -56,6 +59,7 @@ import com.cloudbees.plugins.credentials.CredentialsProvider;
 
 import edu.umd.cs.findbugs.annotations.CheckForNull;
 import edu.umd.cs.findbugs.annotations.NonNull;
+import hudson.model.Node;
 import hudson.model.TopLevelItem;
 import hudson.model.TopLevelItemDescriptor;
 import hudson.model.User;
@@ -99,7 +103,7 @@ public class UserImplPermissionTest {
             public boolean isAuthenticated() { return false; }
             public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {}
         };
-        
+
         jenkins = mock(Jenkins.class);
         when(jenkins.getACL()).thenReturn(new ACL() {
             public boolean hasPermission(Authentication a, Permission permission) {
@@ -110,6 +114,21 @@ public class UserImplPermissionTest {
         mockStatic(Jenkins.class);
         when(Jenkins.getAuthentication()).thenReturn(authentication);
         when(Jenkins.getInstance()).thenReturn(jenkins);
+
+        try {
+            // After Jenkins 2.77 hasPermission is no longer in Node.class and is not final so we need to mock it
+            // prior to it is called as being final and mocking it will fail for the same reason.
+            // TODO remove after core base line is >= 2.77
+            Node.class.getDeclaredMethod("hasPermission", Permission.class);
+        } catch (NoSuchMethodException e) {
+            when(jenkins.hasPermission(Mockito.any(Permission.class))).thenAnswer(new Answer<Boolean>() {
+                public Boolean answer(InvocationOnMock invocation) {
+                    Permission permission = invocation.getArgumentAt(0, Permission.class);
+                    Jenkins j = (Jenkins) invocation.getMock();
+                    return j.getACL().hasPermission(permission);
+                }
+            });
+        }
 
         mockStatic(User.class);
         when(User.get("some_user", false, Collections.EMPTY_MAP)).thenReturn(user);

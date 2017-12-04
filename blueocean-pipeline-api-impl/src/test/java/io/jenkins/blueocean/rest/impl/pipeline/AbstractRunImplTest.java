@@ -148,7 +148,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
     @Test(timeout = 20000)
     @Issue("JENKINS-44736")
-    public void earlyUnstableStatusShouldReportPunStateAsRunningAndResultAsUnknown() throws Exception {
+    public void earlyUnstableStatusShouldReportRunStateAsRunningAndResultAsUnknown() throws Exception {
         WorkflowJob p = j.createProject(WorkflowJob.class, "project");
 
         URL resource = Resources.getResource(getClass(), "earlyUnstableStatusShouldReportPunStateAsRunningAndResultAsUnknown.jenkinsfile");
@@ -161,13 +161,14 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         String url = "/organizations/jenkins/pipelines/project/runs/" + r.getId() + "/";
         Map m = request().get(url).build(Map.class);
 
-        // Wait 'til we're out of queue and actually on the node.
-        j.waitForMessage("Running on master", r);
 
         // While the run has not finished keep checking that the result is unknown
         while (!"FINISHED".equals(m.get("state").toString())) {
-            Assert.assertEquals("RUNNING", m.get("state"));
-            Assert.assertEquals("UNKNOWN", m.get("result"));
+            // when running, check that it is 'UNKNOWN' state
+            if("RUNNING".equals(m.get("state").toString())) {
+                Assert.assertEquals("RUNNING", m.get("state"));
+                Assert.assertEquals("UNKNOWN", m.get("result"));
+            }
             Thread.sleep(1000);
             m = request().get(url).build(Map.class);
         }
