@@ -23,8 +23,10 @@ public class DownstreamJobListener extends RunListener<Run<?, ?>> {
             for (Cause cause : action.getCauses()) {
                 if (cause instanceof Cause.UpstreamCause) {
                     Run triggerRun = ((Cause.UpstreamCause) cause).getUpstreamRun();
-                    // Add a link from the upstream job to this newly spawned one, to be retrieved later
-                    triggerRun.addAction(new DownstreamJobAction(run));
+                    if (triggerRun != null) {
+                        // Add a link from the upstream job to this newly spawned one, to be retrieved later
+                        triggerRun.addAction(new DownstreamJobAction(run));
+                    }
                 }
             }
         }
