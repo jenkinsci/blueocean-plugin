@@ -143,18 +143,6 @@ public class GithubEditorTest {
     @Test
     public void testEditorWithSpace() throws IOException {
         creationPage.createPipeline(" " + token + " ", organization, repo, true);
-        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
-        editorPage.simplePipeline();
-        ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
-        driver.navigate().refresh();
-        sseClient.untilEvents(pipeline.buildsFinished);
-        sseClient.clear();
-        BranchPage branchPage = activityPage.clickBranchTab();
-        branchPage.openEditor("master");
-        editorPage.saveBranch("new - branch");
-        activityPage.checkUrl();
-        activityPage.getRunRowForBranch("new-branch");
-        sseClient.untilEvents(pipeline.buildsFinished);
     }
 
     /**
