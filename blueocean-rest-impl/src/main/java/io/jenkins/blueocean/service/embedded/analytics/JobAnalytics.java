@@ -13,7 +13,6 @@ import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 import java.io.IOException;
-import java.util.HashMap;
 import java.util.Map;
 
 @Extension
@@ -40,9 +39,9 @@ public final class JobAnalytics extends AsyncPeriodicWork {
         ExtensionList<JobAnalyticsCheck> checks = ExtensionList.lookup(JobAnalyticsCheck.class);
 
         // Initialize the tally
-        Map<String, Integer> tally = new HashMap<>();
-        checks.forEach(check -> tally.put(check.getName(), 0));
-        tally.put("other", 0);
+        Tally tally = new Tally();
+        checks.forEach(check -> tally.zero(check.getName()));
+        tally.zero("other");
 
         jenkins.allItems().forEach(item -> {
             if (item instanceof AbstractProject // must be a project
@@ -52,28 +51,20 @@ public final class JobAnalytics extends AsyncPeriodicWork {
                 boolean matchFound = false;
                 for (JobAnalyticsCheck check : checks) {
                     if (check.apply(item)) {
-                        addToTally(tally, check.getName());
+                        tally.count(check.getName());
                         matchFound = true;
                         break;
                     }
                 }
                 if (!matchFound) {
-                    addToTally(tally, "other");
+                    tally.count("other");
                 }
             }
         });
         analytics.track(new TrackRequest(
             JOB_STATS_EVENT_NAME,
-            ImmutableMap.copyOf(tally)
+            ImmutableMap.copyOf(tally.get())
         ));
-    }
-
-    private void addToTally(Map<String, Integer> tally, String name) {
-        Integer count = tally.get(name);
-        if (count == null) {
-            count = 0;
-        }
-        tally.put(name, count + 1);
     }
 
     @Override
