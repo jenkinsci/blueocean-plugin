@@ -280,7 +280,7 @@ public abstract class BlueRun extends Resource {
             return downstreamProject;
         }
 
-        @Exported(name="getDownstreamBuild")
+        @Exported(name="downstreamBuild")
         public Integer getDownstreamBuild() {
             return downstreamBuild;
         }

@@ -6,12 +6,8 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueRunFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueRun;
-import io.jenkins.blueocean.service.embedded.DownstreamJobAction;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Catch all for any run implementation
