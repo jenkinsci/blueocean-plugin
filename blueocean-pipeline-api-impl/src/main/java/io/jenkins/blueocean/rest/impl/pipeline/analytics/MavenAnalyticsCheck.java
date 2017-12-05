@@ -1,7 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline.analytics;
 
 import hudson.Extension;
-import hudson.matrix.MatrixProject;
 import hudson.model.Item;
 import io.jenkins.blueocean.service.embedded.analytics.JobAnalyticsCheck;
 import io.jenkins.blueocean.service.embedded.analytics.JobAnalyticsExclude;
@@ -10,26 +9,29 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 @Extension
 @Restricted(NoExternalUse.class)
-public final class MatrixAnalyticsCheck extends JobAnalyticsCheck {
+public final class MavenAnalyticsCheck extends JobAnalyticsCheck {
+
+    public static final String MAVEN_MODULE_SET_CLASS = "hudson.maven.MavenModuleSet";
+
     @Override
     public String getName() {
-        return "matrix";
+        return "maven";
     }
 
     @Override
     public Boolean apply(Item item) {
-        return item instanceof MatrixProject;
+        return item.getClass().getName().equals(MAVEN_MODULE_SET_CLASS);
     }
 
     /**
-     * Exclude any jobs that are children of a MatrixProject
+     * Exclude any items that are MavenModule's or children of MavenModuleSet
      */
     @Extension
     @Restricted(NoExternalUse.class)
-    public final static class ExcludeImpl extends JobAnalyticsExclude {
+    public static final class ExcludeImpl extends JobAnalyticsExclude {
         @Override
         public Boolean apply(Item item) {
-            return item.getClass().getName().equals("hudson.matrix.MatrixConfiguration") || item.getParent() instanceof MatrixProject;
+            return item.getClass().getName().equals("hudson.maven.MavenModule") || item.getParent().getClass().getName().equals(MAVEN_MODULE_SET_CLASS);
         }
     }
 }

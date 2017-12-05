@@ -37,6 +37,7 @@ public final class JobAnalytics extends AsyncPeriodicWork {
         }
         Jenkins jenkins = Jenkins.getInstance();
         ExtensionList<JobAnalyticsCheck> checks = ExtensionList.lookup(JobAnalyticsCheck.class);
+        ExtensionList<JobAnalyticsExclude> excludes = ExtensionList.lookup(JobAnalyticsExclude.class);
 
         // Initialize the tally
         Tally tally = new Tally();
@@ -44,10 +45,7 @@ public final class JobAnalytics extends AsyncPeriodicWork {
         tally.zero("other");
 
         jenkins.allItems().forEach(item -> {
-            if (item instanceof AbstractProject // must be a project
-                && !item.getClass().getName().equals("hudson.matrix.MatrixConfiguration")  // Individual matrix configurations
-                && !item.getClass().getName().equals("hudson.maven.MavenModule")) // Ignore maven modules)
-            {
+            if (excludes.stream().noneMatch(exclude -> exclude.apply(item))) {
                 boolean matchFound = false;
                 for (JobAnalyticsCheck check : checks) {
                     if (check.apply(item)) {

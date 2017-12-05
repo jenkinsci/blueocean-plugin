@@ -363,14 +363,4 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         run = request().get("/organizations/jenkins/pipelines/project/runs/1/").build(Map.class);
         Assert.assertEquals(null, run.get("description"));
     }
-
-    private WorkflowJob createWorkflowJobWithJenkinsfile(String jenkinsFileName) throws java.io.IOException {
-        WorkflowJob p = j.createProject(WorkflowJob.class, "project");
-
-        URL resource = Resources.getResource(getClass(), jenkinsFileName);
-        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
-        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
-        p.save();
-        return p;
-    }
 }

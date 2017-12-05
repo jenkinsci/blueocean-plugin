@@ -5,6 +5,7 @@ import hudson.model.Item;
 import hudson.model.Job;
 import io.jenkins.blueocean.service.embedded.analytics.JobAnalyticsCheck;
 import io.jenkins.blueocean.rest.impl.pipeline.PrimaryBranch;
+import io.jenkins.blueocean.service.embedded.analytics.JobAnalyticsExclude;
 import jenkins.branch.MultiBranchProject;
 import org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction;
 import org.kohsuke.accmod.Restricted;
@@ -26,5 +27,17 @@ public class ScriptedPipelineAnalyticsCheck extends JobAnalyticsCheck {
         MultiBranchProject project = (MultiBranchProject)item;
         Job resolve = PrimaryBranch.resolve(project);
         return resolve != null && resolve.getAction(DeclarativeJobAction.class) == null;
+    }
+
+    /**
+     * Exclude any jobs that are children of a MultiBranch project
+     */
+    @Extension
+    @Restricted(NoExternalUse.class)
+    public final static class ExcludeImpl extends JobAnalyticsExclude {
+        @Override
+        public Boolean apply(Item item) {
+            return item.getParent() instanceof MultiBranchProject;
+        }
     }
 }
