@@ -514,6 +514,10 @@
     }
 
     .editor-step-content, .editor-step-list-drop-zone {
+        &.is-dragging {
+            background-color: transparent;
+            box-shadow: inset 0 0 5px @grab-color
+        }
         &.is-drop-allowed {
             background-color: @light-blue-bg;
             box-shadow: inset 0 1px 0 @brand-color;

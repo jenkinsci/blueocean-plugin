@@ -146,7 +146,15 @@ class EditorStepItem extends React.Component {
             connectDragSource, connectDragPreview, connectDropTarget,
         } = this.props;
 
-        const dragClass = (isHovering && !isDragging) && (isDroppable && 'is-drop-allowed' || 'is-drop-blocked');
+        let dragClass = '';
+
+        if (isDragging) {
+            dragClass = 'is-dragging';
+        } else if (isHovering && isDroppable) {
+            dragClass = 'is-drop-allowed';
+        } else if (isHovering && !isDroppable) {
+            dragClass = 'is-drop-blocked';
+        }
 
         return (connectDragPreview(connectDropTarget(
             <div className={`editor-step-content ${dragClass}`}>
