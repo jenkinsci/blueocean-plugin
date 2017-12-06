@@ -160,7 +160,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
     @Test(timeout = 20000)
     @Issue("JENKINS-44736")
     public void earlyUnstableStatusShouldReportRunStateAsRunningAndResultAsUnknown() throws Exception {
-        WorkflowJob p = createWorkflowJobWithJenkinsfile("earlyUnstableStatusShouldReportPunStateAsRunningAndResultAsUnknown.jenkinsfile");
+        WorkflowJob p = createWorkflowJobWithJenkinsfile(getClass(),"earlyUnstableStatusShouldReportPunStateAsRunningAndResultAsUnknown.jenkinsfile");
 
         Run r = p.scheduleBuild2(0).waitForStart();
 
@@ -185,7 +185,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
     @Test
     public void pipelineLatestRunIncludesRunning() throws Exception {
-        WorkflowJob p = createWorkflowJobWithJenkinsfile("latestRunIncludesQueued.jenkinsfile");
+        WorkflowJob p = createWorkflowJobWithJenkinsfile(getClass(),"latestRunIncludesQueued.jenkinsfile");
 
         // Ensure null before first run
         Map pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
@@ -240,7 +240,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
     @Issue("JENKINS-44981")
     @Test
     public void queuedSingleNode() throws Exception {
-        WorkflowJob p = createWorkflowJobWithJenkinsfile("queuedSingleNode.jenkinsfile");
+        WorkflowJob p = createWorkflowJobWithJenkinsfile(getClass(),"queuedSingleNode.jenkinsfile");
 
         // Ensure null before first run
         Map pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
@@ -266,7 +266,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
     @Issue("JENKINS-44981")
     @Test
     public void declarativeQueuedAgent() throws Exception {
-        WorkflowJob p = createWorkflowJobWithJenkinsfile("declarativeQueuedAgent.jenkinsfile");
+        WorkflowJob p = createWorkflowJobWithJenkinsfile(getClass(),"declarativeQueuedAgent.jenkinsfile");
 
         j.jenkins.setNumExecutors(0);
         // Ensure null before first run
@@ -312,7 +312,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
     @Issue("JENKINS-44981")
     @Test
     public void queuedAndRunningParallel() throws Exception {
-        WorkflowJob p = createWorkflowJobWithJenkinsfile("queuedAndRunningParallel.jenkinsfile");
+        WorkflowJob p = createWorkflowJobWithJenkinsfile(getClass(),"queuedAndRunningParallel.jenkinsfile");
 
         // Ensure null before first run
         Map pipeline = request().get("/organizations/jenkins/pipelines/project/").build(Map.class);
@@ -349,7 +349,7 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
     @Test
     public void disableDescription() throws Exception {
-        WorkflowJob p = createWorkflowJobWithJenkinsfile("disableDescription.jenkinsfile");
+        WorkflowJob p = createWorkflowJobWithJenkinsfile(getClass(),"disableDescription.jenkinsfile");
 
         WorkflowRun r = p.scheduleBuild2(0).waitForStart();
         j.waitForCompletion(r);
