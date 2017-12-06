@@ -65,7 +65,6 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
                 return (
                     <div className="editor-step nested missing">
                         <div className="editor-step-main" onClick={(e) => this.stepClicked(parent, e)}>
-                            { /* TODO: possibly replace with EditorStepListDropZone */ }
                             <div className="editor-step-content">
                                 <ChildStepIcon/>
                                 <div className="editor-step-title">
