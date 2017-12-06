@@ -52,8 +52,9 @@ public abstract class AbstractAnalytics extends Analytics {
         }
         String server = server();
         allProps.put("jenkins", server);
-        String identity = identity(server);
-        if (identity != null) {
+        // Background requests do not have userId
+        if (Stapler.getCurrentRequest() != null) {
+            String identity = identity(server);
             allProps.put("userId", identity);
         }
         Objects.ToStringHelper eventHelper = Objects.toStringHelper(this).add("name", req.name).add("props", allProps);
@@ -76,10 +77,6 @@ public abstract class AbstractAnalytics extends Analytics {
     }
 
     protected final String identity(String server) {
-        // Background process do not have an identity
-        if (Stapler.getCurrentRequest() == null) {
-            return null;
-        }
         User user = User.current();
         String username = user == null ? "ANONYMOUS" : user.getId();
         return Hashing.sha256().hashString(username + server).toString();
