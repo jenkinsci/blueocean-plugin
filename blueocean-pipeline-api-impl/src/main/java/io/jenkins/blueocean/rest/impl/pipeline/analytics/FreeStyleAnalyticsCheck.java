@@ -9,7 +9,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 @Extension
 @Restricted(NoExternalUse.class)
-public class FreeStyleAnalyticsCheck extends JobAnalyticsCheck {
+public class FreeStyleAnalyticsCheck implements JobAnalyticsCheck {
     @Override
     public String getName() {
         return "freestyle";

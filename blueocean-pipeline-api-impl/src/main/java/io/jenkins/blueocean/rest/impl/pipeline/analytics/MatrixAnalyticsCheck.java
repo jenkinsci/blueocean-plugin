@@ -10,7 +10,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 @Extension
 @Restricted(NoExternalUse.class)
-public final class MatrixAnalyticsCheck extends JobAnalyticsCheck {
+public final class MatrixAnalyticsCheck implements JobAnalyticsCheck {
     @Override
     public String getName() {
         return "matrix";
@@ -26,7 +26,7 @@ public final class MatrixAnalyticsCheck extends JobAnalyticsCheck {
      */
     @Extension
     @Restricted(NoExternalUse.class)
-    public final static class ExcludeImpl extends JobAnalyticsExclude {
+    public final static class ExcludeImpl implements JobAnalyticsExclude {
         @Override
         public Boolean apply(Item item) {
             return item.getClass().getName().equals("hudson.matrix.MatrixConfiguration") || item.getParent() instanceof MatrixProject;

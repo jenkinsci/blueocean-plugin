@@ -6,5 +6,5 @@ import hudson.model.Item;
 import java.util.function.Function;
 
 /** Used to exclude an item from {@link io.jenkins.blueocean.service.embedded.analytics.JobAnalytics} **/
-public abstract class JobAnalyticsExclude implements Function<Item, Boolean>, ExtensionPoint {
+public interface JobAnalyticsExclude extends Function<Item, Boolean>, ExtensionPoint {
 }

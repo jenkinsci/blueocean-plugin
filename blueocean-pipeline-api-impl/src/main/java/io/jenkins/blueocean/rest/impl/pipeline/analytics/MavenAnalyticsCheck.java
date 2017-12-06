@@ -9,7 +9,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 @Extension
 @Restricted(NoExternalUse.class)
-public final class MavenAnalyticsCheck extends JobAnalyticsCheck {
+public final class MavenAnalyticsCheck implements JobAnalyticsCheck {
 
     public static final String MAVEN_MODULE_SET_CLASS = "hudson.maven.MavenModuleSet";
 
@@ -28,7 +28,7 @@ public final class MavenAnalyticsCheck extends JobAnalyticsCheck {
      */
     @Extension
     @Restricted(NoExternalUse.class)
-    public static final class ExcludeImpl extends JobAnalyticsExclude {
+    public static final class ExcludeImpl implements JobAnalyticsExclude {
         @Override
         public Boolean apply(Item item) {
             return item.getClass().getName().equals("hudson.maven.MavenModule") || item.getParent().getClass().getName().equals(MAVEN_MODULE_SET_CLASS);
