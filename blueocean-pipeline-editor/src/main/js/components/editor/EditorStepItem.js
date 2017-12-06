@@ -136,6 +136,10 @@ class EditorStepItem extends React.Component {
         onDragStepDrop: () => {},
     };
 
+    onDragHandleClick = (event) => {
+        event.stopPropagation();
+    };
+
     render() {
         const {
             step, parent, parameters, errors, isHovering, isDragging, isDroppable,
@@ -165,7 +169,7 @@ class EditorStepItem extends React.Component {
                     }
                 </div>
                 {connectDragSource(
-                    <div className="editor-step-drag">
+                    <div className="editor-step-drag" onClick={this.onDragHandleClick}>
                         <Icon icon="EditorDragHandle" />
                     </div>
                 )}
