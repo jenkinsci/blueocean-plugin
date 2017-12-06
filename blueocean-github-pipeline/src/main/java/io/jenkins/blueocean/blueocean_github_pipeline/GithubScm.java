@@ -248,6 +248,9 @@ public class GithubScm extends AbstractScm {
         if(accessToken == null){
             throw new ServiceException.BadRequestException("accessToken is required");
         }
+
+        accessToken = accessToken.trim();
+
         try {
             User authenticatedUser =  getAuthenticatedUser();
 

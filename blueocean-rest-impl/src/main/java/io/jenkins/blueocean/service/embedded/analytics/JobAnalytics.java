@@ -3,6 +3,7 @@ package io.jenkins.blueocean.service.embedded.analytics;
 import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.ExtensionList;
+import hudson.model.AbstractProject;
 import hudson.model.AsyncPeriodicWork;
 import hudson.model.TaskListener;
 import io.jenkins.blueocean.analytics.Analytics;
@@ -12,6 +13,7 @@ import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 import java.io.IOException;
+import java.util.Map;
 
 @Extension
 @Restricted(NoExternalUse.class)
