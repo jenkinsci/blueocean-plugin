@@ -47,17 +47,31 @@ describe('PipelineStore', () => {
             assert.equal(firstStage.steps[3].id, firstStep.id);
         });
 
-        // TODO: finish tests
+        it('should move a step inside block step to ancestor', () => {
+            const firstStage = pipelineStore.pipeline.children[0];
+            const firstStep = firstStage.steps[0];
+            const retryStep = firstStage.steps[2];
+            const dragStep = retryStep.children[0];
 
-        xit('should move a step to ancestor block step', () => {
-
+            pipelineStore.moveStep(firstStage, dragStep.id, firstStep.id, 'beforeItem');
+            assert.equal(retryStep.children.length, 2);
+            assert.equal(firstStage.steps[0].id, dragStep.id);
+            assert.equal(firstStage.steps[1].id, firstStep.id);
         });
 
-        xit('should move a step to descendant block step', () => {
+        it('should move a step to descendant block step', () => {
+            const firstStage = pipelineStore.pipeline.children[0];
+            const topLevelStep = firstStage.steps[0];
+            const retryStep = firstStage.steps[2];
+            const stepCount = retryStep.children.length;
+            const nestedStep1 = retryStep.children[0];
+            const nestedStep2 = retryStep.children[1];
 
-        });
-        xit('should throw an exception if trying to move between stages', () => {
-
+            pipelineStore.moveStep(firstStage, topLevelStep.id, nestedStep2.id, 'beforeItem');
+            assert.equal(retryStep.children.length, stepCount + 1);
+            assert.equal(retryStep.children[0].id, nestedStep1.id);
+            assert.equal(retryStep.children[1].id, topLevelStep.id);
+            assert.equal(retryStep.children[2].id, nestedStep2.id);
         });
     });
 
