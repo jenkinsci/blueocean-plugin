@@ -8,7 +8,6 @@ import GithubApiUtils from '../../creation/github/api/GithubApiUtils';
 import GithubCredentialsManager from './GithubCredentialsManager';
 import GithubCredentialsState from './GithubCredentialsState';
 
-
 function getCreateTokenUrl(apiUrl) {
     let baseUrl = 'https://github.com';
 
@@ -20,10 +19,8 @@ function getCreateTokenUrl(apiUrl) {
     return `${baseUrl}/settings/tokens/new?scopes=repo,read:user,user:email,write:repo_hook`;
 }
 
-
 @observer
 class GithubCredentialsPicker extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -47,8 +44,7 @@ class GithubCredentialsPicker extends React.Component {
 
     componentDidMount() {
         this._configure(this.props);
-        this.tokenManager.findExistingCredential()
-            .then(credential => this._findExistingCredentialComplete(credential));
+        this.tokenManager.findExistingCredential().then(credential => this._findExistingCredentialComplete(credential));
     }
 
     _configure(props) {
@@ -68,14 +64,14 @@ class GithubCredentialsPicker extends React.Component {
     }
 
     _tokenChange(accessToken) {
+        const trimmed = typeof accessToken === 'string' ? accessToken.trim() : accessToken;
         this.setState({
-            accessToken,
+            accessToken: trimmed,
         });
     }
 
     _createToken() {
-        this.tokenManager.createAccessToken(this.state.accessToken)
-            .then(credential => this._onCreateTokenSuccess(credential));
+        this.tokenManager.createAccessToken(this.state.accessToken).then(credential => this._onCreateTokenSuccess(credential));
     }
 
     _onCreateTokenSuccess(credential) {
@@ -115,19 +111,24 @@ class GithubCredentialsPicker extends React.Component {
         };
 
         return (
-            !this.state.loading &&
-            <div className="credentials-picker-github">
-                <p className="instructions">
-                    Jenkins needs an access key to authorize itself with Github. <br />
-                    <a href={tokenUrl} target="_blank">Create an access key here.</a>
-                </p>
+            !this.state.loading && (
+                <div className="credentials-picker-github">
+                    <p className="instructions">
+                        Jenkins needs an access key to authorize itself with Github. <br />
+                        <a href={tokenUrl} target="_blank">
+                            Create an access key here.
+                        </a>
+                    </p>
 
-                <FormElement errorMessage={errorMessage}>
-                    <PasswordInput className="text-token" placeholder="Your Github access token" onChange={val => this._tokenChange(val)} />
+                    <FormElement errorMessage={errorMessage}>
+                        <PasswordInput className="text-token" placeholder="Your Github access token" onChange={val => this._tokenChange(val)} />
 
-                    <Button className="button-connect" status={status} onClick={() => this._createToken()}>Connect</Button>
-                </FormElement>
-            </div>
+                        <Button className="button-connect" status={status} onClick={() => this._createToken()}>
+                            Connect
+                        </Button>
+                    </FormElement>
+                </div>
+            )
         );
     }
 }
@@ -138,6 +139,5 @@ GithubCredentialsPicker.propTypes = {
     scmId: PropTypes.string,
     apiUrl: PropTypes.string,
 };
-
 
 export default GithubCredentialsPicker;
