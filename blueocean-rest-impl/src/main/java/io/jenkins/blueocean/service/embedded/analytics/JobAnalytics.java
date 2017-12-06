@@ -3,7 +3,6 @@ package io.jenkins.blueocean.service.embedded.analytics;
 import com.google.common.collect.ImmutableMap;
 import hudson.Extension;
 import hudson.ExtensionList;
-import hudson.model.AbstractProject;
 import hudson.model.AsyncPeriodicWork;
 import hudson.model.TaskListener;
 import io.jenkins.blueocean.analytics.Analytics;
@@ -13,13 +12,13 @@ import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 import java.io.IOException;
-import java.util.Map;
 
 @Extension
 @Restricted(NoExternalUse.class)
 public final class JobAnalytics extends AsyncPeriodicWork {
 
     private static final String JOB_STATS_EVENT_NAME = "job_stats";
+    private static final String OTHER_CATEGORY = "other";
 
     public JobAnalytics() {
         super("jobAnalytics");
@@ -42,7 +41,7 @@ public final class JobAnalytics extends AsyncPeriodicWork {
         // Initialize the tally
         Tally tally = new Tally();
         checks.forEach(check -> tally.zero(check.getName()));
-        tally.zero("other");
+        tally.zero(OTHER_CATEGORY);
 
         jenkins.allItems().forEach(item -> {
             if (excludes.stream().noneMatch(exclude -> exclude.apply(item))) {
@@ -55,7 +54,7 @@ public final class JobAnalytics extends AsyncPeriodicWork {
                     }
                 }
                 if (!matchFound) {
-                    tally.count("other");
+                    tally.count(OTHER_CATEGORY);
                 }
             }
         });
