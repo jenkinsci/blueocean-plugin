@@ -92,10 +92,10 @@ public class PipelineStepImpl extends BluePipelineStep {
     }
 
     @Override
-    public String getAnalyticsType() {
+    public String getStepType() {
         if (node.getNode() instanceof StepAtomNode) {
             StepDescriptor descriptor = ((StepAtomNode) node.getNode()).getDescriptor();
-            return descriptor.getId();
+            if (descriptor != null) return descriptor.getId();
         }
         return "unknown";
     }

@@ -60,7 +60,7 @@ public abstract class BluePipelineStep extends Resource{
     /**
      * @return the type of step used for analytics purposes
      */
-    public abstract String getAnalyticsType();
+    public abstract String getStepType();
 
     /**
      * Step execution result

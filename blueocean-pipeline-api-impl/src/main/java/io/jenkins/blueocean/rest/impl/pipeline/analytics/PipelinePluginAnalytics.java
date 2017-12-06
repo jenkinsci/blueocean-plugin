@@ -30,7 +30,7 @@ public class PipelinePluginAnalytics extends RunListener<WorkflowRun> {
         Tally tally = new Tally();
         NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(workflowRun);
         builder.getPipelineNodeSteps(new Link("steps/")).forEach(step -> {
-            tally.count(step.getAnalyticsType());
+            tally.count(step.getStepType());
         });
         boolean isDeclarative = workflowRun.getParent().getAction(DeclarativeJobAction.class) != null;
         Result result = workflowRun.getResult();
