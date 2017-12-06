@@ -26,7 +26,9 @@ import org.acegisecurity.Authentication;
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.workflow.actions.ArgumentsAction;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
+import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputStepExecution;
@@ -87,6 +89,15 @@ public class PipelineStepImpl extends BluePipelineStep {
     @Override
     public String getType() {
         return node.getType().name();
+    }
+
+    @Override
+    public String getAnalyticsType() {
+        if (node.getNode() instanceof StepAtomNode) {
+            StepDescriptor descriptor = ((StepAtomNode) node.getNode()).getDescriptor();
+            return descriptor.getId();
+        }
+        return "unknown";
     }
 
     @Override

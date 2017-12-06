@@ -117,6 +117,11 @@ public class PipelineNodeImpl extends BluePipelineNode {
     }
 
     @Override
+    public String getAnalyticsType() {
+        throw new UnsupportedOperationException("not supported");
+    }
+
+    @Override
     public String getCauseOfBlockage() {
         return node.getCauseOfFailure();
     }
