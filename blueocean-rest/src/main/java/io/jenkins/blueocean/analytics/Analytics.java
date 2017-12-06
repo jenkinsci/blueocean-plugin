@@ -43,12 +43,7 @@ public abstract class Analytics implements ExtensionPoint {
      */
     @CheckForNull
     public static Analytics get() {
-        return Iterables.find(ExtensionList.lookup(Analytics.class), new Predicate<Analytics>() {
-            @Override
-            public boolean apply(@Nullable Analytics input) {
-                return input != null && input.isEnabled();
-            }
-        }, null);
+        return ExtensionList.lookup(Analytics.class).stream().filter(input -> input != null && input.isEnabled()).findFirst().orElseGet(() -> null);
     }
 
     /** Is analytics enabled on Jenkins or not **/

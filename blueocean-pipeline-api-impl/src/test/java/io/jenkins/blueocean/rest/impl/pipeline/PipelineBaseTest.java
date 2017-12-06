@@ -1,7 +1,9 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
+import com.google.common.io.Resources;
 import com.mashape.unirest.http.HttpResponse;
 import com.mashape.unirest.http.ObjectMapper;
 import com.mashape.unirest.http.Unirest;
@@ -19,6 +21,7 @@ import org.acegisecurity.adapters.PrincipalAcegiUserToken;
 import org.acegisecurity.context.SecurityContextHolder;
 import org.acegisecurity.userdetails.UserDetails;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
+import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.graphanalysis.ForkScanner;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -37,12 +40,14 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.LogManager;
 
 import static io.jenkins.blueocean.auth.jwt.JwtToken.X_BLUEOCEAN_JWT;
@@ -612,6 +617,15 @@ public abstract class PipelineBaseTest{
     }
     protected User login() throws IOException {
         return login("bob", "Bob Smith", "bob@jenkins-ci.org");
+    }
+
+    protected WorkflowJob createWorkflowJobWithJenkinsfile(Class<?> contextClass, String jenkinsFileName) throws java.io.IOException {
+        WorkflowJob p = j.createProject(WorkflowJob.class, "project-" + UUID.randomUUID().toString());
+        URL resource = Resources.getResource(contextClass, jenkinsFileName);
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        p.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+        p.save();
+        return p;
     }
 
 }
