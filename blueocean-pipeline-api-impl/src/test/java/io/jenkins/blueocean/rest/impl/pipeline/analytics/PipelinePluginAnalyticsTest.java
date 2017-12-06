@@ -18,7 +18,7 @@ public class PipelinePluginAnalyticsTest extends PipelineBaseTest {
     @Test
     public void testGenerateAnalyticsEvent() throws Exception {
         // Create single scripted pipeline
-        WorkflowJob scriptedSingle = createWorkflowJobWithJenkinsfile("JobAnalyticsTest-scripted.jenkinsfile");
+        WorkflowJob scriptedSingle = createWorkflowJobWithJenkinsfile(getClass(),"JobAnalyticsTest-scripted.jenkinsfile");
         WorkflowRun scriptedSingleRun = scriptedSingle.scheduleBuild2(0, new CauseAction()).waitForStart();
         j.waitForCompletion(scriptedSingleRun);
 
@@ -38,7 +38,7 @@ public class PipelinePluginAnalyticsTest extends PipelineBaseTest {
 
     @Test
     public void testGeneratedAnalyticsEventWithScriptedFunction() throws Exception {
-        WorkflowJob scriptedSingle = createWorkflowJobWithJenkinsfile("PipelinePluginAnalyticsTest-scripted-function.jenkinsfile");
+        WorkflowJob scriptedSingle = createWorkflowJobWithJenkinsfile(getClass(),"PipelinePluginAnalyticsTest-scripted-function.jenkinsfile");
         WorkflowRun scriptedSingleRun = scriptedSingle.scheduleBuild2(0, new CauseAction()).waitForStart();
         j.waitForCompletion(scriptedSingleRun);
 
