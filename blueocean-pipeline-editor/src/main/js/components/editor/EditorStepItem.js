@@ -4,8 +4,9 @@ import { PropTypes } from 'react';
 import { DragSource, DropTarget } from 'react-dnd';
 import { Icon } from '@jenkins-cd/design-language';
 
-import { ChildStepIcon } from "./ChildStepIcon";
+import pipelineStore from '../../services/PipelineStore';
 import { getArg } from '../../services/PipelineMetadataService';
+import { ChildStepIcon } from "./ChildStepIcon";
 
 const ItemType = 'EditorStepItem';
 
@@ -47,6 +48,7 @@ function dropTargetCollector(connect, monitor) {
     return {
         connectDropTarget: connect.dropTarget(),
         isHovering: monitor.isOver(),
+        isDroppable: monitor.canDrop(),
         //lastPosition: item && item.lastPosition,
     };
 }
@@ -92,7 +94,13 @@ const dragTarget = {
         // item.lastPosition = currentPosition;
         props.onDragStepHover(item);
     },
-    // TODO: impl canDrop to block dragging a parent into a descendant
+    canDrop(props, monitor) {
+        const item = monitor.getItem();
+        const { stage, step, parent } = props;
+        const ancestors = pipelineStore.findStepHierarchy(parent || step, stage.steps);
+        const ancestorIds = ancestors.map(anc => anc.id);
+        return ancestorIds.indexOf(item.id) === -1;
+    },
     drop(props, monitor) {
         props.onDragStepDrop(monitor.getItem());
     }
@@ -104,6 +112,7 @@ const dragTarget = {
 class EditorStepItem extends React.Component {
 
     static propTypes = {
+        stage: PropTypes.object,
         step: PropTypes.object,
         parent: PropTypes.object,
         parameters: PropTypes.array,
@@ -115,6 +124,7 @@ class EditorStepItem extends React.Component {
         // injected by react-dnd
         isHovering: PropTypes.bool,
         isDragging: PropTypes.bool,
+        isDroppable: PropTypes.bool,
         connectDragSource: PropTypes.func,
         connectDragPreview: PropTypes.func,
         connectDropTarget: PropTypes.func,
@@ -128,14 +138,14 @@ class EditorStepItem extends React.Component {
 
     render() {
         const {
-            step, parent, parameters, errors, isHovering, isDragging,
+            step, parent, parameters, errors, isHovering, isDragging, isDroppable,
             connectDragSource, connectDragPreview, connectDropTarget,
         } = this.props;
 
-        const hoverClass = isHovering && !isDragging && 'is-dragged-over';
+        const dragClass = (isHovering && !isDragging) && (isDroppable && 'is-drop-allowed' || 'is-drop-blocked');
 
         return (connectDragPreview(connectDropTarget(
-            <div className={`editor-step-content ${hoverClass}`}>
+            <div className={`editor-step-content ${dragClass}`}>
                 {parent && <ChildStepIcon/>}
                 <div className="editor-step-title">
                     <span className="editor-step-label">{step.label}</span>

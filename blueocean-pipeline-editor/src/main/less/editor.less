@@ -514,9 +514,14 @@
     }
 
     .editor-step-content, .editor-step-list-drop-zone {
-        &.is-dragged-over {
+        &.is-drop-allowed {
             background-color: @light-blue-bg;
             box-shadow: inset 0 1px 0 @brand-color;
+        }
+
+        &.is-drop-blocked {
+            background-color: @warning-color;
+            opacity: 0.25;
         }
     }
 

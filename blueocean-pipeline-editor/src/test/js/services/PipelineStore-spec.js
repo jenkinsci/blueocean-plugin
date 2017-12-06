@@ -60,4 +60,17 @@ describe('PipelineStore', () => {
 
         });
     });
+
+    describe('findStepHierarchy', () => {
+        it('should return the step and a single ancestor', () => {
+            const firstStage = pipelineStore.pipeline.children[0];
+            const nestedStep1 = firstStage.steps[2];
+            const nestedStep2 = nestedStep1.children[2];
+
+            const hierarchy = pipelineStore.findStepHierarchy(nestedStep2, firstStage.steps);
+            assert.equal(hierarchy.length, 2);
+            assert.equal(hierarchy[0].id, nestedStep2.id);
+            assert.equal(hierarchy[1].id, nestedStep1.id);
+        });
+    });
 });

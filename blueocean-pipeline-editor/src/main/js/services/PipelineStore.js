@@ -228,6 +228,28 @@ class PipelineStore {
     }
 
     /**
+     * Return an array that starts at the specified step and includes all ancestor steps.
+     * @param childStep
+     * @param steps
+     * @returns {[]}
+     */
+    findStepHierarchy(childStep:StepInfo, steps) {
+        const ancestors = [childStep];
+
+        let nextStep = childStep;
+
+        while (nextStep) {
+            nextStep = findParentStepByChild(steps, nextStep);
+
+            if (nextStep) {
+                ancestors.push(nextStep);
+            }
+        }
+
+        return ancestors;
+    }
+
+    /**
      * Delete the selected stage from our stages list. When this leaves a single-branch of parallel jobs, the steps
      * will be moved to the parent stage, and the lone parallel branch will be deleted.
      *

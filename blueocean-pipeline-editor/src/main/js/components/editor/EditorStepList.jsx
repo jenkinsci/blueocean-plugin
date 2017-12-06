@@ -65,6 +65,7 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
                 return (
                     <div className="editor-step nested missing">
                         <div className="editor-step-main" onClick={(e) => this.stepClicked(parent, e)}>
+                            { /* TODO: possibly replace with EditorStepListDropZone */ }
                             <div className="editor-step-content">
                                 <ChildStepIcon/>
                                 <div className="editor-step-title">
@@ -108,6 +109,7 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
             <div className={classNames.join(' ')} key={key}>
                 <div className="editor-step-main" onClick={(e) => this.stepClicked(step, e)}>
                     <EditorStepItem
+                        stage={this.props.stage}
                         step={step}
                         parent={parent}
                         parameters={thisMeta.parameters}
@@ -121,10 +123,11 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
                     {step.isContainer && [
                         this.renderSteps(step.children, step),
                         <EditorStepListDropZone
+                            stage={this.props.stage}
                             parent={step}
                             onDragStepHover={this.props.onDragStepHover}
                             onDragStepDrop={this.props.onDragStepDrop}
-                        />,
+                        />
                     ]}
                 </div>
             </div>
@@ -167,6 +170,7 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
             <div className="editor-steps">
                 {this.renderSteps(steps, parent)}
                 <EditorStepListDropZone
+                    stage={this.props.stage}
                     parent={this.props.stage}
                     onDragStepHover={this.props.onDragStepHover}
                     onDragStepDrop={this.props.onDragStepDrop}
