@@ -56,7 +56,6 @@ public class AnalyticsTest {
 
         Map<String, Object> expectedProps = Maps.newHashMap(props);
         expectedProps.put("jenkins", analytics.getServer());
-        expectedProps.put("userId", analytics.getIdentity());
 
         Assert.assertEquals("test", analytics.lastName);
         Assert.assertEquals( expectedProps, analytics.lastProps);
@@ -71,7 +70,6 @@ public class AnalyticsTest {
 
         Map<String, Object> expectedProps = Maps.newHashMap();
         expectedProps.put("jenkins", analytics.getServer());
-        expectedProps.put("userId", analytics.getIdentity());
         expectedProps.put("jenkinsVersion", j.jenkins.getVersion().toString());
         expectedProps.put("blueoceanVersion", Jenkins.getInstance().getPlugin("blueocean-commons").getWrapper().getVersion());
 
@@ -123,7 +121,7 @@ public class AnalyticsTest {
         }
 
         public String getIdentity() {
-            return identity();
+            return identity(server());
         }
     }
 }
