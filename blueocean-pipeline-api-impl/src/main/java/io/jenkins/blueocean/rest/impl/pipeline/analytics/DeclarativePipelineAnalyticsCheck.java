@@ -12,7 +12,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 @Extension
 @Restricted(NoExternalUse.class)
-public class DeclarativePipelineAnalyticsCheck extends JobAnalyticsCheck {
+public class DeclarativePipelineAnalyticsCheck implements JobAnalyticsCheck {
 
     @Override
     public String getName() {

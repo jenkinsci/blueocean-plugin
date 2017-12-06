@@ -11,7 +11,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 @Extension
 @Restricted(NoExternalUse.class)
-public final class DeclarativeSinglePipelineCheck extends JobAnalyticsCheck {
+public final class DeclarativeSinglePipelineCheck implements JobAnalyticsCheck {
     @Override
     public String getName() {
         return "singlePipelineDeclarative";

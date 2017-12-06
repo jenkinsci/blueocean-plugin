@@ -13,7 +13,7 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 @Extension
 @Restricted(NoExternalUse.class)
-public class ScriptedPipelineAnalyticsCheck extends JobAnalyticsCheck {
+public class ScriptedPipelineAnalyticsCheck implements JobAnalyticsCheck {
     @Override
     public String getName() {
         return "pipelineScripted";
@@ -34,7 +34,7 @@ public class ScriptedPipelineAnalyticsCheck extends JobAnalyticsCheck {
      */
     @Extension
     @Restricted(NoExternalUse.class)
-    public final static class ExcludeImpl extends JobAnalyticsExclude {
+    public final static class ExcludeImpl implements JobAnalyticsExclude {
         @Override
         public Boolean apply(Item item) {
             return item.getParent() instanceof MultiBranchProject;
