@@ -27,6 +27,10 @@ import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.workflow.actions.ArgumentsAction;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
+import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
+import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode;
+import org.jenkinsci.plugins.workflow.graph.FlowNode;
+import org.jenkinsci.plugins.workflow.graph.StepNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
@@ -93,8 +97,10 @@ public class PipelineStepImpl extends BluePipelineStep {
 
     @Override
     public String getStepType() {
-        if (node.getNode() instanceof StepAtomNode) {
-            StepDescriptor descriptor = ((StepAtomNode) node.getNode()).getDescriptor();
+        FlowNode flowNode = this.node.getNode();
+        if (flowNode instanceof StepNode && !(flowNode instanceof StepEndNode)) {
+            StepNode stepNode = (StepNode) flowNode;
+            StepDescriptor descriptor = stepNode.getDescriptor();
             if (descriptor != null) return descriptor.getId();
         }
         return "unknown";
