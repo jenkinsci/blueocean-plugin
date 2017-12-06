@@ -142,7 +142,7 @@ public class GithubEditorTest {
      */
     @Test
     public void testEditorWithSpace() throws IOException {
-        creationPage.createPipeline(" XXX" + token + " ", organization, repo, true);
+        creationPage.createPipeline(" " + token + " ", organization, repo, false);
     }
 
     /**
