@@ -66,12 +66,12 @@ public class JobAnalyticsTest extends PipelineBaseTest {
         j.createProject(MatrixProject.class, "bob");
 
         // Create single scripted pipeline
-        WorkflowJob scriptedSingle = createWorkflowJobWithJenkinsfile("JobAnalyticsTest-scripted.jenkinsfile");
+        WorkflowJob scriptedSingle = createWorkflowJobWithJenkinsfile(getClass(),"JobAnalyticsTest-scripted.jenkinsfile");
         WorkflowRun scriptedSingleRun = scriptedSingle.scheduleBuild2(0, new CauseAction()).waitForStart();
         j.waitForCompletion(scriptedSingleRun);
 
         // Create single declarative pipeline
-        WorkflowJob declarativeSingle = createWorkflowJobWithJenkinsfile("JobAnalyticsTest-declarative.jenkinsfile");
+        WorkflowJob declarativeSingle = createWorkflowJobWithJenkinsfile(getClass(),"JobAnalyticsTest-declarative.jenkinsfile");
         WorkflowRun declarativeSingleRun = declarativeSingle.scheduleBuild2(0, new CauseAction()).waitForStart();
         j.waitForCompletion(declarativeSingleRun);
 
