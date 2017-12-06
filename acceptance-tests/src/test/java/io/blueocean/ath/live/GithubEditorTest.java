@@ -1,6 +1,7 @@
 package io.blueocean.ath.live;
 
 import io.blueocean.ath.ATHJUnitRunner;
+import io.blueocean.ath.CustomJenkinsServer;
 import io.blueocean.ath.Login;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.MultiBranchPipeline;
@@ -57,6 +58,9 @@ public class GithubEditorTest {
 
     @Inject
     WebDriver driver;
+
+    @Inject
+    CustomJenkinsServer jenkins;
 
     /**
      * Cleans up repostory after the test has completed.
@@ -136,12 +140,12 @@ public class GithubEditorTest {
     }
 
     /**
-     * This test covers e2e usage of the editor, with a token that has whitespace added.
-     *
-     * Creates a blank github repo, and then uses editor to create a simple pipeline.
+     * Make sure we can paste a bad token that has whitespace added.
      */
     @Test
     public void testEditorWithSpace() throws IOException {
+        // Gotta make Jenkins clear out its credential store or we might get a false positive depending on test order
+        jenkins.deleteUserDomainCredential("alice", "blueocean-github-domain", "github");
         creationPage.createPipeline(" " + token + " ", organization, repo, false);
     }
 
