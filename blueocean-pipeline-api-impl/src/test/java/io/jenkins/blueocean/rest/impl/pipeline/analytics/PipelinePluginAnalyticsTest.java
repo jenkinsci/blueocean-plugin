@@ -33,6 +33,7 @@ public class PipelinePluginAnalyticsTest extends PipelineBaseTest {
         Assert.assertEquals("timesUsed", 2, properties.get("timesUsed"));
         Assert.assertEquals("isDeclarative", true, properties.get("isDeclarative"));
         Assert.assertEquals("runResult", "SUCCESS", properties.get("runResult"));
+//        Assert.assertEquals("plugin", "", properties.get("plugin"));
     }
 
     @Test(timeout = 120000)
@@ -52,6 +53,7 @@ public class PipelinePluginAnalyticsTest extends PipelineBaseTest {
         Assert.assertEquals("timesUsed", 2, properties.get("timesUsed"));
         Assert.assertEquals("isDeclarative", false, properties.get("isDeclarative"));
         Assert.assertEquals("runResult", "SUCCESS", properties.get("runResult"));
+//        Assert.assertEquals("plugin", "", properties.get("plugin"));
     }
 
     @Test(timeout = 120000)
@@ -70,6 +72,7 @@ public class PipelinePluginAnalyticsTest extends PipelineBaseTest {
         Assert.assertEquals("timesUsed", 1, properties.get("timesUsed"));
         Assert.assertEquals("isDeclarative", false, properties.get("isDeclarative"));
         Assert.assertEquals("runResult", "SUCCESS", properties.get("runResult"));
+//        Assert.assertEquals("plugin", "", properties.get("plugin"));
     }
 
     private void createAndRunPipeline(String jenkinsFileName) throws java.io.IOException, InterruptedException, java.util.concurrent.ExecutionException {

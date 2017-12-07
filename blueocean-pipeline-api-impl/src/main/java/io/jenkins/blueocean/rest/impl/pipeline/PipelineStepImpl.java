@@ -96,17 +96,6 @@ public class PipelineStepImpl extends BluePipelineStep {
     }
 
     @Override
-    public String getStepType() {
-        FlowNode flowNode = this.node.getNode();
-        if (flowNode instanceof StepNode && !(flowNode instanceof StepEndNode)) {
-            StepNode stepNode = (StepNode) flowNode;
-            StepDescriptor descriptor = stepNode.getDescriptor();
-            if (descriptor != null) return descriptor.getId();
-        }
-        return "unknown";
-    }
-
-    @Override
     public BlueRun.BlueRunResult getResult() {
         return node.getStatus().getResult();
     }

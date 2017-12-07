@@ -58,11 +58,6 @@ public abstract class BluePipelineStep extends Resource{
     public abstract String getType();
 
     /**
-     * @return the step type
-     */
-    public abstract String getStepType();
-
-    /**
      * Step execution result
      * @return {@link io.jenkins.blueocean.rest.model.BlueRun.BlueRunResult} instance
      */
