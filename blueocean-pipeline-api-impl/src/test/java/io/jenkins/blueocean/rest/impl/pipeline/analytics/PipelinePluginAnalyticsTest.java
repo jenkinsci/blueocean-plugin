@@ -17,6 +17,25 @@ import java.util.concurrent.TimeUnit;
 public class PipelinePluginAnalyticsTest extends PipelineBaseTest {
 
     @Test(timeout = 120000)
+    public void testGenerateAnalyticsEventWithDeclarative() throws Exception {
+        // Create single scripted pipeline
+        createAndRunPipeline("JobAnalyticsTest-declarative.jenkinsfile");
+
+        AnalyticsImpl analytics = (AnalyticsImpl) Analytics.get();
+        Assert.assertNotNull(analytics);
+
+        TrackRequest req = analytics.lastReq;
+        Assert.assertNotNull(req);
+        Assert.assertEquals("pipeline_step_used", req.name);
+
+        Map<String, Object> properties = req.properties;
+        Assert.assertEquals("type", "org.jenkinsci.plugins.workflow.steps.EchoStep", properties.get("type"));
+        Assert.assertEquals("timesUsed", 2, properties.get("timesUsed"));
+        Assert.assertEquals("isDeclarative", true, properties.get("isDeclarative"));
+        Assert.assertEquals("runResult", "SUCCESS", properties.get("runResult"));
+    }
+
+    @Test(timeout = 120000)
     public void testGenerateAnalyticsEvent() throws Exception {
         // Create single scripted pipeline
         createAndRunPipeline("JobAnalyticsTest-scripted.jenkinsfile");
@@ -30,7 +49,7 @@ public class PipelinePluginAnalyticsTest extends PipelineBaseTest {
 
         Map<String, Object> properties = req.properties;
         Assert.assertEquals("type", "org.jenkinsci.plugins.workflow.steps.EchoStep", properties.get("type"));
-        Assert.assertEquals("timesUsed", 1, properties.get("timesUsed"));
+        Assert.assertEquals("timesUsed", 2, properties.get("timesUsed"));
         Assert.assertEquals("isDeclarative", false, properties.get("isDeclarative"));
         Assert.assertEquals("runResult", "SUCCESS", properties.get("runResult"));
     }
