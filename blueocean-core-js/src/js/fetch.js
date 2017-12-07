@@ -272,11 +272,11 @@ export const Fetch = {
      * @param {Object} [options.fetchOptions] - Optional isomorphic-fetch options.
      * @returns JSON body.
      */
-    fetchJSON(url, { onSuccess, onError, fetchOptions, disableCapabilites, ignoreRefreshHeader } = {}) {
+    fetchJSON(url, { onSuccess, onError, fetchOptions, disableCapabilites, disableLoadingIndicator, ignoreRefreshHeader } = {}) {
         const fixedUrl = FetchFunctions.prefixUrl(url);
         let future;
         if (!config.isJWTEnabled()) {
-            future = FetchFunctions.rawFetchJSON(fixedUrl, { onSuccess, onError, fetchOptions, ignoreRefreshHeader });
+            future = FetchFunctions.rawFetchJSON(fixedUrl, { onSuccess, onError, fetchOptions, disableLoadingIndicator, ignoreRefreshHeader });
         } else {
             future = jwt.getToken()
                 .then(token => FetchFunctions.rawFetchJSON(fixedUrl, {
