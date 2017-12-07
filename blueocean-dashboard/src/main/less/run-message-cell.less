@@ -21,23 +21,19 @@
 
             &:last-child {
                 flex-grow: 1;
-                white-space: nowrap;
-                text-overflow: ellipsis;
-                overflow: hidden;
+                text-overflow();
 
-                &:not(:first-child) > span{
+                &:not(:first-child) > .ellipsis-text {
                     width: 10px;
                 }
 
-                > span {
+                .ellipsis-text {
                     display: table-cell;
                     flex-grow: 1;
                     vertical-align: middle;
                     height: auto;
-                    width: 300px;
-                    white-space: nowrap;
-                    text-overflow: ellipsis;
-                    overflow: hidden;
+                    width: 235px;
+                    text-overflow();
                 }
             }
         }
