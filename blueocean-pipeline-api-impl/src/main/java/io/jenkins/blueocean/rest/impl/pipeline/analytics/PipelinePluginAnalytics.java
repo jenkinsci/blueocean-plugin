@@ -67,7 +67,7 @@ public class PipelinePluginAnalytics extends RunListener<WorkflowRun> {
         });
     }
 
-    private class PipelineStepVisitor extends StandardChunkVisitor {
+    private static final class PipelineStepVisitor extends StandardChunkVisitor {
         final Tally tally = new Tally();
         final Map<String, String> stepToPlugin = new HashMap<>();
 
