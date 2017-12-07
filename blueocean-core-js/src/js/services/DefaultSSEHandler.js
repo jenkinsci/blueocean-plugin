@@ -149,7 +149,7 @@ export class DefaultSSEHandler {
 
         this.loggingEnabled && console.log(`fetch ${logMessage}`);
 
-        this.activityService.fetchActivity(href, { useCache: false }).then((run) => {
+        this.activityService.fetchActivity(href, { useCache: false, disableLoadingIndicator: true }).then((run) => {
             this.activityService.setItem(run);
             for (const key of this.branchPagerKeys(event)) {
                 const pager = this.pagerService.getPager({ key });
