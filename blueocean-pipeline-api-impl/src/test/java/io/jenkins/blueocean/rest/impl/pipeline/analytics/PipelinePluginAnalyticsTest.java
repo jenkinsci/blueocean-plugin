@@ -12,15 +12,14 @@ import org.junit.Test;
 import org.jvnet.hudson.test.TestExtension;
 
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class PipelinePluginAnalyticsTest extends PipelineBaseTest {
 
-    @Test
+    @Test(timeout = 120000)
     public void testGenerateAnalyticsEvent() throws Exception {
         // Create single scripted pipeline
-        WorkflowJob scriptedSingle = createWorkflowJobWithJenkinsfile(getClass(),"JobAnalyticsTest-scripted.jenkinsfile");
-        WorkflowRun scriptedSingleRun = scriptedSingle.scheduleBuild2(0, new CauseAction()).waitForStart();
-        j.waitForCompletion(scriptedSingleRun);
+        createAndRunPipeline("JobAnalyticsTest-scripted.jenkinsfile");
 
         AnalyticsImpl analytics = (AnalyticsImpl) Analytics.get();
         Assert.assertNotNull(analytics);
@@ -36,11 +35,9 @@ public class PipelinePluginAnalyticsTest extends PipelineBaseTest {
         Assert.assertEquals("runResult", "SUCCESS", properties.get("runResult"));
     }
 
-    @Test
+    @Test(timeout = 120000)
     public void testGeneratedAnalyticsEventWithScriptedFunction() throws Exception {
-        WorkflowJob scriptedSingle = createWorkflowJobWithJenkinsfile(getClass(),"PipelinePluginAnalyticsTest-scripted-function.jenkinsfile");
-        WorkflowRun scriptedSingleRun = scriptedSingle.scheduleBuild2(0, new CauseAction()).waitForStart();
-        j.waitForCompletion(scriptedSingleRun);
+        createAndRunPipeline("PipelinePluginAnalyticsTest-scripted-function.jenkinsfile");
 
         AnalyticsImpl analytics = (AnalyticsImpl) Analytics.get();
         Assert.assertNotNull(analytics);
@@ -54,6 +51,19 @@ public class PipelinePluginAnalyticsTest extends PipelineBaseTest {
         Assert.assertEquals("timesUsed", 1, properties.get("timesUsed"));
         Assert.assertEquals("isDeclarative", false, properties.get("isDeclarative"));
         Assert.assertEquals("runResult", "SUCCESS", properties.get("runResult"));
+    }
+
+    private void createAndRunPipeline(String jenkinsFileName) throws java.io.IOException, InterruptedException, java.util.concurrent.ExecutionException {
+        // Create the pipeline and run it
+        WorkflowJob scriptedSingle = createWorkflowJobWithJenkinsfile(getClass(), jenkinsFileName);
+        WorkflowRun scriptedSingleRun = scriptedSingle.scheduleBuild2(0, new CauseAction()).waitForStart();
+        j.waitForCompletion(scriptedSingleRun);
+        // RunListeners can sometimes be executed after the run is reported as completed. This fixes a race condition.
+        AnalyticsImpl analytics = (AnalyticsImpl) Analytics.get();
+        Assert.assertNotNull(analytics);
+        while (analytics.lastReq == null) {
+            Thread.sleep(100);
+        }
     }
 
     @TestExtension

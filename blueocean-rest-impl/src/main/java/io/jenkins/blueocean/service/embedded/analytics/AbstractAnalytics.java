@@ -42,7 +42,7 @@ public abstract class AbstractAnalytics extends Analytics {
         if (StringUtils.isEmpty(req.name)) {
             throw new ServiceException.BadRequestException("missing name");
         }
-        Map<String, Object> allProps = req.properties == null ? Maps.<String, Object>newHashMap() : Maps.newHashMap(req.properties);
+        Map<String, Object> allProps = req.properties == null ? Maps.newHashMap() : Maps.newHashMap(req.properties);
         // Enhance with additional properties
         for (AdditionalAnalyticsProperties enhancer : ExtensionList.lookup(AdditionalAnalyticsProperties.class)) {
             Map<String, Object> additionalProperties = enhancer.properties(req);
@@ -73,7 +73,14 @@ public abstract class AbstractAnalytics extends Analytics {
     protected abstract void doTrack(String name, Map<String, Object> allProps);
 
     protected final String server() {
-        return Hashing.sha256().hashBytes(InstanceIdentity.get().getPublic().getEncoded()).toString();
+        byte[] identityBytes;
+        try {
+            identityBytes = InstanceIdentity.get().getPublic().getEncoded();
+        } catch (AssertionError e) {
+            LOGGER.log(Level.SEVERE, "There was a problem identifying this server", e);
+            throw new IllegalStateException("There was a problem identifying this server", e);
+        }
+        return Hashing.sha256().hashBytes(identityBytes).toString();
     }
 
     protected final String identity(String server) {

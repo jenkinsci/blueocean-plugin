@@ -16,6 +16,7 @@ import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
 import javax.annotation.Nonnull;
+import java.util.concurrent.CountDownLatch;
 
 @Extension
 @Restricted(NoExternalUse.class)
