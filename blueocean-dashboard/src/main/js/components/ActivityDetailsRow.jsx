@@ -87,7 +87,7 @@ class ActivityDetailsRow extends Component {
                     />
                 </TableCell>
                 <TableCell linkTo={runDetailsUrl}><RunIdCell run={run} /></TableCell>
-                <TableCell linkTo={runDetailsUrl}><CommitId commitId={run.commitId} /></TableCell>
+                <TableCell linkTo={runDetailsUrl}><CommitId className="text-with-ellipsis-container" commitId={run.commitId} /></TableCell>
                 { isMultibranch && <TableCell linkTo={runDetailsUrl}><span className="text-with-ellipsis-container">{branchName}</span></TableCell> }
                 <TableCell><RunMessageCell linkTo={runDetailsUrl} run={run} t={t} changesUrl={changesUrl} /></TableCell>
                 <TableCell linkTo={runDetailsUrl}>
