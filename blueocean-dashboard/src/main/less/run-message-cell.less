@@ -27,16 +27,17 @@
 
             &:last-child {
                 flex-grow: 1;
-                flex-shrink: 0;
+                flex-shrink: 1;
 
                 &:not(:first-child) > .ellipsis-text {
-                    width: 1px;
+                    width: 1px; /*let the last flex element get as small as 1px in case the other elements need the space*/
+                    flex-grow: 1;
                 }
             }
 
             .ellipsis-text {
                 display: inline;
-                flex-grow: 1;
+                flex-shrink: 1;
                 vertical-align: middle;
                 height: auto;
                 max-width: 100%;
