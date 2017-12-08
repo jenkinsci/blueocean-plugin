@@ -59,15 +59,15 @@ export class ActivityService extends BunkerService {
      *
      * @param {string} href self href of activity.
      * @param {boolean} useCache Use the cache to lookup data or always fetch a new one.
+     * @param {boolean} disableLoadingIndicator Hide the visual progress indicator displayed during fetch.
      * @returns {Promise} Promise of fetched data.
      */
-    fetchActivity(href, { useCache } = {}) {
+    fetchActivity(href, { useCache, disableLoadingIndicator } = {}) {
         if (useCache && this.hasItem(href)) {
             return Promise.resolve(this.getItem(href));
         }
 
-
-        return Fetch.fetchJSON(href)
+        return Fetch.fetchJSON(href, { disableLoadingIndicator })
             .then(data => {
                 // Should really have dedupe on methods like these, but for now
                 // just clone data so that we dont modify other instances.
