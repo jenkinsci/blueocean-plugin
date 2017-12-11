@@ -575,7 +575,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                 createSyntheticStageId(firstNodeId, PARALLEL_SYNTHETIC_STAGE_NAME), parents){
             @Override
             public void save() throws IOException {
-                // no-op
+                // no-op to avoid JENKINS-45892 violations from serializing the synthetic FlowNode.
             }
 
             @Override
