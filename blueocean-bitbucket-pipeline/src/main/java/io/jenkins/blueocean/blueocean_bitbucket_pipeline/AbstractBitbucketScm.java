@@ -260,7 +260,7 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
         }
         if(!errorList.isEmpty()){
             throw new ServiceException.BadRequestException(
-                    new ErrorMessage(401, "Invalid request").addAll(errorList));
+                    new ErrorMessage(400, "Invalid request").addAll(errorList));
         }
     }
 
