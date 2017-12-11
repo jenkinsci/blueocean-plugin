@@ -17,6 +17,7 @@ import jenkins.scm.api.SCMSource;
 import net.sf.json.JSONObject;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution;
+import org.jenkinsci.plugins.workflow.flow.FlowExecution;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.graphanalysis.MemoryFlowChunk;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -31,6 +32,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 import java.util.Iterator;
@@ -40,6 +42,7 @@ import java.util.concurrent.ExecutionException;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl.PARAMETERS_ELEMENT;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
 /**
@@ -2435,6 +2438,32 @@ public class PipelineNodeTest extends PipelineBaseTest {
         assertEquals(edges.get(0).get("id"), receivedEdges.get(0).get("id"));
         assertEquals(edges.get(1).get("id"), receivedEdges.get(1).get("id"));
         assertEquals(edges.get(2).get("id"), receivedEdges.get(2).get("id"));
+    }
+
+    @Issue("JENKINS-47158")
+    @Test
+    public void syntheticParallelFlowNodeNotSaved() throws Exception {
+        WorkflowJob p = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        p.setDefinition(new CpsFlowDefinition("parallel a: {\n" +
+            "    node {\n" +
+            "        echo 'a'\n" +
+            "    }\n" +
+            "}, b: {\n" +
+            "    node {\n" +
+            "        echo 'b'\n" +
+            "    }\n" +
+            "}\n", true));
+        WorkflowRun b = j.buildAndAssertSuccess(p);
+        get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        FlowExecution rawExec = b.getExecution();
+        assert(rawExec instanceof CpsFlowExecution);
+        CpsFlowExecution execution = (CpsFlowExecution) rawExec;
+        File storage = execution.getStorageDir();
+
+        // Nodes 5 and 6 are the parallel branch start nodes. Make sure no "5-parallel-synthetic.xml" and "6..." files
+        // exist in the storage directory, showing we haven't saved them.
+        assertFalse(new File(storage, "5-parallel-synthetic.xml").exists());
+        assertFalse(new File(storage, "6-parallel-synthetic.xml").exists());
     }
 
     @Test
