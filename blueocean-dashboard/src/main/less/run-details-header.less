@@ -29,11 +29,9 @@
         align-items: center;
 
         &.causes {
-            text-overflow: ellipsis;
-            overflow: hidden;
             display: block;
-            white-space: nowrap;
             max-width: 99.99%;
+            .overflow-ellipsis();
         }
 
         svg+* {
@@ -68,10 +66,8 @@
         span {
             position: relative;
             display: block;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
             padding-right: 17px;
+            .overflow-ellipsis();
 
             svg {
                 display: block;

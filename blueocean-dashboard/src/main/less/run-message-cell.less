@@ -1,12 +1,48 @@
 
 .RunMessageCell {
     display: flex;
+    width: 100%;
+    height: 100%;
     align-items: center;
 
-    .RunMessageCellInner {
+    .RunMessageCellInner,
+    .RunMessageCellInner > span {
+        display: flex;
         flex: 1;
-        white-space: nowrap;
-        overflow: hidden;
-        text-overflow: ellipsis;
+        max-width: 100%;
+        height: 100%;
+        .overflow-ellipsis();
+
+        a {
+            display: flex;
+            flex: 0 1 auto;
+            align-items: center;
+            height: 100%;
+            max-width: 100%;
+            .overflow-ellipsis();
+
+            &:first-child {
+                flex-shrink: 0;
+            }
+
+            &:last-child {
+                flex-grow: 1;
+                flex-shrink: 1;
+
+                &:not(:first-child) > .ellipsis-text {
+                    width: 1px; /*let the last flex element get as small as 1px in case the other elements need the space*/
+                    flex-grow: 1;
+                }
+            }
+
+            .ellipsis-text {
+                display: inline;
+                flex-shrink: 1;
+                vertical-align: middle;
+                height: auto;
+                max-width: 100%;
+                .overflow-ellipsis();
+            }
+        }
     }
 }

@@ -127,9 +127,7 @@ main {
 
         .result-item-label-desc {
             max-height: 16px;
-            overflow: hidden;
-            white-space: nowrap;
-            text-overflow: ellipsis;
+            .overflow-ellipsis();
         }
 
         .result-item-label-name {
@@ -248,7 +246,7 @@ code div a.btn-secondary.inverse:hover{
         display: block;
         text-decoration: none;
         color: inherit;
-        .text-overflow;
+        .overflow-ellipsis();
     }
 
     &.u-link-padding a {
