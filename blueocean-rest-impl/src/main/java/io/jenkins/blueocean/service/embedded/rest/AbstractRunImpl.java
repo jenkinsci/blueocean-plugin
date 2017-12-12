@@ -26,7 +26,6 @@ import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.GenericResource;
-import io.jenkins.blueocean.service.embedded.DownstreamJobAction;
 import jenkins.util.SystemProperties;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -34,7 +33,6 @@ import org.kohsuke.stapler.QueryParameter;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.Callable;
@@ -361,16 +359,5 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
                 }
             });
         }
-    }
-
-    @Override
-    public Collection<BlueDownstreamRun> getDownstreamRuns() {
-        ArrayList<BlueDownstreamRun> runs = new ArrayList<>();
-
-        for (DownstreamJobAction action : run.getActions(DownstreamJobAction.class)) {
-            runs.add(new BlueDownstreamRun(action.getDownstreamProject(), action.getDownstreamBuild()));
-        }
-
-        return runs;
     }
 }

@@ -17,7 +17,6 @@ import org.kohsuke.stapler.export.Exported;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 
 public class QueuedBlueRun extends BlueRun {
@@ -191,11 +190,6 @@ public class QueuedBlueRun extends BlueRun {
     @Override
     public Collection<BlueCause> getCauses() {
         return item.getCauses();
-    }
-
-    @Override
-    public Collection<BlueDownstreamRun> getDownstreamRuns() {
-        return null;
     }
 
     @Override
