@@ -80,9 +80,9 @@ export class BranchDetailsRowRenderer extends Component {
                     )}
                 </TableCell>
                 <TableCell linkTo={runDetailsUrl}>{ statusIndicator }</TableCell>
-                <TableCell linkTo={runDetailsUrl}>{ branchName }</TableCell>
+                <TableCell linkTo={runDetailsUrl}><span className="text-with-ellipsis-container">{ branchName }</span></TableCell>
                 <TableCell linkTo={runDetailsUrl}><CommitId commitId={commitId} /></TableCell>
-                <TableCell linkTo={runDetailsUrl}>{ runMessage }</TableCell>
+                <TableCell>{ runMessage }</TableCell>
                 <TableCell linkTo={runDetailsUrl}>{ completed }</TableCell>
                 { actionsCell }
             </TableRow>

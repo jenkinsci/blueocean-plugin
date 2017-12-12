@@ -105,10 +105,15 @@ a.JTable-row--href {
 }
 
 .JTable-cell-contents {
-    width:100%;
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    .overflow-ellipsis();
+
+    .text-with-ellipsis-container {
+        .overflow-ellipsis();
+    }
 }
 
 .JTable-header {

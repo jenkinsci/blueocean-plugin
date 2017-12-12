@@ -18,12 +18,14 @@ const LinkifiedText = (props) => {
             const partialLinksRegExpString = new RegExp(`(${partialLinksIdString.slice(0, -1)})`, 'gi');
 
             for (let commitMsgPart of text.split(partialLinksRegExpString)) {
+                commitMsgPart = commitMsgPart.replace(/ /g, '\u00A0'); //replace empty space chars with &nbsp;
+
                 if (partialLinksObj[commitMsgPart]) {
-                    textWithPartialLinks.push(<a href={partialLinksObj[commitMsgPart]} target="_blank">{commitMsgPart}</a>);
+                    textWithPartialLinks.push(<a href={partialLinksObj[commitMsgPart]} target="_blank"><span className="ellipsis-text">{commitMsgPart}</span></a>);
                 } else {
                     if (commitMsgPart) {
                         if (textLink) {
-                            textWithPartialLinks.push((<Link to={textLink} className="unstyled-link" >{commitMsgPart}</Link>));
+                            textWithPartialLinks.push((<Link to={textLink} className="unstyled-link" ><span className="ellipsis-text">{commitMsgPart}</span></Link>));
                         } else {
                             textWithPartialLinks.push(commitMsgPart);
                         }
@@ -33,13 +35,13 @@ const LinkifiedText = (props) => {
         }
 
         if (!textWithPartialLinks.length) {
-            textWithPartialLinks.push((<Link to={textLink} className="unstyled-link" >{text}</Link>));
+            textWithPartialLinks.push((<Link to={textLink} className="unstyled-link" ><span className="ellipsis-text">{text}</span></Link>));
         }
 
         return (<span>{textWithPartialLinks}</span>);
     }
 
-    return (textLink ? (<Link to={textLink} className="unstyled-link" >{text}</Link>) : (<span>{text}</span>));
+    return (textLink ? (<Link to={textLink} className="unstyled-link" ><span className="ellipsis-text">{text}</span></Link>) : (<span>{text}</span>));
 };
 
 LinkifiedText.propTypes = {

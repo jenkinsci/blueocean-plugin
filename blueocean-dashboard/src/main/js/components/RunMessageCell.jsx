@@ -66,7 +66,7 @@ export default class RunMessageCell extends Component {
         } else if (showCauses) {
             // Last cause is always more significant than the first
             const cause = run.causes[run.causes.length - 1].shortDescription;
-            const linkedCauseMsg = (<Link to={linkTo} className="unstyled-link">{cause}</Link>);
+            const linkedCauseMsg = (<Link to={linkTo} className="unstyled-link"><span className="ellipsis-text">{cause}</span></Link>);
             return (
                 <span className="RunMessageCell" title={cause}>
                     <span className="RunMessageCellInner">
