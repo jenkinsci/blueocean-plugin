@@ -106,6 +106,13 @@
             <artifactId>plain-credentials</artifactId>
         </dependency>
 
+        <!-- Needed to read the "upstreamNode" action -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>pipeline-build-step</artifactId>
+            <version>2.6-SNAPSHOT</version>
+        </dependency>
+
         <!-- Test plugins -->
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
