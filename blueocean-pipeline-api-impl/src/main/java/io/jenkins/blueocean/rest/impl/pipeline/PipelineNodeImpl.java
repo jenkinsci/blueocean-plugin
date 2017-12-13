@@ -2,8 +2,10 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Predicate;
 import hudson.model.Action;
+import hudson.model.Run;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueInputStep;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
@@ -12,18 +14,19 @@ import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
+import io.jenkins.blueocean.service.embedded.rest.NodeDownstreamBuildAction;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.export.Exported;
 
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import org.kohsuke.stapler.export.Exported;
 
 /**
  * Implementation of {@link BluePipelineNode}.
@@ -78,14 +81,14 @@ public class PipelineNodeImpl extends BluePipelineNode {
     @Override
     public Date getStartTime() {
         long nodeTime = node.getTiming().getStartTimeMillis();
-        if(nodeTime == 0){
+        if (nodeTime == 0) {
             return null;
         }
         return new Date(nodeTime);
     }
 
-    public String getStartTimeString(){
-        if(getStartTime() == null) {
+    public String getStartTimeString() {
+        if (getStartTime() == null) {
             return null;
         }
         return AbstractRunImpl.DATE_FORMAT.print(getStartTime().getTime());
@@ -94,6 +97,22 @@ public class PipelineNodeImpl extends BluePipelineNode {
     @Override
     public List<Edge> getEdges() {
         return edges;
+    }
+
+    @Override
+    public Collection<BlueDownstreamBuild> getDownstreamBuilds() {
+        ArrayList<BlueDownstreamBuild> builds = new ArrayList<>();
+
+        for (NodeDownstreamBuildAction action : node.getNode().getActions(NodeDownstreamBuildAction.class)) {
+            Run<?, ?> run = Run.fromExternalizableId(action.getRunExternalizableId());
+            Link link = LinkResolver.resolveLink(run);
+            if (link != null) {
+                BlueDownstreamBuild ds = new BlueDownstreamBuild(action.getDescription(), link);
+                builds.add(ds);
+            }
+        }
+
+        return builds;
     }
 
     @Override
@@ -112,7 +131,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
     }
 
     @Override
-    public String getType(){
+    public String getType() {
         return node.getType().name();
     }
 
@@ -156,7 +175,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
         return null;
     }
 
-    public static class EdgeImpl extends Edge{
+    public static class EdgeImpl extends Edge {
         private final String id;
         private final String type;
 
@@ -176,17 +195,17 @@ public class PipelineNodeImpl extends BluePipelineNode {
         }
     }
 
-    private List<Edge> buildEdges(List<FlowNodeWrapper> nodes){
-        List<Edge> edges  = new ArrayList<>();
-        if(!nodes.isEmpty()) {
-            for (FlowNodeWrapper edge:nodes) {
+    private List<Edge> buildEdges(List<FlowNodeWrapper> nodes) {
+        List<Edge> edges = new ArrayList<>();
+        if (!nodes.isEmpty()) {
+            for (FlowNodeWrapper edge : nodes) {
                 edges.add(new EdgeImpl(edge));
             }
         }
         return edges;
     }
 
-    FlowNodeWrapper getFlowNodeWrapper(){
+    FlowNodeWrapper getFlowNodeWrapper() {
         return node;
     }
 
