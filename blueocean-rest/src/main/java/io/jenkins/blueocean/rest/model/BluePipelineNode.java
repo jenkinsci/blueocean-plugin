@@ -115,17 +115,17 @@ public abstract class BluePipelineNode extends BluePipelineStep {
 
     @ExportedBean
     public static class BlueDownstreamBuild {
-        private final String shortDescription;
+        private final String description;
         private final Link link;
 
-        public BlueDownstreamBuild(String shortDescription, Link link) {
-            this.shortDescription = shortDescription;
+        public BlueDownstreamBuild(String description, Link link) {
+            this.description = description;
             this.link = link;
         }
 
-        @Exported(name="shortDescription")
-        public String getShortDescription() {
-            return shortDescription;
+        @Exported(name="description")
+        public String getDescription() {
+            return description;
         }
 
         @Exported(name="link")
@@ -142,13 +142,13 @@ public abstract class BluePipelineNode extends BluePipelineStep {
                 return false;
             }
             BlueDownstreamBuild that = (BlueDownstreamBuild) o;
-            return Objects.equals(shortDescription, that.shortDescription) &&
+            return Objects.equals(description, that.description) &&
                 Objects.equals(link, that.link);
         }
 
         @Override
         public int hashCode() {
-            return Objects.hash(shortDescription, link);
+            return Objects.hash(description, link);
         }
     }
 
