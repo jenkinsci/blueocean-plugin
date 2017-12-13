@@ -36,11 +36,16 @@ public class DownstreamJobListener extends RunListener<Run<?, ?>> {
     public void onStarted(Run<?, ?> run, TaskListener listener) {
 
         for (BuildUpstreamNodeAction action : run.getActions(BuildUpstreamNodeAction.class)) {
-            System.out.println("run " + run + " started from node " + action.getUpstreamNodeId() + " in run " + action.getUpstreamRunId()); // TODO: RM
             Run triggerRun = Run.fromExternalizableId(action.getUpstreamRunId());
             if (triggerRun instanceof WorkflowRun) {
                 FlowExecution execution = ((WorkflowRun) triggerRun).getExecution();
                 FlowNode node;
+
+                if (execution == null) {
+                    LOGGER.warning("Could not retrieve upstream FlowExecution");
+                    continue;
+                }
+
                 try {
                     node = execution.getNode(action.getUpstreamNodeId());
                 } catch (IOException e) {
@@ -48,18 +53,13 @@ public class DownstreamJobListener extends RunListener<Run<?, ?>> {
                     continue;
                 }
 
-                System.out.println("!!!!!    Found upstream node " + node); // TODO: RM
-
                 // Look up the nearest StepStartNode which is where we want to add our action so BO will find it
                 node = findContainingStepStartNode(node);
-
-                System.out.println("!!!!! upstream StepStartNode " + node); // TODO: RM
 
                 if (node == null) {
                     LOGGER.warning("Could not retrieve upstream StepStartNode");
                     continue;
                 }
-
 
                 // Add an action on the triggerRun node pointing to the currently executing run
                 node.addAction(new NodeDownstreamBuildAction(run.getExternalizableId()));

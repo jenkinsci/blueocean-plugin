@@ -104,11 +104,15 @@ public abstract class BluePipelineNode extends BluePipelineStep {
     @Exported(name = EDGES, inline = true)
     public abstract List<Edge> getEdges();
 
-    // TODO: Docs
+    /**
+     * Downstream builds that were kicked off by this node, in the Blue Ocean sense. The triggering FlowNode is a
+     * child of this.node.getNode()
+     *
+     * @return downstream builds (with links)
+     */
     @Exported(inline = true)
     public abstract Collection<BlueDownstreamBuild> getDownstreamBuilds();
 
-    // TODO: Docs
     @ExportedBean
     public static class BlueDownstreamBuild {
         private final String shortDescription;
@@ -124,7 +128,7 @@ public abstract class BluePipelineNode extends BluePipelineStep {
             return shortDescription;
         }
 
-        @Exported(name="link", inline = true)
+        @Exported(name="link")
         public Link getLink() {
             return link;
         }
