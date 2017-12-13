@@ -76,6 +76,8 @@ class BbCredentialsPicker extends React.Component {
     _getErrorMessage(stateId) {
         if (stateId === BbCredentialsState.INVALID_CREDENTIAL) {
             return t('creation.bitbucket.connect.invalid_username_password');
+        } else if (stateId === BbCredentialsState.REVOKED_CREDENTIAL) {
+            return t('creation.bitbucket.connect.revoked_credential');
         } else if (stateId === BbCredentialsState.UNEXPECTED_ERROR_CREDENTIAL) {
             return t('creation.bitbucket.connect.unexpected_error');
         }
