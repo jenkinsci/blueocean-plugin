@@ -62,7 +62,11 @@ public class DownstreamJobListener extends RunListener<Run<?, ?>> {
                 }
 
                 // Add an action on the triggerRun node pointing to the currently executing run
-                node.addAction(new NodeDownstreamBuildAction(run));
+                String description = run.getDescription();
+                if (description == null) {
+                    description = run.getFullDisplayName();
+                }
+                node.addAction(new NodeDownstreamBuildAction(run.getExternalizableId(), description));
             }
         }
 

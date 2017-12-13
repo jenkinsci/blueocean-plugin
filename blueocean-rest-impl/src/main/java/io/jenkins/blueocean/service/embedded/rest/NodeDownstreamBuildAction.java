@@ -16,10 +16,6 @@ public class NodeDownstreamBuildAction extends InvisibleAction implements FlowNo
     private final String runExternalizableId;
     private final String description;
 
-    public NodeDownstreamBuildAction(Run<?, ?> run) {
-        this(run.getExternalizableId(), run.getDescription());
-    }
-
     public NodeDownstreamBuildAction(String runExternalizableId, String description) {
         this.runExternalizableId = runExternalizableId;
         this.description = description;
