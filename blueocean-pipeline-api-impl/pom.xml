@@ -110,7 +110,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-build-step</artifactId>
-            <version>2.6-SNAPSHOT</version>
+            <version>2.7-SNAPSHOT</version>
         </dependency>
 
         <!-- Test plugins -->
