@@ -35,7 +35,6 @@ docker tag "jenkinsci/blueocean:$BLUEOCEAN_VERSION" jenkinsci/blueocean:latest
 docker tag "jenkinsci/blueocean:$BLUEOCEAN_VERSION" "jenkinsci/blueocean:$FULL_VERSION"
 
 # push it real good
-export DOCKER_CONTENT_TRUST=1
 docker push "jenkinsci/blueocean:$BLUEOCEAN_VERSION"
 docker push "jenkinsci/blueocean:$FULL_VERSION"
 docker push jenkinsci/blueocean:latest
