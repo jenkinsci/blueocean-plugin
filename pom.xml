@@ -1074,18 +1074,6 @@
 
                             <execution>
                                 <phase>initialize</phase>
-                                <id>gulp clean</id>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <configuration>
-                                    <!-- The package.json must define an "mvnclean" script -->
-                                    <arguments>run mvnclean</arguments>
-                                </configuration>
-                            </execution>
-
-                            <execution>
-                                <phase>initialize</phase>
                                 <id>npm install</id>
                                 <goals>
                                     <goal>npm</goal>
