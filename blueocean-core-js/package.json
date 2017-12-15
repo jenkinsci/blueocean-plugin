@@ -15,7 +15,8 @@
     "test": "gulp test",
     "test:debug": "node --debug-brk ./node_modules/.bin/gulp test:debug",
     "test:fast": "gulp test:fast",
-    "mvnbuild": "gulp clean lint build bundle",
+    "mvnclean": "gulp clean",
+    "mvnbuild": "gulp lint build bundle",
     "mvnbuild:fast": "gulp bundle",
     "mvntest": "gulp test"
   },
