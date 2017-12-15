@@ -23,7 +23,7 @@ const lint = require('gulp-eslint');
 // Options, src/dest folders, etc
 
 const config = {
-    clean: ["dist"],
+    clean: ["dist", "target"],
     react: {
         sources: "src/**/*.{js,jsx}",
         dest: "dist"
