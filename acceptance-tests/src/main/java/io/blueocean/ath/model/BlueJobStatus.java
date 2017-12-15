@@ -1,7 +1,5 @@
 package io.blueocean.ath.model;
 
-import io.jenkins.blueocean.rest.model.BlueRun;
-
 /**
  * Models how the UI combines BlueRunState and BlueRunResult enums.
  *

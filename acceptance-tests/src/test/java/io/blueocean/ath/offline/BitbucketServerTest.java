@@ -3,6 +3,8 @@ package io.blueocean.ath.offline;
 import com.cdancy.bitbucket.rest.BitbucketClient;
 import com.cdancy.bitbucket.rest.options.CreateRepository;
 import com.google.inject.Inject;
+import com.mashape.unirest.http.HttpResponse;
+import com.mashape.unirest.http.Unirest;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.CustomJenkinsServer;
@@ -12,9 +14,9 @@ import io.blueocean.ath.WebDriverMixin;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.pages.blue.DashboardPage;
 import io.blueocean.ath.pages.blue.GithubCreationPage;
-import io.jenkins.blueocean.util.HttpRequest;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.log4j.Logger;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -93,12 +95,15 @@ public class BitbucketServerTest implements WebDriverMixin {
         String serverId = DigestUtils.sha256Hex(endpointUrl);
 
         try {
-            httpRequest().Delete("/organizations/jenkins/scm/bitbucket-server/servers/{serverId}/")
-                .urlPart("serverId", serverId)
-                .status(204)
-                .as(Void.class);
-            LOGGER.info("found and deleted bitbucket server: " + serverId);
-        } catch (Exception ex) {
+            HttpResponse<String> httpResponse = Unirest.delete(restUrl() + "/organizations/jenkins/scm/bitbucket-server/servers/" + serverId + "/")
+                .asString();
+            if (httpResponse.getStatus() == 404) {
+                LOGGER.debug("server not found while attempting to delete bitbucket server: " + serverId);
+            } else {
+                Assert.assertEquals(204, httpResponse.getStatus());
+                LOGGER.info("found and deleted bitbucket server: " + serverId);
+            }
+        }catch (Exception ex) {
             LOGGER.debug("server not found while attempting to delete bitbucket server: " + serverId);
         }
     }
@@ -109,7 +114,7 @@ public class BitbucketServerTest implements WebDriverMixin {
         jenkins.deleteUserDomainCredential("alice", "blueocean-bitbucket-server-domain", credentialId);
     }
 
-    private HttpRequest httpRequest() {
-        return new HttpRequest(baseUrl + "/blue/rest");
+    private String restUrl() {
+        return baseUrl + "/blue/rest";
     }
 }
