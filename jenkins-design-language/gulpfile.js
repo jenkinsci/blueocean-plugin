@@ -84,7 +84,7 @@ gulp.task("watch-styles", ["clean-build"], () => {
 // Default to all
 
 gulp.task("default", () =>
-    runSequence("lint", "test", "build", "validate"));
+    runSequence("clean", "lint", "test", "build", "validate"));
 
 // Clean and build only, for watching
 
