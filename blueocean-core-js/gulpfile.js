@@ -19,7 +19,7 @@ const fs = require('fs');
 // Options, src/dest folders, etc
 
 const config = {
-    clean: ["dist", "target"],
+    clean: ["dist"],
     react: {
         sources: ["src/**/*.{js,jsx}", "!**/__mocks__/**"],
         dest: "dist"
