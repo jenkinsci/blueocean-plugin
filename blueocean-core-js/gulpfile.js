@@ -12,14 +12,11 @@ const babel = require('gulp-babel');
 const less = require('gulp-less');
 const rename = require('gulp-rename');
 const copy = require('gulp-copy');
-const del = require('del');
-const runSequence = require('run-sequence');
 const fs = require('fs');
 
 // Options, src/dest folders, etc
 
 const config = {
-    clean: ["dist"],
     react: {
         sources: ["src/**/*.{js,jsx}", "!**/__mocks__/**"],
         dest: "dist"
@@ -40,25 +37,14 @@ const config = {
 
 // Watch all
 
-gulp.task("watch", ["clean-build"], () => {
+gulp.task("watch", ["build"], () => {
     gulp.watch(config.react.sources, ["compile-react"]);
     gulp.watch(config.less.watch, ["less"]);
 });
 
 // Default to all
 
-gulp.task("default", () =>
-    runSequence("clean", "lint", "test", "build", "validate"));
-
-// Clean and build only, for watching
-
-gulp.task("clean-build", () =>
-    runSequence("clean", "build", "validate"));
-
-// Clean
-
-gulp.task("clean", () =>
-    del(config.clean));
+gulp.task("default", ["validate"]);
 
 // Build all
 
@@ -88,7 +74,7 @@ gulp.task("copy-less-assets", () =>
         .pipe(copy(config.copy.less_assets.dest, { prefix: 2 })));
 
 // Validate contents
-gulp.task("validate", () => {
+gulp.task("validate", ["lint", "test"], () => {
     const paths = [
         config.react.dest,
     ];
@@ -123,4 +109,4 @@ builder.bundle('src/js/index.js', 'blueocean-core-js.js')
     .import("react-router@any")
     .export("@jenkins-cd/js-extensions")
     .export("@jenkins-cd/logging")
-    .export('mobx')
+    .export('mobx');

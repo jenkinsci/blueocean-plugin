@@ -13,8 +13,6 @@ const fs = require('fs');
 const sourcemaps = require('gulp-sourcemaps');
 const babel = require('gulp-babel');
 const less = require('gulp-less');
-const clean = require('gulp-clean');
-const runSequence = require('run-sequence');
 const rename = require('gulp-rename');
 const copy = require('gulp-copy');
 const svgmin = require('gulp-svgmin');
@@ -23,7 +21,6 @@ const lint = require('gulp-eslint');
 // Options, src/dest folders, etc
 
 const config = {
-    clean: ["dist"],
     react: {
         sources: "src/**/*.{js,jsx}",
         dest: "dist"
@@ -70,32 +67,20 @@ const config = {
 
 // Watch all
 
-gulp.task("watch", ["clean-build"], () => {
+gulp.task("watch", ["build"], () => {
    gulp.watch(config.react.sources, ["compile-react"]);
    gulp.watch(config.less.watch, ["less"]);
 });
 
 // Watch only styles, for when you're using Storybook
 
-gulp.task("watch-styles", ["clean-build"], () => {
+gulp.task("watch-styles", ["build"], () => {
    gulp.watch(config.less.watch, ["less"]);
 });
 
 // Default to all
 
-gulp.task("default", () =>
-    runSequence("clean", "lint", "test", "build", "validate"));
-
-// Clean and build only, for watching
-
-gulp.task("clean-build", () =>
-    runSequence("clean", "build", "validate"));
-
-// Clean
-
-gulp.task("clean", () =>
-    gulp.src(config.clean, {read: false})
-        .pipe(clean()));
+gulp.task("default", ["lint", "test", "build", "validate"]);
 
 // Build all
 
