@@ -87,7 +87,14 @@ export default class InputStep extends Component {
     okForm() {
         const { href, id } = this.state;
         const parameters = this.parameterService.parametersToSubmitArray();
-        parameterApi.submitInputParameter(href, id, parameters);
+
+        parameterApi.submitInputParameter(href, id, parameters).catch((error) => {
+            if (error.responseBody.message) {
+                this.setState({
+                    responseErrorMsg: error.responseBody.message
+                });
+            }
+        });
     }
 
     render() {
@@ -125,6 +132,11 @@ export default class InputStep extends Component {
                     </button>
                     { cancelButton }
                 </div>
+                { this.state.responseErrorMsg  && 
+                    <div className="errorContainer">
+                        { this.state.responseErrorMsg }
+                    </div>
+                }
             </div>
         </div>);
     }

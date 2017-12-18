@@ -4,10 +4,7 @@ import com.google.common.base.Predicate;
 import hudson.ExtensionList;
 import hudson.FilePath;
 import hudson.console.AnnotatedLargeText;
-import hudson.model.Action;
-import hudson.model.FileParameterValue;
-import hudson.model.ParameterDefinition;
-import hudson.model.ParameterValue;
+import hudson.model.*;
 import io.jenkins.blueocean.commons.JSON;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -37,14 +34,15 @@ import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputStepExecution;
 import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.framework.io.ByteBuffer;
+import org.kohsuke.stapler.json.JsonHttpResponse;
+import javax.servlet.ServletException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Date;
@@ -234,7 +232,22 @@ public class PipelineStepImpl extends BluePipelineStep {
             }
 
             //XXX: execution.doProceed(request) expects submitted form, otherwise we could have simply used it
-            execution.preSubmissionCheck();
+
+            try {
+                execution.preSubmissionCheck();
+            } catch (Failure f) {
+                JSONObject obj = new JSONObject();
+                obj.put("message", f.getMessage());
+
+                return new HttpResponse() {
+                    @Override
+                    public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
+                        rsp.setStatus(400);
+                        rsp.setContentType("application/json;charset=UTF-8");
+                        rsp.getWriter().print(obj.toString());
+                    }
+                };
+            }
 
             Object o = parseValue(execution, JSONArray.fromObject(body.get(PARAMETERS_ELEMENT)), request);
 
