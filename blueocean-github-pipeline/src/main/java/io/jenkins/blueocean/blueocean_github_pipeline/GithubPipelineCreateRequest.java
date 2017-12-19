@@ -5,6 +5,7 @@ import com.google.common.base.Predicate;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Sets;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -16,19 +17,24 @@ import io.jenkins.blueocean.scm.api.AbstractScmSourceEvent;
 import jenkins.branch.MultiBranchProject;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.SCMSourceOwner;
+import jenkins.scm.api.mixin.ChangeRequestCheckoutStrategy;
 import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait;
 import org.jenkinsci.plugins.github_branch_source.Endpoint;
+import org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait;
 import org.jenkinsci.plugins.github_branch_source.GitHubConfiguration;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMSourceBuilder;
+import org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait;
 import org.kohsuke.stapler.DataBoundConstructor;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
 import java.net.HttpURLConnection;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Vivek Pandey
@@ -45,10 +51,16 @@ public class GithubPipelineCreateRequest extends AbstractMultiBranchCreateReques
         if(scmConfig.getId().equals(GithubEnterpriseScm.ID)) {
             updateEndpoints(scmConfig.getUri());
         }
+
+        Set<ChangeRequestCheckoutStrategy> strategies = new HashSet<>();
+        strategies.add(ChangeRequestCheckoutStrategy.MERGE);
+
         return new GitHubSCMSourceBuilder(null, scmConfig.getUri(), computeCredentialId(scmConfig),
                 (String)scmConfig.getConfig().get("repoOwner"),
                 (String)scmConfig.getConfig().get("repository"))
-                .withTrait(new BranchDiscoveryTrait(3)) //take all branches
+                .withTrait(new BranchDiscoveryTrait(true, true)) //take all branches
+                .withTrait(new ForkPullRequestDiscoveryTrait(strategies, new ForkPullRequestDiscoveryTrait.TrustPermission()))
+                .withTrait(new OriginPullRequestDiscoveryTrait(strategies))
                 .build();
     }
 
