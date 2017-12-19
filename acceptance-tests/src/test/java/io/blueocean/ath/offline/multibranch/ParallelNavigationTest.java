@@ -60,7 +60,7 @@ public class ParallelNavigationTest {
         wait.until(By.xpath("//*[text()=\"firstBranch\"]"));
 
         // and clicking on the unselected node will yield us the second branch
-        wait.until(By.xpath("//*[contains(@class, 'pipeline-node')][3]")).click();
+        wait.click(By.xpath("//*[contains(@class, 'pipeline-node')][3]"));
         wait.until(By.xpath("//*[text()=\"secondBranch\"]"));
 
         pipeline.stopAllRuns();
@@ -86,12 +86,12 @@ public class ParallelNavigationTest {
 
         // at first we see branch one
         wait.until(By.xpath("//*[text()=\"firstBranch\"]"));
-        wait.until(By.cssSelector(".btn.inputStepSubmit")).click();
+        wait.click(By.cssSelector(".btn.inputStepSubmit"));
 
         // and clicking on the unselected node will yield us the second branch
-        wait.until(By.xpath("//*[contains(@class, 'pipeline-node')][3]")).click();
+        wait.click(By.xpath("//*[contains(@class, 'pipeline-node')][3]"));
         wait.until(By.xpath("//*[text()=\"secondBranch\"]"));
-        wait.until(By.cssSelector(".btn.inputStepSubmit")).click();
+        wait.click(By.cssSelector(".btn.inputStepSubmit"));
     }
 
 
