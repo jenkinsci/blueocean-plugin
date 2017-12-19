@@ -35,6 +35,7 @@ import org.jvnet.hudson.test.TestExtension;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
@@ -225,20 +226,22 @@ public class SseEventTest {
         final boolean[] masterBranchNodeBlockEvent = {false};
         final boolean[] feature1BranchNodeBlockEvent = {false};
 
+        final List<String> failures = new ArrayList<>();
+
+
+
         SSEConnection con = new SSEConnection(j.getURL(), "me", new ChannelSubscriber() {
             @Override
             public void onMessage(@Nonnull Message message) {
                 System.out.println(message);
                 if("job".equals(message.get(jenkins_channel))) {
                     if ("org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject".equals(message.get(jenkins_object_type))) {
-                        assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/", message.get(blueocean_job_rest_url));
-                        assertEquals("pipeline1", message.get(blueocean_job_pipeline_name));
-                        assertEquals("job", message.get(jenkins_channel));
-                        assertEquals("jenkins", message.get(jenkins_org));
-                        assertEquals("true", message.get(job_ismultibranch));
-                        assertEquals("pipeline1", message.get(job_name));
-                        assertNull(message.get(job_orgfolder_indexing_status));
-                        assertNull(message.get(job_orgfolder_indexing_result));
+                        checkEqual("check rest url", "/blue/rest/organizations/jenkins/pipelines/pipeline1/", message.get(blueocean_job_rest_url), failures);
+                        checkEqual("check job pipeline name", "pipeline1", message.get(blueocean_job_pipeline_name), failures);
+                        checkEqual("jenkins channel","job", message.get(jenkins_channel), failures);
+                        checkEqual("jenkins org", "jenkins", message.get(jenkins_org) ,failures);
+                        checkEqual("is multibranch","true", message.get(job_ismultibranch),  failures);
+                        checkEqual("job name is pipeline1", "pipeline1", message.get(job_name), failures);
                         if ("QUEUED".equals(message.get(job_run_status))) {
                             mbpStatus[0] = true; // queued
                         }
@@ -257,11 +260,11 @@ public class SseEventTest {
                             mbpStatus[3] = true; // indexing completed
                         }
                     } else if ("org.jenkinsci.plugins.workflow.job.WorkflowJob".equals(message.get(jenkins_object_type))) {
-                        assertEquals("pipeline1", message.get(blueocean_job_pipeline_name));
+                        checkEqual("pipeline1 and blue job pipe name","pipeline1", message.get(blueocean_job_pipeline_name), failures);
                         if ("pipeline1/master".equals(message.get(job_name))) {
                             System.out.println("job_run_status::::: " + message.get(job_run_status));
-                            assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/master/", message.get(blueocean_job_rest_url));
-                            assertEquals("master", message.get(blueocean_job_branch_name));
+                            checkEqual("/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/master/", "/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/master/", message.get(blueocean_job_rest_url), failures);
+                            checkEqual("blue job branch name","master", message.get(blueocean_job_branch_name), failures);
                             if ("job_crud_created".equals(message.get(jenkins_event))) {
                                 masterBranchStatus[0] = true;
                             }
@@ -271,7 +274,7 @@ public class SseEventTest {
                                 masterBranchStatus[2] = true;
                             } else if ("RUNNING".equals(message.get(job_run_status))) {
                                 System.out.println("in master running.....");
-                                assertEquals("1", message.get(blueocean_queue_item_expected_build_number));
+                                checkEqual("blueocean_queue_item_expected_build_number should be 1", "1", message.get(blueocean_queue_item_expected_build_number), failures);
                                 masterBranchStatus[3] = true;
                             }
 
@@ -280,8 +283,8 @@ public class SseEventTest {
                                 masterBranchStatus[4] = true;
                             }
                         } else if ("pipeline1/feature%2Fux-1".equals(message.get(job_name))) {
-                            assertEquals("/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/feature%252Fux-1/", message.get(blueocean_job_rest_url));
-                            assertEquals("feature%2Fux-1", message.get(blueocean_job_branch_name));
+                            checkEqual("blueocean_job_rest_url should have encoded","/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/feature%252Fux-1/", message.get(blueocean_job_rest_url), failures);
+                            checkEqual("blueocean_job_branch_name just branch name encoded","feature%2Fux-1", message.get(blueocean_job_branch_name), failures);
                             if ("job_crud_created".equals(message.get(jenkins_event))) {
                                 feature1BranchStatus[0] = true;
                             }
@@ -300,12 +303,12 @@ public class SseEventTest {
                     } else if ("org.jenkinsci.plugins.workflow.job.WorkflowRun".equals(message.get(jenkins_object_type))) {
                         if ("pipeline1/master".equals(message.get(job_name))) {
                             if ("RUNNING".equals(message.get(job_run_status))) {
-                                assertEquals("1", message.get(blueocean_queue_item_expected_build_number));
+                                checkEqual("blueocean_queue_item_expected_build_number is 1","1", message.get(blueocean_queue_item_expected_build_number), failures);
                                 masterBranchStatus[3] = true;
                             }
                         } else if ("pipeline1/feature%2Fux-1".equals(message.get(job_name))) {
                             if ("RUNNING".equals(message.get(job_run_status))) {
-                                assertEquals("1", message.get(blueocean_queue_item_expected_build_number));
+                                checkEqual("blueocean_queue_item_expected_build_number for feature branch is 1","1", message.get(blueocean_queue_item_expected_build_number), failures);
                                 feature1BranchStatus[3] = true;
                             }
                         }
@@ -316,7 +319,7 @@ public class SseEventTest {
                     }
                 }else if("pipeline".equals(message.get(jenkins_channel))){
                     if("pipeline1/master".equals(message.get(pipeline_job_name))){
-                        assertEquals("1", message.get(pipeline_run_id));
+                        checkEqual("pipeline_run_id should be 1","1", message.get(pipeline_run_id), failures);
                         masterBranchPipelineEvent[0]=true;
                         if ("pipeline_step".equals(message.get(jenkins_event)) &&
                             "node".equals(message.get(pipeline_step_name))) {
@@ -324,24 +327,22 @@ public class SseEventTest {
                         }
                     } else if("pipeline1/feature%2Fux-1".equals(message.get(pipeline_job_name))){
                         feature1BranchPipelineEvent[0]=true;
-                        assertEquals("1", message.get(pipeline_run_id));
+                        checkEqual("pipeline_run_id should be one for feature branch","1", message.get(pipeline_run_id), failures);
                         if ("pipeline_step".equals(message.get(jenkins_event)) &&
                             "node".equals(message.get(pipeline_step_name))) {
                             feature1BranchNodeBlockEvent[0] = true;
                         }
                     }
                     if("pipeline_stage".equals(message.get(jenkins_event))){
-                        assertNotNull(message.get(pipeline_step_stage_name));
-                        assertEquals("build", message.get(pipeline_step_stage_name));
-                        assertNotNull(message.get(pipeline_step_flownode_id));
-                        assertEquals("false", message.get(pipeline_step_is_paused));
+                        checkEqual("pipeline_step_stage_name should be build","build", message.get(pipeline_step_stage_name), failures);
                     }else if("pipeline_step".equals(message.get(jenkins_event))){
-                        assertNotNull(message.get(pipeline_step_flownode_id));
-                        assertEquals("false", message.get(pipeline_step_is_paused));
+                        checkNotNull("We should have a pipeline step flownode id", message.get(pipeline_step_flownode_id), failures);
+                        checkEqual("pipeline step is paused","false", message.get(pipeline_step_is_paused), failures);
                     }
                 }
             }
         });
+
         con.subscribe("pipeline");
         con.subscribe("job");
 
@@ -375,7 +376,31 @@ public class SseEventTest {
             assertArrayEquals(masterBranchStatus, new boolean[]{true, true, true, true, true});
             assertArrayEquals(feature1BranchStatus, new boolean[]{true, true, true, true, true});
         }
+
+        //Check for any failures in the onMessage callback
+        if (!failures.isEmpty()) {
+            String failureSummary = "";
+            for (String f : failures) {
+                failureSummary = failureSummary + " -> "+ f + "\n";
+            }
+            fail("There were " + (failures.size()) + " failures in the onMessage callback: \n" + failureSummary);
+        }
+
     }
+
+    private void checkNotNull(String message, String text, List<String> failures) {
+        if (text == null) {
+            failures.add(message + " (did not expect null)");
+        }
+    }
+
+    /** You can't put assertions directly in callbacks, so have to accumulate failures */
+    private void checkEqual(String message, String s1, String s2, List<String> failures) {
+        if (!s1.equals(s2)) {
+            failures.add(message + " (" + s1 + " is not equal to " + s2 + ")");
+        }
+    }
+
 
     @Test
     public void multiBranchJobEventsWithCustomOrg() throws Exception {
