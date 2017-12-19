@@ -5,7 +5,6 @@ import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSourceBuilder;
 import com.cloudbees.jenkins.plugins.bitbucket.BranchDiscoveryTrait;
 import com.cloudbees.jenkins.plugins.bitbucket.ForkPullRequestDiscoveryTrait;
 import com.cloudbees.jenkins.plugins.bitbucket.OriginPullRequestDiscoveryTrait;
-import com.cloudbees.jenkins.plugins.bitbucket.PublicRepoPullRequestFilterTrait;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -83,7 +82,7 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
 
     @Nullable
     @Override
-    protected AbstractScmSourceEvent getScmSourceEvent(final MultiBranchProject project, SCMSource source) {
+    protected AbstractScmSourceEvent getScmSourceEvent(@Nonnull final MultiBranchProject project, @Nonnull SCMSource source) {
         if(source instanceof BitbucketSCMSource) {
             return new AbstractScmSourceEvent(((BitbucketSCMSource)source).getRepository(),
                     ((BitbucketSCMSource)source).getServerUrl()) {
