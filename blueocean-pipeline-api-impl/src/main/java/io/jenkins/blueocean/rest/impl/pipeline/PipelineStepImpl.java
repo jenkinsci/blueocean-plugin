@@ -7,6 +7,8 @@ import hudson.console.AnnotatedLargeText;
 import hudson.model.*;
 import io.jenkins.blueocean.commons.JSON;
 import io.jenkins.blueocean.commons.ServiceException;
+import io.jenkins.blueocean.commons.JsonConverter;
+import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueInputStep;
@@ -236,15 +238,12 @@ public class PipelineStepImpl extends BluePipelineStep {
             try {
                 execution.preSubmissionCheck();
             } catch (Failure f) {
-                JSONObject obj = new JSONObject();
-                obj.put("message", f.getMessage());
-
                 return new HttpResponse() {
                     @Override
                     public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
                         rsp.setStatus(400);
                         rsp.setContentType("application/json;charset=UTF-8");
-                        rsp.getWriter().print(obj.toString());
+                        rsp.getWriter().print(JsonConverter.toJson(new ErrorMessage(400, f.getMessage())));
                     }
                 };
             }
