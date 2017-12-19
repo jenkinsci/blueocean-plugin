@@ -360,6 +360,7 @@
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-job</artifactId>
             <version>2.15</version>
+            <!-- Use 2.16 or above when baseline is >= 2.76 -->
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
