@@ -374,7 +374,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-multibranch</artifactId>
-            <version>${workflow.support.version}</version>
+            <version>2.16</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.jenkins-ci.plugins</groupId>
