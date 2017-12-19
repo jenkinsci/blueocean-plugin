@@ -19,6 +19,8 @@ import io.jenkins.blueocean.scm.api.AbstractScmSourceEvent;
 import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
 import jenkins.model.JenkinsLocationConfiguration;
+import jenkins.plugins.git.traits.CleanAfterCheckoutTrait;
+import jenkins.plugins.git.traits.CleanBeforeCheckoutTrait;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.SCMHeadObserver;
 import jenkins.scm.api.SCMRevision;
@@ -64,6 +66,8 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
                 .withTrait(new BranchDiscoveryTrait(true, true)) //take all branches
                 .withTrait(new ForkPullRequestDiscoveryTrait(strategies, new ForkPullRequestDiscoveryTrait.TrustTeamForks()))
                 .withTrait(new OriginPullRequestDiscoveryTrait(strategies))
+                .withTrait(new CleanBeforeCheckoutTrait())
+                .withTrait(new CleanAfterCheckoutTrait())
                 .build();
 
         //Setup Jenkins root url, if not set bitbucket cloud notification will fail
