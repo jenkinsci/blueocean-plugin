@@ -199,7 +199,10 @@ public class FlowNodeWrapper {
         this.blockErrorAction = blockErrorAction;
     }
 
-    // TODO: Docs
+    /**
+     * Returns BluePipelineAction instances that were attached to the assosciated FlowNode, or to any of its children.
+     * Filters by class to mimic Item.getActions(class).
+     */
     public <T extends BluePipelineAction> Collection<T> getPipelineActions(Class<T> clazz) {
         ArrayList<T> filtered = new ArrayList<>();
         for (BluePipelineAction a:pipelineActions) {
