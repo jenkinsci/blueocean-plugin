@@ -11,7 +11,7 @@ import java.util.Objects;
  * Annotates a FlowNode to point to a downstream build triggered by said node. Applied by
  * io.jenkins.blueocean.listeners.DownstreamJobListener in blueocean-pipeline-api-impl
  */
-public class NodeDownstreamBuildAction extends InvisibleAction implements FlowNodeAction {
+public class NodeDownstreamBuildAction extends InvisibleAction implements FlowNodeAction, BluePipelineAction {
 
     private final String runExternalizableId;
     private final String description;

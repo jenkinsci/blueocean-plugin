@@ -103,7 +103,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
     public Collection<BlueDownstreamBuild> getDownstreamBuilds() {
         ArrayList<BlueDownstreamBuild> builds = new ArrayList<>();
 
-        for (NodeDownstreamBuildAction action : node.getNode().getActions(NodeDownstreamBuildAction.class)) {
+        for (NodeDownstreamBuildAction action : node.getPipelineActions(NodeDownstreamBuildAction.class)) {
             Run<?, ?> run = Run.fromExternalizableId(action.getRunExternalizableId());
             Link link = LinkResolver.resolveLink(run);
             if (link != null) {

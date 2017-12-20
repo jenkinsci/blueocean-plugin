@@ -4,17 +4,17 @@ import hudson.Extension;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
+import io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeUtil;
 import io.jenkins.blueocean.service.embedded.rest.NodeDownstreamBuildAction;
-import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode;
 import org.jenkinsci.plugins.workflow.flow.FlowExecution;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.support.steps.build.BuildUpstreamNodeAction;
 
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.logging.Logger;
 
 /**
@@ -49,13 +49,17 @@ public class DownstreamJobListener extends RunListener<Run<?, ?>> {
                     continue;
                 }
 
-                // Look up the nearest StepStartNode which is where we want to add our action so BO will find it
-                node = findContainingStepStartNode(node);
+                System.out.println(" trigger node " + node + " -- " + node.getDisplayName()); // TODO: RM
 
-                if (node == null) {
-                    LOGGER.warning("Could not retrieve upstream StepStartNode");
-                    continue;
-                }
+//                    // Look up the nearest StepStartNode which is where we want to add our action so BO will find it
+//                    node = findContainingGraphNode(node);
+//
+//                    if (node == null) {
+//                        LOGGER.warning("Could not retrieve upstream graph node");
+//                        continue;
+//                    }
+//
+//                    System.out.println("containing graph node " + node + " -- " + node.getDisplayName()); // TODO: RM
 
                 // Add an action on the triggerRun node pointing to the currently executing run
                 String description = run.getDescription();
@@ -68,26 +72,26 @@ public class DownstreamJobListener extends RunListener<Run<?, ?>> {
 
     }
 
-    // TODO: explain / refactor this hairy shit, or collect the info during the graph walk instead
-    private StepStartNode findContainingStepStartNode(FlowNode node) {
-        return findContainingStepStartNode(Collections.singletonList(node), 1);
-    }
-
-    // TODO: explain / refactor this hairy shit, or collect the info during the graph walk instead
-    private StepStartNode findContainingStepStartNode(Collection<FlowNode> nodes, int searchDepth) {
-        if (searchDepth > 10) {
-            // Escape hatch for weird / cyclic graphs
-            LOGGER.warning("Hit recurse depth limit searching for containing StepStartNode!!!");
-            return null;
-        }
-        ArrayList<FlowNode> ancestors = new ArrayList<>();
-        for (FlowNode node : nodes) {
-            if (node instanceof StepStartNode) {
-                return (StepStartNode) node;
-            }
-            ancestors.addAll(node.getParents());
-        }
-
-        return findContainingStepStartNode(ancestors, searchDepth +1);
-    }
+//    // TODO: explain / refactor this hairy shit, or collect the info during the graph walk instead
+//    private FlowNode findContainingGraphNode(FlowNode node) {
+//        return findContainingGraphNode(Collections.singletonList(node), 1);
+//    }
+//
+//    // TODO: explain / refactor this hairy shit, or collect the info during the graph walk instead
+//    private FlowNode findContainingGraphNode(Collection<FlowNode> nodes, int searchDepth) {
+//        if (searchDepth > 10) {
+//            // Escape hatch for weird / cyclic graphs
+//            LOGGER.warning("Hit recurse depth limit searching for containing graph node!!!");
+//            return null;
+//        }
+//        HashSet<FlowNode> ancestors = new HashSet<>();
+//        for (FlowNode node : nodes) {
+//            if (PipelineNodeUtil.isStage(node) && PipelineNodeUtil.isParallelBranch(node)) {
+//                return node;
+//            }
+//            ancestors.addAll(node.getParents());
+//        }
+//
+//        return findContainingGraphNode(ancestors, searchDepth + 1);
+//    }
 }
