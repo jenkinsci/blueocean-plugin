@@ -44,7 +44,6 @@ public class FlowNodeWrapper {
 
 
     public FlowNodeWrapper(@Nonnull FlowNode node, @Nonnull NodeRunStatus status, @Nonnull TimingInfo timingInfo, @Nonnull  WorkflowRun run) {
-        System.out.println("*** new FlowNodeWrapper(1) - node " + node.getId()); // TODO: RM
         this.node = node;
         this.status = status;
         this.timingInfo = timingInfo;
@@ -56,7 +55,6 @@ public class FlowNodeWrapper {
 
     public FlowNodeWrapper(@Nonnull FlowNode node, @Nonnull NodeRunStatus status,
                            @Nonnull TimingInfo timingInfo, @Nullable InputStep inputStep, @Nonnull WorkflowRun run) {
-        System.out.println("*** new FlowNodeWrapper(2) - node " + node.getId()); // TODO: RM
         this.node = node;
         this.status = status;
         this.timingInfo = timingInfo;

@@ -31,7 +31,6 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
         WorkflowJob job = run.getParent();
         NodeGraphBuilder graphBuilder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
 
-
         //If build either failed or is in progress then return union with last successful pipeline run
         if (run.getResult() != Result.SUCCESS
             && job.getLastSuccessfulBuild() != null
@@ -46,12 +45,6 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
         for (BluePipelineNode node : nodes) {
             nodeMap.put(node.getId(), node);
         }
-
-//        GraphDumper dumper = new GraphDumper(run); // TODO: RM
-//        for (BluePipelineNode node : nodes) {
-//            dumper.flagNode(node.getId());
-//        }
-//        System.out.println("\n\n\n" + dumper.getDotGraph() + "\n\n\n"); // TODO: RM
     }
 
     @Override

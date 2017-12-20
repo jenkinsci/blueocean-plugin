@@ -8,7 +8,6 @@ import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.service.embedded.rest.BluePipelineAction;
-import org.jenkinsci.plugins.workflow.actions.FlowNodeAction;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
@@ -420,32 +419,25 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         System.out.println(System.identityHashCode(this) + ": "+ str);
     }
 
-    private void dumpBPActions(FlowNode node) {
-        // TODO: Remove this
-//        String dbg = node + "BluePipelineActions:";
-//        final List<BluePipelineAction> actions = node.getActions(BluePipelineAction.class);
-//        if (actions.size() == 0) {
-//            dbg += " (none)";
-//        }
-//        for (BluePipelineAction action : actions) {
-//            dbg += "\n   * " + action;
-//        }
-//        System.out.println(System.identityHashCode(this) + ": "+dbg);
-    }
-
     // TODO: Docs
     protected void accumulatePipelineActions(FlowNode node) {
         final List<BluePipelineAction> actions = node.getActions(BluePipelineAction.class);
         pipelineActions.addAll(actions);
-        System.out.println(System.identityHashCode(this) + ": accumulating actions - added " + actions.size() + ", total is " + pipelineActions.size()); // TODO: RM
+        if (isNodeVisitorDumpEnabled) {
+            dump(String.format("accumulating actions - added %d, total is %d", actions.size(), pipelineActions.size()));
+        }
     }
 
     // TODO: Docs
     protected Collection<BluePipelineAction> drainPipelineActions() {
-        System.out.println(System.identityHashCode(this) + ": draining accumulated actions - total is " + pipelineActions.size()); // TODO: RM
+        if (isNodeVisitorDumpEnabled) {
+            dump(String.format("draining accumulated actions - total is %d", pipelineActions.size()));
+        }
+
         if (pipelineActions.size() == 0) {
             return Collections.emptyList();
         }
+
         Collection<BluePipelineAction> drainedActions = pipelineActions;
         pipelineActions = new ArrayList<>();
         return drainedActions;
