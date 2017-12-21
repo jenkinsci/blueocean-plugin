@@ -7,8 +7,6 @@ import hudson.console.AnnotatedLargeText;
 import hudson.model.*;
 import io.jenkins.blueocean.commons.JSON;
 import io.jenkins.blueocean.commons.ServiceException;
-import io.jenkins.blueocean.commons.JsonConverter;
-import io.jenkins.blueocean.commons.ErrorMessage;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueInputStep;
@@ -36,15 +34,14 @@ import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputStepExecution;
 import org.kohsuke.stapler.HttpResponse;
-import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.framework.io.ByteBuffer;
-import org.kohsuke.stapler.json.JsonHttpResponse;
-import javax.servlet.ServletException;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.io.*;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
 import java.nio.charset.Charset;
 import java.util.Collection;
 import java.util.Date;
@@ -238,14 +235,7 @@ public class PipelineStepImpl extends BluePipelineStep {
             try {
                 execution.preSubmissionCheck();
             } catch (Failure f) {
-                return new HttpResponse() {
-                    @Override
-                    public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
-                        rsp.setStatus(400);
-                        rsp.setContentType("application/json;charset=UTF-8");
-                        rsp.getWriter().print(JsonConverter.toJson(new ErrorMessage(400, f.getMessage())));
-                    }
-                };
+                throw new ServiceException.BadRequestException(f.getMessage());
             }
 
             Object o = parseValue(execution, JSONArray.fromObject(body.get(PARAMETERS_ELEMENT)), request);
