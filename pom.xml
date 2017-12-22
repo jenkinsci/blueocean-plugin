@@ -10,7 +10,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.4.0-beta-3-SNAPSHOT</version>
+  <version>1.4.0-beta-5-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean Parent</name>
@@ -1069,18 +1069,6 @@
                                     <npmVersion>${npm.version}</npmVersion>
                                     <nodeDownloadRoot>https://repo.jenkins-ci.org/nodejs-dist/</nodeDownloadRoot>
                                     <npmDownloadRoot>https://repo.jenkins-ci.org/npm-dist/</npmDownloadRoot>
-                                </configuration>
-                            </execution>
-
-                            <execution>
-                                <phase>initialize</phase>
-                                <id>gulp clean</id>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <configuration>
-                                    <!-- The package.json must define an "mvnclean" script -->
-                                    <arguments>run mvnclean</arguments>
                                 </configuration>
                             </execution>
 

@@ -4,7 +4,6 @@
   "description": "Configuration injected in BlueOcean UI",
   "scripts": {
     "build": "jjsbuilder",
-    "mvnclean": "echo 'clean'",
     "mvnbuild": "jjsbuilder --tasks bundle",
     "mvntest": "jjsbuilder --tasks test,lint"
   },
