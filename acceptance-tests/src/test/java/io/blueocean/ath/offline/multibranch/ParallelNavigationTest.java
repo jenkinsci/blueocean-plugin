@@ -94,5 +94,24 @@ public class ParallelNavigationTest {
         wait.until(By.cssSelector(".btn.inputStepSubmit")).click();
     }
 
+    /**
+     * This checks that an error is shown in the UI for a failed input step
+     */
+    @Test
+    public void failedInputStep () throws IOException, GitAPIException, InterruptedException {
+        String pipelineName = "ParallelNavigationTest_failed_input";
+
+        URL jenkinsFile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile.failed.input");
+        Files.copy(new File(jenkinsFile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
+        git.addAll();
+        git.commit("initial commit");
+        logger.info("Commited Jenkinsfile");
+
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(pipelineName).createPipeline(git);
+        pipeline.getRunDetailsPipelinePage().open(1);
+
+        wait.until(By.cssSelector(".btn.inputStepSubmit")).click();
+        wait.until(By.xpath("//*[text()=\"You need to be B, C to submit this.\"]"));
+    }
 
 }
