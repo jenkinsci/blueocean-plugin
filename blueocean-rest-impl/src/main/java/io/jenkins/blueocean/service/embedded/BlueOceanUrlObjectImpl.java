@@ -12,7 +12,7 @@ import javax.annotation.Nonnull;
 public class BlueOceanUrlObjectImpl extends BlueOceanUrlObject {
 
     private volatile String mappedUrl;
-    private final ModelObject modelObject;
+    private transient final ModelObject modelObject;
 
     public BlueOceanUrlObjectImpl(ModelObject modelObject) {
         this.modelObject = modelObject;
