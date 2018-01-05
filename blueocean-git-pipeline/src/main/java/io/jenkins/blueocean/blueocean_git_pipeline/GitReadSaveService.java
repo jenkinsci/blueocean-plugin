@@ -162,7 +162,7 @@ public class GitReadSaveService extends ScmContentProvider {
 
     @Override
     public Object getContent(@Nonnull StaplerRequest req, @Nonnull Item item) {
-        item.checkPermission(Permission.READ);
+        item.checkPermission(Item.READ);
         User user = User.current();
         if (user == null) {
             throw new ServiceException.UnauthorizedException("Not authenticated");
