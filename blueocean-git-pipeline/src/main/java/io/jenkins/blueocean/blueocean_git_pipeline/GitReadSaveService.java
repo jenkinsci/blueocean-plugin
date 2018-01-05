@@ -23,26 +23,23 @@
  */
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
-import java.io.IOException;
-
-import hudson.model.User;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.kohsuke.stapler.StaplerRequest;
-
 import hudson.Extension;
 import hudson.model.Item;
+import hudson.model.User;
 import hudson.remoting.Base64;
-import hudson.security.Permission;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.impl.pipeline.ScmContentProvider;
 import io.jenkins.blueocean.rest.impl.pipeline.scm.GitContent;
+import java.io.IOException;
 import javax.annotation.Nonnull;
 import jenkins.branch.MultiBranchProject;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.scm.api.SCMSource;
 import net.sf.json.JSONObject;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.ObjectUtils;
+import org.kohsuke.stapler.StaplerRequest;
 
 /**
  * Content provider for load/save with git repositories
@@ -184,7 +181,7 @@ public class GitReadSaveService extends ScmContentProvider {
 
     @Override
     public Object saveContent(@Nonnull StaplerRequest req, @Nonnull Item item) {
-        item.checkPermission(Permission.WRITE);
+        item.checkPermission(Item.CONFIGURE);
         User user = User.current();
         if (user == null) {
             throw new ServiceException.UnauthorizedException("Not authenticated");
