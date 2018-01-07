@@ -42,6 +42,10 @@ public class MultiBranchPipeline extends AbstractPipeline {
         jobApi.abortAllBuilds(getFolder(), getName());
     }
 
+    public void deleteThisPipeline(String name) throws IOException {
+        jobApi.deletePipeline(name);
+    }
+
     @Override
     public boolean isMultiBranch() {
         return true;

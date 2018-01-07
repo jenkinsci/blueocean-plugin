@@ -71,6 +71,7 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
         if(!message.getErrors().isEmpty()){
             throw new ServiceException.BadRequestException(message);
         }
+        validateExistingCredential(apiUrl);
         return super.getState();
     }
 
@@ -209,8 +210,8 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
         final StandardUsernamePasswordCredentials credential = new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
                 createCredentialId(apiUrl), "Bitbucket server credentials", userName, password);
 
-        BitbucketApi api = getApi(apiUrl, this.getId(), credential);
-        api.getUser(); //if credentials are wrong, this call will fail with 403 error
+        //if credentials are wrong, this call will fail with 401 error
+        validateCredential(apiUrl, credential);
 
         StandardUsernamePasswordCredentials bbCredentials = CredentialsUtils.findCredential(createCredentialId(apiUrl),
                 StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
@@ -260,6 +261,52 @@ public abstract class AbstractBitbucketScm extends AbstractScm {
         if(!errorList.isEmpty()){
             throw new ServiceException.BadRequestException(
                     new ErrorMessage(400, "Invalid request").addAll(errorList));
+        }
+    }
+
+    /**
+     * Validate that the credential is valid for the specified apiUrl.
+     * Will throw a 401 ServiceException if the credential is invalid.
+     * @param apiUrl
+     * @param credential
+     */
+    private void validateCredential(String apiUrl, StandardUsernamePasswordCredentials credential) {
+        try {
+            BitbucketApi api = getApi(apiUrl, this.getId(), credential);
+            api.getUser(); //if credentials are wrong, this call will fail with 401 error
+        } catch (ServiceException ex) {
+            if (ex.status == 401) {
+                throw new ServiceException.UnauthorizedException(
+                    new ErrorMessage(401, "Invalid username / password")
+                );
+            } else {
+                throw ex;
+            }
+
+        }
+    }
+
+    /**
+     * Validate that the existing credential is valid (if it exists).
+     * Will throw a 401 ServiceException if the credential is invalid.
+     * @param apiUrl
+     */
+    private void validateExistingCredential(@Nonnull String apiUrl) {
+        StandardUsernamePasswordCredentials bbCredentials = CredentialsUtils.findCredential(createCredentialId(apiUrl),
+            StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+
+        if (bbCredentials != null) {
+            try {
+                validateCredential(apiUrl, bbCredentials);
+            } catch (ServiceException ex) {
+                if (ex.status == 401) {
+                    throw new ServiceException.UnauthorizedException(
+                        new ErrorMessage(401, "Existing credential failed authorization")
+                    );
+                } else {
+                    throw ex;
+                }
+            }
         }
     }
 
