@@ -1,0 +1,36 @@
+{
+  "id" : "0a7f6138-c30b-34de-9c68-b02c9db9ee2c",
+  "request" : {
+    "url" : "/repos/vivek/empty1/pulls?state=open",
+    "method" : "GET"
+  },
+  "response" : {
+    "status" : 200,
+    "bodyFileName" : "body-empty1-pulls-Yi4Ig.json",
+    "headers" : {
+      "Server" : "GitHub.com",
+      "Date" : "Fri, 22 Dec 2017 08:17:37 GMT",
+      "Content-Type" : "application/json; charset=utf-8",
+      "Status" : "200 OK",
+      "X-RateLimit-Limit" : "5000",
+      "X-RateLimit-Remaining" : "4998",
+      "X-RateLimit-Reset" : "1513933573",
+      "Cache-Control" : "private, max-age=60, s-maxage=60",
+      "Vary" : "Accept, Authorization, Cookie, X-GitHub-OTP",
+      "ETag" : "\"63149916802fc595ab2a5fc7ed846731\"",
+      "X-OAuth-Scopes" : "repo, user:email",
+      "X-Accepted-OAuth-Scopes" : "",
+      "X-GitHub-Media-Type" : "github.v3; format=json",
+      "Access-Control-Expose-Headers" : "ETag, Link, Retry-After, X-GitHub-OTP, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset, X-OAuth-Scopes, X-Accepted-OAuth-Scopes, X-Poll-Interval",
+      "Access-Control-Allow-Origin" : "*",
+      "Content-Security-Policy" : "default-src 'none'",
+      "Strict-Transport-Security" : "max-age=31536000; includeSubdomains; preload",
+      "X-Content-Type-Options" : "nosniff",
+      "X-Frame-Options" : "deny",
+      "X-XSS-Protection" : "1; mode=block",
+      "X-Runtime-rack" : "0.046799",
+      "X-GitHub-Request-Id" : "22D2:2282:1637786:345B82F:5A3CBFA0"
+    }
+  },
+  "uuid" : "0a7f6138-c30b-34de-9c68-b02c9db9ee2c"
+}

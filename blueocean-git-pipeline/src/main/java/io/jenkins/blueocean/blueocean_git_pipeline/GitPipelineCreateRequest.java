@@ -10,7 +10,10 @@ import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.plugins.git.traits.BranchDiscoveryTrait;
+import jenkins.plugins.git.traits.CleanAfterCheckoutTrait;
+import jenkins.plugins.git.traits.CleanBeforeCheckoutTrait;
 import jenkins.scm.api.SCMSource;
+import jenkins.scm.api.trait.SCMSourceTrait;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 
@@ -31,7 +34,10 @@ public class GitPipelineCreateRequest extends AbstractMultiBranchCreateRequest {
     protected SCMSource createSource(@Nonnull MultiBranchProject project, @Nonnull BlueScmConfig scmConfig) {
         GitSCMSource gitSource = new GitSCMSource(StringUtils.defaultString(scmConfig.getUri()));
         gitSource.setCredentialsId(computeCredentialId(scmConfig));
-        gitSource.getTraits().add(new BranchDiscoveryTrait());
+        List<SCMSourceTrait> traits = gitSource.getTraits();
+        traits.add(new BranchDiscoveryTrait());
+        traits.add(new CleanBeforeCheckoutTrait());
+        traits.add(new CleanAfterCheckoutTrait());
         return gitSource;
     }
 

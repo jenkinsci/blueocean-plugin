@@ -24,17 +24,29 @@ import io.jenkins.blueocean.rest.impl.pipeline.credential.BlueOceanDomainSpecifi
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueScmConfig;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
+import jenkins.branch.MultiBranchProject;
 import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
+import jenkins.plugins.git.traits.CleanAfterCheckoutTrait;
+import jenkins.plugins.git.traits.CleanBeforeCheckoutTrait;
+import jenkins.scm.api.mixin.ChangeRequestCheckoutStrategy;
+import jenkins.scm.api.trait.SCMSourceTrait;
+import jenkins.scm.api.trait.SCMTrait;
 import net.sf.json.JSONObject;
+import org.jenkinsci.plugins.github_branch_source.BranchDiscoveryTrait;
 import org.jenkinsci.plugins.github_branch_source.Connector;
+import org.jenkinsci.plugins.github_branch_source.ForkPullRequestDiscoveryTrait;
 import org.jenkinsci.plugins.github_branch_source.GitHubSCMNavigator;
+import org.jenkinsci.plugins.github_branch_source.GitHubSCMSource;
+import org.jenkinsci.plugins.github_branch_source.OriginPullRequestDiscoveryTrait;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import org.junit.Assert;
 import org.junit.Test;
 import org.jvnet.hudson.test.TestExtension;
 
 import java.io.IOException;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import static org.junit.Assert.*;
@@ -56,6 +68,29 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
                 .build(Map.class);
         assertNotNull(r);
         assertEquals("pipeline1", r.get("name"));
+
+        MultiBranchProject mbp = (MultiBranchProject) j.getInstance().getItem("pipeline1");
+        GitHubSCMSource source = (GitHubSCMSource) mbp.getSCMSources().get(0);
+        List<SCMSourceTrait> traits = source.getTraits();
+
+        Assert.assertNotNull(SCMTrait.find(traits, CleanAfterCheckoutTrait.class));
+        Assert.assertNotNull(SCMTrait.find(traits, CleanBeforeCheckoutTrait.class));
+
+        BranchDiscoveryTrait branchDiscoveryTrait = SCMTrait.find(traits, BranchDiscoveryTrait.class);
+        Assert.assertNotNull(branchDiscoveryTrait);
+        Assert.assertTrue(branchDiscoveryTrait.isBuildBranch());
+        Assert.assertTrue(branchDiscoveryTrait.isBuildBranchesWithPR());
+
+        ForkPullRequestDiscoveryTrait forkPullRequestDiscoveryTrait = SCMTrait.find(traits, ForkPullRequestDiscoveryTrait.class);
+        Assert.assertNotNull(forkPullRequestDiscoveryTrait);
+        Assert.assertTrue(forkPullRequestDiscoveryTrait.getTrust() instanceof ForkPullRequestDiscoveryTrait.TrustPermission);
+        Assert.assertEquals(1, forkPullRequestDiscoveryTrait.getStrategies().size());
+        Assert.assertTrue(forkPullRequestDiscoveryTrait.getStrategies().contains(ChangeRequestCheckoutStrategy.MERGE));
+
+        OriginPullRequestDiscoveryTrait originPullRequestDiscoveryTrait = SCMTrait.find(traits, OriginPullRequestDiscoveryTrait.class);
+        Assert.assertNotNull(originPullRequestDiscoveryTrait);
+        Assert.assertEquals(1, originPullRequestDiscoveryTrait.getStrategies().size());
+        Assert.assertTrue(originPullRequestDiscoveryTrait.getStrategies().contains(ChangeRequestCheckoutStrategy.MERGE));
     }
 
     @Test

@@ -11,11 +11,10 @@ import javax.annotation.Nonnull;
  */
 public class BlueOceanUrlObjectImpl extends BlueOceanUrlObject {
 
-    private volatile String mappedUrl;
-    private final ModelObject modelObject;
+    private final String mappedUrl;
 
     public BlueOceanUrlObjectImpl(ModelObject modelObject) {
-        this.modelObject = modelObject;
+        this.mappedUrl = computeUrl(modelObject);
     }
 
     @Override
@@ -25,7 +24,6 @@ public class BlueOceanUrlObjectImpl extends BlueOceanUrlObject {
 
     @Override
     public @Nonnull String getUrl() {
-        setUrlIfNeeded();
         return mappedUrl;
     }
 
@@ -34,20 +32,7 @@ public class BlueOceanUrlObjectImpl extends BlueOceanUrlObject {
         return "/plugin/blueocean-rest-impl/images/48x48/blueocean.png";
     }
 
-    private void setUrlIfNeeded(){
-        String url = mappedUrl;
-        if(url == null){
-            synchronized (this){
-                url = mappedUrl;
-                if(url == null){
-                    url = computeUrl();
-                    this.mappedUrl = url;
-                }
-            }
-        }
-    }
-
-    private String computeUrl(){
+    private String computeUrl(ModelObject modelObject){
         String url = null;
         for(BlueOceanUrlMapper mapper: BlueOceanUrlMapper.all()){
             url = mapper.getUrl(modelObject);
