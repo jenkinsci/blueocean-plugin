@@ -72,6 +72,9 @@ public class ParallelNavigationTest {
     /**
      * This checks that we can run a pipeline with 2 long running parallel branches.
      * You should be able to click between one and the other and see it progressing.
+     *
+     * Also checks that you can have input on 2 different parallel branches. There are no stages either side of the parallel construct.
+     * One at a time, the proceed button will be clicked.
      */
     @Test
     public void parallelNavigationTest () throws IOException, GitAPIException, InterruptedException {
@@ -84,14 +87,9 @@ public class ParallelNavigationTest {
         wait.click(By.xpath("//*[contains(@class, 'pipeline-node')][3]"));
         wait.until(By.xpath("//*[text()=\"secondBranch\"]"));
         logger.info("Found second branch");
-    }
 
-    /**
-     * This checks that you can have input on 2 different parallel branches. There are no stages either side of the parallel construct.
-     * One at a time, the proceed button will be clicked.
-     */
-    @Test
-    public void parallelNavigationTestInput () throws IOException, GitAPIException, InterruptedException {
+
+
         logger.info("Beginning parallelNavigationTestInput()");
         navTestWithInputPipeline.getRunDetailsPipelinePage().open(1);
         // At first we see branch one
@@ -107,6 +105,7 @@ public class ParallelNavigationTest {
         logger.info("Clicked the inputStepSubmit button");
 
     }
+
 
     @AfterClass
     public static void deleteTestPipelines() throws IOException, GitAPIException, InterruptedException {
