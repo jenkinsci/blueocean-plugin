@@ -4,6 +4,7 @@ import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.GitRepositoryRule;
+import io.blueocean.ath.Retry;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
@@ -74,6 +75,7 @@ public class ParallelNavigationTest {
      * You should be able to click between one and the other and see it progressing.
      */
     @Test
+    @Retry(3)
     public void parallelNavigationTest () throws IOException, GitAPIException, InterruptedException {
         logger.info("Beginning parallelNavigationTest()");
         navTestPipeline.getRunDetailsPipelinePage().open(1);
@@ -108,8 +110,8 @@ public class ParallelNavigationTest {
 
     }
 
-    @AfterClass
-    public static void deleteTestPipelines() throws IOException, GitAPIException, InterruptedException {
+    @After
+    public void deleteTestPipelines() throws IOException, GitAPIException, InterruptedException {
         MultiBranchPipeline[] listOfPipelineJobs = {navTestPipeline, navTestWithInputPipeline};
         for (MultiBranchPipeline pipelineToCleanup:listOfPipelineJobs) {
             /*
