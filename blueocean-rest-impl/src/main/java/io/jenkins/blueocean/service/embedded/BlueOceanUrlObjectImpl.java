@@ -1,9 +1,9 @@
 package io.jenkins.blueocean.service.embedded;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.ModelObject;
 import io.jenkins.blueocean.rest.factory.BlueOceanUrlMapper;
 import io.jenkins.blueocean.rest.model.BlueOceanUrlObject;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -12,6 +12,10 @@ import javax.annotation.Nonnull;
 public class BlueOceanUrlObjectImpl extends BlueOceanUrlObject {
 
     private final String mappedUrl;
+
+    // leave it there to avoid deserialization errors for older version of this object
+    @SuppressFBWarnings(value = "UUF_UNUSED_FIELD", justification = "Field is present to avoid deserialization errors for older version of this object")
+    private transient ModelObject modelObject;
 
     public BlueOceanUrlObjectImpl(ModelObject modelObject) {
         this.mappedUrl = computeUrl(modelObject);
