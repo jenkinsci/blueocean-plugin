@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import io.jenkins.blueocean.rest.hal.Link;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
@@ -10,7 +11,7 @@ public class NodeDownstreamBuildActionTest {
 
     @Test
     public void appeaseCoverageMonster() {
-        NodeDownstreamBuildAction a = new NodeDownstreamBuildAction("left","right");
+        NodeDownstreamBuildAction a = new NodeDownstreamBuildAction(new Link("/nuts"), "right");
         assertNotNull(a);
     }
 }

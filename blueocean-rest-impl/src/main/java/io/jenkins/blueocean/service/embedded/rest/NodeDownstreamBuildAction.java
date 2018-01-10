@@ -1,23 +1,27 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
+import hudson.model.Action;
 import hudson.model.InvisibleAction;
-import hudson.model.Run;
+import io.jenkins.blueocean.rest.hal.Link;
 import org.jenkinsci.plugins.workflow.actions.FlowNodeAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
+import org.kohsuke.stapler.export.ExportedBean;
 
+import javax.annotation.CheckForNull;
 import java.util.Objects;
 
 /**
  * Annotates a FlowNode to point to a downstream build triggered by said node. Applied by
  * io.jenkins.blueocean.listeners.DownstreamJobListener in blueocean-pipeline-api-impl
  */
-public class NodeDownstreamBuildAction extends InvisibleAction implements FlowNodeAction, BluePipelineAction {
+@ExportedBean
+public class NodeDownstreamBuildAction implements FlowNodeAction, BluePipelineAction {
 
-    private final String runExternalizableId;
+    private final Link link;
     private final String description;
 
-    public NodeDownstreamBuildAction(String runExternalizableId, String description) {
-        this.runExternalizableId = runExternalizableId;
+    public NodeDownstreamBuildAction(Link link, String description) {
+        this.link = link;
         this.description = description;
     }
 
@@ -26,8 +30,8 @@ public class NodeDownstreamBuildAction extends InvisibleAction implements FlowNo
         // Don't care for now
     }
 
-    public String getRunExternalizableId() {
-        return runExternalizableId;
+    public Link getLink() {
+        return link;
     }
 
     public String getDescription() {
@@ -43,12 +47,30 @@ public class NodeDownstreamBuildAction extends InvisibleAction implements FlowNo
             return false;
         }
         NodeDownstreamBuildAction that = (NodeDownstreamBuildAction) o;
-        return Objects.equals(runExternalizableId, that.runExternalizableId) &&
+        return Objects.equals(link, that.link) &&
             Objects.equals(description, that.description);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(runExternalizableId, description);
+        return Objects.hash(link, description);
+    }
+
+    @CheckForNull
+    @Override
+    public String getIconFileName() {
+        return null;
+    }
+
+    @CheckForNull
+    @Override
+    public String getDisplayName() {
+        return null;
+    }
+
+    @CheckForNull
+    @Override
+    public String getUrlName() {
+        return link.getHref();
     }
 }

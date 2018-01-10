@@ -101,11 +101,11 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     @Override
     public Collection<BlueDownstreamBuild> getDownstreamBuilds() {
+        // TODO: Remove once we're getting the actions through
         ArrayList<BlueDownstreamBuild> builds = new ArrayList<>();
 
         for (NodeDownstreamBuildAction action : node.getPipelineActions(NodeDownstreamBuildAction.class)) {
-            Run<?, ?> run = Run.fromExternalizableId(action.getRunExternalizableId());
-            Link link = LinkResolver.resolveLink(run);
+            Link link = action.getLink();
             if (link != null) {
                 BlueDownstreamBuild ds = new BlueDownstreamBuild(action.getDescription(), link);
                 builds.add(ds);
@@ -160,7 +160,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
         return ActionProxiesImpl.getActionProxies(node.getNode().getActions(), new Predicate<Action>() {
             @Override
             public boolean apply(@Nullable Action input) {
-                return input instanceof LogAction;
+                return input instanceof LogAction || input instanceof NodeDownstreamBuildAction;
             }
         }, this);
     }
