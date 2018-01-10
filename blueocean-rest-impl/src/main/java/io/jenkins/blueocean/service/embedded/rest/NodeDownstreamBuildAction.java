@@ -5,6 +5,7 @@ import hudson.model.InvisibleAction;
 import io.jenkins.blueocean.rest.hal.Link;
 import org.jenkinsci.plugins.workflow.actions.FlowNodeAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
+import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 import javax.annotation.CheckForNull;
@@ -15,7 +16,7 @@ import java.util.Objects;
  * io.jenkins.blueocean.listeners.DownstreamJobListener in blueocean-pipeline-api-impl
  */
 @ExportedBean
-public class NodeDownstreamBuildAction implements FlowNodeAction, BluePipelineAction {
+public class NodeDownstreamBuildAction extends InvisibleAction implements FlowNodeAction, BluePipelineAction {
 
     private final Link link;
     private final String description;
@@ -30,10 +31,12 @@ public class NodeDownstreamBuildAction implements FlowNodeAction, BluePipelineAc
         // Don't care for now
     }
 
+    @Exported
     public Link getLink() {
         return link;
     }
 
+    @Exported
     public String getDescription() {
         return description;
     }
@@ -56,21 +59,22 @@ public class NodeDownstreamBuildAction implements FlowNodeAction, BluePipelineAc
         return Objects.hash(link, description);
     }
 
-    @CheckForNull
-    @Override
-    public String getIconFileName() {
-        return null;
-    }
-
-    @CheckForNull
-    @Override
-    public String getDisplayName() {
-        return null;
-    }
-
-    @CheckForNull
-    @Override
-    public String getUrlName() {
-        return link.getHref();
-    }
+    // TODO: RM
+//    @CheckForNull
+//    @Override
+//    public String getIconFileName() {
+//        return null;
+//    }
+//
+//    @CheckForNull
+//    @Override
+//    public String getDisplayName() {
+//        return null;
+//    }
+//
+//    @CheckForNull
+//    @Override
+//    public String getUrlName() {
+//        return link.getHref();
+//    }
 }
