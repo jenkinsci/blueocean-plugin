@@ -61,6 +61,9 @@ public class ActionProxiesImpl extends BlueActionProxy {
         if(getUrlName() != null) {
             return parent.getLink().rel(getUrlName());
         }
+        if (action instanceof Reachable) {
+            return ((Reachable) action).getLink();
+        }
         return null;
     }
 

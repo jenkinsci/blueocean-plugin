@@ -223,6 +223,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                 status, times, run);
 
         stage.setCauseOfFailure(PipelineNodeUtil.getCauseOfBlockage(stage.getNode(), agentNode));
+        accumulatePipelineActions(chunk.getFirstNode());
         stage.setPipelineActions(drainPipelineActions());
 
         nodes.push(stage);

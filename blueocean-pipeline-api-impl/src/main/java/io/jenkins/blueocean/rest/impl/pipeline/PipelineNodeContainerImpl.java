@@ -32,13 +32,13 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
         NodeGraphBuilder graphBuilder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(run);
 
         // TODO: Remove below here
-        if (Boolean.getBoolean("DUMP-DOT")) {
-            GraphDumper gd = new GraphDumper(run);
-            for (FlowNodeWrapper node : graphBuilder.getPipelineNodes()) {
-                gd.flagNode(node.getId());
-            }
-            System.out.println("\n\n\n\n" + gd.getDotGraph() + "\n\n\n\n");
-        }
+//        if (Boolean.getBoolean("DUMP-DOT")) {
+//            GraphDumper gd = new GraphDumper(run);
+//            for (FlowNodeWrapper node : graphBuilder.getPipelineNodes()) {
+//                gd.flagNode(node.getId());
+//            }
+//            System.out.println("\n\n\n\n" + gd.getDotGraph() + "\n\n\n\n");
+//        }
         // TODO: Remove above here
 
         //If build either failed or is in progress then return union with last successful pipeline run

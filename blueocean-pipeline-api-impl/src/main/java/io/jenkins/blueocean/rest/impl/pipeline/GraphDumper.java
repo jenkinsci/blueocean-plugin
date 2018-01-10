@@ -18,7 +18,19 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Objects;
 
+
 // TODO: Document this and/or pull it and stash it somewhere for next time I need it.
+
+// Dump the following into PipelineNodeContainerImpl:
+//
+//        if (Boolean.getBoolean("DUMP-DOT")) {
+//            GraphDumper gd = new GraphDumper(run);
+//            for (FlowNodeWrapper node : graphBuilder.getPipelineNodes()) {
+//                gd.flagNode(node.getId());
+//            }
+//            System.out.println("\n\n\n\n" + gd.getDotGraph() + "\n\n\n\n");
+//        }
+
 public class GraphDumper implements SimpleChunkVisitor {
 
     private final HashMap<String /* node id */, NodeInfo> graph;
@@ -31,7 +43,6 @@ public class GraphDumper implements SimpleChunkVisitor {
         allNodes = new HashMap<>();
 
         this.run = run;
-//        this.inputAction = run.getAction(InputAction.class);
 
         FlowExecution execution = run.getExecution();
 
