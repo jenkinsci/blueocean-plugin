@@ -5,6 +5,7 @@ import TypedError from '../TypedError';
 export const LoadError = {
     TOKEN_NOT_FOUND: 'TOKEN_NOT_FOUND',
     TOKEN_INVALID: 'TOKEN_INVALID',
+    TOKEN_REVOKED: 'TOKEN_REVOKED',
 };
 
 export const SaveError = {
@@ -42,6 +43,11 @@ class BbCredentialsApi {
 
     _findExistingCredentialFailure(error) {
         const { responseBody } = error;
+
+        if (responseBody.message.indexOf('Existing credential failed') >= 0) {
+            throw new TypedError(LoadError.TOKEN_REVOKED, responseBody);
+        }
+
         throw new TypedError(LoadError.TOKEN_INVALID, responseBody);
     }
 

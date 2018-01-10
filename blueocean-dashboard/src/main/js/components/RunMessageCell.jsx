@@ -73,7 +73,7 @@ export default class RunMessageCell extends Component {
                 const runUrl = `${UrlConfig.getJenkinsRootURL()}/${lastCause.upstreamUrl}${lastCause.upstreamBuild}/display/redirect?provider=blueocean`;
 
                 return (<span className="RunMessageCell" title={cause}>
-                    <span className="RunMessageCellInner">
+                    <span className="RunMessageCellInner ellipsis-text">
                          Started by upstream pipeline "<a href={ activityUrl }>{lastCause.upstreamProject}</a>" build <a href={ runUrl }>#{lastCause.upstreamBuild}</a>
                    </span>
                 </span>);

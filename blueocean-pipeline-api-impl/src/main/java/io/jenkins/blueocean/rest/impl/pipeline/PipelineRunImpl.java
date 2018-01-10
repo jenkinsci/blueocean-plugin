@@ -172,7 +172,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     }
 
     private boolean isReplayable(ReplayAction replayAction) {
-        return replayAction != null && replayAction.isEnabled();
+        return replayAction != null && replayAction.isRebuildEnabled();
     }
 
     @Override

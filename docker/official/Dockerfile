@@ -8,5 +8,4 @@ RUN apk -U add docker
 
 USER jenkins
 
-RUN install-plugins.sh workflow-job:2.11.1 antisamy-markup-formatter matrix-auth blueocean:$BLUEOCEAN_VERSION
-
+RUN install-plugins.sh antisamy-markup-formatter matrix-auth blueocean:$BLUEOCEAN_VERSION

@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
+import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -572,6 +573,11 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
         FlowNode syntheticNode = new FlowNode(firstBranch.getNode().getExecution(),
                 createSyntheticStageId(firstNodeId, PARALLEL_SYNTHETIC_STAGE_NAME), parents){
+            @Override
+            public void save() throws IOException {
+                // no-op to avoid JENKINS-45892 violations from serializing the synthetic FlowNode.
+            }
+
             @Override
             protected String getTypeDisplayName() {
                 return PARALLEL_SYNTHETIC_STAGE_NAME;

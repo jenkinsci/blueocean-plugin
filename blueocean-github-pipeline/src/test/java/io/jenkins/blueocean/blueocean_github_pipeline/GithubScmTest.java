@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.StaplerRequest;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.powermock.core.classloader.annotations.PowerMockIgnore;
@@ -46,16 +47,18 @@ import static org.powermock.api.mockito.PowerMockito.*;
  */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest({GithubScm.class, Jenkins.class, Authentication.class, User.class, Secret.class,
-        CredentialsMatchers.class, CredentialsProvider.class, Stapler.class, HttpRequest.class})
+    CredentialsMatchers.class, CredentialsProvider.class, Stapler.class, HttpRequest.class})
 @PowerMockIgnore({"javax.crypto.*", "javax.security.*"})
 public class GithubScmTest {
 
     @Mock
     Jenkins jenkins;
 
-    @Mock Authentication authentication;
+    @Mock
+    Authentication authentication;
 
-    @Mock User user;
+    @Mock
+    User user;
 
     @Before
     public void setup() throws Exception {
@@ -73,7 +76,7 @@ public class GithubScmTest {
         when(user.getId()).thenReturn("joe");
         when(user.getFullName()).thenReturn("joe smith");
         when(user.getDisplayName()).thenReturn("joe smith");
-        when(User.class, method(User.class,"get", Authentication.class)).withArguments(authentication).thenReturn(user);
+        when(User.class, method(User.class, "get", Authentication.class)).withArguments(authentication).thenReturn(user);
         when(User.current()).thenReturn(user);
     }
 
@@ -94,10 +97,20 @@ public class GithubScmTest {
     }
 
     @Test
-    public void validateAndCreate() throws Exception{
+    public void validateAndCreate() throws Exception {
+        validateAndCreate("12345");
+    }
+
+    @Test
+    public void validateAndCreatePaddedToken() throws Exception {
+        validateAndCreate(" 12345 ");
+    }
+
+    protected void validateAndCreate(String accessToken) throws Exception {
+
         Mailer.UserProperty userProperty = mock(Mailer.UserProperty.class);
         when(userProperty.getAddress()).thenReturn("joe@example.com");
-        JSONObject req = new JSONObject().element("accessToken", "12345");
+        JSONObject req = new JSONObject().element("accessToken", accessToken);
         GithubScm githubScm = new GithubScm(new Reachable() {
             @Override
             public Link getLink() {
@@ -105,16 +118,21 @@ public class GithubScmTest {
             }
         });
 
-        String accessToken = "12345";
-
         mockCredentials("joe", accessToken, githubScm.getId(), GithubScm.DOMAIN_NAME);
+
+        mockStatic(HttpRequest.class);
+        HttpRequest httpRequestMock = mock(HttpRequest.class);
+
+        ArgumentCaptor<String> urlStringCaptor = ArgumentCaptor.forClass(String.class);
+        when(HttpRequest.get(urlStringCaptor.capture())).thenReturn(httpRequestMock);
+
+        ArgumentCaptor<String> tokenCaptor = ArgumentCaptor.forClass(String.class);
+        when(httpRequestMock.withAuthorizationToken(tokenCaptor.capture())).thenReturn(httpRequestMock);
 
         HttpURLConnection httpURLConnectionMock = mock(HttpURLConnection.class);
         doNothing().when(httpURLConnectionMock).connect();
+        when(httpRequestMock.connect()).thenReturn(httpURLConnectionMock);
 
-        URL urlMock = mock(URL.class);
-        whenNew(URL.class).withAnyArguments().thenReturn(urlMock);
-        when(urlMock.openConnection(Proxy.NO_PROXY)).thenReturn(httpURLConnectionMock);
         when(httpURLConnectionMock.getHeaderField("X-OAuth-Scopes")).thenReturn("user:email,repo");
         when(httpURLConnectionMock.getResponseCode()).thenReturn(200);
 
@@ -124,15 +142,21 @@ public class GithubScmTest {
         StaplerRequest request = mock(StaplerRequest.class);
         when(Stapler.getCurrentRequest()).thenReturn(request);
 
-        when(httpURLConnectionMock.getInputStream()).thenReturn(new ByteArrayInputStream(guser.getBytes("UTF-8")));
+        when(HttpRequest.getInputStream(httpURLConnectionMock)).thenReturn(new ByteArrayInputStream(guser.getBytes("UTF-8")));
 
         githubScm.validateAndCreate(req);
+
         String id = githubScm.getCredentialId();
         Assert.assertEquals(githubScm.getId(), id);
+
+        verifyStatic();
+
+        Assert.assertEquals("constructed url", "https://api.github.com/user", urlStringCaptor.getValue());
+        Assert.assertEquals("access token passed to github", accessToken.trim(), tokenCaptor.getValue());
     }
 
     @Test
-    public void getOrganizations(){
+    public void getOrganizations() {
         mockStatic(Stapler.class);
         StaplerRequest staplerRequest = mock(StaplerRequest.class);
         when(Stapler.getCurrentRequest()).thenReturn(staplerRequest);
@@ -155,14 +179,14 @@ public class GithubScmTest {
         mockStatic(CredentialsMatchers.class);
         mockStatic(CredentialsProvider.class);
         when(CredentialsMatchers.withId(
-                credentialId)).thenReturn(credentialsMatcher);
+            credentialId)).thenReturn(credentialsMatcher);
 
         BlueOceanDomainRequirement blueOceanDomainRequirement = mock(BlueOceanDomainRequirement.class);
         whenNew(BlueOceanDomainRequirement.class).withNoArguments().thenReturn(blueOceanDomainRequirement);
 
         when(CredentialsProvider.class, "lookupCredentials",
-                StandardUsernamePasswordCredentials.class, jenkins, authentication,  blueOceanDomainRequirement)
-                .thenReturn(Lists.newArrayList(credentials));
+             StandardUsernamePasswordCredentials.class, jenkins, authentication, blueOceanDomainRequirement)
+            .thenReturn(Lists.newArrayList(credentials));
 
         when(CredentialsMatchers.class, "firstOrNull", Lists.newArrayList(credentials), credentialsMatcher).thenReturn(credentials);
 
@@ -180,6 +204,6 @@ public class GithubScmTest {
 
         when(CredentialsProvider.class, "lookupStores", user).thenReturn(Lists.newArrayList(credentialsStore));
 
-        when(credentialsStore.updateCredentials(domain,credentials,credentials)).thenReturn(true);
+        when(credentialsStore.updateCredentials(domain, credentials, credentials)).thenReturn(true);
     }
 }

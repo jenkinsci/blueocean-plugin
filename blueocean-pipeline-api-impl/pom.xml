@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.4.0-beta-1-SNAPSHOT</version>
+        <version>1.4.0-beta-6-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean-pipeline-api-impl</artifactId>
@@ -139,6 +139,11 @@
             -->
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.modules</groupId>
+            <artifactId>instance-identity</artifactId>
             <scope>test</scope>
         </dependency>
 

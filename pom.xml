@@ -10,7 +10,7 @@
 
   <groupId>io.jenkins.blueocean</groupId>
   <artifactId>blueocean-parent</artifactId>
-  <version>1.4.0-beta-1-SNAPSHOT</version>
+  <version>1.4.0-beta-6-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean Parent</name>
@@ -338,7 +338,7 @@
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-model-definition</artifactId>
-            <version>1.2.2</version>
+            <version>1.2.5</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -348,7 +348,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-cps</artifactId>
-            <version>2.39</version>
+            <version>2.42</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -363,7 +363,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-graph-analysis</artifactId>
-            <version>1.5</version>
+            <version>1.6</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -384,7 +384,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-step-api</artifactId>
-            <version>2.13</version>
+            <version>2.14</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -1069,18 +1069,6 @@
                                     <npmVersion>${npm.version}</npmVersion>
                                     <nodeDownloadRoot>https://repo.jenkins-ci.org/nodejs-dist/</nodeDownloadRoot>
                                     <npmDownloadRoot>https://repo.jenkins-ci.org/npm-dist/</npmDownloadRoot>
-                                </configuration>
-                            </execution>
-
-                            <execution>
-                                <phase>initialize</phase>
-                                <id>gulp clean</id>
-                                <goals>
-                                    <goal>npm</goal>
-                                </goals>
-                                <configuration>
-                                    <!-- The package.json must define an "mvnclean" script -->
-                                    <arguments>run mvnclean</arguments>
                                 </configuration>
                             </execution>
 

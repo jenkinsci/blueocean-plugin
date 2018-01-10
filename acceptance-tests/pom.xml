@@ -55,12 +55,6 @@
         </dependency>
         <!-- begin HttpRequest helper -->
         <dependency>
-            <groupId>io.jenkins.blueocean</groupId>
-            <artifactId>blueocean-rest-impl</artifactId>
-            <version>1.4.0-beta-1-SNAPSHOT</version>
-            <type>test-jar</type>
-        </dependency>
-        <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>fluent-hc</artifactId>
             <version>4.5.3</version>

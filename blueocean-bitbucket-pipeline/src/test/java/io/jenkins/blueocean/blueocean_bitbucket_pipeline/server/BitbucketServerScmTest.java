@@ -2,20 +2,36 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline.server;
 
 import com.cloudbees.jenkins.plugins.bitbucket.endpoints.BitbucketEndpointConfiguration;
 import com.mashape.unirest.http.exceptions.UnirestException;
+import io.jenkins.blueocean.util.HttpRequest;
 import org.apache.commons.codec.digest.DigestUtils;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.*;
+import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
+import static com.github.tomakehurst.wiremock.client.WireMock.stubFor;
+import static com.github.tomakehurst.wiremock.client.WireMock.urlEqualTo;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
 /**
  * @author Vivek Pandey
  */
 public class BitbucketServerScmTest extends BbServerWireMock {
 
+    String token;
+
+    @Before
+    public void setUp() throws Exception {
+        super.setup();
+        token = getJwtToken(j.jenkins, authenticatedUser.getId(), authenticatedUser.getId());
+    }
 
     @Test
     public void getBitbucketScmWithoutApiUrlParam() throws IOException, UnirestException {
@@ -162,5 +178,33 @@ public class BitbucketServerScmTest extends BbServerWireMock {
         assertEquals("pipeline-demo-test", ((Map)repos.get(1)).get("description"));
         assertTrue((Boolean) ((Map)repos.get(1)).get("private"));
         assertEquals("master",((Map)repos.get(1)).get("defaultBranch"));
+    }
+
+    /**
+     * Test that fetching the bitbucket-server scm produces a 401 with proper error message when the saved BB creds are invalid.
+     */
+    @Test
+    public void getScmWithRevokedCredential() throws IOException, UnirestException {
+        createCredential(BitbucketServerScm.ID);
+
+        // downstream call to BB should return a 401 when checking the credential
+        stubFor(com.github.tomakehurst.wiremock.client.WireMock.get(urlEqualTo("/rest/api/1.0/users/"+getUserName()))
+            .willReturn(aResponse().withStatus(401)));
+
+        Map result = httpRequest()
+            .Get("/organizations/{org}/scm/{scmid}/?apiUrl={apiurl}")
+            .urlPart("org", "jenkins")
+            .urlPart("scmid", BitbucketServerScm.ID)
+            .urlPart("apiurl", apiUrl)
+            .status(401)
+            .as(Map.class);
+
+        assertEquals(401, result.get("code"));
+        assertTrue("must contain message about existing credential", result.get("message").toString().contains("Existing credential failed"));
+    }
+
+    private HttpRequest httpRequest() {
+        return new HttpRequest(baseUrl)
+            .header("Authorization", "Bearer "+token);
     }
 }

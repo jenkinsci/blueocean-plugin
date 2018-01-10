@@ -47,6 +47,8 @@ import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
 import javax.annotation.Nonnull;
 import java.util.logging.Logger;
 
+import static java.util.logging.Level.WARNING;
+
 /**
  * @author <a href="mailto:tom.fennelly@gmail.com">tom.fennelly@gmail.com</a>
  */
@@ -64,7 +66,15 @@ public class BlueMessageEnricher extends MessageEnricher {
 
     @Override
     public void enrich(@Nonnull Message message) {
+        try {
+            maybeEnrichMessage(message);
+        } catch (Exception e) {
+            LOGGER.log(WARNING, "Unable to enrich message: " + e.getMessage(), e);
+            return;
+        }
+    }
 
+    private void maybeEnrichMessage(@Nonnull Message message) {
         String channelName = message.getChannelName();
         if (channelName.equals(Events.JobChannel.NAME) && message instanceof JobChannelMessage) {
             JobChannelMessage jobChannelMessage = (JobChannelMessage) message;

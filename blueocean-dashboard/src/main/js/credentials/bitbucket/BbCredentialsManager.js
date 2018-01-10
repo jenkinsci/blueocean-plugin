@@ -46,6 +46,8 @@ class BbCredentialsManager {
             this.stateId = BbCredentialState.NEW_REQUIRED;
         } else if (error.type === LoadError.TOKEN_INVALID) {
             this.stateId = BbCredentialState.INVALID_CREDENTIAL;
+        } else if (error.type === LoadError.TOKEN_REVOKED) {
+            this.stateId = BbCredentialState.REVOKED_CREDENTIAL;
         } else {
             this.stateId = BbCredentialState.UNEXPECTED_ERROR_CREDENTIAL;
         }
