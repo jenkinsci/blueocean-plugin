@@ -2,13 +2,10 @@ package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
-import io.jenkins.blueocean.rest.hal.Link;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
-import java.util.Collection;
 import java.util.List;
-import java.util.Objects;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE_NODE;
 
@@ -102,53 +99,4 @@ public abstract class BluePipelineNode extends BluePipelineStep {
      */
     @Exported(name = EDGES, inline = true)
     public abstract List<Edge> getEdges();
-
-    /**
-     * Downstream builds that were kicked off by this node, in the Blue Ocean sense. The triggering FlowNode is a
-     * child of this.node.getNode()
-     *
-     * @return downstream builds (with links)
-     */
-    @Exported(inline = true)
-    public abstract Collection<BlueDownstreamBuild> getDownstreamBuilds();
-
-    @ExportedBean
-    public static class BlueDownstreamBuild {
-        private final String description;
-        private final Link link;
-
-        public BlueDownstreamBuild(String description, Link link) {
-            this.description = description;
-            this.link = link;
-        }
-
-        @Exported(name="description")
-        public String getDescription() {
-            return description;
-        }
-
-        @Exported(name="link")
-        public Link getLink() {
-            return link;
-        }
-
-        @Override
-        public boolean equals(Object o) {
-            if (this == o) {
-                return true;
-            }
-            if (o == null || getClass() != o.getClass()) {
-                return false;
-            }
-            BlueDownstreamBuild that = (BlueDownstreamBuild) o;
-            return Objects.equals(description, that.description) &&
-                Objects.equals(link, that.link);
-        }
-
-        @Override
-        public int hashCode() {
-            return Objects.hash(description, link);
-        }
-    }
-
 }

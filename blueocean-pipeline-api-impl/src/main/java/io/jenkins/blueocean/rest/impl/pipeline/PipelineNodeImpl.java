@@ -100,22 +100,6 @@ public class PipelineNodeImpl extends BluePipelineNode {
     }
 
     @Override
-    public Collection<BlueDownstreamBuild> getDownstreamBuilds() {
-        // TODO: Remove once we're getting the actions through
-        ArrayList<BlueDownstreamBuild> builds = new ArrayList<>();
-
-        for (NodeDownstreamBuildAction action : node.getPipelineActions(NodeDownstreamBuildAction.class)) {
-            Link link = action.getLink();
-            if (link != null) {
-                BlueDownstreamBuild ds = new BlueDownstreamBuild(action.getDescription(), link);
-                builds.add(ds);
-            }
-        }
-
-        return builds;
-    }
-
-    @Override
     public Long getDurationInMillis() {
         return durationInMillis;
     }

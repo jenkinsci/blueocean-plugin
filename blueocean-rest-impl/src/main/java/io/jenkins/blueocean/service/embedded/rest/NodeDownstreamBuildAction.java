@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import hudson.model.Action;
 import hudson.model.InvisibleAction;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -9,7 +8,6 @@ import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
-import javax.annotation.CheckForNull;
 import java.util.Objects;
 
 /**
@@ -17,7 +15,7 @@ import java.util.Objects;
  * io.jenkins.blueocean.listeners.DownstreamJobListener in blueocean-pipeline-api-impl
  */
 @ExportedBean
-public class NodeDownstreamBuildAction extends InvisibleAction implements FlowNodeAction, BluePipelineAction, Reachable {
+public class NodeDownstreamBuildAction extends InvisibleAction implements FlowNodeAction, Reachable {
 
     private final Link link;
     private final String description;

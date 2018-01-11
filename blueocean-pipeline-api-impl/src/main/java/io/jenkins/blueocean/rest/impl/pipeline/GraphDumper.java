@@ -1,9 +1,8 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import io.jenkins.blueocean.service.embedded.rest.BluePipelineAction;
+import io.jenkins.blueocean.service.embedded.rest.NodeDownstreamBuildAction;
 import org.jenkinsci.plugins.workflow.flow.FlowExecution;
 import org.jenkinsci.plugins.workflow.graph.BlockEndNode;
-import org.jenkinsci.plugins.workflow.graph.BlockStartNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.graphanalysis.ForkScanner;
 import org.jenkinsci.plugins.workflow.graphanalysis.SimpleChunkVisitor;
@@ -126,7 +125,7 @@ public class GraphDumper implements SimpleChunkVisitor {
             NodeInfo info = graph.get(node.getId());
             out.append("\n");
 
-            int actionsCount = node.getActions(BluePipelineAction.class).size();
+            int actionsCount = node.getActions(NodeDownstreamBuildAction.class).size();
 
             if (node instanceof BlockEndNode) {
                 BlockEndNode sn = (BlockEndNode) node;
@@ -144,7 +143,7 @@ public class GraphDumper implements SimpleChunkVisitor {
                  ));
 
             if (info.isFlagged()) {
-                attr(out,node,"fillcolor","#ccddff");
+                attr(out, node, "fillcolor", "#ccddff");
             }
 
             for (NodeInfo childInfo : info.getChildren()) {
