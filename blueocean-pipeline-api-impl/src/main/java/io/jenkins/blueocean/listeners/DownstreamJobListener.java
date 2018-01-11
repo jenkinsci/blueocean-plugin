@@ -34,16 +34,11 @@ public class DownstreamJobListener extends RunListener<Run<?, ?>> {
     @Override
     public void onStarted(Run<?, ?> run, TaskListener listener) {
 
-        String dbg = "onStarted: " + run; // TODO: RM
-
         for (BuildUpstreamNodeAction action : run.getActions(BuildUpstreamNodeAction.class)) {
             Run triggerRun = Run.fromExternalizableId(action.getUpstreamRunId());
             if (triggerRun instanceof WorkflowRun) {
                 FlowExecution execution = ((WorkflowRun) triggerRun).getExecution();
                 FlowNode node;
-
-                dbg += "\n\t      trigger: " + triggerRun;
-
 
                 if (execution == null) {
                     LOGGER.warning("Could not retrieve upstream FlowExecution");
@@ -56,7 +51,6 @@ public class DownstreamJobListener extends RunListener<Run<?, ?>> {
                     LOGGER.warning("Could not retrieve upstream node: " + e);
                     continue;
                 }
-                dbg += "\n\t         node: " + node;
 
                 if (node == null) {
                     LOGGER.warning("Could not retrieve upstream node (null)");
@@ -72,8 +66,6 @@ public class DownstreamJobListener extends RunListener<Run<?, ?>> {
                 // Find the node that will be used to create the cut-down graph for visualisation
                 FlowNode blueGraphNode = findBlueGraphNode(node);
 
-                dbg += "\n\tblueGraphNode: " + blueGraphNode;
-
                 if (blueGraphNode == null) {
                     LOGGER.warning("Could not find a suitable parent node for node " + node);
                     continue;
@@ -81,65 +73,55 @@ public class DownstreamJobListener extends RunListener<Run<?, ?>> {
 
                 Link link = LinkResolver.resolveLink(run);
                 if (link != null) {
-                    blueGraphNode.addAction(new NodeDownstreamBuildAction(link, description));
                     try {
+                           // Add to the node we'll use for the visualisation
+                        blueGraphNode.addAction(new NodeDownstreamBuildAction(link, description));
                         blueGraphNode.save();
+
+                        if (!blueGraphNode.equals(node)) {
+                            // Also add to the actual trigger node so we can find it later by step
+                            node.addAction(new NodeDownstreamBuildAction(link, description));
+                            node.save();
+                        }
+
                     } catch (IOException e) {
-                        LOGGER.severe("Could not persist node: " + blueGraphNode);
-                        LOGGER.severe(e.toString());
+                        LOGGER.severe("Could not persist node: " + e);
                     }
                 }
             }
         }
-
-        System.out.println(dbg); // TODO: RM
     }
 
     // TODO: Docs
     private FlowNode findBlueGraphNode(FlowNode actionNode) {
-        String dbg = "findBlueGraphNode for " + actionNode; // TODO: RM
-        try {
-            FlowNode closestStageStart = null; // Closest instance of StepStartNode that is also a stage
-            List<FlowNode> searchNodes = actionNode.getParents();
+        FlowNode closestStageStart = null; // Closest instance of StepStartNode that is also a stage
+        List<FlowNode> searchNodes = actionNode.getParents();
 
-            if (actionNode instanceof StepStartNode && PipelineNodeUtil.isStage(actionNode)) {
-                closestStageStart = actionNode;
-            }
-
-            int i = 0;
-            lookForParallel: while (searchNodes.size() > 0) {
-                i++;
-                ArrayList<FlowNode> nextParents = new ArrayList<>();
-
-                dbg += "\n\tCheck parents loop " + i;
-
-                dbg += "\n\t\tclosestStage is " + closestStageStart;
-
-                for (FlowNode node : searchNodes) {
-                    dbg += "\n\t\t\tnode " + node;
-                    if (PipelineNodeUtil.isParallelBranch(node)) {
-                        // If we find the beginning of a parallel, this is the right one
-                        dbg += " >>>> isParallel!";
-                        return node;
-                    }
-                    if (closestStageStart == null && node instanceof StepStartNode && PipelineNodeUtil.isStage(node)) {
-                        dbg += " set closestStageStart";
-                        closestStageStart = node;
-                    }
-                    if (node instanceof StepEndNode && closestStageStart != null) {
-                        dbg += " is StepEndNode, so give up looking for parallel";
-                        // Stop looking for a parallel, so we don't go too far back in the graph
-                        break lookForParallel;
-                    }
-                    nextParents.addAll(node.getParents());
-                }
-
-                searchNodes = nextParents;
-            }
-
-            return closestStageStart; // If there's no paralell root, return the nearest stage
-        } finally {
-            System.out.println(dbg); // TODO: RM
+        if (actionNode instanceof StepStartNode && PipelineNodeUtil.isStage(actionNode)) {
+            closestStageStart = actionNode;
         }
+
+        while (searchNodes.size() > 0) {
+            ArrayList<FlowNode> nextParents = new ArrayList<>();
+
+            for (FlowNode node : searchNodes) {
+                if (PipelineNodeUtil.isParallelBranch(node)) {
+                    // If we find the beginning of a parallel, this is the right one
+                    return node;
+                }
+                if (closestStageStart == null && node instanceof StepStartNode && PipelineNodeUtil.isStage(node)) {
+                    closestStageStart = node;
+                }
+                if (node instanceof StepEndNode && closestStageStart != null) {
+                    // Stop looking for a parallel, so we don't go too far back in the graph
+                    return closestStageStart;
+                }
+                nextParents.addAll(node.getParents());
+            }
+
+            searchNodes = nextParents;
+        }
+
+        return closestStageStart; // In case this is a non-parallel first stage
     }
 }
