@@ -92,7 +92,10 @@ public class DownstreamJobListener extends RunListener<Run<?, ?>> {
         }
     }
 
-    // TODO: Docs
+    /**
+     * Walks the execution graph from the originating node for a downstream build (actionNode), looking for the
+     * beginning of a parallel branch or failing that, the nearest beginning of a non-atomic stage node.
+     */
     private FlowNode findBlueGraphNode(FlowNode actionNode) {
         FlowNode closestStageStart = null; // Closest instance of StepStartNode that is also a stage
         List<FlowNode> searchNodes = actionNode.getParents();
