@@ -3,6 +3,8 @@ package io.jenkins.blueocean.rest.hal;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
+import java.util.Objects;
+
 /**
  * Link holding reference to a resource.
  *
@@ -51,5 +53,23 @@ public final class Link {
     @Override
     public String toString() {
         return href;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) {
+            return true;
+        }
+        if (o == null || getClass() != o.getClass()) {
+            return false;
+        }
+        Link link = (Link) o;
+        return Objects.equals(href, link.href);
+    }
+
+    @Override
+    public int hashCode() {
+
+        return Objects.hash(href);
     }
 }

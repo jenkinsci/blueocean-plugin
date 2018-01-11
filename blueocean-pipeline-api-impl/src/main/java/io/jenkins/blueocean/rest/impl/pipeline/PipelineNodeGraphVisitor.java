@@ -43,10 +43,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 
 /**
@@ -85,17 +87,17 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     private StepStartNode agentNode = null;
 
     // Collects instances of BluePipelineAction as we walk up the graph, to be drained when appropriate
-    private Collection<BluePipelineAction> pipelineActions;
+    private Set<BluePipelineAction> pipelineActions;
 
     // Temporary holding for actions waiting to be assigned to the wrapper for a branch
-    private Map<FlowNode /* branchStartNode */, Collection<BluePipelineAction>> pendingActionsForBranches;
+    private Map<FlowNode /* branchStartNode */, Set<BluePipelineAction>> pendingActionsForBranches;
 
     private final static String PARALLEL_SYNTHETIC_STAGE_NAME = "Parallel";
 
     public PipelineNodeGraphVisitor(WorkflowRun run) {
         this.run = run;
         this.inputAction = run.getAction(InputAction.class);
-        this.pipelineActions = new ArrayList<>();
+        this.pipelineActions = new HashSet<>();
         this.pendingActionsForBranches = new HashMap<>();
         FlowExecution execution = run.getExecution();
         if(execution!=null) {
@@ -429,17 +431,17 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     /**
      * Empty the pipelineActions buffer, returning its contents.
      */
-    protected Collection<BluePipelineAction> drainPipelineActions() {
+    protected Set<BluePipelineAction> drainPipelineActions() {
         if (isNodeVisitorDumpEnabled) {
             dump(String.format("draining accumulated actions - total is %d", pipelineActions.size()));
         }
 
         if (pipelineActions.size() == 0) {
-            return Collections.emptyList();
+            return Collections.emptySet();
         }
 
-        Collection<BluePipelineAction> drainedActions = pipelineActions;
-        pipelineActions = new ArrayList<>();
+        Set<BluePipelineAction> drainedActions = pipelineActions;
+        pipelineActions = new HashSet<>();
         return drainedActions;
     }
 
