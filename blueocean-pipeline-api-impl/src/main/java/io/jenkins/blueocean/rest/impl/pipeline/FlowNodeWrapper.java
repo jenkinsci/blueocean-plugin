@@ -22,7 +22,6 @@ import java.util.List;
  * @author Vivek Pandey
  */
 public class FlowNodeWrapper {
-
     public enum NodeType {STAGE, PARALLEL, STEP}
 
     private final FlowNode node;
@@ -38,6 +37,8 @@ public class FlowNodeWrapper {
     private List<FlowNodeWrapper> parents = new ArrayList<>();
 
     private ErrorAction blockErrorAction;
+
+
 
     public FlowNodeWrapper(@Nonnull FlowNode node, @Nonnull NodeRunStatus status, @Nonnull TimingInfo timingInfo, @Nonnull  WorkflowRun run) {
         this.node = node;

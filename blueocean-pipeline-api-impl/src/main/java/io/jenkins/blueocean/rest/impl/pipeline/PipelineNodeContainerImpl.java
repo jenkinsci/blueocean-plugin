@@ -41,7 +41,6 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
         } else {
             this.nodes = graphBuilder.getPipelineNodes(getLink());
         }
-
         for (BluePipelineNode node : nodes) {
             nodeMap.put(node.getId(), node);
         }
