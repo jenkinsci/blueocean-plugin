@@ -69,6 +69,7 @@ function _getStageErrors(stage, ...excludeProps) {
     return pipelineValidator.getAllValidationErrors(stage, excludedNodes);
 }
 
+
 export class EditorMain extends Component<DefaultProps, Props, State> {
 
     static defaultProps = {};

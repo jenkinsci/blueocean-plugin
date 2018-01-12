@@ -2,6 +2,7 @@
 
 import idgen from './IdGenerator';
 import type { PipelineKeyValuePair } from './PipelineSyntaxConverter';
+import { DragPosition } from "../components/editor/DragPosition";
 
 /**
  * A stage in a pipeline
@@ -366,7 +367,7 @@ class PipelineStore {
      * @param stage
      * @param sourceNodeId 'id' value of step to move
      * @param targetNodeId 'id' value of target
-     * @param targetType 'beforeItem' or 'childItem'
+     * @param targetType BEFORE_ITEM, AFTER_ITEM, FIRST_CHILD, LAST_CHILD
      */
     moveStep(stage, sourceNodeId, targetNodeId, targetType) {
         if (sourceNodeId === targetNodeId) {
@@ -382,21 +383,28 @@ class PipelineStore {
         sourceArray.splice(sourceArray.indexOf(sourceStep), 1);
 
         // insert the step in the right spot based on where they dragged
-        if (targetType === 'childItem') {
+        if (targetType === DragPosition.FIRST_CHILD || targetType === DragPosition.LAST_CHILD) {
             // if the nodeId didn't resolve to a step, then the target is the stage
             const targetArray = targetStep ? targetStep.children : stage.steps;
-            targetArray.push(sourceStep);
-        } else {
+            if (targetType === DragPosition.FIRST_CHILD) {
+                targetArray.splice(0, 0, sourceStep);
+            } else {
+                targetArray.push(sourceStep);
+            }
+        } else if (targetType === DragPosition.BEFORE_ITEM || targetType === DragPosition.AFTER_ITEM) {
             const targetParentStep = this.findParentStep(targetStep);
             // if the target step has no parent step, it's at the stage level
             const targetArray = !targetParentStep ? stage.steps : targetParentStep.children;
             let targetIndex = targetArray.indexOf(targetStep);
 
-            if (targetType === 'beforeItem') {
+            if (targetType === DragPosition.BEFORE_ITEM) {
                 targetArray.splice(targetIndex, 0, sourceStep);
             } else {
-                console.warn(`targetType=${targetType} not implemented`);
+                // TODO: test this fix
+                targetArray.splice(targetIndex + 1, 0, sourceStep);
             }
+        } else {
+            console.warn(`targetType=${targetType} not implemented`);
         }
 
         this.notify();

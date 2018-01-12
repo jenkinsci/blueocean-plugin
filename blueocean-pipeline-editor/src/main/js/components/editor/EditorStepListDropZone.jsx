@@ -2,36 +2,23 @@ import React from 'react';
 import { PropTypes } from 'react';
 import { DropTarget } from 'react-dnd';
 
-import pipelineStore from '../../services/PipelineStore';
-import { ChildStepIcon} from "./ChildStepIcon";
-
 
 const ItemType = 'EditorStepItem';
 
 function dropTargetCollector(connect, monitor) {
-    // const item = monitor.getItem() || {};
-
     return {
         connectDropTarget: connect.dropTarget(),
         isHovering: monitor.isOver(),
         isDroppable: monitor.canDrop(),
-        //lastPosition: item && item.lastPosition,
     };
 }
 
 const dropTarget = {
     hover(props, monitor) {
         const item = monitor.getItem();
-        item.targetId = props.parent.id;
-        item.targetType = 'childItem';
+        item.targetId = props.step.id;
+        item.targetType = props.position;
         props.onDragStepHover(item);
-    },
-    canDrop(props, monitor) {
-        const item = monitor.getItem();
-        const { stage, step, parent } = props;
-        const ancestors = pipelineStore.findStepHierarchy(parent || step, stage.steps);
-        const ancestorIds = ancestors.map(anc => anc.id);
-        return ancestorIds.indexOf(item.id) === -1;
     },
     drop(props, monitor) {
         const item = monitor.getItem();
@@ -39,13 +26,18 @@ const dropTarget = {
     }
 };
 
+function positionToClass(dragPosition) {
+    return dragPosition ? dragPosition.toLowerCase().replace('_', '-') : '';
+}
+
 
 @DropTarget(ItemType, dropTarget, dropTargetCollector)
 class EditorStepListDropZone extends React.Component {
 
     static propTypes = {
         stage: PropTypes.object,
-        parent: PropTypes.object,
+        step: PropTypes.object,
+        position: PropTypes.string,
         onDragStepHover: PropTypes.func,
         onDragStepDrop: PropTypes.func,
         // injected by react-dnd
@@ -60,18 +52,12 @@ class EditorStepListDropZone extends React.Component {
     };
 
     render() {
-        const { parent, isHovering, isDroppable, connectDropTarget } = this.props;
-        const isStage = !!parent.steps;
-        const dragClass = isHovering && (isDroppable && 'is-drop-allowed' || 'is-drop-blocked');
+        const { position, isHovering, isDroppable, connectDropTarget } = this.props;
+        let dragClass = isHovering && (isDroppable && 'is-drop-allowed' || 'is-drop-blocked') || '';
+        dragClass += ' ' + positionToClass(position);
 
         return (connectDropTarget(
-            <div className={`editor-step-list-drop-zone ${dragClass}`}>
-                <ChildStepIcon />
-                <div className="drop-zone-label">
-                    { isStage && <span>move to bottom</span> }
-                    { !isStage && <span>move to <strong>{parent.name}</strong></span> }
-                </div>
-            </div>
+            <div className={`editor-step-list-drop-zone ${dragClass}`}/>
         ));
     }
 }

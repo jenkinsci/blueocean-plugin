@@ -1,37 +1,15 @@
 import React from 'react';
 import { findDOMNode } from 'react-dom';
 import { PropTypes } from 'react';
-import { DragSource, DropTarget } from 'react-dnd';
+import { DragSource } from 'react-dnd';
 import { Icon } from '@jenkins-cd/design-language';
 
-import pipelineStore from '../../services/PipelineStore';
 import { getArg } from '../../services/PipelineMetadataService';
-import { ChildStepIcon } from "./ChildStepIcon";
+import { EditorStepListDropZone } from "./EditorStepListDropZone";
+import { DragPosition } from './DragPosition';
+
 
 const ItemType = 'EditorStepItem';
-
-/*
-class ItemDragPosition {
-    id = null;
-    below = false;
-
-    constructor(id, below) {
-        this.id = id;
-        this.below = below;
-    }
-
-    equals(position) {
-        return position && this.id === position.id && this.below === position.below;
-    }
-}
-
-function calculateRelativeDragPosition(component, clientOffset) {
-    const hoverBoundingRect = findDOMNode(component).getBoundingClientRect();
-    const hoverMiddleY = (hoverBoundingRect.bottom - hoverBoundingRect.top) / 2;
-    const hoverClientY = clientOffset.y - hoverBoundingRect.top;
-    return hoverClientY >= hoverMiddleY;
-}
-*/
 
 function dragSourceCollector(connect, monitor) {
     return {
@@ -39,17 +17,6 @@ function dragSourceCollector(connect, monitor) {
         connectDragPreview: connect.dragPreview(),
         isDragging: monitor.isDragging(),
         isHovering: false,
-    };
-}
-
-function dropTargetCollector(connect, monitor) {
-    // const item = monitor.getItem() || {};
-
-    return {
-        connectDropTarget: connect.dropTarget(),
-        isHovering: monitor.isOver(),
-        isDroppable: monitor.canDrop(),
-        //lastPosition: item && item.lastPosition,
     };
 }
 
@@ -61,7 +28,6 @@ const dragSource = {
             sourceId: id,
             targetId: null,
             targetType: null,
-            //lastPosition: null,
         };
 
         // workaround a bug in Chrome where 'dragend' would fire immediately after this 'dragstart' handler was called
@@ -75,46 +41,13 @@ const dragSource = {
     }
 };
 
-const dragTarget = {
-    hover(props, monitor, component) {
-        /*
-        const { lastPosition } = monitor.getItem();
-
-        const below = calculateRelativeDragPosition(component, monitor.getClientOffset());
-        const currentPosition = new ItemDragPosition(props.step.id, below);
-
-        if (currentPosition.equals(lastPosition)) {
-            return;
-        }
-        */
-
-        const item = monitor.getItem();
-        item.targetId = props.step.id;
-        item.targetType = 'beforeItem';
-        // item.lastPosition = currentPosition;
-        props.onDragStepHover(item);
-    },
-    canDrop(props, monitor) {
-        const item = monitor.getItem();
-        const { stage, step, parent } = props;
-        const ancestors = pipelineStore.findStepHierarchy(parent || step, stage.steps);
-        const ancestorIds = ancestors.map(anc => anc.id);
-        return ancestorIds.indexOf(item.id) === -1;
-    },
-    drop(props, monitor) {
-        props.onDragStepDrop(monitor.getItem());
-    }
-};
-
 
 @DragSource(ItemType, dragSource, dragSourceCollector)
-@DropTarget(ItemType, dragTarget, dropTargetCollector)
 class EditorStepItem extends React.Component {
 
     static propTypes = {
         stage: PropTypes.object,
         step: PropTypes.object,
-        parent: PropTypes.object,
         parameters: PropTypes.array,
         errors: PropTypes.array,
         onDragStepBegin: PropTypes.func,
@@ -127,7 +60,6 @@ class EditorStepItem extends React.Component {
         isDroppable: PropTypes.bool,
         connectDragSource: PropTypes.func,
         connectDragPreview: PropTypes.func,
-        connectDropTarget: PropTypes.func,
     };
 
     static defaultProps = {
@@ -142,8 +74,8 @@ class EditorStepItem extends React.Component {
 
     render() {
         const {
-            step, parent, parameters, errors, isHovering, isDragging, isDroppable,
-            connectDragSource, connectDragPreview, connectDropTarget,
+            stage, step, parameters, errors, isHovering, isDragging, isDroppable,
+            connectDragSource, connectDragPreview,
         } = this.props;
 
         let dragClass = '';
@@ -156,9 +88,11 @@ class EditorStepItem extends React.Component {
             dragClass = 'is-drop-blocked';
         }
 
-        return (connectDragPreview(connectDropTarget(
+        const topDragPosition = DragPosition.BEFORE_ITEM;
+        const botDragPosition = step.isContainer ? DragPosition.FIRST_CHILD : DragPosition.AFTER_ITEM;
+
+        return (connectDragPreview(
             <div className={`editor-step-content ${dragClass}`}>
-                {parent && <ChildStepIcon/>}
                 <div className="editor-step-title">
                     <span className="editor-step-label">{step.label}</span>
                     {!errors &&
@@ -176,13 +110,27 @@ class EditorStepItem extends React.Component {
                         </span>
                     }
                 </div>
+                <EditorStepListDropZone
+                    stage={stage}
+                    step={step}
+                    position={topDragPosition}
+                    onDragStepHover={this.props.onDragStepHover}
+                    onDragStepDrop={this.props.onDragStepDrop}
+                />
+                <EditorStepListDropZone
+                    stage={stage}
+                    step={step}
+                    position={botDragPosition}
+                    onDragStepHover={this.props.onDragStepHover}
+                    onDragStepDrop={this.props.onDragStepDrop}
+                />
                 {connectDragSource(
                     <div className="editor-step-drag" onClick={this.onDragHandleClick}>
                         <Icon icon="EditorDragHandle" />
                     </div>
                 )}
             </div>
-        )));
+        ));
     }
 }
 

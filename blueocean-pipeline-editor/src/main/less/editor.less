@@ -18,7 +18,8 @@
 @font-family-header: "LatoLatinWebMedium", "Lato", "Helvetica Neue", Helvetica, Arial, sans-serif;
 
 @child-indent-size: 24px;
-@padding-step: 11px 16px;
+@step-padding-tb: 11px;
+@step-padding-lr: 16px;
 
 // TODO: Make these ^^^ use the JDL variables
 
@@ -329,6 +330,20 @@
                 top: 0;
             }
         }
+
+        &.is-container {
+            border-left: 1px solid @hr-color;
+            border-bottom: 1px solid @hr-color;
+            padding-bottom: @step-padding-tb;
+        }
+    }
+
+    .editor-step + .editor-step .editor-step-content {
+        border-top-width: 0;
+    }
+
+    .editor-step.is-container .editor-step:nth-child(2) .editor-step-content {
+        border-top-width: 1px;
     }
 
     .editor-step-errors {
@@ -337,8 +352,15 @@
 
     .editor-step-main {
         width: 100%;
+    }
+
+    .editor-step-content {
         border: 1px solid @hr-color;
-        border-width: 0 1px;
+        border-right-width: 0;
+    }
+
+    .editor-step.is-container > .editor-step-main > .editor-step-content {
+        border: 0;
     }
 
     .editor-step.selected > .editor-step-main {
@@ -346,14 +368,18 @@
     }
 
     .editor-step-content {
-        padding: @padding-step;
+        padding: @step-padding-tb @step-padding-lr;
         cursor: pointer;
         position: relative;
-        border-bottom: 1px solid @hr-color;
+        // border-bottom: 1px solid @hr-color;
 
         &:hover, &:active, &:focus {
             background: @light-blue-bg;
         }
+    }
+
+    .editor-steps > .editor-step {
+        border-right: 1px solid @hr-color;
     }
 
     .editor-step .editor-step .editor-step-main { // nested steps
@@ -361,9 +387,9 @@
         position: relative;
     }
 
-    .editor-step.nested .editor-step-main { // child steps
-        border-left-width: @child-indent-size;
-        position: relative;
+    .editor-step.nested {
+        margin-left: @step-padding-lr;
+        width: calc(~"100% - @{step-padding-lr}"); // prevent cards hanging over right edge
     }
 
     .editor-steps > .editor-step.missing .editor-step-content { // top-level 'no children' step
@@ -488,44 +514,63 @@
         bottom: 0;
         cursor: -webkit-grab;
 
-        display: flex;
+        // uses display: flex;
         align-items: center;
+        // hide by default
+        display: none;
 
         svg {
             fill: @grab-color;
             margin-right: 6px;
         }
-        // hide by default
-        display: none;
     }
 
     .editor-step-list-drop-zone {
-        position: relative;
+        position: absolute;
+        left: 0;
         width: 100%;
-        display: flex;
-        align-items: center;
-        padding: @padding-step;
-        border-style: solid;
-        border-color: @hr-color;
-        border-width: 0 0 1px @child-indent-size;
-        color: @hr-color;
-        // hide by default
-        display: none;
+        height: 31px;
+
+        &.before-item {
+            top: 0;
+        }
+
+        &.after-item, &.first-child, &.last-child {
+            bottom: 0;
+        }
+
+        &.last-child {
+            height: @step-padding-tb;
+        }
     }
 
-    .editor-step-content, .editor-step-list-drop-zone {
-        &.is-dragging {
-            background-color: transparent;
-            box-shadow: inset 0 0 5px @grab-color
-        }
-        &.is-drop-allowed {
-            background-color: @light-blue-bg;
-            box-shadow: inset 0 1px 0 @brand-color;
+    .editor-step-list-drop-zone.is-drop-allowed {
+        &.before-item {
+            box-shadow: inset 0 3px 0 @brand-color;
         }
 
-        &.is-drop-blocked {
-            background-color: @warning-color;
-            opacity: 0.25;
+        &.after-item, &.first-child, &.last-child {
+            box-shadow: inset 0 -3px 0 @brand-color;
+        }
+    }
+
+    // special handling for drag target at end of stage
+    .editor-steps > .editor-step-list-drop-zone.last-child {
+        position: static;
+        border: 1px solid @hr-color;
+        border-top-width: 0;
+    }
+
+    .editor-step-content.is-dragging {
+        background-color: transparent;
+        box-shadow: inset 0 0 5px @grab-color;
+
+        // if container is being dragged, hide any of its nested steps / drop zones
+        & ~ .editor-step.nested {
+            display: none;
+        }
+        & ~ .editor-step-list-drop-zone {
+            display:none;
         }
     }
 

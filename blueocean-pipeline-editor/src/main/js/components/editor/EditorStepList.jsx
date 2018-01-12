@@ -11,6 +11,7 @@ import { EditorStepListDropZone } from "./EditorStepListDropZone";
 import type { StageInfo, StepInfo } from '../../services/PipelineStore';
 import { Icon } from '@jenkins-cd/design-language';
 import pipelineValidator from '../../services/PipelineValidator';
+import { DragPosition } from "./DragPosition";
 
 type Props = {
     stage: ?StageInfo,
@@ -103,6 +104,7 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
         const key = 's_' + step.id;
         if (parent) classNames.push('nested');
         if (errors) classNames.push('errors');
+        if (step.isContainer) classNames.push('is-container');
 
         return (
             <div className={classNames.join(' ')} key={key}>
@@ -110,7 +112,6 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
                     <EditorStepItem
                         stage={this.props.stage}
                         step={step}
-                        parent={parent}
                         parameters={thisMeta.parameters}
                         errors={errors}
                         onDragStepBegin={this.props.onDragStepBegin}
@@ -123,7 +124,8 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
                         this.renderSteps(step.children, step),
                         <EditorStepListDropZone
                             stage={this.props.stage}
-                            parent={step}
+                            step={step}
+                            position={DragPosition.LAST_CHILD}
                             onDragStepHover={this.props.onDragStepHover}
                             onDragStepDrop={this.props.onDragStepDrop}
                         />
@@ -170,7 +172,8 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
                 {this.renderSteps(steps, parent)}
                 <EditorStepListDropZone
                     stage={this.props.stage}
-                    parent={this.props.stage}
+                    step={this.props.stage}
+                    position={DragPosition.LAST_CHILD}
                     onDragStepHover={this.props.onDragStepHover}
                     onDragStepDrop={this.props.onDragStepDrop}
                 />
