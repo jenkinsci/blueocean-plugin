@@ -79,10 +79,12 @@ export default class RunMessageCell extends Component {
                 </span>);
             }
 
+            const linkedCauseMsg = (<Link to={linkTo} className="unstyled-link"><span className="ellipsis-text">{cause}</span></Link>);
+
             return (
                 <span className="RunMessageCell" title={cause}>
                     <span className="RunMessageCellInner">
-                        {cause}
+                        {linkedCauseMsg}
                     </span>
                 </span>
             );
