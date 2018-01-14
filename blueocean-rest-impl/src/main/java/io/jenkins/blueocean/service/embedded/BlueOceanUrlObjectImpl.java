@@ -1,9 +1,9 @@
 package io.jenkins.blueocean.service.embedded;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.ModelObject;
 import io.jenkins.blueocean.rest.factory.BlueOceanUrlMapper;
 import io.jenkins.blueocean.rest.model.BlueOceanUrlObject;
-
 import javax.annotation.Nonnull;
 
 /**
@@ -11,11 +11,14 @@ import javax.annotation.Nonnull;
  */
 public class BlueOceanUrlObjectImpl extends BlueOceanUrlObject {
 
-    private volatile String mappedUrl;
-    private final ModelObject modelObject;
+    private final String mappedUrl;
+
+    // leave it there to avoid deserialization errors for older version of this object
+    @SuppressFBWarnings(value = "UUF_UNUSED_FIELD", justification = "Field is present to avoid deserialization errors for older version of this object")
+    private transient ModelObject modelObject;
 
     public BlueOceanUrlObjectImpl(ModelObject modelObject) {
-        this.modelObject = modelObject;
+        this.mappedUrl = computeUrl(modelObject);
     }
 
     @Override
@@ -25,7 +28,6 @@ public class BlueOceanUrlObjectImpl extends BlueOceanUrlObject {
 
     @Override
     public @Nonnull String getUrl() {
-        setUrlIfNeeded();
         return mappedUrl;
     }
 
@@ -34,20 +36,7 @@ public class BlueOceanUrlObjectImpl extends BlueOceanUrlObject {
         return "/plugin/blueocean-rest-impl/images/48x48/blueocean.png";
     }
 
-    private void setUrlIfNeeded(){
-        String url = mappedUrl;
-        if(url == null){
-            synchronized (this){
-                url = mappedUrl;
-                if(url == null){
-                    url = computeUrl();
-                    this.mappedUrl = url;
-                }
-            }
-        }
-    }
-
-    private String computeUrl(){
+    private String computeUrl(ModelObject modelObject){
         String url = null;
         for(BlueOceanUrlMapper mapper: BlueOceanUrlMapper.all()){
             url = mapper.getUrl(modelObject);
