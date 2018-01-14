@@ -3,7 +3,7 @@ import { FileSize, JTable, TableRow, TableCell, TableHeaderRow } from '@jenkins-
 import { Icon } from '@jenkins-cd/design-language';
 import { observer } from 'mobx-react';
 import mobxUtils from 'mobx-utils';
-import { logging, UrlConfig } from '@jenkins-cd/blueocean-core-js';
+import { logging, UrlConfig, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.artifacts');
 
@@ -69,19 +69,18 @@ export default class RunDetailsArtifacts extends Component {
         if (!result) {
             return;
         }
-        this.artifactsPromise = this.context.activityService.fetchArtifacts(result._links.self.href);
+        this.pager = this.context.activityService.artifactsPager(result._links.self.href);
     }
 
     render() {
         const { result, t } = this.props;
 
-        const promise = this.artifactsPromise;
-        if (!result || !promise || promise.state === mobxUtils.PENDING || promise.state === mobxUtils.REJECTED) {
+        if (!result || !this.pager || this.pager.pendingD) {
             return null;
         }
 
         const { artifactsZipFile: zipFile } = result;
-        const artifacts = promise.value;
+        const artifacts = this.pager.data;
 
         const nameLabel = t('rundetail.artifacts.header.name', { defaultValue: 'Name' });
         const sizeLabel = t('rundetail.artifacts.header.size', { defaultValue: 'Size' });
@@ -156,6 +155,7 @@ export default class RunDetailsArtifacts extends Component {
                     </TableRow>
                     { artifactsRendered }
                 </JTable>
+                <ShowMoreButton pager={this.pager}/>
                 <ZipFileDownload zipFile={zipFile} t={t} />
             </div>
         );
