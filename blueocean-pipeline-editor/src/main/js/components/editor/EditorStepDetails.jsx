@@ -23,6 +23,10 @@ type Props = {
     stage?: ?StageInfo,
     step?: ?StepInfo,
     onDataChange?: (newValue:any) => void,
+    onDragStepBegin?: () => any,
+    onDragStepHover?: () => any,
+    onDragStepDrop?: () => any,
+    onDragStepEnd?: () => any,
 }
 
 export class EditorStepDetails extends Component {
@@ -111,7 +115,12 @@ export class EditorStepDetails extends Component {
                         steps={step.children}
                         parent={step}
                         onAddStepClick={() => this.props.openSelectStepDialog(step)}
-                        onStepSelected={(step) => this.props.selectedStepChanged(step)} />
+                        onStepSelected={(step) => this.props.selectedStepChanged(step)}
+                        onDragStepBegin={this.props.onDragStepBegin}
+                        onDragStepHover={this.props.onDragStepHover}
+                        onDragStepDrop={this.props.onDragStepDrop}
+                        onDragStepEnd={this.props.onDragStepEnd}
+                    />
                 </section>}
             </div>
         );

@@ -309,9 +309,14 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
 
         let parentStep = null;
         for (const step of selectedSteps) {
-            const stepConfigPanel = (<EditorStepDetails className="editor-config-panel step"
+            const stepConfigPanel = (
+                <EditorStepDetails className="editor-config-panel step"
                     stage={selectedStage}
                     step={step} key={step.id}
+                    onDragStepBegin={this.onDragStepBegin}
+                    onDragStepHover={this.onDragStepHover}
+                    onDragStepDrop={this.onDragStepDrop}
+                    onDragStepEnd={this.onDragStepEnd}
                     onDataChange={newValue => this.stepDataChanged(newValue)}
                     onClose={e => cleanPristine(step) || pipelineValidator.validate() || this.selectedStepChanged(null, parentStep)}
                     openSelectStepDialog={step => this.openSelectStepDialog(step)}
@@ -321,7 +326,8 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                         <MoreMenu>
                             <a onClick={e => this.deleteStep(step)}>Delete</a>
                         </MoreMenu>
-                    </h4>} />);
+                    </h4>} />
+            );
 
             if (stepConfigPanel) sheets.push(stepConfigPanel);
             parentStep = step;
