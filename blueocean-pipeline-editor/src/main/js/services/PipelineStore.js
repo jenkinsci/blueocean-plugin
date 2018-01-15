@@ -360,8 +360,6 @@ class PipelineStore {
 
     /**
      * Moves a step to a different location in the same stage.
-     * targetType 'beforeItem' places step as prior sibling of targetNodeId (step.id)
-     * targetType 'childItem' places step as last child of targetNodeId (stage.id or block-level step.id)
      * Does not support movement across stages.
      *
      * @param stage
@@ -384,7 +382,7 @@ class PipelineStore {
 
         // insert the step in the right spot based on where they dragged
         if (targetType === DragPosition.FIRST_CHILD || targetType === DragPosition.LAST_CHILD) {
-            // if the nodeId didn't resolve to a step, then the target is the stage
+            // if the targetNodeId didn't resolve to a targetStep, then use stage as the target
             const targetArray = targetStep ? targetStep.children : stage.steps;
             if (targetType === DragPosition.FIRST_CHILD) {
                 targetArray.splice(0, 0, sourceStep);
@@ -400,7 +398,6 @@ class PipelineStore {
             if (targetType === DragPosition.BEFORE_ITEM) {
                 targetArray.splice(targetIndex, 0, sourceStep);
             } else {
-                // TODO: test this fix
                 targetArray.splice(targetIndex + 1, 0, sourceStep);
             }
         } else {
