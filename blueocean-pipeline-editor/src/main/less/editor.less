@@ -513,10 +513,9 @@
         bottom: 0;
         cursor: -webkit-grab;
 
-        // uses display: flex;
+        display: flex;
         align-items: center;
-        // hide by default
-        display: none;
+        visibility: hidden;
 
         svg {
             fill: @grab-color;
@@ -574,7 +573,8 @@
     }
 
     .editor-step-content:hover .editor-step-drag {
-        display: flex;
+        // show drag handle using visibility to avoid a horizontal layout jitter in Safari 11
+        visibility: visible;
     }
 
     .editor-steps-dragging-active {
