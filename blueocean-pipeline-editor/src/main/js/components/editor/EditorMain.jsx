@@ -207,29 +207,24 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         pipelineValidator.validate();
     }
 
-    onDragStepBegin(item) {
-        console.log('onDragStepBegin', item);
+    onDragStepBegin = (item) => {
         this.setState({
             isDragging: true,
         });
-    }
+    };
 
-    onDragStepHover(item) {
-        console.log('onDragStepHover', item);
-    }
+    onDragStepHover = (item) => {};
 
-    onDragStepDrop(item) {
-        console.log('onDragStepDrop', item);
+    onDragStepDrop = (item) => {
         const { selectedStage } = this.state;
         pipelineStore.moveStep(selectedStage, item.sourceId, item.targetId, item.targetType);
-    }
+    };
 
-    onDragStepEnd() {
-        console.log('onDragStepEnd');
+    onDragStepEnd = () => {
         this.setState({
             isDragging: false,
         });
-    }
+    };
 
     render() {
         const { selectedStage, selectedSteps, stepMetadata } = this.state;
@@ -293,10 +288,10 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                                 onAddStepClick={() => this.openSelectStepDialog()}
                                 onAddChildStepClick={parent => this.openSelectStepDialog(parent)}
                                 onStepSelected={(step) => this.selectedStepChanged(step)}
-                                onDragStepBegin={(step, pos) => this.onDragStepBegin(step, pos)}
-                                onDragStepHover={(step, pos) => this.onDragStepHover(step, pos)}
-                                onDragStepDrop={(step, pos) => this.onDragStepDrop(step, pos)}
-                                onDragStepEnd={(step, pos) => this.onDragStepEnd(step, pos)}
+                                onDragStepBegin={this.onDragStepBegin}
+                                onDragStepHover={this.onDragStepHover}
+                                onDragStepDrop={this.onDragStepDrop}
+                                onDragStepEnd={this.onDragStepEnd}
                             />
                         </div>
                         }
