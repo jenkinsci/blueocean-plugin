@@ -17,7 +17,7 @@ export class Accordion extends React.Component {
              {children.map(child => [
                 <h4 className={`Label ${selected === child.key && 'active'}`}
                     onClick={() => { this.setState({ selected: child.key }); }}>
-                    {child.props.title}
+                    {child.props.title || child.props['data-label']}
                     <Icon icon="NavigationExpandMore" size={24} />
                 </h4>,
                 <div className="Content">{child}</div>
