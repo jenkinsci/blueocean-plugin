@@ -286,7 +286,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                              }>
                     <Accordion show={sectionErrors.show} key={'stageSections' + selectedStage.id}>
                         {!hasChildStages &&
-                        <div key="steps" className={stepListClass} title="Steps">
+                        <div key="steps" className={stepListClass}>
                             <EditorStepList
                                 stage={selectedStage}
                                 steps={steps}
