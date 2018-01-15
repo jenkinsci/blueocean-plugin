@@ -39,4 +39,9 @@ public class KeenAnalyticsImpl extends AbstractAnalytics {
         // Send the event
         CLIENT.addEventAsync(name, allProps);
     }
+
+    @Override
+    public boolean isEnabled() {
+        return false;
+    }
 }
