@@ -6,7 +6,6 @@ import HTML5Backend from 'react-dnd-html5-backend';
 
 import pipelineMetadataService from '../../services/PipelineMetadataService';
 import { EditorStepItem } from './EditorStepItem';
-import { ChildStepIcon } from "./ChildStepIcon";
 import { EditorStepListDropZone } from "./EditorStepListDropZone";
 import type { StageInfo, StepInfo } from '../../services/PipelineStore';
 import { Icon } from '@jenkins-cd/design-language';
@@ -67,7 +66,6 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
                     <div className="editor-step nested missing">
                         <div className="editor-step-main" onClick={(e) => this.stepClicked(parent, e)}>
                             <div className="editor-step-content">
-                                <ChildStepIcon/>
                                 <div className="editor-step-title">
                                     <span className="editor-step-summary">
                                         There are no child steps defined
