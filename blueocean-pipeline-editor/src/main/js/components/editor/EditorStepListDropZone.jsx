@@ -1,7 +1,7 @@
 import React from 'react';
 import { PropTypes } from 'react';
 import { DropTarget } from 'react-dnd';
-
+import { DragPosition } from "./DragPosition";
 
 const ItemType = 'EditorStepItem';
 
@@ -26,9 +26,11 @@ const dropTarget = {
     }
 };
 
-function positionToClass(dragPosition) {
-    return dragPosition ? dragPosition.toLowerCase().replace('_', '-') : '';
-}
+const positionToClassName = {};
+positionToClassName[DragPosition.BEFORE_ITEM] = 'before-item';
+positionToClassName[DragPosition.AFTER_ITEM] = 'after-item';
+positionToClassName[DragPosition.FIRST_CHILD] = 'first-child';
+positionToClassName[DragPosition.LAST_CHILD] = 'last-child';
 
 
 @DropTarget(ItemType, dropTarget, dropTargetCollector)
@@ -54,7 +56,7 @@ class EditorStepListDropZone extends React.Component {
     render() {
         const { position, isHovering, isDroppable, connectDropTarget } = this.props;
         let dragClass = isHovering && (isDroppable && 'is-drop-allowed' || 'is-drop-blocked') || '';
-        dragClass += ' ' + positionToClass(position);
+        dragClass += ' ' + positionToClassName[position];
 
         return (connectDropTarget(
             <div className={`editor-step-list-drop-zone ${dragClass}`}/>
