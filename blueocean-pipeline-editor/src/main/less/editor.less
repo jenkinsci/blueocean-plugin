@@ -522,6 +522,11 @@
         }
     }
 
+    .editor-step-content:hover .editor-step-drag {
+        // show drag handle using visibility to avoid a horizontal layout jitter in Safari 11
+        visibility: visible;
+    }
+
     .editor-step-list-drop-zone {
         position: absolute;
         left: 0;
@@ -569,11 +574,6 @@
         & ~ .editor-step-list-drop-zone {
             display:none;
         }
-    }
-
-    .editor-step-content:hover .editor-step-drag {
-        // show drag handle using visibility to avoid a horizontal layout jitter in Safari 11
-        visibility: visible;
     }
 
 
