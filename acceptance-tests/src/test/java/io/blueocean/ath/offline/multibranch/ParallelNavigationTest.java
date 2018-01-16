@@ -131,8 +131,8 @@ public class ParallelNavigationTest {
         logger.info("Found failed input step error message");
     }
 
-    @After
-    public void deleteTestPipelines() throws IOException, GitAPIException, InterruptedException {
+    @AfterClass
+    public static void deleteTestPipelines() throws IOException, GitAPIException, InterruptedException {
         MultiBranchPipeline[] listOfPipelineJobs = {navTestPipeline, navTestWithInputPipeline, navTestWithFailedInputStepPipeline};
         for (MultiBranchPipeline pipelineToCleanup:listOfPipelineJobs) {
             /*
