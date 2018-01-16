@@ -256,7 +256,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
 
         // Stage config panel
         if (selectedStage) {
-            const stepListClass = this.state.isDragging ? 'editor-steps-dragging-active' : '';
+            const stepListClass = this.state.isDragging ? 'is-performing-drag' : '';
             // Determine if we need to show a particular configuration page
             // and what errors to display
             const sectionErrors = {};
