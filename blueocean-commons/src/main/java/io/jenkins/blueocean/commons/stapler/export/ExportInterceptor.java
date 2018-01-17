@@ -1,6 +1,8 @@
 package io.jenkins.blueocean.commons.stapler.export;
 
 import org.kohsuke.stapler.export.Exported;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
@@ -14,12 +16,19 @@ import java.lang.reflect.InvocationTargetException;
  * @author James Dumay
  */
 public abstract class ExportInterceptor {
+
+    private static final Logger logger = LoggerFactory.getLogger(ExportInterceptor.class);
+
     /**
      * Constant to tell if return of {@link ExportInterceptor#getValue(Property, Object, ExportConfig)} should be skipped.
      *
      * Constant to skip serializaing a property in case of error
      */
-    public static final Object SKIP = new Object();
+    public static final Object SKIP = new Object() {
+        public String toString() {
+            return ExportInterceptor.class.getName() + ".SKIP";
+        }
+    };
 
     /**
      * Subclasses must call {@link Property#getValue(Object)}  to retrieve the property.
@@ -43,9 +52,10 @@ public abstract class ExportInterceptor {
                 return property.getValue(model);
             } catch (IllegalAccessException | InvocationTargetException e) {
                 if(config.isSkipIfFail()) {
+                    logger.error("Failed to get \"" + property.name + "\" from a " + model.getClass().getName(), e);
                     return SKIP;
                 }
-                throw new IOException("Failed to write " + property.name + ":" + e.getMessage(), e);
+                throw new IOException("Failed to get " + property.name + ":" + e.getMessage(), e);
             }
         }
     };
