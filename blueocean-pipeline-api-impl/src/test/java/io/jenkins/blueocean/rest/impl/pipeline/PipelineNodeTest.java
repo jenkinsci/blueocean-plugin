@@ -9,6 +9,13 @@ import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.queue.QueueTaskFuture;
 import hudson.util.RunList;
+import java.io.File;
+import java.io.IOException;
+import java.net.URL;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutionException;
 import jenkins.branch.BranchSource;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
@@ -19,10 +26,12 @@ import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution;
 import org.jenkinsci.plugins.workflow.flow.FlowExecution;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
+import org.jenkinsci.plugins.workflow.graphanalysis.ForkScanner;
 import org.jenkinsci.plugins.workflow.graphanalysis.MemoryFlowChunk;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject;
+import org.jenkinsci.plugins.workflow.pipelinegraphanalysis.StageChunkFinder;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.jenkinsci.plugins.workflow.support.visualization.table.FlowGraphTable;
 import org.junit.Assert;
@@ -31,19 +40,8 @@ import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.Issue;
-
-import java.io.File;
-import java.io.IOException;
-import java.net.URL;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ExecutionException;
-
 import static io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl.PARAMETERS_ELEMENT;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.*;
 
 /**
  * @author Vivek Pandey
@@ -2340,6 +2338,93 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         Assert.assertEquals(3, resp.size());
 
+    }
+
+    @Test
+    public void testEnclosingNestedOrphanParallels() throws Exception{
+        String script = "parallel('branch1':{\n" +
+                "        node {\n" +
+                "            stage('Setup') {\n" +
+                "                sh 'echo \"Setup...\"'\n" +
+                "            }\n" +
+                "            sh 'echo \"Intermediate step...\"'\n" +
+                "            stage('Unit and Integration Tests') {\n" +
+                "                sh 'echo \"Unit and Integration Tests...\"'\n" +
+                "            }\n" +
+                "        }\n" +
+                "}, 'branch2': {\n" +
+                "        node {\n" +
+                "            stage('Setup') {\n" +
+                "                sh 'echo \"Branch2 setup...\"'\n" +
+                "            }\n" +
+                "            stage('Unit and Integration Tests') {\n" +
+                "                echo '\"my command to execute tests\"'\n" +
+                "            }\n" +
+                "        }\n" +
+                "})";
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition(script));
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.SUCCESS, b1);
+
+        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
+        List<FlowNode> parallelNodes = getParallelNodes(builder);
+        assertEquals(2, parallelNodes.size());
+        for(FlowNode p : parallelNodes) {
+            List<Map> stepsResp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+p.getId()+"/steps/", List.class);
+            for(Map m:stepsResp) {
+                FlowNode step = getStep(b1, (String) m.get("id"));
+                FlowNode expectedParent = PipelineNodeUtil.getEnclosingStageOrParallel(step);
+                assertEquals(p, expectedParent);
+            }
+        }
+    }
+
+    @Test
+    public void testEnclosingNestedStages() throws Exception{
+        String script = "node {\n" +
+                "   stage ('Build') { \n" +
+                "     echo ('Building...'); \n" +
+                "     stage('Testing') {\n" +
+                "         echo 'Testing...';\n" +
+                "     }\n" +
+                "   }\n" +
+                "   stage ('Deploy') { \n" +
+                "     echo ('Deploying...'); \n" +
+                "     stage('Packaging') {\n" +
+                "         echo 'Packaging...';\n" +
+                "     }\n" +
+                "   } \n" +
+                "}";
+        WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        job1.setDefinition(new CpsFlowDefinition(script));
+        WorkflowRun b1 = job1.scheduleBuild2(0).get();
+        j.assertBuildStatus(Result.SUCCESS, b1);
+
+        NodeGraphBuilder builder = NodeGraphBuilder.NodeGraphBuilderFactory.getInstance(b1);
+        List<FlowNode> stages = getStages(builder);
+        assertEquals(2, stages.size());
+        for(FlowNode p : stages) {
+            List<Map> stepsResp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+p.getId()+"/steps/", List.class);
+            assertEquals(2, stepsResp.size());
+            for(Map m:stepsResp) {
+                FlowNode step = getStep(b1, (String) m.get("id"));
+                FlowNode expectedParent = PipelineNodeUtil.getEnclosingStageOrParallel(step);
+                assertEquals(p, expectedParent);
+            }
+        }
+    }
+
+
+    protected FlowNode getStep(WorkflowRun run, String stepId){
+        FlowExecution execution = run.getExecution();
+        if(execution == null){
+            return null;
+        }
+        PipelineStepVisitor visitor = new PipelineStepVisitor(run, null);
+        ForkScanner.visitSimpleChunks(execution.getCurrentHeads(), visitor, new StageChunkFinder());
+        FlowNodeWrapper nodeWrapper = visitor.getStep(stepId);
+        return  nodeWrapper == null ? null : nodeWrapper.getNode();
     }
 
     @Test
