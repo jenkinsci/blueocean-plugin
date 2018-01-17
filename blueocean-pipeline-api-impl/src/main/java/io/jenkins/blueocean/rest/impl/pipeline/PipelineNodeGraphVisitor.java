@@ -72,8 +72,6 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     private final Stack<FlowNode> nestedbranches = new Stack<>();
 
     private final ArrayDeque<FlowNode> pendingInputSteps = new ArrayDeque<>();
-    private final ArrayDeque<FlowNode> queuedNodes = new ArrayDeque<>();
-    private final ArrayDeque<FlowNode> runningNodes = new ArrayDeque<>();
 
     private final Stack<FlowNode> parallelBranchEndNodes = new Stack<>();
 
@@ -238,6 +236,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         super.resetChunk(chunk);
         firstExecuted = null;
         pendingInputSteps.clear();
+        if(isNodeVisitorDumpEnabled) {
+            dump("resetChunk");
+        }
     }
 
     @Override
