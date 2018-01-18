@@ -46,19 +46,19 @@ node() {
           archive '*/target/*.hpi'
         }
 
-        stage('ATH - Jenkins 2.73.3') {
-          sh "cd acceptance-tests && ./run.sh -v=2.73.3 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+        stage('ATH - Jenkins 2.89.1') {
+          sh "cd acceptance-tests && ./run.sh -v=2.89.1 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
           junit 'acceptance-tests/target/surefire-reports/*.xml'
           archive 'acceptance-tests/target/screenshots/**/*'
         }
 
         if (env.JOB_NAME =~ 'blueocean-weekly-ath') {
-          stage('ATH - Jenkins 2.73.2') {
-            sh "cd acceptance-tests && ./run.sh -v=2.73.2 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
-            junit 'acceptance-tests/target/surefire-reports/*.xml'
-          }
           stage('ATH - Jenkins 2.73.3') {
             sh "cd acceptance-tests && ./run.sh -v=2.73.3 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+            junit 'acceptance-tests/target/surefire-reports/*.xml'
+          }
+          stage('ATH - Jenkins 2.89.1') {
+            sh "cd acceptance-tests && ./run.sh -v=2.89.1 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
             junit 'acceptance-tests/target/surefire-reports/*.xml'
           }
         }
