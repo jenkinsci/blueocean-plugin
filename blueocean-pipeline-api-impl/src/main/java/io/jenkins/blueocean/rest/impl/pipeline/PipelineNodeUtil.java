@@ -5,16 +5,21 @@ import hudson.model.Action;
 import hudson.model.Queue;
 import hudson.model.queue.CauseOfBlockage;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import java.util.List;
+import javax.annotation.CheckForNull;
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
 import org.jenkinsci.plugins.pipeline.StageStatus;
 import org.jenkinsci.plugins.pipeline.SyntheticStage;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
+import org.jenkinsci.plugins.workflow.actions.QueueItemAction;
 import org.jenkinsci.plugins.workflow.actions.StageAction;
 import org.jenkinsci.plugins.workflow.actions.TagsAction;
-import org.jenkinsci.plugins.workflow.actions.QueueItemAction;
 import org.jenkinsci.plugins.workflow.actions.ThreadNameAction;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
+import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepStartNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.steps.FlowInterruptedException;
@@ -22,10 +27,6 @@ import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.jenkinsci.plugins.workflow.support.actions.PauseAction;
 import org.jenkinsci.plugins.workflow.support.steps.ExecutorStep;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
-
-import javax.annotation.CheckForNull;
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 
 /**
  * @author Vivek Pandey
@@ -205,5 +206,61 @@ public class PipelineNodeUtil {
         }
 
         return false;
+    }
+
+    /**
+     * Gives top level stage or parallel node. A top level stage or parallel is one that doesn't have another stage or
+     *  parallel between it and FlowStartNode
+     * @param node it could be any node inside a stage or parallel
+     * @return Immediate stage or parallel node
+     */
+    public static @CheckForNull FlowNode getEnclosingStageOrParallel(@Nonnull FlowNode node) {
+        FlowNode stageOrParallel = getStageOrParallelParent(node);
+        if(stageOrParallel != null) {
+            return getEnclosingStageOrParellel(stageOrParallel, stageOrParallel.getParents());
+        }
+        return null;
+    }
+
+    /**
+     * Gives immediate enclosing Stage or parallel node.
+     * @param node it could be any node inside a stage or parallel
+     * @return Immediate stage or parallel node
+     */
+    private static @CheckForNull FlowNode getStageOrParallelParent(@Nonnull FlowNode node) {
+        for (FlowNode p : node.getParents()) {
+            if (isStage(p) || isParallelBranch(p)){
+                return p;
+            }
+            return getStageOrParallelParent(p);
+        }
+        return null;
+    }
+
+    /**
+     *  Gives top level stage or parallel. A top level stage or parallel is one that doesn't have another stage or
+     *  parallel between it and FlowStartNode
+     * @param stageOrParallel stage or parallel node
+     * @param parents parents to iterate over
+     * @return
+     */
+    private static @CheckForNull FlowNode getEnclosingStageOrParellel(@Nonnull FlowNode stageOrParallel, @Nonnull List<FlowNode> parents) {
+        for(FlowNode p: parents){
+            //Ignore sibling
+            if(p instanceof StepEndNode){
+                StepStartNode start = ((StepEndNode) p).getStartNode();
+                if(start.getStepName().equals("Stage")) {
+                    return getEnclosingStageOrParellel(stageOrParallel, start.getParents());
+                }
+            }
+            if(p instanceof org.jenkinsci.plugins.workflow.graph.FlowStartNode) {
+                return stageOrParallel; //we got the top stage
+            } else if(isStage(p) || isParallelBranch(p)) {
+                // We encountered stage or parallel, stageOrParallel was nested stage so pick parent
+                return getEnclosingStageOrParellel(p, p.getParents());
+            }
+            return getEnclosingStageOrParellel(stageOrParallel, p.getParents());
+        }
+        return null;
     }
 }
