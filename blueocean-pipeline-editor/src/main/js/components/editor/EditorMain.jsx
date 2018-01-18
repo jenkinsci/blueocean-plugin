@@ -17,6 +17,9 @@ import pipelineValidator from '../../services/PipelineValidator';
 import { ValidationMessageList } from './ValidationMessageList';
 import focusOnElement from './focusOnElement';
 import debounce from 'lodash.debounce';
+import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
+
+const t = i18nTranslator('blueocean-pipeline-editor');
 
 type Props = {
 };
@@ -221,7 +224,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                 <ConfigPanel className="editor-config-panel global"
                           key={'globalConfig'+pipelineStore.pipeline.id}
                           title={<h4>
-                              Pipeline Settings
+                              {t('editor.page.common.pipeline.setting', {default: 'Pipeline Settings'})}
                           </h4>}>
                     <div className="editor-stage-settings" key="settings">
                         <AgentConfiguration key={'agent'+pipelineStore.pipeline.id} node={pipelineStore.pipeline} onChange={agent => (selectedStage && agent.type == 'none' ? delete pipelineStore.pipeline.agent : pipelineStore.pipeline.agent = agent) && this.pipelineUpdated()} />
