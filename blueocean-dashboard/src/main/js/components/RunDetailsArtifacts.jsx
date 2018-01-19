@@ -29,24 +29,6 @@ ZipFileDownload.propTypes = {
 };
 
 
-function ArtifactListingLimited(props) {
-    const { t } = props;
-
-    return (
-        <div className="artifacts-info-container">
-            <div className="artifacts-info">
-                <h1 className="title">{t('rundetail.artifacts.limit_title')}</h1>
-                <p className="message">{t('rundetail.artifacts.limit_message')}</p>
-            </div>
-        </div>
-    );
-}
-
-ArtifactListingLimited.propTypes = {
-    t: PropTypes.func,
-};
-
-
 /**
  * Displays a list of artifacts from the supplied build run property.
  */
@@ -137,7 +119,6 @@ export default class RunDetailsArtifacts extends Component {
 
         return (
             <div>
-                { artifacts.length > 100 && <ArtifactListingLimited t={t} /> }
                 <JTable columns={columns} className="artifacts-table">
                     <TableHeaderRow />
                     <TableRow>
