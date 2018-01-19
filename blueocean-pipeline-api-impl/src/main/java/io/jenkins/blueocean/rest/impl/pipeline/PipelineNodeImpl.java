@@ -25,7 +25,9 @@ import org.kohsuke.stapler.export.Exported;
 import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -141,12 +143,18 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     @Override
     public Collection<BlueActionProxy> getActions() {
-        return ActionProxiesImpl.getActionProxies(node.getNode().getActions(), new Predicate<Action>() {
-            @Override
-            public boolean apply(@Nullable Action input) {
-                return input instanceof LogAction || input instanceof NodeDownstreamBuildAction;
-            }
-        }, this);
+
+        HashSet<Action> actions = new HashSet<>();
+
+        // Actions attached to the node we use for the graph
+        actions.addAll(node.getNode().getActions());
+
+        // Actions from any child nodes
+        actions.addAll(node.getPipelineActions(NodeDownstreamBuildAction.class));
+
+        return ActionProxiesImpl.getActionProxies(actions,
+                                                  input -> input instanceof LogAction || input instanceof NodeDownstreamBuildAction,
+                                                  this);
     }
 
     @Override

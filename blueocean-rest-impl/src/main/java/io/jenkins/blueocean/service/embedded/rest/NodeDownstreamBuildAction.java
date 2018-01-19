@@ -15,7 +15,7 @@ import java.util.Objects;
  * io.jenkins.blueocean.listeners.DownstreamJobListener in blueocean-pipeline-api-impl
  */
 @ExportedBean
-public class NodeDownstreamBuildAction extends InvisibleAction implements FlowNodeAction, Reachable {
+public class NodeDownstreamBuildAction extends InvisibleAction implements FlowNodeAction, Reachable, BluePipelineAction {
 
     private final Link link;
     private final String description;

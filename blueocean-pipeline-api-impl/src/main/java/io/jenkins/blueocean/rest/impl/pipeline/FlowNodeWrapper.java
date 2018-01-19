@@ -3,6 +3,8 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 import hudson.model.Result;
 import io.jenkins.blueocean.rest.model.BlueRun.BlueRunResult;
 import io.jenkins.blueocean.rest.model.BlueRun.BlueRunState;
+import io.jenkins.blueocean.service.embedded.rest.BluePipelineAction;
+import io.jenkins.blueocean.service.embedded.rest.NodeDownstreamBuildAction;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.graph.AtomNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -22,6 +24,7 @@ import java.util.List;
  * @author Vivek Pandey
  */
 public class FlowNodeWrapper {
+
     public enum NodeType {STAGE, PARALLEL, STEP}
 
     private final FlowNode node;
@@ -37,7 +40,7 @@ public class FlowNodeWrapper {
     private List<FlowNodeWrapper> parents = new ArrayList<>();
 
     private ErrorAction blockErrorAction;
-
+    private Collection<BluePipelineAction> pipelineActions;
 
 
     public FlowNodeWrapper(@Nonnull FlowNode node, @Nonnull NodeRunStatus status, @Nonnull TimingInfo timingInfo, @Nonnull  WorkflowRun run) {
@@ -194,5 +197,23 @@ public class FlowNodeWrapper {
 
     public void setBlockErrorAction(ErrorAction blockErrorAction) {
         this.blockErrorAction = blockErrorAction;
+    }
+
+    /**
+     * Returns BluePipelineAction instances that were attached to the assosciated FlowNode, or to any of its children.
+     * Filters by class to mimic Item.getActions(class).
+     */
+    public <T extends BluePipelineAction> Collection<T> getPipelineActions(Class<T> clazz) {
+        ArrayList<T> filtered = new ArrayList<>();
+        for (BluePipelineAction a:pipelineActions) {
+            if (clazz.isInstance(a)) {
+                filtered.add(clazz.cast(a));
+            }
+        }
+        return filtered;
+    }
+
+    public void setPipelineActions(Collection<BluePipelineAction> pipelineActions) {
+        this.pipelineActions = pipelineActions;
     }
 }
