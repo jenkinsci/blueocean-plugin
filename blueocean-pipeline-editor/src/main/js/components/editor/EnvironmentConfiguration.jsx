@@ -99,7 +99,7 @@ export class EnvironmentConfiguration extends Component<DefaultProps, Props, Sta
             <Split>
                 <span>{t('editor.jenkins.environment.name', {default: 'Name'})}</span>
                 <span>{t('editor.jenkins.environment.value', {default: 'Value'})}</span>
-                <button onClick={e => this.addEnvironmentEntry()} title="{t('editor.page.common.add', {default: 'Add'})}"  className="environment-add-delete-icon add">{addIcon()}</button>
+                <button onClick={e => this.addEnvironmentEntry()} title={t('editor.page.common.add', {default: 'Add'})}  className="environment-add-delete-icon add">{addIcon()}</button>
             </Split>
             {node.environment && node.environment.map((env, idx) => <div className="environment-entry" key={env.id}>
                 <ValidationMessageList node={env} />
@@ -108,7 +108,7 @@ export class EnvironmentConfiguration extends Component<DefaultProps, Props, Sta
                         defaultValue={env.key} onChange={val => { env.key = val; this.setState({ pristine: null }); this.props.onChange(); }}
                         onBlur={e => this.setState({ pristine: null })} />
                     <TextInput defaultValue={env.value.value} onChange={val => { env.value.value = val; this.props.onChange(); }} />
-                    <button onClick={e => { this.removeEnviromentEntry(env, idx); this.props.onChange(); }} title="{t('editor.page.common.remove', {default: 'Remove'})}"  className="environment-add-delete-icon delete">{deleteIcon()}</button>
+                    <button onClick={e => { this.removeEnviromentEntry(env, idx); this.props.onChange(); }} title={t('editor.page.common.remove', {default: 'Remove'})}  className="environment-add-delete-icon delete">{deleteIcon()}</button>
                 </Split>
             </div>)}
         </div>);

@@ -5,6 +5,9 @@ import pipelineMetadataService from '../../services/PipelineMetadataService';
 import { Dialog } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/design-language';
 import debounce from 'lodash.debounce';
+import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
+
+const t = i18nTranslator('blueocean-pipeline-editor');
 
 const isStepValidForSelectionUI = (step) => {
     switch (step.type) {
@@ -103,7 +106,7 @@ export class AddStepSelectionSheet extends Component<DefaultProps, Props, State>
                 <div className="editor-step-search">
                     <Icon icon="ActionSearch" size={22} />
                     <input ref="searchInput" type="text" className="editor-step-search-input" onChange={e => this.filterSteps(e.target.value)}
-                        placeholder="Find steps by name" />
+                        placeholder={t('editor.page.common.pipeline.steps.findby.name', {default: 'Find steps by name'})}/>
                 </div>
                 <div className="editor-step-selector">
                 {stepMetadata && stepMetadata.filter(isStepValidForSelectionUI).filter(this.state.searchFilter).sort(stepSorter).map(step =>

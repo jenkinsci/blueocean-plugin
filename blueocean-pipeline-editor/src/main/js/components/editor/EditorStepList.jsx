@@ -5,6 +5,9 @@ import pipelineMetadataService, { getArg } from '../../services/PipelineMetadata
 import type { StepInfo } from '../../services/PipelineStore';
 import { Icon } from '@jenkins-cd/design-language';
 import pipelineValidator from '../../services/PipelineValidator';
+import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
+
+const t = i18nTranslator('blueocean-pipeline-editor');
 
 type Props = {
     steps: Array<StepInfo>,
@@ -61,7 +64,7 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
                                 <ChildStepIcon/>
                                 <div className="editor-step-title">
                                     <span className="editor-step-summary">
-                                        There are no child steps defined
+                                        {t('editor.page.common.pipeline.steps.child.require', {default: 'There are no child steps defined'})}
                                     </span>
                                 </div>
                             </div>
@@ -76,7 +79,7 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
                             <div className="editor-step-content">
                                 <div className="editor-step-title">
                                     <span className="editor-step-summary">
-                                        There are no steps, at least one is required.
+                                        {t('editor.page.common.pipeline.steps.required', {default: 'There are no steps, at least one is required.'})}
                                     </span>
                                 </div>
                             </div>
@@ -160,7 +163,7 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
             <div className="editor-button-bar">
                 <button className="btn-primary add" onClick={(e) => this.addStepClicked(e)}>
                     <Icon icon="ContentAdd" size={20} />
-                    Add step
+                    {t('editor.page.common.pipeline.steps.add', {default: 'Add step'})}
                 </button>
             </div>
         </div>);
