@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.service.embedded.rest;
+package io.jenkins.blueocean.listeners;
 
 import io.jenkins.blueocean.rest.hal.Link;
 import org.junit.Test;

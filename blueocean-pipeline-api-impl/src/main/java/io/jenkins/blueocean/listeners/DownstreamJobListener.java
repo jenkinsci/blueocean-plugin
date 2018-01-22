@@ -6,7 +6,6 @@ import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.hal.LinkResolver;
-import io.jenkins.blueocean.service.embedded.rest.NodeDownstreamBuildAction;
 import org.jenkinsci.plugins.workflow.flow.FlowExecution;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
