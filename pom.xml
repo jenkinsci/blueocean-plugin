@@ -425,7 +425,17 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-build-step</artifactId>
-            <version>2.7-SNAPSHOT</version>
+            <!--TODO: remove it by released version once this PR is verified and pipeline-build-step is released -->
+            <version>2.7-20180123.124004-1</version>
+            <exclusions>
+                <exclusion>
+                    <!-- Exclude script-security. Different versions of it thru all plugins cause
+                         upper bound dependency error
+                    -->
+                    <groupId>org.jenkins-ci.plugins</groupId>
+                    <artifactId>script-security</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
