@@ -374,12 +374,6 @@
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-multibranch</artifactId>
             <version>2.16</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jenkins-ci.plugins</groupId>
-                    <artifactId>script-security</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -427,15 +421,14 @@
             <artifactId>pipeline-build-step</artifactId>
             <!--TODO: remove it by released version once this PR is verified and pipeline-build-step is released -->
             <version>2.7-20180123.124004-1</version>
-            <exclusions>
-                <exclusion>
-                    <!-- Exclude script-security. Different versions of it thru all plugins cause
-                         upper bound dependency error
-                    -->
-                    <groupId>org.jenkins-ci.plugins</groupId>
-                    <artifactId>script-security</artifactId>
-                </exclusion>
-            </exclusions>
+        </dependency>
+        <!-- To fix UpperBoundDeps erros caused due to different plugins depending on different versions
+             of script-security plugin
+        -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>script-security</artifactId>
+            <version>1.39</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -558,12 +551,6 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>matrix-project</artifactId>
             <version>1.11</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jenkins-ci.plugins</groupId>
-                    <artifactId>script-security</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.main</groupId>
@@ -728,12 +715,6 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>junit</artifactId>
             <version>1.23</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jenkins-ci.plugins</groupId>
-                    <artifactId>script-security</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- used in blueocean-rest-impl test -->
