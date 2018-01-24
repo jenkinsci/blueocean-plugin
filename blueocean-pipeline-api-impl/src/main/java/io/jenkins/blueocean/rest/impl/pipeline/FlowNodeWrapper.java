@@ -1,9 +1,9 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import hudson.model.Action;
 import hudson.model.Result;
 import io.jenkins.blueocean.rest.model.BlueRun.BlueRunResult;
 import io.jenkins.blueocean.rest.model.BlueRun.BlueRunState;
-import io.jenkins.blueocean.listeners.BluePipelineAction;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.graph.AtomNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -39,7 +39,7 @@ public class FlowNodeWrapper {
     private List<FlowNodeWrapper> parents = new ArrayList<>();
 
     private ErrorAction blockErrorAction;
-    private Collection<BluePipelineAction> pipelineActions;
+    private Collection<Action> pipelineActions;
 
 
     public FlowNodeWrapper(@Nonnull FlowNode node, @Nonnull NodeRunStatus status, @Nonnull TimingInfo timingInfo, @Nonnull  WorkflowRun run) {
@@ -199,12 +199,12 @@ public class FlowNodeWrapper {
     }
 
     /**
-     * Returns BluePipelineAction instances that were attached to the assosciated FlowNode, or to any of its children.
+     * Returns Action instances that were attached to the assosciated FlowNode, or to any of its children.
      * Filters by class to mimic Item.getActions(class).
      */
-    public <T extends BluePipelineAction> Collection<T> getPipelineActions(Class<T> clazz) {
+    public <T extends Action> Collection<T> getPipelineActions(Class<T> clazz) {
         ArrayList<T> filtered = new ArrayList<>();
-        for (BluePipelineAction a:pipelineActions) {
+        for (Action a:pipelineActions) {
             if (clazz.isInstance(a)) {
                 filtered.add(clazz.cast(a));
             }
@@ -212,7 +212,7 @@ public class FlowNodeWrapper {
         return filtered;
     }
 
-    public void setPipelineActions(Collection<BluePipelineAction> pipelineActions) {
+    public void setPipelineActions(Collection<Action> pipelineActions) {
         this.pipelineActions = pipelineActions;
     }
 }

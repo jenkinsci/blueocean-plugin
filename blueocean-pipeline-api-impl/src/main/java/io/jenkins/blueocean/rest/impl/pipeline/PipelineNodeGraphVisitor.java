@@ -2,12 +2,12 @@ package io.jenkins.blueocean.rest.impl.pipeline;
 
 import com.google.common.base.Predicate;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
+import hudson.model.Action;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
-import io.jenkins.blueocean.listeners.BluePipelineAction;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
@@ -83,11 +83,11 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
     private StepStartNode agentNode = null;
 
-    // Collects instances of BluePipelineAction as we walk up the graph, to be drained when appropriate
-    private Set<BluePipelineAction> pipelineActions;
+    // Collects instances of Action as we walk up the graph, to be drained when appropriate
+    private Set<Action> pipelineActions;
 
     // Temporary holding for actions waiting to be assigned to the wrapper for a branch
-    private Map<FlowNode /* branchStartNode */, Set<BluePipelineAction>> pendingActionsForBranches;
+    private Map<FlowNode /* branchStartNode */, Set<Action>> pendingActionsForBranches;
 
     private final static String PARALLEL_SYNTHETIC_STAGE_NAME = "Parallel";
 
@@ -305,7 +305,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             FlowNodeWrapper branch = new FlowNodeWrapper(branchStartNode, status, times, run);
 
             // Collect any pending actions (required for most-recently-handled branch)
-            ArrayList<BluePipelineAction> branchActions = new ArrayList<>(drainPipelineActions());
+            ArrayList<Action> branchActions = new ArrayList<>(drainPipelineActions());
 
             // Add actions for this branch, which are collected when changing branches
             if (pendingActionsForBranches.containsKey(branchStartNode)) {
@@ -414,11 +414,11 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     }
 
     /**
-     * Find any BluePipelineActions on this node, and add them to the pipelineActions collection until we can attach
+     * Find any Actions on this node, and add them to the pipelineActions collection until we can attach
      * them to a FlowNodeWrapper.
      */
     protected void accumulatePipelineActions(FlowNode node) {
-        final List<BluePipelineAction> actions = node.getActions(BluePipelineAction.class);
+        final List<Action> actions = node.getActions(Action.class);
         pipelineActions.addAll(actions);
         if (isNodeVisitorDumpEnabled) {
             dump(String.format("accumulating actions - added %d, total is %d", actions.size(), pipelineActions.size()));
@@ -428,7 +428,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     /**
      * Empty the pipelineActions buffer, returning its contents.
      */
-    protected Set<BluePipelineAction> drainPipelineActions() {
+    protected Set<Action> drainPipelineActions() {
         if (isNodeVisitorDumpEnabled) {
             dump(String.format("draining accumulated actions - total is %d", pipelineActions.size()));
         }
@@ -437,7 +437,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             return Collections.emptySet();
         }
 
-        Set<BluePipelineAction> drainedActions = pipelineActions;
+        Set<Action> drainedActions = pipelineActions;
         pipelineActions = new HashSet<>();
         return drainedActions;
     }
