@@ -1,6 +1,12 @@
 {
   "name": "blueocean-personalization",
   "version": "0.0.2-unpublished",
+  "description": "Personalization for Jenkins Blue Ocean",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jenkinsci/blueocean-plugin.git"
+  },
   "scripts": {
     "storybook": "start-storybook -p 9001 -s node_modules/@jenkins-cd/design-language/dist/assets/,target/classes/org/jenkins/ui/jsmodules/blueocean-personalization/,./node_modules/@jenkins-cd/blueocean-core-js/dist/assets/",
     "lint": "gulp lint",
