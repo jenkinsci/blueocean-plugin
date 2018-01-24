@@ -120,7 +120,8 @@ public final class Links extends HashMap<String,Link>{
         if(ref != null){
             return ref;
         }
-        put(SELF, self.getLink());
+        ref = self.getLink();
+        put(SELF, ref);
         return ref;
     }
 
