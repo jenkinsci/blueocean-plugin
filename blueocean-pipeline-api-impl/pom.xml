@@ -110,12 +110,6 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-build-step</artifactId>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.jenkins-ci.plugins</groupId>
-                    <artifactId>script-security</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <!-- Test plugins -->
