@@ -30,22 +30,22 @@ import io.jenkins.blueocean.rest.model.BluePipelineScm;
 import io.jenkins.blueocean.rest.model.BlueQueueContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
+import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.BlueTrendContainer;
 import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.util.FavoriteUtil;
-import org.kohsuke.stapler.WebMethod;
-import org.kohsuke.stapler.json.JsonBody;
-import org.kohsuke.stapler.verb.DELETE;
-
-import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
+import javax.annotation.Nonnull;
+import javax.annotation.Nullable;
+import org.kohsuke.stapler.WebMethod;
+import org.kohsuke.stapler.json.JsonBody;
+import org.kohsuke.stapler.verb.DELETE;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_JOB;
 
 /**
@@ -91,8 +91,26 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     @Override
     public BlueRun getLatestRun() {
-        Iterator<BlueRun> iterator = getRuns().iterator();
-        return iterator.hasNext() ? iterator.next() : null;
+        if(Boolean.getBoolean("INCLUDE_PIPELINE_RUN_ACTIONS")){
+            Iterator<BlueRun> iterator = getRuns().iterator();
+            return iterator.hasNext() ? iterator.next() : null;
+        } else{
+            Run run = job.getLastBuild();
+            if(run!=null) {
+                return new AbstractRunImpl<Run>(run, AbstractPipelineImpl.this, organization) {
+                    @Override
+                    public Collection<BlueActionProxy> getActions() {
+                        return Collections.emptyList();
+                    }
+
+                    @Override
+                    public BlueTestSummary getTestSummary() {
+                        return null;
+                    }
+                };
+            }
+        }
+        return null;
     }
 
     @Override
