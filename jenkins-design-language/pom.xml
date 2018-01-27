@@ -15,6 +15,14 @@
 
     <url>https://wiki.jenkins-ci.org/display/JENKINS/Jenkins+Design+Language</url>
 
+    <dependencies>
+        <dependency>
+           <groupId>io.jenkins.blueocean</groupId>
+           <artifactId>blueocean-commons</artifactId>
+           <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
     <build>
         <resources>
             <resource>
@@ -41,18 +49,5 @@
             </resource>
         </resources>
     </build>
-
-    <repositories>
-        <repository>
-            <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
-        </repository>
-    </repositories>
-    <pluginRepositories>
-        <pluginRepository>
-            <id>repo.jenkins-ci.org</id>
-            <url>http://repo.jenkins-ci.org/public/</url>
-        </pluginRepository>
-    </pluginRepositories>
 
 </project>
