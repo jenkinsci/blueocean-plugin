@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.4.0-beta-6-SNAPSHOT</version>
+        <version>1.5.0-beta-1-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean-pipeline-api-impl</artifactId>
@@ -104,6 +104,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>plain-credentials</artifactId>
+        </dependency>
+
+        <!-- Needed to read the "upstreamNode" action -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>pipeline-build-step</artifactId>
         </dependency>
 
         <!-- Test plugins -->

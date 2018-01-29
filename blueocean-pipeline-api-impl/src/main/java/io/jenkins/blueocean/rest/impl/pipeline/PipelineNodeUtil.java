@@ -152,11 +152,15 @@ public class PipelineNodeUtil {
                 if(p.equals(stage)){
                     Queue.Item item = QueueItemAction.getQueueItem(nodeBlock);
                     if (item != null) {
-                        String cause = item.getCauseOfBlockage().getShortDescription();
-                        if (cause == null) {
-                            CauseOfBlockage causeOfBlockage = item.task.getCauseOfBlockage();
-                            if(causeOfBlockage != null) {
-                                return causeOfBlockage.getShortDescription();
+                        CauseOfBlockage causeOfBlockage = item.getCauseOfBlockage();
+                        String cause = null;
+                        if (causeOfBlockage != null) {
+                            cause = causeOfBlockage.getShortDescription();
+                            if (cause == null) {
+                                causeOfBlockage = item.task.getCauseOfBlockage();
+                                if(causeOfBlockage != null) {
+                                    return causeOfBlockage.getShortDescription();
+                                }
                             }
                         }
                         return cause;

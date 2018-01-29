@@ -1,0 +1,19 @@
+stage ("Stage the first") {
+    echo "This pipeline waits for the downstream builds to finish"
+}
+stage ("Stage the second") {
+    parallel(
+            downstream1: {
+                build 'downstream1'
+            },
+            downstream2: {
+                build 'downstream2'
+            }
+    )
+}
+stage ("Double-downstream") {
+    echo 'start ds1, with wait'
+    build 'downstream1'
+    echo 'start ds2, with wait'
+    build 'downstream2'
+}

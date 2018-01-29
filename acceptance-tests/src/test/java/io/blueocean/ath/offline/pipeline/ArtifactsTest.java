@@ -6,7 +6,9 @@ import io.blueocean.ath.BlueOceanAcceptanceTest;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.WebDriverMixin;
 import io.blueocean.ath.factory.ClassicPipelineFactory;
+import io.blueocean.ath.factory.FreestyleJobFactory;
 import io.blueocean.ath.model.ClassicPipeline;
+import io.blueocean.ath.model.FreestyleJob;
 import io.blueocean.ath.sse.SSEClientRule;
 import io.blueocean.ath.sse.SSEEvents;
 import org.apache.log4j.Logger;
@@ -23,6 +25,9 @@ public class ArtifactsTest extends BlueOceanAcceptanceTest implements WebDriverM
     private Logger logger = Logger.getLogger(this.getClass());
     @Inject
     ClassicPipelineFactory pipelineFactory;
+
+    @Inject
+    FreestyleJobFactory freestyleJobFactory;
 
     @Rule
     @Inject
@@ -44,6 +49,17 @@ public class ArtifactsTest extends BlueOceanAcceptanceTest implements WebDriverM
         wait.until(By.className("btn-show-more"));
         click(".btn-show-more");
         wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(By.className("JTable-row"), 130));
+        wait.until(By.cssSelector("a[title='Download all artifact as zip'"));
+
         logger.info("Found artifacts table");
+    }
+
+    @Test
+    public void testNoArtifacts() throws IOException {
+        FreestyleJob testNoArtifacts = freestyleJobFactory.pipeline("testNoArtifacts").create("echo hi").build();
+
+        sseClientRule.untilEvents(SSEEvents.activityComplete("testNoArtifacts"));
+        testNoArtifacts.getRunDetailsArtifactsPage().open(1);
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector("a[title='Download all artifact as zip'")));
     }
 }
