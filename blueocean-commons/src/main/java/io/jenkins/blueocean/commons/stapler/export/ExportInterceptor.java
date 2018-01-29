@@ -1,9 +1,9 @@
 package io.jenkins.blueocean.commons.stapler.export;
 
-import org.kohsuke.stapler.export.Exported;
-
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Allows caller to intercept exporting of properties.
@@ -14,6 +14,9 @@ import java.lang.reflect.InvocationTargetException;
  * @author James Dumay
  */
 public abstract class ExportInterceptor {
+
+    public static final Logger LOGGER = Logger.getLogger(ExportInterceptor.class.getName());
+
     /**
      * Constant to tell if return of {@link ExportInterceptor#getValue(Property, Object, ExportConfig)} should be skipped.
      *
@@ -43,6 +46,7 @@ public abstract class ExportInterceptor {
                 return property.getValue(model);
             } catch (IllegalAccessException | InvocationTargetException e) {
                 if(config.isSkipIfFail()) {
+                    LOGGER.log(Level.WARNING,"Failed to get \"" + property.name + "\" from a " + model.getClass().getName(), e);
                     return SKIP;
                 }
                 throw new IOException("Failed to write " + property.name + ":" + e.getMessage(), e);
