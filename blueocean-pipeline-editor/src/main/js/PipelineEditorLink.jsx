@@ -3,9 +3,10 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Icon } from '@jenkins-cd/design-language';
-import { Paths, pipelineService } from '@jenkins-cd/blueocean-core-js';
+import { Paths, pipelineService, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 import Security from './services/Security';
 import { isSshRepositoryUrl } from './GitUtils';
+const t = i18nTranslator('blueocean-pipeline-editor');
 
 class PipelineEditorLink extends React.Component {
     state = {};
@@ -34,7 +35,7 @@ class PipelineEditorLink extends React.Component {
         const baseUrl = `/organizations/${pipeline.organization}/pipeline-editor/${encodeURIComponent(pipelinePath.join('/'))}/${branch}/`;
 
         return (
-            <Link className="pipeline-editor-link" to={baseUrl} title="Edit">
+            <Link className="pipeline-editor-link" to={baseUrl} title={t('branchdetail.actionbutton.pipeline.edit', { defaultValue: 'Edit' })}>
                 <Icon icon="ImageEdit" size={24} />
             </Link>
         );
