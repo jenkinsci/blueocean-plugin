@@ -88,4 +88,14 @@ export class ActivityService extends BunkerService {
     fetchArtifacts(runHref) {
         return mobxUtils.fromPromise(Fetch.fetchJSON(`${runHref}artifacts/?start=0&limit=101`));
     }
+
+    artifactsPager(runHref) {
+        return this.pagerService.getPager({
+                key: `${runHref}artifacts/`,
+                /**
+                 * Lazily generate the pager incase its needed.
+                 */
+                lazyPager: () => new Pager(`${runHref}artifacts/`, 100, this),
+    });
+    }
 }
