@@ -4,9 +4,9 @@
 
 ### Operating Systems
 
-Linux and macOS are currently the only supported OS. Windows suport is not available at this time.
+Linux and macOS are currently the only supported OS. Windows support is not available at this time.
 
-### Dependancies
+### Dependencies
 
 `libxml2-utils` and `libssl-dev` are needed by the node packages.
 
@@ -32,7 +32,7 @@ mvn clean install -DskipTests -DcleanNode
 ./run.sh
 ```
 
-This is mainly for CI servers. It starts the selenium docker container and runs all 
+This is mainly for CI servers. It starts the selenium docker container and runs all
 nightwatch and java ATH tests in one shot.
 
 ### Run tests against a local instance
@@ -65,7 +65,7 @@ Next run the desired tests
 #### Java Webdriver Tests via Maven
 
 Maven has 5 profiles set up for running tests. The default profile runs the offline tests.
-The `live` profile runs tests that need services like GitHub, and the `all` profile will run all of them. Finally there 
+The `live` profile runs tests that need services like GitHub, and the `all` profile will run all of them. Finally there
 are the `nightwatch` and `offlineAll` profiles which run the nightwatch tests and run the nightwatch  + offline tests respectively.
 
 Specific tests can be specified with `-Dtest=`.
@@ -82,9 +82,9 @@ Note: to run the live tests, there needs to be a `live.properties` file in the a
 ```properties
 github.repo=<name of repository to be created
 github.org=<org or user name to create repo in.>
-github.token=<personal access token (roles: repo, user:email, and optionally delete_repo)>  
+github.token=<personal access token (roles: repo, user:email, and optionally delete_repo)>
 github.deleteRepo=<true/false should the code delete repo once test is done>
-github.randomSuffix=<true/false - add a random suffix to repo name (ie must have for CI> 
+github.randomSuffix=<true/false - add a random suffix to repo name (ie must have for CI>
 ```
 
 #### Java Webdriver Tests via Intellij (and probably other IDEs)
@@ -166,35 +166,35 @@ All test code uses Guice to do dependency injection.
 @RunWith(ATHJUnitRunner.class)
 @UseModules(AthModule.class)
 public class MyFirstATHTest{
-    
+
     // Base url for the browser to navigate to. e.g driver.get(baseUrl + "/blue/")
     @Inject @BaseUrl
     String baseUrl;
-    
+
     // Helper functions for webdriver
-    @Inject 
+    @Inject
     WaitUtil wait;
-    
+
     // Incase direct access to the driver instance is needed
     @Inject
     Webdriver driver;
-    
+
     // Page objects are injectable too
     @Inject
     DashboardPage dashboardPage;
-    
+
     // Creates a temporary git repository to use in this test
     @Rule
     @Inject
     GitRepositoryRule repository;
-    
+
     @Test
     public void myFirstTest() {
         dashboardPage.open();
-        
+
         // Waits for 10s for the url to contain the string pipelines.
         wait.until(ExpectedConditions.urlContains("pipelines"));
-    
+
         wait.until(By.cssSelector("button.some.clazz"));
             .click();
     }
@@ -205,7 +205,7 @@ public class MyFirstATHTest{
 `SSEClient` is a JUnit `ExternalResource`. Once it is injected and marked as a rule on the test
 it connects to the Jenkins server want waits for job events. Events are saved into a list as they happen.
 
-Once a test is ready to check for events, `untilEvent()` can be used. `clear()` can be invoked at any time to clear out any 
+Once a test is ready to check for events, `untilEvent()` can be used. `clear()` can be invoked at any time to clear out any
 messages received until that point in time.
 
 ```java
@@ -213,15 +213,15 @@ messages received until that point in time.
 @RunWith(ATHJUnitRunner.class)
 @UseModules(AthModule.class)
 public class MySecondATHTest{
-    
+
     @Rule
     @Inject
     SSEClientRule sseClient;
-    
+
     @Test
     public void mySecondTest() {
        // ... do something that makes a build run.
-       
+
        // This waits for any builds that have been queued to finish.
        sseClient.untilEvents(SSEEvents.activityComplete(pipelineName));
        // Clear all events so far so that when wait is called again it doesnt see the old events.
@@ -229,7 +229,7 @@ public class MySecondATHTest{
 
        // ... some more run stuff
        sseClient.untilEvents(SSEEvents.activityComplete(pipelineName));
-       
+
        // .. finish off test
     }
 }
@@ -241,7 +241,7 @@ Page Objects allow for selectors and actions to be grouped into reusable classes
 ```java
 @Singleton
 public class MyAwesomePage {
-   
+
     @Inject
     WaitUtil wait;
     // PageFactory.initElements drivers the @Findby annatations. TBD if we want to use these TBH
@@ -253,24 +253,24 @@ public class MyAwesomePage {
     // Use annotation to find the WebElement instead of driver.findElement
     @FindBy(xpath = "//span[text()='Awesome']")
     public WebElement myAwesomeButton;
-    
+
     public void clickAwesomeButton() {
         // Make sure the button is visible
         wait.until(ExpectedConditions.visibilityOf(myAwesomeButton));
         myAwesomeButton.click()
-        
+
         // Check to see if another element is selected using the By selector.
         WebElement somethingElse = wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("somethingElse")));
         somethingElse.isSelected();
     }
 }
-``` 
+```
 
 Any new Page Object classes need to be bound in `ATHModule#configure` to be able to be injected via Guice.
 
 #### Pipeline Helper
 
-These are a series of helpers to deal with pipelines. They started life to deal with pipelines being in folders. It offes a way 
+These are a series of helpers to deal with pipelines. They started life to deal with pipelines being in folders. It offes a way
 to give PageObjects more contextual information about what they are operating on without having to be explicit about it in every method call.
 
 ```java
@@ -279,38 +279,38 @@ to give PageObjects more contextual information about what they are operating on
 @RunWith(ATHJUnitRunner.class)
 @UseModules(AthModule.class)
 public class MySecondATHTest{
-    
+
     @Inject
-    MultiBranchPipelineFactory mbpFactory;  
-    
+    MultiBranchPipelineFactory mbpFactory;
+
     @Rule
     @Inject
     public GitRepositoryRule git;
-    
-    
+
+
     @Rule
     @Inject
     public SSEClientRule sseClient;
-    
+
     @Test
     public void mySecondTest() {
         // Sets up the pipeline model with folders and a job name
         MultiBranchPipeline pipeline = mbpFactory.pipeline(Folder.folders("afolder", "bFolder"), "pipelineName");
-        
+
         // Creates the pipeline in jenkins using the git repository rule.
         pipeline.createPipeline(git);
-        
+
         // Wait for all runs to finish on the pipeline. Including all branches.
         sseClient.untilEvents(pipeline.buildsFinished);
-        
+
         // Builds a bunch
         pipeline.buildBranch("master");
-        
+
         // Opens the activity page for this pipeline and verifies its not 404.
         pipeline.getActivityPage().open();
         // Stops any runsa that are currently running on any branch job.
         pipeline.stopAllBuilds();
-        
+
     }
 }
 ```
