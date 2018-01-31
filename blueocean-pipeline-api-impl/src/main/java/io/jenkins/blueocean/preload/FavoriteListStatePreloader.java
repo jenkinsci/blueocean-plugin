@@ -8,6 +8,7 @@ import net.sf.json.JSONArray;
 
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
+import java.util.Set;
 
 /**
  * Loads the list of item full names for favorites
@@ -24,7 +25,17 @@ public class FavoriteListStatePreloader extends PageStatePreloader {
     @Override
     public String getStateJson() {
         User jenkinsUser = User.current();
+        if (jenkinsUser == null) {
+            return null;
+        }
         FavoriteUserProperty fup = jenkinsUser.getProperty(FavoriteUserProperty.class);
-        return JSONArray.fromObject(fup.getAllFavorites()).toString();
+        if (fup == null) {
+            return null;
+        }
+        Set<String> favorites = fup.getAllFavorites();
+        if (favorites == null) {
+            return null;
+        }
+        return JSONArray.fromObject(favorites).toString();
     }
 }
