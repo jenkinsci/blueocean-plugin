@@ -24,6 +24,7 @@
 package io.jenkins.blueocean.preload;
 
 import hudson.Extension;
+import hudson.model.Item;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.BlueUrlTokenizer;
 import io.jenkins.blueocean.commons.RESTFetchPreloader;
@@ -33,8 +34,10 @@ import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteContainer;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
+import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.service.embedded.rest.OrganizationImpl;
 import io.jenkins.blueocean.service.embedded.rest.UserImpl;
+import jenkins.model.Jenkins;
 import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 
@@ -57,30 +60,41 @@ public class FavoritesStatePreloader extends RESTFetchPreloader {
 
     private static final Logger LOGGER = Logger.getLogger(FavoritesStatePreloader.class.getName());
 
+    private static final int DEFAULT_LIMIT = 26;
+
     @Override
     protected FetchData getFetchData(@Nonnull BlueUrlTokenizer blueUrl) {
         User jenkinsUser = User.current();
-        BlueOrganization organization = Iterables.getFirst(OrganizationFactory.getInstance().list(), null);
+        if (jenkinsUser != null) {
+            BlueOrganization organization = Iterables.getFirst(OrganizationFactory.getInstance().list(), null);
+            if (organization != null) {
+                String pipelineFullName = blueUrl.getPart(BlueUrlTokenizer.UrlPart.PIPELINE);
 
-        if (jenkinsUser != null && organization != null) {
-            UserImpl blueUser = new UserImpl(organization, jenkinsUser);
-            BlueFavoriteContainer favoritesContainer = blueUser.getFavorites();
-
-            if (favoritesContainer != null) {
-                JSONArray favorites = new JSONArray();
-                Iterator<BlueFavorite> favoritesIterator = favoritesContainer.iterator();
-
-                while(favoritesIterator.hasNext()) {
-                    Reachable favorite = favoritesIterator.next();
-                    try {
-                        favorites.add(JSONObject.fromObject(Export.toJson(favorite)));
-                    } catch (IOException e) {
-                        LOGGER.log(Level.FINE, String.format("Unable to preload favorites for User '%s'. Serialization error.", jenkinsUser.getFullName()), e);
-                        return null;
-                    }
+                // don't need this list when at pipeline pages
+                if (pipelineFullName != null) {
+                    return null;
                 }
 
-                return new FetchData(favoritesContainer.getLink().getHref(), favorites.toString());
+                UserImpl blueUser = new UserImpl(organization, jenkinsUser, organization.getUsers());
+                BlueFavoriteContainer favoritesContainer = blueUser.getFavorites();
+
+                if (favoritesContainer != null) {
+                    JSONArray favorites = new JSONArray();
+                    // Limit the number of favorites to return to a sane amount
+                    Iterator<BlueFavorite> favoritesIterator = favoritesContainer.iterator(0, DEFAULT_LIMIT);
+
+                    while (favoritesIterator.hasNext()) {
+                        Reachable favorite = favoritesIterator.next();
+                        try {
+                            favorites.add(JSONObject.fromObject(Export.toJson(favorite)));
+                        } catch (IOException e) {
+                            LOGGER.log(Level.FINE, String.format("Unable to preload favorites for User '%s'. Serialization error.", jenkinsUser.getFullName()), e);
+                            return null;
+                        }
+                    }
+
+                    return new FetchData(favoritesContainer.getLink().getHref() + "?start=0&limit=" + DEFAULT_LIMIT, favorites.toString());
+                }
             }
         }
 
