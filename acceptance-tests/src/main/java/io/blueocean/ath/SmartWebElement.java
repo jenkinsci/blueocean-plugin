@@ -107,8 +107,10 @@ public class SmartWebElement implements WebElement {
      * @return true if visible, false if not
      */
     public boolean isVisible() {
+
         return getElement().isDisplayed();
     }
+
 
     /**
      * Determines if the element is present

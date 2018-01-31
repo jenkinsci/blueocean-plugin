@@ -55,7 +55,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE_NO
  * @author Vivek Pandey
  */
 @Capability(BLUE_PIPELINE_NODE)
-public abstract class BluePipelineNode extends BluePipelineStep{
+public abstract class BluePipelineNode extends BluePipelineStep {
 
     /**
      * If the node execution is blocked, its non null, explaining the cause. Otherwise its null.
@@ -73,9 +73,10 @@ public abstract class BluePipelineNode extends BluePipelineStep{
      * Represents edge of pipeline flow graph
      */
     @ExportedBean
-    public abstract static class Edge{
+    public abstract static class Edge {
         /**
          * Id of {@link BluePipelineNode#getId()} destination node
+         *
          * @return node id
          */
         @Exported
@@ -83,6 +84,7 @@ public abstract class BluePipelineNode extends BluePipelineStep{
 
         /**
          * Type of {@link BluePipelineNode#getType()} destination node
+         *
          * @return type
          */
         @Exported
@@ -92,9 +94,9 @@ public abstract class BluePipelineNode extends BluePipelineStep{
 
     /**
      * All the outgoing edges from this node
+     *
      * @return edges
      */
     @Exported(name = EDGES, inline = true)
     public abstract List<Edge> getEdges();
-
 }

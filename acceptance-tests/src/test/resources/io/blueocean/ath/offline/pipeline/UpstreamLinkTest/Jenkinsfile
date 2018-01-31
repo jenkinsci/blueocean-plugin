@@ -1,0 +1,13 @@
+pipeline {
+  agent any
+  triggers {
+    upstream(upstreamProjects: 'upstreamJob', threshold: hudson.model.Result.SUCCESS)
+  }
+  stages {
+    stage('Example') {
+      steps {
+        echo 'Hello World'
+      }
+    }
+  }
+}

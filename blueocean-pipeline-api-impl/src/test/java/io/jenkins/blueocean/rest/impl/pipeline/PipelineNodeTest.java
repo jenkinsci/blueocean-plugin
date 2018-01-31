@@ -5,16 +5,21 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
 import hudson.FilePath;
+import hudson.model.FreeStyleProject;
 import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.queue.QueueTaskFuture;
 import hudson.util.RunList;
+import io.jenkins.blueocean.listeners.NodeDownstreamBuildAction;
 import jenkins.branch.BranchSource;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.plugins.git.GitSampleRepoRule;
 import jenkins.scm.api.SCMSource;
 import net.sf.json.JSONObject;
+import org.hamcrest.Description;
+import org.hamcrest.Matcher;
+import org.hamcrest.TypeSafeMatcher;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowExecution;
 import org.jenkinsci.plugins.workflow.flow.FlowExecution;
@@ -41,9 +46,8 @@ import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl.PARAMETERS_ELEMENT;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
+import static org.hamcrest.CoreMatchers.hasItem;
+import static org.junit.Assert.*;
 
 /**
  * @author Vivek Pandey
@@ -2588,6 +2592,70 @@ public class PipelineNodeTest extends PipelineBaseTest {
         }
 
         return numBuilds;
+    }
+
+    @Test
+    @Issue("JENKINS-38339")
+    public void downstreamBuildLinks() throws Exception {
+        FreeStyleProject downstream1 = j.createFreeStyleProject("downstream1");
+        FreeStyleProject downstream2 = j.createFreeStyleProject("downstream2");
+
+        WorkflowJob upstream = j.createProject(WorkflowJob.class, "upstream");
+
+        URL resource = Resources.getResource(getClass(), "downstreamBuildLinks.jenkinsfile");
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        upstream.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+
+        j.assertBuildStatus(Result.SUCCESS, upstream.scheduleBuild2(0));
+
+        WorkflowRun r = upstream.getLastBuild();
+
+        List<Map> resp = get("/organizations/jenkins/pipelines/upstream/runs/" + r.getId() + "/nodes/", List.class);
+
+        assertEquals("number of nodes", 5, resp.size());
+
+        Matcher actionMatcher1 = new NodeDownstreamBuildActionMatcher("downstream1");
+        Matcher actionMatcher2 = new NodeDownstreamBuildActionMatcher("downstream2");
+
+        List<Map> actions = (List<Map>) resp.get(2).get("actions");
+        assertThat("node #2 contains a link to downstream1", actions, hasItem(actionMatcher1));
+
+        actions = (List<Map>) resp.get(3).get("actions");
+        assertThat("node #3 contains a link to downstream2", actions, hasItem(actionMatcher2));
+
+        actions = (List<Map>) resp.get(4).get("actions");
+        assertThat("node #4 contains a link to downstream1", actions, hasItem(actionMatcher1));
+        assertThat("node #4 contains a link to downstream1", actions, hasItem(actionMatcher2));
+    }
+
+    /**
+     *  Matcher to check for a serialised NodeDownstreamBuildAction
+     */
+    private static class NodeDownstreamBuildActionMatcher extends TypeSafeMatcher<Map<String, Object>> {
+
+        private final String downstreamName;
+
+        public NodeDownstreamBuildActionMatcher(String downstreamName) {
+            this.downstreamName = downstreamName;
+        }
+
+        @Override
+        public void describeTo(Description description) {
+            description.appendText("a matching NodeDownstreamBuildAction named " + downstreamName);
+        }
+
+        @Override
+        protected boolean matchesSafely(Map<String,Object> props) {
+
+            String className = (String)props.get("_class");
+            String desc = (String)props.get("description");
+            Map<String, Object> link = (Map<String, Object>)props.get("link");
+            String href = (String)link.get("href");
+
+            return className.equals(NodeDownstreamBuildAction.class.getName())
+                && desc.startsWith(downstreamName)
+                && href.startsWith("/blue/rest/organizations/jenkins/pipelines/" + downstreamName + "/runs/");
+        }
     }
 
 }

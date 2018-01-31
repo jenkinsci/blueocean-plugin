@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.base.Predicate;
 import hudson.model.Action;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
@@ -12,6 +11,7 @@ import io.jenkins.blueocean.rest.model.BluePipelineStepContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.ActionProxiesImpl;
+import io.jenkins.blueocean.listeners.NodeDownstreamBuildAction;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -19,10 +19,10 @@ import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.export.Exported;
 
-import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 
 /**
@@ -78,14 +78,14 @@ public class PipelineNodeImpl extends BluePipelineNode {
     @Override
     public Date getStartTime() {
         long nodeTime = node.getTiming().getStartTimeMillis();
-        if(nodeTime == 0){
+        if (nodeTime == 0) {
             return null;
         }
         return new Date(nodeTime);
     }
 
-    public String getStartTimeString(){
-        if(getStartTime() == null) {
+    public String getStartTimeString() {
+        if (getStartTime() == null) {
             return null;
         }
         return AbstractRunImpl.DATE_FORMAT.print(getStartTime().getTime());
@@ -112,7 +112,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
     }
 
     @Override
-    public String getType(){
+    public String getType() {
         return node.getType().name();
     }
 
@@ -138,12 +138,18 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     @Override
     public Collection<BlueActionProxy> getActions() {
-        return ActionProxiesImpl.getActionProxies(node.getNode().getActions(), new Predicate<Action>() {
-            @Override
-            public boolean apply(@Nullable Action input) {
-                return input instanceof LogAction;
-            }
-        }, this);
+
+        HashSet<Action> actions = new HashSet<>();
+
+        // Actions attached to the node we use for the graph
+        actions.addAll(node.getNode().getActions());
+
+        // Actions from any child nodes
+        actions.addAll(node.getPipelineActions(NodeDownstreamBuildAction.class));
+
+        return ActionProxiesImpl.getActionProxies(actions,
+                                                  input -> input instanceof LogAction || input instanceof NodeDownstreamBuildAction,
+                                                  this);
     }
 
     @Override
@@ -156,7 +162,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
         return null;
     }
 
-    public static class EdgeImpl extends Edge{
+    public static class EdgeImpl extends Edge {
         private final String id;
         private final String type;
 
@@ -176,17 +182,17 @@ public class PipelineNodeImpl extends BluePipelineNode {
         }
     }
 
-    private List<Edge> buildEdges(List<FlowNodeWrapper> nodes){
-        List<Edge> edges  = new ArrayList<>();
-        if(!nodes.isEmpty()) {
-            for (FlowNodeWrapper edge:nodes) {
+    private List<Edge> buildEdges(List<FlowNodeWrapper> nodes) {
+        List<Edge> edges = new ArrayList<>();
+        if (!nodes.isEmpty()) {
+            for (FlowNodeWrapper edge : nodes) {
                 edges.add(new EdgeImpl(edge));
             }
         }
         return edges;
     }
 
-    FlowNodeWrapper getFlowNodeWrapper(){
+    FlowNodeWrapper getFlowNodeWrapper() {
         return node;
     }
 

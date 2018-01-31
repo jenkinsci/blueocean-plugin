@@ -80,7 +80,7 @@ public class    GithubEnterpriseCreationTest extends WireMockBase {
         dialog.clickSaveServerButton();
         dialog.findFormErrorMessage("Check hostname");
         // check GitHub server with invalid path
-        dialog.enterServerUrl("https://github.beescloud.com");
+        dialog.enterServerUrl("https://github.beescloud.com/login");
         dialog.waitForErrorMessagesGone();
         dialog.clickSaveServerButton();
         dialog.findFormErrorMessage("Check path");

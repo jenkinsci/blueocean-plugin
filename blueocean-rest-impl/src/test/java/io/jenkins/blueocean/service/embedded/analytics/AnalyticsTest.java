@@ -33,10 +33,11 @@ public class AnalyticsTest {
         Assert.assertTrue(Analytics.get() instanceof NullAnalytics);
     }
 
-    @Test
+    // Re-enable when we want to use keen
+    // @Test
     public void enableUsageStats() {
         UsageStatistics.DISABLED = false;
-        Assert.assertTrue(Analytics.get() instanceof KeenAnalyticsImpl);
+        Assert.assertFalse(Analytics.get() instanceof KeenAnalyticsImpl);
     }
 
     @Test
