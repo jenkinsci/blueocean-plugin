@@ -3,6 +3,8 @@ package io.jenkins.blueocean.blueocean_bitbucket_pipeline;
 import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSource;
 import com.cloudbees.jenkins.plugins.bitbucket.BitbucketSCMSourceBuilder;
 import com.cloudbees.jenkins.plugins.bitbucket.BranchDiscoveryTrait;
+import com.cloudbees.jenkins.plugins.bitbucket.ForkPullRequestDiscoveryTrait;
+import com.cloudbees.jenkins.plugins.bitbucket.OriginPullRequestDiscoveryTrait;
 import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import com.google.common.collect.Lists;
 import edu.umd.cs.findbugs.annotations.NonNull;
@@ -17,11 +19,14 @@ import io.jenkins.blueocean.scm.api.AbstractScmSourceEvent;
 import jenkins.branch.MultiBranchProject;
 import jenkins.model.Jenkins;
 import jenkins.model.JenkinsLocationConfiguration;
+import jenkins.plugins.git.traits.CleanAfterCheckoutTrait;
+import jenkins.plugins.git.traits.CleanBeforeCheckoutTrait;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.SCMHeadObserver;
 import jenkins.scm.api.SCMRevision;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.SCMSourceOwner;
+import jenkins.scm.api.mixin.ChangeRequestCheckoutStrategy;
 import org.apache.commons.lang.StringUtils;
 import org.kohsuke.stapler.DataBoundConstructor;
 import org.slf4j.Logger;
@@ -30,7 +35,9 @@ import org.slf4j.LoggerFactory;
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.io.IOException;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Vivek Pandey
@@ -49,10 +56,18 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
         if(StringUtils.isBlank(scmConfig.getUri())){
             throw new ServiceException.BadRequestException("scmConfig.uri must be present");
         }
+
+        Set<ChangeRequestCheckoutStrategy> strategies = new HashSet<>();
+        strategies.add(ChangeRequestCheckoutStrategy.MERGE);
+
         BitbucketSCMSource bitbucketSCMSource = new BitbucketSCMSourceBuilder(null, scmConfig.getUri(), computeCredentialId(scmConfig),
                 (String)scmConfig.getConfig().get("repoOwner"),
                 (String)scmConfig.getConfig().get("repository"))
-                .withTrait(new BranchDiscoveryTrait(3)) //take all branches
+                .withTrait(new BranchDiscoveryTrait(true, true)) //take all branches
+                .withTrait(new ForkPullRequestDiscoveryTrait(strategies, new ForkPullRequestDiscoveryTrait.TrustTeamForks()))
+                .withTrait(new OriginPullRequestDiscoveryTrait(strategies))
+                .withTrait(new CleanBeforeCheckoutTrait())
+                .withTrait(new CleanAfterCheckoutTrait())
                 .build();
 
         //Setup Jenkins root url, if not set bitbucket cloud notification will fail
@@ -71,7 +86,7 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
 
     @Nullable
     @Override
-    protected AbstractScmSourceEvent getScmSourceEvent(final MultiBranchProject project, SCMSource source) {
+    protected AbstractScmSourceEvent getScmSourceEvent(@Nonnull final MultiBranchProject project, @Nonnull SCMSource source) {
         if(source instanceof BitbucketSCMSource) {
             return new AbstractScmSourceEvent(((BitbucketSCMSource)source).getRepository(),
                     ((BitbucketSCMSource)source).getServerUrl()) {

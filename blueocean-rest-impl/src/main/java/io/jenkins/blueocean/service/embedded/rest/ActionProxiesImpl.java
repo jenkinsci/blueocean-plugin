@@ -61,6 +61,9 @@ public class ActionProxiesImpl extends BlueActionProxy {
         if(getUrlName() != null) {
             return parent.getLink().rel(getUrlName());
         }
+        if (action instanceof Reachable) {
+            return ((Reachable) action).getLink();
+        }
         return null;
     }
 
@@ -85,7 +88,7 @@ public class ActionProxiesImpl extends BlueActionProxy {
      * @param parent reachable
      * @return actionProxies
      */
-    public static Collection<BlueActionProxy> getActionProxies(List<? extends Action> actions, final Predicate<Action> alwaysAllowAction, Reachable parent){
+    public static Collection<BlueActionProxy> getActionProxies(Collection<? extends Action> actions, final Predicate<Action> alwaysAllowAction, Reachable parent){
         List<BlueActionProxy> actionProxies = new ArrayList<>();
         for(Action action : Iterables.filter(actions, new Predicate<Action>() {
             @Override

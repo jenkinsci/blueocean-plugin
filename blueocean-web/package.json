@@ -2,6 +2,10 @@
   "name": "blueocean-web",
   "version": "0.0.1",
   "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jenkinsci/blueocean-plugin.git"
+  },
   "scripts": {
     "lint": "gulp lint",
     "lint:fix": "gulp lint --fixLint",
@@ -9,7 +13,6 @@
     "test:watch": "gulp test:watch",
     "bundle": "gulp bundle",
     "bundle:watch": "gulp bundle:watch",
-    "mvnclean": "echo 'clean'",
     "mvnbuild": "gulp lint bundle && browserify src/main/js/ie/iepolyfills.js > target/classes/org/jenkins/ui/jsmodules/blueocean-web/iepolyfills.js",
     "mvnbuild:fast": "gulp bundle",
     "mvntest": "gulp test"

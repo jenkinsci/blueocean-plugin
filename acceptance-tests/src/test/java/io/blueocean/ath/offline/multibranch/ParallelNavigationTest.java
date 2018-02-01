@@ -4,14 +4,14 @@ import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.GitRepositoryRule;
+import io.blueocean.ath.Retry;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
-import org.junit.Rule;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.openqa.selenium.By;
 
@@ -35,37 +35,46 @@ public class ParallelNavigationTest {
     @Inject
     WaitUtil wait;
 
-
     @Inject
     MultiBranchPipelineFactory mbpFactory;
+
+    // Names of the pipelines we'll create
+    String navTest          = "ParallelNavTest_tested";
+    String navTestWithInput = "ParallelNavTestWithInput_tested";
+    String navTestWithFailedInputStep = "ParallelNavigationTest_failed_input";
+
+    // Initialize our MultiBranchPipeline objects
+    static MultiBranchPipeline navTestPipeline = null;
+    static MultiBranchPipeline navTestWithInputPipeline = null;
+    static MultiBranchPipeline navTestWithFailedInputStepPipeline = null;
 
     /**
      * This checks that we can run a pipeline with 2 long running parallel branches.
      * You should be able to click between one and the other and see it progressing.
      */
     @Test
+    @Retry(3)
     public void parallelNavigationTest () throws IOException, GitAPIException, InterruptedException {
-        String pipelineName = "ParallelNavigationTest_tested";
-
-        URL jenkinsFile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile");
-        Files.copy(new File(jenkinsFile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
+        // Create navTest
+        logger.info("Creating pipeline " + navTest);
+        URL navTestJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile");
+        Files.copy(new File(navTestJenkinsfile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
         git.addAll();
-        git.commit("initial commit");
-        logger.info("Commited Jenkinsfile");
+        git.commit("Initial commit for " + navTest);
+        logger.info("Committed Jenkinsfile for " + navTest);
+        navTestPipeline = mbpFactory.pipeline(navTest).createPipeline(git);
+        logger.info("Finished creating " + navTest);
 
-        MultiBranchPipeline pipeline = mbpFactory.pipeline(pipelineName).createPipeline(git);
-        pipeline.getRunDetailsPipelinePage().open(1);
-
-        // at first we see branch one
+        logger.info("Beginning parallelNavigationTest()");
+        navTestPipeline.getRunDetailsPipelinePage().open(1);
+        // At first we see branch one
         wait.until(By.xpath("//*[text()=\"firstBranch\"]"));
-
+        logger.info("Found first branch");
         // and clicking on the unselected node will yield us the second branch
-        wait.until(By.xpath("//*[contains(@class, 'pipeline-node')][3]")).click();
+        wait.click(By.xpath("//*[contains(@class, 'pipeline-node')][3]"));
         wait.until(By.xpath("//*[text()=\"secondBranch\"]"));
-
-        pipeline.stopAllRuns();
+        logger.info("Found second branch");
     }
-
 
     /**
      * This checks that you can have input on 2 different parallel branches. There are no stages either side of the parallel construct.
@@ -73,26 +82,65 @@ public class ParallelNavigationTest {
      */
     @Test
     public void parallelNavigationTestInput () throws IOException, GitAPIException, InterruptedException {
-        String pipelineName = "ParallelNavigationTest_tested_input";
-
-        URL jenkinsFile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile.input");
-        Files.copy(new File(jenkinsFile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
+        // Create navTestWithInput
+        logger.info("Creating pipeline " + navTestWithInput);
+        URL navTestInputJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile.input");
+        Files.copy(new File(navTestInputJenkinsfile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
         git.addAll();
-        git.commit("initial commit");
-        logger.info("Commited Jenkinsfile");
+        git.commit("Initial commit for " + navTestWithInput);
+        logger.info("Committed Jenkinsfile for " + navTestWithInput);
+        navTestWithInputPipeline = mbpFactory.pipeline(navTestWithInput).createPipeline(git);
+        logger.info("Finished creating " + navTestWithInput);
 
-        MultiBranchPipeline pipeline = mbpFactory.pipeline(pipelineName).createPipeline(git);
-        pipeline.getRunDetailsPipelinePage().open(1);
-
-        // at first we see branch one
+        logger.info("Beginning parallelNavigationTestInput()");
+        navTestWithInputPipeline.getRunDetailsPipelinePage().open(1);
+        // At first we see branch one
         wait.until(By.xpath("//*[text()=\"firstBranch\"]"));
-        wait.until(By.cssSelector(".btn.inputStepSubmit")).click();
-
-        // and clicking on the unselected node will yield us the second branch
-        wait.until(By.xpath("//*[contains(@class, 'pipeline-node')][3]")).click();
+        logger.info("Found first branch");
+        wait.click(By.cssSelector(".btn.inputStepSubmit"));
+        logger.info("Clicked the inputStepSubmit button");
+        // And clicking on the unselected node will yield us the second branch
+        wait.click(By.xpath("//*[contains(@class, 'pipeline-node')][3]"));
         wait.until(By.xpath("//*[text()=\"secondBranch\"]"));
-        wait.until(By.cssSelector(".btn.inputStepSubmit")).click();
+        logger.info("Found second branch");
+        wait.click(By.cssSelector(".btn.inputStepSubmit"));
+        logger.info("Clicked the inputStepSubmit button");
     }
 
+    /**
+     * This checks that an error is shown in the UI for a failed input step
+     */
+    @Test
+    public void failedInputStep () throws IOException, GitAPIException, InterruptedException {
+        // Create navTestWithFailedInputStep
+        logger.info("Creating pipeline " + navTestWithFailedInputStep);
+        URL navTestWithFailedInputStepJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile.failed.input");
+        Files.copy(new File(navTestWithFailedInputStepJenkinsfile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
+        git.addAll();
+        git.commit("Initial commit for " + navTestWithFailedInputStep);
+        logger.info("Committed Jenkinsfile for " + navTestWithFailedInputStep);
+        navTestWithFailedInputStepPipeline = mbpFactory.pipeline(navTestWithFailedInputStep).createPipeline(git);
+        logger.info("Finished creating " + navTestWithFailedInputStep);
 
+        navTestWithFailedInputStepPipeline.getRunDetailsPipelinePage().open(1);
+
+        logger.info("Beginning failedInputStep()");
+        wait.until(By.cssSelector(".btn.inputStepSubmit")).click();
+        logger.info("Clicked the inputStepSubmit button");
+        wait.until(By.xpath("//*[text()=\"You need to be B, C to submit this.\"]"));
+        logger.info("Found failed input step error message");
+    }
+
+    @AfterClass
+    public static void deleteTestPipelines() throws IOException, GitAPIException, InterruptedException {
+        MultiBranchPipeline[] listOfPipelineJobs = {navTestPipeline, navTestWithInputPipeline, navTestWithFailedInputStepPipeline};
+        for (MultiBranchPipeline pipelineToCleanup:listOfPipelineJobs) {
+            /*
+            stopAllRuns and deleteThisPipeline both provide their own
+            logger messages, no need to create new ones here.
+            */
+            pipelineToCleanup.stopAllRuns();
+            pipelineToCleanup.deleteThisPipeline(pipelineToCleanup.getName());
+        }
+    }
 }

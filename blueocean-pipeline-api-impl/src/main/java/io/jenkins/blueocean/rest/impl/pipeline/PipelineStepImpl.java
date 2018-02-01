@@ -5,6 +5,7 @@ import hudson.ExtensionList;
 import hudson.FilePath;
 import hudson.console.AnnotatedLargeText;
 import hudson.model.Action;
+import hudson.model.Failure;
 import hudson.model.FileParameterValue;
 import hudson.model.ParameterDefinition;
 import hudson.model.ParameterValue;
@@ -26,7 +27,11 @@ import org.acegisecurity.Authentication;
 import org.apache.commons.io.IOUtils;
 import org.jenkinsci.plugins.workflow.actions.ArgumentsAction;
 import org.jenkinsci.plugins.workflow.actions.LogAction;
+import org.jenkinsci.plugins.workflow.cps.nodes.StepEndNode;
+import org.jenkinsci.plugins.workflow.graph.FlowNode;
+import org.jenkinsci.plugins.workflow.graph.StepNode;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
+import org.jenkinsci.plugins.workflow.steps.StepDescriptor;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputAction;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputStep;
 import org.jenkinsci.plugins.workflow.support.steps.input.InputStepExecution;
@@ -87,6 +92,17 @@ public class PipelineStepImpl extends BluePipelineStep {
     @Override
     public String getType() {
         return node.getType().name();
+    }
+
+    @Override
+    public String getStepType() {
+        FlowNode flowNode = this.node.getNode();
+        if (flowNode instanceof StepNode && !(flowNode instanceof StepEndNode)) {
+            StepNode stepNode = (StepNode) flowNode;
+            StepDescriptor descriptor = stepNode.getDescriptor();
+            if (descriptor != null) return descriptor.getId();
+        }
+        return "unknown";
     }
 
     @Override
@@ -217,7 +233,12 @@ public class PipelineStepImpl extends BluePipelineStep {
             }
 
             //XXX: execution.doProceed(request) expects submitted form, otherwise we could have simply used it
-            execution.preSubmissionCheck();
+
+            try {
+                execution.preSubmissionCheck();
+            } catch (Failure f) {
+                throw new ServiceException.BadRequestException(f.getMessage());
+            }
 
             Object o = parseValue(execution, JSONArray.fromObject(body.get(PARAMETERS_ELEMENT)), request);
 

@@ -3,7 +3,7 @@ import Extensions from '@jenkins-cd/js-extensions';
 import {
         Fetch, getRestUrl, buildPipelineUrl, locationService,
         ContentPageHeader, pipelineService, Paths, RunApi,
-        activityService,
+        activityService, i18nTranslator,
     } from '@jenkins-cd/blueocean-core-js';
 import {
     Dialog,
@@ -26,6 +26,7 @@ import { EditorMain } from './components/editor/EditorMain';
 import { CopyPastePipelineDialog } from './components/editor/CopyPastePipelineDialog';
 
 const Base64 = { encode: (data) => btoa(data), decode: (str) => atob(str) };
+const t = i18nTranslator('blueocean-pipeline-editor');
 
 class SaveDialog extends React.Component {
     constructor(props) {
@@ -97,7 +98,7 @@ class SaveDialog extends React.Component {
 
         const buttons = [
             <button className="btn-primary" onClick={() => this.save()} disabled={this.state.saving}>Save & run</button>,
-            <button className="btn-link btn-secondary" disabled={this.state.saving} onClick={() => this.cancel()}>Cancel</button>,
+            <button className="btn-link btn-secondary" disabled={this.state.saving} onClick={() => this.cancel()}>{t('editor.page.common.cancel', {default: 'Cancel'})}</button>,
         ];
 
         return (
@@ -590,8 +591,8 @@ class PipelineLoader extends React.Component {
                 </div>
                 {pipelineStore.pipeline &&
                 <div className="editor-page-header-controls">
-                    <button className="btn-link inverse" onClick={() => this.cancel()}>Cancel</button>
-                    {pipelineName && <button className="btn-primary inverse" onClick={() => this.showSaveDialog()}>Save</button>}
+                    <button className="btn-link inverse" onClick={() => this.cancel()}>{t('editor.page.common.cancel', {default: 'Cancel'})}</button>
+                    {pipelineName && <button className="btn-primary inverse" onClick={() => this.showSaveDialog()}>{t('editor.page.common.save', {default: 'Save'})}</button>}
                 </div>
                 }
             </ContentPageHeader>

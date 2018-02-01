@@ -52,10 +52,6 @@ export class PullRequests extends Component {
         }
         const pullRequests = this.pager.data;
 
-        if (this.pager.pending) {
-            return null;
-        }
-
         if (!this.pager.pending && !this.pager.data.length) {
             return <NoPullRequestsPlaceholder t={t} />;
         }

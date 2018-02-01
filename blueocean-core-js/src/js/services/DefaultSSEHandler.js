@@ -1,9 +1,11 @@
 
 export class DefaultSSEHandler {
+
     constructor(pipelineService, activityService, pagerService) {
         this.pipelineService = pipelineService;
         this.activityService = activityService;
         this.pagerService = pagerService;
+        this.loggingEnabled = false;
     }
 
     handleEvents = (event) => {
@@ -137,7 +139,17 @@ export class DefaultSSEHandler {
      * @private
      */
     _updateRun(event, href) {
-        this.activityService.fetchActivity(href, { useCache: false }).then((run) => {
+        const pipelineHref = this._computePipelineHref(event);
+        const logMessage = `${event.jenkins_event} for pipeline ${pipelineHref} with run ${href}`;
+
+        if (!this.pipelineService.hasItem(pipelineHref)) {
+            this.loggingEnabled && console.log(`aborting fetch for ${logMessage}`);
+            return;
+        }
+
+        this.loggingEnabled && console.log(`fetch ${logMessage}`);
+
+        this.activityService.fetchActivity(href, { useCache: false, disableLoadingIndicator: true }).then((run) => {
             this.activityService.setItem(run);
             for (const key of this.branchPagerKeys(event)) {
                 const pager = this.pagerService.getPager({ key });
@@ -147,5 +159,32 @@ export class DefaultSSEHandler {
             }
             this.pipelineService.updateLatestRun(run);
         });
+    }
+
+    /**
+     * Compute the REST URL / href for the job referenced in the supplied server side event.
+     * @param event
+     * @returns {string}
+     * @private
+     */
+    _computePipelineHref(event) {
+        let jobRestUrl = event.blueocean_job_rest_url;
+
+        if (event.blueocean_job_branch_name) {
+            // trim the last two path segments (e.g. 'branches/branch-name')
+            jobRestUrl = jobRestUrl
+                .split('/')
+                .filter(p => p)
+                .slice(0, -2)
+                .join('/');
+        }
+        // ensure leading / trailing slashes
+        if (jobRestUrl.slice(0, 1) !== '/') {
+            jobRestUrl = `/${jobRestUrl}`;
+        }
+        if (jobRestUrl.slice(-1) !== '/') {
+            jobRestUrl += '/';
+        }
+        return jobRestUrl;
     }
 }

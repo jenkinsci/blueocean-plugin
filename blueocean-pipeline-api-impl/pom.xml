@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.4.0-beta-1-SNAPSHOT</version>
+        <version>1.5.0-beta-1-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean-pipeline-api-impl</artifactId>
@@ -106,6 +106,12 @@
             <artifactId>plain-credentials</artifactId>
         </dependency>
 
+        <!-- Needed to read the "upstreamNode" action -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>pipeline-build-step</artifactId>
+        </dependency>
+
         <!-- Test plugins -->
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -139,6 +145,11 @@
             -->
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.modules</groupId>
+            <artifactId>instance-identity</artifactId>
             <scope>test</scope>
         </dependency>
 

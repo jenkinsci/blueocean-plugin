@@ -1,0 +1,4 @@
+node {
+    echo 'hello world'
+    input message: "This step will fail because the user is not authorised to click OK", ok: "OK", submitter: "B, C"
+}

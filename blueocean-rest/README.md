@@ -97,22 +97,22 @@ The Blue Ocean REST API is a "private API" designed for the Blue Ocean user inte
 
 <!-- END doctoc generated TOC please keep comment here to allow auto update -->
 
-This document defines REST API interface that front end UI or any HTTP client can use. 
+This document defines REST API interface that front end UI or any HTTP client can use.
 
 # Run Blue Ocean plugin
 
     cd bluecoean-plugin
     mvn hpi:run
-    
-This will launch a development Jenkins instance with the Blue Ocean plugin and this plugin ready to go. 
+
+This will launch a development Jenkins instance with the Blue Ocean plugin and this plugin ready to go.
 
 BlueOcean UI is available at:
-    
+
     http://localhost:8080/jenkins/blue
-    
+
 
 BlueOcean rest API base URL is:
-    
+
     http://localhost:8080/jenkins/blue/rest
 
 # Schema
@@ -147,7 +147,7 @@ _message_ - High level error message. E.g. 'Failed to create Git Pipeline'
 _code_ - error code, should be HTTP error code
 
 _errors_ - array of errors for request fields.
- 
+
 _errors.message_ - Field validation error message.
 
 _errors.code_ - Field validation codes. Known codes, ALREADY_EXISTS, MISSING, NOT_FOUND, INVALID.
@@ -180,7 +180,7 @@ _Http Error codes_
 
 ## Crumbs
 
-Jenkins usually requires a "crumb" with posted requests to prevent request forgery and other shenanigans. 
+Jenkins usually requires a "crumb" with posted requests to prevent request forgery and other shenanigans.
 To avoid needing a crumb to POST data, the header `Content-Type: application/json` *must* be used.
 
 # Security
@@ -200,11 +200,11 @@ With -DFEATURE_BLUEOCEAN_JWT_AUTHENTICATION=true
 * API requires a valid JWT token, and does not use cookies for authentication.
 
 
-BlueOcean REST APIs requires JWT token for authentication. JWT APIs are provided by blueocean-jwt plugin. See 
+BlueOcean REST APIs requires JWT token for authentication. JWT APIs are provided by blueocean-jwt plugin. See
 [JWT APIs](../blueocean-jwt/README.md) to get JWT token and to get public key needed to verify the claims.
-  
+
 JWT token must be sent as bearer token as value of HTTP 'Authorization' header:
-  
+
     curl -H 'Authorization: Bearer eyJraWQ...' http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/
 
 ## API access from browser with JWT enabled
@@ -213,16 +213,16 @@ Sometimes testing API from browser is desirable. Here are steps to to do that us
 
 * Install Postman on Chrome (chrome://apps/) or install Postman app on Mac OS (https://www.getpostman.com).
 * Launch postman
-* Create a JWT token, see [JWT APIs](../blueocean-jwt/README.md). You can customize expiry time to reuse the fetched token. You may like to save the query in Postman as collection *blueocean*. Anytime later you want to generate token use *blueocean* collection and click send on previous GET. 
-* Click on + on tab and type the API URL, e.g. http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/, then add header with *Authorization* header with value *Bearer COPIED_JWT_TOKEN*. Use this tab to invoke any Blueocean REST API. You may like to either add to 'blueocean' collection if you like.      
-  
- 
+* Create a JWT token, see [JWT APIs](../blueocean-jwt/README.md). You can customize expiry time to reuse the fetched token. You may like to save the query in Postman as collection *blueocean*. Anytime later you want to generate token use *blueocean* collection and click send on previous GET.
+* Click on + on tab and type the API URL, e.g. http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/, then add header with *Authorization* header with value *Bearer COPIED_JWT_TOKEN*. Use this tab to invoke any Blueocean REST API. You may like to either add to 'blueocean' collection if you like.
+
+
 
 # Navigability
 
-## Links 
+## Links
 Each BlueOcean JSON response object includes *_links" as defined by [HAL](https://tools.ietf.org/html/draft-kelly-json-hal-08) spec.
-*self* link references the reachable path to *this* resource. It may include other navigable resources as well. A resource can exponse it's methods as navigable by using [@Navigable](https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean-rest/src/main/java/io/jenkins/blueocean/rest/Navigable.java) annotation.   
+*self* link references the reachable path to *this* resource. It may include other navigable resources as well. A resource can exponse it's methods as navigable by using [@Navigable](https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean-rest/src/main/java/io/jenkins/blueocean/rest/Navigable.java) annotation.
 
     "_links" : {
         "self" : {
@@ -238,13 +238,13 @@ Each BlueOcean JSON response object includes *_links" as defined by [HAL](https:
           "href" : "/blue/rest/organizations/jenkins/pipelines/f/queue/"
         }
 
-Above, *self* references path to pipeline 'f', *runs* and *queue* resource are navigable from this resource and their 
+Above, *self* references path to pipeline 'f', *runs* and *queue* resource are navigable from this resource and their
 href references path to them.
 
 
 # Resource discovery
 
-Each resource provides _class field, it’s a fully qualified name and is an  identifier of the producer of this 
+Each resource provides _class field, it’s a fully qualified name and is an  identifier of the producer of this
 resource's capability.
 
     {
@@ -291,7 +291,7 @@ Frontend can use _class in resource and classes API to serve UI based on class o
 
 ### Get detailed map of all given classes
 
-    curl -v -X POST  http://localhost:8080/jenkins/blue/rest/classes/ -d '{"q":["io.jenkins.blueocean.service.embedded.rest.PipelineImpl","io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl"] 
+    curl -v -X POST  http://localhost:8080/jenkins/blue/rest/classes/ -d '{"q":["io.jenkins.blueocean.service.embedded.rest.PipelineImpl","io.jenkins.blueocean.service.embedded.rest.MultiBranchPipelineImpl"]
 
     {
       "_class" : "io.jenkins.blueocean.service.embedded.rest.ExtensionClassContainerImpl$1",
@@ -329,8 +329,8 @@ Frontend can use _class in resource and classes API to serve UI based on class o
 
 ## Get a user
 
-    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/users/alice 
-    
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/users/alice
+
     {
       "id" : "alice",
       "fullName" : "Alice"
@@ -340,20 +340,20 @@ Frontend can use _class in resource and classes API to serve UI based on class o
 ## Find users in an organization
 
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/users/
-    
-    [ 
+
+    [
       {
         "id" : "alice",
         "name" : "Alice"
-      } 
+      }
     ]
 
 ## Get authenticated user
 
 Gives authenticated user, gives HTTP 404 error if there is no authenticated user found.
 
-    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/user/ 
-    
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/user/
+
     {
       "id" : "alice",
       "fullName" : "Alice"
@@ -365,7 +365,7 @@ Gives authenticated user, gives HTTP 404 error if there is no authenticated user
 ## Get organization details
 
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins
-    
+
     {
       "name" : "jenkins"
     }
@@ -373,7 +373,7 @@ Gives authenticated user, gives HTTP 404 error if there is no authenticated user
 ## Get all organizations
 
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/
-    
+
     [{
       "name" : "jenkins"
     }]
@@ -422,59 +422,59 @@ Gives authenticated user, gives HTTP 404 error if there is no authenticated user
 Pipelines are sorted by pipeline name alphabetically
 
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/
-    
-    [ 
+
+    [
       {
       "organization" : "jenkins",
       "name" : "pipeline1",
       "displayName": "pipeline1",
-      "fullName" : "pipeline1",      
+      "fullName" : "pipeline1",
       "weatherScore": 100,
       "estimatedDurationInMillis": 280,
-      } 
+      }
     ]
 
 ## Get Pipelines across organization
 
-Pipelines are sorted by pipeline name alphabetically across organizations. It gives flattened list of pipelines including 
+Pipelines are sorted by pipeline name alphabetically across organizations. It gives flattened list of pipelines including
 folders and nested pipelines inside them.
 
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/search/?q=type:pipeline
-    
-    [ 
+
+    [
       {
       "organization" : "jenkins",
       "name" : "pipeline1",
       "displayName": "pipeline1",
-      "fullName" : "pipeline1",      
+      "fullName" : "pipeline1",
       "weatherScore": 100,
       "estimatedDurationInMillis": 280,
-      } 
+      }
     ]
- 
+
 ### Exclude flattening of certain job types
 
-__excludedFromFlattening__ query parameter takes comma separated class names of Jenkins item that should not be flattened.    
+__excludedFromFlattening__ query parameter takes comma separated class names of Jenkins item that should not be flattened.
 
 To exclude flattening multi branch project:
-     
+
     GET http://localhost:8080/jenkins/blue/rest/search/?q=type:pipeline;organization:jenkins;excludedFromFlattening=jenkins.branch.MultiBranchProject
 
 To exclude flattening a folder:
-     
+
     GET http://localhost:8080/jenkins/blue/rest/search/?q=type:pipeline;organization:jenkins;excludedFromFlattening=com.cloudbees.hudson.plugins.folder.AbstractFolder
 
 To exclude flattening both a folder and multi-branch projects:
 
     GET http://localhost:8080/jenkins/blue/rest/search/?q=type:pipeline;organization:jenkins;excludedFromFlattening=jenkins.branch.MultiBranchProject,com.cloudbees.hudson.plugins.folder.AbstractFolder
 
-    
+
 ### Get pipelines for specific organization
 
 Use __organization__ query parameter to get flattened pipelines in that organization. If given organization is not found a 400 BadRequest error is returned.
-    
+
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/search/?q=type:pipeline;organization:jenkins
-        
+
       [
          {
             "numberOfFailingBranches" : 0,
@@ -514,19 +514,19 @@ Use __organization__ query parameter to get flattened pipelines in that organiza
             "numberOfPipelines" : 0,
             "name" : "bo1",
             "numberOfFolders" : 0,
-            "numberOfSuccessfulPullRequests" : 0,     
+            "numberOfSuccessfulPullRequests" : 0,
             "actions" : [],
             "branchNames" : []
          }
-      ]  
-      
-      
+      ]
+
+
 ## Parameterized Pipeline
 
 A pipeline can define list of parameters pipeline job expects. For example:
-      
+
       properties([parameters([string(defaultValue: 'xyz', description: 'string param', name: 'param1')]), pipelineTriggers([])])
-      
+
       node(){
           stage('build'){
               echo "building"
@@ -536,7 +536,7 @@ A pipeline can define list of parameters pipeline job expects. For example:
 Once this pipeline script is executed, subsequent REST call to get pipeline details (on a branch in multi-branch pipeline or just a pipeline job) will have 'parameters' element with all parameter definitions.
 
     curl -X GET http://localhost:59702/jenkins/blue/rest/organizations/jenkins/pipelines/p/branches/master/
-    
+
     {
       "_class" : "io.jenkins.blueocean.rest.impl.pipeline.BranchImpl",
       "_links" : {...},
@@ -581,12 +581,12 @@ Once this pipeline script is executed, subsequent REST call to get pipeline deta
       "numberOfFolders" : 1,
       "numberOfPipelines" : 1
     }
-       
+
 
 ## Get Nested Pipeline Inside A Folder
-    
+
     curl -v -X GET   http://localhost:62054/jenkins/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/folder2/pipelines/test2/
-    
+
     {
       "_class" : "io.jenkins.blueocean.service.embedded.rest.PipelineImpl",
       "displayName" : "test2",
@@ -594,17 +594,17 @@ Once this pipeline script is executed, subsequent REST call to get pipeline deta
       "fullName" : "folder1/folder2/test2",
       "latestRun" : null,
       "name" : "test2",
-      "fullName" : "test2",      
+      "fullName" : "test2",
       "organization" : "jenkins",
       "weatherScore" : 100
     }
-    
+
 ## Get nested Folder and Pipeline
 
 Pipelines can be nested inside folder.
-    
+
     curl -v -X GET   http://localhost:62054/jenkins/blue/rest/organizations/jenkins/pipelines/folder1/pipelines/
-    
+
     [ {
       "_class" : "io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl",
       "displayName" : "folder2",
@@ -626,13 +626,13 @@ Pipelines can be nested inside folder.
 
 ## MultiBranch Pipeline API
 
-Create MultiBranch build and set it up with your git repo. Your git repo must have Jenkinsfile with build script. 
+Create MultiBranch build and set it up with your git repo. Your git repo must have Jenkinsfile with build script.
 Each branch in the repo with Jenkins file will appear as a branch in this pipeline.
 
-### Get MultiBranch pipeline 
+### Get MultiBranch pipeline
 
     curl -v http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/p/
-    
+
     {
         "displayName": "p",
         "estimatedDurationInMillis": 280,
@@ -653,14 +653,14 @@ Each branch in the repo with Jenkins file will appear as a branch in this pipeli
         "totalNumberOfPullRequests": 0
     }
 
-    
+
 ### Get MultiBranch pipeline branches
 
 The list of branches will be ordered by favorited branches first, and then branches that have the most recent
 activity.
 
     curl -v http://localhost:56720/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches
-    
+
     [
         {
             "displayName": "feature2",
@@ -669,7 +669,7 @@ activity.
             "weatherScore":100,
             "latestRun": {
                 "changeSet": [
-                    
+
                 ],
                 "durationInMillis": 1391,
                 "estimatedDurationInMillis" : 567,
@@ -706,7 +706,7 @@ activity.
             "weatherScore":100,
             "latestRun": {
                 "changeSet": [
-                    
+
                 ],
                 "artifacts": [
                   {
@@ -733,7 +733,7 @@ activity.
             "organization": "jenkins",
             "weatherScore": 100,
             "pullRequest": null,
-            "totalNumberOfPullRequests": 0           
+            "totalNumberOfPullRequests": 0
         },
         {
             "displayName": "feature1",
@@ -742,7 +742,7 @@ activity.
             "weatherScore":100,
             "latestRun": {
                 "changeSet": [
-                    
+
                 ],
                 "durationInMillis": 1443,
                 "estimatedDurationInMillis" : 567,
@@ -762,7 +762,7 @@ activity.
             "organization": "jenkins",
             "weatherScore": 100,
             "pullRequest": null,
-            "totalNumberOfPullRequests": 0           
+            "totalNumberOfPullRequests": 0
         }
     ]
 
@@ -811,7 +811,7 @@ For example for anonymous user with security enabled and only read permission, t
 ## GET queue for a MultiBranch pipeline
 
     curl http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/bo2/queue/
-    
+
     [
        {
           "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
@@ -841,16 +841,16 @@ For example for anonymous user with security enabled and only read permission, t
        }
     ]
 
-## Remove a queued item 
+## Remove a queued item
 
     curl -X DELETE http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/bo2/queue/64/
 
 # Run API
 
 ## Get all runs in a pipeline
-    
+
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs
-    
+
     [
         {
             "changeSet": [],
@@ -876,12 +876,12 @@ For example for anonymous user with security enabled and only read permission, t
             "commitId": null
         }
     ]
-    
+
 
 ## Get a run details
 
-    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1    
-    
+    curl -v -X GET  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1
+
     {
         "changeSet": [],
         "artifacts": [
@@ -909,8 +909,8 @@ For example for anonymous user with security enabled and only read permission, t
 ## Find latest run of a pipeline
 
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/?q=type:run;organization:jenkins;pipeline:pipeline1;latestOnly:true
-    
-    [ 
+
+    [
       {
           "changeSet": [],
           "artifacts": [
@@ -933,14 +933,14 @@ For example for anonymous user with security enabled and only read permission, t
           "state": "FINISHED",
           "type": "WorkflowRun",
           "commitId": null
-      } 
+      }
     ]
 
 ## Find latest run on all pipelines
 
     curl -v -X GET  http://localhost:8080/jenkins/blue/rest/?q=type:run;organization:jenkins;latestOnly:true
-    
-    [ 
+
+    [
       {
           "changeSet": [],
           "artifacts": [
@@ -963,7 +963,7 @@ For example for anonymous user with security enabled and only read permission, t
           "state": "FINISHED",
           "type": "WorkflowRun",
           "commitId": null
-      }       
+      }
     ]
 
 ## Start a build
@@ -982,7 +982,7 @@ For example for anonymous user with security enabled and only read permission, t
       "pipeline" : "pipeline3",
       "qeueudTime" : "2016-06-22T11:05:41.309+1200"
     }
-    
+
 ## Start a parameterized build
 
 Parameterized build can be triggered on a free-style, pipeline and a branch of multi-branch pipeline jobs.
@@ -994,7 +994,7 @@ Parameterized build can be triggered on a free-style, pipeline and a branch of m
         "value" : "def"
       }]
     }
-    
+
 Response:
 
     {
@@ -1081,11 +1081,11 @@ Client should check the state and if its not FINISHED they may issue another sto
            "commitId": null
        }
 
-    
+
 ## Get MultiBranch job's branch run detail
-    
+
     curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/feature1/runs/1
-    
+
     {
         "durationInMillis": 1330,
         "estimatedDurationInMillis" : 567,
@@ -1174,11 +1174,11 @@ Client should check the state and if its not FINISHED they may issue another sto
 ## Get latest activity of Multi-branch pipeline for all branches
 
      curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/activities/
-         
+
         [
             {
                 "changeSet": [
-    
+
                 ],
                 "artifacts": [
                   {
@@ -1203,7 +1203,7 @@ Client should check the state and if its not FINISHED they may issue another sto
             },
             {
                 "changeSet": [
-    
+
                 ],
                 "durationInMillis": 1716,
                 "estimatedDurationInMillis" : 567,
@@ -1221,7 +1221,7 @@ Client should check the state and if its not FINISHED they may issue another sto
             },
             {
                 "changeSet": [
-    
+
                 ],
                 "durationInMillis": 1714,
                 "estimatedDurationInMillis" : 567,
@@ -1246,7 +1246,7 @@ Client should check the state and if its not FINISHED they may issue another sto
 ## Get change set for a run
 
     curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/branches/master/runs/2/
-    
+
     {
         "changeSet": [
             {
@@ -1285,10 +1285,10 @@ Client should check the state and if its not FINISHED they may issue another sto
         "type": "WorkflowRun"
     }
 ## Pipeline Node API
-    
+
 ### Get Pipeline run nodes
     curl -v  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/
-    
+
     [ {
       "displayName" : "build",
       "durationInMillis" : 219,
@@ -1355,9 +1355,9 @@ Client should check the state and if its not FINISHED they may issue another sto
 
 > In case pipeline run fails in one of the parallel branch, enclosing stage node will appear failed as well.
 
-> In case if the pipeline is in progress or failed in the middle, the response may include future nodes if there was 
-  last successful pipeline build. The returned future nodes will have startTime, result and state as null. 
-  Also the last node's edges will be patched to point to the future node. 
+> In case if the pipeline is in progress or failed in the middle, the response may include future nodes if there was
+  last successful pipeline build. The returned future nodes will have startTime, result and state as null.
+  Also the last node's edges will be patched to point to the future node.
 
 From the above example, if build failed at parallel node *unit* then the response will be:
 
@@ -1438,7 +1438,7 @@ From the above example, if build failed at parallel node *unit* then the respons
 ### Get a Pipeline run node's detail
 
     curl -v  http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/3
-    
+
     {
         "displayName": "build",
         "edges": [
@@ -1456,7 +1456,7 @@ From the above example, if build failed at parallel node *unit* then the respons
 
 This API gives steps inside a pipeline node. For a Stage, the steps will include all the steps defined inside Parallels as well as the stage.
 
-        
+
 ### Get steps for a Pipeline node
 
 Given this pipeline script:
@@ -1465,7 +1465,7 @@ Given this pipeline script:
     node{
       echo "Building..."
     }
-    
+
     stage 'test'
     parallel 'unit':{
       node{
@@ -1480,16 +1480,16 @@ Given this pipeline script:
         echo "UI testing..."
       }
     }
-    
+
     stage 'deploy'
     node{
       echo "Deploying"
     }
-    
+
     stage 'deployToProd'
     node{
       echo "Deploying to production"
-    }        
+    }
 
 
 Get steps of 'test' stage node:
@@ -1539,7 +1539,7 @@ Get steps of 'test' stage node:
       "startTime" : "2016-05-13T09:37:01.784-0700",
       "state" : "FINISHED"
     } ]
-                
+
 ### Get a Pipeline step details
 
     GET http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/13/steps/21/
@@ -1551,13 +1551,13 @@ Get steps of 'test' stage node:
       "startTime" : "2016-05-13T09:37:01.230-0700",
       "state" : "FINISHED"
     }
-    
+
 ### Get Pipeline Steps
 
     Gives all steps in a pipeline. Excludes stages and prallels/blocks.
 
     curl http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/
-    
+
     [ {
       "_class" : "io.jenkins.blueocean.rest.model.GenericResource",
       "displayName" : "Shell Script",
@@ -1589,7 +1589,7 @@ Get steps of 'test' stage node:
     } ]
 
 
-### Get Pipeline Steps with Input 
+### Get Pipeline Steps with Input
 
     curl -v -X GET http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/p31/runs/22/nodes/9/steps/
 
@@ -1640,7 +1640,7 @@ Get steps of 'test' stage node:
 
 ### Submit step input to proceed
 
-    curl -v -u 'xxx:yyy'  -H 'Content-Type: application/json' -X POST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/p31/runs/22/nodes/9/steps/12/ -d 
+    curl -v -u 'xxx:yyy'  -H 'Content-Type: application/json' -X POST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/p31/runs/22/nodes/9/steps/12/ -d
     '{
        "id" : "C51b52435b43a326d5d4f92c290a64d5",
        "parameters" : [{
@@ -1648,7 +1648,7 @@ Get steps of 'test' stage node:
          "value" : "master"
        }]
      }'
-     
+
 Above, "id" is the input.id received in GET /steps/ call:
 
      curl -v -X GET http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/p31/runs/22/nodes/9/steps/
@@ -1697,11 +1697,11 @@ Above, "id" is the input.id received in GET /steps/ call:
            "state" : "PAUSED"
          } ]
 
-Here input.id is 'C51b52435b43a326d5d4f92c290a64d5' and this must be sent as 'id' element in POST call to submit input action.    
-     
-### Submit step input to abort     
+Here input.id is 'C51b52435b43a326d5d4f92c290a64d5' and this must be sent as 'id' element in POST call to submit input action.
 
-    curl -v -u 'xxx:yyy'  -H 'Content-Type: application/json' -X POST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/p31/runs/22/nodes/9/steps/12/ -d 
+### Submit step input to abort
+
+    curl -v -u 'xxx:yyy'  -H 'Content-Type: application/json' -X POST http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/p31/runs/22/nodes/9/steps/12/ -d
     '{
        "id" : "C51b52435b43a326d5d4f92c290a64d5",
        "abort" : true
@@ -1725,11 +1725,11 @@ This will queue up a replay of the pipeline run with the same commit id as the r
       },
       "queuedTime" : "2016-06-29T14:11:52.191-0700"
    }
-    
+
 # Favorite API
 
-Favorite API can be used to favorite a pipeline (Multi-branch, branch, pipeline or even folder) for a logged in user. 
-If favorite request is successful then the repsonse is favorited item.  
+Favorite API can be used to favorite a pipeline (Multi-branch, branch, pipeline or even folder) for a logged in user.
+If favorite request is successful then the response is favorited item.
 
     curl -u alice:xxx -H"Content-Type:application/json" -XPUT -d '{"favorite":true} ttp://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/favorite
 
@@ -1889,21 +1889,21 @@ Must be authenticated.
         "pullRequest" : null
       }
     } ]
-    
+
 
 # Log API
-                       
+
 ## Fetching logs
 
 Clients should look for HTTP header *X-TEXT-SIZE* and *X-More-Data* in the response.
- 
- By default only last 150 KB log data is returned in the response. You can fetch full log by sending start=0 query 
- parameter. You can override default log size from 150KB to other values using thresholdInKB query parameter. 
+
+ By default only last 150 KB log data is returned in the response. You can fetch full log by sending start=0 query
+ parameter. You can override default log size from 150KB to other values using thresholdInKB query parameter.
 
 * X-More-Data Header
 
-If *X-More-Data* is true, then client should repeat the request after some delay. In the repeated request it should use 
-*X-TEXT-SIZE* header value with *start* query parameter.       
+If *X-More-Data* is true, then client should repeat the request after some delay. In the repeated request it should use
+*X-TEXT-SIZE* header value with *start* query parameter.
 
 * X-TEXT-SIZE Header
 
@@ -1911,7 +1911,7 @@ X-TEXT-SIZE is the byte offset of the raw log file client should use in the next
 
 * start Query Parameter
 
-start query parameter tells API to send log starting from this offset in the log file. 
+start query parameter tells API to send log starting from this offset in the log file.
 
 * thresholdInKB Query Parameter
 
@@ -1924,11 +1924,11 @@ This will show up as a download in the browser.
 
     curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/log?start=0&download=true
 
-    
+
 ## Get log for a Pipeline run
 
     curl -v http://localhost:56748/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/log?start=0
-    
+
     Content-Type: text/plain; charset=utf-8
     X-Text-Size: 1835
     X-More-Data: false
@@ -1957,7 +1957,7 @@ This will show up as a download in the browser.
 ## Get log for a Pipeline step
 
     GET http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/13/steps/21/log/
-    
+
     Unit testing...
 
 # SCM API
@@ -1967,17 +1967,17 @@ This will show up as a download in the browser.
 This API does the following:
 
 - Calls SCM provider API, for example GitHub API, to validate the token as well as look for appropriate scopes (in case of GitHub its repo and user:email). It picks up SCM provider from URL path (../scm/:id/validate)
-- If the token is valid 
-  - Look for domain 'github-domain' with github api url specifications in authenticated user's  credential store. If its not found then a new one is created. 
+- If the token is valid
+  - Look for domain 'github-domain' with github api url specifications in authenticated user's  credential store. If its not found then a new one is created.
   - If the token is valid and there is no Jenkins credentials found with id 'github' in authenticated user scoped domain 'github-domain' then this new credential is created.
   - If there exists a Jenkins credentials with authenticated user scope, in user scope domain named 'github-domain' and credentialId == scm id 'github', then this credential is updated with the given token. SCM id is picked from URL path (../scm/:id/validate).
   - HTTP response with credentialId and status 200 is returned
 - If the token is not valid for any reason then 403 error is returned with cause of validation failure.
 
-eg: 
+eg:
 
 ```
-curl -v -u admin:admin -d '{"accessToken": boo"}' -H "Content-Type:application/json" -XPUT http://localhost:8080/jenkins/blue/rest/organizations/jenkins/scm/github/validate 
+curl -v -u admin:admin -d '{"accessToken": boo"}' -H "Content-Type:application/json" -XPUT http://localhost:8080/jenkins/blue/rest/organizations/jenkins/scm/github/validate
 ```
 
 Response:
@@ -2012,7 +2012,7 @@ curl -v -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenkins
 
 > As prerequisite GitHub personal access token must be set as Credential with id 'github' in 'github-domain' domain of authenticated user's credential store. Calling validate access token API above automatically sets it up for you. You can also do it manually.
 
-> Credential id corresponding to github personal access token must be sent either as query parameter 'credentialId' or as HTTP header X-CREDENTIAL-ID. If both are provided query parameter takes precedence. 
+> Credential id corresponding to github personal access token must be sent either as query parameter 'credentialId' or as HTTP header X-CREDENTIAL-ID. If both are provided query parameter takes precedence.
 
 ````
 curl -XGET -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenkins/scm/github/organizations/?credentialId=github
@@ -2106,7 +2106,7 @@ curl -XGET -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenk
 
 ## Repositories API
 
-> Credential id corresponding to github personal access token must be sent either as query parameter 'credentialId' or as HTTP header X-CREDENTIAL-ID. If both are provided query parameter takes precedence. 
+> Credential id corresponding to github personal access token must be sent either as query parameter 'credentialId' or as HTTP header X-CREDENTIAL-ID. If both are provided query parameter takes precedence.
 
 ### Get SCM repositories in an organization
 
@@ -2150,15 +2150,15 @@ curl -v -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenkins
     "nextPage" : 4,
     "pageSize" : 10
   }
-}      
+}
 ````
 
 #### Pagination for GitHub repositories
 
 Repositories response includes nextPage, lastPage and pageSize. nextPage or lastPage might be null if there is no more pages available.
 
-> use pageSize and pageNumber query parameter to get number of items in a page and which page number is needed. Default value of pageNumber is 1 and default and max size is 100. 
- 
+> use pageSize and pageNumber query parameter to get number of items in a page and which page number is needed. Default value of pageNumber is 1 and default and max size is 100.
+
 
 ### Get SCM repository in an organization
 
@@ -2200,12 +2200,12 @@ Optional if request is in context of MBP pipeline, required if made in context o
 
 - **branch**
 
-Optional in case request is made in context of MBP pipeline branch. If missing default branch is assumed if scm 
+Optional in case request is made in context of MBP pipeline branch. If missing default branch is assumed if scm
 supports default branch. Required in all other cases.
 
 - **type**
 
-Optional. Defaults to file. 
+Optional. Defaults to file.
 
 #### Get github file content from MBP branch
 
@@ -2250,7 +2250,7 @@ Response:
 SCM owner and credentials are computed from the OrganizationFolder. Request must include **repo** element.
 
 ```
-curl -H 'Content-Type: application/json' -u user:password -XPUT http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/vivek/scm/content/ -d 
+curl -H 'Content-Type: application/json' -u user:password -XPUT http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/vivek/scm/content/ -d
 
 '{
   "content" : {
@@ -2269,7 +2269,7 @@ curl -H 'Content-Type: application/json' -u user:password -XPUT http://localhost
 SCM owner, repo and credentials are computed from the MultiBranchProject.
 
 ```
-curl -H 'Content-Type: application/json' -u user:password -XPUT http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/vivek/pipelines/test-no-jenkins-file/scm/content/ -d 
+curl -H 'Content-Type: application/json' -u user:password -XPUT http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/vivek/pipelines/test-no-jenkins-file/scm/content/ -d
 
 '{
   "content" : {
@@ -2283,7 +2283,7 @@ curl -H 'Content-Type: application/json' -u user:password -XPUT http://localhost
 ```
 
 - If file **path** doesn't exist in SCM then a new file will be created
-- If **sha** is provided and file **path** exists then it must match with the sha of existing file, else 400 (Bad Request) error will be returned. 
+- If **sha** is provided and file **path** exists then it must match with the sha of existing file, else 400 (Bad Request) error will be returned.
 - If **sha** matches then the file will be updated with the content provided in the request
 - If **branch** element is not provided file will be saved on default branch (typically maser)
 - If **branch** element is present and this branch doesn't exist then a new branch will be created off default branch HEAD

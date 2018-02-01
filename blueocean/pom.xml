@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.4.0-beta-1-SNAPSHOT</version>
+        <version>1.5.0-beta-1-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean</artifactId>
@@ -20,6 +20,14 @@
     </properties>
 
     <dependencies>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>jenkins-design-language</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-core-js</artifactId>
+        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-web</artifactId>

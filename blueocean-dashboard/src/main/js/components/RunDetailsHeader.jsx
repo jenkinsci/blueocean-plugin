@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/design-language';
-import { AppConfig, logging, ResultPageHeader, TimeManager } from '@jenkins-cd/blueocean-core-js';
+import { UrlConfig, AppConfig, logging, ResultPageHeader, TimeManager } from '@jenkins-cd/blueocean-core-js';
 import { ExpandablePath, ReadableDate, TimeDuration, CommitId } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import { Link } from 'react-router';
@@ -155,8 +155,21 @@ class RunDetailsHeader extends Component {
             </div>
         );
 
-        const causeMessage = (run && run.causes.length > 0 && run.causes[run.causes.length - 1].shortDescription) || null;
-        const cause = (<div className="causes" title={ causeMessage }>{ causeMessage }</div>);
+        const cause = (run) => {
+
+            const lastCause = (run && run.causes.length > 0 && run.causes[run.causes.length - 1]) || null;
+            if (lastCause && lastCause.upstreamProject) {
+                const activityUrl = `${UrlConfig.getJenkinsRootURL()}/${lastCause.upstreamUrl}display/redirect?provider=blueocean`;
+                const runUrl = `${UrlConfig.getJenkinsRootURL()}/${lastCause.upstreamUrl}${lastCause.upstreamBuild}/display/redirect?provider=blueocean`;
+
+                return (<div className="causes" title={ lastCause.shortDescription }>
+                    Started by upstream pipeline "<a href={ activityUrl }>{lastCause.upstreamProject}</a>" build <a href={ runUrl }>#{lastCause.upstreamBuild}</a>
+                </div>);
+
+            }
+            const causeMessage = (lastCause && lastCause.shortDescription) || null;
+            return (<div className="causes" title={ causeMessage }>{ causeMessage }</div>);
+        };
 
         return (
             <ResultPageHeader startTime={ startTime }
@@ -179,7 +192,7 @@ class RunDetailsHeader extends Component {
                 </div>
                 <div className="RunDetailsHeader-messages">
                     <ChangeSetToAuthors changeSet={ changeSet } onAuthorsClick={ onAuthorsClick } t={ t } />
-                    { cause }
+                    { cause(run) }
                 </div>
             </ResultPageHeader>
         );
