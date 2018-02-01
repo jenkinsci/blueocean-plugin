@@ -10,6 +10,9 @@ import focusOnElement from './focusOnElement';
 import InputText from './InputText';
 import InputTextArea from './InputTextArea';
 import { ValidationMessageList } from './ValidationMessageList';
+import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
+
+const t = i18nTranslator('blueocean-pipeline-editor');
 
 type Props = {
     node: PipelineInfo|StageInfo,
@@ -111,7 +114,7 @@ export class AgentConfiguration extends Component<DefaultProps, Props, State> {
         };
         this.setState({ selectedAgent: selectedAgent, pristine: true });
         this.props.onChange(selectedAgent);
-        focusOnElement('.agent-select .required input'); 
+        focusOnElement('.agent-select .required input');
     }
 
     _getAgentInputControl(param, pristine, val) {
@@ -150,7 +153,7 @@ export class AgentConfiguration extends Component<DefaultProps, Props, State> {
         }
 
         return (<div className="agent-select">
-            <h5>Agent</h5>
+            <h5>{t('editor.jenkins.agent', {default: 'Agent'})}</h5>
             <ValidationMessageList node={selectedAgent} />
             <Dropdown labelField="symbol" options={agents}
                 defaultOption={selectedAgentMetadata}
@@ -159,7 +162,7 @@ export class AgentConfiguration extends Component<DefaultProps, Props, State> {
             {selectedAgent && selectedAgentMetadata && <div className="agent-parameters">
                 {selectedAgentMetadata.parameters.filter(agentConfigParamFilter(selectedAgent)).map(param => {
                     const val = this.getRealOrEmptyArg(param.name).value.value;
-                    
+
                     return (<div className="agent-param">
                         <label key={selectedAgent.type + '/' + param.name}>
                             <div>{param.capitalizedName}{param.isRequired ? '*' : ''}</div>
