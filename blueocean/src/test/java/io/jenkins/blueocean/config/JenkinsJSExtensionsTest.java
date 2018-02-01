@@ -58,8 +58,6 @@ public class JenkinsJSExtensionsTest extends BaseTest {
                 Assert.assertEquals("TopPipelinesLink", extensionPoints.getJSONObject(0).get("component"));
                 Assert.assertEquals("jenkins.blueocean.top.pipelines", extensionPoints.getJSONObject(0).get("extensionPoint"));
             } else if ("blueocean-personalization".equals(pluginId)) {
-                Assert.assertEquals("redux/FavoritesStore", extensionPoints.getJSONObject(0).get("component"));
-                Assert.assertEquals("jenkins.main.stores", extensionPoints.getJSONObject(0).get("extensionPoint"));
                 Assert.assertEquals("components/DashboardCards", extensionPoints.getJSONObject(1).get("component"));
                 Assert.assertEquals("jenkins.pipeline.list.top", extensionPoints.getJSONObject(1).get("extensionPoint"));
                 Assert.assertEquals("components/FavoritePipeline", extensionPoints.getJSONObject(2).get("component"));
