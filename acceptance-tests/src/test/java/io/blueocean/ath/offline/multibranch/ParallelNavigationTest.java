@@ -70,9 +70,11 @@ public class ParallelNavigationTest {
         // At first we see branch one
         wait.until(By.xpath("//*[text()=\"firstBranch\"]"));
         logger.info("Found first branch");
+        wait.until(By.xpath("//*[text()=\"first branch visible\"]"));
         // and clicking on the unselected node will yield us the second branch
         wait.click(By.xpath("//*[contains(@class, 'pipeline-node')][3]"));
         wait.until(By.xpath("//*[text()=\"secondBranch\"]"));
+        wait.until(By.xpath("//*[text()=\"second branch visible\"]"));
         logger.info("Found second branch");
     }
 

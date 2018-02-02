@@ -35,7 +35,6 @@ export const getNodesInformation = (nodes) => {
             .filter((item) => item.state === null && item.result === null).length !== nodes.length;
     // principal model mapper
     let wasFocused = false; // we only want one node to be focused if any
-    let parallelNodes = [];
     let parent;
     // a job that is in queue would be marked as finished since
     // there will be no running nodes yet, that is why we check for that
@@ -46,20 +45,10 @@ export const getNodesInformation = (nodes) => {
             .filter((itemError) => errorNodes.indexOf(itemError.id) > -1).length > 0 : false;
         const isFailingNode = errorNodes.indexOf(item.id) > -1;
         const isRunning = runningNodes.indexOf(item.id) > -1;
-        /*
-         * are we in a node that indicates that we have parallel nodes?
-         */
-        if (item.edges) {
-            parallelNodes = item.edges.filter((edge) => edge.type === 'PARALLEL').map((edge) => edge.id);
-        }
 
-        // in case we had been in a parallel node before, we will indicate it and remove the id of the parallel array
-        const indexParallel = parallelNodes.indexOf(item.id);
-        const isParallel = indexParallel !== -1;
-        if (isParallel) {
-            // remove the match from the array
-            parallelNodes.splice(indexParallel, 1);
-        }
+
+        const isParallel = item.type === 'PARALLEL';
+
         const logActions = item.actions ? item.actions
             .filter(action => capable(action, 'org.jenkinsci.plugins.workflow.actions.LogAction')) : [];
         const hasLogs = logActions.length > 0;
