@@ -14,7 +14,6 @@ import { DragPosition } from "./DragPosition";
 import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
 
 const t = i18nTranslator('blueocean-pipeline-editor');
-import { DragPosition } from "./DragPosition";
 
 type Props = {
     stage: ?StageInfo,
