@@ -7,6 +7,9 @@ import GenericStepEditor from './steps/GenericStepEditor';
 import UnknownStepEditor from './steps/UnknownStepEditor';
 import { EditorStepList } from './EditorStepList';
 import { ValidationMessageList } from './ValidationMessageList';
+import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
+
+const t = i18nTranslator('blueocean-pipeline-editor');
 
 const allStepEditors = [
     require('./steps/ShellScriptStepEditor').default,
@@ -109,7 +112,7 @@ export class EditorStepDetails extends Component {
                     <StepEditor key={step.id} onChange={step => this.commitValue(step)} step={step} />
                 </section>
                 {step.isContainer && <section>
-                    <h5>Child steps</h5>
+                    <h5>{t('editor.jenkins.pipeline.step.substep', {default: 'Child steps'})}</h5>
                     <EditorStepList
                         stage={stage}
                         steps={step.children}

@@ -1,8 +1,6 @@
 // @flow
 
 import React, { Component } from 'react';
-import debounce from 'lodash.debounce';
-
 import { EditorPipelineGraph } from './EditorPipelineGraph';
 import { EditorStepList } from './EditorStepList';
 import { EditorStepDetails } from './EditorStepDetails';
@@ -18,6 +16,10 @@ import { MoreMenu } from '../MoreMenu';
 import pipelineValidator from '../../services/PipelineValidator';
 import { ValidationMessageList } from './ValidationMessageList';
 import focusOnElement from './focusOnElement';
+import debounce from 'lodash.debounce';
+import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
+
+const t = i18nTranslator('blueocean-pipeline-editor');
 
 
 type Props = {
@@ -68,7 +70,6 @@ function _getStageErrors(stage, ...excludeProps) {
     }
     return pipelineValidator.getAllValidationErrors(stage, excludedNodes);
 }
-
 
 export class EditorMain extends Component<DefaultProps, Props, State> {
 
@@ -244,7 +245,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                 <ConfigPanel className="editor-config-panel global"
                           key={'globalConfig'+pipelineStore.pipeline.id}
                           title={<h4>
-                              Pipeline Settings
+                              {t('editor.page.common.pipeline.setting', {default: 'Pipeline Settings'})}
                           </h4>}>
                     <div className="editor-stage-settings" key="settings">
                         <AgentConfiguration key={'agent'+pipelineStore.pipeline.id} node={pipelineStore.pipeline} onChange={agent => (selectedStage && agent.type == 'none' ? delete pipelineStore.pipeline.agent : pipelineStore.pipeline.agent = agent) && this.pipelineUpdated()} />
@@ -270,18 +271,18 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                              onClose={e => cleanPristine(selectedStage) || pipelineValidator.validate() || this.graphSelectedStageChanged(null)}
                              title={
                                  <div>
-                                     <input className="stage-name-edit" placeholder="Name your stage"
+                                     <input className="stage-name-edit" placeholder={t('editor.page.common.pipeline.stages.input', {default: 'Name your stage'})}
                                             defaultValue={title}
                                             onChange={e => (selectedStage.name = e.target.value) && this.pipelineUpdated()}/>
                                      <MoreMenu>
-                                         <a onClick={e => this.deleteStageClicked(e)}>Delete</a>
+                                         <a onClick={e => this.deleteStageClicked(e)}>{t('editor.page.common.delete', {default: 'Delete'})}</a>
                                      </MoreMenu>
                                      <ValidationMessageList errors={sectionErrors.stage}/>
                                  </div>
                              }>
                     <Accordion show={sectionErrors.show} key={'stageSections' + selectedStage.id}>
                         {!hasChildStages &&
-                        <div key="steps" className={stepListClass} data-label="Steps">
+                        <div key="steps" className={stepListClass} data-label="Steps" title={t('editor.page.common.pipeline.steps', {default: 'Steps'})}>
                             <EditorStepList
                                 stage={selectedStage}
                                 steps={steps}
@@ -295,7 +296,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                             />
                         </div>
                         }
-                        <div title="Settings" className="editor-stage-settings" key="settings">
+                        <div title={t('editor.page.common.setting', {default: 'Settings'})} className="editor-stage-settings" key="settings">
                             {!hasChildStages &&
                             <AgentConfiguration node={selectedStage}
                                                 onChange={agent => (selectedStage && agent.type == 'none' ? delete selectedStage.agent : selectedStage.agent = agent) && this.pipelineUpdated()}/>
@@ -336,7 +337,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         const stepAddPanel = this.state.showSelectStep && (<AddStepSelectionSheet
                 onClose={() => this.setState({showSelectStep: false})}
                 onStepSelected={step => this.addStep(step)}
-                title={<h4>Choose step type</h4>} />);
+                title={<h4>{t('editor.page.common.pipeline.steps.choose', {default: 'Choose step type'})}</h4>} />);
 
         if (stepAddPanel) sheets.push(stepAddPanel);
 
