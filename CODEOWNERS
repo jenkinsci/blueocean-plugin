@@ -7,3 +7,6 @@ pom.xml    @vivek @michaelneale @kzantow
 
 # Jenkins design language is used outside of blue ocean repo, so want to watch changes closely for approval
 jenkins-design-language/*   @kzantow @scherler
+
+
+package.json  @kzantow
