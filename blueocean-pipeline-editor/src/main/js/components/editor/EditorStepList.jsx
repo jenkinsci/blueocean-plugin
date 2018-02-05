@@ -1,39 +1,45 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import pipelineMetadataService, { getArg } from '../../services/PipelineMetadataService';
-import type { StepInfo } from '../../services/PipelineStore';
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+
+import pipelineMetadataService from '../../services/PipelineMetadataService';
+import { EditorStepItem } from './EditorStepItem';
+import { EditorStepListDropZone } from "./EditorStepListDropZone";
+import type { StageInfo, StepInfo } from '../../services/PipelineStore';
 import { Icon } from '@jenkins-cd/design-language';
 import pipelineValidator from '../../services/PipelineValidator';
+import { DragPosition } from "./DragPosition";
 import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
 
 const t = i18nTranslator('blueocean-pipeline-editor');
 
 type Props = {
+    stage: ?StageInfo,
     steps: Array<StepInfo>,
     parent: ?StepInfo,
     onAddStepClick?: () => any,
     onStepSelected?: (step:StepInfo) => any,
     onAddChildStepClick?: (step:StepInfo) => any,
+    onDragStepBegin?: () => any,
+    onDragStepHover?: () => any,
+    onDragStepDrop?: () => any,
+    onDragStepEnd?: () => any,
 }
 
-type State = {};
+type State = {
+    stepMetadata: any,
+};
 
 type DefaultProps = typeof EditorStepList.defaultProps;
 
-function ChildStepIcon() {
-    return (<div className="editor-step-child-icon">
-        <svg fill="#000000" height="16" viewBox="0 0 24 24" width="16" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 0h24v24H0V0z" fill="none"/>
-            <path d="M19 15l-6 6-1.42-1.42L15.17 16H4V4h2v10h9.17l-3.59-3.58L13 9l6 6z"/>
-        </svg>
-    </div>);
-}
 
+@DragDropContext(HTML5Backend)
 export class EditorStepList extends Component<DefaultProps, Props, State> {
 
     static defaultProps = {
-        steps: []
+        steps: [],
     };
 
     //static propTypes = {...}
@@ -44,7 +50,9 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
 
     constructor(props:Props) {
         super(props);
-        this.state = {};
+        this.state = {
+            stepMetadata: null,
+        };
     }
 
     componentWillMount() {
@@ -61,7 +69,6 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
                     <div className="editor-step nested missing">
                         <div className="editor-step-main" onClick={(e) => this.stepClicked(parent, e)}>
                             <div className="editor-step-content">
-                                <ChildStepIcon/>
                                 <div className="editor-step-title">
                                     <span className="editor-step-summary">
                                         {t('editor.page.common.pipeline.steps.child.require', {default: 'There are no child steps defined'})}
@@ -92,35 +99,38 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
     }
 
     renderStep(step:StepInfo, parent: StepInfo) {
-        const thisMeta = this.state.stepMetadata.find(step);
+        const thisMeta = this.state.stepMetadata.find(step) || {};
         const classNames = ["editor-step"];
         const errors = pipelineValidator.getNodeValidationErrors(step);
+        const key = 's_' + step.id;
         if (parent) classNames.push('nested');
         if (errors) classNames.push('errors');
+        if (step.isContainer) classNames.push('is-container');
 
         return (
-            <div className={classNames.join(' ')} key={'s_' + step.id}>
+            <div className={classNames.join(' ')} key={key}>
                 <div className="editor-step-main" onClick={(e) => this.stepClicked(step, e)}>
-                    <div className="editor-step-content">
-                        {parent && <ChildStepIcon/>}
-                        <div className="editor-step-title">
-                            <span className="editor-step-label">{step.label}</span>
-                            {!errors && <span className="editor-step-summary">
-                                {thisMeta && thisMeta.parameters.filter(p => p.isRequired).map(p =>
-                                    <span>{getArg(step, p.name).value} </span>
-                                )}
-                                </span>
-                            }
-                            {errors && <span className="editor-step-errors">
-                                {errors.map(err =>
-                                    <div>{err.error ? err.error : err}</div>
-                                )}
-                                </span>
-                            }
-                        </div>
-                    </div>
+                    <EditorStepItem
+                        stage={this.props.stage}
+                        step={step}
+                        parameters={thisMeta.parameters}
+                        errors={errors}
+                        onDragStepBegin={this.props.onDragStepBegin}
+                        onDragStepHover={this.props.onDragStepHover}
+                        onDragStepDrop={this.props.onDragStepDrop}
+                        onDragStepEnd={this.props.onDragStepEnd}
+                    />
 
-                    {step.isContainer && this.renderSteps(step.children, step)}
+                    {step.isContainer && [
+                        this.renderSteps(step.children, step),
+                        <EditorStepListDropZone
+                            stage={this.props.stage}
+                            step={step}
+                            position={DragPosition.LAST_CHILD}
+                            onDragStepHover={this.props.onDragStepHover}
+                            onDragStepDrop={this.props.onDragStepDrop}
+                        />
+                    ]}
                 </div>
             </div>
         );
@@ -158,14 +168,23 @@ export class EditorStepList extends Component<DefaultProps, Props, State> {
             return null;
         }
         const { steps, parent } = this.props;
-        return (<div className="editor-steps">
-            {this.renderSteps(steps, parent)}
-            <div className="editor-button-bar">
-                <button className="btn-primary add" onClick={(e) => this.addStepClicked(e)}>
-                    <Icon icon="ContentAdd" size={20} />
-                    {t('editor.page.common.pipeline.steps.add', {default: 'Add step'})}
-                </button>
+        return (
+            <div className="editor-steps">
+                {this.renderSteps(steps, parent)}
+                <EditorStepListDropZone
+                    stage={this.props.stage}
+                    step={this.props.stage}
+                    position={DragPosition.LAST_CHILD}
+                    onDragStepHover={this.props.onDragStepHover}
+                    onDragStepDrop={this.props.onDragStepDrop}
+                />
+                <div className="editor-button-bar">
+                    <button className="btn-primary add" onClick={(e) => this.addStepClicked(e)}>
+                        <Icon icon="ContentAdd" size={20} />
+                        {t('editor.page.common.pipeline.steps.add', {default: 'Add step'})}
+                    </button>
+                </div>
             </div>
-        </div>);
+        );
     }
 }

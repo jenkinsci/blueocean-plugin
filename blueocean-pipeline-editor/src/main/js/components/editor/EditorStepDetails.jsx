@@ -2,7 +2,7 @@
 
 import React, {Component, PropTypes} from 'react';
 import pipelineMetadataService from '../../services/PipelineMetadataService';
-import type { StepInfo } from '../../services/PipelineStore';
+import type { StageInfo, StepInfo } from '../../services/PipelineStore';
 import GenericStepEditor from './steps/GenericStepEditor';
 import UnknownStepEditor from './steps/UnknownStepEditor';
 import { EditorStepList } from './EditorStepList';
@@ -23,8 +23,13 @@ for (let e of allStepEditors) {
 }
 
 type Props = {
+    stage?: ?StageInfo,
     step?: ?StepInfo,
     onDataChange?: (newValue:any) => void,
+    onDragStepBegin?: () => any,
+    onDragStepHover?: () => any,
+    onDragStepDrop?: () => any,
+    onDragStepEnd?: () => any,
 }
 
 export class EditorStepDetails extends Component {
@@ -88,8 +93,7 @@ export class EditorStepDetails extends Component {
     }
 
     render() {
-
-        const {step} = this.props;
+        const {stage, step} = this.props;
 
         if (!step) {
             return (
@@ -109,10 +113,17 @@ export class EditorStepDetails extends Component {
                 </section>
                 {step.isContainer && <section>
                     <h5>{t('editor.jenkins.pipeline.step.substep', {default: 'Child steps'})}</h5>
-                    <EditorStepList steps={step.children}
+                    <EditorStepList
+                        stage={stage}
+                        steps={step.children}
                         parent={step}
                         onAddStepClick={() => this.props.openSelectStepDialog(step)}
-                        onStepSelected={(step) => this.props.selectedStepChanged(step)} />
+                        onStepSelected={(step) => this.props.selectedStepChanged(step)}
+                        onDragStepBegin={this.props.onDragStepBegin}
+                        onDragStepHover={this.props.onDragStepHover}
+                        onDragStepDrop={this.props.onDragStepDrop}
+                        onDragStepEnd={this.props.onDragStepEnd}
+                    />
                 </section>}
             </div>
         );
