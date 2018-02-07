@@ -29,6 +29,7 @@ import jenkins.branch.OrganizationFolder;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.traits.CleanAfterCheckoutTrait;
 import jenkins.plugins.git.traits.CleanBeforeCheckoutTrait;
+import jenkins.plugins.git.traits.LocalBranchTrait;
 import jenkins.scm.api.mixin.ChangeRequestCheckoutStrategy;
 import jenkins.scm.api.trait.SCMSourceTrait;
 import jenkins.scm.api.trait.SCMTrait;
@@ -75,6 +76,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
 
         Assert.assertNotNull(SCMTrait.find(traits, CleanAfterCheckoutTrait.class));
         Assert.assertNotNull(SCMTrait.find(traits, CleanBeforeCheckoutTrait.class));
+        Assert.assertNotNull(SCMTrait.find(traits, LocalBranchTrait.class));
 
         BranchDiscoveryTrait branchDiscoveryTrait = SCMTrait.find(traits, BranchDiscoveryTrait.class);
         Assert.assertNotNull(branchDiscoveryTrait);
