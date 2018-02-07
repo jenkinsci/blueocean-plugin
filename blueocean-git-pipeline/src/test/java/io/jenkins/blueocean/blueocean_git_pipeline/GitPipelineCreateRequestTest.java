@@ -10,6 +10,7 @@ import jenkins.plugins.git.GitSampleRepoRule;
 import jenkins.plugins.git.traits.BranchDiscoveryTrait;
 import jenkins.plugins.git.traits.CleanAfterCheckoutTrait;
 import jenkins.plugins.git.traits.CleanBeforeCheckoutTrait;
+import jenkins.plugins.git.traits.LocalBranchTrait;
 import jenkins.scm.api.trait.SCMSourceTrait;
 import jenkins.scm.api.trait.SCMTrait;
 import org.junit.Assert;
@@ -59,6 +60,7 @@ public class GitPipelineCreateRequestTest extends PipelineBaseTest {
         Assert.assertNotNull(SCMTrait.find(traits, BranchDiscoveryTrait.class));
         Assert.assertNotNull(SCMTrait.find(traits, CleanAfterCheckoutTrait.class));
         Assert.assertNotNull(SCMTrait.find(traits, CleanBeforeCheckoutTrait.class));
+        Assert.assertNotNull(SCMTrait.find(traits, LocalBranchTrait.class));
     }
 
 }

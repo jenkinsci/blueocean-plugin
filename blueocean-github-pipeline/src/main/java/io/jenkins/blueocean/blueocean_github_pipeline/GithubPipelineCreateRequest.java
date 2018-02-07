@@ -16,6 +16,7 @@ import io.jenkins.blueocean.scm.api.AbstractScmSourceEvent;
 import jenkins.branch.MultiBranchProject;
 import jenkins.plugins.git.traits.CleanAfterCheckoutTrait;
 import jenkins.plugins.git.traits.CleanBeforeCheckoutTrait;
+import jenkins.plugins.git.traits.LocalBranchTrait;
 import jenkins.scm.api.SCMSource;
 import jenkins.scm.api.SCMSourceOwner;
 import jenkins.scm.api.mixin.ChangeRequestCheckoutStrategy;
@@ -64,6 +65,7 @@ public class GithubPipelineCreateRequest extends AbstractMultiBranchCreateReques
                 .withTrait(new OriginPullRequestDiscoveryTrait(strategies))
                 .withTrait(new CleanBeforeCheckoutTrait())
                 .withTrait(new CleanAfterCheckoutTrait())
+                .withTrait(new LocalBranchTrait())
                 .build();
     }
 
