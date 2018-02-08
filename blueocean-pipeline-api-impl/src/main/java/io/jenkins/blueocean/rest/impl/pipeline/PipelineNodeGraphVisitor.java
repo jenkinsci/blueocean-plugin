@@ -98,7 +98,16 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         this.pendingActionsForBranches = new HashMap<>();
         FlowExecution execution = run.getExecution();
         if(execution!=null) {
-            ForkScanner.visitSimpleChunks(execution.getCurrentHeads(), this, new StageChunkFinder());
+            try {
+                ForkScanner.visitSimpleChunks(execution.getCurrentHeads(), this, new StageChunkFinder());
+            } catch (final Throwable t) {
+                // Log run ID, because the eventual exception handler (probably Stapler) isn't specific enough to do so
+                logger.error("Caught a " + t.getClass().getSimpleName() +
+                                 " traversing the graph for run " + run.getExternalizableId());
+                throw t;
+            }
+        } else {
+            logger.error("Could not find execution for run " + run.getExternalizableId());
         }
     }
 
