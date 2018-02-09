@@ -32,7 +32,7 @@ const classicConfigLink = (pipeline) => {
     if (Security.permit(pipeline).configure()) {
         let url = buildClassicConfigUrl(pipeline);
         link = (
-            <a href={ url } target="_blank" style={ { height: '24px' } }>
+            <a href={ url } target="_blank" title={webTranslate('toast.configure', { defaultValue: 'Configure' })} style={ { height: '24px' } }>
                 <Icon size={ 24 } icon="ActionSettings" />
             </a>
         );
