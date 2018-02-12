@@ -99,6 +99,9 @@ public abstract class AbstractAnalytics extends Analytics {
     }
 
     private boolean belongsToActiveCohort(AnalyticsConfig config, String user) {
+        if (AnalyticsConfig.EMPTY.equals(config)) {
+            return false;
+        }
         int currentCohort = Hashing.consistentHash(user.hashCode(), config.cohorts);
         List<Integer> activeCohorts = config.allActiveCohorts();
         return activeCohorts.contains(currentCohort);
