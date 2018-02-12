@@ -56,4 +56,20 @@ describe("Dropdown", () => {
         assert.equal(drop.find('ul.Dropdown-menu li').length, options.length); // dropdown options same length then our array?
         assert.equal(drop.find('#unit').length, 1); // only on footer?
     });
+    it('dropDown should still have focus after option selection', () => {
+        const wrapper = mount(<Dropdown { ...{
+            options,
+        }}
+        />);
+        assert.ok(wrapper);
+        const drop = wrapper.find('Dropdown');
+        // click the dropDown button
+        drop.find('button').simulate('click');
+        // click on the 1st option
+        drop.find("li a").first().simulate('click');
+        //get focused element
+        const focusedElement = document.activeElement;
+        //verify that the focused element is the dropdown button
+        assert.equal(focusedElement, drop.find('button').get(0));
+    });
 });
