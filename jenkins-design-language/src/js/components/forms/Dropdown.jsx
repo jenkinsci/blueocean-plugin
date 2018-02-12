@@ -266,9 +266,9 @@ export class Dropdown extends React.Component {
             this.props.onChange(option, index);
         }
 
-        //restore the focus on the button element in IE
-        if (this.buttonRef.setActive) {
-            this.buttonRef.setActive();
+        //restore the focus on the button element
+        if (this.buttonRef && this.buttonRef.focus) {
+            this.buttonRef.focus();
         }
     }
 
