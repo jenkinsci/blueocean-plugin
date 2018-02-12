@@ -6,6 +6,7 @@ import com.google.common.hash.Hashing;
 import hudson.ExtensionList;
 import hudson.model.UsageStatistics;
 import hudson.model.User;
+import hudson.util.ConsistentHash;
 import io.jenkins.blueocean.analytics.AdditionalAnalyticsProperties;
 import io.jenkins.blueocean.analytics.Analytics;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -16,6 +17,10 @@ import org.kohsuke.accmod.restrictions.NoExternalUse;
 import org.kohsuke.stapler.Stapler;
 
 import javax.annotation.CheckForNull;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -42,6 +47,11 @@ public abstract class AbstractAnalytics extends Analytics {
         if (StringUtils.isEmpty(req.name)) {
             throw new ServiceException.BadRequestException("missing name");
         }
+        String server = server();
+        AnalyticsConfig config = AnalyticsConfigService.get();
+        if (!belongsToActiveCohort(config, server)) {
+            LOGGER.log(Level.INFO, "Server is not in active cohort. No analytics event has been sent");
+        }
         Map<String, Object> allProps = req.properties == null ? Maps.newHashMap() : Maps.newHashMap(req.properties);
         // Enhance with additional properties
         for (AdditionalAnalyticsProperties enhancer : ExtensionList.lookup(AdditionalAnalyticsProperties.class)) {
@@ -50,7 +60,6 @@ public abstract class AbstractAnalytics extends Analytics {
                 allProps.putAll(additionalProperties);
             }
         }
-        String server = server();
         allProps.put("jenkins", server);
         // Background requests do not have userId
         if (Stapler.getCurrentRequest() != null) {
@@ -87,5 +96,11 @@ public abstract class AbstractAnalytics extends Analytics {
         User user = User.current();
         String username = user == null ? "ANONYMOUS" : user.getId();
         return Hashing.sha256().hashString(username + server).toString();
+    }
+
+    private boolean belongsToActiveCohort(AnalyticsConfig config, String user) {
+        int currentCohort = Hashing.consistentHash(user.hashCode(), config.cohorts);
+        List<Integer> activeCohorts = config.allActiveCohorts();
+        return activeCohorts.contains(currentCohort);
     }
 }
