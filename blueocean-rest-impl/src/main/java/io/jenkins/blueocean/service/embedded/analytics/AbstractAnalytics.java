@@ -51,6 +51,7 @@ public abstract class AbstractAnalytics extends Analytics {
         AnalyticsConfig config = AnalyticsConfigService.get();
         if (!belongsToActiveCohort(config, server)) {
             LOGGER.log(Level.FINE, "Server is not in active cohort. No analytics event has been sent");
+            return;
         }
         Map<String, Object> allProps = req.properties == null ? Maps.newHashMap() : Maps.newHashMap(req.properties);
         // Enhance with additional properties
