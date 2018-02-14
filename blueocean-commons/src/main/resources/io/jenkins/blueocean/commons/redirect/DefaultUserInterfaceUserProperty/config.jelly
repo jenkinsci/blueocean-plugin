@@ -1,0 +1,20 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout"
+         xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+  <f:block>
+    <f:entry name="interfaceId" field="interfaceId">
+        <select name="interfaceId">
+            <j:forEach var="interface" items="${instance.allInterfaces()}">
+                <j:choose>
+                    <j:when test="${instance.isSelected(interface.getInterfaceId())}">
+                        <option value="${interface.getInterfaceId()}" selected="true">${interface.getName()}</option>
+                    </j:when>
+                    <j:otherwise>
+                        <option value="${interface.getInterfaceId()}">${interface.getName()}</option>
+                    </j:otherwise>
+                </j:choose>
+            </j:forEach>
+        </select>
+    </f:entry>
+  </f:block>
+</j:jelly>
