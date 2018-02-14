@@ -243,6 +243,7 @@ export function getRestUrl({ organization, pipeline, branch, runId }) {
     if (runId) {
         url += `/runs/${encodeURIComponent(runId)}`;
     }
+    url = url.replaceAll("%252F","+");
     return endSlash(url);
 }
 
