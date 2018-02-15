@@ -21,6 +21,7 @@ import jenkins.model.Jenkins;
 import jenkins.model.JenkinsLocationConfiguration;
 import jenkins.plugins.git.traits.CleanAfterCheckoutTrait;
 import jenkins.plugins.git.traits.CleanBeforeCheckoutTrait;
+import jenkins.plugins.git.traits.LocalBranchTrait;
 import jenkins.scm.api.SCMHead;
 import jenkins.scm.api.SCMHeadObserver;
 import jenkins.scm.api.SCMRevision;
@@ -68,6 +69,7 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
                 .withTrait(new OriginPullRequestDiscoveryTrait(strategies))
                 .withTrait(new CleanBeforeCheckoutTrait())
                 .withTrait(new CleanAfterCheckoutTrait())
+                .withTrait(new LocalBranchTrait())
                 .build();
 
         //Setup Jenkins root url, if not set bitbucket cloud notification will fail

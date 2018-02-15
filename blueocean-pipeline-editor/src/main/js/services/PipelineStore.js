@@ -2,6 +2,7 @@
 
 import idgen from './IdGenerator';
 import type { PipelineKeyValuePair } from './PipelineSyntaxConverter';
+import { DragPosition } from "../components/editor/DragPosition";
 
 /**
  * A stage in a pipeline
@@ -228,6 +229,28 @@ class PipelineStore {
     }
 
     /**
+     * Return an array that starts at the specified step and includes all ancestor steps.
+     * @param childStep
+     * @param steps
+     * @returns {[]}
+     */
+    findStepHierarchy(childStep:StepInfo, steps) {
+        const ancestors = [childStep];
+
+        let nextStep = childStep;
+
+        while (nextStep) {
+            nextStep = findParentStepByChild(steps, nextStep);
+
+            if (nextStep) {
+                ancestors.push(nextStep);
+            }
+        }
+
+        return ancestors;
+    }
+
+    /**
      * Delete the selected stage from our stages list. When this leaves a single-branch of parallel jobs, the steps
      * will be moved to the parent stage, and the lone parallel branch will be deleted.
      *
@@ -332,6 +355,55 @@ class PipelineStore {
             let newSelectedStepIdx = Math.min(stepIdx, newStepsForStage.length - 1);
             newSelectedStep = newStepsForStage[newSelectedStepIdx];
         }
+        this.notify();
+    }
+
+    /**
+     * Moves a step to a different location in the same stage.
+     * Does not support movement across stages.
+     *
+     * @param stage
+     * @param sourceNodeId 'id' value of step to move
+     * @param targetNodeId 'id' value of target
+     * @param targetType BEFORE_ITEM, AFTER_ITEM, FIRST_CHILD, LAST_CHILD
+     */
+    moveStep(stage, sourceNodeId, targetNodeId, targetType) {
+        if (sourceNodeId === targetNodeId) {
+            return;
+        }
+
+        const sourceStep = findStepById(stage.steps, sourceNodeId);
+        const targetStep = findStepById(stage.steps, targetNodeId);
+
+        // remove the step from wherever it was before
+        const sourceParentStep = this.findParentStep(sourceStep);
+        const sourceArray = sourceParentStep ? sourceParentStep.children : stage.steps;
+        sourceArray.splice(sourceArray.indexOf(sourceStep), 1);
+
+        // insert the step in the right spot based on where they dragged
+        if (targetType === DragPosition.FIRST_CHILD || targetType === DragPosition.LAST_CHILD) {
+            // if the targetNodeId didn't resolve to a targetStep, then use stage as the target
+            const targetArray = targetStep ? targetStep.children : stage.steps;
+            if (targetType === DragPosition.FIRST_CHILD) {
+                targetArray.splice(0, 0, sourceStep);
+            } else {
+                targetArray.push(sourceStep);
+            }
+        } else if (targetType === DragPosition.BEFORE_ITEM || targetType === DragPosition.AFTER_ITEM) {
+            const targetParentStep = this.findParentStep(targetStep);
+            // if the target step has no parent step, it's at the stage level
+            const targetArray = !targetParentStep ? stage.steps : targetParentStep.children;
+            let targetIndex = targetArray.indexOf(targetStep);
+
+            if (targetType === DragPosition.BEFORE_ITEM) {
+                targetArray.splice(targetIndex, 0, sourceStep);
+            } else {
+                targetArray.splice(targetIndex + 1, 0, sourceStep);
+            }
+        } else {
+            console.warn(`targetType=${targetType} not implemented`);
+        }
+
         this.notify();
     }
 

@@ -265,6 +265,11 @@ export class Dropdown extends React.Component {
         if (this.props.onChange) {
             this.props.onChange(option, index);
         }
+
+        //restore the focus on the button element
+        if (this.buttonRef && this.buttonRef.focus) {
+            this.buttonRef.focus();
+        }
     }
 
     _optionToLabel(option) {

@@ -21,6 +21,7 @@ import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
 
 const t = i18nTranslator('blueocean-pipeline-editor');
 
+
 type Props = {
 };
 
@@ -31,6 +32,7 @@ type State = {
     parentStep: ?StepInfo,
     stepMetadata: ?Object,
     dialog: any,
+    isDragging: ?boolean,
 };
 
 type DefaultProps = typeof EditorMain.defaultProps;
@@ -206,6 +208,25 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
         pipelineValidator.validate();
     }
 
+    onDragStepBegin = (item) => {
+        this.setState({
+            isDragging: true,
+        });
+    };
+
+    onDragStepHover = (item) => {};
+
+    onDragStepDrop = (item) => {
+        const { selectedStage } = this.state;
+        pipelineStore.moveStep(selectedStage, item.sourceId, item.targetId, item.targetType);
+    };
+
+    onDragStepEnd = () => {
+        this.setState({
+            isDragging: false,
+        });
+    };
+
     render() {
         const { selectedStage, selectedSteps, stepMetadata } = this.state;
 
@@ -236,6 +257,7 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
 
         // Stage config panel
         if (selectedStage) {
+            const stepListClass = this.state.isDragging ? 'is-performing-drag' : '';
             // Determine if we need to show a particular configuration page
             // and what errors to display
             const sectionErrors = {};
@@ -260,11 +282,18 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                              }>
                     <Accordion show={sectionErrors.show} key={'stageSections' + selectedStage.id}>
                         {!hasChildStages &&
-                        <div title={t('editor.page.common.pipeline.steps', {default: 'Steps'})} key="steps">
-                            <EditorStepList steps={steps}
-                                            onAddStepClick={() => this.openSelectStepDialog()}
-                                            onAddChildStepClick={parent => this.openSelectStepDialog(parent)}
-                                            onStepSelected={(step) => this.selectedStepChanged(step)}/>
+                        <div key="steps" className={stepListClass} data-label="Steps" title={t('editor.page.common.pipeline.steps', {default: 'Steps'})}>
+                            <EditorStepList
+                                stage={selectedStage}
+                                steps={steps}
+                                onAddStepClick={() => this.openSelectStepDialog()}
+                                onAddChildStepClick={parent => this.openSelectStepDialog(parent)}
+                                onStepSelected={(step) => this.selectedStepChanged(step)}
+                                onDragStepBegin={this.onDragStepBegin}
+                                onDragStepHover={this.onDragStepHover}
+                                onDragStepDrop={this.onDragStepDrop}
+                                onDragStepEnd={this.onDragStepEnd}
+                            />
                         </div>
                         }
                         <div title={t('editor.page.common.setting', {default: 'Settings'})} className="editor-stage-settings" key="settings">
@@ -281,8 +310,14 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
 
         let parentStep = null;
         for (const step of selectedSteps) {
-            const stepConfigPanel = (<EditorStepDetails className="editor-config-panel step"
+            const stepConfigPanel = (
+                <EditorStepDetails className="editor-config-panel step"
+                    stage={selectedStage}
                     step={step} key={step.id}
+                    onDragStepBegin={this.onDragStepBegin}
+                    onDragStepHover={this.onDragStepHover}
+                    onDragStepDrop={this.onDragStepDrop}
+                    onDragStepEnd={this.onDragStepEnd}
                     onDataChange={newValue => this.stepDataChanged(newValue)}
                     onClose={e => cleanPristine(step) || pipelineValidator.validate() || this.selectedStepChanged(null, parentStep)}
                     openSelectStepDialog={step => this.openSelectStepDialog(step)}
@@ -292,7 +327,8 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                         <MoreMenu>
                             <a onClick={e => this.deleteStep(step)}>Delete</a>
                         </MoreMenu>
-                    </h4>} />);
+                    </h4>} />
+            );
 
             if (stepConfigPanel) sheets.push(stepConfigPanel);
             parentStep = step;
