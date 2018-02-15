@@ -38,7 +38,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import javax.annotation.Nonnull;
@@ -91,24 +90,19 @@ public class AbstractPipelineImpl extends BluePipeline {
 
     @Override
     public BlueRun getLatestRun() {
-        if(Boolean.getBoolean("INCLUDE_PIPELINE_RUN_ACTIONS")){
-            Iterator<BlueRun> iterator = getRuns().iterator();
-            return iterator.hasNext() ? iterator.next() : null;
-        } else{
-            Run run = job.getLastBuild();
-            if(run!=null) {
-                return new AbstractRunImpl<Run>(run, AbstractPipelineImpl.this, organization) {
-                    @Override
-                    public Collection<BlueActionProxy> getActions() {
-                        return Collections.emptyList();
-                    }
+        Run run = job.getLastBuild();
+        if (run != null) {
+            return new AbstractRunImpl<Run>(run, AbstractPipelineImpl.this, organization) {
+                @Override
+                public Collection<BlueActionProxy> getActions() {
+                    return Collections.emptyList();
+                }
 
-                    @Override
-                    public BlueTestSummary getTestSummary() {
-                        return null;
-                    }
-                };
-            }
+                @Override
+                public BlueTestSummary getTestSummary() {
+                    return null;
+                }
+            };
         }
         return null;
     }
