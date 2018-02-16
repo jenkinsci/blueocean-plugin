@@ -37,9 +37,11 @@
   },
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": "0.0.170",
+    "@jenkins-cd/blueocean-material-icons": "0.0.6",
     "@jenkins-cd/design-language": "0.0.158",
     "@jenkins-cd/js-extensions": "0.0.42",
     "@jenkins-cd/js-modules": "0.0.10",
+    "@jenkins-cd/preferences": "0.0.5",
     "history": "2.0.2",
     "immutable": "3.8.1",
     "keymirror": "0.1.1",
@@ -49,12 +51,16 @@
     "moment": "2.15.1",
     "react": "15.4.2",
     "react-addons-css-transition-group": "15.4.2",
+    "react-dnd": "^2.5.4",
+    "react-dnd-html5-backend": "^2.5.4",
     "react-dom": "15.4.2",
     "react-i18next": "1.10.1",
     "react-redux": "4.4.5",
     "react-router": "2.8.1",
+    "recharts": "^1.0.0-alpha.4",
     "redux": "3.6.0",
-    "redux-thunk": "2.1.0"
+    "redux-thunk": "2.1.0",
+    "reselect": "^2.5.4"
   },
   "jenkinscd": {
     "import": [
