@@ -23,6 +23,7 @@ import java.util.Collections;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_JOB;
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_RUN;
 
 /**
  * @author Kohsuke Kawaguchi
@@ -45,27 +46,7 @@ public class PipelineImpl extends AbstractPipelineImpl {
         Run run = job.getLastBuild();
         if(run instanceof WorkflowRun){
             BlueRun blueRun = new PipelineRunImpl((WorkflowRun) run, this, organization);
-            return new AbstractRunImpl<Run>(run, PipelineImpl.this, organization) {
-                @Override
-                public Collection<BlueActionProxy> getActions() {
-                    return Collections.emptyList();
-                }
-
-                @Override
-                public BlueTestSummary getTestSummary() {
-                    return null;
-                }
-
-                @Override
-                public String getCauseOfBlockage() {
-                    return blueRun.getCauseOfBlockage();
-                }
-
-                @Override
-                public BlueRunState getStateObj() {
-                    return blueRun.getStateObj();
-                }
-            };
+            return new PipelineRunSummary(blueRun, run, this, organization);
         }
         return super.getLatestRun();
     }
@@ -89,6 +70,35 @@ public class PipelineImpl extends AbstractPipelineImpl {
             }
 
             return null;
+        }
+    }
+
+    @Capability(JENKINS_WORKFLOW_RUN)
+    static class PipelineRunSummary extends AbstractRunImpl{
+        private final BlueRun blueRun;
+        public PipelineRunSummary(BlueRun blueRun, Run run, Reachable parent, BlueOrganization organization) {
+            super(run, parent, organization);
+            this.blueRun = blueRun;
+        }
+
+        @Override
+        public Collection<BlueActionProxy> getActions() {
+            return Collections.emptyList();
+        }
+
+        @Override
+        public BlueTestSummary getTestSummary() {
+            return null;
+        }
+
+        @Override
+        public String getCauseOfBlockage() {
+            return blueRun.getCauseOfBlockage();
+        }
+
+        @Override
+        public BlueRunState getStateObj() {
+            return blueRun.getStateObj();
         }
     }
 }
