@@ -1,5 +1,5 @@
 import React from 'react';
-import { Checkbox } from '@jenkins-cd/design-language';
+import { Checkbox } from '../../components/index-jdl';
 import { getArg, setArg } from '../../services/PipelineMetadataService';
 
 export default class BooleanPropertyInput extends React.Component {

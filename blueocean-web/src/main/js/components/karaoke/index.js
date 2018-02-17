@@ -1,4 +1,4 @@
-import { PagerService } from '@jenkins-cd/blueocean-core-js';
+import { PagerService } from '../../core-js';
 import { preferences } from '@jenkins-cd/preferences';
 const pagerService = new PagerService();
 import { KaraokeApi } from './rest/KaraokeApi';

@@ -1,9 +1,9 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
-import { FilterableList } from '@jenkins-cd/design-language';
+import { FilterableList } from '../../../components/index-jdl';
 
 import FlowStep from '../../flow2/FlowStep';
-import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator } from '../../../core-js';
 
 const t = i18nTranslator('blueocean-dashboard');
 

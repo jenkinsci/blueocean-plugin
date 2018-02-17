@@ -4,14 +4,14 @@ import React, { Component, PropTypes } from 'react';
 import type { PipelineInfo, StageInfo } from '../../services/PipelineStore';
 import { isValidEnvironmentKey } from '../../services/PipelineValidator';
 import idgen from '../../services/IdGenerator';
-import { Dropdown } from '@jenkins-cd/design-language';
+import { Dropdown } from '../../components/index-jdl';
 import { Split } from './Split';
-import { TextInput } from '@jenkins-cd/design-language';
+import { TextInput } from '../../components/index-jdl';
 import { getAddIconGroup, getDeleteIconGroup } from './common';
 import focusOnElement from './focusOnElement';
 import InputText from './InputText';
 import { ValidationMessageList } from './ValidationMessageList';
-import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
+import {i18nTranslator} from '../../core-js';
 
 const t = i18nTranslator('blueocean-pipeline-editor');
 

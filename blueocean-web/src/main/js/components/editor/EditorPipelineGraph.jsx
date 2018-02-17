@@ -5,7 +5,7 @@ import React, { Component, PropTypes } from 'react';
 import {getAddIconGroup} from './common';
 import type { StageInfo } from '../../services/PipelineStore';
 import pipelineValidator from '../../services/PipelineValidator';
-import { Icon } from '@jenkins-cd/design-language';
+import { Icon } from '../../components/index-jdl';
 import AlertIcon from './AlertIcon';
 
 const NBSP = '\u00a0';

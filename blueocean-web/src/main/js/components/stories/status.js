@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
-import { StatusIndicator } from '@jenkins-cd/design-language';
+import { StatusIndicator } from '../../components/index-jdl';
 import RunningIndicator from '../RunningIndicator.jsx';
 
 const props = {

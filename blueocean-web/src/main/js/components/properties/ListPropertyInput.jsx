@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextInput } from '@jenkins-cd/design-language';
+import { TextInput } from '../../components/index-jdl';
 
 export default class ListPropertyInput extends React.Component {
     render() {

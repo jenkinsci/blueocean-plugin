@@ -1,6 +1,6 @@
 import React, { Component, PureComponent, PropTypes } from 'react';
-import { Progress, Linkify } from '@jenkins-cd/design-language';
-import { logging } from '@jenkins-cd/blueocean-core-js';
+import { Progress, Linkify } from '../../../components/index-jdl';
+import { logging } from '../../../core-js';
 
 import { scrollHelper } from '../../ScrollHelper';
 

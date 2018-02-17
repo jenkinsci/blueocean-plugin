@@ -4,13 +4,13 @@ import React, { Component, PropTypes } from 'react';
 import type { PipelineAgent } from '../../services/PipelineSyntaxConverter';
 import pipelineMetadataService from '../../services/PipelineMetadataService';
 import type { PipelineInfo, StageInfo } from '../../services/PipelineStore';
-import { Dropdown, TextInput } from '@jenkins-cd/design-language';
+import { Dropdown, TextInput } from '../../components/index-jdl';
 import { Split } from './Split';
 import focusOnElement from './focusOnElement';
 import InputText from './InputText';
 import InputTextArea from './InputTextArea';
 import { ValidationMessageList } from './ValidationMessageList';
-import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
+import {i18nTranslator} from '../../core-js';
 
 const t = i18nTranslator('blueocean-pipeline-editor');
 

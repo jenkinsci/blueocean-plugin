@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dropdown } from '@jenkins-cd/design-language';
+import { Dropdown } from '../../components/index-jdl';
 import { getArg, setArg } from '../../services/PipelineMetadataService';
 
 const timeUnits = [

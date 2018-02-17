@@ -2,7 +2,7 @@
  * Created by cmeyers on 8/26/16.
  */
 import React, { Component, PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/design-language';
+import { Icon } from '../components/index-jdl';
 import { RunApi as runApi, ToastService as toastService, ToastUtils } from '../';
 import Security from '../security';
 import { stopProp } from '../utils';

@@ -4,8 +4,8 @@ import {
     TableRow,
     TableHeader,
     TableCell,
-} from '@jenkins-cd/design-language';
-import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+} from '../components/index-jdl';
+import { capable, RunButton, ShowMoreButton } from '../core-js';
 import { observer } from 'mobx-react';
 import { ActivityDetailsRow } from './ActivityDetailsRow';
 import { ChangeSetRecord } from './records';

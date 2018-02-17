@@ -1,11 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { Page, JTable, TableHeaderRow } from '@jenkins-cd/design-language';
-import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+import { Page, JTable, TableHeaderRow } from '../components/index-jdl';
+import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '../core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
-import { Icon } from '@jenkins-cd/design-language';
+import { Icon } from '../components/index-jdl';
 
 import { documentTitle } from './DocumentTitle';
 import CreatePipelineLink from './CreatePipelineLink';

@@ -4,7 +4,7 @@ import {
         Fetch, getRestUrl, buildPipelineUrl, locationService,
         ContentPageHeader, pipelineService, Paths, RunApi,
         activityService, i18nTranslator,
-    } from '@jenkins-cd/blueocean-core-js';
+    } from './core-js';
 import {
     Dialog,
     TextArea,
@@ -12,7 +12,7 @@ import {
     TextInput,
     FormElement,
     Alerts,
-} from '@jenkins-cd/design-language';
+} from './components/index-jdl';
 import { isSshRepositoryUrl } from './GitUtils';
 
 import ScmContentApi, {LoadError} from './api/ScmContentApi';

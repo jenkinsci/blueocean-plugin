@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { ReadableDate, TableRow, TableCell } from '@jenkins-cd/design-language';
-import { LiveStatusIndicator, RunButton } from '@jenkins-cd/blueocean-core-js';
+import { ReadableDate, TableRow, TableCell } from '../components/index-jdl';
+import { LiveStatusIndicator, RunButton } from '../core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { buildRunDetailsUrl } from '../util/UrlUtils';
 import RunHistoryButton from './RunHistoryButton';

@@ -1,5 +1,5 @@
 import keymirror from 'keymirror';
-import { capable } from '@jenkins-cd/blueocean-core-js';
+import { capable } from '../core-js';
 
 export const RESULTS = keymirror({
     UNKNOWN: null,

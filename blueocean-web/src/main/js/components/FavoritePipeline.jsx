@@ -6,8 +6,8 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
 
-import { Favorite } from '@jenkins-cd/design-language';
-import { capable } from '@jenkins-cd/blueocean-core-js';
+import { Favorite } from '../components/index-jdl';
+import { capable } from '../core-js';
 
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';

@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/design-language';
+import { Icon } from '../components/index-jdl';
 import Autocomplete from 'react-autocomplete';
 
 /**

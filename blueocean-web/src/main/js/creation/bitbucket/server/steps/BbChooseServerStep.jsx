@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
-import { Dropdown, FormElement } from '@jenkins-cd/design-language';
+import { Dropdown, FormElement } from '../../../../components/index-jdl';
 
 import FlowStep from '../../../flow2/FlowStep';
 import BbAddServerDialog from '../BbAddServerDialog';

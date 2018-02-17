@@ -2,8 +2,8 @@
 
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
-import { Icon } from '@jenkins-cd/design-language';
-import { Paths, pipelineService, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { Icon } from './components/index-jdl';
+import { Paths, pipelineService, i18nTranslator } from './core-js';
 import Security from './services/Security';
 import { isSshRepositoryUrl } from './GitUtils';
 const t = i18nTranslator('blueocean-pipeline-editor');

@@ -6,7 +6,7 @@ import TransitionGroup from 'react-addons-css-transition-group';
 import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
-import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator } from '../core-js';
 
 
 import { favoritesSelector } from '../redux/FavoritesStore';

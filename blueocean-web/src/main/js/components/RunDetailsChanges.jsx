@@ -7,7 +7,7 @@ import {
     TableHeaderRow,
     TableRow,
     TableCell,
-} from '@jenkins-cd/design-language';
+} from '../components/index-jdl';
 import Icon from './placeholder/Icon';
 import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
 import LinkifiedText from './LinkifiedText';

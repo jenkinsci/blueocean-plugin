@@ -3,9 +3,9 @@
  */
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { logging, capable, UrlBuilder, AppConfig, RunButton, ReplayButton, LiveStatusIndicator } from '@jenkins-cd/blueocean-core-js';
-import { ExpandablePath, Favorite, ReadableDate } from '@jenkins-cd/design-language';
-import { Icon } from '@jenkins-cd/design-language';
+import { logging, capable, UrlBuilder, AppConfig, RunButton, ReplayButton, LiveStatusIndicator } from '../core-js';
+import { ExpandablePath, Favorite, ReadableDate } from '../components/index-jdl';
+import { Icon } from '../components/index-jdl';
 import moment from 'moment';
 
 const stopProp = (event) => {

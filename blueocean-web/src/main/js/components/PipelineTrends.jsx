@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { action, asFlat, observable } from 'mobx';
 import { observer } from 'mobx-react';
 import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from 'recharts';
-import { capable, AppConfig, Fetch } from '@jenkins-cd/blueocean-core-js';
+import { capable, AppConfig, Fetch } from '../core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { buildPipelineUrl } from '../util/UrlUtils';

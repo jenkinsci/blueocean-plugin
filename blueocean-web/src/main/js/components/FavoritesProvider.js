@@ -6,7 +6,7 @@ import { connect } from 'react-redux';
 import { createSelector } from 'reselect';
 import { List } from 'immutable';
 
-import { User } from '@jenkins-cd/blueocean-core-js';
+import { User } from '../core-js';
 import { favoritesSelector } from '../redux/FavoritesStore';
 import { actions } from '../redux/FavoritesActions';
 

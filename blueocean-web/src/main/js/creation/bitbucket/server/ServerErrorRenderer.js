@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
-import { ErrorMessage } from '@jenkins-cd/design-language';
-import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { ErrorMessage } from '../../../components/index-jdl';
+import { i18nTranslator } from '../../../core-js';
 
 
 const t = i18nTranslator('blueocean-dashboard');

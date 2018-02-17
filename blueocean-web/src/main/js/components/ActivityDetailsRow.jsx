@@ -5,13 +5,13 @@ import {
     TimeDuration,
     TableRow,
     TableCell,
-} from '@jenkins-cd/design-language';
+} from '../components/index-jdl';
 import {
     ReplayButton,
     RunButton,
     LiveStatusIndicator,
     TimeHarmonizer as timeHarmonizer,
-} from '@jenkins-cd/blueocean-core-js';
+} from '../core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';

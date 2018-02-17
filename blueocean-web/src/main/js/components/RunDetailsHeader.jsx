@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/design-language';
-import { UrlConfig, AppConfig, logging, ResultPageHeader, TimeManager } from '@jenkins-cd/blueocean-core-js';
-import { ExpandablePath, ReadableDate, TimeDuration, CommitId } from '@jenkins-cd/design-language';
+import { Icon } from '../components/index-jdl';
+import { UrlConfig, AppConfig, logging, ResultPageHeader, TimeManager } from '../core-js';
+import { ExpandablePath, ReadableDate, TimeDuration, CommitId } from '../components/index-jdl';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import { Link } from 'react-router';
 import { buildPipelineUrl } from '../util/UrlUtils';

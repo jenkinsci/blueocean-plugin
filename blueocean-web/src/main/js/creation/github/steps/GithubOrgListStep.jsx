@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
-import { List, Icon } from '@jenkins-cd/design-language';
+import { List, Icon } from '../../../components/index-jdl';
 
 import FlowStep from '../../flow2/FlowStep';
 

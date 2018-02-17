@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Checkbox, FormElement } from '@jenkins-cd/design-language';
+import { Checkbox, FormElement } from '../../components/index-jdl';
 import { propTypes } from '../commonProptypes';
 import { removeMarkupTags } from '../../stringUtil';
 

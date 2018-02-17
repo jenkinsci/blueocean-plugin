@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormElement, TextInput } from '@jenkins-cd/design-language';
+import { FormElement, TextInput } from '../../components/index-jdl';
 import { getArg, setArg } from '../../services/PipelineMetadataService';
 
 export default class StringPropertyInput extends React.Component {

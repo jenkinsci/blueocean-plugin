@@ -1,4 +1,4 @@
-import { capabilityAugmenter, capable, Fetch, UrlConfig, Utils, AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter, capable, Fetch, UrlConfig, Utils, AppConfig } from '../../../core-js';
 
 import { Enum } from '../../flow2/Enum';
 import GithubApiUtils from './GithubApiUtils';

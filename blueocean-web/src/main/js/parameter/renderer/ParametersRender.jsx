@@ -1,5 +1,5 @@
 import React from 'react';
-import { Alerts } from '@jenkins-cd/design-language';
+import { Alerts } from '../../components/index-jdl';
 import i18nTranslator from '../../i18n/i18n';
 import { supportedInputTypesMapping } from '../index';
 

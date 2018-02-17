@@ -7,8 +7,8 @@ import {
     ParameterApi as parameterApi,
     StringUtil,
     logging,
-} from '@jenkins-cd/blueocean-core-js';
-import { Alerts } from '@jenkins-cd/design-language';
+} from '../../../core-js';
+import { Alerts } from '../../../components/index-jdl';
 
 /**
  * Simple helper to stop stopPropagation

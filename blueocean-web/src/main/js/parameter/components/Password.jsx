@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { FormElement, PasswordInput } from '@jenkins-cd/design-language';
+import { FormElement, PasswordInput } from '../../components/index-jdl';
 import { propTypes } from '../commonProptypes';
 import { removeMarkupTags } from '../../stringUtil';
 // import { DebugRender } from './DebugRender';

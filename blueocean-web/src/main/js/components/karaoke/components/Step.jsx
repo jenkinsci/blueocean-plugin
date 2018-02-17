@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { ResultItem, TimeDuration } from '@jenkins-cd/design-language';
-import { AppConfig, logging, TimeManager } from '@jenkins-cd/blueocean-core-js';
+import { ResultItem, TimeDuration } from '../../../components/index-jdl';
+import { AppConfig, logging, TimeManager } from '../../../core-js';
 import { observer } from 'mobx-react';
 import { KaraokeService } from '../index';
 import LogConsole from './LogConsole';

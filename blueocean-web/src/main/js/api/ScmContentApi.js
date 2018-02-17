@@ -1,4 +1,4 @@
-import { Fetch, getRestUrl } from '@jenkins-cd/blueocean-core-js';
+import { Fetch, getRestUrl } from '../core-js';
 import TypedError from './TypedError';
 
 

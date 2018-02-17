@@ -36,9 +36,7 @@
     "zombie": "4.2.1"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.170",
     "@jenkins-cd/blueocean-material-icons": "0.0.6",
-    "@jenkins-cd/design-language": "0.0.158",
     "@jenkins-cd/js-extensions": "0.0.42",
     "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/preferences": "0.0.5",
@@ -60,12 +58,12 @@
     "recharts": "^1.0.0-alpha.4",
     "redux": "3.6.0",
     "redux-thunk": "2.1.0",
-    "reselect": "^2.5.4"
+    "reselect": "^2.5.4",
+    "react-autocomplete": "1.4.0",
+    "react-addons-update": "15.4.2"
   },
   "jenkinscd": {
     "import": [
-      "@jenkins-cd/blueocean-core-js@any",
-      "@jenkins-cd/design-language@any",
       "@jenkins-cd/js-extensions@any",
       "moment@any",
       "react@any",

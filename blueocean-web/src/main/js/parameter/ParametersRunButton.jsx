@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Alerts, Dialog } from '@jenkins-cd/design-language';
+import { Alerts, Dialog } from '../components/index-jdl';
 
 import { buildClassicBuildUrl, capable, RunButtonBase as RunButton, ToastUtils } from '../index';
 

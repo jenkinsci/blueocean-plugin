@@ -1,4 +1,4 @@
-import { capabilityAugmenter, Fetch, UrlConfig, Utils, AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter, Fetch, UrlConfig, Utils, AppConfig } from '../../../core-js';
 import { Enum } from '../../flow2/Enum';
 
 const ERROR_FIELD_SCM_CREDENTIAL = 'credentialId';

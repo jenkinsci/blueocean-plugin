@@ -2,7 +2,7 @@
 
 import React, { Component, PropTypes } from 'react';
 import debounce from 'lodash.debounce';
-import { TextInput } from '@jenkins-cd/design-language';
+import { TextInput } from '../../../components/index-jdl';
 import { convertPipelineStepsToJson, convertJsonStepsToPipeline, convertStepsToJson, convertStepFromJson } from '../../../services/PipelineSyntaxConverter';
 import type { PipelineStep } from '../../../services/PipelineSyntaxConverter';
 

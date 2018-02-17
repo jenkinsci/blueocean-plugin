@@ -1,4 +1,4 @@
-import { Fetch, UrlConfig } from '@jenkins-cd/blueocean-core-js';
+import { Fetch, UrlConfig } from '../core-js';
 
 export function getArg(step, name, isLiteral = true) {
     if (step.data && step.data[name]) {

@@ -6,7 +6,7 @@ import { BlueLogo } from '../BlueLogo';
 import { ContentPageHeader } from '../ContentPageHeader';
 import { SiteHeader } from '../ContentPageHeader';
 import { ResultPageHeader } from '../ResultPageHeader';
-import { LiveStatusIndicator, WeatherIcon } from '@jenkins-cd/design-language';
+import { LiveStatusIndicator, WeatherIcon } from '../../components/index-jdl';
 
 storiesOf('Headers', module)
     .add('Logo', logo)

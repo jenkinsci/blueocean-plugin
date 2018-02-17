@@ -1,12 +1,12 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
-import { FormElement, PasswordInput, TextInput } from '@jenkins-cd/design-language';
+import { FormElement, PasswordInput, TextInput } from '../../components/index-jdl';
 
 import BbCredentialsManager from './BbCredentialsManager';
 import BbCredentialsState from './BbCredentialsState';
 import { Button } from '../../creation/github/Button';
-import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator } from '../../core-js';
 const t = i18nTranslator('blueocean-dashboard');
 
 @observer

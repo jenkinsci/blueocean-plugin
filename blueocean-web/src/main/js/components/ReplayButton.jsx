@@ -3,7 +3,7 @@
  */
 
 import React, { Component, PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/design-language';
+import { Icon } from '../components/index-jdl';
 
 import { RunApi as runApi, ToastUtils } from '../index';
 import Security from '../security';

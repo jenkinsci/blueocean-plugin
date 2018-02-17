@@ -7,7 +7,7 @@ import GenericStepEditor from './steps/GenericStepEditor';
 import UnknownStepEditor from './steps/UnknownStepEditor';
 import { EditorStepList } from './EditorStepList';
 import { ValidationMessageList } from './ValidationMessageList';
-import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
+import {i18nTranslator} from '../../core-js';
 
 const t = i18nTranslator('blueocean-pipeline-editor');
 

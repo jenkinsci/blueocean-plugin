@@ -1,4 +1,4 @@
-import { Utils } from '@jenkins-cd/blueocean-core-js';
+import { Utils } from '../../../../core-js';
 import { ApiMock } from './ApiMock';
 
 import creationCreateSuccess from './creation-create-onerepo-success';

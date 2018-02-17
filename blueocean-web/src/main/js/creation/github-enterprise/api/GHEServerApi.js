@@ -1,4 +1,4 @@
-import { Fetch, UrlConfig, Utils, AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { Fetch, UrlConfig, Utils, AppConfig } from '../../../core-js';
 
 
 /**

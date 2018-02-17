@@ -5,8 +5,8 @@ import {
     WeatherIcon,
     TableRow,
     TableCell,
-} from '@jenkins-cd/design-language';
-import { LiveStatusIndicator, RunButton } from '@jenkins-cd/blueocean-core-js';
+} from '../components/index-jdl';
+import { LiveStatusIndicator, RunButton } from '../core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { JTable, TableHeaderRow } from '@jenkins-cd/design-language';
-import { capable, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+import { JTable, TableHeaderRow } from '../components/index-jdl';
+import { capable, ShowMoreButton } from '../core-js';
 import { observer } from 'mobx-react';
 
 import PullRequestRow from './PullRequestRow';

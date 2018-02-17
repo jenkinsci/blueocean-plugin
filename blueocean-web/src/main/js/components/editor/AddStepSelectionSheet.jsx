@@ -2,10 +2,10 @@
 
 import React, { Component, PropTypes } from 'react';
 import pipelineMetadataService from '../../services/PipelineMetadataService';
-import { Dialog } from '@jenkins-cd/design-language';
-import { Icon } from '@jenkins-cd/design-language';
+import { Dialog } from '../../components/index-jdl';
+import { Icon } from '../../components/index-jdl';
 import debounce from 'lodash.debounce';
-import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
+import {i18nTranslator} from '../../core-js';
 
 const t = i18nTranslator('blueocean-pipeline-editor');
 

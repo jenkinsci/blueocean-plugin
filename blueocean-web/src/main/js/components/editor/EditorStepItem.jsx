@@ -2,7 +2,7 @@ import React from 'react';
 import { findDOMNode } from 'react-dom';
 import { PropTypes } from 'react';
 import { DragSource } from 'react-dnd';
-import { Icon } from '@jenkins-cd/design-language';
+import { Icon } from '../../components/index-jdl';
 
 import { getArg } from '../../services/PipelineMetadataService';
 import { EditorStepListDropZone } from "./EditorStepListDropZone";

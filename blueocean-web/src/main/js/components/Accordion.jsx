@@ -1,5 +1,5 @@
 import React from 'react';
-import { Icon } from '@jenkins-cd/design-language';
+import { Icon } from '../components/index-jdl';
 
 export class Accordion extends React.Component {
     static propTypes = {

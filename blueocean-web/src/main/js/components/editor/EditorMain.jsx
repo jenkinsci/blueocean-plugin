@@ -17,7 +17,7 @@ import pipelineValidator from '../../services/PipelineValidator';
 import { ValidationMessageList } from './ValidationMessageList';
 import focusOnElement from './focusOnElement';
 import debounce from 'lodash.debounce';
-import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
+import {i18nTranslator} from '../../core-js';
 
 const t = i18nTranslator('blueocean-pipeline-editor');
 

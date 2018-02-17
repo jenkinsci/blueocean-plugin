@@ -5,7 +5,7 @@
 import React, { PropTypes } from 'react';
 import { action, storiesOf } from '@kadira/storybook';
 import moment from 'moment';
-import { DEBUG } from '@jenkins-cd/blueocean-core-js';
+import { DEBUG } from '../core-js';
 DEBUG.enableMocksForI18n();
 
 import { PipelineCard, PipelineCardRenderer } from '../components/PipelineCard';

@@ -1,5 +1,5 @@
 import React from 'react';
-import { FormElement } from '@jenkins-cd/design-language';
+import { FormElement } from '../../components/index-jdl';
 import { getArg, setArg } from '../../services/PipelineMetadataService';
 
 export default class DecimalPropertyInput extends React.Component {

@@ -3,7 +3,7 @@
 import React, { Component, PropTypes } from 'react';
 import pipelineMetadataService, { getArg, setArg } from '../../../services/PipelineMetadataService';
 import debounce from 'lodash.debounce';
-import { FormElement, TextInput } from '@jenkins-cd/design-language';
+import { FormElement, TextInput } from '../../../components/index-jdl';
 
 const allPropertyEditors = [
     require('../../properties/BooleanPropertyInput').default,

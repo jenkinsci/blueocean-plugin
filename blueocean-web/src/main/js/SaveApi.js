@@ -1,4 +1,4 @@
-import { sseService, loadingIndicator, RunApi } from '@jenkins-cd/blueocean-core-js';
+import { sseService, loadingIndicator, RunApi } from './core-js';
 
 const TIMEOUT = 60*1000;
 

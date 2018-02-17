@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { calculateLogView, logging, sseConnection } from '@jenkins-cd/blueocean-core-js';
+import { calculateLogView, logging, sseConnection } from '../../../core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';

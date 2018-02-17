@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import Lozenge from './Lozenge';
 import { Link } from 'react-router';
 import LinkifiedText from './LinkifiedText';
-import { UrlConfig } from '@jenkins-cd/blueocean-core-js';
+import { UrlConfig } from '../core-js';
 
 export default class RunMessageCell extends Component {
     propTypes = {

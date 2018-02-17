@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { observer } from 'mobx-react';
-import { ResultItem, StatusIndicator, TimeDuration } from '@jenkins-cd/design-language';
+import { ResultItem, StatusIndicator, TimeDuration } from '../../components/index-jdl';
 import TestDetails from './TestDetails';
 
 @observer

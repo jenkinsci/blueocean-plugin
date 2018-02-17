@@ -1,4 +1,4 @@
-import { Fetch, UrlConfig } from '@jenkins-cd/blueocean-core-js';
+import { Fetch, UrlConfig } from '../core-js';
 
 const cache = {};
 

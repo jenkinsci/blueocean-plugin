@@ -8,10 +8,10 @@ import pipelineMetadataService from '../../services/PipelineMetadataService';
 import { EditorStepItem } from './EditorStepItem';
 import { EditorStepListDropZone } from "./EditorStepListDropZone";
 import type { StageInfo, StepInfo } from '../../services/PipelineStore';
-import { Icon } from '@jenkins-cd/design-language';
+import { Icon } from '../../components/index-jdl';
 import pipelineValidator from '../../services/PipelineValidator';
 import { DragPosition } from "./DragPosition";
-import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
+import {i18nTranslator} from '../../core-js';
 
 const t = i18nTranslator('blueocean-pipeline-editor');
 

@@ -4,7 +4,7 @@ import {
     TopNav,
     HeaderDetails,
     LiveStatusIndicator,
-} from '@jenkins-cd/design-language';
+} from '../components/index-jdl';
 
 import { _wrap } from './ContentPageHeader';
 

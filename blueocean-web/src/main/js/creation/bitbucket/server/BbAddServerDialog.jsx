@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
-import { Dialog, FormElement, TextInput } from '@jenkins-cd/design-language';
+import { Dialog, FormElement, TextInput } from '../../../components/index-jdl';
 
 import ServerErrorRenderer from './ServerErrorRenderer';
 

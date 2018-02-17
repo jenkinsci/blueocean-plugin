@@ -1,4 +1,4 @@
-import { User, Security } from '@jenkins-cd/blueocean-core-js';
+import { User, Security } from '../core-js';
 
 export default {
     isCreationEnabled() {

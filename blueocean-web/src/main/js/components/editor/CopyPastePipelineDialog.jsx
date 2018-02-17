@@ -1,8 +1,8 @@
 // @flow
 
 import React, { Component, PropTypes } from 'react';
-import { Dialog } from '@jenkins-cd/design-language';
-import { ContentPageHeader } from '@jenkins-cd/blueocean-core-js';
+import { Dialog } from '../../components/index-jdl';
+import { ContentPageHeader } from '../../core-js';
 import pipelineStore from '../../services/PipelineStore';
 import { convertInternalModelToJson, convertJsonToPipeline, convertPipelineToJson, convertJsonToInternalModel } from '../../services/PipelineSyntaxConverter';
 import type { PipelineInfo } from '../../services/PipelineStore';

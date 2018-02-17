@@ -1,8 +1,8 @@
 /**
  * Created by cmeyers on 7/6/16.
  */
-import { UrlConfig, Fetch, AppConfig } from '@jenkins-cd/blueocean-core-js';
-import { capabilityAugmenter as augmenter, ToastService, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { UrlConfig, Fetch, AppConfig } from '../core-js';
+import { capabilityAugmenter as augmenter, ToastService, i18nTranslator } from '../core-js';
 
 import { ACTION_TYPES } from './FavoritesStore';
 import { cleanSlashes } from '../util/UrlUtils';

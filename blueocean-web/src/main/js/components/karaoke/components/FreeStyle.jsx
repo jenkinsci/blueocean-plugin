@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { logging } from '@jenkins-cd/blueocean-core-js';
+import { logging } from '../../../core-js';
 import { observer } from 'mobx-react';
 import { KaraokeService } from '../index';
 import { QueuedState } from './QueuedState';

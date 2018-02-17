@@ -1,6 +1,6 @@
-import { ToastService, AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { ToastService, AppConfig } from '../core-js';
 import FlowManager from './flow2/FlowManager';
-import { pipelineService } from '@jenkins-cd/blueocean-core-js';
+import { pipelineService } from '../core-js';
 
 export default class CreationFlowManager extends FlowManager {
     changeState(stateId) {
