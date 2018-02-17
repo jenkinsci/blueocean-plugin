@@ -8,18 +8,14 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
-import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueRun;
-import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.BlueTrendContainer;
 import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.service.embedded.rest.AbstractBlueRunSummary;
 import io.jenkins.blueocean.service.embedded.rest.AbstractPipelineImpl;
-import io.jenkins.blueocean.service.embedded.rest.AbstractRunImpl;
 import io.jenkins.blueocean.service.embedded.rest.BlueTrendContainerImpl;
-import java.util.Collection;
-import java.util.Collections;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_JOB;
@@ -74,31 +70,9 @@ public class PipelineImpl extends AbstractPipelineImpl {
     }
 
     @Capability(JENKINS_WORKFLOW_RUN)
-    static class PipelineRunSummary extends AbstractRunImpl{
-        private final BlueRun blueRun;
+    static class PipelineRunSummary extends AbstractBlueRunSummary {
         public PipelineRunSummary(BlueRun blueRun, Run run, Reachable parent, BlueOrganization organization) {
-            super(run, parent, organization);
-            this.blueRun = blueRun;
-        }
-
-        @Override
-        public Collection<BlueActionProxy> getActions() {
-            return Collections.emptyList();
-        }
-
-        @Override
-        public BlueTestSummary getTestSummary() {
-            return null;
-        }
-
-        @Override
-        public String getCauseOfBlockage() {
-            return blueRun.getCauseOfBlockage();
-        }
-
-        @Override
-        public BlueRunState getStateObj() {
-            return blueRun.getStateObj();
+            super(blueRun, run, parent, organization);
         }
     }
 }

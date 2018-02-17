@@ -9,14 +9,10 @@ import hudson.model.Run;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.annotation.Capability;
 import io.jenkins.blueocean.rest.factory.BluePipelineFactory;
-import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BlueRun;
-import io.jenkins.blueocean.rest.model.BlueTestSummary;
 import io.jenkins.blueocean.rest.model.Resource;
-import java.util.Collection;
-import java.util.Collections;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_FREESTYLE_PROJECT;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_FREE_STYLE_BUILD;
 
@@ -39,31 +35,9 @@ public class FreeStylePipeline extends AbstractPipelineImpl {
     }
 
     @Capability(JENKINS_FREE_STYLE_BUILD)
-    static class FreeStyleRunSummary extends AbstractRunImpl{
-        private final BlueRun blueRun;
+    static class FreeStyleRunSummary extends AbstractBlueRunSummary{
         public FreeStyleRunSummary(BlueRun blueRun, Run run, Reachable parent, BlueOrganization organization) {
-            super(run, parent, organization);
-            this.blueRun = blueRun;
-        }
-
-        @Override
-        public Collection<BlueActionProxy> getActions() {
-            return Collections.emptyList();
-        }
-
-        @Override
-        public BlueTestSummary getTestSummary() {
-            return null;
-        }
-
-        @Override
-        public String getCauseOfBlockage() {
-            return blueRun.getCauseOfBlockage();
-        }
-
-        @Override
-        public BlueRunState getStateObj() {
-            return blueRun.getStateObj();
+            super(blueRun, run, parent, organization);
         }
     }
 
