@@ -116,7 +116,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
         repoNoJenkinsfile.init();
         repoNoJenkinsfile.write("file", "nearly empty file");
         repoNoJenkinsfile.git("add", "file");
-        repoNoJenkinsfile.git("commit", "--all", "--message=initilaize the repo");
+        repoNoJenkinsfile.git("commit", "--all", "--message=initialize the repo");
 
         // we're using this to test push/pull, allow pushes to current branch, we reset it to match
         repoNoJenkinsfile.git("config", "--local", "--add", "receive.denyCurrentBranch", "false");
@@ -145,7 +145,7 @@ public class GitReadSaveTest extends PipelineBaseTest {
             repoForSSH.init();
             repoForSSH.write("Jenkinsfile", masterPipelineScript);
             repoForSSH.git("add", "Jenkinsfile");
-            repoForSSH.git("commit", "--all", "--message=initilaize the repo");
+            repoForSSH.git("commit", "--all", "--message=initialize the repo");
 
             // we're using this to test push/pull, allow pushes to current branch, we reset it to match
             repoForSSH.git("config", "--local", "--add", "receive.denyCurrentBranch", "false");
