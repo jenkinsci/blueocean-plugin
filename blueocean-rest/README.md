@@ -222,7 +222,7 @@ Sometimes testing API from browser is desirable. Here are steps to to do that us
 
 ## Links
 Each BlueOcean JSON response object includes *_links" as defined by [HAL](https://tools.ietf.org/html/draft-kelly-json-hal-08) spec.
-*self* link references the reachable path to *this* resource. It may include other navigable resources as well. A resource can exponse it's methods as navigable by using [@Navigable](https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean-rest/src/main/java/io/jenkins/blueocean/rest/Navigable.java) annotation.
+*self* link references the reachable path to *this* resource. It may include other navigable resources as well. A resource can expose it's methods as navigable by using [@Navigable](https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean-rest/src/main/java/io/jenkins/blueocean/rest/Navigable.java) annotation.
 
     "_links" : {
         "self" : {
