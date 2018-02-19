@@ -20,7 +20,7 @@ storiesOf('Dialog', module)
     .add('Success', () => renderWithClassName('Dialog--success'))
     .add('Warning', () => renderWithClassName('Dialog--warning'))
     .add('Barebones', renderBarebones)
-    .add('Artisinal', renderArtisanal)
+    .add('Artisanal', renderArtisanal)
 ;
 
 //--------------------------------------
