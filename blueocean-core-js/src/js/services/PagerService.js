@@ -16,7 +16,7 @@ export class PagerService {
     /**
      * Registers a pager with the PagerService.
      *
-     * Namespacing strings is prefered to stop colisions. E.g. Activity/$org-$pipeline.
+     * Namespacing strings is prefered to stop collisions. E.g. Activity/$org-$pipeline.
      *
      * @param {any} key - Key to register the pager under.
      * @param {Pager} pager - pager to regiser.
