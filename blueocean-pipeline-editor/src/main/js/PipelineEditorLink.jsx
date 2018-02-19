@@ -45,7 +45,7 @@ class PipelineEditorLink extends React.Component {
         const { pipeline } = this.props;
         const folder = pipeline.fullName.split('/')[0];
         const href = Paths.rest.apiRoot() + '/organizations/' + pipeline.organization + '/pipelines/' + folder + '/';
-        pipelineService.fetchPipeline(href, { useCache: true, disableCapabilites: false }).then(pipeline => {
+        pipelineService.fetchPipeline(href, { useCache: true, disableCapabilities: false }).then(pipeline => {
             if (this._canSavePipeline(pipeline)) {
                 this.setState({ supportsSave: true });
             }
