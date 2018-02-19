@@ -24,7 +24,7 @@ export class BunkerService {
     }
 
     /**
-     * Extracts the key to store the daata under out of the object
+     * Extracts the key to store the data under out of the object
      *
      * Default impl uses the self href link in BlueOcuean objects.
      *
