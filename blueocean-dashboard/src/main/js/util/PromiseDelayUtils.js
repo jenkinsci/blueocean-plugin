@@ -9,7 +9,7 @@ function time() {
  *
  * Note that the delay time is not additive to the original call but ensures a minimum across both calls, e.g.
  * 1. If original call takes 250 and delay is 500, Promise will resolve after 500.
- * 2. If original call takes 750 and delay is 500, Promise will reoslve after 500.
+ * 2. If original call takes 750 and delay is 500, Promise will resolve after 500.
  *
  * Usage:
  * getFooAsync()
