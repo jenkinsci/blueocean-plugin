@@ -88,7 +88,7 @@ class App extends Component {
         }
 
         if(classicUrl === '/' || classicUrl === `${UrlConfig.getJenkinsRootURL()}`) {
-            classicUrl = classicUrl + "?noDefaultRedirect=true"
+            classicUrl = classicUrl + "?noDefaultRedirect=true";
         }
 
         const userComponents = [
