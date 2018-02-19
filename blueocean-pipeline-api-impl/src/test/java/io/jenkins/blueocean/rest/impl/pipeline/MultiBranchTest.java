@@ -545,9 +545,9 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         Map run = get("/organizations/jenkins/pipelines/p/branches/master/runs/"+b4.getId()+"/");
         validateRun(b4, run);
-        List<Map> changetSet = (List<Map>) run.get("changeSet");
+        List<Map> changeSet = (List<Map>) run.get("changeSet");
 
-        Map c = changetSet.get(0);
+        Map c = changeSet.get(0);
 
         Assert.assertEquals(changeLog.getCommitId(), c.get("commitId"));
         Map a = (Map) c.get("author");
@@ -556,7 +556,7 @@ public class MultiBranchTest extends PipelineBaseTest {
 
         int j=0;
         for(ChangeLogSet.Entry cs:b4.getChangeSets().get(0)){
-            Assert.assertEquals(cs.getCommitId(),changetSet.get(j).get("commitId"));
+            Assert.assertEquals(cs.getCommitId(),changeSet.get(j).get("commitId"));
             j++;
         }
 
