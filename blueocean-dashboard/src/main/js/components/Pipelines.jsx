@@ -69,7 +69,11 @@ export class Pipelines extends Component {
     }
 
     handleKeyDownEvent = (event) => {
-        if (document.activeElement !== this.getSearchInput()) {
+        if (document.activeElement !== this.getSearchInput() && 
+            document.activeElement.tagName !== 'TEXTAREA' &&
+            document.activeElement.tagName !== 'INPUT' &&
+            !document.querySelectorAll('.ModalContainer').length
+        ) {
             if (event.key === 't') {
                 this.getSearchInput().focus();
                 event.preventDefault();
