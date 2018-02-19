@@ -43,8 +43,8 @@ function invokeInstall(err, result) {
                 console.error('Something went wrong! node_modules might now be trashed, sorry.', err);
                 process.exit(1);
             } else {
-                const ellapsed = new Date().getTime() - start;
-                console.log(`Install look good! took ${ellapsed}ms`);
+                const elapsed = new Date().getTime() - start;
+                console.log(`Install look good! took ${elapsed}ms`);
                 process.exit(0);
             }
         }
