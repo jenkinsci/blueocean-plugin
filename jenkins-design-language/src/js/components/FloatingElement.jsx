@@ -248,7 +248,7 @@ export class FloatingElement extends Component {
     }
 
     /**
-     Calculate popover positon based on its dimensions, preferred position,
+     Calculate popover position based on its dimensions, preferred position,
      and the dimensions and position of the anchor. If there's a change,
      invokes movePopover to move the popover.
 

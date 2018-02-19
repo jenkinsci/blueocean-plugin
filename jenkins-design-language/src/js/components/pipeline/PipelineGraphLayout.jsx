@@ -46,7 +46,7 @@ export function layoutGraph(newStages: Array<StageInfo>, layout: LayoutInfo) {
     };
 
     const allNodeColumns = [
-        { rows: [[startNode]], x: 0 }, // Column X positons calculated later
+        { rows: [[startNode]], x: 0 }, // Column X positions calculated later
         ...stageNodeColumns,
         { rows: [[endNode]], x: 0 },
     ];
