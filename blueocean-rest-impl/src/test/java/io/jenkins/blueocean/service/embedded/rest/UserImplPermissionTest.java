@@ -167,19 +167,19 @@ public class UserImplPermissionTest {
 
         assertEquals("User permission does not match", permission.isAdministration(), shouldBeAdmin);
 
-        Map<String, Boolean> premissions = permission.getPipelinePermission();
-        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(BluePipeline.CREATE_PERMISSION));
-        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(BluePipeline.READ_PERMISSION));
-        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(BluePipeline.START_PERMISSION));
-        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(BluePipeline.STOP_PERMISSION));
-        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(BluePipeline.CONFIGURE_PERMISSION));
+        Map<String, Boolean> permissions = permission.getPipelinePermission();
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, permissions.get(BluePipeline.CREATE_PERMISSION));
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, permissions.get(BluePipeline.READ_PERMISSION));
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, permissions.get(BluePipeline.START_PERMISSION));
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, permissions.get(BluePipeline.STOP_PERMISSION));
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, permissions.get(BluePipeline.CONFIGURE_PERMISSION));
 
-        premissions = permission.getCredentialPermission();
-        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(CredentialsProvider.CREATE.name.toLowerCase()));
-        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(CredentialsProvider.VIEW.name.toLowerCase()));
-        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(CredentialsProvider.DELETE.name.toLowerCase()));
-        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(CredentialsProvider.UPDATE.name.toLowerCase()));
-        assertEquals("User permission does not match", shouldHaveOtherPermissions, premissions.get(StringUtils.uncapitalize(CredentialsProvider.MANAGE_DOMAINS.name)));
+        permissions = permission.getCredentialPermission();
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, permissions.get(CredentialsProvider.CREATE.name.toLowerCase()));
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, permissions.get(CredentialsProvider.VIEW.name.toLowerCase()));
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, permissions.get(CredentialsProvider.DELETE.name.toLowerCase()));
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, permissions.get(CredentialsProvider.UPDATE.name.toLowerCase()));
+        assertEquals("User permission does not match", shouldHaveOtherPermissions, permissions.get(StringUtils.uncapitalize(CredentialsProvider.MANAGE_DOMAINS.name)));
     }
 
     public static class TestOrganization extends AbstractOrganization implements ModifiableTopLevelItemGroup, AccessControlled {
