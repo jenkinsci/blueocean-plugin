@@ -1,4 +1,4 @@
-/** @module parametrisedPipeline
+/** @module parameterizedPipeline
  * @memberof log-karaoke
  * @description
  *
@@ -12,7 +12,7 @@ const jobName = 'parameter';
 const jobName2 = jobName + '1';
 // git repo details
 const pathToRepo = path.resolve('./target/test-project-parameter');
-const soureRep = './src/test/resources/parametrised';
+const soureRep = './src/test/resources/parameterized';
 
 module.exports = {
   /**
