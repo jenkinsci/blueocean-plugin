@@ -27,7 +27,7 @@ export function paginateUrl(url) {
  */
 export class Pager {
     /**
-     * List of deisplayed items hrefs.
+     * List of displayed items hrefs.
      */
     @observable hrefs = [];
     /**
