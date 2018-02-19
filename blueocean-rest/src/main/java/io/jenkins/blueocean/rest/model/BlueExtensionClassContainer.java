@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * Map representaion of {@link BlueExtensionClass}es
+ * Map representation of {@link BlueExtensionClass}es
  *
  * @author Vivek Pandey
  */
