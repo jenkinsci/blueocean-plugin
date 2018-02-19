@@ -170,7 +170,7 @@ module.exports = {
            blueRunDetailPage.validateNotEmptyChanges();
            // make sure the windows is small
            browser.resizeWindow(1000, 600);
-           // test now whether the authors are not listed but condendes
+           // test now whether the authors are not listed but condensed
            blueRunDetailPage.authorsIsCondensed();
            // make the browser big again
            browser.resizeWindow(1680, 1050);
