@@ -94,7 +94,7 @@ public class FavoritesNavigationTest extends AbstractFavoritesTest {
         checkRunDetails(pipeline);
         back();
         checkActivity(pipeline);
-        back();
+        dashboardPage.open();
 
         // check the branches tab
         BranchPage branches = navigateBranches(pipeline)
