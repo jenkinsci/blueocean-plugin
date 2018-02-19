@@ -19,7 +19,7 @@ function isRunningNode(item) {
 
 export const getNodesInformation = (nodes) => {
     // calculation of information about stages
-    // nodes in Runing state
+    // nodes in Running state
     const runningNodes = nodes
         .filter((item) => isRunningNode(item) && (!item.edges || item.edges.length < 2))
         .map((item) => item.id);
