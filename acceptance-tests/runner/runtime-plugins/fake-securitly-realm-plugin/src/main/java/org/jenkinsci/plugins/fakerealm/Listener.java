@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.util.*;
 
 @Extension
-public class Listerner  extends ComputerListener{
+public class Listener  extends ComputerListener{
     boolean set = false;
     @Override
     public void onOnline(Computer c, TaskListener listener) throws IOException, InterruptedException {
