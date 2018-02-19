@@ -5,7 +5,7 @@ import React from 'react';
  *
  * Result:
  * ```
- * // Suppoerted code
+ * // Supported code
  * {
  *     isSelectGraphicRendition: true,
  *     escapeCode: string, // input
