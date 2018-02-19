@@ -2098,7 +2098,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
     @Test
     public void testBlockedStep() throws Exception {
-        String scipt = "node {\n" +
+        String script = "node {\n" +
                 "    stage(\"one\"){\n" +
                 "        echo '1'\n" +
                 "    }\n" +
@@ -2111,7 +2111,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
                 "}";
 
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
-        job1.setDefinition(new CpsFlowDefinition(scipt, false));
+        job1.setDefinition(new CpsFlowDefinition(script, false));
 
         QueueTaskFuture<WorkflowRun> runQueueTaskFuture = job1.scheduleBuild2(0);
         WorkflowRun run = runQueueTaskFuture.getStartCondition().get();
