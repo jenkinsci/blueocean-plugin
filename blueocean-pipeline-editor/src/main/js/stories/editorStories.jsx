@@ -136,7 +136,7 @@ function renderMainInPage() {
 
 //--[ Step Details Editor ]---------------------------------------------------------------------------------------------
 
-const stepDetailssContainerStyle = {
+const stepDetailsContainerStyle = {
     border: "solid 1px #ccc",
     maxWidth: "40em",
     margin: "2em",
@@ -149,7 +149,7 @@ const stepDetailssContainerStyle = {
 function renderStepDetailsBasic() {
     let step = makeStep(st_shell, "Run Script");
     return (
-        <div style={stepDetailssContainerStyle}>
+        <div style={stepDetailsContainerStyle}>
             <EditorStepDetails step={step}/>
         </div>
     );
