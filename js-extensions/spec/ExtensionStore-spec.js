@@ -92,7 +92,7 @@ describe("ExtensionStore.js", function () {
             var extensionStore = makeExtensionStore(plugins, false);
 
             try {
-                extenstionStore.getExtensions('ext', function(ext) { });
+                extensionStore.getExtensions('ext', function(ext) { });
                 expect("Exception should be thrown").to.be.undefined;
             } catch(ex) {
                 // expected
