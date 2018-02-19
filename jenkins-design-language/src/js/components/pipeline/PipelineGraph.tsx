@@ -344,7 +344,7 @@ export class PipelineGraph extends React.Component {
         const controlOffsetUpper = curveRadius * 1.54;
         const controlOffsetLower = skipHeight * 0.257;
         const controlOffsetMid = skipHeight * 0.2;
-        const inflectiontOffset = Math.round(skipHeight * 0.7071); // cos(45º)-ish
+        const inflectionOffset = Math.round(skipHeight * 0.7071); // cos(45º)-ish
 
         // Start point
         const p1x = leftNode.x + leftNodeRadius - nodeStrokeWidth / 2;
@@ -363,8 +363,8 @@ export class PipelineGraph extends React.Component {
         const c4y = p4y;
 
         // Curve down midpoint / inflection
-        const p3x = skippedNodes[0].x - inflectiontOffset;
-        const p3y = skippedNodes[0].y + inflectiontOffset;
+        const p3x = skippedNodes[0].x - inflectionOffset;
+        const p3y = skippedNodes[0].y + inflectionOffset;
         const c2x = p3x - controlOffsetMid;
         const c2y = p3y - controlOffsetMid;
         const c3x = p3x + controlOffsetMid;
@@ -383,8 +383,8 @@ export class PipelineGraph extends React.Component {
         const c8y = p7y;
 
         // Curve up midpoint / inflection
-        const p6x = lastSkippedNode.x + inflectiontOffset;
-        const p6y = lastSkippedNode.y + inflectiontOffset;
+        const p6x = lastSkippedNode.x + inflectionOffset;
+        const p6y = lastSkippedNode.y + inflectionOffset;
         const c6x = p6x - controlOffsetMid;
         const c6y = p6y + controlOffsetMid;
         const c7x = p6x + controlOffsetMid;
