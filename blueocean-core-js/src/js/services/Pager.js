@@ -20,7 +20,7 @@ export function paginateUrl(url) {
  * inserts them into the [@link BunkerService], and stores the href from the data.
  *
  * MobX computes a data field from the hrefs backed by the backend cache. This allows for SSE events
- * to be proporgated to the pager.
+ * to be propagated to the pager.
  *
  * @export
  * @class Pager
