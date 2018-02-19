@@ -1952,7 +1952,7 @@ This will show up as a download in the browser.
     [Pipeline] End of Pipeline
     Finished: SUCCESS
 
-> Note: Fetching log on a Multi-Branch project will give 404 as a Multi-Branch project doesn't have run of it's own, it's essetnailly a folder hence no logs.
+> Note: Fetching log on a Multi-Branch project will give 404 as a Multi-Branch project doesn't have run of it's own, it's essentially a folder hence no logs.
 
 ## Get log for a Pipeline step
 
