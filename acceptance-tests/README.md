@@ -87,11 +87,11 @@ github.deleteRepo=<true/false should the code delete repo once test is done>
 github.randomSuffix=<true/false - add a random suffix to repo name (ie must have for CI>
 ```
 
-#### Java Webdriver Tests via Intellij (and probably other IDEs)
+#### Java Webdriver Tests via IntelliJ (and probably other IDEs)
 
 Running tests via the IDE works as expected as long as the standalone part of the ATH is running.
 
-To start a test in Intellij the easiest way is to right click on the test class or method and click Run test.
+To start a test in IntelliJ the easiest way is to right click on the test class or method and click Run test.
 
 NOTE: if you have a `~/.blueocean-ath-config` it will be used when running tests this way.
 
@@ -118,7 +118,7 @@ nightwatch src/test/js/
 
 ### Java Webdriver tests
 
-#### Intellij
+#### IntelliJ
 
 Make sure you add the acceptance-tests to your intellij blueocean project by right-clicking on `acceptance-tests/pom.xml`
 and adding it to the project.
