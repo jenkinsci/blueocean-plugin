@@ -28,7 +28,7 @@ storiesOf('Pipeline Editor Main', module)
 ;
 
 storiesOf('Pipeline Editor Graph', module)
-    .add('Basic', renderPiplineFlat)
+    .add('Basic', renderPipelineFlat)
     .add('Mixed', renderPipelineMixed)
     .add('Duplicate Names', renderPipelineDupNames)
 ;
@@ -266,7 +266,7 @@ function makeStep(type:string, label:string, nestedSteps?:Array<StepInfo>):StepI
 
 //--[ Pipeline Graph ]--------------------------------------------------------------------------------------------------
 
-function renderPiplineFlat() {
+function renderPipelineFlat() {
 
     const stages = [
         makeStage("Ken"),
