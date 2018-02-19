@@ -159,7 +159,7 @@ _errors.field_ - Name of the field in request. Top level field name are represen
 
 _Field Error codes_
 
-| Field Error Code  | Descriptiojn  |
+| Field Error Code  | Description   |
 | ------------------|:-------------:|
 | ALREADY_EXISTS    | Field value already exists |
 | MISSING| Required field|
@@ -168,7 +168,7 @@ _Field Error codes_
 
 _Http Error codes_
 
-| HTTP Error Code  | Descriptiojn  |
+| HTTP Error Code  | Description   |
 | ------------------|:-------------:|
 | 400    | Bad Request |
 | 401| Unauthorized, invalid credentials|
