@@ -184,7 +184,7 @@
   <testsuite name="Enum" tests="2" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:37:18" time="0.573">
     <testcase classname="Enum construction should populate the keys and values" name="Enum construction should populate the keys and values" time="0.002">
     </testcase>
-    <testcase classname="Enum values should return an erray with all values" name="Enum values should return an erray with all values" time="0">
+    <testcase classname="Enum values should return an array with all values" name="Enum values should return an array with all values" time="0">
     </testcase>
   </testsuite>
   <testsuite name="RunDetailsArtifacts" tests="2" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:37:16" time="3.041">
