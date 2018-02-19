@@ -27,7 +27,7 @@ public class MultiBranchPipeline extends AbstractPipeline {
     }
 
     public MultiBranchPipeline createPipeline(GitRepositoryRule git) throws IOException {
-        jobApi.createMultlBranchPipeline(jobApi.getFolder(getFolder(), true), getName(), git);
+        jobApi.createMultiBranchPipeline(jobApi.getFolder(getFolder(), true), getName(), git);
         return this;
     }
 
