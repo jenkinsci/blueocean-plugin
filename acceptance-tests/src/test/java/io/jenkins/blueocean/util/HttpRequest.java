@@ -153,7 +153,7 @@ public class HttpRequest {
 
     /**
      * Specify the value to be bound to uri template syntax.
-     * @param key tempalte variable name
+     * @param key template variable name
      * @param value value to bind
      * @return builder
      */
