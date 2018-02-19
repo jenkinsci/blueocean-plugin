@@ -4,7 +4,7 @@ var path = require("path");
 var faker = require('faker');
 
 /**
- * Generic wrapper aroung NodeGit
+ * Generic wrapper around NodeGit
  * @param pathToRepo {String}
  * @param onInit {Function}
  */
