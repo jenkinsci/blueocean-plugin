@@ -100,7 +100,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
             "}\n" +
             "node {\n" +
             "    stage 'testing'\n" +
-            "    echo 'testig'\n" +
+            "    echo 'testing'\n" +
             "}\n" +
             "\n" +
             "node {\n" +
