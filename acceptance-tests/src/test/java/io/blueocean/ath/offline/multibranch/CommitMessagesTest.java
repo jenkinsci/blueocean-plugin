@@ -69,7 +69,7 @@ public class CommitMessagesTest extends BlueOceanAcceptanceTest {
         sseClientRule.untilEvents(pipeline.buildsFinished);
 
         ActivityPage activityPage = pipeline.getActivityPage().open();
-        activityPage.checkForCommitMesssage("2nd commit");
+        activityPage.checkForCommitMessage("2nd commit");
 
         // Do some assertions on the run data
 
