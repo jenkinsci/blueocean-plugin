@@ -187,7 +187,7 @@ export class PipelineCard extends Component {
         let runDateTime = null;
 
         if (latestRun) {
-            // We'll pick the latest time we have. Completion, start, or enque in that order
+            // We'll pick the latest time we have. Completion, start, or enqueue in that order
             const serverTimeISO = latestRun.endTime || latestRun.startTime || latestRun.enQueueTime;
 
             if (serverTimeISO) {
