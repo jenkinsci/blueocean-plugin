@@ -5,7 +5,7 @@ import utils from '../utils';
 import { BunkerService } from './BunkerService';
 import { action } from 'mobx';
 /**
- * This class handles pipeline related data. This includes pipelines, branches and pullrequeusts as they are
+ * This class handles pipeline related data. This includes pipelines, branches and pullrequests as they are
  * all pipelines in the backend.
  *
  * @export
