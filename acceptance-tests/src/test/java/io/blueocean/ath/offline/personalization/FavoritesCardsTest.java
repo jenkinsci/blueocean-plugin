@@ -92,7 +92,7 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
             .withPipeline(pipeline)
             .clickBranchTab()
             .toggleFavoriteStatus(branchOther);
-        go(-2);
+        dashboardPage.open();
 
         List<String> cardFullnames = ImmutableList.of(fullNameMaster, fullNameOther);
         int count = 2;

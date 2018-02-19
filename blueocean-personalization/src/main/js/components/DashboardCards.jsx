@@ -2,18 +2,13 @@
  * Created by cmeyers on 7/6/16.
  */
 import React, { Component, PropTypes } from 'react';
+import { observer } from 'mobx-react';
 import TransitionGroup from 'react-addons-css-transition-group';
-import { connect } from 'react-redux';
-import { createSelector } from 'reselect';
-import { List } from 'immutable';
 import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
-
-import { favoritesSelector } from '../redux/FavoritesStore';
-import { actions } from '../redux/FavoritesActions';
+import favoriteStore from '../model/FavoriteStore';
 import favoritesSseListener from '../model/FavoritesSseListener';
 
-import FavoritesProvider from './FavoritesProvider';
 import { PipelineCard } from './PipelineCard';
 
 const t = i18nTranslator('blueocean-personalization');
@@ -41,41 +36,27 @@ CardStack.propTypes = {
 /**
  * Renders a stack of "favorites cards" including current most recent status.
  */
+@observer
 export class DashboardCards extends Component {
-
-    constructor() {
-        super();
-        this.state = {
-        };
+    _onFavoriteToggle(item) {
+        favoriteStore.setFavorite(item, !favoriteStore.isFavorite(item));
     }
 
     componentWillMount() {
-        favoritesSseListener.initialize(
-            this.props.store,
-            (runData, event) => this._handleJobRunUpdate(runData, event),
-        );
-
-        if (this.props.sortFavorites) {
-            this.props.sortFavorites();
-        }
+        favoritesSseListener.initialize(favoriteStore.onPipelineRun);
     }
 
-    _onFavoriteToggle(isFavorite, favorite) {
-        this.props.toggleFavorite(isFavorite, favorite.item, favorite);
-    }
-
-    _handleJobRunUpdate(runData) {
-        this.props.updateRun(runData);
+    componentWillUnmount() {
+        favoritesSseListener.unsubscribe();
+        favoriteStore.clearCache(); // since we're not listening for events anymore...
     }
 
     render() {
-        const favorites = this.props.favorites || [];
-
         const locale = t && t.lng;
 
         // empty array will be filled in the next method if any paused fav's exist
         const pausedCards = [];
-        const favoriteCards = favorites.map(favorite => {
+        const favoriteCards = favoriteStore.favorites.map(favorite => {
             const pipeline = favorite.item;
             const responseElement = (
                 <div key={favorite._links.self.href}>
@@ -85,7 +66,7 @@ export class DashboardCards extends Component {
                       t={t}
                       locale={locale}
                       favorite
-                      onFavoriteToggle={(isFavorite) => this._onFavoriteToggle(isFavorite, favorite)}
+                      onFavoriteToggle={() => this._onFavoriteToggle(pipeline)}
                     />
                 </div>
             );
@@ -103,34 +84,22 @@ export class DashboardCards extends Component {
             <CardStack message={t('dashboardCard.input.required')}>
                 {pausedCards}
             </CardStack>) : null;
-        const favoriteCardsStack = favoriteCards.size > 0 ? (
+        const favoriteCardsStack = favoriteCards.length > 0 ? (
             <CardStack message={t('dashboardCard.input.favorite')}>
                 {favoriteCards}
             </CardStack>) : null;
 
         return (
-            <FavoritesProvider store={this.props.store}>
-                <div>
-                    { pausedCardsStack }
-                    { favoriteCardsStack }
-                </div>
-            </FavoritesProvider>
+            <div>
+                { pausedCardsStack }
+                { favoriteCardsStack }
+            </div>
         );
     }
 }
 
 DashboardCards.propTypes = {
-    store: PropTypes.object,
     router: PropTypes.object,
-    favorites: PropTypes.instanceOf(List),
-    sortFavorites: PropTypes.func,
-    toggleFavorite: PropTypes.func,
-    updateRun: PropTypes.func,
 };
 
-const selectors = createSelector(
-    [favoritesSelector],
-    (favorites) => ({ favorites })
-);
-
-export default connect(selectors, actions)(DashboardCards);
+export default DashboardCards;
