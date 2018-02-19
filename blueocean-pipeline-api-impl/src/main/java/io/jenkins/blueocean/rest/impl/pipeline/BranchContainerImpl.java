@@ -106,7 +106,7 @@ public class BranchContainerImpl extends BluePipelineContainer {
                 return pipeline1.getName().compareTo(pipeline2.getName());
             }
 
-            //If both jobs have not eneded yet, we need to order by start time.
+            //If both jobs have not ended yet, we need to order by start time.
             Date startTime1 = latestRun1.getStartTime();
             Date startTime2 = latestRun2.getStartTime();
             if(startTime1 != null && startTime2 == null) {
