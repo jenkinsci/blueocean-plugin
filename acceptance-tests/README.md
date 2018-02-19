@@ -244,7 +244,7 @@ public class MyAwesomePage {
 
     @Inject
     WaitUtil wait;
-    // PageFactory.initElements drivers the @Findby annatations. TBD if we want to use these TBH
+    // PageFactory.initElements drivers the @Findby annotations. TBD if we want to use these TBH
     @Inject
     public MyAwesomePage(WebDriver driver) {
         PageFactory.initElements(driver, this);
