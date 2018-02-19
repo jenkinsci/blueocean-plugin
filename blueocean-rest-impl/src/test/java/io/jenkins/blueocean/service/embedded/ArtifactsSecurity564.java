@@ -50,7 +50,7 @@ public class ArtifactsSecurity564 extends BaseTest {
     @Test
     public void testArtifactsWithPermissions() throws Exception {
         String JOB_NAME = "artifactPermissions";
-        String artfictPath = "a/b/c";
+        String artifactPath = "a/b/c";
         HudsonPrivateSecurityRealm realm = new HudsonPrivateSecurityRealm(false);
         realm.createAccount("alice","alice");
         realm.createAccount("bob","bob");
@@ -65,7 +65,7 @@ public class ArtifactsSecurity564 extends BaseTest {
         as.add(Item.READ,"bob");
 
         FreeStyleProject p = j.createFreeStyleProject(JOB_NAME);
-        p.getBuildersList().add(new ArtifactBuilder(artfictPath, 100));
+        p.getBuildersList().add(new ArtifactBuilder(artifactPath, 100));
         p.getPublishersList().add(new ArtifactArchiver("**/*"));
         Run r = p.scheduleBuild2(0).waitForStart();
 
@@ -75,8 +75,8 @@ public class ArtifactsSecurity564 extends BaseTest {
 
         Assert.assertEquals(100, artifacts.size());
         Assert.assertEquals(0, ((Map) artifacts.get(0)).get("size"));
-        Assert.assertEquals(artfictPath + "/0.txt", ((Map) artifacts.get(0)).get("path"));
-        Assert.assertEquals("/job/artifactPermissions/1/artifact/"+ artfictPath +"/0.txt", ((Map) artifacts.get(0)).get("url"));
+        Assert.assertEquals(artifactPath + "/0.txt", ((Map) artifacts.get(0)).get("path"));
+        Assert.assertEquals("/job/artifactPermissions/1/artifact/"+ artifactPath +"/0.txt", ((Map) artifacts.get(0)).get("url"));
 
         List artifactsBob = request().auth("bob", "bob").get("/organizations/jenkins/pipelines/"+JOB_NAME+"/runs/"+r.getId()+"/artifacts").build(List.class);
 
