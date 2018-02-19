@@ -109,7 +109,7 @@ public abstract class AbstractMultiBranchCreateRequest extends AbstractPipelineC
      * Validate the provided SCMConfig and test that a connection can be made to the SCM server
      * @param name of pipeline being created
      * @param scmConfig to validate
-     * @return errors occuring during validation
+     * @return errors occurring during validation
      */
     protected abstract List<Error> validate(String name, BlueScmConfig scmConfig);
 
