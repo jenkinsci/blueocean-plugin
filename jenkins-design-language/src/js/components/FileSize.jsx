@@ -5,7 +5,7 @@ import React, {Component, PropTypes} from 'react';
 const { oneOfType, number, string } = PropTypes;
 const units = ['bytes', 'KB', 'MB', 'GB', 'TB', 'PB'];
 
-// Ponyfill for old browsers and IE
+// Polyfill for old browsers and IE
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/log10
 const log10 = Math.log10 || function (x) {
     return Math.log(x) / Math.LN10;
