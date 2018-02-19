@@ -17,7 +17,7 @@ const folder = ['committer', '三百', 'ñba', '七'];
 const jobName = 'Sohn';
 // git repo details
 const pathToRepo = path.resolve('./target/test-project-folder1');
-const soureRep = './src/test/resources/multibranch_1';
+const sourceRep = './src/test/resources/multibranch_1';
 // helper to return the project name including a separator or '/'
 function getProjectName(nameArray, separator) {
     if (!separator) {
@@ -33,7 +33,7 @@ module.exports = {
     before: !function (browser, done) {
         browser.waitForJobDeleted('committer', function () {
             // we creating a git repo in target based on the src repo (see above)
-            git.createRepo(soureRep, pathToRepo)
+            git.createRepo(sourceRep, pathToRepo)
                 .then(function () {
                     git.createBranch('feature/1', pathToRepo)
                         .then(done);
