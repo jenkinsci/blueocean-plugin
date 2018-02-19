@@ -2,7 +2,7 @@
  * This service manages the various instances of pagers that currently exist.
  *
  * TODO: Currently a new pager is created for any new list of items to be paged. Cleanup may be
- * required to stop memory leakes. However Pagers don't store more data so this may not be an issue.'
+ * required to stop memory leaks. However Pagers don't store more data so this may not be an issue.'
  *
  * @export
  * @class PagerService
