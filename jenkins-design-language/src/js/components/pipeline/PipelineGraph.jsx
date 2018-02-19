@@ -479,7 +479,7 @@ export class PipelineGraph extends Component {
     }
 
     /**
-     * A direct curve between two nodes in adjactent columns.
+     * A direct curve between two nodes in adjacent columns.
      *
      * Adds all the SVG components to the elements list.
      */
