@@ -175,7 +175,7 @@ function positionNodes(nodeColumns: Array<NodeColumn>, { nodeSpacingH, parallelS
 
         for (const row of column.rows) {
 
-            // Offst the beginning of narrower rows towards column center
+            // Offset the beginning of narrower rows towards column center
             xp += Math.round((widestRow - row.length) * parallelSpacingH * 0.5);
 
             for (const node of row) {
