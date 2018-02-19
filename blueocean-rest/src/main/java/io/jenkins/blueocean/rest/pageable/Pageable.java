@@ -7,7 +7,7 @@ import java.util.Iterator;
  */
 public interface Pageable<T> extends Iterable<T> {
     /**
-     * Returns a iterator that visits a subset, which is used by the HTTP layer to do the pagenation.
+     * Returns a iterator that visits a subset, which is used by the HTTP layer to do the pagination.
      * @param start starting index requested from collection
      * @param limit max number of item requested in the page
      * @return filtered collection
