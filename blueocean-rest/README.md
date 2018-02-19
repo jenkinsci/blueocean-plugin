@@ -101,7 +101,7 @@ This document defines REST API interface that front end UI or any HTTP client ca
 
 # Run Blue Ocean plugin
 
-    cd bluecoean-plugin
+    cd blueocean-plugin
     mvn hpi:run
 
 This will launch a development Jenkins instance with the Blue Ocean plugin and this plugin ready to go.
