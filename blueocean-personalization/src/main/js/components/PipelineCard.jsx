@@ -66,7 +66,7 @@ function extractNames(pipeline, isBranch) {
  * item: pipeline or branch
  * favorite: whether or not the pipeline is favorited
  * onRunClick: callback invoked when 'Run Again' is clicked
- * onFavoriteToggle: callback invokved when favorite checkbox is toggled.
+ * onFavoriteToggle: callback invoked when favorite checkbox is toggled.
  */
 export class PipelineCard extends Component {
 
