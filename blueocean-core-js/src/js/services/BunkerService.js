@@ -26,7 +26,7 @@ export class BunkerService {
     /**
      * Extracts the key to store the data under out of the object
      *
-     * Default impl uses the self href link in BlueOcuean objects.
+     * Default impl uses the self href link in BlueOcean objects.
      *
      * @param {object} data Data to be stored once it has been passed through
      *                      [@link bunkerMapper]
