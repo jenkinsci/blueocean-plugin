@@ -112,7 +112,7 @@ public class GithubCreationTest{
     /**
      * This test tests the github creation flow.
      *
-     * Creates a github repo with a sameple Jenkinsfile
+     * Creates a github repo with a sample Jenkinsfile
      *
      * TODO: Add PR coverage.
      */
