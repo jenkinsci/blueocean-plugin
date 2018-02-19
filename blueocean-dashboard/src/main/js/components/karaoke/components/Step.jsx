@@ -159,7 +159,7 @@ export class Step extends Component {
         };
         // some ATH hook enhancements
         const logConsoleClass = `logConsole step-${step.id}`;
-        // duration calaculations
+        // duration calculations
         const duration = step.isRunning ? this.durationInMillis : durationInMillis;
         logger.debug('duration', duration, step.isRunning);
         const time = (<TimeDuration
