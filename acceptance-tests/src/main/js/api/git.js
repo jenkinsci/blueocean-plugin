@@ -130,7 +130,7 @@ exports.createBranch = function (branchName, pathToRepo) {
 /** 
  * Creates a file and adds it to repo.
  * 
- * FIXME: doesnt seem to actually git add the file, altohugh it does create the commit hash.
+ * FIXME: doesnt seem to actually git add the file, although it does create the commit hash.
  * 
  * @param pathToRepo {String} the route to the repository
  * @param fileName {String} name of the file
