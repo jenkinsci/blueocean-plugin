@@ -30,6 +30,7 @@ public class DefaultUserInterfaceGlobalConfiguration extends GlobalConfiguration
     @Override
     public boolean configure(StaplerRequest req, JSONObject json) throws FormException {
         req.bindJSON(this, json);
+        save();
         return true;
     }
 

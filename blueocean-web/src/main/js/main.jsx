@@ -87,6 +87,10 @@ class App extends Component {
             classicUrl = '/' + classicUrl;
         }
 
+        if(classicUrl === '/' || classicUrl === `${UrlConfig.getJenkinsRootURL()}`) {
+            classicUrl = classicUrl + "?noDefaultRedirect=true"
+        }
+
         const userComponents = [
             <Extensions.Renderer extensionPoint="jenkins.blueocean.top.go.classic">
                 <div className="user-component icon" title={translate('go.to.classic', { defaultValue: 'Go to classic' })}>

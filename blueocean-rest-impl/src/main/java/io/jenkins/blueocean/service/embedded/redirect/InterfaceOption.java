@@ -2,7 +2,7 @@ package io.jenkins.blueocean.service.embedded.redirect;
 
 public class InterfaceOption {
     public static final InterfaceOption classic = new InterfaceOption("classic", "Jenkins Classic");
-    public static final InterfaceOption blueocean = new InterfaceOption("blueocean", "BlueOcean");
+    public static final InterfaceOption blueocean = new InterfaceOption("blueocean", "Blue Ocean");
 
     private String interfaceId;
     private String name;
