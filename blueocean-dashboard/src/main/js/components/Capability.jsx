@@ -15,7 +15,7 @@ export class CapabilityRecord extends Record({ classNames: [] }) {
 }
 
 /**
- * capabilityStore is a enchances components to inject capabilities for
+ * capabilityStore is a enhances components to inject capabilities for
  * a given class.
  *
  * Usage: capabilityStore(classFunction)(React.Component) where
