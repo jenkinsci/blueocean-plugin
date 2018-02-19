@@ -8,7 +8,7 @@
     <version>1.32</version>
   </parent>
 
-  <artifactId>bluecoean-acceptance-test</artifactId>
+  <artifactId>blueocean-acceptance-test</artifactId>
   <version>1.0-SNAPSHOT</version>
 
   <name>Blue Ocean Acceptance Tests</name>
