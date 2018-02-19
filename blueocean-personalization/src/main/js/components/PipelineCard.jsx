@@ -15,7 +15,7 @@ const stopProp = (event) => {
 const BRANCH_CAPABILITY = 'io.jenkins.blueocean.rest.model.BlueBranch';
 
 /**
- * Extract elements from a path string deliminted with forward slashes
+ * Extract elements from a path string delimited with forward slashes
  * @param path
  * @param begin
  * @param end
