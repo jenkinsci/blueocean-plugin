@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Alerts } from '@jenkins-cd/design-language';
+import { Alerts } from '../../../../jdl/components/index.js';
 
 export default class RunDescription extends Component {
     propTypes = {

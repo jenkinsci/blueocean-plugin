@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { ResultItem, TimeDuration } from '@jenkins-cd/design-language';
+import { ResultItem, TimeDuration } from '../../../../jdl/components/index.js';
 import { AppConfig, logging, TimeManager } from '../../../../core/index.js';
 import { observer } from 'mobx-react';
 import { KaraokeService } from '../index';

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
-import { FileSize, JTable, TableRow, TableCell, TableHeaderRow } from '@jenkins-cd/design-language';
-import { Icon } from '@jenkins-cd/design-language';
+import { FileSize, JTable, TableRow, TableCell, TableHeaderRow } from '../../jdl/components/index.js';
+import { Icon } from '../../jdl/components/index.js';
 import { observer } from 'mobx-react';
 import mobxUtils from 'mobx-utils';
 import { logging, UrlConfig, ShowMoreButton } from '../../core/index.js';

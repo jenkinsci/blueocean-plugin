@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
-import { TabLink } from '@jenkins-cd/design-language';
+import { TabLink } from '../../jdl/components/index.js';
 import { i18nTranslator, ReplayButton, RunButton, LoginButton, logging } from '../../core/index.js';
 import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 
-import { Icon } from '@jenkins-cd/design-language';
+import { Icon } from '../../jdl/components/index.js';
 
 import {
     rootPath,

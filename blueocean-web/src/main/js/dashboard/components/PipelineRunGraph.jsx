@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { PipelineGraph } from '@jenkins-cd/design-language';
+import { PipelineGraph } from '../../jdl/components/index.js';
 import { TimeManager, i18nTranslator, logging } from '../../core/index.js';
 
 const timeManager = new TimeManager();

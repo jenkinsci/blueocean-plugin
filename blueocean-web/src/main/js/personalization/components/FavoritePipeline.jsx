@@ -4,7 +4,7 @@
 import React, { Component, PropTypes } from 'react';
 import { observer } from 'mobx-react';
 
-import { Favorite } from '@jenkins-cd/design-language';
+import { Favorite } from '../../jdl/components/index.js';
 import { capable } from '../../core/index.js';
 
 import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';

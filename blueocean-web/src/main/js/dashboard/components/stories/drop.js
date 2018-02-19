@@ -1,6 +1,6 @@
 import React from 'react';
 import { storiesOf } from '@kadira/storybook';
-import { Dropdown } from '@jenkins-cd/design-language';
+import { Dropdown } from '../../../jdl/components/index.js';
 
 const a2z = 'ABCDEFGHIJKLM NOPQRSTUVWXYZ';
 

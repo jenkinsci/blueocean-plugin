@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
-import { FormElement, PasswordInput, TextInput } from '@jenkins-cd/design-language';
+import { FormElement, PasswordInput, TextInput } from '../../../jdl/components/index.js';
 
 import BbCredentialsManager from './BbCredentialsManager';
 import BbCredentialsState from './BbCredentialsState';

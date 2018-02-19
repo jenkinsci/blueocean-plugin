@@ -1,10 +1,10 @@
 import React, { Component, PropTypes } from 'react';
-import { ExpandablePath, WeatherIcon, TableRow, TableCell } from '@jenkins-cd/design-language';
+import { ExpandablePath, WeatherIcon, TableRow, TableCell } from '../../jdl/components/index.js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { buildPipelineUrl } from '../util/UrlUtils';
 import { capable, UrlConfig } from '../../core/index.js';
 import { MATRIX_PIPELINE } from '../Capabilities';
-import { Icon } from '@jenkins-cd/design-language';
+import { Icon } from '../../jdl/components/index.js';
 
 // Generate classic URL to redirect matrix-style / multiconfig jobs.
 function generateRedirectURL(pipeline) {

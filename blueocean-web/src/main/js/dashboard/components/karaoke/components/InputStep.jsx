@@ -8,7 +8,7 @@ import {
     StringUtil,
     logging,
 } from '../../../../core/index.js';
-import { Alerts } from '@jenkins-cd/design-language';
+import { Alerts } from '../../../../jdl/components/index.js';
 
 /**
  * Simple helper to stop stopPropagation

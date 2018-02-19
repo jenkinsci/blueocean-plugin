@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/design-language';
+import { Icon } from '../../jdl/components/index.js';
 import { UrlConfig, AppConfig, logging, ResultPageHeader, TimeManager } from '../../core/index.js';
-import { ExpandablePath, ReadableDate, TimeDuration, CommitId } from '@jenkins-cd/design-language';
+import { ExpandablePath, ReadableDate, TimeDuration, CommitId } from '../../jdl/components/index.js';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import { Link } from 'react-router';
 import { buildPipelineUrl } from '../util/UrlUtils';

@@ -5,7 +5,7 @@ import {
     WeatherIcon,
     TableRow,
     TableCell,
-} from '@jenkins-cd/design-language';
+} from '../../jdl/components/index.js';
 import { LiveStatusIndicator, RunButton } from '../../core/index.js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';

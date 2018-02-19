@@ -3,7 +3,7 @@ import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
 import Extensions from '@jenkins-cd/js-extensions';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import { Alerts, Dropdown, FormElement, TextInput } from '@jenkins-cd/design-language';
+import { Alerts, Dropdown, FormElement, TextInput } from '../../../jdl/components/index.js';
 
 import FlowStep from '../flow2/FlowStep';
 

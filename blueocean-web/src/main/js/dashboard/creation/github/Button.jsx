@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { StatusIndicator } from '@jenkins-cd/design-language';
+import { StatusIndicator } from '../../../jdl/components/index.js';
 
 
 // must equal .Button-icon: transition + transition-delay

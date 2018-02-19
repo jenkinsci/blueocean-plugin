@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { StatusIndicator } from '@jenkins-cd/design-language';
+import { StatusIndicator } from '../../jdl/components/index.js';
 
 const { number } = PropTypes;
 

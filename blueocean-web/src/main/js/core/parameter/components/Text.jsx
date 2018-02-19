@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { TextArea, FormElement } from '@jenkins-cd/design-language';
+import { TextArea, FormElement } from '../../../jdl/components/index.js';
 import { propTypes } from '../commonProptypes';
 import { removeMarkupTags } from '../../stringUtil';
 

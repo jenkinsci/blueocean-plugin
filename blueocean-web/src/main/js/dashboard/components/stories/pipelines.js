@@ -3,7 +3,7 @@ import React from 'react';
 import { storiesOf } from '@kadira/storybook';
 import PipelineRowItem from '../PipelineRowItem.jsx';
 import { PipelineRecord } from '../records.jsx';
-import { JTable, TableHeaderRow } from '@jenkins-cd/design-language';
+import { JTable, TableHeaderRow } from '../../../jdl/components/index.js';
 
 /*
 First example of using storybook

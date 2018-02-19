@@ -5,7 +5,7 @@ import {
     TimeDuration,
     TableRow,
     TableCell,
-} from '@jenkins-cd/design-language';
+} from '../../jdl/components/index.js';
 import {
     ReplayButton,
     RunButton,

@@ -4,8 +4,8 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { logging, capable, UrlBuilder, AppConfig, RunButton, ReplayButton, LiveStatusIndicator } from '../../core/index.js';
-import { ExpandablePath, Favorite, ReadableDate } from '@jenkins-cd/design-language';
-import { Icon } from '@jenkins-cd/design-language';
+import { ExpandablePath, Favorite, ReadableDate } from '../../jdl/components/index.js';
+import { Icon } from '../../jdl/components/index.js';
 import moment from 'moment';
 
 const stopProp = (event) => {

@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { JTable, TableHeaderRow } from '@jenkins-cd/design-language';
+import { JTable, TableHeaderRow } from '../../jdl/components/index.js';
 import { capable, ShowMoreButton } from '../../core/index.js';
 import { observer } from 'mobx-react';
 

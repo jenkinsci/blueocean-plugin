@@ -2,7 +2,7 @@ import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
 
-import { Dialog, FormElement, PasswordInput, RadioButtonGroup, TextArea, TextInput } from '@jenkins-cd/design-language';
+import { Dialog, FormElement, PasswordInput, RadioButtonGroup, TextArea, TextInput } from '../../../jdl/components/index.js';
 
 
 let t = null;

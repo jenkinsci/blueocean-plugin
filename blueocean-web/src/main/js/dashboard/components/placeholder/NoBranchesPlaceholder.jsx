@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { PlaceholderTable } from '@jenkins-cd/design-language';
+import { PlaceholderTable } from '../../../jdl/components/index.js';
 
 import { PlaceholderContent } from './PlaceholderContent';
 import { PlaceholderDialog } from './PlaceholderDialog';

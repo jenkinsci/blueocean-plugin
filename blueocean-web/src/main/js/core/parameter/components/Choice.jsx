@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Dropdown, FormElement, RadioButtonGroup } from '@jenkins-cd/design-language';
+import { Dropdown, FormElement, RadioButtonGroup } from '../../../jdl/components/index.js';
 import { propTypes } from '../commonProptypes';
 import { removeMarkupTags } from '../../stringUtil';
 

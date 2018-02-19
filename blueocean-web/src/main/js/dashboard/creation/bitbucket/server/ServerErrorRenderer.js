@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { ErrorMessage } from '@jenkins-cd/design-language';
+import { ErrorMessage } from '../../../../jdl/components/index.js';
 import { i18nTranslator } from '../../../../core/index.js';
 
 

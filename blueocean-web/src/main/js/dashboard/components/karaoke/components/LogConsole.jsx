@@ -1,5 +1,5 @@
 import React, { Component, PureComponent, PropTypes } from 'react';
-import { Progress, Linkify } from '@jenkins-cd/design-language';
+import { Progress, Linkify } from '../../../../jdl/components/index.js';
 import { logging } from '../../../../core/index.js';
 
 import { scrollHelper } from '../../ScrollHelper';

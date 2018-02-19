@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { Icon, TimeDuration } from '@jenkins-cd/design-language';
+import { Icon, TimeDuration } from '../../../../jdl/components/index.js';
 import { fetchAllSuffix as suffix } from '../../../util/UrlUtils';
 
 const { string } = PropTypes;

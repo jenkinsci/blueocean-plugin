@@ -1,11 +1,11 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { Page, JTable, TableHeaderRow } from '@jenkins-cd/design-language';
+import { Page, JTable, TableHeaderRow } from '../../jdl/components/index.js';
 import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '../../core/index.js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
-import { Icon } from '@jenkins-cd/design-language';
+import { Icon } from '../../jdl/components/index.js';
 
 import { documentTitle } from './DocumentTitle';
 import CreatePipelineLink from './CreatePipelineLink';

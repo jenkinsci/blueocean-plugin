@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { ReadableDate, TableRow, TableCell } from '@jenkins-cd/design-language';
+import { ReadableDate, TableRow, TableCell } from '../../jdl/components/index.js';
 import { LiveStatusIndicator, RunButton } from '../../core/index.js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { buildRunDetailsUrl } from '../util/UrlUtils';

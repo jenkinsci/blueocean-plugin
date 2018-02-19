@@ -4,7 +4,7 @@ import {
     TopNav,
     PageTabs,
     HeaderDetails,
-} from '@jenkins-cd/design-language';
+} from '../../jdl/components/index.js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { BlueLogo } from './BlueLogo';

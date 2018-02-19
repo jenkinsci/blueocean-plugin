@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 
-import { Icon } from '@jenkins-cd/design-language';
+import { Icon } from '../../jdl/components/index.js';
 import { buildPipelineUrl } from '../util/UrlUtils';
 import { Link } from 'react-router';
 

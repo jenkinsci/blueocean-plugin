@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { IconButton } from '@jenkins-cd/design-language';
+import { IconButton } from '../../../jdl/components/index.js';
 
 import { BbIcon } from './BbIcon';
 

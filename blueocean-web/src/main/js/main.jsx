@@ -14,7 +14,7 @@ import { ToastDrawer } from './components/ToastDrawer';
 import { BackendConnectFailure } from './components/BackendConnectFailure';
 import { DevelopmentFooter } from './DevelopmentFooter';
 import { useStrict } from 'mobx';
-import { Icon } from '@jenkins-cd/design-language';
+import { Icon } from './jdl/components/index.js';
 import ErrorUtils from './ErrorUtils';
 
 useStrict(true);

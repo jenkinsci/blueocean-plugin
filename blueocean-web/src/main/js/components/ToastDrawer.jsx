@@ -4,7 +4,7 @@
 import React, { Component, PropTypes } from 'react';
 import { observer } from 'mobx-react';
 
-import { Toaster } from '@jenkins-cd/design-language';
+import { Toaster } from '../jdl/components/index.js';
 import { ToastService as toastService } from '../core/index.js';
 
 /**

@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
-import { FormElement, PasswordInput } from '@jenkins-cd/design-language';
+import { FormElement, PasswordInput } from '../../../jdl/components/index.js';
 
 import { Button } from '../../creation/github/Button';
 import GithubApiUtils from '../../creation/github/api/GithubApiUtils';

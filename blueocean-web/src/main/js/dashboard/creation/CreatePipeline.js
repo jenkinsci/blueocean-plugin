@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Page } from '@jenkins-cd/design-language';
+import { Page } from '../../jdl/components/index.js';
 import { ContentPageHeader, i18nTranslator, loadingIndicator } from '../../core/index.js';
 import Extensions from '@jenkins-cd/js-extensions';
 

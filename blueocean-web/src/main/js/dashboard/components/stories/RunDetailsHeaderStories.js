@@ -8,8 +8,8 @@ import {
     PageTabs,
     Progress,
     TabLink,
-} from '@jenkins-cd/design-language';
-import WithContext from '@jenkins-cd/design-language/dist/js/stories/WithContext';
+} from '../../../jdl/components/index.js';
+import WithContext from '../../../jdl/components/index.js/dist/js/stories/WithContext';
 import {RunDetailsHeader} from '../RunDetailsHeader';
 import {RunRecord} from '../records';
 

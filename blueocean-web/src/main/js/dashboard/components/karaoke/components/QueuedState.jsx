@@ -1,5 +1,5 @@
 import React, { PropTypes } from 'react';
-import { Alerts } from '@jenkins-cd/design-language';
+import { Alerts } from '../../../../jdl/components/index.js';
 
 const messageOrDefault = (translation, messageKey, message) => (!message ? translation(messageKey) : message);
 

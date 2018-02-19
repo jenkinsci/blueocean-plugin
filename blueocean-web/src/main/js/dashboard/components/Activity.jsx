@@ -4,7 +4,7 @@ import {
     TableRow,
     TableHeader,
     TableCell,
-} from '@jenkins-cd/design-language';
+} from '../../jdl/components/index.js';
 import { capable, RunButton, ShowMoreButton } from '../../core/index.js';
 import { observer } from 'mobx-react';
 import { ActivityDetailsRow } from './ActivityDetailsRow';
