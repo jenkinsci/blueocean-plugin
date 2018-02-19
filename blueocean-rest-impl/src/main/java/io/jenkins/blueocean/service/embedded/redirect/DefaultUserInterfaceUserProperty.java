@@ -13,7 +13,7 @@ import java.util.List;
 public class DefaultUserInterfaceUserProperty extends UserProperty {
     public static final InterfaceOption system = new InterfaceOption("system", "Default");
     @Nullable
-    private String interfaceId;
+    private final String interfaceId;
 
     @Nullable
     public String getInterfaceId() {
