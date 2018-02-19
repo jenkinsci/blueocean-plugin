@@ -793,7 +793,7 @@ For example for anonymous user with security enabled and only read permission, t
 
 ## Fetch queue for an pipeline
 
-     curl http://localhost:8080/jenkins/blue/rest/organiations/jenkins/pipelines/pipeline1/queue
+     curl http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/queue
      [ {
        "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
        "expectedBuildNumber" : 4,
@@ -1021,7 +1021,7 @@ Response:
 
 > Note: it takes a while to stop, so you may get a state of RUNNING or QUEUED.
 
-    curl -X PUT http://localhost:8080/jenkins/blue/rest/organiations/jenkins/pipelines/pipeline1/runs/1/stop
+    curl -X PUT http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/stop
     {
            "changeSet": [],
            "artifacts": [
@@ -1055,7 +1055,7 @@ Client should check the state and if its not FINISHED they may issue another sto
 
 > Note: There is no guarantee, after timeout build build might still be running.
 
-    curl -X PUT http://localhost:8080/jenkins/blue/rest/organiations/jenkins/pipelines/pipeline1/runs/1/stop/?blocking=true&timeOutInSecs=5
+    curl -X PUT http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/stop/?blocking=true&timeOutInSecs=5
 
     {
            "changeSet": [],
