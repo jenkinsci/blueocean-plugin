@@ -55,7 +55,7 @@ public class RedirectFilter implements Filter {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
 
             String noRedirect = httpRequest.getParameter("noDefaultRedirect");
-            if(noRedirect != null && "/".equals(httpRequest.getPathInfo())) {
+            if(noRedirect == null && "/".equals(httpRequest.getPathInfo())) {
                 ((HttpServletResponse) response).sendRedirect(httpRequest.getContextPath() + "/blue");
                 return;
             }
