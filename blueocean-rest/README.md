@@ -1554,7 +1554,7 @@ Get steps of 'test' stage node:
 
 ### Get Pipeline Steps
 
-    Gives all steps in a pipeline. Excludes stages and prallels/blocks.
+    Gives all steps in a pipeline. Excludes stages and parallels/blocks.
 
     curl http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/
 
