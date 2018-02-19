@@ -28,12 +28,12 @@ const jobName = 'Sohn';
 // git repo details
 const pathToRepo = path.resolve('./target/test-project-folder');
 const soureRep = './src/test/resources/multibranch_1';
-// helper to return the project name including a seperator or '/'
-function getProjectName(nameArray, seperator) {
-    if (!seperator) {
-        seperator = '/';
+// helper to return the project name including a separator or '/'
+function getProjectName(nameArray, separator) {
+    if (!separator) {
+        separator = '/';
     }
-    return nameArray.join(seperator) + seperator + jobName;
+    return nameArray.join(separator) + separator + jobName;
 }
 // here we need to escape the real projectName to a urlEncoded string
 const projectName = getProjectName(anotherFolders, '%2F');
