@@ -39,7 +39,7 @@
             value.CompatibilityMode = value.TrueVersion != value.ActingVersion;
         }
 
-        //Try to find Edge and the EdgeHTML vesion number
+        //Try to find Edge and the EdgeHTML version number
         var edge = navigator.userAgent.match(/Edge\/(\d+\.\d+)$/);
         if (edge) {
             value.IsEdge = true;
