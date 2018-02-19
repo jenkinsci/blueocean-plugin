@@ -18,7 +18,7 @@ import javax.inject.Inject;
 import java.io.IOException;
 
 /**
- * This class is for testing anything to do with click on links in Mulitbranch pipelines.
+ * This class is for testing anything to do with click on links in Multibranch pipelines.
  */
 @RunWith(ATHJUnitRunner.class)
 public class NavigationTest extends BlueOceanAcceptanceTest {
