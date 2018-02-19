@@ -1,4 +1,4 @@
-import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator } from './core-js';
 
 
 let initialized = false;

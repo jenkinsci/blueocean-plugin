@@ -4,7 +4,7 @@ import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-rout
 import { createHistory } from 'history';
 import {
     logging, i18nTranslator, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound, SiteHeader, toClassicJobPage, User, loadingIndicator, LoginButton,
-} from '@jenkins-cd/blueocean-core-js';
+} from './core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { Provider, configureStore, combineReducers} from './redux';
@@ -14,7 +14,7 @@ import { ToastDrawer } from './components/ToastDrawer';
 import { BackendConnectFailure } from './components/BackendConnectFailure';
 import { DevelopmentFooter } from './DevelopmentFooter';
 import { useStrict } from 'mobx';
-import { Icon } from '@jenkins-cd/design-language';
+import { Icon } from './components/index-jdl';
 import ErrorUtils from './ErrorUtils';
 
 useStrict(true);
