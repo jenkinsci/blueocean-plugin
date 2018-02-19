@@ -62,7 +62,7 @@ export class Pager {
     /**
      * Creates an instance of Pager and fetches the first page.
      *
-     * @param {string} url - Base url of collectin to fetch
+     * @param {string} url - Base url of collection to fetch
      * @param {number} pageSize - Page size to fetch during one load.
      * @param {BunkerService} bunker - Data store
      * @param {UrlProvider} [urlProvider=paginateUrl]
