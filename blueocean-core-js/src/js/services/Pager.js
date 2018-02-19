@@ -7,7 +7,7 @@ import { Fetch } from '../fetch';
  *
  * @export
  * @param {string} url - Base url to paginate.
- * @returns {function} - Function that provides pagincated urls.
+ * @returns {function} - Function that provides paginated urls.
  */
 export function paginateUrl(url) {
     const sep = url.indexOf('?') >= 0 ? '&' : '?';
