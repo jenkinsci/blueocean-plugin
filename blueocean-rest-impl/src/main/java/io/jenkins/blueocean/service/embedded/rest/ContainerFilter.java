@@ -57,7 +57,7 @@ public abstract class ContainerFilter implements ExtensionPoint {
     }
 
     /**
-     * Filter items based on supplied fiter and paging criteria
+     * Filter items based on supplied filter and paging criteria
      */
     public static <T extends Item> Collection<T> filter(Collection<T> items, int start, int limit) {
         String[] filterNames = filterNames();
