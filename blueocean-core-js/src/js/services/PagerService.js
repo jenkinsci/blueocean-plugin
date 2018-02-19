@@ -19,7 +19,7 @@ export class PagerService {
      * Namespacing strings is prefered to stop collisions. E.g. Activity/$org-$pipeline.
      *
      * @param {any} key - Key to register the pager under.
-     * @param {Pager} pager - pager to regiser.
+     * @param {Pager} pager - pager to register.
      */
     registerPager(key, pager) {
         if (this._pagerMap.has(key)) {
