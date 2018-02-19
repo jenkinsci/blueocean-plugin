@@ -1,6 +1,5 @@
-package io.jenkins.blueocean.commons.redirect;
+package io.jenkins.blueocean.service.embedded.redirect;
 
-import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;
 import hudson.Extension;
 import hudson.model.UserProperty;
@@ -12,7 +11,7 @@ import java.util.List;
 
 
 public class DefaultUserInterfaceUserProperty extends UserProperty {
-
+    public static final InterfaceOption system = new InterfaceOption("system", "Global default");
     @Nullable
     private String interfaceId;
 
@@ -27,7 +26,7 @@ public class DefaultUserInterfaceUserProperty extends UserProperty {
     }
 
     public static List<InterfaceOption> allInterfaces() {
-        return ImmutableList.of(InterfaceOption.classic, InterfaceOption.blueocean);
+        return ImmutableList.of(system, InterfaceOption.classic, InterfaceOption.blueocean);
     }
 
     public boolean isSelected(String interfaceId) {

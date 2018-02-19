@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.commons.redirect;
+package io.jenkins.blueocean.service.embedded.redirect;
 
 import hudson.model.User;
 import hudson.model.UserProperty;
@@ -14,7 +14,7 @@ public class DefaultUserInterfaceUserPropertyDescriptor extends UserPropertyDesc
 
     @Override
     public UserProperty newInstance(User user) {
-        return new DefaultUserInterfaceUserProperty(InterfaceOption.classic.getInterfaceId());
+        return new DefaultUserInterfaceUserProperty(DefaultUserInterfaceUserProperty.system.getInterfaceId());
     }
 
     @Nonnull

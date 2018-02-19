@@ -1,4 +1,4 @@
-package io.jenkins.blueocean.commons.redirect;
+package io.jenkins.blueocean.service.embedded.redirect;
 
 import hudson.Extension;
 import hudson.init.Initializer;
@@ -36,23 +36,26 @@ public class RedirectFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        boolean redirectIndex = false;
+
+        String defaultUI = InterfaceOption.classic.getInterfaceId();
         DefaultUserInterfaceGlobalConfiguration userInterfaceGlobalConfiguration = GlobalConfiguration.all().get(DefaultUserInterfaceGlobalConfiguration.class);
-        if(userInterfaceGlobalConfiguration != null && InterfaceOption.blueocean.getInterfaceId().equals(userInterfaceGlobalConfiguration.getInterfaceId())) {
-            redirectIndex = true;
+        if(userInterfaceGlobalConfiguration != null) {
+            defaultUI = userInterfaceGlobalConfiguration.getInterfaceId();
         }
 
         User user = User.current();
         if(user != null ) {
             DefaultUserInterfaceUserProperty property = user.getProperty(DefaultUserInterfaceUserProperty.class);
-            if(InterfaceOption.blueocean.getInterfaceId().equals(property.getInterfaceId())) {
-                redirectIndex = true;
+            if(property != null && !property.getInterfaceId().equals(DefaultUserInterfaceUserProperty.system.getInterfaceId())) {
+                defaultUI = property.getInterfaceId();
             }
         }
-        if(redirectIndex && request instanceof HttpServletRequest) {
+
+        if(InterfaceOption.blueocean.getInterfaceId().equals(defaultUI) && request instanceof HttpServletRequest) {
             HttpServletRequest httpRequest = (HttpServletRequest) request;
 
-            if("/".equals(httpRequest.getPathInfo())) {
+            String noRedirect = httpRequest.getParameter("noDefaultRedirect");
+            if(noRedirect != null && "/".equals(httpRequest.getPathInfo())) {
                 ((HttpServletResponse) response).sendRedirect(httpRequest.getContextPath() + "/blue");
                 return;
             }

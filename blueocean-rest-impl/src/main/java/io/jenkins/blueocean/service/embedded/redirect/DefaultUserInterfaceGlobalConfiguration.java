@@ -1,18 +1,16 @@
-package io.jenkins.blueocean.commons.redirect;
+package io.jenkins.blueocean.service.embedded.redirect;
 
 import com.google.common.collect.ImmutableList;
 import hudson.Extension;
-import hudson.model.Descriptor;
 import jenkins.model.GlobalConfiguration;
 import net.sf.json.JSONObject;
-import org.kohsuke.stapler.DataBoundConstructor;
 import org.kohsuke.stapler.StaplerRequest;
 
 import javax.annotation.Nullable;
 import java.util.List;
 
-import static io.jenkins.blueocean.commons.redirect.InterfaceOption.blueocean;
-import static io.jenkins.blueocean.commons.redirect.InterfaceOption.classic;
+import static io.jenkins.blueocean.service.embedded.redirect.InterfaceOption.blueocean;
+import static io.jenkins.blueocean.service.embedded.redirect.InterfaceOption.classic;
 
 @Extension
 public class DefaultUserInterfaceGlobalConfiguration extends GlobalConfiguration {

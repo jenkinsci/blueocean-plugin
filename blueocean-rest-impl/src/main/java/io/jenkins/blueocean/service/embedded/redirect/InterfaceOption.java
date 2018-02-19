@@ -1,8 +1,4 @@
-package io.jenkins.blueocean.commons.redirect;
-
-import com.google.common.collect.ImmutableList;
-
-import java.util.List;
+package io.jenkins.blueocean.service.embedded.redirect;
 
 public class InterfaceOption {
     public static final InterfaceOption classic = new InterfaceOption("classic", "Jenkins Classic");
