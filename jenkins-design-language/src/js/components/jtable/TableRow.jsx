@@ -88,7 +88,7 @@ function processChildren(children: any, columns: any): Array<React$Element<any>>
         }
         newStyle.flexBasis = colWidth;
 
-        // Add or remove space on flexible columns in proportion to comparitive widths
+        // Add or remove space on flexible columns in proportion to comparative widths
         newStyle.flexGrow = newStyle.flexShrink = columnDescription.isFlexible ? colWidth : 0;
 
         return React.cloneElement(child, {style: newStyle});
