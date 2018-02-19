@@ -26,7 +26,7 @@ describe('ToastService', () => {
         assert.isOk(toast.id);
     });
 
-    it('adds a new toast and perserves ID if necessary', () => {
+    it('adds a new toast and preserves ID if necessary', () => {
         toastService.newToast({
             id: 12345,
             text: 'Hello World',
