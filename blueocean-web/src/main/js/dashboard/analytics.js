@@ -1,4 +1,4 @@
-import { analyticsService } from '@jenkins-cd/blueocean-core-js';
+import { analyticsService } from '../core/index.js';
 
 /** codifies all events send to analytics service in this module */
 class Analytics {

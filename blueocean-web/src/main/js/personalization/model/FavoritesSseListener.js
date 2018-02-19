@@ -1,7 +1,7 @@
 /**
  * Created by cmeyers on 8/12/16.
  */
-import { SseBus as sseBus } from '@jenkins-cd/blueocean-core-js';
+import { SseBus as sseBus } from '../../core/index.js';
 import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';
 import favoriteStore from './FavoriteStore';
 

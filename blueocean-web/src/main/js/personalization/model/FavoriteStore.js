@@ -1,8 +1,8 @@
 import { observable, action } from 'mobx';
-import { UrlConfig, Fetch, AppConfig, User, capabilityAugmenter, ToastService, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { UrlConfig, Fetch, AppConfig, User, capabilityAugmenter, ToastService, i18nTranslator } from '../../core/index.js';
 import { cleanSlashes } from '../util/UrlUtils';
 import { FavoritesSortHelper } from '../util/SortUtils';
-import { blueocean } from '@jenkins-cd/blueocean-core-js/dist/js/scopes';
+import { blueocean } from '../../core/index.js/dist/js/scopes';
 
 const t = i18nTranslator('blueocean-personalization');
 const sortHelper = new FavoritesSortHelper();

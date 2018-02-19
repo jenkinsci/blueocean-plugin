@@ -4,7 +4,7 @@
 import React, { Component, PropTypes } from 'react';
 import { observer } from 'mobx-react';
 import TransitionGroup from 'react-addons-css-transition-group';
-import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator } from '../../core/index.js';
 
 import favoriteStore from '../model/FavoriteStore';
 import favoritesSseListener from '../model/FavoritesSseListener';

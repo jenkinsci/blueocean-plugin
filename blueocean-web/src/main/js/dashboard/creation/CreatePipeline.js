@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { Page } from '@jenkins-cd/design-language';
-import { ContentPageHeader, i18nTranslator, loadingIndicator } from '@jenkins-cd/blueocean-core-js';
+import { ContentPageHeader, i18nTranslator, loadingIndicator } from '../../core/index.js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { ClassicCreationLink } from './ClassicCreationLink';

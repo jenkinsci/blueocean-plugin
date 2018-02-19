@@ -2,7 +2,7 @@ import React from 'react';
 import { action, computed, observable } from 'mobx';
 import Promise from 'bluebird';
 
-import { i18nTranslator, logging, sseService, pipelineService } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, logging, sseService, pipelineService } from '../../../core/index.js';
 const translate = i18nTranslator('blueocean-dashboard');
 
 import FlowManager from '../CreationFlowManager';

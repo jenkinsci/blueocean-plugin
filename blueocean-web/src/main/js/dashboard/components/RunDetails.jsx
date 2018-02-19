@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { TabLink } from '@jenkins-cd/design-language';
-import { i18nTranslator, ReplayButton, RunButton, LoginButton, logging } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, ReplayButton, RunButton, LoginButton, logging } from '../../core/index.js';
 import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 
 import { Icon } from '@jenkins-cd/design-language';
@@ -16,7 +16,7 @@ import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import { FullScreen } from './FullScreen';
-import { Paths, capable, locationService, Security } from '@jenkins-cd/blueocean-core-js';
+import { Paths, capable, locationService, Security } from '../../core/index.js';
 import { observer } from 'mobx-react';
 
 const { func, object, any, string } = PropTypes;

@@ -5,7 +5,7 @@ import React, { Component, PropTypes } from 'react';
 import { observer } from 'mobx-react';
 
 import { Favorite } from '@jenkins-cd/design-language';
-import { capable } from '@jenkins-cd/blueocean-core-js';
+import { capable } from '../../core/index.js';
 
 import { checkMatchingFavoriteUrls } from '../util/FavoriteUtils';
 import favoriteStore from '../model/FavoriteStore';

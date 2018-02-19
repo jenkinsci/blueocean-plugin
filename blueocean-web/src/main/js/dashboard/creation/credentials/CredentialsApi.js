@@ -1,4 +1,4 @@
-import { capabilityAugmenter, Fetch, UrlConfig, Utils, AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter, Fetch, UrlConfig, Utils, AppConfig } from '../../../core/index.js';
 
 const DOMAIN = 'blueocean-git-domain';
 const SCOPE = 'USER';

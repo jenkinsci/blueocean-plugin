@@ -1,5 +1,5 @@
 import { action, computed, observable } from 'mobx';
-import { logging } from '@jenkins-cd/blueocean-core-js';
+import { logging } from '../../../../../core/index.js';
 
 import { KaraokeApi } from '../../index';
 

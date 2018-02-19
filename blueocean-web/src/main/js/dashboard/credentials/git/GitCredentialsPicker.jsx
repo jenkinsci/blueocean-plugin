@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 import { FormElement } from '@jenkins-cd/design-language';
-import { Fetch, AppConfig, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { Fetch, AppConfig, i18nTranslator } from '../../../core/index.js';
 import { Button } from '../../creation/github/Button';
 const t = i18nTranslator('blueocean-dashboard');
 

@@ -4,7 +4,7 @@ import { Router, Route, Link, useRouterHistory, IndexRedirect } from 'react-rout
 import { createHistory } from 'history';
 import {
     logging, i18nTranslator, AppConfig, Security, UrlConfig, Utils, sseService, locationService, NotFound, SiteHeader, toClassicJobPage, User, loadingIndicator, LoginButton,
-} from '@jenkins-cd/blueocean-core-js';
+} from './core/index.js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { Provider, configureStore, combineReducers} from './redux';

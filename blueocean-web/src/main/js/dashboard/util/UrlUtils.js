@@ -20,4 +20,4 @@ export {
     getRestUrl,
     buildUrl,
     relativeUrl,
-} from '@jenkins-cd/blueocean-core-js';
+} from '../../core/index.js';

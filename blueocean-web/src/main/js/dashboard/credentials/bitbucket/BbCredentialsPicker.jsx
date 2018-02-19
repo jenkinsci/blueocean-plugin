@@ -6,7 +6,7 @@ import { FormElement, PasswordInput, TextInput } from '@jenkins-cd/design-langua
 import BbCredentialsManager from './BbCredentialsManager';
 import BbCredentialsState from './BbCredentialsState';
 import { Button } from '../../creation/github/Button';
-import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator } from '../../../core/index.js';
 const t = i18nTranslator('blueocean-dashboard');
 
 @observer

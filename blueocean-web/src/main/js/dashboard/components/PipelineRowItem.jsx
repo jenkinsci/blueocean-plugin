@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { ExpandablePath, WeatherIcon, TableRow, TableCell } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
 import { buildPipelineUrl } from '../util/UrlUtils';
-import { capable, UrlConfig } from '@jenkins-cd/blueocean-core-js';
+import { capable, UrlConfig } from '../../core/index.js';
 import { MATRIX_PIPELINE } from '../Capabilities';
 import { Icon } from '@jenkins-cd/design-language';
 

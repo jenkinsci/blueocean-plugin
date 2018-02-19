@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
 import { Page, JTable, TableHeaderRow } from '@jenkins-cd/design-language';
-import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, ContentPageHeader, AppConfig, ShowMoreButton } from '../../core/index.js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';

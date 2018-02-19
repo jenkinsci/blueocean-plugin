@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import moment from 'moment';
 // The following import target will be generate on build time, do not edit
 import revisionInfo from '../../../target/classes/io/jenkins/blueocean/revisionInfo';
-import { AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { AppConfig } from './core/index.js';
 
 export class DevelopmentFooter extends Component {
     render() {

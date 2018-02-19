@@ -3,7 +3,7 @@
  */
 import React, { Component, PropTypes } from 'react';
 import { Link } from 'react-router';
-import { logging, capable, UrlBuilder, AppConfig, RunButton, ReplayButton, LiveStatusIndicator } from '@jenkins-cd/blueocean-core-js';
+import { logging, capable, UrlBuilder, AppConfig, RunButton, ReplayButton, LiveStatusIndicator } from '../../core/index.js';
 import { ExpandablePath, Favorite, ReadableDate } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/design-language';
 import moment from 'moment';

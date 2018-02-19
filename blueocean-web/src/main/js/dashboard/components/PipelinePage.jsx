@@ -7,7 +7,7 @@ import {
     TabLink,
     WeatherIcon,
 } from '@jenkins-cd/design-language';
-import { AppConfig, ContentPageHeader, i18nTranslator, logging, NotFound, Paths, Security } from '@jenkins-cd/blueocean-core-js';
+import { AppConfig, ContentPageHeader, i18nTranslator, logging, NotFound, Paths, Security } from '../../core/index.js';
 import { Icon } from '@jenkins-cd/design-language';
 import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
 import { documentTitle } from './DocumentTitle';

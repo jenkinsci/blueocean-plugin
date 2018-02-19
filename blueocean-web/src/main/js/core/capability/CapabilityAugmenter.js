@@ -33,7 +33,7 @@ const DEFAULT_IGNORED_PROPS = ['_links'];
 /**
  * Decorate an object graph with a '_capabilities' property for each object with a valid '_class'
  * Usage:
- *      import { capabilityAugmenter } from '@jenkins-cd/blueocean-core-js';
+ *      import { capabilityAugmenter } from '../../core/index.js';
  *      const augmentCapability = capabilityAugmenter.augmentCapability;
  *
  *      fetch(url, fetchOptions)

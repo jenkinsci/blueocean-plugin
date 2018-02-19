@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { logging } from '@jenkins-cd/blueocean-core-js';
+import { logging } from '../../core/index.js';
 import { observer } from 'mobx-react';
 import Extensions from '@jenkins-cd/js-extensions';
 import { Augmenter } from './karaoke/services/Augmenter';

@@ -1,4 +1,4 @@
-import { BunkerService, logging } from '@jenkins-cd/blueocean-core-js';
+import { BunkerService, logging } from '../../../../core/index.js';
 import { GeneralLogPager, LogPager, PipelinePager } from './pagers';
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Service');
 /*

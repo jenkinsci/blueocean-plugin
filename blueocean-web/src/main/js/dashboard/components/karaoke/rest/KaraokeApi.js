@@ -1,4 +1,4 @@
-import { capabilityAugmenter, Fetch, logging } from '@jenkins-cd/blueocean-core-js';
+import { capabilityAugmenter, Fetch, logging } from '../../../../core/index.js';
 import debounce from 'lodash.debounce';
 import { generateDetailUrl } from '../urls/detailUrl';
 import { getNodesInformation } from '../../../util/logDisplayHelper';

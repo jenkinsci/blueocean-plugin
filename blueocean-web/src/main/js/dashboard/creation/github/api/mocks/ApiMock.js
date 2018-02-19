@@ -1,5 +1,5 @@
 import Promise from 'bluebird';
-import { Utils } from '@jenkins-cd/blueocean-core-js';
+import { Utils } from '../../../../../core/index.js';
 
 export class ApiMock {
 

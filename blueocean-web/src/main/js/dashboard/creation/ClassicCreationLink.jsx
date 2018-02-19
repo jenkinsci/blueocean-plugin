@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { i18nTranslator, buildClassicCreateJobUrl } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator, buildClassicCreateJobUrl } from '../../core/index.js';
 import { Icon } from '@jenkins-cd/design-language';
 
 const t = i18nTranslator('blueocean-dashboard');

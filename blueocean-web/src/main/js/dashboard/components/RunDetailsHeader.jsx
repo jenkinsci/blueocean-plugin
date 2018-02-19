@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/design-language';
-import { UrlConfig, AppConfig, logging, ResultPageHeader, TimeManager } from '@jenkins-cd/blueocean-core-js';
+import { UrlConfig, AppConfig, logging, ResultPageHeader, TimeManager } from '../../core/index.js';
 import { ExpandablePath, ReadableDate, TimeDuration, CommitId } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import { Link } from 'react-router';

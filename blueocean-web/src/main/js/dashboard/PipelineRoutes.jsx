@@ -1,6 +1,6 @@
 import { Route, Redirect, IndexRedirect } from 'react-router';
 import React from 'react';
-import { AppConfig } from '@jenkins-cd/blueocean-core-js';
+import { AppConfig } from '../core/index.js';
 import { analytics } from './analytics';
 
 import Dashboard from './Dashboard';

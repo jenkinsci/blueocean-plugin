@@ -1,6 +1,6 @@
 import React from 'react';
 import { action, asFlat, computed, observable } from 'mobx';
-import { logging, Utils } from '@jenkins-cd/blueocean-core-js';
+import { logging, Utils } from '../../../core/index.js';
 
 const LOGGER = logging.logger('io.jenkins.blueocean.create-pipeline');
 

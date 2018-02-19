@@ -1,4 +1,4 @@
-import { BunkerService, Pager } from '@jenkins-cd/blueocean-core-js';
+import { BunkerService, Pager } from '../../../core/index.js';
 import TestLogService from './TestLogService';
 
 

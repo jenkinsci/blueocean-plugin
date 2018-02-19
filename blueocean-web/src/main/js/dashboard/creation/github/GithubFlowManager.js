@@ -1,7 +1,7 @@
 import React from 'react';
 import { action, computed, observable } from 'mobx';
-import { sseService } from '@jenkins-cd/blueocean-core-js';
-import { logging, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { sseService } from '../../../core/index.js';
+import { logging, i18nTranslator } from '../../../core/index.js';
 
 import waitAtLeast from '../flow2/waitAtLeast';
 

@@ -1,5 +1,5 @@
 import { action, computed, observable } from 'mobx';
-import { capable, logging } from '@jenkins-cd/blueocean-core-js';
+import { capable, logging } from '../../../../core/index.js';
 
 import { prefixIfNeeded } from '../urls/prefixIfNeeded';
 import { FREESTYLE_JOB, MULTIBRANCH_PIPELINE, PIPELINE_JOB } from '../../../Capabilities';

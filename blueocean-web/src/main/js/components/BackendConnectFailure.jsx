@@ -23,7 +23,7 @@
  */
 
 import React, { Component } from 'react';
-import { sseConnection, Fullscreen, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { sseConnection, Fullscreen, i18nTranslator } from '../core/index.js';
 
 const translate = i18nTranslator('blueocean-web');
 

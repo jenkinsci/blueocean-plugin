@@ -5,7 +5,7 @@ import React, { Component, PropTypes } from 'react';
 import { observer } from 'mobx-react';
 
 import { Toaster } from '@jenkins-cd/design-language';
-import { ToastService as toastService } from '@jenkins-cd/blueocean-core-js';
+import { ToastService as toastService } from '../core/index.js';
 
 /**
  * Provides a UI for displaying toasts and binds it with the shared ToastService.

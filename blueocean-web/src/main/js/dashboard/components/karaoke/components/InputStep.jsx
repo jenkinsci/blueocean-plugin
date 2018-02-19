@@ -7,7 +7,7 @@ import {
     ParameterApi as parameterApi,
     StringUtil,
     logging,
-} from '@jenkins-cd/blueocean-core-js';
+} from '../../../../core/index.js';
 import { Alerts } from '@jenkins-cd/design-language';
 
 /**

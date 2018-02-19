@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { pagerService } from '@jenkins-cd/blueocean-core-js';
+import { pagerService } from '../../core/index.js';
 
 import TestResults from './testing/TestResults';
 import TestService from './testing/TestService';

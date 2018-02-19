@@ -4,7 +4,7 @@ import debounce from 'lodash.debounce';
 
 import { FormElement, TextInput } from '@jenkins-cd/design-language';
 import FlowStep from '../../flow2/FlowStep';
-import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator } from '../../../../core/index.js';
 const t = i18nTranslator('blueocean-dashboard');
 
 let STATE;

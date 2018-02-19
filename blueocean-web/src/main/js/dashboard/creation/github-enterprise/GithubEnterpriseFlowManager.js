@@ -1,5 +1,5 @@
 import React from 'react';
-import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator } from '../../../core/index.js';
 
 import waitAtLeast from '../flow2/waitAtLeast';
 import GithubFlowManager from '../github/GithubFlowManager';

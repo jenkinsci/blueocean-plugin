@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { pipelineService, activityService } from '@jenkins-cd/blueocean-core-js';
+import { pipelineService, activityService } from '../core/index.js';
 import navState from './DashboardNavState';
 
 

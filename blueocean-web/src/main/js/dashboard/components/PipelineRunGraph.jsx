@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { PipelineGraph } from '@jenkins-cd/design-language';
-import { TimeManager, i18nTranslator, logging } from '@jenkins-cd/blueocean-core-js';
+import { TimeManager, i18nTranslator, logging } from '../../core/index.js';
 
 const timeManager = new TimeManager();
 const { array, any, func, object, string } = PropTypes;

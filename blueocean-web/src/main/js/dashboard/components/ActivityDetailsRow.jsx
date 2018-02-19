@@ -11,7 +11,7 @@ import {
     RunButton,
     LiveStatusIndicator,
     TimeHarmonizer as timeHarmonizer,
-} from '@jenkins-cd/blueocean-core-js';
+} from '../../core/index.js';
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';

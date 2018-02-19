@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { observer } from 'mobx-react';
-import { ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
+import { ShowMoreButton } from '../../../core/index.js';
 import TestCaseResultRow from './TestCaseResultRow';
 
 @observer
