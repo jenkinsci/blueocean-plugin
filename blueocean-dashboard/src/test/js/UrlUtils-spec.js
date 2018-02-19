@@ -44,7 +44,7 @@ describe('UrlUtils', () => {
     });
 
     describe('buildRunDetailsUrl', () => {
-        it('should build the baseUrl if tabName ommitted', () => {
+        it('should build the baseUrl if tabName omitted', () => {
             const url = buildRunDetailsUrl(
                 'jenkins',
                 'blueocean',

@@ -8,7 +8,7 @@
     </testcase>
     <testcase classname="UrlUtils buildPipelineUrl should build the baseUrl for 3-level nested pipeline" name="UrlUtils buildPipelineUrl should build the baseUrl for 3-level nested pipeline" time="0">
     </testcase>
-    <testcase classname="UrlUtils buildRunDetailsUrl should build the baseUrl if tabName ommitted" name="UrlUtils buildRunDetailsUrl should build the baseUrl if tabName ommitted" time="0.001">
+    <testcase classname="UrlUtils buildRunDetailsUrl should build the baseUrl if tabName omitted" name="UrlUtils buildRunDetailsUrl should build the baseUrl if tabName omitted" time="0.001">
     </testcase>
     <testcase classname="UrlUtils buildRunDetailsUrl should build the full url with tab name" name="UrlUtils buildRunDetailsUrl should build the full url with tab name" time="0">
     </testcase>
