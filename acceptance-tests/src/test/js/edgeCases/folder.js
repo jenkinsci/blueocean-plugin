@@ -101,7 +101,7 @@ module.exports = {
     */
     'step 05': function (browser) {
        const bluePipelinesPage = browser.page.bluePipelines().navigate();
-       // simply validate that the pipline listing is showing the basic things
+       // simply validate that the pipeline listing is showing the basic things
        bluePipelinesPage.assertBasicLayoutOkay();
        // by now we should have 2 different jobs from prior steps
        bluePipelinesPage.countJobToBeEqual(browser, jobName, 2);
