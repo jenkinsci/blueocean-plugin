@@ -38,6 +38,11 @@ public class MultiBranchPipeline extends AbstractPipeline {
         return this;
     }
 
+    // Uses jobApi.build(Folder folder, String pipeline) to force a rescan.
+    public void rescanThisPipeline() throws IOException {
+        jobApi.build(getFolder(), getName());
+    }
+
     public void stopAllRuns() throws IOException {
         jobApi.abortAllBuilds(getFolder(), getName());
     }
