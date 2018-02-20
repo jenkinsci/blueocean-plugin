@@ -82,26 +82,26 @@ public class TypeUtil {
      * Implements the logic for {@link #erasure(Type)}.
      */
     private static final TypeVisitor<Class,Void> eraser = new TypeVisitor<Class,Void>() {
-        public Class onClass(Class c,Void _) {
+        public Class onClass(Class c,Void ignored) {
             return c;
         }
 
-        public Class onParameterizdType(ParameterizedType p,Void _) {
+        public Class onParameterizdType(ParameterizedType p,Void ignored) {
             // TODO: why getRawType returns Type? not Class?
             return visit(p.getRawType(),null);
         }
 
-        public Class onGenericArray(GenericArrayType g,Void _) {
+        public Class onGenericArray(GenericArrayType g,Void ignored) {
             return Array.newInstance(
                 visit(g.getGenericComponentType(),null),
                 0 ).getClass();
         }
 
-        public Class onVariable(TypeVariable v,Void _) {
+        public Class onVariable(TypeVariable v,Void ignored) {
             return visit(v.getBounds()[0],null);
         }
 
-        public Class onWildcard(WildcardType w,Void _) {
+        public Class onWildcard(WildcardType w,Void ignored) {
             return visit(w.getUpperBounds()[0],null);
         }
     };

@@ -32,10 +32,11 @@ public abstract class ExportInterceptor {
      *
      * @param property to get the value from model object
      * @param model object with this property
+     * @param config current configuration to control marshalling / exception-handling behaviour
      * @return the value of the property, if {@link #SKIP} is returned, this property will be skipped
      * @throws IOException if there was a problem with serialization that should prevent
      *         the serialization from proceeding
-     * @see Exported#skipNull()
+     * @see org.kohsuke.stapler.export.Exported#skipNull()
      */
     public abstract Object getValue(Property property, Object model, ExportConfig config) throws IOException;
 
