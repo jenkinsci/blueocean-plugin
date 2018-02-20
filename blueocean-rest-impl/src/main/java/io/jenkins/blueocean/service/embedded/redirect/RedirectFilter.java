@@ -36,25 +36,28 @@ public class RedirectFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest request1 = (HttpServletRequest) request;
-        if (request instanceof HttpServletRequest && "/".equals(request1.getPathInfo()) && request.getParameter("noDefaultRedirect") == null) {
-            String defaultUI = InterfaceOption.classic.getInterfaceId();
-            DefaultUserInterfaceGlobalConfiguration userInterfaceGlobalConfiguration = GlobalConfiguration.all().get(DefaultUserInterfaceGlobalConfiguration.class);
-            if (userInterfaceGlobalConfiguration != null) {
-                defaultUI = userInterfaceGlobalConfiguration.getInterfaceId();
-            }
+        if(request instanceof HttpServletRequest) {
+            HttpServletRequest request1 = (HttpServletRequest) request;
 
-            User user = User.current();
-            if (user != null) {
-                DefaultUserInterfaceUserProperty property = user.getProperty(DefaultUserInterfaceUserProperty.class);
-                if (property != null && !property.getInterfaceId().equals(DefaultUserInterfaceUserProperty.system.getInterfaceId())) {
-                    defaultUI = property.getInterfaceId();
+            if ("/".equals(request1.getPathInfo()) && request.getParameter("noDefaultRedirect") == null) {
+                String defaultUI = InterfaceOption.classic.getInterfaceId();
+                DefaultUserInterfaceGlobalConfiguration userInterfaceGlobalConfiguration = GlobalConfiguration.all().get(DefaultUserInterfaceGlobalConfiguration.class);
+                if (userInterfaceGlobalConfiguration != null) {
+                    defaultUI = userInterfaceGlobalConfiguration.getInterfaceId();
                 }
-            }
 
-            if (InterfaceOption.blueocean.getInterfaceId().equals(defaultUI)) {
-                ((HttpServletResponse) response).sendRedirect(request1.getContextPath() + "/blue");
-                return;
+                User user = User.current();
+                if (user != null) {
+                    DefaultUserInterfaceUserProperty property = user.getProperty(DefaultUserInterfaceUserProperty.class);
+                    if (property != null && !property.getInterfaceId().equals(DefaultUserInterfaceUserProperty.system.getInterfaceId())) {
+                        defaultUI = property.getInterfaceId();
+                    }
+                }
+
+                if (InterfaceOption.blueocean.getInterfaceId().equals(defaultUI)) {
+                    ((HttpServletResponse) response).sendRedirect(request1.getContextPath() + "/blue");
+                    return;
+                }
             }
         }
         chain.doFilter(request, response);
