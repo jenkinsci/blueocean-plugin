@@ -4,6 +4,7 @@ import hudson.model.Action;
 import hudson.model.Result;
 import io.jenkins.blueocean.rest.model.BlueRun.BlueRunResult;
 import io.jenkins.blueocean.rest.model.BlueRun.BlueRunState;
+import java.util.Collections;
 import org.jenkinsci.plugins.workflow.actions.ErrorAction;
 import org.jenkinsci.plugins.workflow.graph.AtomNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -203,6 +204,9 @@ public class FlowNodeWrapper {
      * Filters by class to mimic Item.getActions(class).
      */
     public <T extends Action> Collection<T> getPipelineActions(Class<T> clazz) {
+        if(pipelineActions == null){
+            return Collections.emptyList();
+        }
         ArrayList<T> filtered = new ArrayList<>();
         for (Action a:pipelineActions) {
             if (clazz.isInstance(a)) {
