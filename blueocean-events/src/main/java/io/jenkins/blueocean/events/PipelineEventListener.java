@@ -7,7 +7,7 @@ import io.jenkins.blueocean.rest.impl.pipeline.PipelineInputStepListener;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeUtil;
 import java.io.IOException;
 import java.util.ArrayDeque;
-import java.util.Iterator;
+import java.util.Collection;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
@@ -60,20 +60,20 @@ public class PipelineEventListener implements GraphListener {
             ArrayDeque<String> branch = getBranch(flowNode);
             currentStageName.put(flowNode.getExecution(), flowNode.getDisplayName());
             currentStageId.put(flowNode.getExecution(), flowNode.getId());
-            publishEvent(newMessage(PipelineEventChannel.Event.pipeline_stage, flowNode, branch.iterator()));
+            publishEvent(newMessage(PipelineEventChannel.Event.pipeline_stage, flowNode, branch));
         } else if (flowNode instanceof StepStartNode) {
             if (flowNode.getAction(BodyInvocationAction.class) != null) {
                 ArrayDeque<String> branch = getBranch(flowNode);
                 branch.add(flowNode.getId());
-                publishEvent(newMessage(PipelineEventChannel.Event.pipeline_block_start, flowNode, branch.iterator()));
+                publishEvent(newMessage(PipelineEventChannel.Event.pipeline_block_start, flowNode, branch));
             } else if (flowNode.getPersistentAction(QueueItemAction.class) != null) {
                 // Make sure we fire an event for the start of node blocks.
                 ArrayDeque<String> branch = getBranch(flowNode);
-                publishEvent(newMessage(PipelineEventChannel.Event.pipeline_step, flowNode, branch.iterator()));
+                publishEvent(newMessage(PipelineEventChannel.Event.pipeline_step, flowNode, branch));
             }
         } else if (flowNode instanceof StepAtomNode) {
             ArrayDeque<String> branch = getBranch(flowNode);
-            publishEvent(newMessage(PipelineEventChannel.Event.pipeline_step, flowNode, branch.iterator()));
+            publishEvent(newMessage(PipelineEventChannel.Event.pipeline_step, flowNode, branch));
         } else if (flowNode instanceof StepEndNode) {
             if (flowNode.getAction(BodyInvocationAction.class) != null) {
                 FlowNode startNode = ((StepEndNode) flowNode).getStartNode();
@@ -82,7 +82,7 @@ public class PipelineEventListener implements GraphListener {
                 ArrayDeque<String> branch = getBranch(startNode);
 
                 branch.add(startNodeId);
-                publishEvent(newMessage(PipelineEventChannel.Event.pipeline_block_end, flowNode, branch.iterator()));
+                publishEvent(newMessage(PipelineEventChannel.Event.pipeline_block_end, flowNode, branch));
             }
         } else if (flowNode instanceof FlowEndNode) {
             publishEvent(newMessage(PipelineEventChannel.Event.pipeline_end, flowNode.getExecution()));
@@ -110,10 +110,9 @@ public class PipelineEventListener implements GraphListener {
         return branch;
     }
 
-    private String toPath(Iterator<String> branch) {
+    private String toPath(Collection<String> branch) {
         StringBuilder builder = new StringBuilder();
-        while (branch.hasNext()) {
-            String leaf = branch.next();
+        for(String leaf: branch){
             if(builder.length() > 0) {
                 builder.append("/");
             }
@@ -149,7 +148,7 @@ public class PipelineEventListener implements GraphListener {
         return message;
     }
 
-    private Message newMessage(PipelineEventChannel.Event event, FlowNode flowNode, Iterator<String> branch) {
+    private Message newMessage(PipelineEventChannel.Event event, FlowNode flowNode, Collection<String> branch) {
         Message message = newMessage(event, flowNode.getExecution());
 
         message.set(PipelineEventChannel.EventProps.pipeline_step_flownode_id, flowNode.getId());
