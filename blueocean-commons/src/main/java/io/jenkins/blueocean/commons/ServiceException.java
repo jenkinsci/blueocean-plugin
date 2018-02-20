@@ -39,7 +39,10 @@ public class ServiceException extends RuntimeException implements HttpResponse {
         this.errorMessage = errorMessage;
     }
 
-    /** Convert ErrorMessage to JSON */
+    /**
+     * Convert ErrorMessage to JSON
+     * @return JSON string
+     **/
     public String toJson(){
         return JsonConverter.toJson(errorMessage);
     }
