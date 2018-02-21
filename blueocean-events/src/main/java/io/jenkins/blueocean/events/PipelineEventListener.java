@@ -1,17 +1,19 @@
 package io.jenkins.blueocean.events;
 
+import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.Queue;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineInputStepListener;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeUtil;
 import java.io.IOException;
-import java.util.ArrayDeque;
 import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.jenkinsci.plugins.pubsub.Events;
@@ -57,30 +59,28 @@ public class PipelineEventListener implements GraphListener {
     public void onNewHead(FlowNode flowNode) {
         // test whether we have a stage node
         if (PipelineNodeUtil.isStage(flowNode)) {
-            ArrayDeque<String> branch = getBranch(flowNode);
+            List<String> branch = getBranch(flowNode);
             currentStageName.put(flowNode.getExecution(), flowNode.getDisplayName());
             currentStageId.put(flowNode.getExecution(), flowNode.getId());
             publishEvent(newMessage(PipelineEventChannel.Event.pipeline_stage, flowNode, branch));
         } else if (flowNode instanceof StepStartNode) {
             if (flowNode.getAction(BodyInvocationAction.class) != null) {
-                ArrayDeque<String> branch = getBranch(flowNode);
+                List<String> branch = getBranch(flowNode);
                 branch.add(flowNode.getId());
                 publishEvent(newMessage(PipelineEventChannel.Event.pipeline_block_start, flowNode, branch));
             } else if (flowNode.getPersistentAction(QueueItemAction.class) != null) {
                 // Make sure we fire an event for the start of node blocks.
-                ArrayDeque<String> branch = getBranch(flowNode);
+                List<String> branch = getBranch(flowNode);
                 publishEvent(newMessage(PipelineEventChannel.Event.pipeline_step, flowNode, branch));
             }
         } else if (flowNode instanceof StepAtomNode) {
-            ArrayDeque<String> branch = getBranch(flowNode);
+            List<String> branch = getBranch(flowNode);
             publishEvent(newMessage(PipelineEventChannel.Event.pipeline_step, flowNode, branch));
         } else if (flowNode instanceof StepEndNode) {
             if (flowNode.getAction(BodyInvocationAction.class) != null) {
                 FlowNode startNode = ((StepEndNode) flowNode).getStartNode();
                 String startNodeId = startNode.getId();
-
-                ArrayDeque<String> branch = getBranch(startNode);
-
+                List<String> branch = getBranch(startNode);
                 branch.add(startNodeId);
                 publishEvent(newMessage(PipelineEventChannel.Event.pipeline_block_end, flowNode, branch));
             }
@@ -89,25 +89,9 @@ public class PipelineEventListener implements GraphListener {
         }
     }
 
-    private ArrayDeque<String> getBranch(FlowNode flowNode) {
-        ArrayDeque<String> branch = new ArrayDeque<>();
-        String parentBlockId = flowNode.getEnclosingId();
-
-        while (parentBlockId != null) {
-            branch.addFirst(parentBlockId);
-            try {
-                FlowNode parentBlock = flowNode.getExecution().getNode(parentBlockId);
-                if(parentBlock == null){
-                    return branch;
-                }
-                parentBlockId = parentBlock.getEnclosingId();
-            } catch (IOException e) {
-                LOGGER.log(Level.WARNING, String.format("Failed to load enclosing FlowNode: %s of node: %s",
-                        parentBlockId, flowNode), e);
-                return branch;
-            }
-        }
-        return branch;
+    /* package: so that we can unit test it */ List<String> getBranch(FlowNode flowNode) {
+        return Lists.reverse(flowNode.getEnclosingBlocks().stream()
+                .map(FlowNode::getId).collect(Collectors.toList()));
     }
 
     private String toPath(Collection<String> branch) {
