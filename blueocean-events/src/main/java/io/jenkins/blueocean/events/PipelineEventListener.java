@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.WeakHashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import org.jenkinsci.plugins.pubsub.Events;
@@ -90,8 +89,7 @@ public class PipelineEventListener implements GraphListener {
     }
 
     /* package: so that we can unit test it */ List<String> getBranch(FlowNode flowNode) {
-        return Lists.reverse(flowNode.getEnclosingBlocks().stream()
-                .map(FlowNode::getId).collect(Collectors.toList()));
+        return Lists.reverse(flowNode.getAllEnclosingIds());
     }
 
     private String toPath(Collection<String> branch) {
