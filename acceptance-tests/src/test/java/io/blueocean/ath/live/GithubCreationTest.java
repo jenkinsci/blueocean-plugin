@@ -1,13 +1,19 @@
 package io.blueocean.ath.live;
 
+import com.google.common.io.Files;
 import com.google.common.io.Resources;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.CustomJenkinsServer;
 import io.blueocean.ath.Login;
 import io.blueocean.ath.Retry;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
+import io.blueocean.ath.model.MultiBranchPipeline;
+import io.blueocean.ath.pages.blue.ActivityPage;
+import io.blueocean.ath.pages.blue.BranchPage;
+import io.blueocean.ath.pages.blue.DashboardPage;
 import io.blueocean.ath.pages.blue.EditorPage;
 import io.blueocean.ath.pages.blue.GithubCreationPage;
+import io.blueocean.ath.pages.blue.PullRequestsPage;
 import io.blueocean.ath.sse.SSEClientRule;
 import org.apache.log4j.Logger;
 import org.junit.*;
@@ -17,6 +23,8 @@ import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
 
 import javax.inject.Inject;
+import javax.validation.constraints.AssertTrue;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -40,6 +48,8 @@ public class GithubCreationTest{
     private GitHub github;
     private GHRepository ghRepository;
 
+    private MultiBranchPipeline testCreatePullRequestPipeline = null;
+
     @Inject
     GithubCreationPage creationPage;
 
@@ -49,13 +59,21 @@ public class GithubCreationTest{
     @Inject @Rule
     public SSEClientRule sseClient;
 
+    @Inject ActivityPage activityPage;
+
+    @Inject BranchPage branchPage;
+
     @Inject EditorPage editorPage;
+
+    @Inject DashboardPage dashboardPage;
+
+    @Inject PullRequestsPage pullRequestsPage;
 
     @Inject
     CustomJenkinsServer jenkins;
 
     /**
-     * Cleans up repostory after the test has completed.
+     * Cleans up repository after the test has completed.
      *
      * @throws IOException
      */
@@ -112,9 +130,8 @@ public class GithubCreationTest{
     /**
      * This test tests the github creation flow.
      *
-     * Creates a github repo with a sameple Jenkinsfile
+     * Creates a github repo with a sample Jenkinsfile
      *
-     * TODO: Add PR coverage.
      */
     @Test
    // @Retry(3)
@@ -128,8 +145,50 @@ public class GithubCreationTest{
         creationPage.createPipeline(token, organization, repo);
     }
 
+    /**
+     * This test walks through a Pull Request flow..
+     *
+     * -Creates a github repo with a sample Jenkinsfile and follows
+     *  the typical create flow
+     * -Navigates back to the top level Dashboard page
+     * -Creates a PR in the GH repo
+     * -Triggers a rescan of the multibranch pipeline
+     * -Opens the PR tab to verify that we actually have something there.
+     *
+     */
+
     @Test
-    @Retry(3)
+    public void testCreatePullRequest() throws IOException {
+        String branchToCreate = "new-branch";
+        // Initialize our MultiBranchPipeline object as `repo` so that we
+        // can trigger a rescan of it.
+        testCreatePullRequestPipeline = mbpFactory.pipeline(repo);
+        byte[] firstJenkinsfile = "stage('first-build') { echo 'first-build' }".getBytes("UTF-8");
+        GHContentUpdateResponse initialUpdateResponse = ghRepository.createContent(firstJenkinsfile, "firstJenkinsfile", "Jenkinsfile", "master");
+        ghRepository.createRef(("refs/heads/" + branchToCreate), initialUpdateResponse.getCommit().getSHA1());
+        logger.info("Created master and " + branchToCreate + " branches in " + repo);
+
+        ghRepository.createContent("hi there","newfile", "new-file", branchToCreate);
+        creationPage.createPipeline(token, organization, repo);
+        dashboardPage.open();
+        ghRepository.createPullRequest(
+            "Add new-file to our repo",
+            branchToCreate,
+            "master",
+            "My first pull request is very exciting.");
+        // Fire the rescan.
+        testCreatePullRequestPipeline.rescanThisPipeline();
+        // Right now we're at dashboard page, so we need to first click on
+        // the name of the pipeline we just created
+        dashboardPage.clickPipeline(repo);
+        logger.info("Clicked the pipeline " + repo + " on dashboardPage");
+        // Navigate to the pullRequestsPage
+        pullRequestsPage.open(repo);
+    }
+
+    @Test
+    // @Retry(3)
+    @Ignore
     public void testTokenValidation_failed() throws IOException {
         jenkins.deleteUserDomainCredential("alice", "blueocean-github-domain", "github");
         creationPage.navigateToCreation();
