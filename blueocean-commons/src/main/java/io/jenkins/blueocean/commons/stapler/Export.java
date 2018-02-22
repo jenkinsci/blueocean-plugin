@@ -150,7 +150,7 @@ public class Export {
 
     private Export() {};
 
-    public static class BlueOceanExportInterceptor extends ExportInterceptor{
+    private static class BlueOceanExportInterceptor extends ExportInterceptor{
         @Override
         public Object getValue(Property property, Object model, ExportConfig config) throws IOException {
             if(model instanceof Action){
