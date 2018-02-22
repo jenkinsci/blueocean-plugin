@@ -35,7 +35,7 @@ public abstract class ExportInterceptor {
      * @return the value of the property, if {@link #SKIP} is returned, this property will be skipped
      * @throws IOException if there was a problem with serialization that should prevent
      *         the serialization from proceeding
-     * @see Exported#skipNull()
+     * @see org.kohsuke.stapler.export.Exported#skipNull()
      */
     public abstract Object getValue(Property property, Object model, ExportConfig config) throws IOException;
 
