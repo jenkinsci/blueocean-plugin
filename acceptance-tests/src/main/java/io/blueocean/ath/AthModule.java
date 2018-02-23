@@ -4,20 +4,11 @@ import com.google.inject.AbstractModule;
 import com.google.inject.assistedinject.FactoryModuleBuilder;
 import com.google.inject.name.Names;
 import com.offbytwo.jenkins.JenkinsServer;
-import io.blueocean.ath.factory.ActivityPageFactory;
-import io.blueocean.ath.factory.BranchPageFactory;
-import io.blueocean.ath.factory.ClassicPipelineFactory;
-import io.blueocean.ath.factory.FreestyleJobFactory;
-import io.blueocean.ath.factory.MultiBranchPipelineFactory;
-import io.blueocean.ath.factory.RunDetailsArtifactsPageFactory;
-import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
+import io.blueocean.ath.factory.*;
 import io.blueocean.ath.model.ClassicPipeline;
 import io.blueocean.ath.model.FreestyleJob;
 import io.blueocean.ath.model.MultiBranchPipeline;
-import io.blueocean.ath.pages.blue.ActivityPage;
-import io.blueocean.ath.pages.blue.BranchPage;
-import io.blueocean.ath.pages.blue.RunDetailsArtifactsPage;
-import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
+import io.blueocean.ath.pages.blue.*;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.logging.LogType;
@@ -139,5 +130,9 @@ public class AthModule extends AbstractModule {
         install(new FactoryModuleBuilder()
             .implement(BranchPage.class, BranchPage.class)
             .build(BranchPageFactory.class));
+
+        install(new FactoryModuleBuilder()
+            .implement(PullRequestsPage.class, PullRequestsPage.class)
+            .build(PullRequestsPageFactory.class));
     }
 }

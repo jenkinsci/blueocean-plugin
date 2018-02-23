@@ -2,10 +2,12 @@ package io.blueocean.ath.pages.blue;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import io.blueocean.ath.BaseUrl;
+import io.blueocean.ath.Locate;
 import io.blueocean.ath.WaitUtil;
-import io.blueocean.ath.factory.BranchPageFactory;
+import io.blueocean.ath.WebDriverMixin;
+import io.blueocean.ath.factory.ActivityPageFactory;
 import io.blueocean.ath.factory.PullRequestsPageFactory;
+import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
 import io.blueocean.ath.model.AbstractPipeline;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.annotations.Nullable;
@@ -17,24 +19,27 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import javax.inject.Inject;
-import java.net.URLEncoder;
 
-import static io.blueocean.ath.factory.PullRequestsPageFactory.*;
-
-// I should have started with branchPage.
-
-
-public class PullRequestsPage {
-    private Logger logger = Logger.getLogger(ActivityPage.class);
+public class PullRequestsPage implements WebDriverMixin {
+    private Logger logger = Logger.getLogger(BranchPage.class);
 
     private WebDriver driver;
     private AbstractPipeline pipeline;
+
     @Inject
-    @BaseUrl
-    String base;
+    ActivityPageFactory activityPageFactory;
+
+    @Inject
+    PullRequestsPageFactory pullRequestsPageFactory;
+
+    @Inject
+    RunDetailsPipelinePageFactory runDetailsPipelinePageFactory;
 
     @Inject
     WaitUtil wait;
+
+    @Inject
+    EditorPage editorPage;
 
     @Inject
     public PullRequestsPage(WebDriver driver) {
@@ -49,43 +54,74 @@ public class PullRequestsPage {
         PageFactory.initElements(driver, this);
     }
 
-    /*
-    public void checkPipeline(AbstractPipeline pipeline) {
-        Assert.assertNotNull("AbstractPipeline is null", pipeline);
-    }
-    */
 
-    public PullRequestsPage checkUrl() {
-        logger.info("--> It will be " + pipeline.getUrl() + "/pr");
-        wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/pr"), 120000);
+    /**
+    HEY
+    Look for something like multibranch-table, pr-table, or article-table
+
+    Here's the one from BranchPage:
+    public BranchPage checkUrl() {
+        wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/branches"), 30000);
+        wait.until(By.cssSelector("div.multibranch-table"));
+        return this;
+    }
+    Here's the one from ActivityPage:
+    public ActivityPage checkUrl() {
+        wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity"), 120000);
         wait.until(By.cssSelector("article.activity"), 60000);
         return this;
     }
-
-    // public void open(String pipeline) {
-    public PullRequestsPage open(String pipeline) {
-        // checkPipeline(pipeline);
-        driver.get(base + "/blue/organizations/jenkins/" + pipeline + "/pr");
-        // checkUrl();
-        logger.info("Opened PR page for " + pipeline);
+    */
+    public PullRequestsPage checkUrl() {
+        wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/pr"), 30000);
+        // HEY
+        // Look for
+        wait.until(By.cssSelector("div.multibranch-table"));
         return this;
     }
 
-    public PullRequestsPage clickBranchTab() {
-        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("a.branches"))).click();
-        logger.info("Clicked on branch tab");
-        return this.checkUrl();
+    /**
+     * HEY
+     *
+     * Add a checkPipeline method maybe? Or checkPr?
+     *
+     *
+     *
+     */
+    public void checkPipeline() {
+        Assert.assertNotNull("AbstractPipeline is null", pipeline);
     }
 
-    public By getSelectorForBranch(String branchName) {
-        return By.xpath("//*[@data-branch=\"" + branchName + "\"]");
+    public PullRequestsPage clickHistoryButton(String prNumber) {
+        wait.until(By.cssSelector("div[data-branch='" + prNumber + "'] a.history-button")).click();
+        logger.info("Clicked history button of branch " + prNumber);
+        // return pullRequestsPageFactory.withPipeline(pipeline).checkUrl(branch);
+        return pullRequestsPageFactory.withPipeline(pipeline).checkUrl();
     }
 
-    public WebElement getRunRowForBranch(String branchName) {
-        return wait.until(getSelectorForBranch(branchName));
+    public void open(String pipelineName) {
+        go("/blue/organizations/jenkins/" + pipelineName + "/pr");
+        logger.info("PullRequestsPage --> opened PR tab for " + pipelineName);
     }
 
-    public By getSelectorForRowCells() {
-        return By.className("JTable-cell");
+    public EditorPage openEditor(String branch) {
+        wait.until(By.cssSelector("div[data-branch='" + branch + "'] a.pipeline-editor-link")).click();
+        logger.info("Clicked Editor button of branch " + branch);
+        return editorPage;
     }
+
+    /**
+     * Open run details for the specified pr (by clicking on its row)
+     * @param prNumber
+     * @return
+     */
+    public RunDetailsPipelinePage openPrDetails(String prNumber) {
+        findPrRow(prNumber).click();
+        return runDetailsPipelinePageFactory.withPipeline(pipeline);
+    }
+
+    private WebElement findPrRow(String prNumber) {
+        return wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[data-pr='" + prNumber + "']")));
+    }
+
 }

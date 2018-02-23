@@ -156,7 +156,6 @@ public class GithubCreationTest{
      * -Opens the PR tab to verify that we actually have something there.
      *
      */
-
     @Test
     public void testCreatePullRequest() throws IOException {
         String branchToCreate = "new-branch";
@@ -184,11 +183,11 @@ public class GithubCreationTest{
         logger.info("Clicked the pipeline " + repo + " on dashboardPage");
         // Navigate to the pullRequestsPage
         pullRequestsPage.open(repo);
+        pullRequestsPage.getCurrentUrl();
     }
 
     @Test
-    // @Retry(3)
-    @Ignore
+    @Retry(3)
     public void testTokenValidation_failed() throws IOException {
         jenkins.deleteUserDomainCredential("alice", "blueocean-github-domain", "github");
         creationPage.navigateToCreation();
@@ -196,5 +195,4 @@ public class GithubCreationTest{
         creationPage.validateGithubOauthToken("foo");
         creationPage.findFormErrorMessage("Invalid access token.");
     }
-
 }
