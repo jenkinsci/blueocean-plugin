@@ -54,53 +54,36 @@ public class PullRequestsPage implements WebDriverMixin {
         PageFactory.initElements(driver, this);
     }
 
-
-    /**
-    HEY
-    Look for something like multibranch-table, pr-table, or article-table
-
-    Here's the one from BranchPage:
-    public BranchPage checkUrl() {
-        wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/branches"), 30000);
-        wait.until(By.cssSelector("div.multibranch-table"));
-        return this;
-    }
-    Here's the one from ActivityPage:
-    public ActivityPage checkUrl() {
-        wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity"), 120000);
-        wait.until(By.cssSelector("article.activity"), 60000);
-        return this;
-    }
-    */
     public PullRequestsPage checkUrl() {
-        wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/pr"), 30000);
-        // HEY
-        // Look for
-        wait.until(By.cssSelector("div.multibranch-table"));
+        // The AbstractPipeline object `pipeline` is null, and this still passes.
+        // Need to figure out what I'm doing wrong with passing around the pipeline object.
+        // wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/pr"), 30000);
+        wait.until(By.cssSelector("a.selected.pr"));
+        logger.info("PR Tab is selected");
         return this;
     }
 
-    /**
-     * HEY
-     *
-     * Add a checkPipeline method maybe? Or checkPr?
-     *
-     *
-     *
-     */
     public void checkPipeline() {
         Assert.assertNotNull("AbstractPipeline is null", pipeline);
     }
 
+    public void checkPr() {
+        wait.until(By.cssSelector("a.selected.pr"));
+        logger.info("DBG checkPr success");
+    }
+
     public PullRequestsPage clickHistoryButton(String prNumber) {
+        // TODO: Change to a locator for data-pr
         wait.until(By.cssSelector("div[data-branch='" + prNumber + "'] a.history-button")).click();
-        logger.info("Clicked history button of branch " + prNumber);
+        logger.info("Clicked history button of PR " + prNumber);
         // return pullRequestsPageFactory.withPipeline(pipeline).checkUrl(branch);
         return pullRequestsPageFactory.withPipeline(pipeline).checkUrl();
     }
 
     public void open(String pipelineName) {
+        // checkPipeline();
         go("/blue/organizations/jenkins/" + pipelineName + "/pr");
+        checkPr();
         logger.info("PullRequestsPage --> opened PR tab for " + pipelineName);
     }
 

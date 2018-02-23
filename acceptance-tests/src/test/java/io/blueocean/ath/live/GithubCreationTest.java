@@ -126,6 +126,13 @@ public class GithubCreationTest{
         logger.info("Created repository " + repo);
     }
 
+    /**
+     * Create our MultiBranchPipeline object here
+     */
+    public MultiBranchPipeline createMultiBranchPipeline(String repo) {
+        testCreatePullRequestPipeline = mbpFactory.pipeline(repo);
+        return testCreatePullRequestPipeline;
+    }
 
     /**
      * This test tests the github creation flow.
@@ -161,7 +168,8 @@ public class GithubCreationTest{
         String branchToCreate = "new-branch";
         // Initialize our MultiBranchPipeline object as `repo` so that we
         // can trigger a rescan of it.
-        testCreatePullRequestPipeline = mbpFactory.pipeline(repo);
+        // testCreatePullRequestPipeline = mbpFactory.pipeline(repo);
+        createMultiBranchPipeline(repo);
         byte[] firstJenkinsfile = "stage('first-build') { echo 'first-build' }".getBytes("UTF-8");
         GHContentUpdateResponse initialUpdateResponse = ghRepository.createContent(firstJenkinsfile, "firstJenkinsfile", "Jenkinsfile", "master");
         ghRepository.createRef(("refs/heads/" + branchToCreate), initialUpdateResponse.getCommit().getSHA1());
