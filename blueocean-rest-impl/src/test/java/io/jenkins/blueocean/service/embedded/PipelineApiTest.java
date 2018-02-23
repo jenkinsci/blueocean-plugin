@@ -584,11 +584,16 @@ public class PipelineApiTest extends BaseTest {
     public void getPipelinesExtensionTest() throws Exception {
 
         Project p = j.createProject(TestProject.class,"pipeline1");
+        j.assertBuildStatusSuccess(p.scheduleBuild2(0));
 
         Map<String,Object> response = get("/organizations/jenkins/pipelines/pipeline1");
         validatePipeline(p, response);
 
         assertEquals("hello world!", response.get("hello"));
+        assertNotNull(response.get("latestRun"));
+        Map latestRun = (Map) response.get("latestRun");
+        assertEquals("pipeline1", latestRun.get("pipeline"));
+        assertEquals("TestBuild", latestRun.get("type"));
     }
 
     @Extension(ordinal = 3)

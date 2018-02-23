@@ -76,12 +76,6 @@ public class TestProject extends Project<TestProject,TestProject.TestBuild> impl
             super(project, buildDir);
         }
 
-        @Override
-        public void run() {
-            //noop
-        }
-
-
     }
 
 }
