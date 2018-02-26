@@ -9,7 +9,7 @@
  * read the plugins target/classes/jenkins-js-extension.json file and use it
  * to initialize the store. That's nice in that we can automatically do it,
  * but the problem is that it wouldn't actually work in this case because we
- * also need to specify the blueocean-web module. This initalization is needed
+ * also need to specify the blueocean-web module. This initialization is needed
  * for i18n components that need access to plugin version info, which comes
  * from the ExtensionStore.
  */

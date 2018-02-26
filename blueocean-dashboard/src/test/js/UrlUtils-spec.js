@@ -44,7 +44,7 @@ describe('UrlUtils', () => {
     });
 
     describe('buildRunDetailsUrl', () => {
-        it('should build the baseUrl if tabName ommitted', () => {
+        it('should build the baseUrl if tabName omitted', () => {
             const url = buildRunDetailsUrl(
                 'jenkins',
                 'blueocean',
@@ -116,7 +116,7 @@ describe('UrlUtils', () => {
             assert.equal(url, `${testData._appURLBase}/rest/organizations/jenkins/` +
                 `pipelines/${testData.name}/runs/${testData.runId}/nodes/`);
         });
-        it('should build the url with mutibranch', () => {
+        it('should build the url with multibranch', () => {
             const isMultiBranch = true;
             const url = calculateNodeBaseUrl({...testData, isMultiBranch});
 
@@ -169,7 +169,7 @@ describe('UrlUtils', () => {
             assert.equal(url, `${testData._appURLBase}/rest/organizations/jenkins/` +
                 `pipelines/${testData.name}/runs/${testData.runId}/nodes/${node}/steps/`);
         });
-        it('should build the url with mutibranch and no node', () => {
+        it('should build the url with multibranch and no node', () => {
             const isMultiBranch = true;
             const url = calculateStepsBaseUrl({...testData, isMultiBranch});
 
@@ -192,7 +192,7 @@ describe('UrlUtils', () => {
                 `pipelines/${testData.name}/runs/${testData.runId}/log/`);
             assert.equal(urlObject.fileName, `${testData.runId}.txt`);
         });
-        it('should build the urlObject with mutibranch', () => {
+        it('should build the urlObject with multibranch', () => {
             const isMultiBranch = true;
             const urlObject = calculateRunLogURLObject({...testData, isMultiBranch});
 

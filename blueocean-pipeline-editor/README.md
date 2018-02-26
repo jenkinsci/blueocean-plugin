@@ -8,7 +8,7 @@ This repository houses the [Jenkins](https://jenkins.io/) plugin for creating an
 
 ## Running Locally
 
-To start a new jenkins and run this pluging for development purposes:
+To start a new jenkins and run this plugin for development purposes:
 
 ```
 # Start a local Jenkins

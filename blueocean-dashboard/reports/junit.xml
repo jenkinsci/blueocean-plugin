@@ -8,7 +8,7 @@
     </testcase>
     <testcase classname="UrlUtils buildPipelineUrl should build the baseUrl for 3-level nested pipeline" name="UrlUtils buildPipelineUrl should build the baseUrl for 3-level nested pipeline" time="0">
     </testcase>
-    <testcase classname="UrlUtils buildRunDetailsUrl should build the baseUrl if tabName ommitted" name="UrlUtils buildRunDetailsUrl should build the baseUrl if tabName ommitted" time="0.001">
+    <testcase classname="UrlUtils buildRunDetailsUrl should build the baseUrl if tabName omitted" name="UrlUtils buildRunDetailsUrl should build the baseUrl if tabName omitted" time="0.001">
     </testcase>
     <testcase classname="UrlUtils buildRunDetailsUrl should build the full url with tab name" name="UrlUtils buildRunDetailsUrl should build the full url with tab name" time="0">
     </testcase>
@@ -20,7 +20,7 @@
     </testcase>
     <testcase classname="UrlUtils calculate calculateNodeBaseUrl should build the url no multibranch" name="UrlUtils calculate calculateNodeBaseUrl should build the url no multibranch" time="0.001">
     </testcase>
-    <testcase classname="UrlUtils calculate calculateNodeBaseUrl should build the url with mutibranch" name="UrlUtils calculate calculateNodeBaseUrl should build the url with mutibranch" time="0">
+    <testcase classname="UrlUtils calculate calculateNodeBaseUrl should build the url with multibranch" name="UrlUtils calculate calculateNodeBaseUrl should build the url with multibranch" time="0">
     </testcase>
     <testcase classname="UrlUtils double encode branch name in nodeBaseUrl should build the url multibranch" name="UrlUtils double encode branch name in nodeBaseUrl should build the url multibranch" time="0.001">
     </testcase>
@@ -28,11 +28,11 @@
     </testcase>
     <testcase classname="UrlUtils calculate calculateStepsBaseUrl should build the url with node" name="UrlUtils calculate calculateStepsBaseUrl should build the url with node" time="0.001">
     </testcase>
-    <testcase classname="UrlUtils calculate calculateStepsBaseUrl should build the url with mutibranch and no node" name="UrlUtils calculate calculateStepsBaseUrl should build the url with mutibranch and no node" time="0">
+    <testcase classname="UrlUtils calculate calculateStepsBaseUrl should build the url with multibranch and no node" name="UrlUtils calculate calculateStepsBaseUrl should build the url with multibranch and no node" time="0">
     </testcase>
     <testcase classname="UrlUtils calculate calculateRunLogURLObject should build the urlObject no multibranch" name="UrlUtils calculate calculateRunLogURLObject should build the urlObject no multibranch" time="0.001">
     </testcase>
-    <testcase classname="UrlUtils calculate calculateRunLogURLObject should build the urlObject with mutibranch" name="UrlUtils calculate calculateRunLogURLObject should build the urlObject with mutibranch" time="0">
+    <testcase classname="UrlUtils calculate calculateRunLogURLObject should build the urlObject with multibranch" name="UrlUtils calculate calculateRunLogURLObject should build the urlObject with multibranch" time="0">
     </testcase>
   </testsuite>
   <testsuite name="pipeline graph data converter /" tests="12" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:36:46" time="13.35">
@@ -184,7 +184,7 @@
   <testsuite name="Enum" tests="2" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:37:18" time="0.573">
     <testcase classname="Enum construction should populate the keys and values" name="Enum construction should populate the keys and values" time="0.002">
     </testcase>
-    <testcase classname="Enum values should return an erray with all values" name="Enum values should return an erray with all values" time="0">
+    <testcase classname="Enum values should return an array with all values" name="Enum values should return an array with all values" time="0">
     </testcase>
   </testsuite>
   <testsuite name="RunDetailsArtifacts" tests="2" errors="0" failures="0" skipped="0" timestamp="2017-07-02T05:37:16" time="3.041">

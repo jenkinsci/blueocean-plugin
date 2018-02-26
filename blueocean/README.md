@@ -1,6 +1,6 @@
 # BlueOcean Aggregator
 
-Aggreagates all BlueOcean modules. 
+Aggregates all BlueOcean modules. 
 
 ## To start it all up
 

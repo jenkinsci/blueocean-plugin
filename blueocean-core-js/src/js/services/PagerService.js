@@ -2,7 +2,7 @@
  * This service manages the various instances of pagers that currently exist.
  *
  * TODO: Currently a new pager is created for any new list of items to be paged. Cleanup may be
- * required to stop memory leakes. However Pagers don't store more data so this may not be an issue.'
+ * required to stop memory leaks. However Pagers don't store more data so this may not be an issue.'
  *
  * @export
  * @class PagerService
@@ -16,10 +16,10 @@ export class PagerService {
     /**
      * Registers a pager with the PagerService.
      *
-     * Namespacing strings is prefered to stop colisions. E.g. Activity/$org-$pipeline.
+     * Namespacing strings is prefered to stop collisions. E.g. Activity/$org-$pipeline.
      *
      * @param {any} key - Key to register the pager under.
-     * @param {Pager} pager - pager to regiser.
+     * @param {Pager} pager - pager to register.
      */
     registerPager(key, pager) {
         if (this._pagerMap.has(key)) {

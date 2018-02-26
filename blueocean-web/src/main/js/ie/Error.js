@@ -1,6 +1,6 @@
 //
 // Explicit polyfill for Error functions not supported in IE
-// and semingly not polyfilled by Babel.
+// and seemingly not polyfilled by Babel.
 //
 
 // Error.captureStackTrace

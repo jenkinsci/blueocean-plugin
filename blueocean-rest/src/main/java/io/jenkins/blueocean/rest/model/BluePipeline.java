@@ -102,7 +102,7 @@ public abstract class BluePipeline extends Resource {
     public abstract BlueRun getLatestRun();
 
     /**
-     * @return Estiamated duration based on last pipeline runs. -1 is returned if there is no estimate available.
+     * @return Estimated duration based on last pipeline runs. -1 is returned if there is no estimate available.
      *
      */
     @Exported(name = ESTIMATED_DURATION)

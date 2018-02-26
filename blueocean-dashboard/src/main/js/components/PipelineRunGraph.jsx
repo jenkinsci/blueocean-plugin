@@ -126,7 +126,7 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
     // Filter out any edges to missing nodes
     allEdges.filter(([src, dest]) => (src in convertedNodeForId && dest in convertedNodeForId));
 
-    // Cound edges going to/from each node.
+    // Count edges going to/from each node.
     for (const edgePair of allEdges) {
         const dest = edgePair[1];
         edgeCountToNode[dest] = edgeCountToNode[dest] + 1;

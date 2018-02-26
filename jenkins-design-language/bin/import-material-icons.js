@@ -163,7 +163,7 @@ function findSourceFiles(sourceIconsRoot) {
                 // For each path...
                 const statPromises = paths.map(filePath => {
                     return fs.statAsync(filePath) // ... get stats
-                        .then(stats => ({ filePath, stats })); // ... and assosciate with path
+                        .then(stats => ({ filePath, stats })); // ... and associate with path
                 });
 
                 // Turn the array of promises into a promise of arrays.

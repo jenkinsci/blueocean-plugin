@@ -200,7 +200,7 @@ public class FlowNodeWrapper {
     }
 
     /**
-     * Returns Action instances that were attached to the assosciated FlowNode, or to any of its children.
+     * Returns Action instances that were attached to the associated FlowNode, or to any of its children.
      * Filters by class to mimic Item.getActions(class).
      */
     public <T extends Action> Collection<T> getPipelineActions(Class<T> clazz) {

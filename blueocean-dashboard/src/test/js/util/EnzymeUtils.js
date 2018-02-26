@@ -11,7 +11,7 @@ const jsdom = require('jsdom').jsdom;
  * Created by cmeyers on 7/12/16.
  */
 export const prepareMount = () => {
-    // code to boostrap mount with JSDOM
+    // code to bootstrap mount with JSDOM
     // see: https://github.com/airbnb/enzyme/blob/master/docs/guides/jsdom.md
     const exposedProperties = ['window', 'navigator', 'document'];
     global.document = jsdom('');

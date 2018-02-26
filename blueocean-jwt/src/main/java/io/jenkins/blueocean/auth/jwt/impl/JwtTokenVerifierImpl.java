@@ -99,7 +99,7 @@ public class JwtTokenVerifierImpl extends JwtTokenVerifier {
                 }else{
                     // If not anonymous user, get Authentication object associated with this claim
                     // We give a change to the authentication store to inspect the claims and if expired it might
-                    // do cleanup of associated Authenticaiton object for example.
+                    // do cleanup of associated Authentication object for example.
                     JwtAuthenticationStore authenticationStore = getJwtStore(claims.getClaimsMap());
                     Authentication authentication = authenticationStore.getAuthentication(claims.getClaimsMap());
 

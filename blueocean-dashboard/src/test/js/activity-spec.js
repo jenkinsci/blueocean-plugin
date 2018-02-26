@@ -203,7 +203,7 @@ describe('Pipeline -> Activity List', () => {
         const run3 = runs.at(2).html(); // has changeset
 
         assert(run1.indexOf('Branch indexing') >= 0, 'should have cause message');
-        assert(run3.indexOf('Update Jenkinsfile') >= 0, 'should have changset message');
+        assert(run3.indexOf('Update Jenkinsfile') >= 0, 'should have changeset message');
     });
 
     it('should not duplicate changeset messages', () => {

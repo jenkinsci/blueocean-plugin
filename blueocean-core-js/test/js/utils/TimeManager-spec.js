@@ -21,7 +21,7 @@ describe("TimeManager", () => {
 
     const aTtimeManager = new TimeManager();
 
-    it('/ Supprts Client GMT-7 running job - pause state', () => {
+    it('/ Supports Client GMT-7 running job - pause state', () => {
         const skewMillis = -7118377;
         aTtimeManager.currentTime = () => moment(1485441519326);
         const {

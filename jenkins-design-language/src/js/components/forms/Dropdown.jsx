@@ -376,7 +376,10 @@ Dropdown.propTypes = {
     style: PropTypes.object,
     placeholder: PropTypes.string,
     options: PropTypes.array,
-    defaultOption: PropTypes.node,
+    defaultOption: PropTypes.oneOfType([
+        PropTypes.node,
+        PropTypes.object,
+    ]),
     title: PropTypes.string,
     labelField: PropTypes.string,
     labelFunction: PropTypes.func,

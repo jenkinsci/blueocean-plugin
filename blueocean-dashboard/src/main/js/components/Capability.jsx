@@ -15,7 +15,7 @@ export class CapabilityRecord extends Record({ classNames: [] }) {
 }
 
 /**
- * capabilityStore is a enchances components to inject capabilities for
+ * capabilityStore is a enhances components to inject capabilities for
  * a given class.
  *
  * Usage: capabilityStore(classFunction)(React.Component) where
@@ -27,7 +27,7 @@ export class CapabilityRecord extends Record({ classNames: [] }) {
  * props => props.pipeline._class
  * props => [props.pipeline._class, props.favoriteData._class]
  *
- * capabilityStore will inject "capabilities" as a property into the componenet
+ * capabilityStore will inject "capabilities" as a property into the component
  * so you need to add "capabilities: object" to propTypes. capabilities.has(MULTIBRANCH)
  * can be called to find out if a capability is supported. A list of capabilities is in the
  * Capabilities.js file.
@@ -87,7 +87,7 @@ export const capabilityStore = classesFunction => ComposedComponent => class ext
         const { capabilities } = this.state;
         
         // Early out. Doing it here means we don't have to do it in
-        // the composed componenet
+        // the composed component
         let classesMap = classesFunction(this.props);
         if (classesMap === undefined || classesMap === null) {
             throw new Error('capabilityStore function did not find class in props.');

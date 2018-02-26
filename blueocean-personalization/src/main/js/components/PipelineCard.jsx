@@ -15,7 +15,7 @@ const stopProp = (event) => {
 const BRANCH_CAPABILITY = 'io.jenkins.blueocean.rest.model.BlueBranch';
 
 /**
- * Extract elements from a path string deliminted with forward slashes
+ * Extract elements from a path string delimited with forward slashes
  * @param path
  * @param begin
  * @param end
@@ -66,7 +66,7 @@ function extractNames(pipeline, isBranch) {
  * item: pipeline or branch
  * favorite: whether or not the pipeline is favorited
  * onRunClick: callback invoked when 'Run Again' is clicked
- * onFavoriteToggle: callback invokved when favorite checkbox is toggled.
+ * onFavoriteToggle: callback invoked when favorite checkbox is toggled.
  */
 export class PipelineCard extends Component {
 
@@ -187,7 +187,7 @@ export class PipelineCard extends Component {
         let runDateTime = null;
 
         if (latestRun) {
-            // We'll pick the latest time we have. Completion, start, or enque in that order
+            // We'll pick the latest time we have. Completion, start, or enqueue in that order
             const serverTimeISO = latestRun.endTime || latestRun.startTime || latestRun.enQueueTime;
 
             if (serverTimeISO) {

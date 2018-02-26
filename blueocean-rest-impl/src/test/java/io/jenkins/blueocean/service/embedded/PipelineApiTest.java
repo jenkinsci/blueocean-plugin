@@ -888,7 +888,7 @@ public class PipelineApiTest extends BaseTest {
         public OrganizationImpl get(String name) {
             if (instance != null) {
                 if (instance.getName().equals(name)) {
-                    System.out.println("" + name + " Intance returned " + instance);
+                    System.out.println("" + name + " Instance returned " + instance);
                     return instance;
                 }
             }

@@ -100,7 +100,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
             "}\n" +
             "node {\n" +
             "    stage 'testing'\n" +
-            "    echo 'testig'\n" +
+            "    echo 'testing'\n" +
             "}\n" +
             "\n" +
             "node {\n" +
@@ -1523,7 +1523,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals(nodes.get(1).getId(), edges.get(0).get("id"));
 
 
-        //Get a parllel node detail
+        //Get a parallel node detail
         node = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+parallelNodes.get(0).getId());
 
         n = parallelNodes.get(0);

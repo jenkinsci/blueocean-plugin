@@ -63,7 +63,7 @@ public class GithubEnterpriseApiTest extends GithubMockBase {
 
     @Test
     public void fetchExistingCredentialApiUrlRequired() throws IOException, UnirestException {
-        // fetch the github-enterprise endpoint without specifiying apirUrl
+        // fetch the github-enterprise endpoint without specifying apirUrl
         Map r = new RequestBuilder(baseUrl)
             .status(400)
             .jwtToken(getJwtToken(j.jenkins, user.getId(), user.getId()))
