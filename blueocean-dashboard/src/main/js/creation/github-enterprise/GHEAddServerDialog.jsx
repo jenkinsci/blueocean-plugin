@@ -126,31 +126,45 @@ class GHEAddServerDialog extends React.Component {
 
     _onCreateServerFailure(error) {
         const { duplicateName, duplicateUrl, invalidServer, invalidApiUrl } = error;
+        const serverUrl = this.state.urlValue;
 
-        const newState = {
-            pending: false,
-            unknownError: null,
-            nameErrorMsg: null,
-            urlErrorMsg: null,
-        };
+        if (serverUrl.substring(serverUrl.length - 7, serverUrl.length) !== '/api/v3') {
+            const retryServerUrl = serverUrl + 
+                (serverUrl.substring(serverUrl.length - 1, serverUrl.length) == '/' ? 
+                    'api/v3' : '/api/v3'
+                );
 
-        if (duplicateName) {
-            newState.nameErrorMsg = t('creation.githubent.add_server.text_name_error_duplicate');
+            this.setState({
+                urlValue: retryServerUrl
+            });
+
+            this._onCreateClick();
+        } else {
+            const newState = {
+                pending: false,
+                unknownError: null,
+                nameErrorMsg: null,
+                urlErrorMsg: null,
+            };
+
+            if (duplicateName) {
+                newState.nameErrorMsg = t('creation.githubent.add_server.text_name_error_duplicate');
+            }
+
+            if (duplicateUrl) {
+                newState.urlErrorMsg = t('creation.githubent.add_server.text_url_error_duplicate');
+            } else if (invalidServer) {
+                newState.urlErrorMsg = t('creation.githubent.add_server.text_url_error_invalid_server');
+            } else if (invalidApiUrl) {
+                newState.urlErrorMsg = t('creation.githubent.add_server.text_url_error_invalid_apiurl');
+            }
+
+            if (!duplicateName && !duplicateUrl && !invalidServer && !invalidApiUrl) {
+                newState.unknownError = error;
+            }
+
+            this.setState(newState);
         }
-
-        if (duplicateUrl) {
-            newState.urlErrorMsg = t('creation.githubent.add_server.text_url_error_duplicate');
-        } else if (invalidServer) {
-            newState.urlErrorMsg = t('creation.githubent.add_server.text_url_error_invalid_server');
-        } else if (invalidApiUrl) {
-            newState.urlErrorMsg = t('creation.githubent.add_server.text_url_error_invalid_apiurl');
-        }
-
-        if (!duplicateName && !duplicateUrl && !invalidServer && !invalidApiUrl) {
-            newState.unknownError = error;
-        }
-
-        this.setState(newState);
     }
 
     _onCloseClick(credential) {
