@@ -42,11 +42,13 @@ public class ParallelNavigationTest {
     String navTest          = "ParallelNavTest_tested";
     String navTestWithInput = "ParallelNavTestWithInput_tested";
     String navTestWithFailedInputStep = "ParallelNavigationTest_failed_input";
+    String navTestWithNoStepsNoStages = "ParallelNavTestWithNoStepsNoStages";
 
     // Initialize our MultiBranchPipeline objects
     static MultiBranchPipeline navTestPipeline = null;
     static MultiBranchPipeline navTestWithInputPipeline = null;
     static MultiBranchPipeline navTestWithFailedInputStepPipeline = null;
+    static MultiBranchPipeline navTestWithNoStepsNoStagesPipeline = null;
 
     /**
      * This checks that we can run a pipeline with 2 long running parallel branches.
@@ -131,6 +133,27 @@ public class ParallelNavigationTest {
         logger.info("Clicked the inputStepSubmit button");
         wait.until(By.xpath("//*[text()=\"You need to be B, C to submit this.\"]"));
         logger.info("Found failed input step error message");
+    }
+
+    /**
+     * This checks that the log is visible when a run fails with no steps or stages
+     */
+    @Test
+    public void testLogVisibilityWhenNoStepsOrStages () throws IOException, GitAPIException, InterruptedException {
+        // Create navTestWithFailedInputStep
+        logger.info("Creating pipeline " + navTestWithNoStepsNoStages);
+        URL navTestWithNoStepsNoStagesJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile.nosteps.nostages");
+        Files.copy(new File(navTestWithNoStepsNoStagesJenkinsfile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
+        git.addAll();
+        git.commit("Initial commit for " + navTestWithNoStepsNoStages);
+        logger.info("Committed Jenkinsfile for " + navTestWithNoStepsNoStages);
+        navTestWithNoStepsNoStagesPipeline = mbpFactory.pipeline(navTestWithNoStepsNoStages).createPipeline(git);
+        logger.info("Finished creating " + navTestWithNoStepsNoStages);
+
+        navTestWithNoStepsNoStagesPipeline.getRunDetailsPipelinePage().open(1);
+
+        logger.info("Wait for log to appear");
+        wait.until(By.cssSelector(".log-body"));
     }
 
     @AfterClass
