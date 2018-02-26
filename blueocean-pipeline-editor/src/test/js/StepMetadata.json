@@ -494,7 +494,7 @@
                 "capitalizedName": "ReplyTo",
                 "collectionTypes": [],
                 "descriptorUrl": null,
-                "help": "<div>\n    Reploy-To email address. Defaults to the admin address globally configured for the Jenkins instance.\n</div>\n",
+                "help": "<div>\n    Reply-To email address. Defaults to the admin address globally configured for the Jenkins instance.\n</div>\n",
                 "isDeprecated": false,
                 "isRequired": false,
                 "name": "replyTo",

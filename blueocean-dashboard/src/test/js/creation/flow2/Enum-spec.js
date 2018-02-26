@@ -38,7 +38,7 @@ describe('Enum', () => {
         });
     });
     describe('values', () => {
-        it('should return an erray with all values', () => {
+        it('should return an array with all values', () => {
             const Suit = new Enum({
                 SPADES: 'spades',
                 CLUBS: 'clubs',

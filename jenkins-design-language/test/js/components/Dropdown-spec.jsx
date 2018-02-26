@@ -6,7 +6,7 @@ import '../utils/rAf';
 
 import { Dropdown } from '../../../src/js/components';
 
-const options = ['Thor', 'Ironman', 'Captian America'];
+const options = ['Thor', 'Ironman', 'Captain America'];
 
 describe("Dropdown", () => {
     it('dropDown button title should be default title', () => {

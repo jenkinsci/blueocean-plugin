@@ -21,7 +21,7 @@ public abstract class JwtAuthenticationStoreFactory implements ExtensionPoint{
      *
      * @param claims JWT claims
      *
-     * @return JwtAuthenitcationStore, can be null
+     * @return JwtAuthenticationStore, can be null
      */
     public abstract  JwtAuthenticationStore getJwtAuthenticationStore(Map<String,Object> claims);
 
@@ -30,7 +30,7 @@ public abstract class JwtAuthenticationStoreFactory implements ExtensionPoint{
      *
      * @param authentication {@link Authentication} instance
      *
-     * @return JwtAuthenitcationStore, can be null
+     * @return JwtAuthenticationStore, can be null
      */
     public abstract  JwtAuthenticationStore getJwtAuthenticationStore(Authentication authentication);
 

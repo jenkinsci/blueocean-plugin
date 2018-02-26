@@ -24,9 +24,9 @@ export class BunkerService {
     }
 
     /**
-     * Extracts the key to store the daata under out of the object
+     * Extracts the key to store the data under out of the object
      *
-     * Default impl uses the self href link in BlueOcuean objects.
+     * Default impl uses the self href link in BlueOcean objects.
      *
      * @param {object} data Data to be stored once it has been passed through
      *                      [@link bunkerMapper]
@@ -62,7 +62,7 @@ export class BunkerService {
      * It uses the [@link bunkerKey] and [@link bunkerMapper] to generate the key/value
      * to be stored.
      *
-     * @param {Object} item Raw data from extenal source.
+     * @param {Object} item Raw data from external source.
      * @returns {Object} item mapped by [@link bunkerMapper]. It is also a mobx computed value.
      */
     @action

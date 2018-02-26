@@ -101,7 +101,7 @@ This document defines REST API interface that front end UI or any HTTP client ca
 
 # Run Blue Ocean plugin
 
-    cd bluecoean-plugin
+    cd blueocean-plugin
     mvn hpi:run
 
 This will launch a development Jenkins instance with the Blue Ocean plugin and this plugin ready to go.
@@ -159,7 +159,7 @@ _errors.field_ - Name of the field in request. Top level field name are represen
 
 _Field Error codes_
 
-| Field Error Code  | Descriptiojn  |
+| Field Error Code  | Description   |
 | ------------------|:-------------:|
 | ALREADY_EXISTS    | Field value already exists |
 | MISSING| Required field|
@@ -168,7 +168,7 @@ _Field Error codes_
 
 _Http Error codes_
 
-| HTTP Error Code  | Descriptiojn  |
+| HTTP Error Code  | Description   |
 | ------------------|:-------------:|
 | 400    | Bad Request |
 | 401| Unauthorized, invalid credentials|
@@ -222,7 +222,7 @@ Sometimes testing API from browser is desirable. Here are steps to to do that us
 
 ## Links
 Each BlueOcean JSON response object includes *_links" as defined by [HAL](https://tools.ietf.org/html/draft-kelly-json-hal-08) spec.
-*self* link references the reachable path to *this* resource. It may include other navigable resources as well. A resource can exponse it's methods as navigable by using [@Navigable](https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean-rest/src/main/java/io/jenkins/blueocean/rest/Navigable.java) annotation.
+*self* link references the reachable path to *this* resource. It may include other navigable resources as well. A resource can expose it's methods as navigable by using [@Navigable](https://github.com/jenkinsci/blueocean-plugin/blob/master/blueocean-rest/src/main/java/io/jenkins/blueocean/rest/Navigable.java) annotation.
 
     "_links" : {
         "self" : {
@@ -793,7 +793,7 @@ For example for anonymous user with security enabled and only read permission, t
 
 ## Fetch queue for an pipeline
 
-     curl http://localhost:8080/jenkins/blue/rest/organiations/jenkins/pipelines/pipeline1/queue
+     curl http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/queue
      [ {
        "_class" : "io.jenkins.blueocean.service.embedded.rest.QueueItemImpl",
        "expectedBuildNumber" : 4,
@@ -1021,7 +1021,7 @@ Response:
 
 > Note: it takes a while to stop, so you may get a state of RUNNING or QUEUED.
 
-    curl -X PUT http://localhost:8080/jenkins/blue/rest/organiations/jenkins/pipelines/pipeline1/runs/1/stop
+    curl -X PUT http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/stop
     {
            "changeSet": [],
            "artifacts": [
@@ -1055,7 +1055,7 @@ Client should check the state and if its not FINISHED they may issue another sto
 
 > Note: There is no guarantee, after timeout build build might still be running.
 
-    curl -X PUT http://localhost:8080/jenkins/blue/rest/organiations/jenkins/pipelines/pipeline1/runs/1/stop/?blocking=true&timeOutInSecs=5
+    curl -X PUT http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/stop/?blocking=true&timeOutInSecs=5
 
     {
            "changeSet": [],
@@ -1554,7 +1554,7 @@ Get steps of 'test' stage node:
 
 ### Get Pipeline Steps
 
-    Gives all steps in a pipeline. Excludes stages and prallels/blocks.
+    Gives all steps in a pipeline. Excludes stages and parallels/blocks.
 
     curl http://localhost:8080/jenkins/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/steps/
 
@@ -1952,7 +1952,7 @@ This will show up as a download in the browser.
     [Pipeline] End of Pipeline
     Finished: SUCCESS
 
-> Note: Fetching log on a Multi-Branch project will give 404 as a Multi-Branch project doesn't have run of it's own, it's essetnailly a folder hence no logs.
+> Note: Fetching log on a Multi-Branch project will give 404 as a Multi-Branch project doesn't have run of it's own, it's essentially a folder hence no logs.
 
 ## Get log for a Pipeline step
 

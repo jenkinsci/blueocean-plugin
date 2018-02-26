@@ -206,7 +206,7 @@ public class BitbucketServerEndpointTest extends BbServerWireMock {
         assertEquals("My Server", server.get("name"));
         assertEquals(apiUrl, server.get("apiUrl"));
 
-        //get this paritular endpoint
+        //get this particular endpoint
         server = request()
                 .status(200)
                 .jwtToken(token)

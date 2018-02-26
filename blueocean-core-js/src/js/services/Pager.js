@@ -7,7 +7,7 @@ import { Fetch } from '../fetch';
  *
  * @export
  * @param {string} url - Base url to paginate.
- * @returns {function} - Function that provides pagincated urls.
+ * @returns {function} - Function that provides paginated urls.
  */
 export function paginateUrl(url) {
     const sep = url.indexOf('?') >= 0 ? '&' : '?';
@@ -20,14 +20,14 @@ export function paginateUrl(url) {
  * inserts them into the [@link BunkerService], and stores the href from the data.
  *
  * MobX computes a data field from the hrefs backed by the backend cache. This allows for SSE events
- * to be proporgated to the pager.
+ * to be propagated to the pager.
  *
  * @export
  * @class Pager
  */
 export class Pager {
     /**
-     * List of deisplayed items hrefs.
+     * List of displayed items hrefs.
      */
     @observable hrefs = [];
     /**
@@ -62,7 +62,7 @@ export class Pager {
     /**
      * Creates an instance of Pager and fetches the first page.
      *
-     * @param {string} url - Base url of collectin to fetch
+     * @param {string} url - Base url of collection to fetch
      * @param {number} pageSize - Page size to fetch during one load.
      * @param {BunkerService} bunker - Data store
      * @param {UrlProvider} [urlProvider=paginateUrl]

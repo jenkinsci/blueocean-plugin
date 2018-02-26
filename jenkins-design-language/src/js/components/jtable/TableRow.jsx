@@ -52,7 +52,7 @@ export function generateLink(defaultTagOrComponent: TagOrComponent, href ?: stri
 
 function processChildren(children: any, columns: any): Array<React$Element<any>> {
 
-    // First filter the children to strip any falsey values dropped by logic in our parent's render() method
+    // First filter the children to strip any falsy values dropped by logic in our parent's render() method
     const filteredChildren = [];
 
     Children.forEach(children, child => {
@@ -88,7 +88,7 @@ function processChildren(children: any, columns: any): Array<React$Element<any>>
         }
         newStyle.flexBasis = colWidth;
 
-        // Add or remove space on flexible columns in proportion to comparitive widths
+        // Add or remove space on flexible columns in proportion to comparative widths
         newStyle.flexGrow = newStyle.flexShrink = columnDescription.isFlexible ? colWidth : 0;
 
         return React.cloneElement(child, {style: newStyle});

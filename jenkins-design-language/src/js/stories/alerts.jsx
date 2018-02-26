@@ -18,7 +18,7 @@ function allCases() {
         <br/>
         <Alerts type="Error" message={<div>This pipeline uses input types that are unsupported. Use <a href="#">Jenkins Classic</a> to resolve this input step</div>} />
         <br/>
-        <Alerts type="Success"  message="Yay! All the thigns worked. Obviously don’t use this text"/>
+        <Alerts type="Success"  message="Yay! All the things worked. Obviously don’t use this text"/>
         <br/>
         <Alerts message="Generic alert text. Other info about the alert." />
         <br/>

@@ -190,7 +190,7 @@ function startApp(routes, stores) {
         // if we do not have any stores we only add the location store
         store = configureStore(combineReducers(rootReducer));
     } else {
-        // some plugins provide they own store so combining with loction store
+        // some plugins provide they own store so combining with location store
         store = configureStore(combineReducers(
           Object.assign({}, ...stores, rootReducer))
         );

@@ -60,7 +60,7 @@ Core Web infrastructure that bootstraps BlueOcean UI and integrates REST API cor
 ## Building and running
 
 At a minimum you will need a JVM and Maven installed, if you are doing active JavaScript development, 
-you may want to install NodeJS, but it is not a requirement as the `frontent-maven-plugin` will install
+you may want to install NodeJS, but it is not a requirement as the `frontend-maven-plugin` will install
 the correct version of Node locally for each plugin to build and develop with.
 
 ## Build everything (from root directory)

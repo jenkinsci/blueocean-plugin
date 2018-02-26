@@ -35,7 +35,7 @@ public abstract class BluePipelineFolder extends BluePipeline {
      *
      * Gets nested BluePipeline inside the BluePipelineFolder
      *
-     * For example for: /pipelines/folder1/pipelines/folder2/pipelines/p1, call sequnce  will be:
+     * For example for: /pipelines/folder1/pipelines/folder2/pipelines/p1, call sequence  will be:
      *
      * <ul>
      *     <li>getPipelines().get("folder1")</li>

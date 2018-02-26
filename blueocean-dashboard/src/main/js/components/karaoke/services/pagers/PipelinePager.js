@@ -53,7 +53,7 @@ export class PipelinePager {
      *
      * @param {BunkerService} bunker - Data store
      * @param {object} augmenter augmenter that this pager belongs to.
-     * @param {object} props Properies that this pager belongs to.
+     * @param {object} props Properties that this pager belongs to.
      */
     constructor(bunker, augmenter, props) {
         this.bunker = bunker;

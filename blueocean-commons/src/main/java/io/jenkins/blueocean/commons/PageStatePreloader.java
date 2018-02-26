@@ -41,8 +41,8 @@ import javax.annotation.Nonnull;
 public abstract class PageStatePreloader implements ExtensionPoint {
 
     /**
-     * Get the JavaScript object graph path at shiwh the state is to be stored.
-     * @return The JavaScript object graph path at shiwh the state is to be stored.
+     * Get the JavaScript object graph path at which the state is to be stored.
+     * @return The JavaScript object graph path at which the state is to be stored.
      */
     @Nonnull
     public abstract String getStatePropertyPath();

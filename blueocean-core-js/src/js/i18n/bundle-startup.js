@@ -80,7 +80,7 @@ export function execute(done, bundleConfig) {
                 done();
             }
         } else {
-            logger.warn(`Unexpected error finding pluging info for plugin ${bundleConfig.hpiPluginId}. There should be a preloaded jsExtensions entry.`);
+            logger.warn(`Unexpected error finding plugin info for plugin ${bundleConfig.hpiPluginId}. There should be a preloaded jsExtensions entry.`);
             done();
         }
     } else {

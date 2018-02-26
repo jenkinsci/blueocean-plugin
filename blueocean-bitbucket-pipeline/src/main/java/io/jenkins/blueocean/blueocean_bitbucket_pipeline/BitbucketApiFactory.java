@@ -25,7 +25,7 @@ public abstract class BitbucketApiFactory implements ExtensionPoint {
      *
      * Before calling this method, clients must ensure {@link #handles(String)} is called first and returned true
      *
-     * @param apiUrl API url (host url) of bitbucket server or cloud. e.g. https://mybitcuketserver.com/
+     * @param apiUrl API url (host url) of bitbucket server or cloud. e.g. https://mybitbucketserver.com/
      * @param credentials {@link StandardUsernamePasswordCredentials}
      * @return {@link BitbucketApi} instance
      */

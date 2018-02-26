@@ -133,7 +133,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
             final String cause = PipelineNodeUtil.getCauseOfBlockage(chunk.getFirstNode(), agentNode);
             if(cause != null) {
                 // TODO: This should probably be changed (elsewhere?) to instead just render this directly, not via a fake step.
-                //Now add a step that indicates bloackage cause
+                //Now add a step that indicates blockage cause
                 FlowNode step = new LocalAtomNode(chunk, cause);
 
                 FlowNodeWrapper stepNode = new FlowNodeWrapper(step, new NodeRunStatus(BlueRun.BlueRunResult.UNKNOWN, BlueRun.BlueRunState.QUEUED),new TimingInfo(), run);

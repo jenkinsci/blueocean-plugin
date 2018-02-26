@@ -27,16 +27,16 @@ public class BlueOceanConfigFactoryTest {
 
         Boolean originalConfig = BlueOceanConfigFactory.getConfig(BlueOceanConfig.ORGANIZATION_ENABLED, Boolean.class);
 
-        assertThat("Overriden extension point should have been called", BlueOceanTestConfigurationFactory.loaded, equalTo(true));
+        assertThat("Overridden extension point should have been called", BlueOceanTestConfigurationFactory.loaded, equalTo(true));
 
         //Check reload and override
         BlueOceanTestConfigurationFactory.setValue = !originalConfig;
         BlueOceanTestConfigurationFactory.loaded = false;
 
-        Boolean overridenConfig = BlueOceanConfigFactory.getConfig(BlueOceanConfig.ORGANIZATION_ENABLED, Boolean.class);
+        Boolean overriddenConfig = BlueOceanConfigFactory.getConfig(BlueOceanConfig.ORGANIZATION_ENABLED, Boolean.class);
 
         assertThat("Configuration should have been reloaded", BlueOceanTestConfigurationFactory.loaded, equalTo(true));
-        assertThat("Configuration should have been overriden", originalConfig, not(equalTo(overridenConfig)));
+        assertThat("Configuration should have been overridden", originalConfig, not(equalTo(overriddenConfig)));
 
     }
 

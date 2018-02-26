@@ -156,7 +156,7 @@ public abstract class OrganizationFolderPipelineImpl extends BlueOrganizationFol
 
     /**
      * Certain SCM provider organization folder implementation might support filtered repo search, if thats the case this method
-     * must be overriden by their implementations.
+     * must be overridden by their implementations.
      */
     @Override
     public boolean isScanAllRepos() {

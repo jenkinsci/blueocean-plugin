@@ -479,7 +479,7 @@ export class PipelineGraph extends Component {
     }
 
     /**
-     * A direct curve between two nodes in adjactent columns.
+     * A direct curve between two nodes in adjacent columns.
      *
      * Adds all the SVG components to the elements list.
      */
@@ -515,7 +515,7 @@ export class PipelineGraph extends Component {
     }
 
     /**
-     * Generates an SVG path string for the "verical" S curve used to connect nodes in adjacent columns.
+     * Generates an SVG path string for the "vertical" S curve used to connect nodes in adjacent columns.
      */
     svgCurve(x1: number, y1: number, x2: number, y2: number, midPointX: number, curveRadius: number) {
         const verticalDirection = Math.sign(y2 - y1); // 1 == curve down, -1 == curve up
