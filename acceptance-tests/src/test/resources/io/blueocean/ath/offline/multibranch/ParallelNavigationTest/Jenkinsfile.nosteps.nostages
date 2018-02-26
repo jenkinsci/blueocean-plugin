@@ -1,0 +1,9 @@
+node {
+    def hello_message = "Hello" stage('Fake1') {
+        parallel firstBranch: {
+            sh "echo ${helo_message}"
+        }, secondBranch: {
+            sh "echo ${hello_message}"
+        }
+    }
+}
