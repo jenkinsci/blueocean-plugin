@@ -5,6 +5,7 @@ import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
 import { NoSteps, QueuedState } from './QueuedState';
 import { KaraokeService } from '../index';
+import LogConsole from './LogConsole';
 import LogToolbar from './LogToolbar';
 import Steps from './Steps';
 import FreeStyle from './FreeStyle';
@@ -250,6 +251,9 @@ export default class Pipeline extends Component {
         const logFileName = this.pager.nodes !== undefined ? augmenter.getNodesLogFileName(this.pager.currentNode) : augmenter.generalLogFileName;
         logger.debug('displayName', this.pager.currentNode.displayName, 'logging info', logUrl, logFileName);
 
+        const generalLogPager = (!this.pager.pending && !isPipelineQueued && noResultsToDisplay) ? KaraokeService.generalLogPager(augmenter, location) : '';
+        const { data: logArray, hasMore } = (!this.pager.pending && !isPipelineQueued && noResultsToDisplay && generalLogPager.log) ? generalLogPager.log : '';
+
         return (<div>
             { <RunDescription run={this.props.run} t={t} /> }
             { this.pager.nodes !== undefined &&
@@ -267,11 +271,11 @@ export default class Pipeline extends Component {
             }
             { !isPipelineQueued &&
                 <LogToolbar
-                    fileName={logFileName}
-                    url={logUrl}
+                    fileName={generalLogPager ? augmenter.generalLogFileName : logFileName}
+                    url={generalLogPager ? augmenter.generalLogUrl : logUrl}
                     title={title}
-                    duration={this.pager.currentNode.durationInMillis}
-                    running={this.pager.currentNode.isRunning}
+                    duration={!generalLogPager ? this.pager.currentNode.durationInMillis : ''}
+                    running={!generalLogPager ? this.pager.currentNode.isRunning : false}
                     t={t}
                 />
             }
@@ -290,13 +294,25 @@ export default class Pipeline extends Component {
                 />
             )}
 
-            { !this.pager.pending && !isPipelineQueued && noResultsToDisplay &&
-                <NoSteps
-                    translation={t}
-                    titleKey="rundetail.pipeline.nosteps.message.title"
-                    messageKey="rundetail.pipeline.nosteps.message.description"
-                />
-            }
+            { !this.pager.pending && !isPipelineQueued && noResultsToDisplay && (
+                <div className="nosteps-container">
+                    <NoSteps
+                        translation={t}
+                        titleKey="rundetail.pipeline.nosteps.message.title"
+                        messageKey="rundetail.pipeline.nosteps.message.description"
+                    />
+                    <LogConsole {...{
+                        t,
+                        router,
+                        location,
+                        hasMore,
+                        logArray,
+                        currentLogUrl: augmenter.generalLogUrl,
+                        key: augmenter.generalLogUrl,
+                    }}
+                    />
+                </div>
+            )}
 
             { isPipelineQueued &&
                 <QueuedState translation={t}
