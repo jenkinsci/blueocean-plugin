@@ -85,7 +85,7 @@ export default class Pipeline extends Component {
             'this.props.augmenter.karaoke',
             this.props.augmenter.karaoke,
             'this.karaoke',
-            this.karaoke,
+            this.karaoke
         );
         // update on finish and start, you can de-activate it by setting updateOnFinish to false
         //
@@ -170,41 +170,41 @@ export default class Pipeline extends Component {
                 throw new Error('exit');
             }
             switch (jenkinsEvent) {
-            case 'pipeline_step': {
-                if (karaokeOut) {
-                    logger.debug('early out because we do not want to follow along sse events');
-                    throw new Error('exit');
-                }
-                logger.debug('sse event step fetchCurrentSteps', jenkinsEvent);
-                debounce(() => {
-                    logger.debug('sse fetch it', this.karaoke);
-                    this.pager.fetchCurrentStepUrl();
-                }, 200)();
-                // prevent flashing of stages and nodes
-                this.showPending = false;
-                break;
-            }
-            case 'pipeline_end':
-            case 'pipeline_start':
-            case 'job_run_ended':
-            case 'pipeline_block_end':
-            case 'pipeline_stage': {
-                logger.debug('sse event block starts refetchNodes', jenkinsEvent);
-                debounce(() => {
-                    logger.debug('sse fetch it', this.karaoke);
+                case 'pipeline_step': {
                     if (karaokeOut) {
-                        this.pager.fetchNodesOnly({});
-                    } else {
-                        this.pager.fetchNodes({});
+                        logger.debug('early out because we do not want to follow along sse events');
+                        throw new Error('exit');
                     }
-                }, 200)();
-                // prevent flashing of stages and nodes
-                this.showPending = false;
-                break;
-            }
-            default: {
-                logger.debug('ignoring event', jenkinsEvent);
-            }
+                    logger.debug('sse event step fetchCurrentSteps', jenkinsEvent);
+                    debounce(() => {
+                        logger.debug('sse fetch it', this.karaoke);
+                        this.pager.fetchCurrentStepUrl();
+                    }, 200)();
+                    // prevent flashing of stages and nodes
+                    this.showPending = false;
+                    break;
+                }
+                case 'pipeline_end':
+                case 'pipeline_start':
+                case 'job_run_ended':
+                case 'pipeline_block_end':
+                case 'pipeline_stage': {
+                    logger.debug('sse event block starts refetchNodes', jenkinsEvent);
+                    debounce(() => {
+                        logger.debug('sse fetch it', this.karaoke);
+                        if (karaokeOut) {
+                            this.pager.fetchNodesOnly({});
+                        } else {
+                            this.pager.fetchNodes({});
+                        }
+                    }, 200)();
+                    // prevent flashing of stages and nodes
+                    this.showPending = false;
+                    break;
+                }
+                default: {
+                    logger.debug('ignoring event', jenkinsEvent);
+                }
             }
         } catch (e) {
             // we only ignore the exit error
@@ -293,8 +293,8 @@ export default class Pipeline extends Component {
                 .map(action => ({ runDescription: action.description, runLink: action.link.href }));
         }
 
-        const generalLogPager = (!this.pager.pending && !isPipelineQueued && noResultsToDisplay) ? KaraokeService.generalLogPager(augmenter, location) : '';
-        const { data: logArray, hasMore } = (!this.pager.pending && !isPipelineQueued && noResultsToDisplay && generalLogPager.log) ? generalLogPager.log : '';
+        const generalLogPager = !this.pager.pending && !isPipelineQueued && noResultsToDisplay ? KaraokeService.generalLogPager(augmenter, location) : '';
+        const { data: logArray, hasMore } = !this.pager.pending && !isPipelineQueued && noResultsToDisplay && generalLogPager.log ? generalLogPager.log : '';
 
         // TODO: Split up this return statement once everything is working again
 
@@ -302,65 +302,70 @@ export default class Pipeline extends Component {
             <div>
                 {<RunDescription run={this.props.run} t={t} />}
 
-                {this.pager.nodes !== undefined &&
-                <Extensions.Renderer
-                    extensionPoint="jenkins.pipeline.run.result"
-                    selectedStage={this.pager.currentNode}
-                    callback={afterClick}
-                    nodes={this.pager.nodes.data.model}
-                    pipelineName={pipeline.displayName}
-                    branchName={augmenter.isMultiBranchPipeline ? branch : undefined}
-                    runId={run.id}
-                    run={run}
-                    t={t}
-                />
-                }
-
-                {!isPipelineQueued &&
-                <LogToolbar
-                    fileName={generalLogPager ? augmenter.generalLogFileName : logFileName}
-                    url={generalLogPager ? augmenter.generalLogUrl : logUrl}
-                    title={title}
-                    duration={!generalLogPager ? this.pager.currentNode.durationInMillis : ''}
-                    running={!generalLogPager ? this.pager.currentNode.isRunning : false}
-                    t={t}
-                />
-                }
-
-                {this.pager.steps && !noResultsToDisplay && (
-                    <Steps onUserExpand={this.userExpandedStep}
-                           onUserCollapse={this.userCollapsedStep}
-                           tailLogs={this.state.tailLogs}
-                           key={this.pager.currentStepsUrl}
-                           nodeInformation={this.pager.steps.data}
-                           followAlong={augmenter.karaoke}
-                           augmenter={augmenter}
-                           t={t}
-                           scrollToBottom={scrollToBottom}
-                           router={router}
-                           location={location}
+                {this.pager.nodes !== undefined && (
+                    <Extensions.Renderer
+                        extensionPoint="jenkins.pipeline.run.result"
+                        selectedStage={this.pager.currentNode}
+                        callback={afterClick}
+                        nodes={this.pager.nodes.data.model}
+                        pipelineName={pipeline.displayName}
+                        branchName={augmenter.isMultiBranchPipeline ? branch : undefined}
+                        runId={run.id}
+                        run={run}
+                        t={t}
                     />
                 )}
 
-                {!this.pager.pending && !isPipelineQueued && noResultsToDisplay && (
-                    <div className="nosteps-container">
-                        <NoSteps
-                            translation={t}
-                            titleKey="rundetail.pipeline.nosteps.message.title"
-                            messageKey="rundetail.pipeline.nosteps.message.description"
-                        />
-                        <LogConsole {...{
-                            t,
-                            router,
-                            location,
-                            hasMore,
-                            logArray,
-                            currentLogUrl: augmenter.generalLogUrl,
-                            key: augmenter.generalLogUrl,
-                        }}
-                        />
-                    </div>
+                {!isPipelineQueued && (
+                    <LogToolbar
+                        fileName={generalLogPager ? augmenter.generalLogFileName : logFileName}
+                        url={generalLogPager ? augmenter.generalLogUrl : logUrl}
+                        title={title}
+                        duration={!generalLogPager ? this.pager.currentNode.durationInMillis : ''}
+                        running={!generalLogPager ? this.pager.currentNode.isRunning : false}
+                        t={t}
+                    />
                 )}
+
+                {this.pager.steps &&
+                    !noResultsToDisplay && (
+                        <Steps
+                            onUserExpand={this.userExpandedStep}
+                            onUserCollapse={this.userCollapsedStep}
+                            tailLogs={this.state.tailLogs}
+                            key={this.pager.currentStepsUrl}
+                            nodeInformation={this.pager.steps.data}
+                            followAlong={augmenter.karaoke}
+                            augmenter={augmenter}
+                            t={t}
+                            scrollToBottom={scrollToBottom}
+                            router={router}
+                            location={location}
+                        />
+                    )}
+
+                {!this.pager.pending &&
+                    !isPipelineQueued &&
+                    noResultsToDisplay && (
+                        <div className="nosteps-container">
+                            <NoSteps
+                                translation={t}
+                                titleKey="rundetail.pipeline.nosteps.message.title"
+                                messageKey="rundetail.pipeline.nosteps.message.description"
+                            />
+                            <LogConsole
+                                {...{
+                                    t,
+                                    router,
+                                    location,
+                                    hasMore,
+                                    logArray,
+                                    currentLogUrl: augmenter.generalLogUrl,
+                                    key: augmenter.generalLogUrl,
+                                }}
+                            />
+                        </div>
+                    )}
 
                 {downstreamRuns.length > 0 && (
                     <div>
