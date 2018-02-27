@@ -43,12 +43,14 @@ public class ParallelNavigationTest {
     String navTestWithInput = "ParallelNavTestWithInput_tested";
     String navTestWithFailedInputStep = "ParallelNavigationTest_failed_input";
     String navTestWithNoStepsNoStages = "ParallelNavTestWithNoStepsNoStages";
+    String navTestInputParamGoToClassicLink = "ParallelNavTestInputParamGoToClassicLink";
 
     // Initialize our MultiBranchPipeline objects
     static MultiBranchPipeline navTestPipeline = null;
     static MultiBranchPipeline navTestWithInputPipeline = null;
     static MultiBranchPipeline navTestWithFailedInputStepPipeline = null;
     static MultiBranchPipeline navTestWithNoStepsNoStagesPipeline = null;
+    static MultiBranchPipeline navTestInputParamGoToClassicLinkPipeline = null;
 
     /**
      * This checks that we can run a pipeline with 2 long running parallel branches.
@@ -140,7 +142,7 @@ public class ParallelNavigationTest {
      */
     @Test
     public void testLogVisibilityWhenNoStepsOrStages () throws IOException, GitAPIException, InterruptedException {
-        // Create navTestWithFailedInputStep
+        // Create navTestWithNoStepsNoStages
         logger.info("Creating pipeline " + navTestWithNoStepsNoStages);
         URL navTestWithNoStepsNoStagesJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile.nosteps.nostages");
         Files.copy(new File(navTestWithNoStepsNoStagesJenkinsfile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
@@ -154,6 +156,27 @@ public class ParallelNavigationTest {
 
         logger.info("Wait for log to appear");
         wait.until(By.cssSelector(".log-body"));
+    }
+
+    /**
+     * This checks that href attr of the alert error for unsupported inputs leads to the correct classic url
+     */
+    @Test
+    public void testInputParamGoToClassicLink () throws IOException, GitAPIException, InterruptedException {
+        // Create navTestInputParamGoToClassicLink
+        logger.info("Creating pipeline " + navTestInputParamGoToClassicLink);
+        URL navTestInputParamGoToClassicLinkJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile.input.param.classic.link");
+        Files.copy(new File(navTestInputParamGoToClassicLinkJenkinsfile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
+        git.addAll();
+        git.commit("Initial commit for " + navTestInputParamGoToClassicLink);
+        logger.info("Committed Jenkinsfile for " + navTestInputParamGoToClassicLink);
+        navTestInputParamGoToClassicLinkPipeline = mbpFactory.pipeline(navTestInputParamGoToClassicLink).createPipeline(git);
+        logger.info("Finished creating " + navTestInputParamGoToClassicLink);
+
+        navTestInputParamGoToClassicLinkPipeline.getRunDetailsPipelinePage().open(1);
+
+        logger.info("Wait for alert error with link to classic input to appear");
+        wait.until(By.xpath("//*[@class=\"Alert Error\"]//a[@href=\"/job/ParallelNavTestInputParamGoToClassicLink/job/master/1/input\"]"));
     }
 
     @AfterClass
