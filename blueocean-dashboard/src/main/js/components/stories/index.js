@@ -7,6 +7,7 @@ ext.store.init({
 });
 
 require('./ColumnFilterStories');
+require('./DownstreamRunsStories');
 require('./FullScreenStories');
 require('./inputStep');
 require('./moments');
