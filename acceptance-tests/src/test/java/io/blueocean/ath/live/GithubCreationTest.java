@@ -59,15 +59,9 @@ public class GithubCreationTest{
     @Inject @Rule
     public SSEClientRule sseClient;
 
-    @Inject ActivityPage activityPage;
-
-    @Inject BranchPage branchPage;
-
-    @Inject EditorPage editorPage;
-
     @Inject DashboardPage dashboardPage;
 
-    @Inject PullRequestsPage pullRequestsPage;
+    // @Inject PullRequestsPage pullRequestsPage;
 
     @Inject
     CustomJenkinsServer jenkins;
@@ -167,7 +161,9 @@ public class GithubCreationTest{
     public void testCreatePullRequest() throws IOException {
         String branchToCreate = "new-branch";
         String commitMessage = "Add new-file to our repo";
-        createMultiBranchPipeline(repo);
+        // createMultiBranchPipeline(repo);
+        MultiBranchPipeline pipeline = createMultiBranchPipeline(repo);
+
         byte[] firstJenkinsfile = "stage('first-build') { echo 'first-build' }".getBytes("UTF-8");
         GHContentUpdateResponse initialUpdateResponse = ghRepository.createContent(firstJenkinsfile, "firstJenkinsfile", "Jenkinsfile", "master");
         ghRepository.createRef(("refs/heads/" + branchToCreate), initialUpdateResponse.getCommit().getSHA1());
@@ -183,14 +179,12 @@ public class GithubCreationTest{
             "My first pull request is very exciting.");
         // Fire the rescan.
         testCreatePullRequestPipeline.rescanThisPipeline();
-        // Right now we're at dashboard page, so we need to first click on
-        // the name of the pipeline we just created
         dashboardPage.clickPipeline(repo);
-        logger.info("Clicked the pipeline " + repo + " on dashboardPage");
-        // Navigate to the pullRequestsPage
-        pullRequestsPage.open(repo);
-        pullRequestsPage.openPrDetails("1");
-        // pullRequestsPage.clickHistoryButton("1");
+        ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
+        PullRequestsPage pullRequestsPage = activityPage.clickPullRequestsTab();
+        // pullRequestsPage.open(repo);
+        // pullRequestsPage.openPrDetails("1");
+        pullRequestsPage.clickHistoryButton("1");
         pullRequestsPage.getCurrentUrl();
     }
 

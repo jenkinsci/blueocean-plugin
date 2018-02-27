@@ -72,11 +72,11 @@ public class PullRequestsPage implements WebDriverMixin {
         logger.info("DBG checkPr success");
     }
 
-    public PullRequestsPage clickHistoryButton(String prNumber) {
-        // Simple one that works:
-        wait.click(By.cssSelector("a.history-button"));
+    public ActivityPage clickHistoryButton(String prNumber) {
+        // Ryan helped me fix this.
+        wait.click(By.cssSelector("a[data-pr='" + prNumber + "'] a.history-button"));
         logger.info("Clicked history button and moving to Activity page");
-        return pullRequestsPageFactory.withPipeline(pipeline).checkUrl();
+        return activityPageFactory.withPipeline(pipeline).checkUrl(("PR-" + prNumber));
     }
 
     public PullRequestsPage clickRow(String commitMessage) {
