@@ -19,8 +19,10 @@ import org.apache.log4j.Logger;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.kohsuke.github.GHContentUpdateResponse;
+import org.kohsuke.github.GHDeploymentBuilder;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
+import org.kohsuke.github.*;
 
 import javax.inject.Inject;
 import javax.validation.constraints.AssertTrue;
@@ -48,8 +50,6 @@ public class GithubCreationTest{
     private GitHub github;
     private GHRepository ghRepository;
 
-    private MultiBranchPipeline testCreatePullRequestPipeline = null;
-
     @Inject
     GithubCreationPage creationPage;
 
@@ -60,8 +60,6 @@ public class GithubCreationTest{
     public SSEClientRule sseClient;
 
     @Inject DashboardPage dashboardPage;
-
-    // @Inject PullRequestsPage pullRequestsPage;
 
     @Inject
     CustomJenkinsServer jenkins;
@@ -121,14 +119,6 @@ public class GithubCreationTest{
     }
 
     /**
-     * Create our MultiBranchPipeline object here
-     */
-    public MultiBranchPipeline createMultiBranchPipeline(String repo) {
-        testCreatePullRequestPipeline = mbpFactory.pipeline(repo);
-        return testCreatePullRequestPipeline;
-    }
-
-    /**
      * This test tests the github creation flow.
      *
      * Creates a github repo with a sample Jenkinsfile
@@ -161,9 +151,7 @@ public class GithubCreationTest{
     public void testCreatePullRequest() throws IOException {
         String branchToCreate = "new-branch";
         String commitMessage = "Add new-file to our repo";
-        // createMultiBranchPipeline(repo);
-        MultiBranchPipeline pipeline = createMultiBranchPipeline(repo);
-
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
         byte[] firstJenkinsfile = "stage('first-build') { echo 'first-build' }".getBytes("UTF-8");
         GHContentUpdateResponse initialUpdateResponse = ghRepository.createContent(firstJenkinsfile, "firstJenkinsfile", "Jenkinsfile", "master");
         ghRepository.createRef(("refs/heads/" + branchToCreate), initialUpdateResponse.getCommit().getSHA1());
@@ -178,14 +166,20 @@ public class GithubCreationTest{
             "master",
             "My first pull request is very exciting.");
         // Fire the rescan.
-        testCreatePullRequestPipeline.rescanThisPipeline();
+        pipeline.rescanThisPipeline();
         dashboardPage.clickPipeline(repo);
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
         PullRequestsPage pullRequestsPage = activityPage.clickPullRequestsTab();
-        // pullRequestsPage.open(repo);
-        // pullRequestsPage.openPrDetails("1");
+        pullRequestsPage.clickRunButton("1");
+        // pullRequestsPage.clickRow(commitMessage);
         pullRequestsPage.clickHistoryButton("1");
-        pullRequestsPage.getCurrentUrl();
+        // We'll be on the activity page now, pre-filtered to PR-1.
+        // Now we want to merge the PR on ghRepository, trigger a rescan,
+        // and do activityPage.clickPipeline(repo) or whatever.
+        // GHContentUpdateResponse mergePRResponse = ghRepository.getPullRequests();
+        // ghRepository.createPullRequest().merge('Default merge message',());
+        activityPage.clickPullRequestsTab();
+        pullRequestsPage.checkForNoPullRequestsAvailable();
     }
 
     @Test

@@ -54,12 +54,17 @@ public class PullRequestsPage implements WebDriverMixin {
         PageFactory.initElements(driver, this);
     }
 
+    public PullRequestsPage checkForNoPullRequestsAvailable () {
+        logger.info("--> This should look for the \"you don\'t have any pull requests\" thing");
+        return this;
+    }
+
     public PullRequestsPage checkUrl() {
         // The AbstractPipeline object `pipeline` is null, and this still passes.
         // Need to figure out what I'm doing wrong with passing around the pipeline object.
-        // wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/pr"), 30000);
-        wait.until(By.cssSelector("a.selected.pr"));
-        logger.info("PR Tab is selected");
+        wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/pr"), 30000);
+        // wait.until(By.cssSelector("a.selected.pr"));
+        logger.info("checkUrl: success, PR Tab is selected");
         return this;
     }
 
@@ -69,7 +74,7 @@ public class PullRequestsPage implements WebDriverMixin {
 
     public void checkPr() {
         wait.until(By.cssSelector("a.selected.pr"));
-        logger.info("DBG checkPr success");
+        logger.info("checkPr: success, PR tab is selected");
     }
 
     public ActivityPage clickHistoryButton(String prNumber) {
@@ -80,13 +85,22 @@ public class PullRequestsPage implements WebDriverMixin {
     }
 
     public PullRequestsPage clickRow(String commitMessage) {
-        click(commitMessage);
-        // wait.click(By.cssSelector("div[JTable-cell-contents='" + commitMessage + "']"));
+        wait.click(By.cssSelector("div[JTable-cell-contents='" + commitMessage + "']"));
         return pullRequestsPageFactory.withPipeline(pipeline).checkUrl();
     }
 
+    public RunDetailsPipelinePage clickRunButton(String prNumber) {
+        wait.click(By.cssSelector("a[data-pr='" + prNumber + "'] a.run-button"));
+        logger.info("Clicked Run button to build the PR");
+        // return activityPageFactory.withPipeline(pipeline).checkUrl(("PR-" + prNumber));
+        // String runNumber = driver.findElement(By.cssSelector("span[data-pr='\" + prNumber + \"'] a.run-button"));
+        return runDetailsPipelinePageFactory.withPipeline(pipeline);
+    }
+
+
     public void open(String pipelineName) {
-        // checkPipeline();
+        checkPipeline();
+        checkUrl();
         go("/blue/organizations/jenkins/" + pipelineName + "/pr");
         checkPr();
         logger.info("PullRequestsPage --> opened PR tab for " + pipelineName);
