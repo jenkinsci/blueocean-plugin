@@ -130,12 +130,12 @@ export class Step extends Component {
             }}
             />);
         } else if (step.isInputStep) {
-            children = <InputStep 
+            children = (<InputStep 
                 {...{ step, key: 'step' }}
                 pipeline={pipeline}
                 branch={branch}
                 run={run}
-            />;
+            />);
         } else if (!logArray && step.hasLogs) {
             children = <span key={'span'}>&nbsp;</span>;
         }
@@ -203,4 +203,7 @@ Step.propTypes = {
     onUserExpand: PropTypes.func,
     onUserCollapse: PropTypes.func,
     tailLogs: PropTypes.bool,
+    pipeline: PropTypes.object,
+    branch: PropTypes.string,
+    run: PropTypes.object,
 };
