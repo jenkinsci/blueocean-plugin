@@ -73,10 +73,15 @@ public class PullRequestsPage implements WebDriverMixin {
     }
 
     public PullRequestsPage clickHistoryButton(String prNumber) {
-        // TODO: Change to a locator for data-pr
-        wait.until(By.cssSelector("div[data-branch='" + prNumber + "'] a.history-button")).click();
-        logger.info("Clicked history button of PR " + prNumber);
-        // return pullRequestsPageFactory.withPipeline(pipeline).checkUrl(branch);
+        // Simple one that works:
+        wait.click(By.cssSelector("a.history-button"));
+        logger.info("Clicked history button and moving to Activity page");
+        return pullRequestsPageFactory.withPipeline(pipeline).checkUrl();
+    }
+
+    public PullRequestsPage clickRow(String commitMessage) {
+        click(commitMessage);
+        // wait.click(By.cssSelector("div[JTable-cell-contents='" + commitMessage + "']"));
         return pullRequestsPageFactory.withPipeline(pipeline).checkUrl();
     }
 
@@ -85,12 +90,6 @@ public class PullRequestsPage implements WebDriverMixin {
         go("/blue/organizations/jenkins/" + pipelineName + "/pr");
         checkPr();
         logger.info("PullRequestsPage --> opened PR tab for " + pipelineName);
-    }
-
-    public EditorPage openEditor(String branch) {
-        wait.until(By.cssSelector("div[data-branch='" + branch + "'] a.pipeline-editor-link")).click();
-        logger.info("Clicked Editor button of branch " + branch);
-        return editorPage;
     }
 
     /**

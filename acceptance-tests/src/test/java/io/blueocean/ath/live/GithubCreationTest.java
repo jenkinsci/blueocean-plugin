@@ -166,9 +166,7 @@ public class GithubCreationTest{
     @Test
     public void testCreatePullRequest() throws IOException {
         String branchToCreate = "new-branch";
-        // Initialize our MultiBranchPipeline object as `repo` so that we
-        // can trigger a rescan of it.
-        // testCreatePullRequestPipeline = mbpFactory.pipeline(repo);
+        String commitMessage = "Add new-file to our repo";
         createMultiBranchPipeline(repo);
         byte[] firstJenkinsfile = "stage('first-build') { echo 'first-build' }".getBytes("UTF-8");
         GHContentUpdateResponse initialUpdateResponse = ghRepository.createContent(firstJenkinsfile, "firstJenkinsfile", "Jenkinsfile", "master");
@@ -179,7 +177,7 @@ public class GithubCreationTest{
         creationPage.createPipeline(token, organization, repo);
         dashboardPage.open();
         ghRepository.createPullRequest(
-            "Add new-file to our repo",
+            commitMessage,
             branchToCreate,
             "master",
             "My first pull request is very exciting.");
@@ -191,6 +189,8 @@ public class GithubCreationTest{
         logger.info("Clicked the pipeline " + repo + " on dashboardPage");
         // Navigate to the pullRequestsPage
         pullRequestsPage.open(repo);
+        pullRequestsPage.openPrDetails("1");
+        // pullRequestsPage.clickHistoryButton("1");
         pullRequestsPage.getCurrentUrl();
     }
 
