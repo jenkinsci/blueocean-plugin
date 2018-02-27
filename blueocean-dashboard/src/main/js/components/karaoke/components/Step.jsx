@@ -106,7 +106,7 @@ export class Step extends Component {
     }
 
     render() {
-        const { step, locale, router, location, t, scrollToBottom } = this.props;
+        const { step, locale, router, location, t, scrollToBottom, pipeline, branch, run } = this.props;
         if (step === undefined || !step) {
             return null;
         }
@@ -130,7 +130,12 @@ export class Step extends Component {
             }}
             />);
         } else if (step.isInputStep) {
-            children = <InputStep {...{ step, key: 'step' }} />;
+            children = <InputStep 
+                {...{ step, key: 'step' }}
+                pipeline={pipeline}
+                branch={branch}
+                run={run}
+            />;
         } else if (!logArray && step.hasLogs) {
             children = <span key={'span'}>&nbsp;</span>;
         }

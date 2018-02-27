@@ -291,6 +291,9 @@ export default class Pipeline extends Component {
                        scrollToBottom={scrollToBottom}
                        router={router}
                        location={location}
+                       pipeline={pipeline}
+                       branch={branch}
+                       run={run}
                 />
             )}
 

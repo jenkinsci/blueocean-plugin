@@ -8,6 +8,7 @@ import {
     StringUtil,
     logging,
 } from '@jenkins-cd/blueocean-core-js';
+import {rootPath} from '../../../util/UrlUtils';
 import { Alerts } from '@jenkins-cd/design-language';
 
 /**
@@ -98,18 +99,30 @@ export default class InputStep extends Component {
 
     render() {
         const { parameters } = this.parameterService;
+        const { run, branch, pipeline } = this.props;
+
         // Early out
         if (!parameters) {
             return null;
         }
+
         const sanity = parameters.filter(parameter => supportedInputTypesMapping[parameter.type] !== undefined);
         logger.debug('sanity check', sanity.length, parameters.length, this.props.classicInputUrl);
         if (sanity.length !== parameters.length) {
             logger.debug('sanity check failed. Returning Alert instead of the form.');
+            
+            let classicInputUrl;
+            if (pipeline.branchNames) {
+                classicInputUrl = `${rootPath(pipeline.fullName)}job/${encodeURIComponent(branch)}/${encodeURIComponent(run.id)}/input`;
+            } else {
+                classicInputUrl = `${rootPath(pipeline.fullName)}${encodeURIComponent(run.id)}/input`;
+            }
+
             const alertCaption = [
                 <p>{translate('inputStep.error.message')}</p>,
-                <a href={this.props.classicInputUrl} target="_blank">{translate('inputStep.error.linktext')}</a>
+                <a href={classicInputUrl} target="_blank">{translate('inputStep.error.linktext')}</a>
             ];
+
             const alertTitle = translate('inputStep.error.title', { defaultValue: 'Error' });
             return (<div className="inputStep">
                 <Alerts message={alertCaption} type="Error" title={alertTitle} />
