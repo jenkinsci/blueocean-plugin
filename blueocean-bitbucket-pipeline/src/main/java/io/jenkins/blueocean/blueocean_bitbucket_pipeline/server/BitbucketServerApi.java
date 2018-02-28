@@ -283,7 +283,9 @@ public class BitbucketServerApi extends BitbucketApi {
         try {
             HttpResponse response = request.get(String.format("%s/%s/repos/%s/branches/default",baseUrl+"projects",
                     orgId, repoSlug));
-            if(response.getStatus() == 404){
+            int status = response.getStatus();
+            //With 5.6.0 its 204, before that it was 404
+            if(status == 404 || status == 204){
                 return null; //empty repo gives 404, we ignore these
             }
             InputStream inputStream = response.getContent();
@@ -301,7 +303,8 @@ public class BitbucketServerApi extends BitbucketApi {
                     orgId, repoSlug));
 
             HttpResponse response = request.head(uriBuilder.build().toString());
-            return response.getStatus() == 404;
+            int status = response.getStatus();
+            return status == 404 || status == 204; //with BB server 5.6.0 204 is returned for empty repo
         } catch (URISyntaxException e) {
             throw handleException(e);
         }
