@@ -296,8 +296,6 @@ export default class Pipeline extends Component {
         const generalLogPager = !this.pager.pending && !isPipelineQueued && noResultsToDisplay ? KaraokeService.generalLogPager(augmenter, location) : '';
         const { data: logArray, hasMore } = !this.pager.pending && !isPipelineQueued && noResultsToDisplay && generalLogPager.log ? generalLogPager.log : '';
 
-        // TODO: Split up this return statement once everything is working again
-
         return (
             <div>
                 {<RunDescription run={this.props.run} t={t} />}
