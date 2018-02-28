@@ -8,7 +8,6 @@ import {
     StringUtil,
     logging,
 } from '@jenkins-cd/blueocean-core-js';
-import {rootPath} from '../../../util/UrlUtils';
 import { Alerts } from '@jenkins-cd/design-language';
 
 /**
