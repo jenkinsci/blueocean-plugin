@@ -1,7 +1,5 @@
 package io.blueocean.ath.live;
 
-import com.google.common.io.Files;
-import com.google.common.io.Resources;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.CustomJenkinsServer;
 import io.blueocean.ath.Login;
@@ -9,9 +7,7 @@ import io.blueocean.ath.Retry;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import io.blueocean.ath.pages.blue.ActivityPage;
-import io.blueocean.ath.pages.blue.BranchPage;
 import io.blueocean.ath.pages.blue.DashboardPage;
-import io.blueocean.ath.pages.blue.EditorPage;
 import io.blueocean.ath.pages.blue.GithubCreationPage;
 import io.blueocean.ath.pages.blue.PullRequestsPage;
 import io.blueocean.ath.sse.SSEClientRule;
@@ -19,19 +15,14 @@ import org.apache.log4j.Logger;
 import org.junit.*;
 import org.junit.runner.RunWith;
 import org.kohsuke.github.GHContentUpdateResponse;
-import org.kohsuke.github.GHDeploymentBuilder;
 import org.kohsuke.github.GHRepository;
 import org.kohsuke.github.GitHub;
-import org.kohsuke.github.*;
 
 import javax.inject.Inject;
-import javax.validation.constraints.AssertTrue;
-import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.URL;
 import java.security.SecureRandom;
 import java.util.Properties;
 
@@ -125,7 +116,7 @@ public class GithubCreationTest{
      *
      */
     @Test
-   // @Retry(3)
+    @Retry(3)
     public void testCreatePipelineFull() throws IOException {
         byte[] content = "stage('build') { echo 'yes' }".getBytes("UTF-8");
         GHContentUpdateResponse updateResponse = ghRepository.createContent(content, "Jenkinsfile", "Jenkinsfile", "master");
@@ -137,7 +128,7 @@ public class GithubCreationTest{
     }
 
     /**
-     * This test walks through a Pull Request flow..
+     * This test walks through a simple Pull Request flow..
      *
      * -Creates a github repo with a sample Jenkinsfile and follows
      *  the typical create flow
@@ -171,15 +162,10 @@ public class GithubCreationTest{
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
         PullRequestsPage pullRequestsPage = activityPage.clickPullRequestsTab();
         pullRequestsPage.clickRunButton("1");
-        // pullRequestsPage.clickRow(commitMessage);
         pullRequestsPage.clickHistoryButton("1");
         // We'll be on the activity page now, pre-filtered to PR-1.
-        // Now we want to merge the PR on ghRepository, trigger a rescan,
-        // and do activityPage.clickPipeline(repo) or whatever.
-        // GHContentUpdateResponse mergePRResponse = ghRepository.getPullRequests();
-        // ghRepository.createPullRequest().merge('Default merge message',());
+        // Go to the Pull Requests tab one last time.
         activityPage.clickPullRequestsTab();
-        pullRequestsPage.checkForNoPullRequestsAvailable();
     }
 
     @Test

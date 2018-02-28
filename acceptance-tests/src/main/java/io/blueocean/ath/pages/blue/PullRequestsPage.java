@@ -2,11 +2,9 @@ package io.blueocean.ath.pages.blue;
 
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
-import io.blueocean.ath.Locate;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.WebDriverMixin;
 import io.blueocean.ath.factory.ActivityPageFactory;
-import io.blueocean.ath.factory.PullRequestsPageFactory;
 import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
 import io.blueocean.ath.model.AbstractPipeline;
 import org.apache.log4j.Logger;
@@ -30,16 +28,10 @@ public class PullRequestsPage implements WebDriverMixin {
     ActivityPageFactory activityPageFactory;
 
     @Inject
-    PullRequestsPageFactory pullRequestsPageFactory;
-
-    @Inject
     RunDetailsPipelinePageFactory runDetailsPipelinePageFactory;
 
     @Inject
     WaitUtil wait;
-
-    @Inject
-    EditorPage editorPage;
 
     @Inject
     public PullRequestsPage(WebDriver driver) {
@@ -54,50 +46,63 @@ public class PullRequestsPage implements WebDriverMixin {
         PageFactory.initElements(driver, this);
     }
 
-    public PullRequestsPage checkForNoPullRequestsAvailable () {
-        logger.info("--> This should look for the \"you don\'t have any pull requests\" thing");
-        return this;
-    }
-
+    /**
+     * Validates a correctly constructed URL.
+     * test into that PR's Activity page.
+     * @return
+     */
     public PullRequestsPage checkUrl() {
-        // The AbstractPipeline object `pipeline` is null, and this still passes.
-        // Need to figure out what I'm doing wrong with passing around the pipeline object.
         wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/pr"), 30000);
-        // wait.until(By.cssSelector("a.selected.pr"));
-        logger.info("checkUrl: success, PR Tab is selected");
+        logger.info("checkUrl: successfully validated our URL");
         return this;
     }
 
+    /**
+     * Validates that the pipeline object actually exists and can do stuff.
+     * @return
+     */
     public void checkPipeline() {
         Assert.assertNotNull("AbstractPipeline is null", pipeline);
     }
 
+    /**
+     * Verifies that the PR tab in the UI is actually selected.
+     * @return
+     */
     public void checkPr() {
         wait.until(By.cssSelector("a.selected.pr"));
         logger.info("checkPr: success, PR tab is selected");
     }
 
+    /**
+     * Clicks the History button for the specified PR number, taking the
+     * test into that PR's Activity page.
+     * @param prNumber
+     * @return
+     */
     public ActivityPage clickHistoryButton(String prNumber) {
-        // Ryan helped me fix this.
         wait.click(By.cssSelector("a[data-pr='" + prNumber + "'] a.history-button"));
-        logger.info("Clicked history button and moving to Activity page");
+        logger.info("Clicked history button, which moves us to the Activity page");
         return activityPageFactory.withPipeline(pipeline).checkUrl(("PR-" + prNumber));
     }
 
-    public PullRequestsPage clickRow(String commitMessage) {
-        wait.click(By.cssSelector("div[JTable-cell-contents='" + commitMessage + "']"));
-        return pullRequestsPageFactory.withPipeline(pipeline).checkUrl();
-    }
-
+    /**
+     * Clicks the Run button for the specified PR number, taking the
+     * test into that PR's Activity page.
+     * @param prNumber
+     * @return
+     */
     public RunDetailsPipelinePage clickRunButton(String prNumber) {
         wait.click(By.cssSelector("a[data-pr='" + prNumber + "'] a.run-button"));
         logger.info("Clicked Run button to build the PR");
-        // return activityPageFactory.withPipeline(pipeline).checkUrl(("PR-" + prNumber));
-        // String runNumber = driver.findElement(By.cssSelector("span[data-pr='\" + prNumber + \"'] a.run-button"));
         return runDetailsPipelinePageFactory.withPipeline(pipeline);
     }
 
-
+    /**
+     * Opens a PullRequestsPage for the specified pipeline
+     * @param pipelineName
+     * @return
+     */
     public void open(String pipelineName) {
         checkPipeline();
         checkUrl();
@@ -116,6 +121,11 @@ public class PullRequestsPage implements WebDriverMixin {
         return runDetailsPipelinePageFactory.withPipeline(pipeline);
     }
 
+    /**
+     * Locate the row for the specified pr
+     * @param prNumber
+     * @return
+     */
     private WebElement findPrRow(String prNumber) {
         return wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("div[data-pr='" + prNumber + "']")));
     }
