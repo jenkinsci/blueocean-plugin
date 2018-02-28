@@ -130,7 +130,7 @@ export class Step extends Component {
             }}
             />);
         } else if (step.isInputStep) {
-            children = <InputStep step={step} key='step' classicInputUrl={classicInputUrl} />;
+            children = <InputStep step={step} key="step" classicInputUrl={classicInputUrl} />;
         } else if (!logArray && step.hasLogs) {
             children = <span key={'span'}>&nbsp;</span>;
         }
