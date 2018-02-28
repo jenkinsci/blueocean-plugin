@@ -106,7 +106,7 @@ export class Step extends Component {
     }
 
     render() {
-        const { step, locale, router, location, t, scrollToBottom, pipeline, branch, run } = this.props;
+        const { step, locale, router, location, t, scrollToBottom, classicInputUrl } = this.props;
         if (step === undefined || !step) {
             return null;
         }
@@ -130,12 +130,7 @@ export class Step extends Component {
             }}
             />);
         } else if (step.isInputStep) {
-            children = (<InputStep 
-                {...{ step, key: 'step' }}
-                pipeline={pipeline}
-                branch={branch}
-                run={run}
-            />);
+            children = <InputStep step={step} key='step' classicInputUrl={classicInputUrl} />;
         } else if (!logArray && step.hasLogs) {
             children = <span key={'span'}>&nbsp;</span>;
         }
@@ -203,7 +198,5 @@ Step.propTypes = {
     onUserExpand: PropTypes.func,
     onUserCollapse: PropTypes.func,
     tailLogs: PropTypes.bool,
-    pipeline: PropTypes.object,
-    branch: PropTypes.string,
-    run: PropTypes.object,
+    classicInputUrl: PropTypes.string,
 };

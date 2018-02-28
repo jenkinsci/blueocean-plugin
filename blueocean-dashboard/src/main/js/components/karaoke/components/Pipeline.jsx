@@ -10,6 +10,7 @@ import LogToolbar from './LogToolbar';
 import Steps from './Steps';
 import FreeStyle from './FreeStyle';
 import RunDescription from './RunDescription';
+import {buildClassicInputUrl} from '../../../util/UrlUtils';
 
 import { KaraokeConfig } from '../';
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pipeline');
@@ -291,9 +292,7 @@ export default class Pipeline extends Component {
                        scrollToBottom={scrollToBottom}
                        router={router}
                        location={location}
-                       pipeline={pipeline}
-                       branch={branch}
-                       run={run}
+                       classicInputUrl={buildClassicInputUrl(pipeline, branch, run.id)}
                 />
             )}
 

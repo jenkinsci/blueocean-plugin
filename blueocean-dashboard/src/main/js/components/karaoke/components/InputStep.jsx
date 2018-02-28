@@ -99,7 +99,7 @@ export default class InputStep extends Component {
 
     render() {
         const { parameters } = this.parameterService;
-        const { run, branch, pipeline } = this.props;
+        const { classicInputUrl } = this.props;
 
         // Early out
         if (!parameters) {
@@ -107,16 +107,9 @@ export default class InputStep extends Component {
         }
 
         const sanity = parameters.filter(parameter => supportedInputTypesMapping[parameter.type] !== undefined);
-        logger.debug('sanity check', sanity.length, parameters.length, this.props.classicInputUrl);
+        logger.debug('sanity check', sanity.length, parameters.length, classicInputUrl);
         if (sanity.length !== parameters.length) {
             logger.debug('sanity check failed. Returning Alert instead of the form.');
-
-            let classicInputUrl;
-            if (pipeline.branchNames) {
-                classicInputUrl = `${rootPath(pipeline.fullName)}job/${encodeURIComponent(branch)}/${encodeURIComponent(run.id)}/input`;
-            } else {
-                classicInputUrl = `${rootPath(pipeline.fullName)}${encodeURIComponent(run.id)}/input`;
-            }
 
             const alertCaption = [
                 <p>{translate('inputStep.error.message')}</p>,
@@ -162,9 +155,7 @@ const { object, shape } = PropTypes;
 InputStep.propTypes = {
     step: shape().isRequired,
     classicInputUrl: object,
-    pipeline: PropTypes.object,
-    branch: PropTypes.string,
-    run: PropTypes.object,
+    classicInputUrl: PropTypes.string,
 };
 
 InputStep.contextTypes = {

@@ -50,9 +50,13 @@ export const buildClassicConfigUrl = (pipeline) => {
     return null;
 };
 
-export const buildClassicInputUrl = (pipeline, runNumber) => {
+export const buildClassicInputUrl = (pipeline, branch, runNumber) => {
     if (pipeline && pipeline.fullName) {
-        return `${rootPath(pipeline.fullName)}${runNumber}/input/`;
+        if (pipeline.branchNames) {
+            return `${rootPath(pipeline.fullName)}job/${encodeURIComponent(branch)}/${encodeURIComponent(runNumber)}/input`;
+        } else {
+            return `${rootPath(pipeline.fullName)}${encodeURIComponent(runNumber)}/input`;
+        }
     }
     return null;
 };
