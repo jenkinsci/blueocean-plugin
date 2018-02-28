@@ -163,6 +163,24 @@ public class BitbucketApiTest extends BbServerWireMock {
     }
 
     @Test
+    public void testEmptyRepo204(){
+        BbBranch branch = api.getDefaultBranch("TESTP","empty1");
+        assertNull(branch);
+    }
+
+    @Test
+    public void testDefaultBranchPre5_6_0(){
+        BbBranch branch = api.getDefaultBranch("TESTP","empty-repo-test");
+        assertNull(branch);
+    }
+
+    @Test
+    public void testDefaultBranch5_6_0(){
+        BbBranch branch = api.getDefaultBranch("TESTP","empty1");
+        assertNull(branch);
+    }
+
+    @Test
     public void testCreateNewBranchOnExistingRepo(){
         BbBranch branch = api.getDefaultBranch("TESTP","pipeline-demo-test");
         BbBranch newBranch = api.createBranch("TESTP", "pipeline-demo-test",
