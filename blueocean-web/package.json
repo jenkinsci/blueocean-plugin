@@ -36,8 +36,6 @@
     "zombie": "4.2.1"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.170",
-    "@jenkins-cd/design-language": "0.0.158",
     "@jenkins-cd/js-extensions": "0.0.42",
     "@jenkins-cd/js-modules": "0.0.10",
     "history": "2.0.2",
@@ -54,12 +52,11 @@
     "react-redux": "4.4.5",
     "react-router": "2.8.1",
     "redux": "3.6.0",
-    "redux-thunk": "2.1.0"
+    "redux-thunk": "2.1.0",
+    "@jenkins-cd/blueocean-material-icons": "0.0.6"
   },
   "jenkinscd": {
     "import": [
-      "@jenkins-cd/blueocean-core-js@any",
-      "@jenkins-cd/design-language@any",
       "@jenkins-cd/js-extensions@any",
       "moment@any",
       "react@any",

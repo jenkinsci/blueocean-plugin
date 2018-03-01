@@ -50,9 +50,7 @@ exports.install = function(builder) {
 
     // This because core-js init is more complex
     builder.onSetupBundle(function(bundle, packageJson) {
-        if (packageJson.name === '@jenkins-cd/blueocean-core-js') {
-            bundle.onStartup('@jenkins-cd/js-extensions/dist/init/blueocean-core-js');
-        } else if (!packageJson.name.startsWith('@jenkins-cd')) {
+        if (!packageJson.name.startsWith('@jenkins-cd')) {
             bundle.onStartup('@jenkins-cd/js-extensions/dist/init/extension');
         }
     });
@@ -65,8 +63,6 @@ exports.install = function(builder) {
         // See jenkinscd/export in blueocean-web/package.json
         builder
             .import('@jenkins-cd/js-extensions@any')
-            .import('@jenkins-cd/design-language@any')
-            .import('@jenkins-cd/blueocean-core-js@any')
             .import('@jenkins-cd/logging')
             .import('react@any', {
                 aliases: ['react/lib/React'] // in case a module requires react through the back door
@@ -75,9 +71,5 @@ exports.install = function(builder) {
             .import('react-addons-css-transition-group@any')
             .import('redux@any')
         ;
-    }
-
-    if (!packageJson.name.startsWith('@jenkins-cd')) {
-        builder.import('jenkins-cd-blueocean-core-js:jenkins-cd-blueocean-core-js@any');
     }
 };
