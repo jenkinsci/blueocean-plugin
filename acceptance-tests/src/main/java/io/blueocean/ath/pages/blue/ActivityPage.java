@@ -19,6 +19,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import javax.inject.Inject;
 import java.net.URLEncoder;
 
+import static org.junit.Assert.assertNotNull;
+
 public class ActivityPage {
     private Logger logger = Logger.getLogger(ActivityPage.class);
 
@@ -56,7 +58,7 @@ public class ActivityPage {
     }
 
     public void checkPipeline() {
-        Assert.assertNotNull("AbstractPipeline is null", pipeline);
+        assertNotNull("AbstractPipeline is null", pipeline);
     }
 
     public ActivityPage checkUrl() {
@@ -87,13 +89,18 @@ public class ActivityPage {
     public BranchPage clickBranchTab() {
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("a.branches"))).click();
         logger.info("Clicked on branch tab");
-        return branchPageFactory.withPipeline(pipeline).checkUrl();
+        // return branchPageFactory.withPipeline(pipeline).checkUrl();
+        BranchPage page = branchPageFactory.withPipeline(pipeline);
+        assertNotNull("AbstractPipeline object is null", page);
+        return page.checkUrl();
     }
 
     public PullRequestsPage clickPullRequestsTab() {
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("a.pr"))).click();
         logger.info("Clicked on PR tab");
-        return pullRequestsPageFactory.withPipeline(pipeline).checkUrl();
+        PullRequestsPage page = pullRequestsPageFactory.withPipeline(pipeline);
+        assertNotNull("AbstractPipeline object is null", page);
+        return page.checkUrl();
     }
 
     public By getSelectorForBranch(String branchName) {
