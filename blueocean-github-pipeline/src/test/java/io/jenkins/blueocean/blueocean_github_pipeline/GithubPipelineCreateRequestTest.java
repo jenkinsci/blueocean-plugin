@@ -98,7 +98,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
     @Test
     public void createPipelineNoJenkinsFile() throws UnirestException, IOException {
 //        AbstractMultiBranchCreateRequest.JenkinsfileCriteria criteria = Mockito.mock(AbstractMultiBranchCreateRequest.JenkinsfileCriteria.class);
-//        when(criteria.isJekinsfileFound()).thenReturn(true);
+//        when(criteria.isJenkinsfileFound()).thenReturn(true);
         OrganizationImpl organization = new OrganizationImpl("jenkins", j.jenkins);
         String credentialId = createGithubCredential(user);
 
@@ -108,7 +108,7 @@ public class GithubPipelineCreateRequestTest extends GithubMockBase {
                 "empty1", new BlueScmConfig(GithubScm.ID, githubApiUrl, credentialId, config));
 
         request.create(organization, organization);
-//        verify(criteria, atLeastOnce()).isJekinsfileFound();
+//        verify(criteria, atLeastOnce()).isJenkinsfileFound();
     }
 
     @Test

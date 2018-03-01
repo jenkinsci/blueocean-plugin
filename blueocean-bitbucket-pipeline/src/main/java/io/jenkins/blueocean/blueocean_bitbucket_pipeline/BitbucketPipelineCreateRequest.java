@@ -116,7 +116,7 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
                 @Override
                 public boolean isObserving() {
                     //if jenkinsfile is found stop observing
-                    return !criteria.isJekinsfileFound();
+                    return !criteria.isJenkinsfileFound();
 
                 }
             }, TaskListener.NULL);
@@ -124,7 +124,7 @@ public class BitbucketPipelineCreateRequest extends AbstractMultiBranchCreateReq
             logger.warn("Error detecting Jenkinsfile: "+e.getMessage(), e);
         }
 
-        return criteria.isJekinsfileFound();
+        return criteria.isJenkinsfileFound();
     }
 
     @Override
