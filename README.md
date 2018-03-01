@@ -168,6 +168,31 @@ npm i
 npm shrinkwrap --dev
 ```
 
+#### Source code formatting
+
+We are using [prettier.js](https://prettier.io/) to format JavaScript in order to keep source consistent automatically
+rather than with build-time errors about unformatted code. We do this via a pre-commit hook, which you will have to 
+enable in your local checkout.
+
+* From the root directory of your `blueocean/` clone, first create the symlink:
+
+````
+jdoe@localhost> ln -s ../../bin/pre-commit.js .git/hooks/pre-commit
+````
+        
+* Check the symlink, because if it's wrong git will silently ignore it:
+
+````
+jdoe@localhost> file .git/hooks/pre-commit
+# => .git/hooks/pre-commit: a /usr/bin/env node script text executable, ASCII text
+````
+
+* Check (with no staged changes) to make sure it's going to run successfully in your environment:
+
+````
+jdoe@localhost> .git/hooks/pre-commit
+# => No staged files to format.
+````
 
 ## Contributing - help wanted
 
