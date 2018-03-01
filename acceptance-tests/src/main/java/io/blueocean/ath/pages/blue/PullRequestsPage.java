@@ -19,7 +19,7 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import javax.inject.Inject;
 
 public class PullRequestsPage implements WebDriverMixin {
-    private Logger logger = Logger.getLogger(BranchPage.class);
+    private Logger logger = Logger.getLogger(PullRequestsPage.class);
 
     private WebDriver driver;
     private AbstractPipeline pipeline;
@@ -48,7 +48,6 @@ public class PullRequestsPage implements WebDriverMixin {
 
     /**
      * Validates a correctly constructed URL.
-     * test into that PR's Activity page.
      * @return
      */
     public PullRequestsPage checkUrl() {
@@ -88,7 +87,7 @@ public class PullRequestsPage implements WebDriverMixin {
 
     /**
      * Clicks the Run button for the specified PR number, taking the
-     * test into that PR's Activity page.
+     * test into that PR's Run Details page.
      * @param prNumber
      * @return
      */

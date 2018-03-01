@@ -139,6 +139,7 @@ public class GithubCreationTest{
      *
      */
     @Test
+    @Retry(3)
     public void testCreatePullRequest() throws IOException {
         String branchToCreate = "new-branch";
         String commitMessage = "Add new-file to our repo";
