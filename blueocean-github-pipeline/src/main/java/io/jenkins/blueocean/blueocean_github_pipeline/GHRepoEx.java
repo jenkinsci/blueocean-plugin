@@ -7,7 +7,7 @@ import org.kohsuke.github.GHRepository;
 /**
  * Expose github repository 'private' field
  *
- * GHRepositry defines _private but doesn't get deserialized reliably with Jackson
+ * GHRepository defines _private but doesn't get deserialized reliably with Jackson
  *
  * @author Vivek Pandey
  */

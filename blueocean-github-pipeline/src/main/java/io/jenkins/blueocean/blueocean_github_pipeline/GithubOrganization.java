@@ -38,7 +38,7 @@ public class GithubOrganization extends AbstractGithubOrganization {
 
     @Override
     public ScmRepositoryContainer getRepositories() {
-        return new GithubRespositoryContainer(scm, ghOrganization.getUrl().toString(), getName(), credential,this);
+        return new GithubRepositoryContainer(scm, ghOrganization.getUrl().toString(), getName(), credential,this);
     }
 
     @Override

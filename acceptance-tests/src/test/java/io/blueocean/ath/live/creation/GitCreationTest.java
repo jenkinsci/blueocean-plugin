@@ -62,7 +62,7 @@ public class GitCreationTest extends BlueOceanAcceptanceTest {
 
     @Ignore
     @Test
-    public void testSSHPrivateRepostory() throws IOException, GitAPIException, URISyntaxException {
+    public void testSSHPrivateRepository() throws IOException, GitAPIException, URISyntaxException {
         String gitUrl = liveProperties.getProperty("git.ssh.repository");
         String privateKeyFile = liveProperties.getProperty("git.ssh.keyfile");
         String pipelineName = liveProperties.getProperty("git.ssh.pipelineName");

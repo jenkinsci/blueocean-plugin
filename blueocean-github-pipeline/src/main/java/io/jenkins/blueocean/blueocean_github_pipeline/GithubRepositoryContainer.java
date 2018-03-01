@@ -15,7 +15,7 @@ import java.net.HttpURLConnection;
 /**
  * @author Vivek Pandey
  */
-public class GithubRespositoryContainer extends ScmRepositoryContainer {
+public class GithubRepositoryContainer extends ScmRepositoryContainer {
     private final Link self;
     private final StandardUsernamePasswordCredentials credentials;
     private final String rootUrl;
@@ -23,11 +23,11 @@ public class GithubRespositoryContainer extends ScmRepositoryContainer {
     private final String orgUrl;
     private final String repoType;
 
-    public GithubRespositoryContainer(Scm scm, String orgUrl, String orgId, StandardUsernamePasswordCredentials credentials, Reachable parent) {
+    public GithubRepositoryContainer(Scm scm, String orgUrl, String orgId, StandardUsernamePasswordCredentials credentials, Reachable parent) {
         this(scm, orgUrl, orgId, "all", credentials, parent);
     }
 
-    public GithubRespositoryContainer(Scm scm, String orgUrl, String orgId, String repoType, StandardUsernamePasswordCredentials credentials, Reachable parent) {
+    public GithubRepositoryContainer(Scm scm, String orgUrl, String orgId, String repoType, StandardUsernamePasswordCredentials credentials, Reachable parent) {
         this.rootUrl = scm.getUri();
         this.self = parent.getLink().rel("repositories");
         this.credentials = credentials;
