@@ -10,6 +10,7 @@ import LogToolbar from './LogToolbar';
 import Steps from './Steps';
 import FreeStyle from './FreeStyle';
 import RunDescription from './RunDescription';
+import {buildClassicInputUrl} from '../../../util/UrlUtils';
 
 import { KaraokeConfig } from '../';
 import RunDetails from '../../RunDetails';
@@ -339,6 +340,7 @@ export default class Pipeline extends Component {
                             scrollToBottom={scrollToBottom}
                             router={router}
                             location={location}
+                            classicInputUrl={buildClassicInputUrl(pipeline, branch, run.id)}
                         />
                     )}
 

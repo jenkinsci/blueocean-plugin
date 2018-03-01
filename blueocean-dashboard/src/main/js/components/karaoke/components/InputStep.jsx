@@ -98,18 +98,23 @@ export default class InputStep extends Component {
 
     render() {
         const { parameters } = this.parameterService;
+        const { classicInputUrl } = this.props;
+
         // Early out
         if (!parameters) {
             return null;
         }
+
         const sanity = parameters.filter(parameter => supportedInputTypesMapping[parameter.type] !== undefined);
-        logger.debug('sanity check', sanity.length, parameters.length, this.props.classicInputUrl);
+        logger.debug('sanity check', sanity.length, parameters.length, classicInputUrl);
         if (sanity.length !== parameters.length) {
             logger.debug('sanity check failed. Returning Alert instead of the form.');
+
             const alertCaption = [
                 <p>{translate('inputStep.error.message')}</p>,
-                <a href={this.props.classicInputUrl} target="_blank">{translate('inputStep.error.linktext')}</a>
+                <a href={classicInputUrl} target="_blank">{translate('inputStep.error.linktext')}</a>
             ];
+
             const alertTitle = translate('inputStep.error.title', { defaultValue: 'Error' });
             return (<div className="inputStep">
                 <Alerts message={alertCaption} type="Error" title={alertTitle} />
@@ -149,6 +154,7 @@ const { object, shape } = PropTypes;
 InputStep.propTypes = {
     step: shape().isRequired,
     classicInputUrl: object,
+    classicInputUrl: PropTypes.string,
 };
 
 InputStep.contextTypes = {
