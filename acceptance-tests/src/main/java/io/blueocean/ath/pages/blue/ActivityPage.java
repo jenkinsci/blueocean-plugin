@@ -19,8 +19,6 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import javax.inject.Inject;
 import java.net.URLEncoder;
 
-import static org.junit.Assert.assertNotNull;
-
 public class ActivityPage {
     private Logger logger = Logger.getLogger(ActivityPage.class);
 
@@ -58,7 +56,7 @@ public class ActivityPage {
     }
 
     public void checkPipeline() {
-        assertNotNull("AbstractPipeline is null", pipeline);
+        Assert.assertNotNull("AbstractPipeline is null", pipeline);
     }
 
     public ActivityPage checkUrl() {
@@ -91,7 +89,7 @@ public class ActivityPage {
         logger.info("Clicked on branch tab");
         // return branchPageFactory.withPipeline(pipeline).checkUrl();
         BranchPage page = branchPageFactory.withPipeline(pipeline);
-        assertNotNull("AbstractPipeline object is null", page);
+        Assert.assertNotNull("AbstractPipeline object is null", page);
         return page.checkUrl();
     }
 
@@ -99,7 +97,7 @@ public class ActivityPage {
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("a.pr"))).click();
         logger.info("Clicked on PR tab");
         PullRequestsPage page = pullRequestsPageFactory.withPipeline(pipeline);
-        assertNotNull("AbstractPipeline object is null", page);
+        Assert.assertNotNull("AbstractPipeline object is null", page);
         return page.checkUrl();
     }
 
