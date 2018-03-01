@@ -340,6 +340,7 @@ export default class Pipeline extends Component {
                             scrollToBottom={scrollToBottom}
                             router={router}
                             location={location}
+                            classicInputUrl={buildClassicInputUrl(pipeline, branch, run.id)}
                         />
                     )}
 
