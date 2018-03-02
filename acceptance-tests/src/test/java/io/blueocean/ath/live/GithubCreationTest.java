@@ -1,13 +1,15 @@
 package io.blueocean.ath.live;
 
-import com.google.common.io.Resources;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.CustomJenkinsServer;
 import io.blueocean.ath.Login;
 import io.blueocean.ath.Retry;
 import io.blueocean.ath.factory.MultiBranchPipelineFactory;
-import io.blueocean.ath.pages.blue.EditorPage;
+import io.blueocean.ath.model.MultiBranchPipeline;
+import io.blueocean.ath.pages.blue.ActivityPage;
+import io.blueocean.ath.pages.blue.DashboardPage;
 import io.blueocean.ath.pages.blue.GithubCreationPage;
+import io.blueocean.ath.pages.blue.PullRequestsPage;
 import io.blueocean.ath.sse.SSEClientRule;
 import org.apache.log4j.Logger;
 import org.junit.*;
@@ -21,7 +23,6 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.math.BigInteger;
-import java.net.URL;
 import java.security.SecureRandom;
 import java.util.Properties;
 
@@ -49,13 +50,13 @@ public class GithubCreationTest{
     @Inject @Rule
     public SSEClientRule sseClient;
 
-    @Inject EditorPage editorPage;
+    @Inject DashboardPage dashboardPage;
 
     @Inject
     CustomJenkinsServer jenkins;
 
     /**
-     * Cleans up repostory after the test has completed.
+     * Cleans up repository after the test has completed.
      *
      * @throws IOException
      */
@@ -108,16 +109,14 @@ public class GithubCreationTest{
         logger.info("Created repository " + repo);
     }
 
-
     /**
      * This test tests the github creation flow.
      *
-     * Creates a github repo with a sameple Jenkinsfile
+     * Creates a github repo with a sample Jenkinsfile
      *
-     * TODO: Add PR coverage.
      */
     @Test
-   // @Retry(3)
+    @Retry(3)
     public void testCreatePipelineFull() throws IOException {
         byte[] content = "stage('build') { echo 'yes' }".getBytes("UTF-8");
         GHContentUpdateResponse updateResponse = ghRepository.createContent(content, "Jenkinsfile", "Jenkinsfile", "master");
@@ -126,6 +125,48 @@ public class GithubCreationTest{
         ghRepository.createContent("hi there","newfile", "newfile", "branch1");
 
         creationPage.createPipeline(token, organization, repo);
+    }
+
+    /**
+     * This test walks through a simple Pull Request flow..
+     *
+     * -Creates a github repo with a sample Jenkinsfile and follows
+     *  the typical create flow
+     * -Navigates back to the top level Dashboard page
+     * -Creates a PR in the GH repo
+     * -Triggers a rescan of the multibranch pipeline
+     * -Opens the PR tab to verify that we actually have something there.
+     *
+     */
+    @Test
+    @Retry(3)
+    public void testCreatePullRequest() throws IOException {
+        String branchToCreate = "new-branch";
+        String commitMessage = "Add new-file to our repo";
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
+        byte[] firstJenkinsfile = "stage('first-build') { echo 'first-build' }".getBytes("UTF-8");
+        GHContentUpdateResponse initialUpdateResponse = ghRepository.createContent(firstJenkinsfile, "firstJenkinsfile", "Jenkinsfile", "master");
+        ghRepository.createRef(("refs/heads/" + branchToCreate), initialUpdateResponse.getCommit().getSHA1());
+        logger.info("Created master and " + branchToCreate + " branches in " + repo);
+
+        ghRepository.createContent("hi there","newfile", "new-file", branchToCreate);
+        creationPage.createPipeline(token, organization, repo);
+        dashboardPage.open();
+        ghRepository.createPullRequest(
+            commitMessage,
+            branchToCreate,
+            "master",
+            "My first pull request is very exciting.");
+        // Fire the rescan.
+        pipeline.rescanThisPipeline();
+        dashboardPage.clickPipeline(repo);
+        ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
+        PullRequestsPage pullRequestsPage = activityPage.clickPullRequestsTab();
+        pullRequestsPage.clickRunButton("1");
+        pullRequestsPage.clickHistoryButton("1");
+        // We'll be on the activity page now, pre-filtered to PR-1.
+        // Go to the Pull Requests tab one last time.
+        activityPage.clickPullRequestsTab();
     }
 
     @Test
@@ -137,5 +178,4 @@ public class GithubCreationTest{
         creationPage.validateGithubOauthToken("foo");
         creationPage.findFormErrorMessage("Invalid access token.");
     }
-
 }

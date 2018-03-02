@@ -5,6 +5,7 @@ import com.google.inject.assistedinject.AssistedInject;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.factory.BranchPageFactory;
+import io.blueocean.ath.factory.PullRequestsPageFactory;
 import io.blueocean.ath.model.AbstractPipeline;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.annotations.Nullable;
@@ -32,6 +33,8 @@ public class ActivityPage {
 
     @Inject
     BranchPageFactory branchPageFactory;
+
+    @Inject PullRequestsPageFactory pullRequestsPageFactory;
 
     @Inject
     public ActivityPage(WebDriver driver) {
@@ -84,7 +87,18 @@ public class ActivityPage {
     public BranchPage clickBranchTab() {
         wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("a.branches"))).click();
         logger.info("Clicked on branch tab");
-        return branchPageFactory.withPipeline(pipeline).checkUrl();
+        // return branchPageFactory.withPipeline(pipeline).checkUrl();
+        BranchPage page = branchPageFactory.withPipeline(pipeline);
+        Assert.assertNotNull("AbstractPipeline object is null", page);
+        return page.checkUrl();
+    }
+
+    public PullRequestsPage clickPullRequestsTab() {
+        wait.until(ExpectedConditions.elementToBeClickable(By.cssSelector("a.pr"))).click();
+        logger.info("Clicked on PR tab");
+        PullRequestsPage page = pullRequestsPageFactory.withPipeline(pipeline);
+        Assert.assertNotNull("AbstractPipeline object is null", page);
+        return page.checkUrl();
     }
 
     public By getSelectorForBranch(String branchName) {
