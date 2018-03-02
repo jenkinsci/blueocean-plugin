@@ -58,8 +58,9 @@ module.exports.commands = [{
             // Need to explicitly move the form buttons because we didn't
             // "navigate" to this page via nightwatch navigate.
             self.moveClassicBottomStickyButtons();
-            self.waitForElementVisible('@configSave')
-                .click('@configSave');
+            self.waitForElementVisible('@configSave');
+            self.pause(500);
+            self.click('@configSave');
             // We know the folder is created once the "Delete Folder"
             // task link is visible
             self.waitForElementVisible('@deleteFolder', function() {});
