@@ -149,12 +149,11 @@ export default class InputStep extends Component {
     }
 }
 
-const { object, shape } = PropTypes;
+const { object, shape, string } = PropTypes;
 
 InputStep.propTypes = {
     step: shape().isRequired,
-    classicInputUrl: object,
-    classicInputUrl: PropTypes.string,
+    classicInputUrl: string,
 };
 
 InputStep.contextTypes = {
