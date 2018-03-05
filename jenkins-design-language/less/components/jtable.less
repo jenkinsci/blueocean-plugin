@@ -94,6 +94,39 @@ a.JTable-row--href {
     &:last-child {
         padding-right: @table-left-right-padding;
     }
+
+    .actions-container {
+        position: relative;
+
+        &:after {
+            position: absolute;
+            content: " ";
+            pointer-events: none;
+            background-color: white;
+            transition: background-color 0.15s;
+            top: 0;
+            right: 24px;
+            width: calc(100% - 24px);
+            height: 100%;
+
+            .JTable-row--rollOver:hover & {
+                background-color: #fafbfd;
+            }
+        }
+
+        .JTable-row--rollOver:hover &:after {
+            background-color: transparent;
+        }
+
+        .ParametersRunButton,
+        .history-button-component,
+        .jenkins-pipeline-branches-list-action,
+        .jenkins-pipeline-branches-list-action > div {
+            display: inline-block;
+            vertical-align: middle;
+        }
+
+    }
 }
 
 .TableCell--actions {

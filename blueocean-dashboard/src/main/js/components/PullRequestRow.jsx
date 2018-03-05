@@ -51,13 +51,6 @@ export class PullRequestRowRenderer extends Component {
             dataProps['data-pr'] = pullRequestId;
         }
 
-        const actionsCell = React.createElement(
-            TableCell,
-            {
-                className: 'TableCell--actions',
-            },
-            ...actions);
-
         return (
             <TableRow columns={columns} linkTo={runDetailsUrl} {...dataProps}>
                 <TableCell>{ statusIndicator }</TableCell>
@@ -65,7 +58,7 @@ export class PullRequestRowRenderer extends Component {
                 <TableCell>{ summary || ' - ' }</TableCell>
                 <TableCell>{ author || ' - ' }</TableCell>
                 <TableCell>{ completed || ' - ' }</TableCell>
-                { actionsCell }
+                <TableCell className="TableCell--actions">{ actions }</TableCell>
             </TableRow>
         );
     }
@@ -130,17 +123,17 @@ export default class PullRequestRow extends Component {
             />
         );
 
-        const actions = [
-            <RunButton className="icon-button"
-                       runnable={pr}
-                       latestRun={pr.latestRun}
-                       onNavigation={this.openRunDetails}
-            />,
-
-            <RunHistoryButton pipeline={contextPipeline} branchName={pr.name} t={t} />,
-
-            <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" t={t} />,
-        ];
+        const actions = (
+            <div className="actions-container">
+                <RunHistoryButton pipeline={contextPipeline} branchName={pr.name} t={t} />
+                <RunButton className="icon-button"
+                           runnable={pr}
+                           latestRun={pr.latestRun}
+                           onNavigation={this.openRunDetails}
+                />
+                <Extensions.Renderer extensionPoint="jenkins.pipeline.pullrequests.list.action" t={t} />
+            </div>
+        );
 
         return (
             <PullRequestRowRenderer columns={columns}
