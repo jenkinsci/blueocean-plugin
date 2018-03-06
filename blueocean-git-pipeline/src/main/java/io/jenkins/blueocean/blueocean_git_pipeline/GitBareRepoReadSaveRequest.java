@@ -84,7 +84,7 @@ class GitBareRepoReadSaveRequest extends GitCacheCloneReadSaveRequest {
                     String mailAddress = MailAddressResolver.resolve(user);
 
                     if(mailAddress == null) {
-                        mailAddress = "jenkinsUsername@email-address-not-set";
+                        mailAddress = "jenkins-pipeline-editor-user-" + user.getId() + "@email-address-not-set";
                     }
 
                     StandardCredentials credential = getCredential();
