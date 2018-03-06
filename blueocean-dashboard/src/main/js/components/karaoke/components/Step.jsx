@@ -62,8 +62,6 @@ export class Step extends Component {
         const nextStart = nextProps.location && nextProps.location.query ? nextProps.location.query.start : undefined;
         const currentStart = this.props.location && this.props.location.query ? this.props.location.query.start : undefined;
         logger.debug('newProps mate', nextStart, currentStart);
-        logger.debug('      currentStart', currentStart);
-        logger.debug('         nextStart', nextStart);
         if (currentStart !== nextStart && nextStart !== undefined) {
             logger.debug('re-fetching since result changed and we want to display the full log');
             this.pager.fetchLog({ url: nextProps.step.logUrl, start: nextStart });
@@ -126,17 +124,15 @@ export class Step extends Component {
             logger.debug('Updating children');
             children = (
                 <LogConsole
-                    {...{
-                        t,
-                        router,
-                        location,
-                        hasMore,
-                        scrollToBottom,
-                        logArray,
-                        currentLogUrl,
-                        key: step.logUrl,
-                        prefix: `step-${step.id}-`,
-                    }}
+                    t={t}
+                    router={router}
+                    location={location}
+                    hasMore={hasMore}
+                    scrollToBottom={scrollToBottom}
+                    logArray={logArray}
+                    currentLogUrl={currentLogUrl}
+                    key={step.logUrl}
+                    prefix={`step-${step.id}-`}
                 />
             );
         } else if (step.isInputStep) {
