@@ -53,6 +53,7 @@ export class Step extends Component {
         this.durationInMillis = this.durationHarmonize(step).durationInMillis;
         logger.debug('durationInMillis mounting', this.durationInMillis);
     }
+
     /**
      * Mainly implemented due to fetch full log `start=0` for a step
      * @param nextProps
@@ -68,6 +69,7 @@ export class Step extends Component {
             this.pager.fetchLog({ url: nextProps.step.logUrl, start: nextStart });
         }
     }
+
     /*
      * Calculate whether we need to expand the step due to linking.
      * When we trigger a log-0 that means we want to see the full log
@@ -175,15 +177,13 @@ export class Step extends Component {
         return (
             <div className={logConsoleClass}>
                 <ResultItem
-                    {...{
-                        extraInfo: time,
-                        key: step.key,
-                        result: step.computedResult.toLowerCase(),
-                        expanded: isFocused,
-                        label: createStepLabel(step),
-                        onCollapse: removeFocus,
-                        onExpand: getLogForNode,
-                    }}
+                    extraInfo={time}
+                    key={step.key}
+                    result={step.computedResult.toLowerCase()}
+                    expanded={isFocused}
+                    label={createStepLabel(step)}
+                    onCollapse={removeFocus}
+                    onExpand={getLogForNode}
                 >
                     {children}
                 </ResultItem>
@@ -196,7 +196,7 @@ Step.propTypes = {
     augmenter: PropTypes.object,
     step: PropTypes.object.isRequired,
     location: PropTypes.object,
-    router: PropTypes.shape,
+    router: PropTypes.object,
     locale: PropTypes.object,
     t: PropTypes.func,
     scrollToBottom: PropTypes.bool,
