@@ -15,7 +15,9 @@ function createStepLabel(step) {
 
     if (displayDescription) {
         return [
-            <span className="result-item-label-desc" title={displayDescription}>{displayDescription}</span>,
+            <span className="result-item-label-desc" title={displayDescription}>
+                {displayDescription}
+            </span>,
             <span className="result-item-label-name">&mdash; {displayName}</span>,
         ];
     }
@@ -36,6 +38,8 @@ export class Step extends Component {
         this.pager = KaraokeService.logPager(augmenter, { ...step, isFocused: newIsFocused });
         logger.debug('isFocused initial', oldIsFocused, 'after', newIsFocused);
 
+        console.log('augmenter is', augmenter.constructor.name); // TODO: RM
+
         this.state = {
             expanded: newIsFocused,
         };
@@ -48,7 +52,7 @@ export class Step extends Component {
     componentWillMount() {
         const { step } = this.props;
         // needed for running steps as reference
-        this.durationInMillis = (this.durationHarmonize(step)).durationInMillis;
+        this.durationInMillis = this.durationHarmonize(step).durationInMillis;
         logger.debug('durationInMillis mounting', this.durationInMillis);
     }
     /**
@@ -59,6 +63,8 @@ export class Step extends Component {
         const nextStart = nextProps.location && nextProps.location.query ? nextProps.location.query.start : undefined;
         const currentStart = this.props.location && this.props.location.query ? this.props.location.query.start : undefined;
         logger.debug('newProps mate', nextStart, currentStart);
+        logger.debug('      currentStart', currentStart);
+        logger.debug('         nextStart', nextStart);
         if (currentStart !== nextStart && nextStart !== undefined) {
             logger.debug('re-fetching since result changed and we want to display the full log');
             this.pager.fetchLog({ url: nextProps.step.logUrl, start: nextStart });
@@ -95,6 +101,18 @@ export class Step extends Component {
                 isFocused = true;
             }
         }
+
+        console.log('isFocused?'); // TODO: RM
+        console.log('                       step', step.title); // TODO: RM
+        console.log('           step.isInputStep', step.isInputStep); // TODO: RM
+        console.log('                step.result', step.result); // TODO: RM
+        console.log('             step.isFocused', step.isFocused); // TODO: RM
+        console.log('             props.tailLogs', props.tailLogs); // TODO: RM
+        console.log('    props.augmenter.karaoke', props.augmenter.karaoke); // TODO: RM
+        // console.log("      xxxxxxxxxx",xzxxxx); // TODO: RM
+        // console.log("      xxxxxxxxxx",xzxxxx); // TODO: RM
+        console.log('                  isFocused', isFocused); // TODO: RM
+
         return isFocused || false;
     }
 
@@ -117,18 +135,21 @@ export class Step extends Component {
         if (logArray && !step.isInputStep) {
             const currentLogUrl = prefixIfNeeded(this.pager.currentLogUrl);
             logger.debug('Updating children');
-            children = (<LogConsole {...{
-                t,
-                router,
-                location,
-                hasMore,
-                scrollToBottom,
-                logArray,
-                currentLogUrl,
-                key: step.logUrl,
-                prefix: `step-${step.id}-`,
-            }}
-            />);
+            children = (
+                <LogConsole
+                    {...{
+                        t,
+                        router,
+                        location,
+                        hasMore,
+                        scrollToBottom,
+                        logArray,
+                        currentLogUrl,
+                        key: step.logUrl,
+                        prefix: `step-${step.id}-`,
+                    }}
+                />
+            );
         } else if (step.isInputStep) {
             children = <InputStep step={step} key="step" classicInputUrl={classicInputUrl} />;
         } else if (!logArray && step.hasLogs) {
@@ -136,8 +157,9 @@ export class Step extends Component {
         }
         const getLogForNode = () => {
             if (this.pager.log === undefined || (this.pager.log && !this.pager.log.data)) {
-                const cfg = { url: step.logUrl };
+                const cfg = { url: step.logUrl, followAlong: this.props.augmenter.karaoke };
                 logger.debug('getLogForNode called will fetch now with cfg.', cfg);
+                console.log('getLogForNode called will fetch now with cfg.', cfg); // TODO: RM
                 this.pager.fetchLog(cfg);
                 // we are now want to expand the result item
                 this.setState({ expanded: true });
@@ -162,28 +184,25 @@ export class Step extends Component {
         // duration calculations
         const duration = step.isRunning ? this.durationInMillis : durationInMillis;
         logger.debug('duration', duration, step.isRunning);
-        const time = (<TimeDuration
-            millis={duration }
-            liveUpdate={step.isRunning}
-            updatePeriod={1000}
-            locale={locale}
-            t={t}
-        />);
+        const time = <TimeDuration millis={duration} liveUpdate={step.isRunning} updatePeriod={1000} locale={locale} t={t} />;
 
-        return (<div className={logConsoleClass}>
-            <ResultItem {...{
-                extraInfo: time,
-                key: step.key,
-                result: step.computedResult.toLowerCase(),
-                expanded: isFocused,
-                label: createStepLabel(step),
-                onCollapse: removeFocus,
-                onExpand: getLogForNode,
-            }}
-            >
-                { children }
-            </ResultItem>
-        </div>);
+        return (
+            <div className={logConsoleClass}>
+                <ResultItem
+                    {...{
+                        extraInfo: time,
+                        key: step.key,
+                        result: step.computedResult.toLowerCase(),
+                        expanded: isFocused,
+                        label: createStepLabel(step),
+                        onCollapse: removeFocus,
+                        onExpand: getLogForNode,
+                    }}
+                >
+                    {children}
+                </ResultItem>
+            </div>
+        );
     }
 }
 

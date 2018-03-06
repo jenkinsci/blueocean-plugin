@@ -10,7 +10,7 @@ import LogToolbar from './LogToolbar';
 import Steps from './Steps';
 import FreeStyle from './FreeStyle';
 import RunDescription from './RunDescription';
-import {buildClassicInputUrl} from '../../../util/UrlUtils';
+import { buildClassicInputUrl } from '../../../util/UrlUtils';
 
 import { KaraokeConfig } from '../';
 import RunDetails from '../../RunDetails';
@@ -314,6 +314,10 @@ export default class Pipeline extends Component {
                         t={t}
                     />
                 )}
+
+                <ul className="TODO: REMOVE ME">
+                    <li>scrollToBottom - {typeof scrollToBottom + ' = ' + scrollToBottom}</li>
+                </ul>
 
                 {!isPipelineQueued && (
                     <LogToolbar
