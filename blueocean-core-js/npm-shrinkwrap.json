@@ -2,13 +2,17 @@
   "name": "@jenkins-cd/blueocean-core-js",
   "version": "0.0.170",
   "dependencies": {
-    "@jenkins-cd/blueocean-material-icons": {
-      "version": "0.0.6",
-      "from": "@jenkins-cd/blueocean-material-icons@0.0.6",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-material-icons/-/blueocean-material-icons-0.0.6.tgz"
-    },
     "@jenkins-cd/design-language": {
-      "version": "0.0.158"
+      "version": "0.0.158",
+      "from": "@jenkins-cd/design-language@0.0.158",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.158.tgz",
+      "dependencies": {
+        "moment": {
+          "version": "2.15.1",
+          "from": "moment@2.15.1",
+          "resolved": "https://registry.npmjs.org/moment/-/moment-2.15.1.tgz"
+        }
+      }
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -7065,9 +7069,9 @@
       }
     },
     "moment": {
-      "version": "2.15.1",
-      "from": "moment@2.15.1",
-      "resolved": "https://registry.npmjs.org/moment/-/moment-2.15.1.tgz"
+      "version": "2.19.3",
+      "from": "moment@2.19.3",
+      "resolved": "https://registry.npmjs.org/moment/-/moment-2.19.3.tgz"
     },
     "moment-duration-format": {
       "version": "1.3.0",
