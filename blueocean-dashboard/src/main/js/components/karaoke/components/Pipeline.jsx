@@ -315,10 +315,6 @@ export default class Pipeline extends Component {
                     />
                 )}
 
-                <ul className="TODO: REMOVE ME">
-                    <li>scrollToBottom - {typeof scrollToBottom + ' = ' + scrollToBottom}</li>
-                </ul>
-
                 {!isPipelineQueued && (
                     <LogToolbar
                         fileName={generalLogPager ? augmenter.generalLogFileName : logFileName}

@@ -38,8 +38,6 @@ export class Step extends Component {
         this.pager = KaraokeService.logPager(augmenter, { ...step, isFocused: newIsFocused });
         logger.debug('isFocused initial', oldIsFocused, 'after', newIsFocused);
 
-        console.log('augmenter is', augmenter.constructor.name); // TODO: RM
-
         this.state = {
             expanded: newIsFocused,
         };
@@ -102,17 +100,6 @@ export class Step extends Component {
             }
         }
 
-        console.log('isFocused?'); // TODO: RM
-        console.log('                       step', step.title); // TODO: RM
-        console.log('           step.isInputStep', step.isInputStep); // TODO: RM
-        console.log('                step.result', step.result); // TODO: RM
-        console.log('             step.isFocused', step.isFocused); // TODO: RM
-        console.log('             props.tailLogs', props.tailLogs); // TODO: RM
-        console.log('    props.augmenter.karaoke', props.augmenter.karaoke); // TODO: RM
-        // console.log("      xxxxxxxxxx",xzxxxx); // TODO: RM
-        // console.log("      xxxxxxxxxx",xzxxxx); // TODO: RM
-        console.log('                  isFocused', isFocused); // TODO: RM
-
         return isFocused || false;
     }
 
@@ -159,7 +146,6 @@ export class Step extends Component {
             if (this.pager.log === undefined || (this.pager.log && !this.pager.log.data)) {
                 const cfg = { url: step.logUrl, followAlong: this.props.augmenter.karaoke };
                 logger.debug('getLogForNode called will fetch now with cfg.', cfg);
-                console.log('getLogForNode called will fetch now with cfg.', cfg); // TODO: RM
                 this.pager.fetchLog(cfg);
                 // we are now want to expand the result item
                 this.setState({ expanded: true });

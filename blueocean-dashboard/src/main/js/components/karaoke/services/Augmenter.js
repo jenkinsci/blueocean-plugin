@@ -25,7 +25,6 @@ export class Augmenter {
      * @param {boolean} followAlong should we follow along
      */
     constructor(pipeline, branch, run, followAlong) {
-        console.log('new augmenter'); // TODO: RM
         this.setPipeline(pipeline);
         this.setBranch(branch);
         this.setKaraoke(followAlong);
@@ -138,7 +137,6 @@ export class Augmenter {
 
     @action
     setKaraoke(followAlong) {
-        console.log('Augmenter set karaoke from', this.karaoke, 'to', followAlong); // TODO: RM
         this.karaoke = followAlong;
     }
 
