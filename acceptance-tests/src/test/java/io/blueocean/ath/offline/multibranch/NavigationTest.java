@@ -52,9 +52,9 @@ public class NavigationTest extends BlueOceanAcceptanceTest {
         BranchPage branchPage = activityPage.clickBranchTab();
 
         branchPage.clickHistoryButton("feature/1");
-        activityPage.getRunRowForBranch("feature@2")
-        pipeline.getRunDetailsPipelinePage().checkUrl("feature@2", 1);
+        activityPage.open();
+        activityPage.getRunRowForBranch("feature@2").click();
+        pipeline.getRunDetailsPipelinePage().checkUrl("feature%402", 1);
         pipeline.getRunDetailsPipelinePage().checkBasicDomElements();
-
     }
 }
