@@ -12,6 +12,7 @@ import io.blueocean.ath.factory.MultiBranchPipelineFactory;
 import io.blueocean.ath.factory.PullRequestsPageFactory;
 import io.blueocean.ath.factory.RunDetailsArtifactsPageFactory;
 import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
+import io.blueocean.ath.factory.RunDetailsTestsPageFactory;
 import io.blueocean.ath.model.ClassicPipeline;
 import io.blueocean.ath.model.FreestyleJob;
 import io.blueocean.ath.model.MultiBranchPipeline;
@@ -20,6 +21,7 @@ import io.blueocean.ath.pages.blue.BranchPage;
 import io.blueocean.ath.pages.blue.PullRequestsPage;
 import io.blueocean.ath.pages.blue.RunDetailsArtifactsPage;
 import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
+import io.blueocean.ath.pages.blue.RunDetailsTestsPage;
 import org.openqa.selenium.Dimension;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.logging.LogType;
@@ -137,6 +139,9 @@ public class AthModule extends AbstractModule {
             .implement(RunDetailsArtifactsPage.class, RunDetailsArtifactsPage.class)
             .build(RunDetailsArtifactsPageFactory.class));
 
+        install(new FactoryModuleBuilder()
+            .implement(RunDetailsTestsPage.class, RunDetailsTestsPage.class)
+            .build(RunDetailsTestsPageFactory.class));
 
         install(new FactoryModuleBuilder()
             .implement(BranchPage.class, BranchPage.class)
