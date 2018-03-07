@@ -15,7 +15,9 @@ function createStepLabel(step) {
 
     if (displayDescription) {
         return [
-            <span className="result-item-label-desc" title={displayDescription}>{displayDescription}</span>,
+            <span className="result-item-label-desc" title={displayDescription}>
+                {displayDescription}
+            </span>,
             <span className="result-item-label-name">&mdash; {displayName}</span>,
         ];
     }
@@ -48,9 +50,10 @@ export class Step extends Component {
     componentWillMount() {
         const { step } = this.props;
         // needed for running steps as reference
-        this.durationInMillis = (this.durationHarmonize(step)).durationInMillis;
+        this.durationInMillis = this.durationHarmonize(step).durationInMillis;
         logger.debug('durationInMillis mounting', this.durationInMillis);
     }
+
     /**
      * Mainly implemented due to fetch full log `start=0` for a step
      * @param nextProps
@@ -64,6 +67,7 @@ export class Step extends Component {
             this.pager.fetchLog({ url: nextProps.step.logUrl, start: nextStart });
         }
     }
+
     /*
      * Calculate whether we need to expand the step due to linking.
      * When we trigger a log-0 that means we want to see the full log
@@ -95,6 +99,7 @@ export class Step extends Component {
                 isFocused = true;
             }
         }
+
         return isFocused || false;
     }
 
@@ -117,18 +122,19 @@ export class Step extends Component {
         if (logArray && !step.isInputStep) {
             const currentLogUrl = prefixIfNeeded(this.pager.currentLogUrl);
             logger.debug('Updating children');
-            children = (<LogConsole {...{
-                t,
-                router,
-                location,
-                hasMore,
-                scrollToBottom,
-                logArray,
-                currentLogUrl,
-                key: step.logUrl,
-                prefix: `step-${step.id}-`,
-            }}
-            />);
+            children = (
+                <LogConsole
+                    t={t}
+                    router={router}
+                    location={location}
+                    hasMore={hasMore}
+                    scrollToBottom={scrollToBottom}
+                    logArray={logArray}
+                    currentLogUrl={currentLogUrl}
+                    key={step.logUrl}
+                    prefix={`step-${step.id}-`}
+                />
+            );
         } else if (step.isInputStep) {
             children = <InputStep step={step} key="step" classicInputUrl={classicInputUrl} />;
         } else if (!logArray && step.hasLogs) {
@@ -136,7 +142,7 @@ export class Step extends Component {
         }
         const getLogForNode = () => {
             if (this.pager.log === undefined || (this.pager.log && !this.pager.log.data)) {
-                const cfg = { url: step.logUrl };
+                const cfg = { url: step.logUrl, followAlong: this.props.augmenter.karaoke };
                 logger.debug('getLogForNode called will fetch now with cfg.', cfg);
                 this.pager.fetchLog(cfg);
                 // we are now want to expand the result item
@@ -162,28 +168,23 @@ export class Step extends Component {
         // duration calculations
         const duration = step.isRunning ? this.durationInMillis : durationInMillis;
         logger.debug('duration', duration, step.isRunning);
-        const time = (<TimeDuration
-            millis={duration }
-            liveUpdate={step.isRunning}
-            updatePeriod={1000}
-            locale={locale}
-            t={t}
-        />);
+        const time = <TimeDuration millis={duration} liveUpdate={step.isRunning} updatePeriod={1000} locale={locale} t={t} />;
 
-        return (<div className={logConsoleClass}>
-            <ResultItem {...{
-                extraInfo: time,
-                key: step.key,
-                result: step.computedResult.toLowerCase(),
-                expanded: isFocused,
-                label: createStepLabel(step),
-                onCollapse: removeFocus,
-                onExpand: getLogForNode,
-            }}
-            >
-                { children }
-            </ResultItem>
-        </div>);
+        return (
+            <div className={logConsoleClass}>
+                <ResultItem
+                    extraInfo={time}
+                    key={step.key}
+                    result={step.computedResult.toLowerCase()}
+                    expanded={isFocused}
+                    label={createStepLabel(step)}
+                    onCollapse={removeFocus}
+                    onExpand={getLogForNode}
+                >
+                    {children}
+                </ResultItem>
+            </div>
+        );
     }
 }
 
@@ -191,7 +192,7 @@ Step.propTypes = {
     augmenter: PropTypes.object,
     step: PropTypes.object.isRequired,
     location: PropTypes.object,
-    router: PropTypes.shape,
+    router: PropTypes.object,
     locale: PropTypes.object,
     t: PropTypes.func,
     scrollToBottom: PropTypes.bool,
