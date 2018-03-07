@@ -72,6 +72,7 @@ export class ActivityService extends BunkerService {
                 // Should really have dedupe on methods like these, but for now
                 // just clone data so that we dont modify other instances.
                 const run = utils.clone(data);
+                console.log('ba', run);
                 return this.setItem(run);
             })
             .catch(err => {

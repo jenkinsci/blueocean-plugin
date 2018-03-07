@@ -1,3 +1,4 @@
+import JenkinsEncode from '../utils/jenkins-encode';
 /**
  * This object defines rest paths
  */
@@ -28,7 +29,7 @@ export default {
 
     run({ organization, pipeline, branch, runId }) {
         if (branch) {
-            return `${this.pipeline(organization, pipeline)}branches/${encodeURIComponent(encodeURIComponent(branch))}/runs/${runId}/`;
+            return `${this.pipeline(organization, pipeline)}branches/${encodeURIComponent(JenkinsEncode.encode(branch))}/runs/${runId}/`;
         }
 
         return `${this.pipeline(organization, pipeline)}runs/${runId}/`;

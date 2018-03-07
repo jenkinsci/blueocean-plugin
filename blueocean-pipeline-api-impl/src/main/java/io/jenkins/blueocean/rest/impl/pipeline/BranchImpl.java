@@ -26,6 +26,8 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 import javax.annotation.CheckForNull;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Collection;
 import java.util.concurrent.ExecutionException;
 
@@ -62,7 +64,11 @@ public class BranchImpl extends PipelineImpl {
 
     @Override
     public Link getLink() {
-        return parent.rel(Util.rawEncode(getName()));
+        try {
+            return parent.rel(URLEncoder.encode(getName(), "UTF-8").replace("+", "%20"));
+        } catch (UnsupportedEncodingException e) {
+            return parent.rel(URLEncoder.encode(getName()).replace("+", "%20"));
+        }
     }
 
     @Navigable
