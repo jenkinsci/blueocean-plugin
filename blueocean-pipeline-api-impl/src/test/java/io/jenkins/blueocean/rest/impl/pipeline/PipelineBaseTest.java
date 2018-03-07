@@ -607,7 +607,9 @@ public abstract class PipelineBaseTest{
         hudson.model.User bob = User.get(userId);
 
         bob.setFullName(fullName);
-        bob.addProperty(new Mailer.UserProperty(email));
+        if(email != null ) {
+            bob.addProperty(new Mailer.UserProperty(email));
+        }
 
 
         UserDetails d = Jenkins.getInstance().getSecurityRealm().loadUserByUsername(bob.getId());
