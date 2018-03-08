@@ -21,11 +21,12 @@ describe('TestResults', () => {
 
     class MockTestService {
 
-        constructor({regressions, existingFailed, skipped, fixed}) {
+        constructor({regressions, existingFailed, skipped, fixed, passed}) {
             this.regressions = regressions || [];
             this.existingfailed = existingFailed || [];
             this.skipped = skipped || [];
             this.fixed = fixed || [];
+            this.passed = passed || [];
         }
 
         newRegressionsPager(pipeline, run) {
@@ -49,6 +50,12 @@ describe('TestResults', () => {
         newFixedPager(pipeline, run) {
             return {
                 data: this.fixed
+            };
+        }
+
+        newPassedPager(pipeline, run) {
+            return {
+                data: this.passed
             };
         }
 
@@ -76,13 +83,15 @@ describe('TestResults', () => {
             { age: 4, name: 'failure.TestThisWillFailAbunch', duration: 0.003, errorDetails: '<some exception here>', status: 'FAILED' },
             { age: 4, name: 'failure.TestThisWillFailAbunch', duration: 0.003, errorDetails: '<some exception here>', status: 'FAILED' },
         ];
-
+        const passed = [
+            { age: 0, name: 'failure.TestThisWillFailAbunch', duration: 0, status: 'PASSED', state: null },
+        ];
         const run = {
             testSummary: {
                 existingFailed: 3,
                 failed: 0,
                 fixed: 1,
-                passed: 10,
+                passed: 1,
                 regressions: 0,
                 skipped: 3,
                 total: 16,

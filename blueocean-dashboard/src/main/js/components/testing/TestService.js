@@ -40,6 +40,12 @@ export default class TestService extends BunkerService {
         });
     }
 
+    newPassedPager(pipeline, run) {
+        return this.pagerService.getPager({
+            key: `tests/passed/${pipeline.organization}-${pipeline.name}-${run.id}/`,
+            lazyPager: () => new Pager(TestService.createURL({ run, status: 'PASSED', state: null }), PAGE_SIZE, this),
+        });
+    }
     testLogs() {
         return this._logs;
     }
