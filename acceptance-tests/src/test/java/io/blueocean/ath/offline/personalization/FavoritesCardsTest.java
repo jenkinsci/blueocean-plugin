@@ -8,7 +8,13 @@ import io.blueocean.ath.model.FreestyleJob;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.junit.Assert;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -31,6 +37,9 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
 
     @Inject
     ActivityPageFactory activityPageFactory;
+
+    @Inject
+    WebDriver driver;
 
     @Test
     public void testFreestyle() throws IOException {
@@ -70,7 +79,7 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
     }
 
     @Test
-    public void testMultibranch() throws IOException, GitAPIException {
+    public void testMultibranch() throws IOException, GitAPIException, InterruptedException {
         String branchOther = "feature/1";
 
         git.writeJenkinsFile(resources.loadJenkinsFile());
@@ -99,6 +108,33 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
 
         dashboardPage.checkFavoriteCardStatus(fullNameMaster, SUCCESS);
         dashboardPage.checkFavoriteCardStatus(fullNameOther, SUCCESS);
+
+        //Check that favorite actions are hidden until pointer is hovering the row
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        Object backgroundColor;
+
+        backgroundColor = js.executeScript(
+            "return getComputedStyle(document.querySelectorAll('.actions-container')[0], ':after').getPropertyValue('background-color')"
+        );
+
+        //check that background color of overlay is  NOT transparent when pointer is NOT hovering the favorite row
+        Assert.assertNotEquals(backgroundColor, "rgba(0, 0, 0, 0)");
+
+        logger.info("move pointer over favorite card actions");
+
+        Actions action = new Actions(driver);
+        WebElement we = driver.findElement(By.xpath("//*[@class=\"pipeline-card success-bg-lite\"]"));
+        action.moveToElement(we).perform();
+
+        //Wait for the hover animation to finish
+        Thread.sleep(150);
+
+        backgroundColor = js.executeScript(
+            "return getComputedStyle(document.querySelectorAll('.actions-container')[0], ':after').getPropertyValue('background-color')"
+        );
+
+        //check that background color of overlay is transparent when pointer is hovering the favorite row
+        Assert.assertEquals(backgroundColor, "rgba(0, 0, 0, 0)");
 
         for (String fullName : cardFullnames) {
             logger.info(String.format("running tests against favorited branch: %s", fullName));
