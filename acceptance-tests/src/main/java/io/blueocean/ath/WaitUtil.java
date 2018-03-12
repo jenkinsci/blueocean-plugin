@@ -109,6 +109,27 @@ public class WaitUtil {
         }
     }
 
+
+    public void sendKeys(By by, String keySequence) {
+        for (int i = 0; i < RETRY_COUNT + 1; i++) {
+            try {
+                // until(ExpectedConditions.elementToBeClickable(by)).click();
+                until(ExpectedConditions.elementToBeClickable(by)).sendKeys(keySequence);
+                if (i > 0) {
+                    logger.info(String.format("Retry of sendKeys successful for %s", by.toString()));
+                }
+                return;
+            } catch (WebDriverException ex) {
+                if (ex.getMessage().contains("is not clickable at point")) {
+                    logger.warn(String.format("%s not clickable: will retry click", by.toString()));
+                    logger.debug("exception: " + ex.getMessage());
+                } else {
+                    throw ex;
+                }
+            }
+        }
+    }
+
     /**
      * Try to perform the specified function up to the specified count.
      *

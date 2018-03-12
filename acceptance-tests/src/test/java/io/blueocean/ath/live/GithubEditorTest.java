@@ -145,8 +145,9 @@ public class GithubEditorTest {
      *
      */
     @Test
-    public void testEditorChangeAStage() throws IOException {
-        String newBranchName = "made-by-testEditorChangeAStage";
+    public void testEditorAddStages() throws IOException {
+        String newBranchName = "made-by-testEditorAddStages";
+        String newStageName = "Stage made by ATH";
         creationPage.createPipeline(token, organization, repo, true);
         MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
         editorPage.simplePipeline();
@@ -156,9 +157,7 @@ public class GithubEditorTest {
         sseClient.clear();
         BranchPage branchPage = activityPage.clickBranchTab();
         branchPage.openEditor("master");
-        // Here's where we need to call edit
-        logger.info("--> Check for existing Jenkinsfile now");
-        editorPage.editExistingPipeline(pipeline, newBranchName, 4);
+        editorPage.addStageToPipeline(pipeline, newBranchName, newStageName);
         // end of the stage editing stuff
         // editorPage.saveBranch(newBranchName);
         activityPage.checkUrl();

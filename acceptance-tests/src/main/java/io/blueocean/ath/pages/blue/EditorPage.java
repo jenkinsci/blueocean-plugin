@@ -31,40 +31,38 @@ public class EditorPage {
         simplePipeline(null);
     }
 
-    public void editExistingPipeline(MultiBranchPipeline pipelineToEdit, String newBranch, int numNewStages) {
-        // logger.info("Editing pipeline to save to branch " + newBranch + " with " + numNewStages + " new stages");
-        logger.info("Editing pipeline " + pipelineToEdit.getName() + " to save to branch " + newBranch);
-        // This line is creating a parallel stage. It is NOT creating a new stage.
-        // Need to find the correct hittarget to click on.
-        // wait.click(By.xpath("(//*[@class='pipeline-node-hittarget'])[2]"));
+    public void addStageToPipeline(MultiBranchPipeline pipelineToEdit, String newBranch, String newStageName) {
+        pipeline = pipelineToEdit;
+        // logger.info("Editing pipeline " + pipelineToEdit.getName() + " to save to branch " + newBranch);
+        logger.info("--> Editing pipeline " + pipeline.getName() + " to save to branch " + newBranch + " with new stage " + newStageName);
         logger.info("--> About to click hittarget number 4");
+        // For our first pass through this, we need to be at 4, however we get there.
         wait.click(By.xpath("(//*[@class='pipeline-node-hittarget'])[4]"));
-        // We could totally loop this to create a whole bunch of stages. Hrm.
-        wait.until(By.cssSelector("input.stage-name-edit")).sendKeys("ATH generated stage");
+        wait.sendKeys(By.cssSelector("input.stage-name-edit"),newStageName);
         // Add our shell step
         wait.click(By.cssSelector("button.btn-primary.add"));
         wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"sh\"]"));
-        wait.until(By.cssSelector("textarea.editor-step-detail-script")).sendKeys("whoami");
+        // wait.until(By.cssSelector("textarea.editor-step-detail-script")).sendKeys("whoami");
+        wait.sendKeys(By.cssSelector("textarea.editor-step-detail-script"),"whoami");
         wait.click(By.xpath("(//a[@class='back-from-sheet'])[2]"));
         // Add our echo step
         wait.click(By.cssSelector("button.btn-primary.add"));
         wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"echo\"]"));
-        wait.until(By.cssSelector("input.TextInput-control")).sendKeys("ATH generated echo message");
+        // wait.until(By.cssSelector("input.TextInput-control")).sendKeys("ATH generated echo message");
+        wait.sendKeys(By.cssSelector("input.TextInput-control"),"ATH generated echo message");
         wait.click(By.xpath("(//a[@class='back-from-sheet'])[2]"));
-        // Save and leave.
         wait.click(By.xpath("//*[text()='Save']"));
-        // Maybe?
-        // wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("We added " + numOfNewStages + " new stages");
-        wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("We added a stage");
+        // wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("We added a stage");
+        wait.sendKeys(By.cssSelector("textarea[placeholder=\"What changed?\"]"),"We added a stage");
         if(!Strings.isNullOrEmpty(newBranch)) {
             wait.click(By.xpath("//*[text()='Commit to new branch']"));
-            wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys(newBranch);
+            wait.sendKeys(By.cssSelector("input[placeholder='my-new-branch']:enabled"),newBranch);
             logger.info("Using branch " + newBranch);
         } else {
             logger.info("Using branch master");
         }
         wait.click(By.xpath("//*[text()=\"Save & run\"]"));
-        logger.info("Pipeline saved with edited stage names in place");
+        logger.info("Pipeline saved with edited stages in place");
     }
 
     public void saveBranch(String branch) {
@@ -94,7 +92,8 @@ public class EditorPage {
         wait.until(By.cssSelector("input.TextInput-control")).sendKeys("hi there");
         wait.click(By.xpath("(//a[@class='back-from-sheet'])[2]"));
         wait.click(By.xpath("//*[text()='Save']"));
-        wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("Simple pipeline");
+        // wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("Simple pipeline");
+        wait.sendKeys(By.cssSelector("textarea[placeholder=\"What changed?\"]"),"Simple pipeline");
         if(!Strings.isNullOrEmpty(newBranch)) {
             wait.click(By.xpath("//*[text()='Commit to new branch']"));
             wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys(newBranch);
