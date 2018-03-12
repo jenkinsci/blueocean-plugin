@@ -1,6 +1,7 @@
 package io.blueocean.ath.offline.personalization;
 
 import com.google.common.collect.ImmutableList;
+import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.factory.ActivityPageFactory;
 import io.blueocean.ath.model.ClassicPipeline;
 import io.blueocean.ath.model.Folder;
@@ -15,6 +16,7 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -40,6 +42,9 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
 
     @Inject
     WebDriver driver;
+
+    @Inject
+    WaitUtil wait;
 
     @Test
     public void testFreestyle() throws IOException {
@@ -78,6 +83,21 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
         dashboardPage.checkIsPipelineListItemFavorited(jobName, false);
     }
 
+    public ExpectedCondition<Boolean> hoverBackgroundColor () {
+        return (driver) -> {
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            Object backgroundColor = js.executeScript(
+                "return getComputedStyle(document.querySelectorAll('.actions-container')[0], ':after').getPropertyValue('background-color')"
+            );
+
+            if (backgroundColor.toString().equals("rgba(0, 0, 0, 0)")) {
+                return true;
+            } else {
+                return false;
+            }
+        };
+    }
+
     @Test
     public void testMultibranch() throws IOException, GitAPIException, InterruptedException {
         String branchOther = "feature/1";
@@ -111,9 +131,7 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
 
         //Check that favorite actions are hidden until pointer is hovering the row
         JavascriptExecutor js = (JavascriptExecutor) driver;
-        Object backgroundColor;
-
-        backgroundColor = js.executeScript(
+        Object backgroundColor = js.executeScript(
             "return getComputedStyle(document.querySelectorAll('.actions-container')[0], ':after').getPropertyValue('background-color')"
         );
 
@@ -123,18 +141,11 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
         logger.info("move pointer over favorite card actions");
 
         Actions action = new Actions(driver);
-        WebElement we = driver.findElement(By.xpath("//*[@class=\"pipeline-card success-bg-lite\"]"));
+        WebElement we = wait.until(By.xpath("//*[@class=\"pipeline-card success-bg-lite\"]"));
         action.moveToElement(we).perform();
 
-        //Wait for the hover animation to finish
-        Thread.sleep(150);
-
-        backgroundColor = js.executeScript(
-            "return getComputedStyle(document.querySelectorAll('.actions-container')[0], ':after').getPropertyValue('background-color')"
-        );
-
         //check that background color of overlay is transparent when pointer is hovering the favorite row
-        Assert.assertEquals(backgroundColor, "rgba(0, 0, 0, 0)");
+        wait.until(hoverBackgroundColor());
 
         for (String fullName : cardFullnames) {
             logger.info(String.format("running tests against favorited branch: %s", fullName));
