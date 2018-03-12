@@ -113,7 +113,8 @@ public class WaitUtil {
      * Send a key sequence to the element specified by the locator.
      * Will retry clicking into to a number of  'element not clickable'
      * exceptions as defined by RETRY_COUNT
-     * @param by
+     * @param by The `By` identifier we are targeting
+     * @param keySequence a String of characters to enter
      */
     public void sendKeys(By by, String keySequence) {
         for (int i = 0; i < RETRY_COUNT + 1; i++) {
