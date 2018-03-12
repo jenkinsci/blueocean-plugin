@@ -109,11 +109,15 @@ public class WaitUtil {
         }
     }
 
-
+    /**
+     * Send a key sequence to the element specified by the locator.
+     * Will retry clicking into to a number of  'element not clickable'
+     * exceptions as defined by RETRY_COUNT
+     * @param by
+     */
     public void sendKeys(By by, String keySequence) {
         for (int i = 0; i < RETRY_COUNT + 1; i++) {
             try {
-                // until(ExpectedConditions.elementToBeClickable(by)).click();
                 until(ExpectedConditions.elementToBeClickable(by)).sendKeys(keySequence);
                 if (i > 0) {
                     logger.info(String.format("Retry of sendKeys successful for %s", by.toString()));
