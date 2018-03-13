@@ -65,13 +65,6 @@ export class BranchDetailsRowRenderer extends Component {
             dataProps['data-runid'] = latestRunId;
         }
 
-        const actionsCell = React.createElement(
-            TableCell,
-            {
-                className: 'TableCell--actions',
-            },
-            ...actions);
-
         return (
             <TableRow useRollover={!!runDetailsUrl} {...dataProps} {...restProps}>
                 <TableCell linkTo={runDetailsUrl}>
@@ -84,7 +77,7 @@ export class BranchDetailsRowRenderer extends Component {
                 <TableCell linkTo={runDetailsUrl}><CommitId commitId={commitId} /></TableCell>
                 <TableCell>{ runMessage }</TableCell>
                 <TableCell linkTo={runDetailsUrl}>{ completed }</TableCell>
-                { actionsCell }
+                <TableCell className="TableCell--actions">{ actions }</TableCell>
             </TableRow>
         );
     }
@@ -156,26 +149,28 @@ export class BranchDetailsRow extends Component {
             />
         );
 
-        const actions = [
-            <RunButton
-                className="icon-button"
-                runnable={branch}
-                latestRun={branch.latestRun}
-                onNavigation={openRunDetails}
-            />,
-            <RunHistoryButton
-                pipeline={pipeline}
-                branchName={branch.name}
-                t={t}
-            />,
-            <Extensions.Renderer
-                extensionPoint="jenkins.pipeline.branches.list.action"
-                filter={sortByOrdinal}
-                pipeline={branch }
-                store={this.context.store}
-                {...t}
-            />,
-        ];
+        const actions = (
+            <div className="actions-container">
+                <RunButton
+                    className="icon-button"
+                    runnable={branch}
+                    latestRun={branch.latestRun}
+                    onNavigation={openRunDetails}
+                />
+                <RunHistoryButton
+                    pipeline={pipeline}
+                    branchName={branch.name}
+                    t={t}
+                />
+                <Extensions.Renderer
+                    extensionPoint="jenkins.pipeline.branches.list.action"
+                    filter={sortByOrdinal}
+                    pipeline={branch }
+                    store={this.context.store}
+                    {...t}
+                />
+            </div>
+        );
 
         return (
             <BranchDetailsRowRenderer columns={columns}

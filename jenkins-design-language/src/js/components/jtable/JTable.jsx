@@ -122,10 +122,12 @@ export class JTable extends Component {
                 newChildren.push(React.cloneElement(child, newChildProps));
             }
         });
-
+        // div element does not know anything about columns, to prevent warnings remove columns from props
+        if (restProps.columns) {
+            delete restProps.columns;
+        }
         const newProps = {
             ...restProps,
-            columns: undefined,
             className: classNames.join(' '),
         };
 
