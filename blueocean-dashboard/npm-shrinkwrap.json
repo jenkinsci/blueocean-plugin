@@ -38,6 +38,11 @@
           "version": "2.15.1",
           "from": "moment@2.15.1",
           "resolved": "https://registry.npmjs.org/moment/-/moment-2.15.1.tgz"
+        },
+        "moment-duration-format": {
+          "version": "1.3.0",
+          "from": "moment-duration-format@1.3.0",
+          "resolved": "https://registry.npmjs.org/moment-duration-format/-/moment-duration-format-1.3.0.tgz"
         }
       }
     },
@@ -6668,9 +6673,9 @@
       "resolved": "https://registry.npmjs.org/moment/-/moment-2.19.3.tgz"
     },
     "moment-duration-format": {
-      "version": "1.3.0",
-      "from": "moment-duration-format@1.3.0",
-      "resolved": "https://registry.npmjs.org/moment-duration-format/-/moment-duration-format-1.3.0.tgz"
+      "version": "2.2.2",
+      "from": "moment-duration-format@2.2.2",
+      "resolved": "https://registry.npmjs.org/moment-duration-format/-/moment-duration-format-2.2.2.tgz"
     },
     "ms": {
       "version": "0.7.3",
