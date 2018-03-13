@@ -316,22 +316,24 @@ export function PipelineCardRenderer(props) {
             }
 
             <span className="actions" onClick={stopProp}>
-                <ReplayButton className="icon-button dark"
-                              runnable={runnableItem}
-                              latestRun={latestRun}
-                              onNavigation={onRunDetails}
-                />
+                <div className="actions-container">
+                    <ReplayButton className="icon-button dark"
+                                  runnable={runnableItem}
+                                  latestRun={latestRun}
+                                  onNavigation={onRunDetails}
+                    />
 
-                <RunButton className="icon-button dark"
-                           runnable={runnableItem}
-                           latestRun={latestRun}
-                           onNavigation={onRunDetails}
-                />
+                    <RunButton className="icon-button dark"
+                               runnable={runnableItem}
+                               latestRun={latestRun}
+                               onNavigation={onRunDetails}
+                    />
 
-                <Favorite checked={favoriteChecked}
-                          className="dark"
-                          onToggle={onFavoriteToggle}
-                />
+                    <Favorite checked={favoriteChecked}
+                              className="dark"
+                              onToggle={onFavoriteToggle}
+                    />
+                </div>
             </span>
         </div>
     );
