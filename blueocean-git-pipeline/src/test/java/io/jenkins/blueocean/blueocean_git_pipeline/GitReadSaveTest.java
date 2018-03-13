@@ -153,9 +153,17 @@ public class GitReadSaveTest extends PipelineBaseTest {
     }
 
     private void startSSH() throws Exception {
+        startSSH(null);
+    }
+    private void startSSH(@Nullable User u) throws Exception {
         if (sshd == null) {
             // Set up an SSH server with access to a git repo
-            User user = login();
+            User user;
+            if(u == null) {
+                user = login();
+            } else {
+                user = u;
+            }
             final BasicSSHUserPrivateKey key = UserSSHKeyManager.getOrCreate(user);
             final JSch jsch = new JSch();
             final KeyPair pair = KeyPair.load(jsch, key.getPrivateKey().getBytes(), null);
@@ -293,16 +301,32 @@ public class GitReadSaveTest extends PipelineBaseTest {
         testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, remote, repoForSSH, masterPipelineScript);
     }
 
+    @Test
+    public void bareRepoReadWriteNoEmail() throws Exception {
+        if (!OsUtils.isUNIX()) {
+            return; // can't really run this on windows
+        }
+        User user = login("bob", "Bob Smith", null);
+
+        startSSH(user);
+        String userHostPort = "bob@127.0.0.1:" + sshd.getPort();
+        String remote = "ssh://" + userHostPort + "" + repoForSSH.getRoot().getCanonicalPath() + "/.git";
+        testGitReadWrite(GitReadSaveService.ReadSaveType.CACHE_BARE, remote, repoForSSH, masterPipelineScript, user);
+    }
+
     private void testGitReadWrite(final @Nonnull GitReadSaveService.ReadSaveType type, @Nonnull GitSampleRepoRule repo, @Nullable String startPipelineScript) throws Exception {
         testGitReadWrite(type, repo.getRoot().getCanonicalPath(), repo, startPipelineScript);
     }
 
+
     private void testGitReadWrite(final @Nonnull GitReadSaveService.ReadSaveType type, @Nonnull String remote, @Nonnull GitSampleRepoRule repo, @Nullable String startPipelineScript) throws Exception {
+        testGitReadWrite(type,remote,repo,startPipelineScript, login());
+    }
+
+    private void testGitReadWrite(final @Nonnull GitReadSaveService.ReadSaveType type, @Nonnull String remote, @Nonnull GitSampleRepoRule repo, @Nullable String startPipelineScript, @Nullable User user) throws Exception {
         GitReadSaveService.setType(type);
 
         String jobName = repo.getRoot().getName();
-
-        User user = login();
 
         Map r = new RequestBuilder(baseUrl)
                 .status(201)

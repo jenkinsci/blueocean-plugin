@@ -67,6 +67,11 @@ public class GitRepositoryRule extends ExternalResource {
         logger.info("Wrote Jenkinsfile to git repository");
     }
 
+    public void writeFile(String name, String contents) throws IOException {
+        JGitTestUtil.writeTrashFile(client.getRepository(), name, contents);
+        logger.info("Wrote " + name +" to git repository");
+    }
+
     public RevCommit commit(String message) throws GitAPIException {
         return client.commit().setMessage(message).call();
     }

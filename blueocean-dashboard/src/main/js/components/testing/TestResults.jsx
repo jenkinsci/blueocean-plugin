@@ -31,6 +31,7 @@ export default class TestResults extends Component {
         this.existingFailedPager = this.props.testService.newExistingFailedPager(pipeline, run);
         this.skippedPager = this.props.testService.newSkippedPager(pipeline, run);
         this.fixedPager = this.props.testService.newFixedPager(pipeline, run);
+        this.passedPager = this.props.testService.newPassedPager(pipeline, run);
     }
 
     render() {
@@ -75,6 +76,14 @@ export default class TestResults extends Component {
                     extraClasses="skipped-block"
                     locale={locale} t={translation}
                     total={run.testSummary.skipped}
+                    testService={this.props.testService}
+                />
+                 <TestSection
+                    titleKey="rundetail.tests.results.passed.count"
+                    pager={this.passedPager}
+                    extraClasses=""
+                    locale={locale} t={translation}
+                    total={run.testSummary.passed}
                     testService={this.props.testService}
                 />
             </div>

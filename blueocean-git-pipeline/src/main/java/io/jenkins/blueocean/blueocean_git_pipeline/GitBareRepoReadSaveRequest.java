@@ -82,6 +82,11 @@ class GitBareRepoReadSaveRequest extends GitCacheCloneReadSaveRequest {
                         throw new ServiceException.UnauthorizedException("Not authenticated");
                     }
                     String mailAddress = MailAddressResolver.resolve(user);
+
+                    if(mailAddress == null) {
+                        mailAddress = user.getId() + "@email-address-not-set";
+                    }
+
                     StandardCredentials credential = getCredential();
 
                     // Make sure up-to-date and credentials work
