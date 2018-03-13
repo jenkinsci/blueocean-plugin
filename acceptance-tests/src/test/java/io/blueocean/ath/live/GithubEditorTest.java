@@ -140,9 +140,8 @@ public class GithubEditorTest {
     }
 
     /**
-     * This test covers creation of a pipeline, and subsequent editing of a
-     * stage within that same pipeline.
-     *
+     * This test covers creation of a pipeline, and subsequently adds a
+     * stage within that same pipeline, then saves it to a new branch.
      */
     @Test
     public void testEditorAddStages() throws IOException {
@@ -158,8 +157,6 @@ public class GithubEditorTest {
         BranchPage branchPage = activityPage.clickBranchTab();
         branchPage.openEditor("master");
         editorPage.addStageToPipeline(pipeline, newBranchName, newStageName);
-        // end of the stage editing stuff
-        // editorPage.saveBranch(newBranchName);
         activityPage.checkUrl();
         activityPage.getRunRowForBranch(newBranchName);
         sseClient.untilEvents(pipeline.buildsFinished);

@@ -8,6 +8,7 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
+import org.openqa.selenium.support.ui.Sleeper;
 
 import javax.inject.Inject;
 
@@ -33,26 +34,22 @@ public class EditorPage {
 
     public void addStageToPipeline(MultiBranchPipeline pipelineToEdit, String newBranch, String newStageName) {
         pipeline = pipelineToEdit;
-        // logger.info("Editing pipeline " + pipelineToEdit.getName() + " to save to branch " + newBranch);
-        logger.info("--> Editing pipeline " + pipeline.getName() + " to save to branch " + newBranch + " with new stage " + newStageName);
-        logger.info("--> About to click hittarget number 4");
-        // For our first pass through this, we need to be at 4, however we get there.
+        logger.info("Editing pipeline " + pipeline.getName() + ", saving to branch " + newBranch + ", with new stage " + newStageName);
         wait.click(By.xpath("(//*[@class='pipeline-node-hittarget'])[4]"));
         wait.sendKeys(By.cssSelector("input.stage-name-edit"),newStageName);
-        // Add our shell step
+        logger.info("Adding a shell step");
         wait.click(By.cssSelector("button.btn-primary.add"));
         wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"sh\"]"));
-        // wait.until(By.cssSelector("textarea.editor-step-detail-script")).sendKeys("whoami");
         wait.sendKeys(By.cssSelector("textarea.editor-step-detail-script"),"whoami");
+        logger.info("--> About to click back-from-sheet");
         wait.click(By.xpath("(//a[@class='back-from-sheet'])[2]"));
-        // Add our echo step
+        logger.info("Adding an echo step");
         wait.click(By.cssSelector("button.btn-primary.add"));
         wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"echo\"]"));
-        // wait.until(By.cssSelector("input.TextInput-control")).sendKeys("ATH generated echo message");
-        wait.sendKeys(By.cssSelector("input.TextInput-control"),"ATH generated echo message");
+        wait.sendKeys(By.cssSelector("input.TextInput-control"),"Echo step added by ATH");
         wait.click(By.xpath("(//a[@class='back-from-sheet'])[2]"));
+        logger.info("Stages added, about to save");
         wait.click(By.xpath("//*[text()='Save']"));
-        // wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("We added a stage");
         wait.sendKeys(By.cssSelector("textarea[placeholder=\"What changed?\"]"),"We added a stage");
         if(!Strings.isNullOrEmpty(newBranch)) {
             wait.click(By.xpath("//*[text()='Commit to new branch']"));
@@ -86,17 +83,19 @@ public class EditorPage {
     public void simplePipeline(String newBranch) {
         logger.info("Editing simple pipeline");
         wait.click(By.xpath("(//*[@class='pipeline-node-hittarget'])[2]"));
-        wait.until(By.cssSelector("input.stage-name-edit")).sendKeys("Test stage");
+        wait.sendKeys(By.cssSelector("input.stage-name-edit"),"Test stage");
         wait.click(By.cssSelector("button.btn-primary.add"));
         wait.click(By.xpath("//*[text()='Print Message']"));
-        wait.until(By.cssSelector("input.TextInput-control")).sendKeys("hi there");
+        wait.sendKeys(By.cssSelector("input.TextInput-control"),"Simple pipeline created by ATH");
         wait.click(By.xpath("(//a[@class='back-from-sheet'])[2]"));
         wait.click(By.xpath("//*[text()='Save']"));
-        // wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("Simple pipeline");
-        wait.sendKeys(By.cssSelector("textarea[placeholder=\"What changed?\"]"),"Simple pipeline");
+        // Let's try a wait.click here too. I occasionally see "Simple pipeline" not
+        // make it all the way into this box, and then we  end up with a flaky result.
+        // wait.click(By.cssSelector("textarea[placeholder=\"What changed?\"]"));
+        wait.sendKeys(By.cssSelector("textarea[placeholder=\"What changed?\"]"),"We changed some things via ATH");
         if(!Strings.isNullOrEmpty(newBranch)) {
             wait.click(By.xpath("//*[text()='Commit to new branch']"));
-            wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys(newBranch);
+            wait.sendKeys(By.cssSelector("input[placeholder='my-new-branch']:enabled"),newBranch);
             logger.info("Using branch " + newBranch);
         } else {
             logger.info("Using branch master");
@@ -115,10 +114,10 @@ public class EditorPage {
         for (int i = 0; i < numberOfParallels; i++) {
             logger.info("Create stage Parallel-" + i);
             wait.click(By.xpath("(//*[@class='pipeline-node-hittarget'])[2]"));
-            wait.until(By.cssSelector("input.stage-name-edit")).sendKeys("Parallel-" + i);
+            wait.sendKeys(By.cssSelector("input.stage-name-edit"),("Parallel-" + i));
             wait.click(By.cssSelector("button.btn-primary.add"));
             wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"sh\"]"));
-            wait.until(By.cssSelector("textarea.editor-step-detail-script")).sendKeys("netstat -a");
+            wait.sendKeys(By.cssSelector("textarea.editor-step-detail-script"),"netstat -a");
             wait.click(By.xpath("(//a[@class='back-from-sheet'])[2]"));
         }
         /*
@@ -126,21 +125,21 @@ public class EditorPage {
         got automatically put in.
         */
         wait.click(By.cssSelector("div.pipeline-big-label.top-level-parallel"));
-        wait.until(By.cssSelector("input.stage-name-edit")).clear();
-        wait.until(By.cssSelector("input.stage-name-edit")).sendKeys("Top Level Parallel Wrapper Stage");
+        wait.clear(By.cssSelector("input.stage-name-edit"));
+        wait.sendKeys(By.cssSelector("input.stage-name-edit"),"Top Level Parallel Wrapper Stage");
         wait.click(By.cssSelector("button.btn-primary.inverse"));
-        wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("Parallel pipeline");
+        wait.sendKeys(By.cssSelector("textarea[placeholder=\"What changed?\"]"),"Parallel pipeline");
         if(!Strings.isNullOrEmpty(newBranch)) {
             logger.info("Saving to branch " + newBranch);
             wait.click(By.xpath("//*[text()='Commit to new branch']"));
-            wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys(newBranch);
+            wait.sendKeys(By.cssSelector("input[placeholder='my-new-branch']:enabled"),newBranch);
         } else {
             /*
             This mimics the user changing picking a new branch, and then
             changing their mind and committing to master after all.
             */
             wait.click(By.xpath("//*[text()='Commit to new branch']"));
-            wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys("i-am-changing-my-mind");
+            wait.sendKeys(By.cssSelector("input[placeholder='my-new-branch']:enabled"),"i-am-changing-my-mind");
             wait.click(By.xpath("//*[text()='Commit to master']"));
             logger.info("Using branch master");
         }

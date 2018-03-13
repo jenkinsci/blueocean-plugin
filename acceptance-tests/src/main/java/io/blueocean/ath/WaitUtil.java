@@ -86,6 +86,33 @@ public class WaitUtil {
     }
 
     /**
+     * Send a clear to the element specified by the locator.
+     * Used for wiping out default entries in text fields.
+     * Will retry through a number of 'element not clickable'
+     * exceptions as defined by RETRY_COUNT.
+     * @param by The `By` identifier we are targeting
+     */
+    public void clear(By by) {
+        for (int i = 0; i < RETRY_COUNT + 1; i++) {
+            try {
+                until(ExpectedConditions.elementToBeClickable(by)).clear();
+                if (i > 0) {
+                    logger.info(String.format("Retry of clear successful on attempt " + i + " for %s", by.toString()));
+                }
+                return;
+            } catch (WebDriverException ex) {
+                if (ex.getMessage().contains("is not clickable at point")) {
+                    logger.warn(String.format("%s not clickable: will retry clear", by.toString()));
+                    logger.debug("exception: " + ex.getMessage());
+                } else {
+                    throw ex;
+                }
+            }
+        }
+    }
+
+
+    /**
      * Click the element specified by the locator.
      * Will retry click for 'element not clickable' exceptions
      * @param by
@@ -95,7 +122,7 @@ public class WaitUtil {
             try {
                 until(ExpectedConditions.elementToBeClickable(by)).click();
                 if (i > 0) {
-                    logger.info(String.format("retry click successful for %s", by.toString()));
+                    logger.info(String.format("Retry click successful on attempt " + i + " for %s", by.toString()));
                 }
                 return;
             } catch (WebDriverException ex) {
@@ -111,7 +138,7 @@ public class WaitUtil {
 
     /**
      * Send a key sequence to the element specified by the locator.
-     * Will retry clicking into to a number of  'element not clickable'
+     * Will retry through a number of  'element not clickable'
      * exceptions as defined by RETRY_COUNT
      * @param by The `By` identifier we are targeting
      * @param keySequence a String of characters to enter
@@ -121,7 +148,7 @@ public class WaitUtil {
             try {
                 until(ExpectedConditions.elementToBeClickable(by)).sendKeys(keySequence);
                 if (i > 0) {
-                    logger.info(String.format("Retry of sendKeys successful for %s", by.toString()));
+                    logger.info(String.format("Retry of sendKeys successful on attempt " + i + " for %s", by.toString()));
                 }
                 return;
             } catch (WebDriverException ex) {
