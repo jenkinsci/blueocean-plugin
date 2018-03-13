@@ -564,6 +564,7 @@ needsLayout = true;
             <circle r={mouseTargetRadius}
                     cursor="pointer"
                     className="pipeline-node-hittarget"
+                    id={`pipeline-node-hittarget${node.nodeId}${node.type ? `-${node.type}` : ""}`}
                     fillOpacity="0"
                     stroke="none"
                     onClick={e => this.nodeClicked(node, e)}/>
@@ -648,6 +649,8 @@ needsLayout = true;
                     width={measuredWidth} height={measuredHeight}>
                     {connections.map(conn => this.renderConnection(conn))}
                     {nodes.map(node => this.renderNode(node))}
+                    
+
                 </svg>
                 {bigLabels.map(label => this.renderBigLabel(label))}
                 {smallLabels.map(label => this.renderSmallLabel(label))}
