@@ -77,7 +77,7 @@ describe("TimeDuration", () => {
     });
 
     it("renders correct time with long duration", () => {
-        const wrapper = shallow(<TimeDuration millis={1000*60*60*24*178-1} t={t} />);
+        const wrapper = shallow(<TimeDuration millis={1000*60*60*24*178-1000} t={t} />);
 
         assert.isTrue(wrapper.is('span'));
         assert.equal(wrapper.text(), '177d 23h 59m 59s');
