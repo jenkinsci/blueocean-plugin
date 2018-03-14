@@ -9,7 +9,7 @@ export class Sheet extends React.Component {
     }
     render() {
         const child = React.Children.only(this.props.children);
-        return (<div className="sheet">
+        return (<div className={`sheet ${this.props.active ? "active":"" }`}>
             <div className="sheet-header">
                 {child.props.onClose &&
                     <a className="back-from-sheet" onClick={e => this.onClose()}>
@@ -53,8 +53,10 @@ export class Sheets extends React.Component {
             return;
         }
         const { transitionDuration = 400, transitionClass = 'sheet' } = this.props;
+        const sheets = this.getActiveSheets()
+        
         const sheetChildren = this.getActiveSheets()
-            .map(c => <Sheet key={c.key}>{c}</Sheet>);
+            .map((c,i) => <Sheet active={i==sheets.length-1} key={c.key}>{c}</Sheet>);
         return (
             <div className="sheet-container">
                 <ReactCSSTransitionGroup
@@ -69,6 +71,10 @@ export class Sheets extends React.Component {
             </div>
         );
     }
+}
+
+Sheet.propTypes = {
+    active: React.PropTypes.bool
 }
 
 Sheets.propTypes = {
