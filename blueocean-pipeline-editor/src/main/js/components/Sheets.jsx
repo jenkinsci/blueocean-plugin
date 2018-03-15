@@ -53,7 +53,7 @@ export class Sheets extends React.Component {
             return;
         }
         const { transitionDuration = 400, transitionClass = 'sheet' } = this.props;
-        const sheets = this.getActiveSheets()
+        const sheets = this.getActiveSheets();
         
         const sheetChildren = this.getActiveSheets()
             .map((c,i) => <Sheet active={i==sheets.length-1} key={c.key}>{c}</Sheet>);
@@ -75,7 +75,7 @@ export class Sheets extends React.Component {
 
 Sheet.propTypes = {
     active: React.PropTypes.bool
-}
+};
 
 Sheets.propTypes = {
     children: React.PropTypes.any,
