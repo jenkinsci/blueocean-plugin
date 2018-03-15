@@ -31,25 +31,18 @@ public class EditorPage {
         simplePipeline(null);
     }
 
+    /**
+     * Creates a simple pipeline, then re-edits it to add a stage
+     * with two steps in it.
+     *
+     * @param pipelineToEdit the AbstractPipeline object we're working with
+     * @param newBranch the name of the new branch we'll save to
+     * @param newStageName the name of the new stage we'll create
+     */
     public void addStageToPipeline(MultiBranchPipeline pipelineToEdit, String newBranch, String newStageName) {
         pipeline = pipelineToEdit;
         logger.info("Editing pipeline " + pipeline.getName() + ", saving to branch " + newBranch + ", with new stage " + newStageName);
-        /*
-        Now we have an id we can use, which is programatically-generated and
-        predictable. In the old way, we'd counted the number of nodes. That's
-        how we arrived at 4 - there were 4 of them. Now, we know we're in
-        "column 3" of the grid, so tp speak, so we can click on the id
-        pipeline-node-hittarget-3-add and get what we want.
-
-        Old and flaky:
-          wait.click(By.xpath("(//*[@class='pipeline-node-hittarget'])[4]"));
-
-        New hotness:
-          wait.click(By.id("pipeline-node-hittarget-3-add"));
-        */
-        logger.info("Clicking on id pipeline-node-hittarget-3-add to add an entirely new stage.");
         wait.click(By.id("pipeline-node-hittarget-3-add"));
-
         wait.sendKeys(By.cssSelector("input.stage-name-edit"),newStageName);
         logger.info("Adding a shell step");
         wait.click(By.cssSelector("button.btn-primary.add"));
@@ -79,48 +72,44 @@ public class EditorPage {
         logger.info("Pipeline saved with edited stages in place");
     }
 
+    /**
+     * Saves the pipeline to a branch
+     *
+     * @param branch the name of the new branch we'll save to. If null,
+     *               we save to master.
+     */
     public void saveBranch(String branch) {
         logger.info("Editing pipeline - saving now");
-        wait.until(By.xpath("//*[text()='Save']")).click();
-        wait.until(By.cssSelector("textarea[placeholder=\"What changed?\"]")).sendKeys("We changed some things.");
+        wait.click(By.xpath("//*[text()='Save']"));
+        wait.sendKeys(By.cssSelector("textarea[placeholder=\"What changed?\"]"), "We changed some things.");
         if(!Strings.isNullOrEmpty(branch)) {
-            wait.until(By.xpath("//span[text()='Commit to new branch']")).click();
-            wait.until(By.cssSelector("input[placeholder='my-new-branch']:enabled")).sendKeys(branch);
+            wait.click(By.xpath("//span[text()='Commit to new branch']"));
+            wait.sendKeys(By.cssSelector("input[placeholder='my-new-branch']:enabled"),branch);
             logger.info("Testing removal of spaces in branch name");
             wait.until(ExpectedConditions.textToBePresentInElementValue(By.cssSelector("input[placeholder='my-new-branch']:enabled"), branch.replaceAll("\\s","")));
             logger.info("Using branch " + branch.replaceAll("\\s",""));
         } else {
             logger.info("Using branch master");
         }
-        wait.until(By.xpath("//*[text()=\"Save & run\"]")).click();
-
+        wait.click(By.xpath("//*[text()=\"Save & run\"]"));
         logger.info("Saved new branch");
     }
 
+    /**
+     * Creates a simple pipeline from scratch.
+     *
+     * @param newBranch the name of the new branch we'll save to. If null,
+     *                  we save to master.
+     */
     public void simplePipeline(String newBranch) {
         logger.info("Editing simple pipeline");
-        /*
-        Now we have an id we can use, which is programatically-generated and
-        predictable.
-        Old and flaky:
-        wait.click(By.xpath("(//*[@class='pipeline-node-hittarget'])[2]"));
-        new hotness:
-        wait.click(By.id("pipeline-node-hittarget-2-add"));
-         */
         logger.info("Clicking on id pipeline-node-hittarget-2-add");
         wait.click(By.id("pipeline-node-hittarget-2-add"));
         wait.sendKeys(By.cssSelector("input.stage-name-edit"),"Test stage");
         wait.click(By.cssSelector("button.btn-primary.add"));
         wait.click(By.xpath("//*[text()='Print Message']"));
         wait.sendKeys(By.cssSelector("input.TextInput-control"),"Simple pipeline created by ATH");
-        /*
-        This cssSelector guarantees that we're clicking on the a.back-from-sheet
-        which is in the foreground. Thanks, Ivan.
-        Old and flaky:
-        wait.click(By.xpath("(//a[@class='back-from-sheet'])[2]"));
-        New hotness:
-        wait.click(By.cssSelector("div.sheet.active a.back-from-sheet"));
-        */
+        // Newly available cssSelector that targets the back-from-sheet which is on the active sheet.
         logger.info("Clicking on active sheet div.sheet.active a.back-from-sheet");
         wait.click(By.cssSelector("div.sheet.active a.back-from-sheet"));
         wait.click(By.xpath("//*[text()='Save']"));
@@ -136,7 +125,12 @@ public class EditorPage {
         logger.info("Simple pipeline saved");
     }
 
-    // Creates a pipeline with parallel stages in it.
+    /**
+     * Creates a parallel pipeline from scratch.
+     *
+     * @param newBranch the name of the new branch we'll save to. If null,
+     *                  we save to master.
+     */
     public void parallelPipeline(String newBranch, int numberOfParallels) {
         logger.info("Editing a parallel pipeline");
         /*
@@ -151,20 +145,11 @@ public class EditorPage {
             the id pipeline-node-hittarget-2-add, because it is the second
             column in the "grid," so to speak.
              */
-            logger.info("Clicking on id pipeline-node-hittarget-2-add");
             wait.click(By.id("pipeline-node-hittarget-2-add"));
             wait.sendKeys(By.cssSelector("input.stage-name-edit"),("Parallel-" + i));
             wait.click(By.cssSelector("button.btn-primary.add"));
             wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"sh\"]"));
             wait.sendKeys(By.cssSelector("textarea.editor-step-detail-script"),"netstat -a");
-            /*
-            This cssSelector guarantees that we're clicking on the a.back-from-sheet
-            which is in the foreground. Thanks, Ivan.
-            Old and flaky:
-            wait.click(By.xpath("(//a[@class='back-from-sheet'])[2]"));
-            New hotness:
-            wait.click(By.cssSelector("div.sheet.active a.back-from-sheet"));
-            */
             logger.info("Clicking on active sheet div.sheet.active a.back-from-sheet");
             wait.click(By.cssSelector("div.sheet.active a.back-from-sheet"));
 
