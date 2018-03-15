@@ -102,22 +102,32 @@ public class EditorPage {
      *                  we save to master.
      */
     public void simplePipeline(String newBranch) {
-        logger.info("Editing simple pipeline");
-        logger.info("Clicking on id pipeline-node-hittarget-2-add");
+        logger.info("Creating and editing simple pipeline");
+        logger.info("Adding a stage by clicking on id pipeline-node-hittarget-2-add");
         wait.click(By.id("pipeline-node-hittarget-2-add"));
-        wait.sendKeys(By.cssSelector("input.stage-name-edit"),"Test stage");
+        logger.info("simplePipeline naming the stage");
+        wait.sendKeys(By.cssSelector("input.stage-name-edit"),"simplePipeline creating Test stage");
+        logger.info("simplePipeline clicking the Add Step button");
         wait.click(By.cssSelector("button.btn-primary.add"));
-        wait.click(By.xpath("//*[text()='Print Message']"));
-        wait.sendKeys(By.cssSelector("input.TextInput-control"),"Simple pipeline created by ATH");
+        // Let's change this to a cssSelector:
+        // wait.click(By.xpath("//*[text()='Print Message']"));
+        logger.info("simplePipeline selecting an echo step from the dropdown");
+        wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"echo\"]"));
+        logger.info("simplePipeline entering the echo message");
+        wait.sendKeys(By.cssSelector("input.TextInput-control"),"simplePipeline creating echo message");
         // Newly available cssSelector that targets the back-from-sheet which is on the active sheet.
-        logger.info("Clicking on active sheet div.sheet.active a.back-from-sheet");
+        logger.info("simplePipeline committing that change by clicking on active sheet div.sheet.active a.back-from-sheet");
         wait.click(By.cssSelector("div.sheet.active a.back-from-sheet"));
+        logger.info("simplePipeline clicking the Save button");
         wait.click(By.xpath("//*[text()='Save']"));
+        logger.info("simplePipeline providing a commit message");
         wait.sendKeys(By.cssSelector("textarea[placeholder=\"What changed?\"]"),"We changed some things via ATH");
         if(!Strings.isNullOrEmpty(newBranch)) {
+            logger.info("simplePipeline Choosing to commit to new branch");
             wait.click(By.xpath("//*[text()='Commit to new branch']"));
+            logger.info("simplePipeline setting the branch name to " + newBranch);
             wait.sendKeys(By.cssSelector("input[placeholder='my-new-branch']:enabled"),newBranch);
-            logger.info("Using branch " + newBranch);
+            // logger.info("Using branch " + newBranch);
         } else {
             logger.info("Using branch master");
         }
