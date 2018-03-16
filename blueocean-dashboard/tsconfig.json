@@ -1,0 +1,15 @@
+{
+	"compilerOptions": {
+		"outDir": "build",
+		"module": "commonjs",
+		"moduleResolution": "node",
+		"target": "es6",
+		"jsx": "react",
+		"allowJS": false
+	},
+	"exclude": [
+		"target",
+		"**/*.jsx"
+		
+	]
+}
