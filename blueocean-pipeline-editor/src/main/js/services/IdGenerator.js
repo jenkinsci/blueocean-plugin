@@ -3,12 +3,14 @@
  */
 
 export type IdGenerator = {
-    next(): number;
+    next(): number,
 };
 
 const idgen: IdGenerator = {
     id: 0,
-    next() { return --this.id; }
+    next() {
+        return --this.id;
+    },
 };
 
 export default idgen;

@@ -5,9 +5,7 @@ import FlowStep from '../../flow2/FlowStep';
 import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 const t = i18nTranslator('blueocean-dashboard');
 
-
 export default class BbCredentialsStep extends React.Component {
-
     constructor(props) {
         super(props);
 

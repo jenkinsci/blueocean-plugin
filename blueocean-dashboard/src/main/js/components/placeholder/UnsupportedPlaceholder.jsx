@@ -5,7 +5,6 @@ import { PlaceholderContent } from './PlaceholderContent';
 import { PlaceholderDialog } from './PlaceholderDialog';
 import Icon from './Icon';
 
-
 export function UnsupportedPlaceholder(props) {
     const { linkHref, linkText, message, title } = props;
 

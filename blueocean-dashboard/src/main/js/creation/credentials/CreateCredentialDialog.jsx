@@ -4,32 +4,26 @@ import debounce from 'lodash.debounce';
 
 import { Dialog, FormElement, PasswordInput, RadioButtonGroup, TextArea, TextInput } from '@jenkins-cd/design-language';
 
-
 let t = null;
 
 const NEW_CREDENTIAL_TYPE = {
     SSH_KEY: 'SSH_KEY',
     USER_PASS: 'USER_PASS',
-    values: () => [
-        NEW_CREDENTIAL_TYPE.SSH_KEY,
-        NEW_CREDENTIAL_TYPE.USER_PASS,
-    ],
+    values: () => [NEW_CREDENTIAL_TYPE.SSH_KEY, NEW_CREDENTIAL_TYPE.USER_PASS],
     toLabel(option) {
         switch (option) {
-        case NEW_CREDENTIAL_TYPE.SSH_KEY:
-            return t('creation.git.create_credential.credential_type_ssh_key');
-        case NEW_CREDENTIAL_TYPE.USER_PASS:
-            return t('creation.git.create_credential.credential_type_user_pass');
-        default:
-            return '';
+            case NEW_CREDENTIAL_TYPE.SSH_KEY:
+                return t('creation.git.create_credential.credential_type_ssh_key');
+            case NEW_CREDENTIAL_TYPE.USER_PASS:
+                return t('creation.git.create_credential.credential_type_user_pass');
+            default:
+                return '';
         }
     },
 };
 
-
 @observer
 export class CreateCredentialDialog extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -131,10 +125,7 @@ export class CreateCredentialDialog extends React.Component {
                 creationPending: true,
             });
 
-            promise.then(
-                cred => this._onCreateCredentialSuccess(cred),
-                error => this._onCreateCredentialFailure(error),
-            );
+            promise.then(cred => this._onCreateCredentialSuccess(cred), error => this._onCreateCredentialFailure(error));
         }
     }
 
@@ -207,17 +198,13 @@ export class CreateCredentialDialog extends React.Component {
         ];
 
         return (
-            <Dialog
-              className="create-credential-dialog"
-              title={t('creation.git.create_credential.title')}
-              buttons={buttons}
-            >
+            <Dialog className="create-credential-dialog" title={t('creation.git.create_credential.title')} buttons={buttons}>
                 <FormElement
-                  className="credentials-new"
-                  title={t('creation.git.create_credential.credential_type')}
-                  errorMessage={this.state.creationErrorMessage}
-                  showDivider
-                  verticalLayout
+                    className="credentials-new"
+                    title={t('creation.git.create_credential.credential_type')}
+                    errorMessage={this.state.creationErrorMessage}
+                    showDivider
+                    verticalLayout
                 >
                     <RadioButtonGroup
                         className="credentials-type-picker"
@@ -227,28 +214,27 @@ export class CreateCredentialDialog extends React.Component {
                         onChange={option => this._newCredentialTypeChange(option)}
                     />
 
-                    { this.state.newCredentialType === NEW_CREDENTIAL_TYPE.SSH_KEY &&
-                    <FormElement title={t('creation.git.create_credential.sshkey_title')} errorMessage={this.state.sshKeyErrorMsg}>
-                        <TextArea onChange={val => this._sshKeyChange(val)} />
-                    </FormElement>
-                    }
+                    {this.state.newCredentialType === NEW_CREDENTIAL_TYPE.SSH_KEY && (
+                        <FormElement title={t('creation.git.create_credential.sshkey_title')} errorMessage={this.state.sshKeyErrorMsg}>
+                            <TextArea onChange={val => this._sshKeyChange(val)} />
+                        </FormElement>
+                    )}
 
-                    { this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS &&
-                    <FormElement title={t('creation.git.create_credential.username_title')} errorMessage={this.state.usernameErrorMsg}>
-                        <TextInput className="text-username" onChange={val => this._usernameChange(val)} />
-                    </FormElement>
-                    }
+                    {this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS && (
+                        <FormElement title={t('creation.git.create_credential.username_title')} errorMessage={this.state.usernameErrorMsg}>
+                            <TextInput className="text-username" onChange={val => this._usernameChange(val)} />
+                        </FormElement>
+                    )}
 
-                    { this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS &&
-                    <FormElement title={t('creation.git.create_credential.password_title')} errorMessage={this.state.passwordErrorMsg}>
-                        <PasswordInput className="text-password" onChange={val => this._passwordChange(val)} />
-                    </FormElement>
-                    }
+                    {this.state.newCredentialType === NEW_CREDENTIAL_TYPE.USER_PASS && (
+                        <FormElement title={t('creation.git.create_credential.password_title')} errorMessage={this.state.passwordErrorMsg}>
+                            <PasswordInput className="text-password" onChange={val => this._passwordChange(val)} />
+                        </FormElement>
+                    )}
                 </FormElement>
             </Dialog>
         );
     }
-
 }
 
 CreateCredentialDialog.propTypes = {

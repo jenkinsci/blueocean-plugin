@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { Link } from 'react-router';
 
-const LinkifiedText = (props) => {
+const LinkifiedText = props => {
     const { text, partialTextLinks, textLink } = props;
     const textWithPartialLinks = [];
 
@@ -21,11 +21,19 @@ const LinkifiedText = (props) => {
                 commitMsgPart = commitMsgPart.replace(/ /g, '\u00A0'); //replace empty space chars with &nbsp;
 
                 if (partialLinksObj[commitMsgPart]) {
-                    textWithPartialLinks.push(<a href={partialLinksObj[commitMsgPart]} target="_blank"><span className="ellipsis-text">{commitMsgPart}</span></a>);
+                    textWithPartialLinks.push(
+                        <a href={partialLinksObj[commitMsgPart]} target="_blank">
+                            <span className="ellipsis-text">{commitMsgPart}</span>
+                        </a>
+                    );
                 } else {
                     if (commitMsgPart) {
                         if (textLink) {
-                            textWithPartialLinks.push((<Link to={textLink} className="unstyled-link" ><span className="ellipsis-text">{commitMsgPart}</span></Link>));
+                            textWithPartialLinks.push(
+                                <Link to={textLink} className="unstyled-link">
+                                    <span className="ellipsis-text">{commitMsgPart}</span>
+                                </Link>
+                            );
                         } else {
                             textWithPartialLinks.push(commitMsgPart);
                         }
@@ -35,13 +43,23 @@ const LinkifiedText = (props) => {
         }
 
         if (!textWithPartialLinks.length) {
-            textWithPartialLinks.push((<Link to={textLink} className="unstyled-link" ><span className="ellipsis-text">{text}</span></Link>));
+            textWithPartialLinks.push(
+                <Link to={textLink} className="unstyled-link">
+                    <span className="ellipsis-text">{text}</span>
+                </Link>
+            );
         }
 
-        return (<span>{textWithPartialLinks}</span>);
+        return <span>{textWithPartialLinks}</span>;
     }
 
-    return (textLink ? (<Link to={textLink} className="unstyled-link" ><span className="ellipsis-text">{text}</span></Link>) : (<span>{text}</span>));
+    return textLink ? (
+        <Link to={textLink} className="unstyled-link">
+            <span className="ellipsis-text">{text}</span>
+        </Link>
+    ) : (
+        <span>{text}</span>
+    );
 };
 
 LinkifiedText.propTypes = {

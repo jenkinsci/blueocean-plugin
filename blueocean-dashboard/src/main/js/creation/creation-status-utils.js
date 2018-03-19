@@ -1,13 +1,11 @@
 import { User, Security } from '@jenkins-cd/blueocean-core-js';
 import { Enum } from '../creation/flow2/Enum';
 
-
 export const CreationStatus = new Enum({
     ENABLED: 'enabled',
     DISABLED: 'disabled',
     HIDDEN: 'hidden',
 });
-
 
 export default {
     getCreationStatus() {

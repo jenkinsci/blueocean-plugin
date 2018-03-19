@@ -11,7 +11,8 @@ export default class RunningIndicator extends Component {
         super(props);
         const initialPercentage = props.percentage || 12.5;
         this.state = { percentage: initialPercentage };
-        this.tick = () => { // FIXME: remove this.tick code when ux-206 is fixed
+        this.tick = () => {
+            // FIXME: remove this.tick code when ux-206 is fixed
             if (this.state.percentage === 100 - initialPercentage) {
                 this.setState({ percentage: 100 });
                 clearInterval(this.timer);
@@ -40,9 +41,7 @@ export default class RunningIndicator extends Component {
             title: 'running',
             percentage: this.state.percentage,
         };
-        return (<StatusIndicator
-          {...Object.assign({}, this.props, props)}
-        />);
+        return <StatusIndicator {...Object.assign({}, this.props, props)} />;
     }
 }
 

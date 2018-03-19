@@ -10,9 +10,9 @@ export default class PipelineScriptStepEditor extends React.Component {
 
     render() {
         const { step } = this.props;
-        return (<textarea className="editor-step-detail-script"
-                  defaultValue={getArg(step, 'scriptBlock').value}
-                  onChange={(e) => this.textChanged(e.target.value)} />);
+        return (
+            <textarea className="editor-step-detail-script" defaultValue={getArg(step, 'scriptBlock').value} onChange={e => this.textChanged(e.target.value)} />
+        );
     }
 }
 

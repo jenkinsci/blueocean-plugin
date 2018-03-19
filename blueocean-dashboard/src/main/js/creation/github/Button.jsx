@@ -1,10 +1,8 @@
 import React, { PropTypes } from 'react';
 import { StatusIndicator } from '@jenkins-cd/design-language';
 
-
 // must equal .Button-icon: transition + transition-delay
 const ANIMATION_DURATION = 2250;
-
 
 // TODO: migrate to JDL and merge w/ IconButton
 
@@ -24,7 +22,6 @@ const ANIMATION_DURATION = 2250;
  * }
  */
 export class Button extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -35,9 +32,8 @@ export class Button extends React.Component {
     }
 
     componentWillReceiveProps(nextProps) {
-        const statusChanged = !this.props.status || !nextProps.status ||
-            this.props.status.result !== nextProps.status.result ||
-            this.state.result !== nextProps.status.result;
+        const statusChanged =
+            !this.props.status || !nextProps.status || this.props.status.result !== nextProps.status.result || this.state.result !== nextProps.status.result;
 
         const shouldReset = nextProps.status && nextProps.status.reset;
 
@@ -73,7 +69,6 @@ export class Button extends React.Component {
         }
     }
 
-
     _onClick() {
         if (this.props.onClick) {
             this.props.onClick();
@@ -81,11 +76,7 @@ export class Button extends React.Component {
     }
 
     render() {
-        const {
-            className = '',
-            style = {},
-            children,
-        } = this.props;
+        const { className = '', style = {}, children } = this.props;
 
         const { result } = this.state;
         const disabled = result === 'running' || this.props.disabled;
@@ -93,25 +84,10 @@ export class Button extends React.Component {
         const transitionClass = this.state.pendingReset ? 'Button-transitioning' : '';
 
         return (
-            <button
-                className={`Button ${className} ${statusClass} ${transitionClass}`}
-                style={style}
-                disabled={disabled}
-                onClick={() => this._onClick()}
-            >
-                <span className="Button-text">{ children }</span>
+            <button className={`Button ${className} ${statusClass} ${transitionClass}`} style={style} disabled={disabled} onClick={() => this._onClick()}>
+                <span className="Button-text">{children}</span>
 
-                <div className="Button-icon">
-                { result &&
-                    <StatusIndicator
-                        result={result}
-                        percentage={999}
-                        width={16}
-                        height={16}
-                        noBackground
-                    />
-                }
-                </div>
+                <div className="Button-icon">{result && <StatusIndicator result={result} percentage={999} width={16} height={16} noBackground />}</div>
             </button>
         );
     }

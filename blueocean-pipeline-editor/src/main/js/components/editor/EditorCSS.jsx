@@ -6,7 +6,7 @@ import React, { Component } from 'react';
 // and trigger CSS loading from this plugin
 export class EditorCSS extends Component {
     render() {
-        return (<span />);
+        return <span />;
     }
 }
 

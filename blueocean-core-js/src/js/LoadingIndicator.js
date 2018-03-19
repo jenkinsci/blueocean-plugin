@@ -24,9 +24,11 @@ function clearTimeouts() {
  * Add a timeout to transition the loading animation differently
  */
 function setLoaderClass(c, t) {
-    timeouts.push(setTimeout(() => {
-        loadbar.classList.add(c);
-    }, t));
+    timeouts.push(
+        setTimeout(() => {
+            loadbar.classList.add(c);
+        }, t)
+    );
 }
 
 /**
@@ -52,19 +54,21 @@ export default {
             if (loadingCount > 0) {
                 loadingCount--;
             }
-    
+
             if (loadingCount === 0) {
                 // stop the loading animation
                 clearTimeouts();
                 setLoaderClass('complete', 10);
-                timeouts.push(setTimeout(() => {
-                    // The Element.classList is a read-only property
-                    const classList = loadbar.classList;
-                    if (classList && classList.length && classList.length > 0) {
-                        // remove all items - compatible with older browser
-                        classList.remove.apply(classList, [... classList]);
-                    }
-                }, 500));
+                timeouts.push(
+                    setTimeout(() => {
+                        // The Element.classList is a read-only property
+                        const classList = loadbar.classList;
+                        if (classList && classList.length && classList.length > 0) {
+                            // remove all items - compatible with older browser
+                            classList.remove.apply(classList, [...classList]);
+                        }
+                    }, 500)
+                );
             }
         }
     },

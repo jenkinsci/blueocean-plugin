@@ -7,11 +7,10 @@
  * @param url
  * @returns {string}
  */
-export const cleanSlashes = (url) => {
+export const cleanSlashes = url => {
     if (url.indexOf('//') !== -1) {
         let cleanUrl = url.replace('//', '/');
-        cleanUrl = cleanUrl.substr(-1) === '/' ?
-            cleanUrl : `${cleanUrl}/`;
+        cleanUrl = cleanUrl.substr(-1) === '/' ? cleanUrl : `${cleanUrl}/`;
 
         return cleanSlashes(cleanUrl);
     }
@@ -24,7 +23,7 @@ export const cleanSlashes = (url) => {
  * @param {string} value
  * @returns {string}
  */
-export const fullUriDecode = (value) => {
+export const fullUriDecode = value => {
     let val = value;
     while (val !== decodeURIComponent(val)) {
         val = decodeURIComponent(val);
@@ -38,7 +37,7 @@ export const fullUriDecode = (value) => {
  * @param {string} value
  * @returns {string}
  */
-export const uriEncodeOnce = (value) => {
+export const uriEncodeOnce = value => {
     const clean = fullUriDecode(value);
     return encodeURIComponent(clean);
 };

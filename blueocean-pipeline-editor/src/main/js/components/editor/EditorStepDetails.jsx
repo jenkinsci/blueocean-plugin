@@ -1,20 +1,17 @@
 // @flow
 
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 import pipelineMetadataService from '../../services/PipelineMetadataService';
 import type { StageInfo, StepInfo } from '../../services/PipelineStore';
 import GenericStepEditor from './steps/GenericStepEditor';
 import UnknownStepEditor from './steps/UnknownStepEditor';
 import { EditorStepList } from './EditorStepList';
 import { ValidationMessageList } from './ValidationMessageList';
-import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 const t = i18nTranslator('blueocean-pipeline-editor');
 
-const allStepEditors = [
-    require('./steps/ShellScriptStepEditor').default,
-    require('./steps/PipelineScriptStepEditor').default,
-];
+const allStepEditors = [require('./steps/ShellScriptStepEditor').default, require('./steps/PipelineScriptStepEditor').default];
 
 const stepEditorsByName = {};
 
@@ -25,24 +22,24 @@ for (let e of allStepEditors) {
 type Props = {
     stage?: ?StageInfo,
     step?: ?StepInfo,
-    onDataChange?: (newValue:any) => void,
+    onDataChange?: (newValue: any) => void,
     onDragStepBegin?: () => any,
     onDragStepHover?: () => any,
     onDragStepDrop?: () => any,
     onDragStepEnd?: () => any,
-}
+};
 
 export class EditorStepDetails extends Component {
-    props:Props;
+    props: Props;
 
-    state:{
+    state: {
         step: string,
         stepMetadata: any,
     };
 
     static defaultProps = {};
 
-    constructor(props:Props) {
+    constructor(props: Props) {
         super(props);
     }
 
@@ -52,18 +49,18 @@ export class EditorStepDetails extends Component {
 
     componentWillMount() {
         pipelineMetadataService.getStepListing(stepMetadata => {
-            this.setState({stepMetadata: stepMetadata});
+            this.setState({ stepMetadata: stepMetadata });
         });
     }
 
-    componentWillReceiveProps(nextProps:Props) {
+    componentWillReceiveProps(nextProps: Props) {
         if (nextProps.step !== this.props.step) {
-            this.setState({step: nextProps.step});
+            this.setState({ step: nextProps.step });
         }
     }
 
     commitValue(step) {
-        const {onDataChange} = this.props;
+        const { onDataChange } = this.props;
         if (onDataChange) {
             onDataChange(step);
         }
@@ -93,7 +90,7 @@ export class EditorStepDetails extends Component {
     }
 
     render() {
-        const {stage, step} = this.props;
+        const { stage, step } = this.props;
 
         if (!step) {
             return (
@@ -111,20 +108,22 @@ export class EditorStepDetails extends Component {
                     <ValidationMessageList node={step} />
                     <StepEditor key={step.id} onChange={step => this.commitValue(step)} step={step} />
                 </section>
-                {step.isContainer && <section>
-                    <h5>{t('editor.jenkins.pipeline.step.substep', {default: 'Child steps'})}</h5>
-                    <EditorStepList
-                        stage={stage}
-                        steps={step.children}
-                        parent={step}
-                        onAddStepClick={() => this.props.openSelectStepDialog(step)}
-                        onStepSelected={(step) => this.props.selectedStepChanged(step)}
-                        onDragStepBegin={this.props.onDragStepBegin}
-                        onDragStepHover={this.props.onDragStepHover}
-                        onDragStepDrop={this.props.onDragStepDrop}
-                        onDragStepEnd={this.props.onDragStepEnd}
-                    />
-                </section>}
+                {step.isContainer && (
+                    <section>
+                        <h5>{t('editor.jenkins.pipeline.step.substep', { default: 'Child steps' })}</h5>
+                        <EditorStepList
+                            stage={stage}
+                            steps={step.children}
+                            parent={step}
+                            onAddStepClick={() => this.props.openSelectStepDialog(step)}
+                            onStepSelected={step => this.props.selectedStepChanged(step)}
+                            onDragStepBegin={this.props.onDragStepBegin}
+                            onDragStepHover={this.props.onDragStepHover}
+                            onDragStepDrop={this.props.onDragStepDrop}
+                            onDragStepEnd={this.props.onDragStepEnd}
+                        />
+                    </section>
+                )}
             </div>
         );
     }

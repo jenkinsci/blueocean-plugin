@@ -7,7 +7,7 @@ class IfCapability extends Component {
 
         // since one or more 'capability' can be supplied, check if at least one of the supplied capabilities is present
         const capabilityList = capability instanceof Array ? capability : [capability];
-        const result = capabilityList.some((capable) => capabilities[className].contains(capable));
+        const result = capabilityList.some(capable => capabilities[className].contains(capable));
 
         if (result) {
             return this.props.children;
@@ -25,4 +25,3 @@ IfCapability.propTypes = {
 };
 
 export default capabilityStore(props => props.className)(IfCapability);
-
