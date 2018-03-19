@@ -26,9 +26,10 @@
   },
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.62",
-    "@jenkins-cd/js-builder-jest": "0.0.4",
+    "@jenkins-cd/js-builder": "git+https://github.com/imeredith/js-builder.git#typescript_support",
+    "@jenkins-cd/js-builder-jest": "git+https://github.com/imeredith/js-builder-jest.git#typescript_support",
     "@kadira/storybook": "2.20.1",
+    "@types/react": "15.6.14",
     "babel": "6.5.2",
     "babel-core": "6.17.0",
     "babel-eslint": "7.0.0",
@@ -43,15 +44,16 @@
     "eslint-plugin-react": "4.3.0",
     "gulp": "3.9.1",
     "gulp-mocha": "3.0.1",
+    "jest-cli": "22.4.2",
     "mocha": "3.1.0",
     "react-addons-test-utils": "15.4.2",
     "reactify": "1.1.1",
-    "skin-deep": "0.16.0"
+    "skin-deep": "0.16.0",
+    "ts-node": "^5.0.1"
   },
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": "0.0.170",
     "@jenkins-cd/design-language": "0.0.158",
-    "@jenkins-cd/js-builder": "git+https://github.com/imeredith/js-builder.git#typescript_support",
     "@jenkins-cd/js-extensions": "0.0.42",
     "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/preferences": "0.0.4",
@@ -89,6 +91,20 @@
       "react-redux@any",
       "react-router@any",
       "redux-thunk@any"
+    ]
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "ts-jest",
+      "^.+\\.jsx?$": "babel-jest"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
     ]
   }
 }

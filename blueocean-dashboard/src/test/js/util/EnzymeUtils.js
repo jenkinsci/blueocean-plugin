@@ -1,5 +1,6 @@
 import { store as ExtensionStore } from '@jenkins-cd/js-extensions';
-const jsdom = require('jsdom').jsdom;
+const jsdom = require('jsdom');
+const { JSDOM } = jsdom;
 
 /**
  * Prepares Enzyme's "mount" function for use by binding it to JSDOM.
@@ -14,7 +15,7 @@ export const prepareMount = () => {
     // code to bootstrap mount with JSDOM
     // see: https://github.com/airbnb/enzyme/blob/master/docs/guides/jsdom.md
     const exposedProperties = ['window', 'navigator', 'document'];
-    global.document = jsdom('');
+    global.document = new JSDOM('').window;
     global.window = document.defaultView;
     Object.keys(document.defaultView).forEach((property) => {
         if (typeof global[property] === 'undefined') {

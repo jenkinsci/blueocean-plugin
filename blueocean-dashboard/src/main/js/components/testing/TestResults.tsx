@@ -5,26 +5,30 @@ import TestSection from './TestSection';
 
 /* eslint-disable max-len */
 
+interface TestResultsProps {
+    pipeline: any,
+    run: any,
+    t: (key: string) => string,
+    locale: string,
+    testService: any
+}
 @observer
-export default class TestResults extends Component {
-
-    propTypes = {
-        pipeline: PropTypes.object,
-        run: PropTypes.object,
-        t: PropTypes.func,
-        locale: PropTypes.string,
-        testService: PropTypes.object,
-    };
+export default class TestResults extends Component<TestResultsProps, any> {
+    private regressionsPager: any;
+    private existingFailedPager: any;
+    private skippedPager: any;
+    private fixedPager: any;
+    private passedPager: any;
 
     componentWillMount() {
         this._initPagers(this.props);
     }
 
-    componentWillReceiveProps(nextProps) {
+    componentWillReceiveProps(nextProps: TestResultsProps) {
         this._initPagers(nextProps);
     }
 
-    _initPagers(props) {
+    _initPagers(props: TestResultsProps) {
         const pipeline = props.pipeline;
         const run = props.run;
         this.regressionsPager = this.props.testService.newRegressionsPager(pipeline, run);

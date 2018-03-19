@@ -5,11 +5,12 @@
 		"moduleResolution": "node",
 		"target": "es6",
 		"jsx": "react",
-		"allowJS": false
+		"allowJs": false,
+		"allowSyntheticDefaultImports": true,
+		"experimentalDecorators": true
 	},
 	"exclude": [
 		"target",
 		"**/*.jsx"
-		
 	]
 }
