@@ -58,7 +58,6 @@
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": "0.0.170",
     "@jenkins-cd/design-language": "0.0.158",
-    "@jenkins-cd/js-builder": "0.0.63",
     "@jenkins-cd/js-extensions": "0.0.42",
     "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/preferences": "0.0.4",
