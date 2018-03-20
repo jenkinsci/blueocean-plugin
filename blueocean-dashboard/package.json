@@ -45,7 +45,7 @@
     "gulp": "3.9.1",
     "gulp-mocha": "3.0.1",
     "jest": "19.0.2",
-    "jest-cli": "22.4.2",
+    "jest-cli": "19.0.2",
     "mocha": "3.1.0",
     "react-addons-test-utils": "15.4.2",
     "reactify": "1.1.1",
@@ -99,7 +99,7 @@
   },
   "jest": {
     "transform": {
-      "^.+\\.tsx?$": "ts-jest",
+      "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js",
       "^.+\\.jsx?$": "babel-jest"
     },
     "moduleFileExtensions": [
