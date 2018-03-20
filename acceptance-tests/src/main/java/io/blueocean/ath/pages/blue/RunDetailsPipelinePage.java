@@ -10,6 +10,7 @@ import org.apache.log4j.Logger;
 import org.junit.Assert;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -84,4 +85,8 @@ public class RunDetailsPipelinePage implements WebDriverMixin {
         return this;
     }
 
+    public boolean checkTitle(String title){
+        WebElement element = driver.findElement(By.cssSelector(".ResultPageHeader-main"));
+        return element.getText().endsWith(title);
+    }
 }

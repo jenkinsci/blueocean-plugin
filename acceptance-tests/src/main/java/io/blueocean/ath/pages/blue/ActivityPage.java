@@ -142,4 +142,8 @@ public class ActivityPage {
             return favorite;
         });
     }
+
+    public void testEmptyLayout() {
+
+    }
 }

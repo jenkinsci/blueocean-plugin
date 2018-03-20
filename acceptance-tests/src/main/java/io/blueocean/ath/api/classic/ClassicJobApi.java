@@ -135,7 +135,7 @@ public class ClassicJobApi {
         createMultiBranchPipeline(folder, pipelineName, repository.gitDirectory.getAbsolutePath());
     }
 
-    public void createFolders(Folder folder, boolean deleteRoot) throws IOException {
+    public FolderJob createFolders(Folder folder, boolean deleteRoot) throws IOException {
         if(deleteRoot) {
             jenkins.deleteJob(folder.get(0));
         }
@@ -143,9 +143,10 @@ public class ClassicJobApi {
         FolderJob lastFolder = jenkins.getFolderJob(jenkins.getJob(folder.get(0))).get();
 
         for (int i = 1; i < folder.getFolders().size(); i++) {
-            lastFolder.createFolder(folder.get(0));
-            lastFolder = jenkins.getFolderJob(lastFolder.getJob(folder.get(0))).get();
-        };
+            lastFolder.createFolder(folder.get(i));
+            lastFolder = jenkins.getFolderJob(jenkins.getJob(lastFolder,folder.get(i))).get();
+        }
+        return lastFolder;
     }
 
     public <T> T until(Function<JenkinsServer, T> function, long timeoutInMS) {
