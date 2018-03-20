@@ -32,7 +32,7 @@ function _appendValidationError(node, message) {
     if (_hasValidationErrors(node)) {
         node.validationErrors.push(message);
     } else {
-        node.validationErrors = [ message ];
+        node.validationErrors = [message];
     }
 }
 
@@ -48,13 +48,13 @@ function _validateAgentEntries(metadata, agent) {
         }
     }
     if (!meta) {
-        _appendValidationError(meta, "Unknown agent type: " + agent.type);
+        _appendValidationError(meta, 'Unknown agent type: ' + agent.type);
         return;
     }
     meta.parameters.map(param => {
         const arg = agent.arguments.filter(arg => arg.key === param.name)[0];
         if (param.isRequired && (!arg || !arg.value || !arg.value.value)) {
-            _appendValidationError(agent, param.name + " is required");
+            _appendValidationError(agent, param.name + ' is required');
         }
     });
 }
@@ -95,11 +95,11 @@ function _addClientSideErrors(metadata, node) {
             // For this one particular error, just replace it
             //node.validationErrors = [];
             //node.steps.validationErrors = [ 'At least one step is required' ];
-            node.validationErrors = [ 'At least one step is required' ];
+            node.validationErrors = ['At least one step is required'];
         }
         if (node === pipelineStore.pipeline) {
             // override default message
-            node.validationErrors = [ 'A stage is required' ];
+            node.validationErrors = ['A stage is required'];
         }
     } else {
         node.children.map(child => _addClientSideErrors(metadata, child));
@@ -111,13 +111,17 @@ export class PipelineValidator {
 
     validatePipeline(pipeline: PipelineInfo, handler: ValidationResult) {
         const json = convertInternalModelToJson(pipeline);
-        fetch('/pipeline-model-converter/validateJson',
-        'json=' + encodeURIComponent(JSON.stringify(json)), data => {
-            if (!data.result && data.errors) {
-                if (window.isDevelopmentMode) console.error(data);
-            }
-            handler(data);
-        }, { disableLoadingIndicator: true });
+        fetch(
+            '/pipeline-model-converter/validateJson',
+            'json=' + encodeURIComponent(JSON.stringify(json)),
+            data => {
+                if (!data.result && data.errors) {
+                    if (window.isDevelopmentMode) console.error(data);
+                }
+                handler(data);
+            },
+            { disableLoadingIndicator: true }
+        );
     }
 
     /**
@@ -140,7 +144,7 @@ export class PipelineValidator {
         for (const key of Object.keys(node)) {
             const val = node[key];
             if (val instanceof Object) {
-                if(this.hasValidationErrors(val, visited)) {
+                if (this.hasValidationErrors(val, visited)) {
                     return true;
                 }
             }
@@ -152,7 +156,7 @@ export class PipelineValidator {
      * Gets the validation errors for the specific node
      */
     getNodeValidationErrors(node: Object, visited: any[] = []): Object[] {
-        const validationErrors = node.validationErrors ? [ ...node.validationErrors ] : [];
+        const validationErrors = node.validationErrors ? [...node.validationErrors] : [];
 
         // if this is a parallel, check the parent stage for errors
         const parent = pipelineStore.findParentStage(node);
@@ -198,7 +202,7 @@ export class PipelineValidator {
         let node = pipeline;
         for (let i = 0; i < path.length; i++) {
             const part = path[i];
-            switch(part) {
+            switch (part) {
                 case 'pipeline': {
                     break;
                 }
@@ -228,14 +232,16 @@ export class PipelineValidator {
                 }
                 case 'steps': {
                     const idx = parseInt(path[++i]);
-                    if (!isNaN(idx)) { // it is actually the steps array, so just target the node
+                    if (!isNaN(idx)) {
+                        // it is actually the steps array, so just target the node
                         node = node.steps[idx];
                     }
                     break;
                 }
                 case 'arguments': {
                     const idx = parseInt(path[++i]);
-                    if (!isNaN(idx)) { // it is actually the arguments array, so just target the node
+                    if (!isNaN(idx)) {
+                        // it is actually the arguments array, so just target the node
                         // FIXME ehh, arguments are stored in 'data'
                         node = node.data;
                     }
@@ -332,7 +338,7 @@ export class PipelineValidator {
         for (const key of Object.keys(node)) {
             const val = node[key];
             if (val instanceof Object) {
-                if(this.hasPristineEdits(val, visited)) {
+                if (this.hasPristineEdits(val, visited)) {
                     return true;
                 }
             }
@@ -362,7 +368,7 @@ export class PipelineValidator {
     validate(onComplete) {
         const json = JSON.stringify(convertInternalModelToJson(pipelineStore.pipeline));
         if (this.lastPipelineValidated === json) {
-        	if (onComplete) onComplete();
+            if (onComplete) onComplete();
             return;
         }
         if (!this.lastPipelineValidate) {

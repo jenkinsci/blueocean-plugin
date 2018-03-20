@@ -11,7 +11,6 @@ const { sortByOrdinal } = Extensions.Utils;
  * Displays the initial set of options to begin a creation flow from a SCM Provider.
  */
 export class CreatePipelineScmListRenderer extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -26,7 +25,7 @@ export class CreatePipelineScmListRenderer extends React.Component {
 
     _initialize() {
         // load and store the SCM providers that contributed the specified extension point
-        Extensions.store.getExtensions(this.props.extensionPoint, sortByOrdinal, (extensions) => {
+        Extensions.store.getExtensions(this.props.extensionPoint, sortByOrdinal, extensions => {
             let providers = extensions.map(Provider => {
                 try {
                     return new Provider();
@@ -53,7 +52,7 @@ export class CreatePipelineScmListRenderer extends React.Component {
     render() {
         return (
             <div className="scm-provider-list layout-large">
-                { this.state.providers.map(provider => {
+                {this.state.providers.map(provider => {
                     let defaultOption;
 
                     try {
@@ -68,11 +67,7 @@ export class CreatePipelineScmListRenderer extends React.Component {
                         isSelected: provider === this.props.selectedProvider,
                     };
 
-                    return (
-                        <Sandbox className="provider-button">
-                            {React.cloneElement(defaultOption, props)}
-                        </Sandbox>
-                    );
+                    return <Sandbox className="provider-button">{React.cloneElement(defaultOption, props)}</Sandbox>;
                 })}
             </div>
         );

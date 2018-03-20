@@ -10,10 +10,13 @@ export default function InputText({ defaultValue, onChange, isRequired, hasError
         <div className={generateClassNames('FormElement', hasError && 'u-error-state', isRequired && 'required')}>
             <div className="FormElement-children">
                 <div className="TextInput">
-                    <input type="text" className="TextInput-control"
+                    <input
+                        type="text"
+                        className="TextInput-control"
                         defaultValue={defaultValue}
                         onChange={e => onChange(e.target.value)}
-                        onBlur={e => onBlur && onBlur()} />
+                        onBlur={e => onBlur && onBlur()}
+                    />
                 </div>
             </div>
         </div>

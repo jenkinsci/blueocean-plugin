@@ -7,7 +7,6 @@ import { action, observable, computed } from 'mobx';
  * Holds one or more toasts in state for display in UI.
  */
 export class ToastService {
-
     @observable toasts = [];
 
     /**
@@ -50,9 +49,7 @@ export class ToastService {
      */
     @action
     removeToast(toast) {
-        this.toasts = this.toasts.filter((item) =>
-            toast.id !== item.id
-        );
+        this.toasts = this.toasts.filter(item => toast.id !== item.id);
     }
 
     @computed
@@ -68,13 +65,11 @@ export class ToastService {
      */
     _hasDuplicate(newToast) {
         for (const toast of this.toasts) {
-            if (toast.text === newToast.text &&
-                toast.action === newToast.action) {
+            if (toast.text === newToast.text && toast.action === newToast.action) {
                 return true;
             }
         }
 
         return false;
     }
-
 }

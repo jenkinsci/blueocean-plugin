@@ -47,8 +47,7 @@ class FavoriteStore {
             body: JSON.stringify({ favorite: favorite }),
         };
 
-        this.fetch(url, fetchOptions)
-        .then(() => {
+        this.fetch(url, fetchOptions).then(() => {
             const { _favoritesNames: f } = this;
             const itemName = getItemName(item);
             if (favorite) {
@@ -74,8 +73,7 @@ class FavoriteStore {
                 const username = user.id;
                 const organization = AppConfig.getOrganizationName();
                 const url = cleanSlashes(`${baseUrl}/rest/organizations/${organization}/users/${username}/favorites/?start=0&limit=26`);
-                this.fetch(url)
-                    .then(favorites => this._setFavorites(sortHelper.applyStandardSort(favorites)));
+                this.fetch(url).then(favorites => this._setFavorites(sortHelper.applyStandardSort(favorites)));
             }
         }
         return this._favorites;
@@ -84,7 +82,7 @@ class FavoriteStore {
     fetch(url, fetchOptions) {
         return Fetch.fetchJSON(url, { fetchOptions })
             .then(data => capabilityAugmenter.augmentCapabilities(data))
-            .catch((error) => {
+            .catch(error => {
                 const responseBody = error.responseBody;
                 if (responseBody && responseBody.code && responseBody.message) {
                     ToastService.newToast({
@@ -104,7 +102,7 @@ class FavoriteStore {
     }
 
     @action
-    onPipelineRun = (jobRun) => {
+    onPipelineRun = jobRun => {
         if (this._fetched) {
             for (const fav of this._favorites) {
                 const runsBaseUrl = `${fav.item._links.self.href}runs`;
@@ -122,7 +120,7 @@ class FavoriteStore {
                 }
             }
         }
-    }
+    };
 }
 
 export default new FavoriteStore();

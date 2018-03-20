@@ -4,7 +4,6 @@
  * Expose everything as getters, because some of these will change from plugin to plugin.
  */
 export default class Config {
-
     constructor(options) {
         this._appURLBase = options.appURLBase || '';
         this._rootURL = options.rootURL || '';

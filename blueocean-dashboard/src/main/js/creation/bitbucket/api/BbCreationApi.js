@@ -8,7 +8,6 @@ const ERROR_FIELD_CODE_CONFLICT = 'ALREADY_EXISTS';
 
 const ERROR_FIELD_SCM_URI = 'scmConfig.uri';
 
-
 export const ListOrganizationsOutcome = new Enum({
     SUCCESS: 'success',
     INVALID_CREDENTIAL_ID: 'invalid_credential_id',
@@ -23,17 +22,12 @@ export const CreateMbpOutcome = new Enum({
     ERROR: 'error',
 });
 
-
 function hasErrorFieldName(errors, fieldName) {
-    return errors
-            .filter(err => err.field === fieldName)
-            .length > 0;
+    return errors.filter(err => err.field === fieldName).length > 0;
 }
 
 function hasErrorFieldCode(errors, code) {
-    return errors
-            .filter(err => err.code === code)
-            .length > 0;
+    return errors.filter(err => err.code === code).length > 0;
 }
 
 export class BbCreationApi {
@@ -47,14 +41,12 @@ export class BbCreationApi {
         const path = UrlConfig.getJenkinsRootURL();
         const orgsUrl = Utils.cleanSlashes(
             `${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/organizations/?credentialId=${credentialId}&apiUrl=${apiUrl}`,
-            false);
+            false
+        );
 
         return this._fetch(orgsUrl)
             .then(orgs => capabilityAugmenter.augmentCapabilities(orgs))
-            .then(
-                orgs => this._listOrganizationsSuccess(orgs),
-                error => this._listOrganizationsFailure(error),
-            );
+            .then(orgs => this._listOrganizationsSuccess(orgs), error => this._listOrganizationsFailure(error));
     }
 
     _listOrganizationsSuccess(organizations) {
@@ -84,19 +76,17 @@ export class BbCreationApi {
         const path = UrlConfig.getJenkinsRootURL();
         const reposUrl = Utils.cleanSlashes(
             `${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/organizations/${organizationName}/repositories/` +
-            `?credentialId=${credentialId}&pageNumber=${pageNumber}&pageSize=${pageSize}&apiUrl=${apiUrl}`);
+                `?credentialId=${credentialId}&pageNumber=${pageNumber}&pageSize=${pageSize}&apiUrl=${apiUrl}`
+        );
 
-        return this._fetch(reposUrl)
-            .then(response => capabilityAugmenter.augmentCapabilities(response));
+        return this._fetch(reposUrl).then(response => capabilityAugmenter.augmentCapabilities(response));
     }
 
     createMbp(credentialId, scmId, apiUrl, itemName, bbOrganizationKey, repoName, creatorClass) {
         const path = UrlConfig.getJenkinsRootURL();
         const createUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/pipelines/`);
 
-        const requestBody = this._buildRequestBody(
-            credentialId, scmId, apiUrl, itemName, bbOrganizationKey, repoName, creatorClass
-        );
+        const requestBody = this._buildRequestBody(credentialId, scmId, apiUrl, itemName, bbOrganizationKey, repoName, creatorClass);
 
         const fetchOptions = {
             method: 'POST',
@@ -108,10 +98,7 @@ export class BbCreationApi {
 
         return this._fetch(createUrl, { fetchOptions })
             .then(data => capabilityAugmenter.augmentCapabilities(data))
-            .then(
-                pipeline => this._createMbpSuccess(pipeline),
-                error => this._createMbpFailure(error),
-            );
+            .then(pipeline => this._createMbpSuccess(pipeline), error => this._createMbpFailure(error));
     }
 
     checkPipelineNameAvailable(name) {
@@ -125,10 +112,8 @@ export class BbCreationApi {
             },
         };
 
-        return this._fetch(checkUrl, { fetchOptions })
-            .then(() => false, () => true);
+        return this._fetch(checkUrl, { fetchOptions }).then(() => false, () => true);
     }
-
 
     _createMbpSuccess(pipeline) {
         return {
@@ -185,10 +170,7 @@ export class BbCreationApi {
         const pipelineUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/pipelines/${pipelineName}/`);
         return this._fetch(pipelineUrl)
             .then(response => capabilityAugmenter.augmentCapabilities(response))
-            .then(
-                pipeline => this._findBranchesSuccess(pipeline),
-                (error) => this._findBranchesFailure(error),
-            );
+            .then(pipeline => this._findBranchesSuccess(pipeline), error => this._findBranchesFailure(error));
     }
 
     _findBranchesSuccess(pipeline) {

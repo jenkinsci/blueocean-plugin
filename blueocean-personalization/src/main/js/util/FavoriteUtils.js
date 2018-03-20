@@ -18,6 +18,5 @@ export const checkMatchingFavoriteUrls = (favoriteUrl, pipelineOrBranchUrl) => {
     // This logic handles the special case where a multi-branch pipeline was favorited -
     // implicitly favoriting the 'master' branch - but the URL to the pipeline itself is supplied.
     // We watch this to count as a match, even though the URL's are actually different.
-    return (favoriteUrl === `${pipelineOrBranchUrl}branches/master` ||
-        favoriteUrl === `${pipelineOrBranchUrl}branches/master/`);
+    return favoriteUrl === `${pipelineOrBranchUrl}branches/master` || favoriteUrl === `${pipelineOrBranchUrl}branches/master/`;
 };

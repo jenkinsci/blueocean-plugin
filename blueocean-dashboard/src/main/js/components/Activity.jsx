@@ -1,10 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import {
-    JTable,
-    TableRow,
-    TableHeader,
-    TableCell,
-} from '@jenkins-cd/design-language';
+import { JTable, TableRow, TableHeader, TableCell } from '@jenkins-cd/design-language';
 import { capable, RunButton, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import { ActivityDetailsRow } from './ActivityDetailsRow';
@@ -13,11 +8,7 @@ import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { buildPipelineUrl } from '../util/UrlUtils';
 import { ColumnFilter } from './ColumnFilter';
 import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
-import {
-    NoRunsDefaultPlaceholder,
-    NoRunsForBranchPlaceholder,
-    NoRunsMultibranchPlaceholder,
-} from './placeholder/NoRunsPlaceholder';
+import { NoRunsDefaultPlaceholder, NoRunsForBranchPlaceholder, NoRunsMultibranchPlaceholder } from './placeholder/NoRunsPlaceholder';
 
 import Extensions from '@jenkins-cd/js-extensions';
 
@@ -36,7 +27,6 @@ function extractLatestRecord(run) {
 
 @observer
 export class Activity extends Component {
-
     state = {
         actionExtensionCount: 0,
     };
@@ -63,7 +53,7 @@ export class Activity extends Component {
     // Figure out how many extensions we have for the action buttons column so we can size it appropriately
     _countExtensions() {
         Extensions.store.getExtensions('jenkins.pipeline.activity.list.action', extensions => {
-            const count = extensions && typeof(extensions.length) === 'number' ? extensions.length : 0;
+            const count = extensions && typeof extensions.length === 'number' ? extensions.length : 0;
             if (count !== this.state.actionExtensionCount) {
                 this.setState({ actionExtensionCount: count });
             }
@@ -107,7 +97,7 @@ export class Activity extends Component {
         const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
         const hasBranches = pipeline.branchNames && !!pipeline.branchNames.length;
 
-        const onNavigation = (url) => {
+        const onNavigation = url => {
             this.context.location.pathname = url;
             this.context.router.push(this.context.location);
         };
@@ -118,22 +108,20 @@ export class Activity extends Component {
         // Multi-branch pipelines have the Run/play button beside them on
         // the Branches/PRs tab.
         const runButton = isMultiBranchPipeline ? null : (
-                <RunButton buttonType="run-only"
-                           innerButtonClasses="btn-secondary"
-                           runnable={pipeline}
-                           latestRun={latestRun}
-                           onNavigation={onNavigation}
-                />
-            );
+            <RunButton buttonType="run-only" innerButtonClasses="btn-secondary" runnable={pipeline} latestRun={latestRun} onNavigation={onNavigation} />
+        );
 
         if (!isLoading) {
             if (isMultiBranchPipeline && !hasBranches) {
                 return (
-                    <NoBranchesPlaceholder t={t} primaryAction={
-                        <button className="btn btn-primary" onClick={() => this.createPipeline()}>
-                            {t('creation.git.step1.create_button')}
-                        </button>
-                    } />
+                    <NoBranchesPlaceholder
+                        t={t}
+                        primaryAction={
+                            <button className="btn btn-primary" onClick={() => this.createPipeline()}>
+                                {t('creation.git.step1.create_button')}
+                            </button>
+                        }
+                    />
                 );
             }
             if (!runs || !runs.length) {
@@ -160,20 +148,17 @@ export class Activity extends Component {
         const decodedBranchName = branch ? decodeURIComponent(branch) : branch;
 
         const branchFilter = isMultiBranchPipeline && (
-            <ColumnFilter placeholder={branchText}
-                          value={decodedBranchName}
-                          onChange={this.navigateToBranch}
-                          options={pipeline.branchNames.map(b => decodeURIComponent(b))}
+            <ColumnFilter
+                placeholder={branchText}
+                value={decodedBranchName}
+                onChange={this.navigateToBranch}
+                options={pipeline.branchNames.map(b => decodeURIComponent(b))}
             />
         );
 
         // Build up our column metadata
 
-        const columns = [
-            JTable.column(60, status, false),
-            JTable.column(60, runHeader, false),
-            JTable.column(60, commit, false),
-        ];
+        const columns = [JTable.column(60, status, false), JTable.column(60, runHeader, false), JTable.column(60, commit, false)];
 
         if (isMultiBranchPipeline) {
             columns.push(JTable.column(160, 'branches', false));
@@ -183,53 +168,49 @@ export class Activity extends Component {
             JTable.column(480, message, true),
             JTable.column(100, duration, false),
             JTable.column(100, completed, false),
-            JTable.column((actionExtensionCount + actionsInRowCount) * 24, '', false),
+            JTable.column((actionExtensionCount + actionsInRowCount) * 24, '', false)
         );
 
         // Build main display table
 
         const runsTable = showTable && (
-                <JTable columns={columns} className="activity-table">
-                    <TableRow>
-                        <TableHeader>{ status }</TableHeader>
-                        <TableHeader>{ runHeader }</TableHeader>
-                        <TableHeader>{ commit }</TableHeader>
-                        { isMultiBranchPipeline && (
-                            <TableCell>{ branchFilter }</TableCell>
-                        )}
-                        <TableHeader>{ message }</TableHeader>
-                        <TableHeader>{ duration }</TableHeader>
-                        <TableHeader>{ completed }</TableHeader>
-                        <TableHeader />
-                    </TableRow>
-                    {
-                        runs.map(extractLatestRecord).map(
-                            ([run, changeset], index) => (
-                                <ActivityDetailsRow t={t}
-                                               locale={locale}
-                                               run={run}
-                                               pipeline={pipeline}
-                                               key={index}
-                                               changeset={changeset}
-                                               isMultibranch={isMultiBranchPipeline}
-                                />
-                            ))
-                    }
-                </JTable>
-            );
+            <JTable columns={columns} className="activity-table">
+                <TableRow>
+                    <TableHeader>{status}</TableHeader>
+                    <TableHeader>{runHeader}</TableHeader>
+                    <TableHeader>{commit}</TableHeader>
+                    {isMultiBranchPipeline && <TableCell>{branchFilter}</TableCell>}
+                    <TableHeader>{message}</TableHeader>
+                    <TableHeader>{duration}</TableHeader>
+                    <TableHeader>{completed}</TableHeader>
+                    <TableHeader />
+                </TableRow>
+                {runs
+                    .map(extractLatestRecord)
+                    .map(([run, changeset], index) => (
+                        <ActivityDetailsRow
+                            t={t}
+                            locale={locale}
+                            run={run}
+                            pipeline={pipeline}
+                            key={index}
+                            changeset={changeset}
+                            isMultibranch={isMultiBranchPipeline}
+                        />
+                    ))}
+            </JTable>
+        );
 
-        return (<main>
-            <article className="activity">
-                { runButton }
-                { runsTable }
-                { !isLoading && !runs.length && branch &&
-                    <NoRunsForBranchPlaceholder t={t} branchName={branch} />
-                }
-                { runs && runs.length > 0 &&
-                  <ShowMoreButton pager={this.pager} />
-                }
-            </article>
-        </main>);
+        return (
+            <main>
+                <article className="activity">
+                    {runButton}
+                    {runsTable}
+                    {!isLoading && !runs.length && branch && <NoRunsForBranchPlaceholder t={t} branchName={branch} />}
+                    {runs && runs.length > 0 && <ShowMoreButton pager={this.pager} />}
+                </article>
+            </main>
+        );
     }
 }
 

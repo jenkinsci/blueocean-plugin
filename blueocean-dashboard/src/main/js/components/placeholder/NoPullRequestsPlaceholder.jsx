@@ -5,7 +5,6 @@ import { PlaceholderContent } from './PlaceholderContent';
 import { PlaceholderDialog } from './PlaceholderDialog';
 import Icon from './Icon';
 
-
 export function NoPullRequestsPlaceholder(props) {
     const { t } = props;
 

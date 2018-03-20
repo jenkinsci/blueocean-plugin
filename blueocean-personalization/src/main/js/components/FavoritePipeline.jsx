@@ -27,10 +27,10 @@ export class FavoritePipeline extends Component {
             return null;
         }
 
-        return !(this.props.pipeline.branchNames && !this.props.pipeline.branchNames.length) && (
-            <Favorite checked={favoriteStore.isFavorite(this.props.pipeline)} className={this.props.className}
-              onToggle={() => this._onFavoriteToggle()}
-            />
+        return (
+            !(this.props.pipeline.branchNames && !this.props.pipeline.branchNames.length) && (
+                <Favorite checked={favoriteStore.isFavorite(this.props.pipeline)} className={this.props.className} onToggle={() => this._onFavoriteToggle()} />
+            )
         );
     }
 }

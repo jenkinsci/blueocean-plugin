@@ -2,9 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { pipelineService, activityService } from '@jenkins-cd/blueocean-core-js';
 import navState from './DashboardNavState';
 
-
 class Dashboard extends Component {
-
     constructor(props) {
         super(props);
         this._context = {};

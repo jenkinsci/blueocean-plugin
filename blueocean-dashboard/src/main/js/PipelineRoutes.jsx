@@ -36,8 +36,7 @@ function cleanupCopy(el) {
     if (el.childNodes && el.childNodes.length) {
         for (let i = 0; i < el.childNodes.length; i++) {
             const child = el.childNodes[i];
-            if (child.nodeType !== Node.TEXT_NODE
-                && child.nodeType !== Node.ELEMENT_NODE) {
+            if (child.nodeType !== Node.TEXT_NODE && child.nodeType !== Node.ELEMENT_NODE) {
                 el.removeChild(child);
             } else if (child.nodeType === Node.ELEMENT_NODE) {
                 cleanupCopy(child);
@@ -84,7 +83,7 @@ function isEnteringRunDetails(prevState, nextState) {
 }
 
 function isLeavingRunDetails(prevState, nextState) {
-    return (prevState !== null && prevState.params.runId) && !nextState.params.runId;
+    return prevState !== null && prevState.params.runId && !nextState.params.runId;
 }
 
 function isPersistBackgroundRoute(prevState, nextState) {
@@ -137,9 +136,9 @@ export default (
             <Route path=":pipeline/branches" component={MultiBranch} onEnter={analytics.trackPipelineBranchesVisited} />
             <Route path=":pipeline/activity" component={Activity} onEnter={analytics.trackPipelineActivityVisited} />
             <Route path=":pipeline/pr" component={PullRequests} onEnter={analytics.trackPipelinePullRequestsVisited} />
-            { trends && <Route path=":pipeline/trends" component={PipelineTrends} /> }
+            {trends && <Route path=":pipeline/trends" component={PipelineTrends} />}
 
-            <Route path=":pipeline/detail/:branch/:runId" component={RunDetails} onLeave={onLeaveCheckBackground} >
+            <Route path=":pipeline/detail/:branch/:runId" component={RunDetails} onLeave={onLeaveCheckBackground}>
                 <IndexRedirect to="pipeline" />
                 <Route path="pipeline" component={RunDetailsPipeline} onEnter={analytics.trackPipelineRunVisited}>
                     <Route path=":node" component={RunDetailsPipeline} />
@@ -150,7 +149,6 @@ export default (
             </Route>
 
             <Redirect from=":pipeline(/*)" to=":pipeline/activity" />
-
         </Route>
         <Route path="/pipelines" component={Pipelines} onEnter={analytics.trackDashboardVisited} />
         <Route path="/create-pipeline" component={CreatePipeline} onEnter={analytics.trackPipelineCreationVisited} />

@@ -8,16 +8,9 @@ import Extensions from '@jenkins-cd/js-extensions';
 import { buildPipelineUrl } from '../util/UrlUtils';
 import { ColumnFilter } from './ColumnFilter';
 
-
 export const MULTIBRANCH_PIPELINE = 'io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline';
 
-const seriesColors = [
-    '#4A90E2',
-    '#d54c53',
-    '#78b037',
-    '#F5A623',
-    '#bd0fe1',
-];
+const seriesColors = ['#4A90E2', '#d54c53', '#78b037', '#F5A623', '#bd0fe1'];
 
 function sortRowsById(row1, row2) {
     return parseInt(row1.id) - parseInt(row2.id);
@@ -59,9 +52,7 @@ function createChartSeries(trend, rows) {
     for (const col of columns) {
         if (col !== 'id') {
             const color = colors.shift() || '#4A4A4A';
-            series.push(
-                <Line type="monotone" dataKey={col} stroke={color} />
-            );
+            series.push(<Line type="monotone" dataKey={col} stroke={color} />);
         }
     }
 
@@ -89,10 +80,8 @@ DefaultChart.propTypes = {
     rows: PropTypes.object,
 };
 
-
 @observer
 export class PipelineTrends extends Component {
-
     componentWillMount() {
         this.fetchTrendsData(this.props);
     }
@@ -120,8 +109,7 @@ export class PipelineTrends extends Component {
             fullUrl = `${baseUrl}/trends/`;
         }
 
-        Fetch.fetchJSON(fullUrl)
-            .then(data => this._loadTrendsSuccess(data));
+        Fetch.fetchJSON(fullUrl).then(data => this._loadTrendsSuccess(data));
     }
 
     _loadTrendsSuccess(trends) {
@@ -142,8 +130,7 @@ export class PipelineTrends extends Component {
             const rowsUrl = trend._links && trend._links.rows && trend._links.rows.href;
 
             if (rowsUrl) {
-                Fetch.fetchJSON(rowsUrl)
-                    .then(rows => this._updateTrendRows(trend, rows));
+                Fetch.fetchJSON(rowsUrl).then(rows => this._updateTrendRows(trend, rows));
             }
 
             rowsMap[trend.id] = [];
@@ -185,51 +172,43 @@ export class PipelineTrends extends Component {
         if (capable(pipeline, MULTIBRANCH_PIPELINE)) {
             const branchName = decodeURIComponent(this._selectedBranch(this.props, pipeline));
 
-            branchFilter = (
-                <ColumnFilter
-                    value={branchName}
-                    onChange={this.navigateToBranch}
-                    options={pipeline.branchNames.map(b => decodeURIComponent(b))}
-                />
-            );
+            branchFilter = <ColumnFilter value={branchName} onChange={this.navigateToBranch} options={pipeline.branchNames.map(b => decodeURIComponent(b))} />;
         }
 
         return (
             <div className="trends-view">
-                <div className="trends-branch-filter">
-                    {branchFilter}
-                </div>
+                <div className="trends-branch-filter">{branchFilter}</div>
 
                 <div className="trends-table">
-                { trends.map(trend => {
-                    const CustomComponent = this.extensions[trend.id];
-                    const rows = this.rowsMap[trend.id];
+                    {trends.map(trend => {
+                        const CustomComponent = this.extensions[trend.id];
+                        const rows = this.rowsMap[trend.id];
 
-                    if (!rows || !rows.length) {
-                        // forces a full re-render of the chart when branch is changed, for animations
-                        return null;
-                    }
+                        if (!rows || !rows.length) {
+                            // forces a full re-render of the chart when branch is changed, for animations
+                            return null;
+                        }
 
-                    let chart = null;
+                        let chart = null;
 
-                    if (CustomComponent) {
-                        chart = (
-                            <Extensions.SandboxedComponent>
-                                <CustomComponent trend={trend} rows={rows.slice()} />
-                            </Extensions.SandboxedComponent>
+                        if (CustomComponent) {
+                            chart = (
+                                <Extensions.SandboxedComponent>
+                                    <CustomComponent trend={trend} rows={rows.slice()} />
+                                </Extensions.SandboxedComponent>
+                            );
+                        } else {
+                            chart = <DefaultChart trend={trend} rows={rows.slice()} />;
+                        }
+
+                        return (
+                            <div className="trends-chart-container" data-trend-id={trend.id}>
+                                <div className="trends-chart-label">{trend.displayName}</div>
+
+                                {chart}
+                            </div>
                         );
-                    } else {
-                        chart = <DefaultChart trend={trend} rows={rows.slice()} />;
-                    }
-
-                    return (
-                        <div className="trends-chart-container" data-trend-id={trend.id}>
-                            <div className="trends-chart-label">{trend.displayName}</div>
-
-                            {chart}
-                        </div>
-                    );
-                })}
+                    })}
                 </div>
             </div>
         );

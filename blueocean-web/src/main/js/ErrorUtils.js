@@ -1,6 +1,5 @@
 import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
-
 let initialized = false;
 let warningLogged = false;
 
@@ -8,12 +7,11 @@ function isGoogleChrome() {
     const isChromium = window.chrome,
         winNav = window.navigator,
         vendorName = winNav.vendor,
-        isOpera = winNav.userAgent.indexOf("OPR") > -1,
-        isIEedge = winNav.userAgent.indexOf("Edge") > -1,
-        isIOSChrome = winNav.userAgent.match("CriOS");
+        isOpera = winNav.userAgent.indexOf('OPR') > -1,
+        isIEedge = winNav.userAgent.indexOf('Edge') > -1,
+        isIOSChrome = winNav.userAgent.match('CriOS');
 
-    return isIOSChrome ||
-        (isChromium !== null && typeof isChromium !== "undefined" && vendorName === "Google Inc." &&  !isOpera && !isIEedge);
+    return isIOSChrome || (isChromium !== null && typeof isChromium !== 'undefined' && vendorName === 'Google Inc.' && !isOpera && !isIEedge);
 }
 
 function isFirefox() {
@@ -58,8 +56,8 @@ function logUnhandledPromiseRejection(errorEvent) {
 
 function initializeErrorHandling() {
     if (!initialized) {
-        window.addEventListener("error", logApplicationError);
-        window.addEventListener("unhandledrejection", logUnhandledPromiseRejection);
+        window.addEventListener('error', logApplicationError);
+        window.addEventListener('unhandledrejection', logUnhandledPromiseRejection);
         initialized = true;
     }
 }

@@ -4,7 +4,6 @@ import { logging, Utils } from '@jenkins-cd/blueocean-core-js';
 
 const LOGGER = logging.logger('io.jenkins.blueocean.create-pipeline');
 
-
 /**
  * Base class for managing the flow of multiple steps.
  * Must provide an initial step, and has methods for pushing or replacing steps on stack.
@@ -16,8 +15,7 @@ export default class FlowManager {
 
     @computed
     get activeIndex() {
-        return this.steps.length > 0 ?
-            this.steps.length - 1 : 0;
+        return this.steps.length > 0 ? this.steps.length - 1 : 0;
     }
 
     /**
@@ -52,15 +50,13 @@ export default class FlowManager {
 
     // new APIS
 
-    @observable
-    stateId = null;
+    @observable stateId = null;
 
     states = [];
 
     steps = [];
 
     placeholders = [];
-
 
     /**
      * Render the specified state and step.
@@ -242,5 +238,4 @@ export default class FlowManager {
         console.error(errorString);
         throw new Error(errorString);
     }
-
 }

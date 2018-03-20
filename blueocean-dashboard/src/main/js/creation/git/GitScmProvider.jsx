@@ -9,7 +9,6 @@ import { CredentialsApi } from '../credentials/CredentialsApi';
  * Provides the impl of FlowManager and the button for starting the git flow.
  */
 export default class GitScmProvider extends ScmProvider {
-
     getDefaultOption() {
         return <GitDefaultOption />;
     }
@@ -21,5 +20,4 @@ export default class GitScmProvider extends ScmProvider {
     }
 
     destroyFlowManager() {}
-
 }

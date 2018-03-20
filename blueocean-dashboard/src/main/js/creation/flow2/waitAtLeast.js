@@ -2,7 +2,6 @@ function time() {
     return new Date().getTime();
 }
 
-
 /**
  * Utility function chained w/ a Promise to delay resolution for a minimum amount of time.
  *
@@ -29,7 +28,7 @@ export default function waitAtLeast(delay = 1000) {
     return function proceed(data) {
         // if we haven't reached the delay yet, stash the payload
         // so the setTimeout above will resolve it later
-        if ((time() - begin) < delay) {
+        if (time() - begin < delay) {
             promise.payload = data;
             return promise;
         }

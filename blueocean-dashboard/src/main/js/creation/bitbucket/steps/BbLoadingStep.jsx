@@ -8,11 +8,8 @@ const t = i18nTranslator('blueocean-dashboard');
 @observer
 export default class BbLoadingStep extends React.Component {
     render() {
-        return (
-            <FlowStep {...this.props} title={t('common.pager.loading')} loading scrollOnActive={false} />
-        );
+        return <FlowStep {...this.props} title={t('common.pager.loading')} loading scrollOnActive={false} />;
     }
-
 }
 
 BbLoadingStep.propTypes = {

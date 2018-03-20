@@ -2,7 +2,7 @@
  * Created by cmeyers on 8/25/16.
  */
 
-const extractRestUrl = (subject) => {
+const extractRestUrl = subject => {
     let restUrl = null;
 
     if (typeof subject === 'object') {
@@ -26,7 +26,7 @@ const extractRestUrl = (subject) => {
  * @param {Array} tokens
  * @returns {Array}
  */
-const trimEmptyTokens = (tokens) => {
+const trimEmptyTokens = tokens => {
     const copy = tokens.slice();
 
     if (copy[0] === '') {
@@ -47,7 +47,7 @@ const trimEmptyTokens = (tokens) => {
  * @param {object|string} run
  * @returns {string}
  */
-export const buildRunDetailsUrl = (run) => {
+export const buildRunDetailsUrl = run => {
     const restUrl = extractRestUrl(run);
     const tokens = trimEmptyTokens(restUrl.split('/'));
 
@@ -77,9 +77,7 @@ export const buildRunDetailsUrl = (run) => {
         throw new Error('Could not extract URI components');
     }
 
-    return `/organizations/${organizationName}` +
-        `/${encodeURIComponent(fullName)}/detail` +
-        `/${detailName}/${runId}/pipeline`;
+    return `/organizations/${organizationName}` + `/${encodeURIComponent(fullName)}/detail` + `/${detailName}/${runId}/pipeline`;
 };
 
 export default {
