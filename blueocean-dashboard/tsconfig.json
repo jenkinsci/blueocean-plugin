@@ -3,7 +3,7 @@
 		"outDir": "build",
 		"module": "commonjs",
 		"moduleResolution": "node",
-		"target": "es6",
+		"target": "es5",
 		"jsx": "react",
 		"allowJs": false,
 		"allowSyntheticDefaultImports": true,

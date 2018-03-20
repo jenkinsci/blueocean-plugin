@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import * as React from 'react';
 import { observer } from 'mobx-react';
 import { TestSummary } from './TestSummary';
 import TestSection from './TestSection';
@@ -12,8 +12,9 @@ interface TestResultsProps {
     locale: string,
     testService: any
 }
+
 @observer
-export default class TestResults extends Component<TestResultsProps, any> {
+export default class TestResults extends React.Component<TestResultsProps, any> {
     private regressionsPager: any;
     private existingFailedPager: any;
     private skippedPager: any;
