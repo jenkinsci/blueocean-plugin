@@ -69,9 +69,9 @@
       "dev": true
     },
     "@jenkins-cd/js-builder": {
-      "version": "0.0.62",
-      "from": "git+https://github.com/imeredith/js-builder.git#typescript_support",
-      "resolved": "git+https://github.com/imeredith/js-builder.git#13f6c7d5af58df46c55e97506219b8f437412b91",
+      "version": "0.0.63",
+      "from": "@jenkins-cd/js-builder@0.0.63",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/js-builder/-/js-builder-0.0.63.tgz",
       "dev": true,
       "dependencies": {
         "glob": {
