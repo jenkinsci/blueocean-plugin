@@ -13,12 +13,17 @@ const less = require('gulp-less');
 const rename = require('gulp-rename');
 const copy = require('gulp-copy');
 const fs = require('fs');
-
+const ts = require('gulp-typescript');
+const tsProject = ts.createProject('./tsconfig.json');
 // Options, src/dest folders, etc
 
 const config = {
     react: {
         sources: ["src/**/*.{js,jsx}", "!**/__mocks__/**"],
+        dest: "dist"
+    },
+    ts: {
+        sources: ["src/**/*.{ts,tsx}"],
         dest: "dist"
     },
     less: {
@@ -48,7 +53,7 @@ gulp.task("default", ["validate"]);
 
 // Build all
 
-gulp.task("build", ["compile-react", "less", "copy"]);
+gulp.task("build", ["compile-typescript", "compile-react", "less", "copy"]);
 
 // Compile react sources
 
@@ -59,6 +64,11 @@ gulp.task("compile-react", () =>
         .pipe(sourcemaps.write("."))
         .pipe(gulp.dest(config.react.dest)));
 
+gulp.task("compile-typescript", () =>
+    gulp.src(config.ts.sources)
+        .pipe(tsProject())
+        .pipe(gulp.dest(config.ts.dest)));
+        
 gulp.task("less", () =>
     gulp.src(config.less.sources)
         .pipe(sourcemaps.init())
