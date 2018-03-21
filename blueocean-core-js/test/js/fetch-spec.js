@@ -67,6 +67,7 @@ describe('Fetch', () => {
                             assert.fail(null, null, 'should not call success handler');
                         },
                         error => {
+                            console.log('XXXXX:' ,error);
                             assert.isOk(error);
                             assert.isOk(error.responseBody);
                             assert.equal(error.responseBody.message, 'validation');

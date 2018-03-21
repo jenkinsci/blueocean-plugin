@@ -7,7 +7,20 @@
 		"jsx": "react",
 		"allowJs": false,
 		"allowSyntheticDefaultImports": true,
-		"experimentalDecorators": true
+		"experimentalDecorators": true,
+		"forceConsistentCasingInFileNames": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "strictNullChecks": true,
+        "suppressImplicitAnyIndexErrors": true,
+		"noUnusedLocals": true,
+		"types": [
+			"bluebird-global"
+		],
+		"lib": [
+			"dom",
+			"es2018"
+		]
 	},
 	"exclude": [
 		"target",

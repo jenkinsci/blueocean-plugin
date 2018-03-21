@@ -295,6 +295,18 @@
         }
       }
     },
+    "@types/bluebird": {
+      "version": "3.5.0",
+      "from": "@types/bluebird@3.5.0",
+      "resolved": "https://registry.npmjs.org/@types/bluebird/-/bluebird-3.5.0.tgz",
+      "dev": true
+    },
+    "@types/bluebird-global": {
+      "version": "3.5.0",
+      "from": "@types/bluebird-global@3.5.0",
+      "resolved": "https://registry.npmjs.org/@types/bluebird-global/-/bluebird-global-3.5.0.tgz",
+      "dev": true
+    },
     "@types/react": {
       "version": "15.6.14",
       "from": "@types/react@15.6.14",

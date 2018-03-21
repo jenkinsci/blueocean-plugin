@@ -3,15 +3,15 @@ import { pipelineService, activityService } from '@jenkins-cd/blueocean-core-js'
 import navState from './DashboardNavState';
 
 interface Props {
-    params: object,
-    chilren: React.ReactNode,
+    params: object
+    children?: React.ReactNode
     location: object
 }
 
 interface DashBoardContext {
-    pipelineService?: object,
-    activityService?: object,
-    params?: object,
+    pipelineService?: object
+    activityService?: object
+    params?: object
     location?: object
 }
 class Dashboard extends React.Component<Props> {
