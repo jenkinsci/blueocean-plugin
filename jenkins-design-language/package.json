@@ -60,10 +60,9 @@
     "react-dom": "15.4.2",
     "react-router": "2.8.1",
     "@jenkins-cd/blueocean-material-icons": "0.0.6"
-
   },
   "devDependencies": {
-    "@jenkins-cd/js-builder": "0.0.62",
+    "@jenkins-cd/js-builder": "0.0.63",
     "@jenkins-cd/js-builder-jest": "0.0.4",
     "@kadira/storybook": "2.35.3",
     "babel-eslint": "7.0.0",
