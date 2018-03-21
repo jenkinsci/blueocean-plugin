@@ -13,7 +13,6 @@ var ErrorUtils = require('./ErrorUtils').default;
  * Useful for rendering untrusted React elements: errors will be trapped and displayed so the main UI isn't broken.
  */
 export class SandboxedComponent extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -44,7 +43,7 @@ export class SandboxedComponent extends React.Component {
         try {
             var contextValuesAsProps = {
                 config: this.context.config,
-                router: this.context.router
+                router: this.context.router,
             };
             var bridgedComponent = React.createElement(ContextBridge, contextValuesAsProps, props.children);
             ReactDOM.render(bridgedComponent, this.domNode);
@@ -58,9 +57,8 @@ export class SandboxedComponent extends React.Component {
         if (this.domNode) {
             try {
                 ReactDOM.unmountComponentAtNode(this.domNode);
-            }
-            catch (err) {
-                console.log("Error unmounting component", err);
+            } catch (err) {
+                console.log('Error unmounting component', err);
             }
         }
     }
@@ -69,7 +67,12 @@ export class SandboxedComponent extends React.Component {
         const extraClass = this.props.className || '';
 
         return (
-            <div className={`sandbox-component ${extraClass}`} ref={(node) => { this.domNode = node; }}></div>
+            <div
+                className={`sandbox-component ${extraClass}`}
+                ref={node => {
+                    this.domNode = node;
+                }}
+            />
         );
     }
 }

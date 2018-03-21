@@ -26,5 +26,5 @@ export function ParametersRender(properties) {
         return <Alerts message={alertCaption} type="Error" title={alertTitle} />;
     });
 
-    return (<div>{ renderedParameters }</div>);
+    return <div>{renderedParameters}</div>;
 }

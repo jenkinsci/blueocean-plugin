@@ -1,7 +1,7 @@
 // @flow
 
-import React, {Component, PropTypes} from 'react';
-import {EmptyStateIcon} from './EmptyStateIcon';
+import React, { Component, PropTypes } from 'react';
+import { EmptyStateIcon } from './EmptyStateIcon';
 import { Icon } from './Icon';
 
 /**
@@ -32,7 +32,7 @@ export class EmptyStateView extends Component {
             } else {
                 icon = (
                     <div className="empty-state-icon" style={{ paddingLeft: 0 }}>
-                        <Icon size={150} icon={this.props.iconName} style={{fill: '#fff'}} />
+                        <Icon size={150} icon={this.props.iconName} style={{ fill: '#fff' }} />
                     </div>
                 );
             }
@@ -41,7 +41,7 @@ export class EmptyStateView extends Component {
         return (
             <div className="empty-state">
                 <div className={layoutClasses}>
-                    { icon }
+                    {icon}
                     <div className="empty-state-content">{this.props.children}</div>
                 </div>
             </div>

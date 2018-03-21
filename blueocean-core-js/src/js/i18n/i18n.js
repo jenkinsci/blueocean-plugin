@@ -19,7 +19,7 @@ export const defaultLngDetector = new LngDetector(null, {
     lookupQuerystring: 'language',
     // Don't use the default (document.documentElement) because that can
     // trigger the browsers auto-translate, which is quite annoying.
-    htmlTag: (window.document ? window.document.head : undefined),
+    htmlTag: window.document ? window.document.head : undefined,
 });
 const prefix = urlConfig.getJenkinsRootURL() || '';
 const FALLBACK_LANG = '';
@@ -46,7 +46,7 @@ function newPluginXHR(pluginName) {
                 callback(data, { status: 200 });
             });
         },
-        parse: (response) => {
+        parse: response => {
             if (logger.isDebugEnabled()) {
                 logger.debug('Received i18n resource bundle for plugin "%s".', pluginName, response.data);
             }
@@ -70,7 +70,8 @@ const i18nextInstance = (backend, lngDetector = defaultLngDetector, options) => 
     if (!options) {
         throw new Error('Invalid call to create a new i18next instance. No i18next options supplied.');
     }
-    return i18next.createInstance()
+    return i18next
+        .createInstance()
         .use(backend)
         .use(lngDetector)
         .init(options);
@@ -79,13 +80,13 @@ const i18nextInstance = (backend, lngDetector = defaultLngDetector, options) => 
 const translatorCache = {};
 let useMockFallback = false;
 
-const assertPluginNameDefined = (pluginName) => {
+const assertPluginNameDefined = pluginName => {
     if (!pluginName) {
         throw new Error('"pluginName" arg cannot be null/blank');
     }
 };
 
-const toDefaultNamespace = (pluginName) => {
+const toDefaultNamespace = pluginName => {
     assertPluginNameDefined(pluginName);
     // Replace all hyphen chars with a dot.
     return `jenkins.plugins.${pluginName.replace(/-/g, '.')}.Messages`;
@@ -206,4 +207,3 @@ export function enableMocksForI18n() {
 export function disableMocksForI18n() {
     useMockFallback = false;
 }
-

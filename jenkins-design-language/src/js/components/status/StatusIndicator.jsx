@@ -1,6 +1,6 @@
 // @flow
 
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 import SvgSpinner from './SvgSpinner';
 import SvgStatus from './SvgStatus';
 
@@ -22,7 +22,7 @@ const validResultValues = {
 export type Result = $Keys<typeof validResultValues>;
 
 // Clean up result value, or return "invalid" value
-export function decodeResultValue(resultMaybe: any):Result {
+export function decodeResultValue(resultMaybe: any): Result {
     if (resultMaybe) {
         const lcResult = String(resultMaybe).toLowerCase();
         if (validResultValues.hasOwnProperty(lcResult)) {
@@ -36,9 +36,9 @@ export function decodeResultValue(resultMaybe: any):Result {
 // NB: This is also used by the PipelineGraph
 export function getGroupForResult(result: Result, percentage: number, radius: number) {
     if (usesSvgSpinner(result)) {
-        return <SvgSpinner radius={radius} result={result} percentage={percentage}/>;
+        return <SvgSpinner radius={radius} result={result} percentage={percentage} />;
     } else {
-        return <SvgStatus radius={radius} result={result}/>;
+        return <SvgStatus radius={radius} result={result} />;
     }
 }
 
@@ -56,46 +56,33 @@ function usesSvgSpinner(result: Result) {
 }
 
 class StatusIndicator extends Component {
-
-    static validResultValues:typeof validResultValues = validResultValues;
+    static validResultValues: typeof validResultValues = validResultValues;
 
     render() {
-        const {
-            result,
-            percentage,
-            width = '24px',
-            height = '24px',
-            noBackground,
-        } = this.props;
+        const { result, percentage, width = '24px', height = '24px', noBackground } = this.props;
 
-        const groupClasses = [
-            'svgResultStatus',
-            noBackground ?
-                'no-background' : null
-        ];
+        const groupClasses = ['svgResultStatus', noBackground ? 'no-background' : null];
 
         const radius = 12; // px.
         const resultClean = decodeResultValue(result);
 
         const translate = `translate(${radius} ${radius})`;
         // SvgStatus needs to be scaled up to fill the available space when no bg is used
-        const scale = noBackground && !usesSvgSpinner(resultClean) ?
-            'scale(2,2)' : null;
+        const scale = noBackground && !usesSvgSpinner(resultClean) ? 'scale(2,2)' : null;
 
-        const transforms = [
-            translate,
-            scale,
-        ];
+        const transforms = [translate, scale];
 
         return (
-            <svg className={groupClasses.join(' ')} xmlns="http://www.w3.org/2000/svg"
-              viewBox={`0 0 ${2 * radius} ${2 * radius}`} width={width} height={height}
-              focusable={false}
+            <svg
+                className={groupClasses.join(' ')}
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox={`0 0 ${2 * radius} ${2 * radius}`}
+                width={width}
+                height={height}
+                focusable={false}
             >
                 <title>{resultClean}</title>
-                <g transform={transforms.join(' ')}>
-                    {getGroupForResult(resultClean, percentage, radius)}
-                </g>
+                <g transform={transforms.join(' ')}>{getGroupForResult(resultClean, percentage, radius)}</g>
             </svg>
         );
     }
@@ -109,4 +96,4 @@ StatusIndicator.propTypes = {
     noBackground: PropTypes.bool,
 };
 
-export {StatusIndicator, SvgSpinner, SvgStatus};
+export { StatusIndicator, SvgSpinner, SvgStatus };

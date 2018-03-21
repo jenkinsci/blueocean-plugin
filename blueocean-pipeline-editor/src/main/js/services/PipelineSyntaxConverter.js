@@ -200,7 +200,8 @@ export function convertStepFromJson(s: PipelineStep) {
     pipelineMetadataService.getStepListing(steps => {
         stepMeta = steps;
     });
-    const meta = stepMeta.filter(md => md.functionName === s.name)[0] || { // handle unknown steps
+    const meta = stepMeta.filter(md => md.functionName === s.name)[0] || {
+        // handle unknown steps
         isBlockContainer: false,
         displayName: s.name,
     };

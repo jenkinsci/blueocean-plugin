@@ -11,7 +11,6 @@ import React, { Component, PropTypes } from 'react';
  FIXME: Block user scroll input at .ModalContainer on capture
  */
 export class ModalContainer extends Component {
-
     screenClicked = () => {
         const { onScreenClick } = this.props;
 
@@ -23,7 +22,7 @@ export class ModalContainer extends Component {
     render() {
         return (
             <div className="ModalContainer">
-                <div className="ModalContainer-modalScreen" onClick={this.screenClicked}/>
+                <div className="ModalContainer-modalScreen" onClick={this.screenClicked} />
                 {this.props.children}
             </div>
         );
@@ -32,7 +31,7 @@ export class ModalContainer extends Component {
 
 ModalContainer.propTypes = {
     onScreenClick: PropTypes.func,
-    children: PropTypes.element.isRequired
+    children: PropTypes.element.isRequired,
 };
 
 export default ModalContainer;

@@ -8,7 +8,6 @@ var importedResourceLoadTracker = require('./ResourceLoadTracker').instance;
  * Renderer for react component extensions for which other plugins can provide an implementing Component.
  */
 export default class ExtensionRenderer extends React.Component {
-
     constructor() {
         super();
         // Initial state is empty. See the componentDidMount and render functions.
@@ -51,9 +50,7 @@ export default class ExtensionRenderer extends React.Component {
     }
 
     _setExtensions() {
-        ExtensionRenderer.extensionStore.getExtensions(this.props.extensionPoint, this.props.filter,
-            extensions => this.setState({extensions: extensions})
-        );
+        ExtensionRenderer.extensionStore.getExtensions(this.props.extensionPoint, this.props.filter, extensions => this.setState({ extensions: extensions }));
     }
 
     /**
@@ -76,27 +73,23 @@ export default class ExtensionRenderer extends React.Component {
 
         // Add a <div> for each of the extensions. See the __renderAllExtensions function.
         for (var i = 0; i < extensions.length; i++) {
-            newChildren.push(<div key={i}/>);
+            newChildren.push(<div key={i} />);
         }
 
         if (newChildren.length === 0 && this.props.children) {
             newChildren = this.props.children;
         }
 
-        const {
-            className,
-            extensionPoint,
-            wrappingElement
-        } = this.props;
+        const { className, extensionPoint, wrappingElement } = this.props;
 
-        const classNames = ['ExtensionPoint', extensionPoint.replace(/\.+/g,'-')];
+        const classNames = ['ExtensionPoint', extensionPoint.replace(/\.+/g, '-')];
 
         if (className) {
             classNames.push(className);
         }
 
         const newProps = {
-            className: classNames.join(' ')
+            className: classNames.join(' '),
         };
 
         return React.createElement(wrappingElement, newProps, newChildren);
@@ -122,11 +115,14 @@ export default class ExtensionRenderer extends React.Component {
         if (el) {
             const children = el.children;
             if (children) {
-
                 // The number of children should be exactly the same as the number
                 // of extensions. See the render function for where these are added.
                 if (extensions.length !== children.length) {
-                    console.error('Unexpected error in Jenkins ExtensionRenderer rendering (' + this.props.extensionPoint + '). Expecting a child DOM node for each extension point.');
+                    console.error(
+                        'Unexpected error in Jenkins ExtensionRenderer rendering (' +
+                            this.props.extensionPoint +
+                            '). Expecting a child DOM node for each extension point.'
+                    );
                     return;
                 }
                 // render each extension on the allocated child node.
@@ -143,14 +139,18 @@ export default class ExtensionRenderer extends React.Component {
         try {
             var contextValuesAsProps = {
                 config: this.context.config,
-                router: this.context.router
+                router: this.context.router,
             };
             var bridgedComponent = React.createElement(ContextBridge, contextValuesAsProps, component);
             ReactDOM.render(bridgedComponent, element);
         } catch (e) {
-            console.log("error rendering", extension.name, e);
+            console.log('error rendering', extension.name, e);
 
-            var errorDiv = <div className="error alien">Error rendering {extension.name}: {e.toString()}</div>;
+            var errorDiv = (
+                <div className="error alien">
+                    Error rendering {extension.name}: {e.toString()}
+                </div>
+            );
             ReactDOM.render(errorDiv, element);
         }
     }
@@ -160,7 +160,6 @@ export default class ExtensionRenderer extends React.Component {
      * would otherwise not be notified when this is being unmounted.
      */
     _unmountAllExtensions() {
-
         const extensions = this.state.extensions;
 
         if (!extensions || extensions.length === 0) {
@@ -178,10 +177,9 @@ export default class ExtensionRenderer extends React.Component {
                     if (child) {
                         ReactDOM.unmountComponentAtNode(child);
                     }
-                }
-                catch (err) {
+                } catch (err) {
                     // Log and continue, don't want to stop unmounting children
-                    console.log("Error unmounting component", child, err);
+                    console.log('Error unmounting component', child, err);
                 }
             }
         }
@@ -189,17 +187,17 @@ export default class ExtensionRenderer extends React.Component {
 }
 
 ExtensionRenderer.defaultProps = {
-    wrappingElement: "div"
+    wrappingElement: 'div',
 };
 
 ExtensionRenderer.propTypes = {
     children: React.PropTypes.node,
     extensionPoint: React.PropTypes.string.isRequired,
     filter: React.PropTypes.any,
-    wrappingElement: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.element])
+    wrappingElement: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.element]),
 };
 
 ExtensionRenderer.contextTypes = {
     router: React.PropTypes.object,
-    config: React.PropTypes.object
+    config: React.PropTypes.object,
 };

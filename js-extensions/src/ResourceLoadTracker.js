@@ -34,7 +34,7 @@ export default class ResourceLoadTracker {
         this.activeCSSs = {};
 
         // Iterate through each plugin /jenkins-js-extension.json
-        for(var i1 = 0; i1 < extensionPointList.length; i1++) {
+        for (var i1 = 0; i1 < extensionPointList.length; i1++) {
             var pluginMetadata = extensionPointList[i1];
             var extensions = pluginMetadata.extensions; // All the extensions defined on the plugin
             var pluginCSS = pluginMetadata.extensionCSS; // The plugin CSS URL (adjunct URL).
@@ -50,10 +50,10 @@ export default class ResourceLoadTracker {
                 }
 
                 // Add the plugin CSS if it's not already in the list.
-                if (pointCSS.filter((pluginCSSEntry) => pluginCSSEntry.url === pluginCSS).length === 0) {
+                if (pointCSS.filter(pluginCSSEntry => pluginCSSEntry.url === pluginCSS).length === 0) {
                     pointCSS.push({
                         url: pluginCSS,
-                        hpiPluginId: pluginMetadata.hpiPluginId
+                        hpiPluginId: pluginMetadata.hpiPluginId,
                     });
                 }
             }

@@ -30,7 +30,7 @@ export function isType(objectToTest, type) {
     }
     return objectToTest instanceof type;
 }
-    
+
 export function componentType(componentType) {
     return (extensions, onload) => {
         extensions = extensions.filter(e => isType(e.instance, componentType));

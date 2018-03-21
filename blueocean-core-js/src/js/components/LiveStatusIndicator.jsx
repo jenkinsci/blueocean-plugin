@@ -5,14 +5,13 @@ import logging from '../logging';
 const logger = logging.logger('io.jenkins.blueocean.core.LiveStatusIndicator');
 
 export class LiveStatusIndicator extends Component {
-
     render() {
         const { result, getI18nTitle } = this.props;
         const title = getI18nTitle(result);
         logger.debug('i18n title', title);
         return (
             <div title={title}>
-                <LiveStatusIndicatorJdl { ... this.props } />
+                <LiveStatusIndicatorJdl {...this.props} />
             </div>
         );
     }
