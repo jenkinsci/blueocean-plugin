@@ -5,7 +5,6 @@ import React, { PropTypes } from 'react';
  * Not intended to be used directly.
  */
 export class TextControl extends React.Component {
-
     constructor(props) {
         super(props);
 
@@ -53,28 +52,24 @@ export class TextControl extends React.Component {
     render() {
         return (
             <div className={this.props.className}>
-                { React.Children.map(this.props.children, child => {
+                {React.Children.map(this.props.children, child => {
                     // while multiple children can be passed in (icons, etc)
                     // we only want to pass down props to underlying text control
                     if (child && (child.type === 'input' || child.type === 'textarea')) {
-                        return React.cloneElement(
-                            child,
-                            {
-                                placeholder: this.props.placeholder,
-                                disabled: this.props.disabled,
-                                value: this.state.value,
-                                onChange: e => this._onChange(e),
-                                onBlur: e => this._onBlur(e),
-                            }
-                        );
+                        return React.cloneElement(child, {
+                            placeholder: this.props.placeholder,
+                            disabled: this.props.disabled,
+                            value: this.state.value,
+                            onChange: e => this._onChange(e),
+                            onBlur: e => this._onBlur(e),
+                        });
                     }
 
                     return child;
-                } )}
+                })}
             </div>
         );
     }
-
 }
 
 TextControl.propTypes = {

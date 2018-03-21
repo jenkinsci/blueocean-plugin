@@ -1,6 +1,6 @@
 // @flow
 
-import React, {Component, PropTypes} from 'react';
+import React, { Component, PropTypes } from 'react';
 
 const GIT_HASH_REGEX = /\b[0-9a-f]{5,40}\b/;
 
@@ -9,7 +9,7 @@ const GIT_HASH_REGEX = /\b[0-9a-f]{5,40}\b/;
  */
 export class CommitId extends Component {
     render() {
-        const {className, commitId, url, title} = this.props;
+        const { className, commitId, url, title } = this.props;
         let displayValue;
         const classNames = ['hash'];
 
@@ -26,12 +26,14 @@ export class CommitId extends Component {
         }
 
         if (url) {
-            return (<a href={url} target="_blank" title={title ? title : 'Opens commit in a new window'}>
-                <code className={classNames.join(' ')}>{displayValue}</code>
-            </a>);
+            return (
+                <a href={url} target="_blank" title={title ? title : 'Opens commit in a new window'}>
+                    <code className={classNames.join(' ')}>{displayValue}</code>
+                </a>
+            );
         }
 
-        return (<code className={classNames.join(' ')}>{displayValue}</code>);
+        return <code className={classNames.join(' ')}>{displayValue}</code>;
     }
 }
 

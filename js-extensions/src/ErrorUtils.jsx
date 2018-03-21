@@ -8,11 +8,8 @@ import React from 'react';
  * @param error
  */
 function errorToElement(error) {
-    return (
-        <div className="error">Error rendering: {error.toString()}</div>
-    );
+    return <div className="error">Error rendering: {error.toString()}</div>;
 }
-
 
 export default {
     errorToElement,

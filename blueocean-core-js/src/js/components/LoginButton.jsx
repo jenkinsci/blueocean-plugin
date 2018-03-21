@@ -1,16 +1,13 @@
 import React, { Component, PropTypes } from 'react';
-import {
-    AppConfig, Security, UrlConfig, Utils,
-} from '../index';
+import { AppConfig, Security, UrlConfig, Utils } from '../index';
 
 /**
  * LoginButton to login/logout.
  */
 export class LoginButton extends Component {
-
     render() {
         if (!Security.isSecurityEnabled()) {
-            return (null);
+            return null;
         }
 
         let action;
@@ -23,9 +20,9 @@ export class LoginButton extends Component {
             url = `${UrlConfig.getJenkinsRootURL()}/logout`;
         }
         return (
-            <div className={ this.props.className }>
+            <div className={this.props.className}>
                 <a href={url} className="btn-link">
-                    { this.props.translate(action, { defaultValue: action }) }
+                    {this.props.translate(action, { defaultValue: action })}
                 </a>
             </div>
         );

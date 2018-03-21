@@ -68,10 +68,12 @@ export default class ExtensionStore {
             extensionPoint: extensionPointId,
             pluginId: pluginId,
             component: component,
-            instance: instance
+            instance: instance,
         });
 
-        logger.warn(`Unable to locate ExtensionPoint definition for ${extensionPointId} / ${pluginId} / ${component}. Auto-registered the ExtensionPoint, but the plugin should probably be updated in Jenkins Plugin Manager.`);
+        logger.warn(
+            `Unable to locate ExtensionPoint definition for ${extensionPointId} / ${pluginId} / ${component}. Auto-registered the ExtensionPoint, but the plugin should probably be updated in Jenkins Plugin Manager.`
+        );
     }
 
     /**
@@ -103,7 +105,7 @@ export default class ExtensionStore {
      */
     getExtensions(extensionPoint, filter, onload) {
         // Allow calls like: getExtensions('something', a => ...)
-        if (arguments.length === 2 && typeof(filter) === 'function') {
+        if (arguments.length === 2 && typeof filter === 'function') {
             onload = filter;
             filter = undefined;
         }
@@ -112,7 +114,7 @@ export default class ExtensionStore {
         if (extensionPoint instanceof Array) {
             var args = [];
             var nextArg = ext => {
-                if(ext) args.push(ext);
+                if (ext) args.push(ext);
                 if (extensionPoint.length === 0) {
                     onload(...args);
                 } else {
@@ -134,7 +136,7 @@ export default class ExtensionStore {
      * @return The version string for the named plugin, or undefined if the plugin is not installed/active.
      */
     getPluginVersion(pluginName) {
-        for(var i = 0; i < this.extensionPointList.length; i++) {
+        for (var i = 0; i < this.extensionPointList.length; i++) {
             var pluginMetadata = this.extensionPointList[i];
             if (pluginMetadata.hpiPluginId === pluginName) {
                 return pluginMetadata.hpiPluginVer;
@@ -150,14 +152,17 @@ export default class ExtensionStore {
             return;
         }
 
-        const doOnload = (extensions) => {
+        const doOnload = extensions => {
             // Map to instances and call the supplied onload callback.
             let instanceList = [];
             extensions.forEach(extension => {
                 if (extension.instance) {
                     instanceList.push(extension.instance);
                 } else {
-                    logger.warn("Failed to locate/load instance for ExtensionPoint. Check the plugin's jenkins-js-extension.yaml file and make sure the ExtensionPoint is properly defined. If using a Hosted UI bundle, then the plugin should probably be updated in the Jenkins Plugin Manager.", extension);
+                    logger.warn(
+                        "Failed to locate/load instance for ExtensionPoint. Check the plugin's jenkins-js-extension.yaml file and make sure the ExtensionPoint is properly defined. If using a Hosted UI bundle, then the plugin should probably be updated in the Jenkins Plugin Manager.",
+                        extension
+                    );
                 }
             });
             onload(instanceList);
@@ -166,7 +171,7 @@ export default class ExtensionStore {
         if (filters) {
             // allow calls like: getExtensions('abcd', dataType(something), ext => ...)
             if (!filters.length) {
-                filters = [ filters ];
+                filters = [filters];
             }
             var remaining = [].concat(filters);
             var nextFilter = extensions => {
@@ -189,7 +194,7 @@ export default class ExtensionStore {
      */
     _initExtensionPointList() {
         if (!this.extensionData) {
-            throw new Error("Must call ExtensionStore.init({ extensionData: array, typeInfoProvider: (type, cb) => ... }) first");
+            throw new Error('Must call ExtensionStore.init({ extensionData: array, typeInfoProvider: (type, cb) => ... }) first');
         }
         if (this.extensionPointList) {
             return;
@@ -197,14 +202,15 @@ export default class ExtensionStore {
 
         // We clone the data because we add to it.
         this.extensionPointList = JSON.parse(JSON.stringify(this.extensionData));
-        for(var i1 = 0; i1 < this.extensionPointList.length; i1++) {
+        for (var i1 = 0; i1 < this.extensionPointList.length; i1++) {
             var pluginMetadata = this.extensionPointList[i1];
             var extensions = pluginMetadata.extensions || [];
 
-            for(var i2 = 0; i2 < extensions.length; i2++) {
+            for (var i2 = 0; i2 < extensions.length; i2++) {
                 var extensionMetadata = extensions[i2];
                 extensionMetadata.pluginId = pluginMetadata.hpiPluginId;
-                var extensionPointMetadatas = this.extensionPoints[extensionMetadata.extensionPoint] = this.extensionPoints[extensionMetadata.extensionPoint] || [];
+                var extensionPointMetadatas = (this.extensionPoints[extensionMetadata.extensionPoint] =
+                    this.extensionPoints[extensionMetadata.extensionPoint] || []);
                 extensionPointMetadatas.push(extensionMetadata);
             }
         }
@@ -229,7 +235,7 @@ export default class ExtensionStore {
         var jsModules = require('@jenkins-cd/js-modules');
         var loadCountMonitor = new LoadCountMonitor();
 
-        var loadPluginBundle = (pluginMetadata) => {
+        var loadPluginBundle = pluginMetadata => {
             loadCountMonitor.inc();
 
             // The plugin bundle for this plugin may already be in the process of loading (async extension
@@ -240,16 +246,19 @@ export default class ExtensionStore {
             if (!pluginMetadata.loadCountMonitors) {
                 pluginMetadata.loadCountMonitors = [];
                 pluginMetadata.loadCountMonitors.push(loadCountMonitor);
-                logger.debug('Initiating js-extensions bundle loading for plugin "%s". Triggered by extensionPointId "%s".', pluginMetadata.hpiPluginId, extensionPointId);
-                jsModules.importModule(pluginMetadata.hpiPluginId + ':jenkins-js-extension')
-                    .onFulfilled(() => {
-                        logger.log('js-extensions bundle for plugin "%s" loaded.', pluginMetadata.hpiPluginId);
-                        pluginMetadata.bundleLoaded = true;
-                        for (var i = 0; i < pluginMetadata.loadCountMonitors.length; i++) {
-                            pluginMetadata.loadCountMonitors[i].dec();
-                        }
-                        delete pluginMetadata.loadCountMonitors;
-                    });
+                logger.debug(
+                    'Initiating js-extensions bundle loading for plugin "%s". Triggered by extensionPointId "%s".',
+                    pluginMetadata.hpiPluginId,
+                    extensionPointId
+                );
+                jsModules.importModule(pluginMetadata.hpiPluginId + ':jenkins-js-extension').onFulfilled(() => {
+                    logger.log('js-extensions bundle for plugin "%s" loaded.', pluginMetadata.hpiPluginId);
+                    pluginMetadata.bundleLoaded = true;
+                    for (var i = 0; i < pluginMetadata.loadCountMonitors.length; i++) {
+                        pluginMetadata.loadCountMonitors[i].dec();
+                    }
+                    delete pluginMetadata.loadCountMonitors;
+                });
             } else {
                 pluginMetadata.loadCountMonitors.push(loadCountMonitor);
             }
@@ -265,12 +274,11 @@ export default class ExtensionStore {
         // Iterate over each plugin in extensionPointMetadata, async loading
         // the extension point .js bundle (if not already loaded) for each of the
         // plugins that implement the specified extensionPointId.
-        for(var i1 = 0; i1 < this.extensionPointList.length; i1++) {
-
+        for (var i1 = 0; i1 < this.extensionPointList.length; i1++) {
             var pluginMetadata = this.extensionPointList[i1];
             var extensions = pluginMetadata.extensions || [];
 
-            for(var i2 = 0; i2 < extensions.length; i2++) {
+            for (var i2 = 0; i2 < extensions.length; i2++) {
                 var extensionMetadata = extensions[i2];
                 if (extensionMetadata.extensionPoint === extensionPointId) {
                     // This plugin implements the ExtensionPoint.
@@ -285,7 +293,7 @@ export default class ExtensionStore {
 
         // Listen to the inc/dec calls now that we've iterated
         // over all of the plugins.
-        loadCountMonitor.onchange( () => {
+        loadCountMonitor.onchange(() => {
             checkLoading();
         });
 
