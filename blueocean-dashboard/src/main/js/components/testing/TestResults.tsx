@@ -55,7 +55,8 @@ export default class TestResults extends React.Component<TestResultsProps, any> 
                     titleKey="rundetail.tests.results.errors.new.count"
                     pager={this.regressionsPager}
                     extraClasses="new-failure-block"
-                    locale={locale} t={translation}
+                    locale={locale}
+                    t={translation}
                     total={run.testSummary.regressions}
                     testService={this.props.testService}
                 />
@@ -63,7 +64,8 @@ export default class TestResults extends React.Component<TestResultsProps, any> 
                     titleKey="rundetail.tests.results.errors.existing.count"
                     pager={this.existingFailedPager}
                     extraClasses="existing-failure-block"
-                    locale={locale} t={translation}
+                    locale={locale}
+                    t={translation}
                     total={run.testSummary.existingFailed}
                     testService={this.props.testService}
                 />
@@ -71,7 +73,8 @@ export default class TestResults extends React.Component<TestResultsProps, any> 
                     titleKey="rundetail.tests.results.fixed"
                     pager={this.fixedPager}
                     extraClasses="fixed-block"
-                    locale={locale} t={translation}
+                    locale={locale}
+                    t={translation}
                     total={run.testSummary.fixed}
                     testService={this.props.testService}
                 />
@@ -79,15 +82,17 @@ export default class TestResults extends React.Component<TestResultsProps, any> 
                     titleKey="rundetail.tests.results.skipped.count"
                     pager={this.skippedPager}
                     extraClasses="skipped-block"
-                    locale={locale} t={translation}
+                    locale={locale}
+                    t={translation}
                     total={run.testSummary.skipped}
                     testService={this.props.testService}
                 />
-                 <TestSection
+                <TestSection
                     titleKey="rundetail.tests.results.passed.count"
                     pager={this.passedPager}
                     extraClasses=""
-                    locale={locale} t={translation}
+                    locale={locale}
+                    t={translation}
                     total={run.testSummary.passed}
                     testService={this.props.testService}
                 />

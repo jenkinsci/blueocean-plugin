@@ -1,4 +1,3 @@
-
 /**
  * Created by cmeyers on 8/18/16.
  */
@@ -54,10 +53,7 @@ export {
     supportedInputTypesMapping,
     ParametersRender,
 } from './parameter';
-export {
-    BlueLogo,
-    BlueOceanIcon,
-} from './components/BlueLogo';
+export { BlueLogo, BlueOceanIcon } from './components/BlueLogo';
 export { ContentPageHeader, SiteHeader } from './components/ContentPageHeader';
 export { ResultPageHeader } from './components/ResultPageHeader';
 

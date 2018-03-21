@@ -13,15 +13,21 @@ export class Accordion extends React.Component {
         const children = React.Children.toArray(this.props.children);
         let { selected } = this.state;
         if (!selected) selected = children && children[0].key;
-        return (<div className="Accordion">
-             {children.map(child => [
-                <h4 className={`Label ${selected === child.key && 'active'}`}
-                    onClick={() => { this.setState({ selected: child.key }); }}>
-                    {child.props.title || child.props['data-label']}
-                    <Icon icon="NavigationExpandMore" size={24} />
-                </h4>,
-                <div className="Content">{child}</div>
-            ])}
-        </div>);
+        return (
+            <div className="Accordion">
+                {children.map(child => [
+                    <h4
+                        className={`Label ${selected === child.key && 'active'}`}
+                        onClick={() => {
+                            this.setState({ selected: child.key });
+                        }}
+                    >
+                        {child.props.title || child.props['data-label']}
+                        <Icon icon="NavigationExpandMore" size={24} />
+                    </h4>,
+                    <div className="Content">{child}</div>,
+                ])}
+            </div>
+        );
     }
 }

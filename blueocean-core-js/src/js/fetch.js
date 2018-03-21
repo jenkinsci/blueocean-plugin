@@ -10,7 +10,6 @@ import { prefetchdata } from './scopes';
 import loadingIndicator from './LoadingIndicator';
 import { capabilityAugmenter } from './capability/index';
 
-
 let refreshToken = null;
 
 function isGetRequest(fetchOptions) {
@@ -103,15 +102,18 @@ export const FetchFunctions = {
      * FetchUtils.fetch(..).then(FetchUtils.parseJSON)
      */
     parseJSON(response) {
-        return response.json()
-        // FIXME: workaround for status=200 w/ empty response body that causes error in Chrome
-        // server should probably return HTTP 204 instead
-        .catch((error) => {
-            if (error.message.indexOf('Unexpected end of JSON input') !== -1) {
-                return {};
-            }
-            throw error;
-        });
+        return (
+            response
+                .json()
+                // FIXME: workaround for status=200 w/ empty response body that causes error in Chrome
+                // server should probably return HTTP 204 instead
+                .catch(error => {
+                    if (error.message.indexOf('Unexpected end of JSON input') !== -1) {
+                        return {};
+                    }
+                    throw error;
+                })
+        );
     },
 
     /* eslint-disable no-param-reassign */
@@ -127,11 +129,12 @@ export const FetchFunctions = {
             () => {
                 error.responseBody = null;
                 throw error;
-            });
+            }
+        );
     },
     /* eslint-enable no-param-reassign */
 
-     /**
+    /**
      * Error function helper to log errors to console.
      *
      * Usage;
@@ -159,7 +162,7 @@ export const FetchFunctions = {
         };
     },
 
-     /**
+    /**
      * Raw fetch that returns the json body.
      *
      * This method is semi-private, under normal conditions it should not be
@@ -189,11 +192,13 @@ export const FetchFunctions = {
                     future = future.then(FetchFunctions.checkRefreshHeader);
                 }
 
-                future = future.then(FetchFunctions.checkStatus)
-                    .then(FetchFunctions.parseJSON, FetchFunctions.parseErrorJson);
+                future = future.then(FetchFunctions.checkStatus).then(FetchFunctions.parseJSON, FetchFunctions.parseErrorJson);
 
                 if (!disableLoadingIndicator) {
-                    future = future.then(FetchFunctions.stopLoadingIndicator, err => { FetchFunctions.stopLoadingIndicator(); throw err; });
+                    future = future.then(FetchFunctions.stopLoadingIndicator, err => {
+                        FetchFunctions.stopLoadingIndicator();
+                        throw err;
+                    });
                 }
             } else if (!disableLoadingIndicator) {
                 loadingIndicator.hide();
@@ -242,7 +247,10 @@ export const FetchFunctions = {
                 future = future.then(FetchFunctions.checkStatus);
 
                 if (!disableLoadingIndicator) {
-                    future = future.then(FetchFunctions.stopLoadingIndicator, err => { FetchFunctions.stopLoadingIndicator(); throw err; });
+                    future = future.then(FetchFunctions.stopLoadingIndicator, err => {
+                        FetchFunctions.stopLoadingIndicator();
+                        throw err;
+                    });
                 }
             }
             if (onSuccess) {
@@ -278,12 +286,13 @@ export const Fetch = {
         if (!config.isJWTEnabled()) {
             future = FetchFunctions.rawFetchJSON(fixedUrl, { onSuccess, onError, fetchOptions, disableLoadingIndicator, ignoreRefreshHeader });
         } else {
-            future = jwt.getToken()
-                .then(token => FetchFunctions.rawFetchJSON(fixedUrl, {
+            future = jwt.getToken().then(token =>
+                FetchFunctions.rawFetchJSON(fixedUrl, {
                     onSuccess,
                     onError,
                     fetchOptions: FetchFunctions.jwtFetchOption(token, fetchOptions),
-                }));
+                })
+            );
         }
 
         if (!disableCapabilites) {
@@ -312,12 +321,13 @@ export const Fetch = {
             return FetchFunctions.rawFetch(fixedUrl, { onSuccess, onError, fetchOptions, disableLoadingIndicator, ignoreRefreshHeader });
         }
 
-        return jwt.getToken()
-            .then(token => FetchFunctions.rawFetch(fixedUrl, {
+        return jwt.getToken().then(token =>
+            FetchFunctions.rawFetch(fixedUrl, {
                 onSuccess,
                 onError,
                 fetchOptions: FetchFunctions.jwtFetchOption(token, fetchOptions),
-            }));
+            })
+        );
     },
 };
 

@@ -5,9 +5,8 @@ import { DragSource } from 'react-dnd';
 import { Icon } from '@jenkins-cd/design-language';
 
 import { getArg } from '../../services/PipelineMetadataService';
-import { EditorStepListDropZone } from "./EditorStepListDropZone";
+import { EditorStepListDropZone } from './EditorStepListDropZone';
 import { DragPosition } from './DragPosition';
-
 
 const ItemType = 'EditorStepItem';
 
@@ -22,7 +21,7 @@ function dragSourceCollector(connect, monitor) {
 
 const dragSource = {
     beginDrag(props) {
-        const id = props.step && props.step.id || -1;
+        const id = (props.step && props.step.id) || -1;
         const dragSource = {
             id,
             sourceId: id,
@@ -38,13 +37,11 @@ const dragSource = {
     },
     endDrag(props) {
         props.onDragStepEnd();
-    }
+    },
 };
-
 
 @DragSource(ItemType, dragSource, dragSourceCollector)
 class EditorStepItem extends React.Component {
-
     static propTypes = {
         stage: PropTypes.object,
         step: PropTypes.object,
@@ -68,15 +65,12 @@ class EditorStepItem extends React.Component {
         onDragStepDrop: () => {},
     };
 
-    onDragHandleClick = (event) => {
+    onDragHandleClick = event => {
         event.stopPropagation();
     };
 
     render() {
-        const {
-            stage, step, parameters, errors, isHovering, isDragging, isDroppable,
-            connectDragSource, connectDragPreview,
-        } = this.props;
+        const { stage, step, parameters, errors, isHovering, isDragging, isDroppable, connectDragSource, connectDragPreview } = this.props;
 
         let dragClass = '';
 
@@ -91,24 +85,16 @@ class EditorStepItem extends React.Component {
         const topDragPosition = DragPosition.BEFORE_ITEM;
         const botDragPosition = step.isContainer ? DragPosition.FIRST_CHILD : DragPosition.AFTER_ITEM;
 
-        return (connectDragPreview(
+        return connectDragPreview(
             <div className={`editor-step-content ${dragClass}`}>
                 <div className="editor-step-title">
                     <span className="editor-step-label">{step.label}</span>
-                    {!errors &&
+                    {!errors && (
                         <span className="editor-step-summary">
-                        {parameters && parameters.filter(p => p.isRequired).map(p =>
-                            <span>{getArg(step, p.name).value} </span>
-                        )}
+                            {parameters && parameters.filter(p => p.isRequired).map(p => <span>{getArg(step, p.name).value} </span>)}
                         </span>
-                    }
-                    {errors &&
-                        <span className="editor-step-errors">
-                        {errors.map(err =>
-                            <div>{err.error ? err.error : err}</div>
-                        )}
-                        </span>
-                    }
+                    )}
+                    {errors && <span className="editor-step-errors">{errors.map(err => <div>{err.error ? err.error : err}</div>)}</span>}
                 </div>
                 <EditorStepListDropZone
                     stage={stage}
@@ -130,7 +116,7 @@ class EditorStepItem extends React.Component {
                     </div>
                 )}
             </div>
-        ));
+        );
     }
 }
 

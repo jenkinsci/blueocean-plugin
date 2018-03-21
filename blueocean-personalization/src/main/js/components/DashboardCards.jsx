@@ -18,10 +18,7 @@ function CardStack(props) {
     return (
         <div className="favorites-card-stack">
             <div className="favorites-card-stack-heading"> {message}</div>
-            <TransitionGroup transitionName="vertical-expand-collapse"
-                             transitionEnterTimeout={300}
-                             transitionLeaveTimeout={300}
-            >
+            <TransitionGroup transitionName="vertical-expand-collapse" transitionEnterTimeout={300} transitionLeaveTimeout={300}>
                 {children}
             </TransitionGroup>
         </div>
@@ -31,7 +28,6 @@ CardStack.propTypes = {
     children: PropTypes.array,
     message: PropTypes.string,
 };
-
 
 /**
  * Renders a stack of "favorites cards" including current most recent status.
@@ -61,12 +57,12 @@ export class DashboardCards extends Component {
             const responseElement = (
                 <div key={favorite._links.self.href}>
                     <PipelineCard
-                      router={this.props.router}
-                      runnable={pipeline}
-                      t={t}
-                      locale={locale}
-                      favorite
-                      onFavoriteToggle={() => this._onFavoriteToggle(pipeline)}
+                        router={this.props.router}
+                        runnable={pipeline}
+                        t={t}
+                        locale={locale}
+                        favorite
+                        onFavoriteToggle={() => this._onFavoriteToggle(pipeline)}
                     />
                 </div>
             );
@@ -75,24 +71,18 @@ export class DashboardCards extends Component {
                 pausedCards.push(responseElement);
                 return null;
             }
-            return (responseElement);
+            return responseElement;
         });
 
         // Only show paused pipelines when we really have some
         // do we have any paused pipelines?
-        const pausedCardsStack = pausedCards.length > 0 ? (
-            <CardStack message={t('dashboardCard.input.required')}>
-                {pausedCards}
-            </CardStack>) : null;
-        const favoriteCardsStack = favoriteCards.length > 0 ? (
-            <CardStack message={t('dashboardCard.input.favorite')}>
-                {favoriteCards}
-            </CardStack>) : null;
+        const pausedCardsStack = pausedCards.length > 0 ? <CardStack message={t('dashboardCard.input.required')}>{pausedCards}</CardStack> : null;
+        const favoriteCardsStack = favoriteCards.length > 0 ? <CardStack message={t('dashboardCard.input.favorite')}>{favoriteCards}</CardStack> : null;
 
         return (
             <div>
-                { pausedCardsStack }
-                { favoriteCardsStack }
+                {pausedCardsStack}
+                {favoriteCardsStack}
             </div>
         );
     }

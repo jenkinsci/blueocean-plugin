@@ -1,6 +1,7 @@
 package io.blueocean.ath.offline.personalization;
 
 import com.google.common.collect.ImmutableList;
+import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.factory.ActivityPageFactory;
 import io.blueocean.ath.model.ClassicPipeline;
 import io.blueocean.ath.model.Folder;
@@ -8,7 +9,14 @@ import io.blueocean.ath.model.FreestyleJob;
 import io.blueocean.ath.model.MultiBranchPipeline;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
+import org.junit.Assert;
 import org.junit.Test;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
+import org.openqa.selenium.support.ui.ExpectedCondition;
 
 import javax.inject.Inject;
 import java.io.IOException;
@@ -31,6 +39,12 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
 
     @Inject
     ActivityPageFactory activityPageFactory;
+
+    @Inject
+    WebDriver driver;
+
+    @Inject
+    WaitUtil wait;
 
     @Test
     public void testFreestyle() throws IOException {
@@ -69,8 +83,23 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
         dashboardPage.checkIsPipelineListItemFavorited(jobName, false);
     }
 
+    public ExpectedCondition<Boolean> hoverBackgroundColor () {
+        return (driver) -> {
+            JavascriptExecutor js = (JavascriptExecutor) driver;
+            Object backgroundColor = js.executeScript(
+                "return getComputedStyle(document.querySelectorAll('.actions-container')[0], ':after').getPropertyValue('background-color')"
+            );
+
+            if (backgroundColor.toString().equals("rgba(0, 0, 0, 0)")) {
+                return true;
+            } else {
+                return false;
+            }
+        };
+    }
+
     @Test
-    public void testMultibranch() throws IOException, GitAPIException {
+    public void testMultibranch() throws IOException, GitAPIException, InterruptedException {
         String branchOther = "feature/1";
 
         git.writeJenkinsFile(resources.loadJenkinsFile());
@@ -99,6 +128,24 @@ public class FavoritesCardsTest extends AbstractFavoritesTest {
 
         dashboardPage.checkFavoriteCardStatus(fullNameMaster, SUCCESS);
         dashboardPage.checkFavoriteCardStatus(fullNameOther, SUCCESS);
+
+        //Check that favorite actions are hidden until pointer is hovering the row
+        JavascriptExecutor js = (JavascriptExecutor) driver;
+        Object backgroundColor = js.executeScript(
+            "return getComputedStyle(document.querySelectorAll('.actions-container')[0], ':after').getPropertyValue('background-color')"
+        );
+
+        //check that background color of overlay is  NOT transparent when pointer is NOT hovering the favorite row
+        Assert.assertNotEquals(backgroundColor, "rgba(0, 0, 0, 0)");
+
+        logger.info("move pointer over favorite card actions");
+
+        Actions action = new Actions(driver);
+        WebElement we = wait.until(By.xpath("//*[@class=\"pipeline-card success-bg-lite\"]"));
+        action.moveToElement(we).perform();
+
+        //check that background color of overlay is transparent when pointer is hovering the favorite row
+        wait.until(hoverBackgroundColor());
 
         for (String fullName : cardFullnames) {
             logger.info(String.format("running tests against favorited branch: %s", fullName));

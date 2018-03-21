@@ -1,11 +1,9 @@
 import { Fetch, UrlConfig, Utils, AppConfig } from '@jenkins-cd/blueocean-core-js';
 
-
 /**
  * Handles lookup and creation of Github servers.
  */
 class GHEServerApi {
-
     constructor() {
         this._fetch = Fetch.fetchJSON;
         this.organization = AppConfig.getOrganizationName();
@@ -38,7 +36,6 @@ class GHEServerApi {
 
         return this._fetch(createUrl, { fetchOptions });
     }
-
 }
 
 export default GHEServerApi;

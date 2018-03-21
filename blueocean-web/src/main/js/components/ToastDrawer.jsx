@@ -13,7 +13,6 @@ import { ToastService as toastService } from '@jenkins-cd/blueocean-core-js';
  */
 @observer
 export class ToastDrawer extends Component {
-
     _removeToast(toast) {
         toastService.removeToast(toast);
     }
@@ -25,8 +24,8 @@ export class ToastDrawer extends Component {
         return (
             <Toaster
                 toasts={toastService.toasts}
-                onActionClick={(toast1) => this._removeToast(toast1)}
-                onDismiss={(toast2) => this._removeToast(toast2)}
+                onActionClick={toast1 => this._removeToast(toast1)}
+                onDismiss={toast2 => this._removeToast(toast2)}
                 dismissDelay={5000}
             />
         );

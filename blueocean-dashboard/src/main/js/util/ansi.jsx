@@ -26,14 +26,13 @@ export function parseEscapeCode(escapeCode) {
     const graphicsPattern = /^\u001b\[([;0-9]*)m$/; // We only care about SGR codes
 
     const result = {
-        isSelectGraphicRendition: false,  // True when is a color / font command
+        isSelectGraphicRendition: false, // True when is a color / font command
         escapeCode,
     };
 
     const match = graphicsPattern.exec(escapeCode);
 
     if (match) {
-
         result.isSelectGraphicRendition = true;
         result.setFG = false;
         result.setBG = false;
@@ -45,25 +44,17 @@ export function parseEscapeCode(escapeCode) {
 
         // Now go through the ints, decode them into bg/fg info
         for (const num of params) {
-
             if (num >= 30 && num <= 37) {
-
                 result.setFG = num - 30; // Normal FG set
-
             } else if (num >= 40 && num <= 47) {
-
                 result.setBG = num - 40; // Normal BG set
-
             } else {
-
                 if (num === 38 || num === 0) {
-
                     result.resetFG = true;
                     result.setFG = false;
                 }
 
                 if (num === 48 || num === 0) {
-
                     result.resetBG = true;
                     result.setBG = false;
                 }
@@ -78,7 +69,6 @@ export function parseEscapeCode(escapeCode) {
  * Break up a string into an array of plain strings and escape codes. Returns [input] if no codes present.
  */
 export function tokenizeANSIString(input) {
-
     if (typeof input !== 'string') {
         return [];
     }
@@ -89,11 +79,11 @@ export function tokenizeANSIString(input) {
         return [];
     }
 
-    let i1 = 0, i2 = 0;
+    let i1 = 0,
+        i2 = 0;
     const result = [];
 
     while (i1 < len) {
-
         //--------------------------------------------------------------------------
         //  Find next escape code
 
@@ -168,9 +158,7 @@ export function makeReactChildren(tokenizedInput) {
                     classNames.push(`ansi-bg-${currentState.setBG}`);
                 }
 
-                result.push(
-                    <span className={classNames.join(' ')}>{codeOrString}</span>,
-                );
+                result.push(<span className={classNames.join(' ')}>{codeOrString}</span>);
             }
         } else if (codeOrString.isSelectGraphicRendition) {
             // Update the current FG / BG colors for the next text span

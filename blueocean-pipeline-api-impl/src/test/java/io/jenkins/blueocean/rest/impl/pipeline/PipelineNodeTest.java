@@ -2271,6 +2271,37 @@ public class PipelineNodeTest extends PipelineBaseTest {
     }
 
     @Test
+    @Issue("JENKINS-49297")
+    public void submitInputPostBlock() throws Exception {
+        WorkflowJob job = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
+        URL resource = Resources.getResource(getClass(), "stepsFromPost.jenkinsfile");
+        String jenkinsFile = Resources.toString(resource, Charsets.UTF_8);
+        job.setDefinition(new CpsFlowDefinition(jenkinsFile, true));
+        QueueTaskFuture<WorkflowRun> buildTask = job.scheduleBuild2(0);
+        WorkflowRun run = buildTask.getStartCondition().get();
+        CpsFlowExecution e = (CpsFlowExecution) run.getExecutionPromise().get();
+
+        while (run.getAction(InputAction.class) == null) {
+            e.waitForSuspension();
+        }
+
+        List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+
+        assertEquals(1, nodes.size());
+
+        List<Map> steps = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/"+nodes.get(0).get("id")+"/steps/", List.class);
+
+        assertEquals(3, steps.size());
+
+        assertEquals("7", steps.get(0).get("id"));
+        assertEquals("Hello World", steps.get(0).get("displayDescription"));
+        assertEquals("12", steps.get(1).get("id"));
+        assertEquals("Hello World from post", steps.get(1).get("displayDescription"));
+        assertEquals("13", steps.get(2).get("id"));
+        assertEquals("Wait for interactive input", steps.get(2).get("displayName"));
+    }
+
+    @Test
     public void pipelineLogError() throws Exception {
         String script = "def foo = null\n" +
                 "\n" +

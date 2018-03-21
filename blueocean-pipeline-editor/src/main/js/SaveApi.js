@@ -1,9 +1,8 @@
 import { sseService, loadingIndicator, RunApi } from '@jenkins-cd/blueocean-core-js';
 
-const TIMEOUT = 60*1000;
+const TIMEOUT = 60 * 1000;
 
 export class SaveApi {
-
     /**
      * Indexes Multibranch pipeline
      * @param href URL of MBP pipeline
@@ -16,8 +15,7 @@ export class SaveApi {
             this._cleanup(timeoutId, onComplete, onError);
         }, TIMEOUT);
         this._registerSse(timeoutId, onComplete, onError);
-        RunApi.startRun({ _links: { self: { href: href + '/' }}})
-            .catch(err => onError);
+        RunApi.startRun({ _links: { self: { href: href + '/' } } }).catch(err => onError);
     }
 
     _cleanup(sseId, timeoutId, onComplete, onError, err) {

@@ -47,8 +47,8 @@
     "reactify": "1.1.1"
   },
   "dependencies": {
-    "@jenkins-cd/blueocean-core-js": "0.0.170",
-    "@jenkins-cd/design-language": "0.0.158",
+    "@jenkins-cd/blueocean-core-js": "0.0.171",
+    "@jenkins-cd/design-language": "0.0.161",
     "@jenkins-cd/js-extensions": "0.0.42",
     "@jenkins-cd/js-modules": "0.0.10",
     "mobx": "2.6.0",

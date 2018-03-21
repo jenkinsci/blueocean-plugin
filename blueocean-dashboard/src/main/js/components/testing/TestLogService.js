@@ -9,16 +9,18 @@ class Item {
 }
 
 export default class TestLogService extends BunkerService {
-
     loadStdOut(test) {
         if (this.hasItem(test)) return;
         Fetch.fetch(test._links.stdout.href)
-            .then(res => res.text(), (e) => {
-                if (e.response.status === 404) {
-                    this.setItem(new Item(test, null, true));
+            .then(
+                res => res.text(),
+                e => {
+                    if (e.response.status === 404) {
+                        this.setItem(new Item(test, null, true));
+                    }
                 }
-            })
-            .then((data) => {
+            )
+            .then(data => {
                 this.setItem(new Item(test, data, true));
             });
     }
@@ -26,12 +28,15 @@ export default class TestLogService extends BunkerService {
     loadStdErr(test) {
         if (this.hasItem(test)) return;
         Fetch.fetch(test._links.stderr.href)
-            .then(res => res.text(), (e) => {
-                if (e.response.status === 404) {
-                    this.setItem(new Item(test, null, false));
+            .then(
+                res => res.text(),
+                e => {
+                    if (e.response.status === 404) {
+                        this.setItem(new Item(test, null, false));
+                    }
                 }
-            })
-            .then((data) => {
+            )
+            .then(data => {
                 this.setItem(new Item(test, data, false));
             });
     }

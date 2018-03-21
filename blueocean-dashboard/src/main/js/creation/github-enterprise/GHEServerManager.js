@@ -2,19 +2,15 @@ import { action, observable } from 'mobx';
 
 import CreateServerError from './api/CreateServerError';
 
-
 class GHEServerManager {
-
-    @observable
-    servers = [];
+    @observable servers = [];
 
     constructor(serverApi) {
         this.serverApi = serverApi;
     }
 
     listServers() {
-        return this.serverApi.listServers()
-            .then(servers => this._onListServersSuccess(servers));
+        return this.serverApi.listServers().then(servers => this._onListServersSuccess(servers));
     }
 
     @action
@@ -24,11 +20,7 @@ class GHEServerManager {
     }
 
     createServer(name, url) {
-        return this.serverApi.createServer(name, url)
-            .then(
-                server => this._onCreateServerSuccess(server),
-                error => this._onCreateServerFailure(error),
-            );
+        return this.serverApi.createServer(name, url).then(server => this._onCreateServerSuccess(server), error => this._onCreateServerFailure(error));
     }
 
     @action

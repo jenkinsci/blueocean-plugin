@@ -7,7 +7,6 @@ import BbDefaultOption from '../BbDefaultOption';
 import BbCloudFlowManager from './BbCloudFlowManager';
 
 export default class BbCloudScmProvider extends ScmProvider {
-
     manager = null;
 
     getDefaultOption() {

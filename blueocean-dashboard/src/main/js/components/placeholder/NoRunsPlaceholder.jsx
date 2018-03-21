@@ -6,7 +6,6 @@ import { PlaceholderContent } from './PlaceholderContent';
 import { PlaceholderDialog } from './PlaceholderDialog';
 import Icon from './Icon';
 
-
 const columns = [
     { width: 40, head: { text: 40 }, cell: { icon: 20 } },
     { width: 50, head: { text: 40 }, cell: { text: 30 } },
@@ -17,7 +16,6 @@ const columns = [
     { width: 100, head: { text: 60 }, cell: { text: 60 } },
     { width: 20, head: {}, cell: { icon: 20 } },
 ];
-
 
 export function NoRunsMultibranchPlaceholder(props) {
     const { branchesUrl, t } = props;
@@ -48,7 +46,6 @@ NoRunsMultibranchPlaceholder.propTypes = {
     branchesUrl: PropTypes.string,
 };
 
-
 export function NoRunsDefaultPlaceholder(props) {
     const { t, runButton } = props;
 
@@ -60,7 +57,7 @@ export function NoRunsDefaultPlaceholder(props) {
 
     return (
         <PlaceholderContent className="NoRuns u-fill u-fade-bottom" style={{ top: 72 }}>
-            { runButton }
+            {runButton}
             <PlaceholderTable columns={columns} rowCount={20} />
             <PlaceholderDialog width={375} content={content} />
         </PlaceholderContent>
@@ -71,7 +68,6 @@ NoRunsDefaultPlaceholder.propTypes = {
     t: PropTypes.func,
     runButton: PropTypes.element,
 };
-
 
 export function NoRunsForBranchPlaceholder(props) {
     const { branchName, t } = props;

@@ -2,7 +2,6 @@ import { capabilityAugmenter, Fetch, UrlConfig, Utils, AppConfig } from '@jenkin
 
 import { Enum } from '../flow2/Enum';
 
-
 const CODE_VALIDATION_FAILED = 400;
 
 const ERROR_FIELD_CODE_CONFLICT = 'ALREADY_EXISTS';
@@ -18,25 +17,18 @@ export const CreatePipelineOutcome = new Enum({
     ERROR: 'error',
 });
 
-
 function hasErrorFieldCode(errors, code) {
-    return errors
-            .filter(err => err.code === code)
-            .length > 0;
+    return errors.filter(err => err.code === code).length > 0;
 }
 
 function hasErrorFieldName(errors, fieldName) {
-    return errors
-            .filter(err => err.field === fieldName)
-            .length > 0;
+    return errors.filter(err => err.field === fieldName).length > 0;
 }
-
 
 /**
  * Proxy to the backend REST API.
  */
 export default class GitCreationApi {
-
     constructor(fetch) {
         this._fetch = fetch || Fetch.fetchJSON;
         this.organization = AppConfig.getOrganizationName();
@@ -65,10 +57,7 @@ export default class GitCreationApi {
 
         return this._fetch(createUrl, { fetchOptions })
             .then(data => capabilityAugmenter.augmentCapabilities(data))
-            .then(
-                pipeline => this._createPipelineSuccess(pipeline),
-                error => this._createPipelineFailure(error),
-            );
+            .then(pipeline => this._createPipelineSuccess(pipeline), error => this._createPipelineFailure(error));
     }
 
     _createPipelineSuccess(pipeline) {
@@ -116,8 +105,6 @@ export default class GitCreationApi {
             },
         };
 
-        return this._fetch(checkUrl, { fetchOptions })
-            .then(() => false, () => true);
+        return this._fetch(checkUrl, { fetchOptions }).then(() => false, () => true);
     }
-
 }

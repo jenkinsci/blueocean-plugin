@@ -6,9 +6,9 @@ export default function focusOnElement(selector: string) {
     const focusFirstField = () => {
         try {
             document.querySelector(selector).focus();
-        } catch(e) {
+        } catch (e) {
             tries++;
-            if(tries < 5) {
+            if (tries < 5) {
                 setTimeout(focusFirstField, 500);
             }
         }
