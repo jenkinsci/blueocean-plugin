@@ -5,7 +5,7 @@ import TestSection from './TestSection';
 
 /* eslint-disable max-len */
 
-interface TestResultsProps {
+interface Props {
     pipeline: any,
     run: any,
     t: (key: string) => string,
@@ -14,7 +14,7 @@ interface TestResultsProps {
 }
 
 @observer
-export default class TestResults extends React.Component<TestResultsProps, any> {
+export default class TestResults extends React.Component<Props> {
     private regressionsPager: any;
     private existingFailedPager: any;
     private skippedPager: any;
@@ -25,11 +25,11 @@ export default class TestResults extends React.Component<TestResultsProps, any> 
         this._initPagers(this.props);
     }
 
-    componentWillReceiveProps(nextProps: TestResultsProps) {
+    componentWillReceiveProps(nextProps: Props) {
         this._initPagers(nextProps);
     }
 
-    _initPagers(props: TestResultsProps) {
+    _initPagers(props: Props) {
         const pipeline = props.pipeline;
         const run = props.run;
         this.regressionsPager = this.props.testService.newRegressionsPager(pipeline, run);

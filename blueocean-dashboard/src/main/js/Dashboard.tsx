@@ -2,7 +2,7 @@ import * as React from 'react';
 import { pipelineService, activityService } from '@jenkins-cd/blueocean-core-js';
 import navState from './DashboardNavState';
 
-interface DashboardProps {
+interface Props {
     params: object,
     chilren: React.ReactNode,
     location: object
@@ -14,7 +14,7 @@ interface DashBoardContext {
     params?: object,
     location?: object
 }
-class Dashboard extends React.Component<DashboardProps, any> {
+class Dashboard extends React.Component<Props> {
     static childContextTypes = {
         params: React.PropTypes.object, // From react-router
         location: React.PropTypes.object, // From react-router
