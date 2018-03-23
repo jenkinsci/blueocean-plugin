@@ -5,7 +5,7 @@ module.exports = {
      * we need to calculate the path, prefix every folder with ```/job/```
      * @param launchUrl - this is normally equal to this.api.launchUrl
      * @param jobName {String} name of the job to configure
-     * @returns url {String} calculate the url of a mutlibranch
+     * @returns url {String} calculate the url of a multibranch
      */
     getJobUrl: function (launchUrl, jobName) {
         const nameArray = jobName.split('/');

@@ -84,7 +84,7 @@ public class ClassicJobApi {
         jenkins.createJob(folder, jobName, Resources.toString(url, Charsets.UTF_8).replace("{{script}}", script));
         logger.info("Created pipeline job "+ jobName);
     }
-    public void createMultlBranchPipeline(FolderJob folder, String pipelineName, String repositoryPath) throws IOException {
+    public void createMultiBranchPipeline(FolderJob folder, String pipelineName, String repositoryPath) throws IOException {
         deletePipeline(folder, pipelineName);
         URL url = Resources.getResource(this.getClass(), "multibranch.xml");
         jenkins.createJob(folder, pipelineName, Resources.toString(url, Charsets.UTF_8).replace("{{repo}}", repositoryPath));
@@ -131,8 +131,8 @@ public class ClassicJobApi {
         return ret;
     }
 
-    public void createMultlBranchPipeline(FolderJob folder, String pipelineName, GitRepositoryRule repository) throws IOException {
-        createMultlBranchPipeline(folder, pipelineName, repository.gitDirectory.getAbsolutePath());
+    public void createMultiBranchPipeline(FolderJob folder, String pipelineName, GitRepositoryRule repository) throws IOException {
+        createMultiBranchPipeline(folder, pipelineName, repository.gitDirectory.getAbsolutePath());
     }
 
     public void createFolders(Folder folder, boolean deleteRoot) throws IOException {

@@ -26,7 +26,7 @@ module.exports = {
         multibranchCreate.createBranch(jobName, pathToRepo);
     },
 
-    'Open acitivty page wait for first run to finish': (browser) => {
+    'Open activity page wait for first run to finish': (browser) => {
 
         const blueActivityPage = browser.page.bluePipelineActivity().forJob(jobName);
         blueActivityPage.waitForElementVisible(".branches");        

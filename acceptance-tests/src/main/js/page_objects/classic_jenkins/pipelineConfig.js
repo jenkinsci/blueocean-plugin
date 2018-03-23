@@ -28,7 +28,7 @@ exports.commands = [
         },
         /**
          * Set the pipeline script to the correct input field and then saves the form
-         * @param script {String} the name of the script that shoould be used to be injected. Has to
+         * @param script {String} the name of the script that should be used to be injected. Has to
          * be present in ROOT/src/test/resources/test_scripts
          * @returns {Object} self - nightwatch page object
          */

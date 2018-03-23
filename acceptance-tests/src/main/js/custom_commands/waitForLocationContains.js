@@ -28,8 +28,8 @@ const waitForLocationContains = function (urlFragment) {
             currentUrl = response.value;
 
             if (currentUrl.indexOf(urlFragment) >= 0) {
-                var ellapsed = new Date().getTime() - startTime;
-                console.log('url matched fragment ' + urlFragment + ' after ' + ellapsed + ' ms; full url=' + currentUrl);
+                var elapsed = new Date().getTime() - startTime;
+                console.log('url matched fragment ' + urlFragment + ' after ' + elapsed + ' ms; full url=' + currentUrl);
                 cleanUp();
                 self.emit('complete');
             }

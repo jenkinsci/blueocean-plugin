@@ -11,7 +11,7 @@ const pageHelper = require('../../util/pageHelper');
 const sanityCheck = pageHelper.sanityCheck;
 
 function activityRowSelector(pipeline, runId) {
-    // Fixme: Can we parameterise the "elements" below?
+    // Fixme: Can we parameterize the "elements" below?
     return `.activity-table .JTable-row[data-pipeline='${pipeline}'][data-runid='${runId}']`;
 }
 

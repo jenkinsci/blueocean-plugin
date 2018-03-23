@@ -1,7 +1,7 @@
 const path = require("path");
 const jobName = 'runDetailsBackwardNavigation';
 const pathToRepo = path.resolve('./target/' + jobName);
-const soureRep = './src/test/resources/multibranch_2';
+const sourceRep = './src/test/resources/multibranch_2';
 const git = require("../../../main/js/api/git");
 
 var activity, branches, runDetails;
@@ -21,7 +21,7 @@ var activity, branches, runDetails;
 module.exports = {
     before: function(browser, done) {
         // we creating a git repo in target based on the src repo (see above)
-        git.createRepo(soureRep, pathToRepo)
+        git.createRepo(sourceRep, pathToRepo)
             .then(function () {
                 git.createBranch('feature/1', pathToRepo)
                     .then(done);

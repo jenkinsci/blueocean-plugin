@@ -66,17 +66,17 @@ module.exports = {
         // So, make sure the sleeps in no-stages.groovy are long enough to cover this. Remember
         // that the CI servers run a bit slower, so time needs to be given for that.
         //
-        browser.elements('css selector', 'div.result-item', function (resutlItems) {
-                var results = resutlItems.value.length;
+        browser.elements('css selector', 'div.result-item', function (resultItems) {
+                var results = resultItems.value.length;
                 // to validate that we left follow, give it some time and then count the elements again
                 this.pause(3000)
                     .elements('css selector', 'pre', function (codeCollection) {
                         // JENKINS-36700 there can only be one code view open in follow stopped
                         this.assert.equal(codeCollection.value.length, 1);
                     })
-                    .elements('css selector', 'div.result-item', function (resutlItemsCompare) {
+                    .elements('css selector', 'div.result-item', function (resultItemsCompare) {
                         // there should not be more items then we had before
-                        this.assert.equal( resutlItemsCompare.value.length, results);
+                        this.assert.equal( resultItemsCompare.value.length, results);
                     })
                 });
         blueRunDetailPage.assertBasicLayoutOkay();
@@ -145,8 +145,8 @@ module.exports = {
     'Step 09': function (browser) {
         const blueRunDetailPage = browser.page.bluePipelineRunDetail().forRun(jobName, 'jenkins', 1);
         blueRunDetailPage.clickTab('artifacts');
-        browser.elements('css selector', '.TableCell--actions', function (resutlItems) {
-            this.assert.equal(resutlItems.value.length, 1);
+        browser.elements('css selector', '.TableCell--actions', function (resultItems) {
+            this.assert.equal(resultItems.value.length, 1);
         });
     }
 };

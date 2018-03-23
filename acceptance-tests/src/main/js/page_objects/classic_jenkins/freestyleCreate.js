@@ -20,7 +20,7 @@ module.exports.commands = [{
     /**
      * Returns the create freestyle page for a certain job and creates the freestyle job
      * @param jobName {String} name of the job to configure
-     * @param script{String} the name of the script that shoould be used to be injected. Has to
+     * @param script{String} the name of the script that should be used to be injected. Has to
      * be present in ROOT/src/test/resources/test_scripts
      * @param {Function} [oncreated] - callback to be invoke when finished, will expect a traditional node callback function
      */

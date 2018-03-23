@@ -79,7 +79,7 @@ public class ActivityPage {
         return this;
     }
 
-    public void checkForCommitMesssage(String message) {
+    public void checkForCommitMessage(String message) {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//*[text()=\"" + message + "\"]")));
         logger.info("Found commit message '" + message + "'");
     }

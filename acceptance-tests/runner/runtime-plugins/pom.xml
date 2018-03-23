@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>io.jenkins.blueocean</groupId>
-  <artifactId>blueocean-acceptance-tests-parrent</artifactId>
+  <artifactId>blueocean-acceptance-tests-parent</artifactId>
   <version>2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
   <name>Blue Ocean Parent</name>
 
   <modules>
-    <module>fake-securitly-realm-plugin</module>
+    <module>fake-security-realm-plugin</module>
     <module>runtime-deps</module>
   </modules>
 </project>

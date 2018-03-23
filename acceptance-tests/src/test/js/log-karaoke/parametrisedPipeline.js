@@ -1,4 +1,4 @@
-/** @module parametrisedPipeline
+/** @module parameterizedPipeline
  * @memberof log-karaoke
  * @description
  *
@@ -12,7 +12,7 @@ const jobName = 'parameter';
 const jobName2 = jobName + '1';
 // git repo details
 const pathToRepo = path.resolve('./target/test-project-parameter');
-const soureRep = './src/test/resources/parametrised';
+const sourceRep = './src/test/resources/parameterized';
 
 module.exports = {
   /**
@@ -20,7 +20,7 @@ module.exports = {
    */
   before: function (browser, done) {
       // we creating a git repo in target based on the src repo (see above)
-      git.createRepo(soureRep, pathToRepo)
+      git.createRepo(sourceRep, pathToRepo)
         .then(function () {
           git.createBranch('feature/1', pathToRepo)
             .then(done);
