@@ -56,7 +56,7 @@ public abstract class AbstractScmContentProvider extends ScmContentProvider {
 
         //if no repo param, then see if its there in given Item.
         if(repo == null && scmParamsFromItem.getRepo() == null){
-            throw new ServiceException.BadRequestException("github repo could not be determine from pipeline: "+item.getFullName());
+            throw new ServiceException.BadRequestException("repo could not be determine from pipeline: "+item.getFullName());
         }
 
         // If both, repo param and repo in pipeline scm configuration present, they better match
