@@ -185,16 +185,16 @@ To avoid needing a crumb to POST data, the header `Content-Type: application/jso
 
 # Security
 
-NOTE: JWT is disabled by default for now. to enable JWT authentication use FEATURE_BLUEOCEAN_JWT_AUTHENTICATION=true system property.
+NOTE: JWT is disabled by default for now. to enable JWT authentication use BLUEOCEAN_FEATURE_JWT_AUTHENTICATION=true system property.
 
-    mvn hpi:run -DFEATURE_BLUEOCEAN_JWT_AUTHENTICATION=true
+    mvn hpi:run -DBLUEOCEAN_FEATURE_JWT_AUTHENTICATION=true
 
-With -DFEATURE_BLUEOCEAN_JWT_AUTHENTICATION=false (default)
+With -DBLUEOCEAN_FEATURE_JWT_AUTHENTICATION=false (default)
 
 * No JWT tokens are send from the frontend.
 * Api does not look for a JWT token, and instead uses cookies for authentication.
 
-With -DFEATURE_BLUEOCEAN_JWT_AUTHENTICATION=true
+With -DBLUEOCEAN_FEATURE_JWT_AUTHENTICATION=true
 
 * JWT tokens are fetched and sent with api requests from the frontend.
 * API requires a valid JWT token, and does not use cookies for authentication.
