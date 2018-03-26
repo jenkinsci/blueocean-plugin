@@ -27,7 +27,7 @@ public class RunBundleWatches {
     public final static boolean isEnabled = (new BlueOceanUI().isDevelopmentMode());
     final static List<BundleBuild> builds = new CopyOnWriteArrayList<>();
     final static long DEFAULT_BACK_OFF = 10000;
-    final static Pattern EXTENSIONS_TO_CAUSE_REBUILD = Pattern.compile(".*[.](js|jsx|less|css|json|yaml)");
+    final static Pattern EXTENSIONS_TO_CAUSE_REBUILD = Pattern.compile(".*[.](js|jsx|ts|tsx|less|css|json|yaml)");
 
     static class BundleBuild {
         final List<LogLine> logLines = new CopyOnWriteArrayList<>();

@@ -18,21 +18,27 @@
     "mvntest": "gulp test"
   },
   "devDependencies": {
-    "@jenkins-cd/js-builder": "0.0.62",
+    "@jenkins-cd/js-builder": "0.0.63",
     "babel-eslint": "7.0.0",
     "babel-plugin-transform-decorators-legacy": "1.3.4",
     "babel-polyfill": "6.16.0",
     "babel-preset-es2015": "6.16.0",
     "babel-preset-react": "6.16.0",
     "babel-preset-stage-0": "6.16.0",
+    "bluebird-global": "1.0.1",
     "create-hmac": "1.1.4",
     "eslint": "2.13.1",
     "eslint-plugin-react": "4.3.0",
     "giti": "1.1.3",
     "gulp": "3.9.1",
+    "gulp-typescript": "4.0.1",
+    "jest": "19.0.2",
     "jquery-detached": "2.1.4-v4",
     "ncp": "2.0.0",
     "reactify": "1.1.1",
+    "ts-jest": "19.0.2",
+    "tsify": "3.0.4",
+    "typescript": "2.7.2",
     "zombie": "4.2.1"
   },
   "dependencies": {
@@ -66,6 +72,35 @@
       "react-addons-css-transition-group@any",
       "react-dom@any",
       "react-router@any"
+    ]
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js",
+      "^.+\\.jsx?$": "babel-jest"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  },
+  "browserify": {
+    "extensions": [
+      ".js",
+      ".es6",
+      ".jsx",
+      ".hbs",
+      ".ts",
+      ".tsx"
+    ],
+    "plugin": [
+      [
+        "tsify"
+      ]
     ]
   }
 }

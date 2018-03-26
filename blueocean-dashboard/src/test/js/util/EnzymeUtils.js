@@ -1,6 +1,7 @@
 import { store as ExtensionStore } from '@jenkins-cd/js-extensions';
 const jsdom = require('jsdom').jsdom;
 
+
 /**
  * Prepares Enzyme's "mount" function for use by binding it to JSDOM.
  * Also takes care of a little bootstrapping of @js-extensions/ExtensionStore to avoid errors.

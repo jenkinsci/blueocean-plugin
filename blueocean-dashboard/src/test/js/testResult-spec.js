@@ -3,7 +3,7 @@ import React from 'react';
 import { assert } from 'chai';
 import { mount } from 'enzyme';
 
-import TestResults from '../../main/js/components/testing/TestResults.jsx';
+import TestResults from '../../main/js/components/testing/TestResults';
 
 import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 import { mockExtensionsForI18n } from './mock-extensions-i18n';

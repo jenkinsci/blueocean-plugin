@@ -24,9 +24,11 @@
   "license": "MIT",
   "devDependencies": {
     "@jenkins-cd/eslint-config-jenkins": "0.0.2",
-    "@jenkins-cd/js-builder": "0.0.62",
+    "@jenkins-cd/js-builder": "0.0.63",
     "@jenkins-cd/js-builder-jest": "0.0.4",
     "@kadira/storybook": "2.20.1",
+    "@types/bluebird-global": "3.5.5",
+    "@types/react": "15.6.14",
     "babel": "6.5.2",
     "babel-core": "6.17.0",
     "babel-eslint": "7.0.0",
@@ -42,10 +44,15 @@
     "eslint-to-editorconfig": "1.2.0",
     "gulp": "3.9.1",
     "gulp-mocha": "2.2.0",
+    "gulp-typescript": "4.0.1",
+    "jest": "19.0.2",
     "jsdom": "7.2.2",
     "mocha": "2.4.5",
     "nock": "8.0.0",
-    "react-addons-test-utils": "15.4.2"
+    "react-addons-test-utils": "15.4.2",
+    "ts-jest": "19.0.2",
+    "tsify": "3.0.4",
+    "typescript": "2.7.2"
   },
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": "0.0.171",
@@ -72,6 +79,35 @@
       "react-addons-css-transition-group@any",
       "react-dom@any",
       "react-router@any"
+    ]
+  },
+  "jest": {
+    "transform": {
+      "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js",
+      "^.+\\.jsx?$": "babel-jest"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "tsx",
+      "js",
+      "jsx",
+      "json",
+      "node"
+    ]
+  },
+  "browserify": {
+    "extensions": [
+      ".js",
+      ".es6",
+      ".jsx",
+      ".hbs",
+      ".ts",
+      ".tsx"
+    ],
+    "plugin": [
+      [
+        "tsify", {"allowJs": false, "project": "tsconfig.json"}
+      ]
     ]
   }
 }
