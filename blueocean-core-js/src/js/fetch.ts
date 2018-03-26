@@ -79,7 +79,9 @@ export const FetchFunctions = {
     checkStatus(response: Response): Response {
         if (response.status >= 300 || response.status < 200) {
             const message = `fetch failed: ${response.status} for ${response.url}`;
-            throw {message , response};
+            const error: any = new Error(message); //FIXME
+            error.response = response;
+            throw error;
         }
         return response;
     },

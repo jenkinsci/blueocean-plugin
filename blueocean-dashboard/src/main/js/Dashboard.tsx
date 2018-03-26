@@ -8,7 +8,7 @@ interface Props {
     location: object
 }
 
-interface DashBoardContext {
+interface DashboardContext {
     pipelineService?: object
     activityService?: object
     params?: object
@@ -21,7 +21,7 @@ class Dashboard extends React.Component<Props> {
         pipelineService: React.PropTypes.object,
         activityService: React.PropTypes.object,
     };
-    private _context: DashBoardContext
+    private _context: DashboardContext
 
     constructor(props) {
         super(props);
