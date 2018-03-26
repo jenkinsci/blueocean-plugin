@@ -1,4 +1,5 @@
-import Promise from 'bluebird';
+import * as Promise from 'bluebird';
+
 import 'isomorphic-fetch';
 
 import jwt from './jwt';
@@ -246,8 +247,9 @@ export const FetchFunctions = {
      */
     rawFetch(url, { onSuccess, onError, fetchOptions, disableDedupe, disableLoadingIndicator, ignoreRefreshHeader }: RawFetchOpts = {}) {
         const request = () => {
-            let future = getPrefetchedDataFuture(url); // eslint-disable-line no-use-before-define
-            if (!future) {
+            let future: Promise<Response> | undefined = getPrefetchedDataFuture(url); // eslint-disable-line no-use-before-define
+            if (future) {
+            } else {
                 if (!disableLoadingIndicator) {
                     loadingIndicator.show();
                 }
@@ -267,6 +269,7 @@ export const FetchFunctions = {
                     });
                 }
             }
+
             if (onSuccess) {
                 return future.then(onSuccess).catch(FetchFunctions.onError(onError));
             }
@@ -356,7 +359,7 @@ function trimRestUrl(url) {
     return url;
 }
 
-function getPrefetchedDataFuture(url) {
+function getPrefetchedDataFuture(url): Promise<Response> | undefined {
     const trimmedUrl = trimRestUrl(url);
 
     for (const prop in prefetchdata) {
