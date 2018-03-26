@@ -2114,7 +2114,7 @@ curl -XGET -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenk
 curl -v -u xxx:yyy http://localhost:8080/jenkins/blue/rest/organizations/jenkins/scm/github/organizations/CloudBees-community/repositories/?credentialId=github&pageSize=10&pageNumber=3
 
 {
-  "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubRespositoryContainer",
+  "_class" : "io.jenkins.blueocean.blueocean_github_pipeline.GithubRepositoryContainer",
   "_links" : {
     "self" : {
       "_class" : "io.jenkins.blueocean.rest.hal.Link",

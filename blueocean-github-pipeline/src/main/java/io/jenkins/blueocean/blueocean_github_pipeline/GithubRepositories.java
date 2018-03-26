@@ -32,10 +32,10 @@ public class GithubRepositories extends ScmRepositories {
     private final Integer lastPage;
     private final int pageSize;
     private final StandardUsernamePasswordCredentials credential;
-    private final GithubRespositoryContainer parent;
+    private final GithubRepositoryContainer parent;
 
 
-    public GithubRepositories(StandardUsernamePasswordCredentials credentials, String orgUrl, GithubRespositoryContainer parent) {
+    public GithubRepositories(StandardUsernamePasswordCredentials credentials, String orgUrl, GithubRepositoryContainer parent) {
         this.self = parent.getLink().rel("repositories");
         this.accessToken = credentials.getPassword().getPlainText();
         this.credential = credentials;

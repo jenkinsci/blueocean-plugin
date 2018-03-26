@@ -1,6 +1,6 @@
 /* eslint-disable */
 export default {
-    _class: 'io.jenkins.blueocean.blueocean_github_pipeline.GithubRespositoryContainer',
+    _class: 'io.jenkins.blueocean.blueocean_github_pipeline.GithubRepositoryContainer',
     _links: {
         self: {
             _class: 'io.jenkins.blueocean.rest.hal.Link',
