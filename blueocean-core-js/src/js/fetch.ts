@@ -247,9 +247,8 @@ export const FetchFunctions = {
      */
     rawFetch(url, { onSuccess, onError, fetchOptions, disableDedupe, disableLoadingIndicator, ignoreRefreshHeader }: RawFetchOpts = {}) {
         const request = () => {
-            let future: Promise<Response> | undefined = getPrefetchedDataFuture(url); // eslint-disable-line no-use-before-define
-            if (future) {
-            } else {
+            let future = getPrefetchedDataFuture(url); // eslint-disable-line no-use-before-define
+            if (!future){
                 if (!disableLoadingIndicator) {
                     loadingIndicator.show();
                 }
