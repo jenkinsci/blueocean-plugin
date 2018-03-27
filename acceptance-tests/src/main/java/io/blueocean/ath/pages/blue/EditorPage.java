@@ -49,14 +49,11 @@ public class EditorPage {
         wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"sh\"]"));
         wait.sendKeys(By.cssSelector("textarea.editor-step-detail-script"),"whoami");
         // This selector makes sure we always click on the back arrow in the active sheet.
-        logger.info("Clicking on active sheet div.sheet.active a.back-from-sheet");
         wait.click(By.cssSelector("div.sheet.active a.back-from-sheet"));
         logger.info("Adding an echo step");
         wait.click(By.cssSelector("button.btn-primary.add"));
         wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"echo\"]"));
         wait.sendKeys(By.cssSelector("input.TextInput-control"),"Echo step added by ATH");
-        // Same thing here - we know we'll click on the active sheet now.
-        logger.info("Clicking on active sheet div.sheet.active a.back-from-sheet");
         wait.click(By.cssSelector("div.sheet.active a.back-from-sheet"));
         logger.info("Stages added, about to save");
         wait.click(By.xpath("//*[text()='Save']"));
@@ -103,31 +100,19 @@ public class EditorPage {
      */
     public void simplePipeline(String newBranch) {
         logger.info("Creating and editing simple pipeline");
-        logger.info("Adding a stage by clicking on id pipeline-node-hittarget-2-add");
         wait.click(By.id("pipeline-node-hittarget-2-add"));
-        logger.info("simplePipeline naming the stage");
         wait.sendKeys(By.cssSelector("input.stage-name-edit"),"simplePipeline creating Test stage");
-        logger.info("simplePipeline clicking the Add Step button");
         wait.click(By.cssSelector("button.btn-primary.add"));
-        // Let's change this to a cssSelector:
-        // wait.click(By.xpath("//*[text()='Print Message']"));
-        logger.info("simplePipeline selecting an echo step from the dropdown");
+        logger.info("Adding an echo step");
         wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"echo\"]"));
-        logger.info("simplePipeline entering the echo message");
         wait.sendKeys(By.cssSelector("input.TextInput-control"),"simplePipeline creating echo message");
-        // Newly available cssSelector that targets the back-from-sheet which is on the active sheet.
-        logger.info("simplePipeline committing that change by clicking on active sheet div.sheet.active a.back-from-sheet");
         wait.click(By.cssSelector("div.sheet.active a.back-from-sheet"));
-        logger.info("simplePipeline clicking the Save button");
         wait.click(By.xpath("//*[text()='Save']"));
-        logger.info("simplePipeline providing a commit message");
         wait.sendKeys(By.cssSelector("textarea[placeholder=\"What changed?\"]"),"We changed some things via ATH");
         if(!Strings.isNullOrEmpty(newBranch)) {
-            logger.info("simplePipeline Choosing to commit to new branch");
             wait.click(By.xpath("//*[text()='Commit to new branch']"));
-            logger.info("simplePipeline setting the branch name to " + newBranch);
+            logger.info("Committed to new branch " + newBranch);
             wait.sendKeys(By.cssSelector("input[placeholder='my-new-branch']:enabled"),newBranch);
-            // logger.info("Using branch " + newBranch);
         } else {
             logger.info("Using branch master");
         }
@@ -149,7 +134,6 @@ public class EditorPage {
         */
         for (int i = 1; i < numberOfParallels; i++) {
             logger.info("Create stage Parallel-" + i);
-            logger.info("--> WHAT NODE TO CLICK ON?");
             /*
             We're only creating one stage. So the "add" button will always have
             the id pipeline-node-hittarget-2-add, because it is the second
@@ -162,7 +146,7 @@ public class EditorPage {
             wait.sendKeys(By.cssSelector("textarea.editor-step-detail-script"),"netstat -a");
             logger.info("Clicking on active sheet div.sheet.active a.back-from-sheet");
             wait.click(By.cssSelector("div.sheet.active a.back-from-sheet"));
-
+            logger.info("Stage Parallel-" + i + " created");
         }
         /*
         Now we need to name the "wrapper" stage to something other than what
