@@ -46,6 +46,8 @@ const trimEmptyTokens = tokens => {
  *
  * @param {object|string} run
  * @returns {string}
+ *
+ * FIXME-JM: Unify this with buildRunDetailsUrl in blueocean-core-js/src/js/utils/UrlUtils.js - this is madness.
  */
 export const buildRunDetailsUrl = run => {
     const restUrl = extractRestUrl(run);
