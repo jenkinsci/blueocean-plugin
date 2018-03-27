@@ -74,6 +74,8 @@ export const buildClassicBuildUrl = pipeline => {
  * @param branch
  * @param runId
  * @param tabName
+ *
+ * FIXME-JM: Unify this with buildRunDetailsUrl in blueocean-core-js/src/js/UrlBuilder.js - this is madness.
  */
 export const buildRunDetailsUrl = (organization, pipeline, branch, runId, tabName) => {
     const baseUrl =
