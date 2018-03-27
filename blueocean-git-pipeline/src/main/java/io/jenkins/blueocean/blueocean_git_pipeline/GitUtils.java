@@ -160,6 +160,7 @@ class GitUtils {
                 }
             }
         } catch (GitAPIException e) {
+            e.printStackTrace(); // TODO: RM
             if (e.getMessage().toLowerCase().contains("auth")) {
                 throw new ServiceException.UnauthorizedException(e.getMessage(), e);
             }

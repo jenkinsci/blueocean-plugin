@@ -24,6 +24,7 @@
 package io.jenkins.blueocean.blueocean_git_pipeline;
 
 import com.cloudbees.plugins.credentials.common.StandardCredentials;
+import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredentials;
 import hudson.model.User;
 import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.credential.CredentialsUtils;
@@ -63,15 +64,35 @@ abstract class GitReadSaveRequest  {
 
     @CheckForNull StandardCredentials getCredential() {
         StandardCredentials credential = null;
-        if (GitUtils.isSshUrl(gitSource.getRemote()) || GitUtils.isLocalUnixFileUrl(gitSource.getRemote())) {
-            // Get committer info and credentials
+
             User user = User.current();
             if (user == null) {
                 throw new ServiceException.UnauthorizedException("Not authenticated");
             }
+
+        if (GitUtils.isSshUrl(gitSource.getRemote()) || GitUtils.isLocalUnixFileUrl(gitSource.getRemote())) {
+            // Get committer info and credentials
             credential = UserSSHKeyManager.getOrCreate(user);
         } else {
-            throw new ServiceException.UnauthorizedException("Editing only supported for repositories using SSH");
+//            throw new ServiceException.UnauthorizedException("Editing only supported for repositories using SSH");
+
+            String apiUrl = gitSource.getRemote();
+
+            String credentialId = GitScm.ID + ":" + GitScm.normalizeServerUrl(apiUrl);
+            /*StandardUsernamePasswordCredentials */ credential =
+                CredentialsUtils.findCredential(credentialId,
+                                                StandardUsernamePasswordCredentials.class,
+                                                new BlueOceanDomainRequirement());
+
+            System.out.println("GitReadSaveRequest - credential id is " + credentialId); // TODO: RM
+            System.out.println("                   - credential is " + credential); // TODO: RM
+
+//            if (credential == null) {
+//                throw new ServiceException.UnauthorizedException("No credential found for " + credentialId + " for user " + user.getDisplayName());
+//            }
+//
+//            return credential;
+
         }
         return credential;
     }
