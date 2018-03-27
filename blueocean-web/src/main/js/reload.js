@@ -5,7 +5,7 @@
 //
 
 const CHECK_FREQUENCY = 1000;
-const TOLERANCE = CHECK_FREQUENCY + 20000; 
+const TOLERANCE = CHECK_FREQUENCY + 20000;
 let lastCheck = new Date();
 
 function check() {

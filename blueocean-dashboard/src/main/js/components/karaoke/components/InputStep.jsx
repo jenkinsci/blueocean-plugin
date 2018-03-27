@@ -14,7 +14,7 @@ import { Alerts } from '@jenkins-cd/design-language';
  * Simple helper to stop stopPropagation
  * @param event the event we want to cancel
  */
-const stopProp = (event) => {
+const stopProp = event => {
     event.stopPropagation();
 };
 
@@ -35,7 +35,6 @@ const logger = logging.logger('io.jenkins.blueocean.dashboard.InputStep');
  * and further in './parameter/commonProptypes' you need to include the new type in the oneOf array.
  */
 export default class InputStep extends Component {
-
     constructor(props) {
         super(props);
         this.parameterService = new ParameterService();
@@ -59,10 +58,7 @@ export default class InputStep extends Component {
         // console.log({ step });
         if (step) {
             const { config = {} } = this.context;
-            const {
-                input: { id },
-                _links: { self: { href } },
-            } = step;
+            const { input: { id }, _links: { self: { href } } } = step;
             this.setState({
                 id,
                 href: `${config._rootURL}${href}`,
@@ -70,7 +66,6 @@ export default class InputStep extends Component {
             });
         }
     }
-
 
     /**
      * Submit the form as "cancel" out of the state data id.
@@ -87,10 +82,10 @@ export default class InputStep extends Component {
         const { href, id } = this.state;
         const parameters = this.parameterService.parametersToSubmitArray();
 
-        parameterApi.submitInputParameter(href, id, parameters).catch((error) => {
+        parameterApi.submitInputParameter(href, id, parameters).catch(error => {
             if (error.responseBody.message) {
                 this.setState({
-                    responseErrorMsg: error.responseBody.message
+                    responseErrorMsg: error.responseBody.message,
                 });
             }
         });
@@ -112,40 +107,41 @@ export default class InputStep extends Component {
 
             const alertCaption = [
                 <p>{translate('inputStep.error.message')}</p>,
-                <a href={classicInputUrl} target="_blank">{translate('inputStep.error.linktext')}</a>
+                <a href={classicInputUrl} target="_blank">
+                    {translate('inputStep.error.linktext')}
+                </a>,
             ];
 
             const alertTitle = translate('inputStep.error.title', { defaultValue: 'Error' });
-            return (<div className="inputStep">
-                <Alerts message={alertCaption} type="Error" title={alertTitle} />
-            </div>);
+            return (
+                <div className="inputStep">
+                    <Alerts message={alertCaption} type="Error" title={alertTitle} />
+                </div>
+            );
         }
         const { input: { message, ok } } = this.props.step;
         const cancelCaption = translate('rundetail.input.cancel', { defaultValue: 'Cancel' });
-        const cancelButton = (<button title={cancelCaption} onClick={() => this.cancelForm()} className="btn btn-secondary inputStepCancel" >
-            <span className="button-label">{cancelCaption}</span>
-        </button>);
+        const cancelButton = (
+            <button title={cancelCaption} onClick={() => this.cancelForm()} className="btn btn-secondary inputStepCancel">
+                <span className="button-label">{cancelCaption}</span>
+            </button>
+        );
 
-        return (<div className="inputStep">
-            <div className="inputBody">
-                <h3>{StringUtil.removeMarkupTags(message)}</h3>
-                <ParametersRender
-                    parameters={parameters}
-                    onChange={(index, newValue) => this.parameterService.changeParameter(index, newValue) }
-                />
-                <div onClick={(event => stopProp(event))} className="inputControl">
-                    <button title={ok} onClick={() => this.okForm()} className="btn inputStepSubmit" >
-                        <span className="button-label">{ok}</span>
-                    </button>
-                    { cancelButton }
-                </div>
-                { this.state.responseErrorMsg  && 
-                    <div className="errorContainer">
-                        { this.state.responseErrorMsg }
+        return (
+            <div className="inputStep">
+                <div className="inputBody">
+                    <h3>{StringUtil.removeMarkupTags(message)}</h3>
+                    <ParametersRender parameters={parameters} onChange={(index, newValue) => this.parameterService.changeParameter(index, newValue)} />
+                    <div onClick={event => stopProp(event)} className="inputControl">
+                        <button title={ok} onClick={() => this.okForm()} className="btn inputStepSubmit">
+                            <span className="button-label">{ok}</span>
+                        </button>
+                        {cancelButton}
                     </div>
-                }
+                    {this.state.responseErrorMsg && <div className="errorContainer">{this.state.responseErrorMsg}</div>}
+                </div>
             </div>
-        </div>);
+        );
     }
 }
 

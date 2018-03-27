@@ -7,7 +7,6 @@ import GithubDefaultOption from './GithubDefaultOption';
 import GithubFlowManager from './GithubFlowManager';
 
 export default class GithubScmProvider extends ScmProvider {
-
     manager = null;
 
     getDefaultOption() {

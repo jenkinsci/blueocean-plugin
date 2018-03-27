@@ -9,19 +9,18 @@ export class DevelopmentFooter extends Component {
         // testing basic integrity
         if (!revisionInfo || !revisionInfo.sha) {
             // TODO: At minimum we should return Jenkins version. Jenkins version is always present
-             // in X-Hudson HTTP header. Something to be handled elsewhere during load time by
-             // inspecting HTTP response headers
+            // in X-Hudson HTTP header. Something to be handled elsewhere during load time by
+            // inspecting HTTP response headers
             return null;
         }
 
         return (
-          <div className="development-footer">
-              <span> {AppConfig.getConfig().version}&nbsp;</span>
-              <span> &#183; Core {AppConfig.getJenkinsConfig().version}&nbsp;</span>
-              <span> &#183; {revisionInfo.sha.substring(0,7)}&nbsp; </span>
-              <span> &#183; {moment(revisionInfo.timestamp).format('Do MMMM YYYY hh:mm A')}</span>
-
-          </div>
+            <div className="development-footer">
+                <span> {AppConfig.getConfig().version}&nbsp;</span>
+                <span> &#183; Core {AppConfig.getJenkinsConfig().version}&nbsp;</span>
+                <span> &#183; {revisionInfo.sha.substring(0, 7)}&nbsp; </span>
+                <span> &#183; {moment(revisionInfo.timestamp).format('Do MMMM YYYY hh:mm A')}</span>
+            </div>
         );
     }
 }

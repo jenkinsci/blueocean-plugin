@@ -2,7 +2,6 @@ import React, { PropTypes } from 'react';
 import { TextControl } from './TextControl';
 
 export class TextArea extends React.Component {
-
     render() {
         return (
             <TextControl {...this.props} className={`TextArea ${this.props.className}`}>
@@ -10,7 +9,6 @@ export class TextArea extends React.Component {
             </TextControl>
         );
     }
-
 }
 
 TextArea.propTypes = {

@@ -27,13 +27,13 @@ const anotherFolders = ['anotherFolder', '三百', 'ñba', '七'];
 const jobName = 'Sohn';
 // git repo details
 const pathToRepo = path.resolve('./target/test-project-folder');
-const soureRep = './src/test/resources/multibranch_1';
-// helper to return the project name including a seperator or '/'
-function getProjectName(nameArray, seperator) {
-    if (!seperator) {
-        seperator = '/';
+const sourceRep = './src/test/resources/multibranch_1';
+// helper to return the project name including a separator or '/'
+function getProjectName(nameArray, separator) {
+    if (!separator) {
+        separator = '/';
     }
-    return nameArray.join(seperator) + seperator + jobName;
+    return nameArray.join(separator) + separator + jobName;
 }
 // here we need to escape the real projectName to a urlEncoded string
 const projectName = getProjectName(anotherFolders, '%2F');
@@ -44,7 +44,7 @@ module.exports = {
         browser.waitForJobDeleted('firstFolder', function () {
             browser.waitForJobDeleted('anotherFolder', function () {
                 // we creating a git repo in target based on the src repo (see above)
-                git.createRepo(soureRep, pathToRepo)
+                git.createRepo(sourceRep, pathToRepo)
                     .then(function () {
                         git.createBranch('feature/1', pathToRepo)
                             .then(done);
@@ -101,7 +101,7 @@ module.exports = {
     */
     'step 05': function (browser) {
        const bluePipelinesPage = browser.page.bluePipelines().navigate();
-       // simply validate that the pipline listing is showing the basic things
+       // simply validate that the pipeline listing is showing the basic things
        bluePipelinesPage.assertBasicLayoutOkay();
        // by now we should have 2 different jobs from prior steps
        bluePipelinesPage.countJobToBeEqual(browser, jobName, 2);
@@ -131,7 +131,7 @@ module.exports = {
        // {@link https://issues.jenkins-ci.org/browse/JENKINS-36773|JENKINS-36773} / JENKINS-37605 verify encoding and spacing of details
        blueRunDetailPage.assertTitle('feature/1');
        // JENKINS-36613 Unable to load steps for multibranch pipelines with / in them
-       // FIXME should show the graph but it is failing because underlying 500 -> is under inverstigation currently
+       // FIXME should show the graph but it is failing because underlying 500 -> is under investigation currently
       // blueRunDetailPage.validateGraph(); // test whether we have a pipeline graph
       // blueRunDetailPage.validateSteps(); // validate that steps are displayed
        // There should be no authors

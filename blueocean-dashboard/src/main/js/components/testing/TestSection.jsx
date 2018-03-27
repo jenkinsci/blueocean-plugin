@@ -5,7 +5,6 @@ import TestCaseResultRow from './TestCaseResultRow';
 
 @observer
 export default class TestSection extends Component {
-
     propTypes = {
         titleKey: PropTypes.string,
         extraClasses: PropTypes.string,
@@ -23,7 +22,7 @@ export default class TestSection extends Component {
         if (total > 0) {
             result = (
                 <div className={classes}>
-                    <h4>{translation(titleKey, { 0: total }) }</h4>
+                    <h4>{translation(titleKey, { 0: total })}</h4>
                     {pager.data.map((t, i) => <TestCaseResultRow key={i} testCase={t} translation={translation} locale={locale} testService={testService} />)}
                     <ShowMoreButton pager={pager} />
                 </div>

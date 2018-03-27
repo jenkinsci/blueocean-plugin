@@ -41,7 +41,7 @@ public class CustomJenkinsServer extends JenkinsServer {
             logger.info("deleted credential at " + path);
         } catch (HttpResponseException e) {
             if (e.getStatusCode() == 404) {
-                logger.debug("received 404 while trying to delete redential at " + path);
+                logger.debug("received 404 while trying to delete credential at " + path);
             } else {
                 logger.error("error deleting credential at " + path);
                 logger.error("message = " + e.getMessage());

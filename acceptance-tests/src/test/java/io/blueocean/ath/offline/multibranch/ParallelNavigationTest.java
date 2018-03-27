@@ -39,7 +39,7 @@ public class ParallelNavigationTest {
     MultiBranchPipelineFactory mbpFactory;
 
     // Names of the pipelines we'll create
-    String navTest          = "ParallelNavTest_tested";
+    String navTest = "ParallelNavTest_tested";
     String navTestWithInput = "ParallelNavTestWithInput_tested";
     String navTestWithFailedInputStep = "ParallelNavigationTest_failed_input";
     String navTestWithNoStepsNoStages = "ParallelNavTestWithNoStepsNoStages";
@@ -58,7 +58,7 @@ public class ParallelNavigationTest {
      */
     @Test
     @Retry(3)
-    public void parallelNavigationTest () throws IOException, GitAPIException, InterruptedException {
+    public void parallelNavigationTest() throws IOException, GitAPIException, InterruptedException {
         // Create navTest
         logger.info("Creating pipeline " + navTest);
         URL navTestJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile");
@@ -87,7 +87,7 @@ public class ParallelNavigationTest {
      * One at a time, the proceed button will be clicked.
      */
     @Test
-    public void parallelNavigationTestInput () throws IOException, GitAPIException, InterruptedException {
+    public void parallelNavigationTestInput() throws IOException, GitAPIException, InterruptedException {
         // Create navTestWithInput
         logger.info("Creating pipeline " + navTestWithInput);
         URL navTestInputJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile.input");
@@ -117,7 +117,7 @@ public class ParallelNavigationTest {
      * This checks that an error is shown in the UI for a failed input step
      */
     @Test
-    public void failedInputStep () throws IOException, GitAPIException, InterruptedException {
+    public void failedInputStep() throws IOException, GitAPIException, InterruptedException {
         // Create navTestWithFailedInputStep
         logger.info("Creating pipeline " + navTestWithFailedInputStep);
         URL navTestWithFailedInputStepJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile.failed.input");
@@ -141,7 +141,7 @@ public class ParallelNavigationTest {
      * This checks that the log is visible when a run fails with no steps or stages
      */
     @Test
-    public void testLogVisibilityWhenNoStepsOrStages () throws IOException, GitAPIException, InterruptedException {
+    public void testLogVisibilityWhenNoStepsOrStages() throws IOException, GitAPIException, InterruptedException {
         // Create navTestWithNoStepsNoStages
         logger.info("Creating pipeline " + navTestWithNoStepsNoStages);
         URL navTestWithNoStepsNoStagesJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile.nosteps.nostages");
@@ -162,7 +162,7 @@ public class ParallelNavigationTest {
      * This checks that href attr of the alert error for unsupported inputs leads to the correct classic url
      */
     @Test
-    public void testInputParamGoToClassicLink () throws IOException, GitAPIException, InterruptedException {
+    public void testInputParamGoToClassicLink() throws IOException, GitAPIException, InterruptedException {
         // Create navTestInputParamGoToClassicLink
         logger.info("Creating pipeline " + navTestInputParamGoToClassicLink);
         URL navTestInputParamGoToClassicLinkJenkinsfile = Resources.getResource(ParallelNavigationTest.class, "ParallelNavigationTest/Jenkinsfile.input.param.classic.link");
@@ -177,18 +177,5 @@ public class ParallelNavigationTest {
 
         logger.info("Wait for alert error with link to classic input to appear");
         wait.until(By.xpath("//*[@class=\"Alert Error\"]//a[@href=\"/job/ParallelNavTestInputParamGoToClassicLink/job/master/1/input\"]"));
-    }
-
-    @AfterClass
-    public static void deleteTestPipelines() throws IOException, GitAPIException, InterruptedException {
-        MultiBranchPipeline[] listOfPipelineJobs = {navTestPipeline, navTestWithInputPipeline, navTestWithFailedInputStepPipeline};
-        for (MultiBranchPipeline pipelineToCleanup:listOfPipelineJobs) {
-            /*
-            stopAllRuns and deleteThisPipeline both provide their own
-            logger messages, no need to create new ones here.
-            */
-            pipelineToCleanup.stopAllRuns();
-            pipelineToCleanup.deleteThisPipeline(pipelineToCleanup.getName());
-        }
     }
 }

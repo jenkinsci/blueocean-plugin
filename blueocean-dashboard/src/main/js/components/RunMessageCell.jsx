@@ -44,7 +44,6 @@ export default class RunMessageCell extends Component {
             const commitMsg = run.changeSet[run.changeSet.length - 1].msg;
 
             if (run.changeSet.length > 1) {
-
                 const { changesUrl } = this.props;
 
                 return (
@@ -68,26 +67,35 @@ export default class RunMessageCell extends Component {
             const lastCause = (run && run.causes.length > 0 && run.causes[run.causes.length - 1]) || null;
             const cause = (lastCause && lastCause.shortDescription) || null;
 
-            if(lastCause && lastCause.upstreamProject) {
+            if (lastCause && lastCause.upstreamProject) {
                 const activityUrl = `${UrlConfig.getJenkinsRootURL()}/${lastCause.upstreamUrl}display/redirect?provider=blueocean`;
                 const runUrl = `${UrlConfig.getJenkinsRootURL()}/${lastCause.upstreamUrl}${lastCause.upstreamBuild}/display/redirect?provider=blueocean`;
 
-                return (<span className="RunMessageCell" title={cause}>
-                         Started by upstream pipeline "<a href={ activityUrl }>{lastCause.upstreamProject}</a>" build&nbsp; <a href={ runUrl }>#{lastCause.upstreamBuild}</a>
-                </span>);
+                return (
+                    <span className="RunMessageCell" title={cause}>
+                        Started by upstream pipeline "<a href={activityUrl}>{lastCause.upstreamProject}</a>" build&nbsp;{' '}
+                        <a href={runUrl}>#{lastCause.upstreamBuild}</a>
+                    </span>
+                );
             }
 
-            const linkedCauseMsg = (<Link to={linkTo} className="unstyled-link"><span className="ellipsis-text">{cause}</span></Link>);
+            const linkedCauseMsg = (
+                <Link to={linkTo} className="unstyled-link">
+                    <span className="ellipsis-text">{cause}</span>
+                </Link>
+            );
 
             return (
                 <span className="RunMessageCell" title={cause}>
-                    <span className="RunMessageCellInner">
-                        {linkedCauseMsg}
-                    </span>
+                    <span className="RunMessageCellInner">{linkedCauseMsg}</span>
                 </span>
             );
         } else {
-            message = (<span className="RunMessageCell"><span className="RunMessageCellInner">–</span></span>);
+            message = (
+                <span className="RunMessageCell">
+                    <span className="RunMessageCellInner">–</span>
+                </span>
+            );
         }
         return message;
     }

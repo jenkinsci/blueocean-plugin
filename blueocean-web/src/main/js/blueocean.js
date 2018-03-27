@@ -4,5 +4,3 @@ try {
 } catch (e) {
     console.error('Error starting Blue Ocean.', e);
 }
-
-

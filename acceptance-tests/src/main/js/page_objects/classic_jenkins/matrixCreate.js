@@ -39,7 +39,7 @@ module.exports.commands = [{
             oncreated = function() {};
         }
 
-        // Reusing the freeStyle config code atm since we arent actaully doing anything specific.
+        // Reusing the freeStyle config code atm since we arent actually doing anything specific.
         self.api.page.freestyleConfig()
             .moveClassicBottomStickyButtons()
          //   .setFreestyleScript(script)

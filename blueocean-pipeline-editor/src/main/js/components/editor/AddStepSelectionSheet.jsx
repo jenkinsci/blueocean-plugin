@@ -5,11 +5,11 @@ import pipelineMetadataService from '../../services/PipelineMetadataService';
 import { Dialog } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/design-language';
 import debounce from 'lodash.debounce';
-import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 
 const t = i18nTranslator('blueocean-pipeline-editor');
 
-const isStepValidForSelectionUI = (step) => {
+const isStepValidForSelectionUI = step => {
     switch (step.type) {
         case 'org.jenkinsci.plugins.workflow.support.steps.StageStep':
         case 'org.jenkinsci.plugins.docker.workflow.WithContainerStep':
@@ -30,7 +30,7 @@ const knownStepOrder = [
     'node', // Allocate Node
 ];
 
-const stepSorter = (a,b) => {
+const stepSorter = (a, b) => {
     const ai = knownStepOrder.indexOf(a.functionName);
     const bi = knownStepOrder.indexOf(b.functionName);
     if (ai < 0 && bi < 0) {
@@ -47,8 +47,8 @@ const stepSorter = (a,b) => {
 
 type Props = {
     onClose?: () => any,
-    onStepSelected: (step:StepInfo) => any,
-}
+    onStepSelected: (step: StepInfo) => any,
+};
 
 type State = {
     selectedStep?: () => any,
@@ -59,17 +59,17 @@ type State = {
 type DefaultProps = typeof AddStepSelectionSheet.defaultProps;
 
 export class AddStepSelectionSheet extends Component<DefaultProps, Props, State> {
-    props:Props;
-    state:State;
+    props: Props;
+    state: State;
 
-    constructor(props:Props) {
+    constructor(props: Props) {
         super(props);
         this.state = { steps: null, selectedStep: null, searchFilter: e => true };
     }
 
     componentWillMount() {
         pipelineMetadataService.getStepListing(stepMetadata => {
-            this.setState({stepMetadata: stepMetadata});
+            this.setState({ stepMetadata: stepMetadata });
         });
     }
 
@@ -86,9 +86,9 @@ export class AddStepSelectionSheet extends Component<DefaultProps, Props, State>
         this.closeDialog();
     }
 
-    filterSteps = debounce((value) => {
+    filterSteps = debounce(value => {
         const searchTerm = value.toLowerCase();
-        this.setState({searchFilter: s => s.displayName.toLowerCase().indexOf(searchTerm) !== -1});
+        this.setState({ searchFilter: s => s.displayName.toLowerCase().indexOf(searchTerm) !== -1 });
     }, 300);
 
     selectItemByKeyPress(e, step) {
@@ -105,16 +105,30 @@ export class AddStepSelectionSheet extends Component<DefaultProps, Props, State>
             <div className="editor-step-selection-dialog">
                 <div className="editor-step-search">
                     <Icon icon="ActionSearch" size={22} />
-                    <input ref="searchInput" type="text" className="editor-step-search-input" onChange={e => this.filterSteps(e.target.value)}
-                        placeholder={t('editor.page.common.pipeline.steps.findby.name', {default: 'Find steps by name'})}/>
+                    <input
+                        ref="searchInput"
+                        type="text"
+                        className="editor-step-search-input"
+                        onChange={e => this.filterSteps(e.target.value)}
+                        placeholder={t('editor.page.common.pipeline.steps.findby.name', { default: 'Find steps by name' })}
+                    />
                 </div>
                 <div className="editor-step-selector">
-                {stepMetadata && stepMetadata.filter(isStepValidForSelectionUI).filter(this.state.searchFilter).sort(stepSorter).map(step =>
-                    <div tabIndex="0" data-functionName={step.functionName} onKeyPress={e => this.selectItemByKeyPress(e, step)}
-                        onClick={() => this.addStep(step)}>
-                        {step.displayName}
-                    </div>
-                )}
+                    {stepMetadata &&
+                        stepMetadata
+                            .filter(isStepValidForSelectionUI)
+                            .filter(this.state.searchFilter)
+                            .sort(stepSorter)
+                            .map(step => (
+                                <div
+                                    tabIndex="0"
+                                    data-functionName={step.functionName}
+                                    onKeyPress={e => this.selectItemByKeyPress(e, step)}
+                                    onClick={() => this.addStep(step)}
+                                >
+                                    {step.displayName}
+                                </div>
+                            ))}
                 </div>
             </div>
         );

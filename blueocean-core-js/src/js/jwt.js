@@ -52,7 +52,8 @@ export default {
                 } else {
                     resolve(payload);
                 }
-            }));
+            })
+        );
     },
 
     /**
@@ -65,11 +66,12 @@ export default {
             publicKeyStore = fetch(url, { credentials: 'same-origin' })
                 .then(FetchFunctions.checkStatus)
                 .then(FetchFunctions.parseJSON)
-                .then(cert => this.verifyToken(token, cert)
-                    .then(payload => ({
+                .then(cert =>
+                    this.verifyToken(token, cert).then(payload => ({
                         token,
                         payload,
-                    })));
+                    }))
+                );
         }
 
         return publicKeyStore;

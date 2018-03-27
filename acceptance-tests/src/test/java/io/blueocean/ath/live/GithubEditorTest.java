@@ -63,7 +63,7 @@ public class GithubEditorTest {
     CustomJenkinsServer jenkins;
 
     /**
-     * Cleans up repostory after the test has completed.
+     * Cleans up repository after the test has completed.
      *
      * @throws IOException
      */

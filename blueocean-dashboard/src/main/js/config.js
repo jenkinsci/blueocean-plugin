@@ -1,4 +1,3 @@
-
 //
 // General "system" config information.
 //
@@ -6,7 +5,7 @@
 // Passing it around in the react context is silly.
 //
 
-exports.loadConfig = function () {
+exports.loadConfig = function() {
     const headElement = document.getElementsByTagName('head')[0];
 
     // Look up where the Blue Ocean app is hosted

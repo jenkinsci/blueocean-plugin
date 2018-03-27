@@ -6,7 +6,7 @@ export function getArg(step, name, isLiteral = true) {
     }
     return {
         isLiteral,
-        value: "",
+        value: '',
     };
 }
 

@@ -7,11 +7,8 @@ import FavoritePipeline from './FavoritePipeline';
  * Created by cmeyers on 7/20/16.
  */
 export class FavoritePipelineHeader extends Component {
-
     render() {
-        return (
-            <FavoritePipeline { ...this.props } className="dark" />
-        );
+        return <FavoritePipeline {...this.props} className="dark" />;
     }
 }
 

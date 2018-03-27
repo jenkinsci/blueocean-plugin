@@ -54,7 +54,7 @@ module.exports = {
 
 module.exports.commands = [{
     /**
-     * Navigate to a certain detail page, calculated based on diferent params
+     * Navigate to a certain detail page, calculated based on different params
      *
      * @example
      *   const blueRunDetailPage = browser.page.bluePipelineRunDetail()

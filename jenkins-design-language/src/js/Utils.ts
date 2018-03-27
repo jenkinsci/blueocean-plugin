@@ -3,8 +3,8 @@
  * @param prefix
  * @returns {string}
  */
-function randomId(prefix = 'id') {
-    const integer = Math.round(Math.random() * Number.MAX_SAFE_INTEGER);
+function randomId(prefix: string = 'id'): string {
+    const integer: number = Math.round(Math.random() * Number.MAX_SAFE_INTEGER);
     return `${prefix}-${integer}`;
 }
 

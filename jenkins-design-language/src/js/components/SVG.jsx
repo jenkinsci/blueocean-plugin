@@ -5,12 +5,11 @@
 //
 
 export function polarToCartesian(centerX: number, centerY: number, radius: number, angleInDegrees: number) {
-
     const angleInRadians = (angleInDegrees - 90) * Math.PI / 180.0;
 
     return {
-        x: centerX + (radius * Math.cos(angleInRadians)),
-        y: centerY + (radius * Math.sin(angleInRadians)),
+        x: centerX + radius * Math.cos(angleInRadians),
+        y: centerY + radius * Math.sin(angleInRadians),
     };
 }
 
@@ -20,10 +19,7 @@ export function describeArcAsPath(x: number, y: number, radius: number, startAng
 
     const arcSweep = endAngle - startAngle <= 180 ? '0' : '1';
 
-    const d = [
-        'M', start.x, start.y,
-        'A', radius, radius, 0, arcSweep, 0, end.x, end.y,
-    ].join(' ');
+    const d = ['M', start.x, start.y, 'A', radius, radius, 0, arcSweep, 0, end.x, end.y].join(' ');
 
     return d;
 }
@@ -31,7 +27,7 @@ export function describeArcAsPath(x: number, y: number, radius: number, startAng
 // Also export an OBJ of classes + funs, like Math
 const SVG = {
     polarToCartesian,
-    describeArcAsPath
+    describeArcAsPath,
 };
 
 export default SVG;

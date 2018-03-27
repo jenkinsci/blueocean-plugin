@@ -19,4 +19,4 @@ ListPropertyInput.propTypes = {
     type: React.PropTypes.any,
 };
 
-ListPropertyInput.dataTypes = [ 'java.util.List' ];
+ListPropertyInput.dataTypes = ['java.util.List'];

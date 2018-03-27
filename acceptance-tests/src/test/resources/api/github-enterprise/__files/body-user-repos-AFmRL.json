@@ -494,7 +494,7 @@
     },
     "private": false,
     "html_url": "https://github.com/cliffmeyers/gulp-runner",
-    "description": "Simple module for running gulp tasks programattically, since `gulp.run` is deprecated.",
+    "description": "Simple module for running gulp tasks programmatically, since `gulp.run` is deprecated.",
     "fork": true,
     "url": "http://localhost:63242/repos/cliffmeyers/gulp-runner",
     "forks_url": "http://localhost:63242/repos/cliffmeyers/gulp-runner/forks",

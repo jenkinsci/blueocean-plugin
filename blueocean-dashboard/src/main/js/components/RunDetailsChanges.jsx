@@ -1,17 +1,8 @@
 import React, { Component, PropTypes } from 'react';
-import {
-    CommitId,
-    PlaceholderTable,
-    ReadableDate,
-    JTable,
-    TableHeaderRow,
-    TableRow,
-    TableCell,
-} from '@jenkins-cd/design-language';
+import { CommitId, PlaceholderTable, ReadableDate, JTable, TableHeaderRow, TableRow, TableCell } from '@jenkins-cd/design-language';
 import Icon from './placeholder/Icon';
 import { PlaceholderDialog } from './placeholder/PlaceholderDialog';
 import LinkifiedText from './LinkifiedText';
-
 
 function NoChangesPlaceholder(props) {
     const { t } = props;
@@ -39,9 +30,7 @@ NoChangesPlaceholder.propTypes = {
     t: PropTypes.func,
 };
 
-
 export default class RunDetailsChanges extends Component {
-
     render() {
         const { result, t, locale } = this.props;
 
@@ -70,17 +59,22 @@ export default class RunDetailsChanges extends Component {
         return (
             <JTable columns={columns} className="changeset-table">
                 <TableHeaderRow />
-                { changeSet.map(commit => (
+                {changeSet.map(commit => (
                     <TableRow key={commit.commitId}>
-                        <TableCell><CommitId commitId={commit.commitId} url={commit.url} /></TableCell>
-                        <TableCell>{commit.author.fullName}</TableCell>
-                        <TableCell className="multipleLines"><LinkifiedText text={commit.msg} partialTextLinks={commit.issues} /></TableCell>
                         <TableCell>
-                            <ReadableDate date={commit.timestamp}
-                                          liveUpdate
-                                          locale={locale}
-                                          shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
-                                          longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
+                            <CommitId commitId={commit.commitId} url={commit.url} />
+                        </TableCell>
+                        <TableCell>{commit.author.fullName}</TableCell>
+                        <TableCell className="multipleLines">
+                            <LinkifiedText text={commit.msg} partialTextLinks={commit.issues} />
+                        </TableCell>
+                        <TableCell>
+                            <ReadableDate
+                                date={commit.timestamp}
+                                liveUpdate
+                                locale={locale}
+                                shortFormat={t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' })}
+                                longFormat={t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' })}
                             />
                         </TableCell>
                     </TableRow>

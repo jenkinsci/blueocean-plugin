@@ -11,7 +11,6 @@ import favoriteStore from './FavoriteStore';
  * TODO: should cleaner way of registering a long-lived component which can easily access stores, services, etc.
  */
 class FavoritesSseListener {
-
     initialize(jobListener) {
         // prevent leaking by disposing of any prior listeners
         if (this.sseBus) {
@@ -20,10 +19,7 @@ class FavoritesSseListener {
 
         this.sseBus = sseBus;
         try {
-            this.id = this.sseBus.subscribeToJob(
-                jobListener,
-                (event) => this._filterJobs(event)
-            );
+            this.id = this.sseBus.subscribeToJob(jobListener, event => this._filterJobs(event));
         } catch (e) {
             if (!this.sseBus.connection && (!global.window || !global.window.EventSource)) {
                 // This should only happen in tests i.e no browser/window, EventSource etc.

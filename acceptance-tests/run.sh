@@ -16,7 +16,7 @@
 #   -s  Install local SNAPSHOTS. See https://github.com/jenkinsci/acceptance-test-harness/blob/master/docs/SUT-VERSIONS.md#install-plugins-from-local-maven-repository
 #       e.g.  ./run.sh -s
 #   -d  Run a clean dev instance of Jenkins (with blueocean plugins) and keep it running. Allows you to do fast dev of tests in your IDE without having to
-#       constanly wait for Jenkins to startup etc. Need to ensure that your test does not use JenkinsAcceptanceTestRule while you are developing
+#       constantly wait for Jenkins to startup etc. Need to ensure that your test does not use JenkinsAcceptanceTestRule while you are developing
 #       (e.g. via AbstractJUnitTest), or you'll be wasting your time.
 #       e.g.  ./run.sh -d
 #

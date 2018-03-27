@@ -9,5 +9,6 @@ jenkins:
         - .js
         - .jsx
     ignoreGlobs:
-        - "**/material-ui/svg-icons/**"
+        - "**/svg-icons/**"
+        - "**/src/test/**"
         - "**/stories/**"

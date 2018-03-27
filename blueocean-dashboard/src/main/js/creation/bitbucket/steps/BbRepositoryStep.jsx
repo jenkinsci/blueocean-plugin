@@ -9,7 +9,6 @@ const t = i18nTranslator('blueocean-dashboard');
 
 @observer
 export default class BbRepositoryStep extends React.Component {
-
     selectRepository(org) {
         this.props.flowManager.selectRepository(org);
     }
@@ -48,41 +47,35 @@ export default class BbRepositoryStep extends React.Component {
 
         return (
             <FlowStep {...this.props} className="github-repo-list-step" title={title} loading={loading} disabled={disabled}>
-                <div className="loading-msg">
-                    { this._getLoadingMessage()}
-                </div>
+                <div className="loading-msg">{this._getLoadingMessage()}</div>
 
-                { flowManager.selectableRepositories.length > 0 &&
-                <div className="container">
-                    <FilterableList
-                        className="repo-list"
-                        data={sortedRepos}
-                        onItemSelect={(idx, repo) => this.selectRepository(repo)}
-                        labelFunction={repo => repo.name}
-                        filterFunction={(text, repo) => repo.name.toLowerCase().indexOf(text.toLowerCase()) !== -1}
-                    />
+                {flowManager.selectableRepositories.length > 0 && (
+                    <div className="container">
+                        <FilterableList
+                            className="repo-list"
+                            data={sortedRepos}
+                            onItemSelect={(idx, repo) => this.selectRepository(repo)}
+                            labelFunction={repo => repo.name}
+                            filterFunction={(text, repo) => repo.name.toLowerCase().indexOf(text.toLowerCase()) !== -1}
+                        />
 
-                    <button
-                        className="button-create"
-                        onClick={() => this.beginCreation()}
-                        disabled={buttonDisabled}
-                    >
-                        {t('creation.core.header.title')}
-                    </button>
-                </div>
-                }
+                        <button className="button-create" onClick={() => this.beginCreation()} disabled={buttonDisabled}>
+                            {t('creation.core.header.title')}
+                        </button>
+                    </div>
+                )}
 
-                { flowManager.repositories.length === 0 &&
-                <div className="container">
-                    <p className="instructions">
-                        {t('creation.core.repository.no_repository', { 0: orgName })}
+                {flowManager.repositories.length === 0 && (
+                    <div className="container">
+                        <p className="instructions">
+                            {t('creation.core.repository.no_repository', { 0: orgName })}
 
-                        {t('creation.core.organization.pick_different')}
-                    </p>
+                            {t('creation.core.organization.pick_different')}
+                        </p>
 
-                    <button onClick={() => this._exit()}>{t('creation.core.intro.invalid_permission_button')}</button>
-                </div>
-                }
+                        <button onClick={() => this._exit()}>{t('creation.core.intro.invalid_permission_button')}</button>
+                    </div>
+                )}
             </FlowStep>
         );
     }

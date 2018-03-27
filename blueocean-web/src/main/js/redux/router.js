@@ -28,9 +28,9 @@ export const actionHandlers = {
 
 export const actions = {
     clearLocationData() {
-        return (dispatch) => dispatch({type: ACTION_TYPES.CLEAR_LOCATION_DATA});
+        return dispatch => dispatch({ type: ACTION_TYPES.CLEAR_LOCATION_DATA });
     },
-    setCurrentLocation(newLocation){
+    setCurrentLocation(newLocation) {
         return (dispatch, getState) => {
             const lastLocation = getState().location.current;
             if (lastLocation) {
@@ -38,21 +38,19 @@ export const actions = {
                     type: ACTION_TYPES.SET_LOCATION_PREVIOUS,
                     payload: lastLocation,
                 });
-
             }
             return dispatch({
                 type: ACTION_TYPES.SET_LOCATION_CURRENT,
                 payload: newLocation,
             });
-
         };
-    }
+    },
 };
 
 // reducer
-export const location = (state) => state.location;
+export const location = state => state.location;
 
-export function reducer(state = new routerState(), action:Object):routerState {
+export function reducer(state = new routerState(), action: Object): routerState {
     const { type } = action;
     if (type in actionHandlers) {
         return actionHandlers[type](state, action);
@@ -60,4 +58,4 @@ export function reducer(state = new routerState(), action:Object):routerState {
     return state;
 }
 
-export default {location: reducer};
+export default { location: reducer };

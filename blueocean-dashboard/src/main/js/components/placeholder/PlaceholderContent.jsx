@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
 
-
 /**
  * Simple wrapper that holds a PlaceholderDialog and positions it.
  * @param props
@@ -13,9 +12,7 @@ export function PlaceholderContent(props) {
 
     return (
         <main className={classString} style={style}>
-            <article>
-                {children}
-            </article>
+            <article>{children}</article>
         </main>
     );
 }
