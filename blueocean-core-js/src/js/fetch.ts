@@ -16,7 +16,7 @@ let refreshToken: string | null = null;
 function isGetRequest(fetchOptions: RequestInit): boolean {
     return !fetchOptions || !fetchOptions.method || 'get'.localeCompare(fetchOptions.method) === 0;
 }
-interface RawFetchOpts {
+export interface RawFetchOpts {
     onSuccess?: <A, B>(success: A) => B
     onError?: <A, B>(error: A) => B
     fetchOptions?: RequestInit
