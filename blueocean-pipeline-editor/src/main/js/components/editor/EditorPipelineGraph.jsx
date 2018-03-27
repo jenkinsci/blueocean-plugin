@@ -548,10 +548,11 @@ export class EditorPipelineGraph extends Component<DefaultProps, Props, State> {
         // Add an invisible click/touch target, coz the nodes are small and (more importantly)
         // many are hollow.
         groupChildren.push(
-            <circle
+            <circle 
                 r={mouseTargetRadius}
                 cursor="pointer"
                 className="pipeline-node-hittarget"
+                id={`pipeline-node-hittarget${node.nodeId}${node.type ? `-${node.type}` : ""}`}
                 fillOpacity="0"
                 stroke="none"
                 onClick={e => this.nodeClicked(node, e)}
@@ -626,6 +627,8 @@ export class EditorPipelineGraph extends Component<DefaultProps, Props, State> {
                 <svg className="editor-graph-svg" width={measuredWidth} height={measuredHeight}>
                     {connections.map(conn => this.renderConnection(conn))}
                     {nodes.map(node => this.renderNode(node))}
+                    
+
                 </svg>
                 {bigLabels.map(label => this.renderBigLabel(label))}
                 {smallLabels.map(label => this.renderSmallLabel(label))}
