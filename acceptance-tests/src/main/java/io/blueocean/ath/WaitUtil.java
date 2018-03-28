@@ -118,16 +118,17 @@ public class WaitUtil {
      * @param by
      */
     public void click(By by) {
-        for (int i = 0; i < RETRY_COUNT + 1; i++) {
+        for (int i = 1; i < RETRY_COUNT + 1; i++) {
             try {
                 until(ExpectedConditions.elementToBeClickable(by)).click();
-                if (i > 0) {
+                if (i > 1) {
                     logger.info(String.format("Retry click successful on attempt " + i + " for %s", by.toString()));
                 }
                 return;
             } catch (WebDriverException ex) {
                 if (ex.getMessage().contains("is not clickable at point")) {
-                    logger.warn(String.format("%s not clickable: will retry click", by.toString()));
+                    logger.warn(String.format("%s not clickable on attempt " + i + ", will sleep 500ms and retry ", by.toString()));
+                    tinySleep();
                     logger.debug("exception: " + ex.getMessage());
                 } else {
                     throw ex;
@@ -188,4 +189,18 @@ public class WaitUtil {
         }
         return null;
     }
+
+    /**
+     * Sleep method to work around the occasional glitch with
+     * perfectly clickable buttons not behaving correctly
+     * in these tests.
+     */
+    public void tinySleep() {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ex) {
+            logger.info("Exception thrown by tinySleep");
+        }
+    }
+
 }
