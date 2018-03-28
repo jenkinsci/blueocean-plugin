@@ -1769,10 +1769,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
         Assert.assertEquals("FINISHED", nodes.get(0).get("state"));
 
         Assert.assertEquals("NOT_BUILT",nodes.get(1).get("result"));
-        Assert.assertEquals("NOT_BUILT",nodes.get(1).get("state"));
+        Assert.assertEquals("SKIPPED",nodes.get(1).get("state"));
 
         Assert.assertEquals("NOT_BUILT",nodes.get(2).get("result"));
-        Assert.assertEquals("NOT_BUILT",nodes.get(2).get("state"));
+        Assert.assertEquals("SKIPPED",nodes.get(2).get("state"));
     }
 
     @Test
