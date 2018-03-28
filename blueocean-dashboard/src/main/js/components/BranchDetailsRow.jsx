@@ -5,7 +5,7 @@ import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 
 import RunMessageCell from './RunMessageCell';
-import { buildRunDetailsUrl } from '../util/UrlUtils';
+import { buildRunDetailsUrl } from '@jenkins-cd/blueocean-core-js';
 import RunHistoryButton from './RunHistoryButton';
 
 const { sortByOrdinal } = Extensions.Utils;

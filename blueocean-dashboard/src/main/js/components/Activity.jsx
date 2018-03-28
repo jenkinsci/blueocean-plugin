@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import { ActivityDetailsRow } from './ActivityDetailsRow';
 import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
-import { buildPipelineUrl } from '../util/UrlUtils';
+import { buildPipelineUrl } from '@jenkins-cd/blueocean-core-js';
 import { ColumnFilter } from './ColumnFilter';
 import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
 import { NoRunsDefaultPlaceholder, NoRunsForBranchPlaceholder, NoRunsMultibranchPlaceholder } from './placeholder/NoRunsPlaceholder';

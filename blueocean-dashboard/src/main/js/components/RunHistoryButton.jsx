@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 
 import { Icon } from '@jenkins-cd/design-language';
-import { buildPipelineUrl } from '../util/UrlUtils';
+import { buildPipelineUrl } from '@jenkins-cd/blueocean-core-js';
 import { Link } from 'react-router';
 
 const RunHistoryButton = props => {

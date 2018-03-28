@@ -4,7 +4,7 @@ import { ReplayButton, RunButton, LiveStatusIndicator, TimeHarmonizer as timeHar
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
-import { buildRunDetailsUrl } from '../util/UrlUtils';
+import { buildRunDetailsUrl } from '@jenkins-cd/blueocean-core-js';
 import IfCapability from './IfCapability';
 import RunMessageCell from './RunMessageCell';
 import RunIdCell from './RunIdCell';

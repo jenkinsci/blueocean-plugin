@@ -4,7 +4,7 @@ import { UrlConfig, AppConfig, logging, ResultPageHeader, TimeManager } from '@j
 import { ExpandablePath, ReadableDate, TimeDuration, CommitId } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import { Link } from 'react-router';
-import { buildPipelineUrl } from '../util/UrlUtils';
+import { buildPipelineUrl } from '@jenkins-cd/blueocean-core-js';
 import RunIdCell from './RunIdCell';
 
 class RunDetailsHeader extends Component {

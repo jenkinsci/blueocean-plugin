@@ -5,7 +5,7 @@ import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from 'r
 import { capable, AppConfig, Fetch } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
-import { buildPipelineUrl } from '../util/UrlUtils';
+import { buildPipelineUrl } from '@jenkins-cd/blueocean-core-js';
 import { ColumnFilter } from './ColumnFilter';
 
 export const MULTIBRANCH_PIPELINE = 'io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline';

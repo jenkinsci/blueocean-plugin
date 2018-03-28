@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { ReadableDate, TableRow, TableCell } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
-import { buildRunDetailsUrl } from '../util/UrlUtils';
+import { buildRunDetailsUrl } from '@jenkins-cd/blueocean-core-js';
 import RunHistoryButton from './RunHistoryButton';
 
 function noRun(pr, openRunDetails, t, columns) {

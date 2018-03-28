@@ -10,12 +10,10 @@ import LogToolbar from './LogToolbar';
 import Steps from './Steps';
 import FreeStyle from './FreeStyle';
 import RunDescription from './RunDescription';
-import { buildClassicInputUrl } from '../../../util/UrlUtils';
+import { buildClassicInputUrl } from '@jenkins-cd/blueocean-core-js';
 
 import { KaraokeConfig } from '../';
-import RunDetails from '../../RunDetails';
 import { DownstreamRuns } from '../../downstream-runs/DownstreamRuns';
-import Dashboard from '../../../Dashboard';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pipeline');
 

@@ -5,12 +5,12 @@ import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 
 import { Icon } from '@jenkins-cd/design-language';
 
-import { rootPath, buildOrganizationUrl, buildPipelineUrl, buildRunDetailsUrl, buildClassicConfigUrl } from '../util/UrlUtils';
+import { rootPath, buildOrganizationUrl, buildPipelineUrl, buildRunDetailsUrl, buildClassicConfigUrl } from '@jenkins-cd/blueocean-core-js';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import { FullScreen } from './FullScreen';
-import { Paths, capable, locationService, Security } from '@jenkins-cd/blueocean-core-js';
+import { Paths, capable, Security } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 
 const { rest: RestPaths } = Paths;

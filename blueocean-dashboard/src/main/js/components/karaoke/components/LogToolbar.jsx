@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Icon, TimeDuration } from '@jenkins-cd/design-language';
-import { fetchAllSuffix as suffix } from '../../../util/UrlUtils';
+import { fetchAllSuffix as suffix } from '@jenkins-cd/blueocean-core-js';
 
 const { string } = PropTypes;
 
