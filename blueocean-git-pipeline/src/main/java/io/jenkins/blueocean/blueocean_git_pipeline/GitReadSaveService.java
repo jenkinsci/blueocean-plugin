@@ -76,11 +76,11 @@ public class GitReadSaveService extends ScmContentProvider {
     public String getApiUrl(@Nonnull Item item) {
         if (item instanceof org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject) {
             MultiBranchProject<?,?> mbp = (MultiBranchProject<?,?>)item;
-            SCMSource s = mbp.getSCMSources().iterator().next();
-            if (s instanceof GitSCMSource) {
-                String remote = ((GitSCMSource)s).getRemote();
-                return remote;
-            }
+            return mbp.getSCMSources().stream()
+                    .filter(s->s instanceof GitSCMSource)
+                    .map(s -> ((GitSCMSource)s).getRemote())
+                    .findFirst()
+                    .orElse(null);
         }
         return null;
     }
