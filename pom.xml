@@ -137,7 +137,6 @@
     <module>blueocean-git-pipeline</module>
     <module>blueocean-bitbucket-pipeline</module>
     <module>blueocean-pipeline-editor</module>
-    <module>blueocean-jira</module>
   </modules>
 
   <repositories>
@@ -299,12 +298,6 @@
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>blueocean-autofavorite</artifactId>
             <version>1.2.0</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-jira</artifactId>
-            <version>${project.version}</version>
         </dependency>
 
         <!-- TODO: should be moved out of blueocean repo as separate plugin -->
@@ -495,41 +488,6 @@
                 <exclusion>
                     <groupId>org.jenkins-ci</groupId>
                     <artifactId>annotation-indexer</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>jira</artifactId>
-            <version>2.4.2</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-
-                <!-- Upper bound dependency fix
-                    TODO: Remove it after https://github.com/jenkinsci/jira-plugin/pull/130 is merged and released.
-                -->
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-beans</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpclient</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpmime</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpcore</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.objenesis</groupId>
-                    <artifactId>objenesis</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
