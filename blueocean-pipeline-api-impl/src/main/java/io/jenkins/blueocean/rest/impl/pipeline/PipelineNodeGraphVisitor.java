@@ -107,7 +107,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                 throw t;
             }
         } else {
-            logger.error("Could not find execution for run " + run.getExternalizableId());
+            logger.debug("Could not find execution for run " + run.getExternalizableId());
         }
     }
 
@@ -271,7 +271,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
 
         if(nestedbranches.size() != parallelBranchEndNodes.size()){
-            logger.error(String.format("nestedBranches size: %s not equal to parallelBranchEndNodes: %s",
+            logger.debug(String.format("nestedBranches size: %s not equal to parallelBranchEndNodes: %s",
                     nestedbranches.size(), parallelBranchEndNodes.size()));
             return;
         }
@@ -419,7 +419,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
     }
 
     private void dump(String str){
-        System.out.println(System.identityHashCode(this) + ": "+ str);
+        logger.debug(System.identityHashCode(this) + ": "+ str);
     }
 
     /**
