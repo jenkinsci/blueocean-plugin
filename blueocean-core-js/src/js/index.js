@@ -17,7 +17,7 @@ export logging from './logging';
 export loadingIndicator from './LoadingIndicator';
 
 export { Fetch, FetchFunctions } from './fetch';
-export UrlBuilder from './UrlBuilder';
+export * as UrlBuilder from './UrlBuilder';
 export UrlConfig from './urlconfig';
 export JWT from './jwt';
 export TestUtils from './testutils';
