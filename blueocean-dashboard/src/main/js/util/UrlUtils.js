@@ -21,3 +21,5 @@ export {
     buildUrl,
     relativeUrl,
 } from '@jenkins-cd/blueocean-core-js';
+
+// FIXME-JM: This is an abomination. Individual files within Dashboard should import from core-js, which needs to have all its URL utils collapsed into one module

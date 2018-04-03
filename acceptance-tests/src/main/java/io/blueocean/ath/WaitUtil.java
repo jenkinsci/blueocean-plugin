@@ -19,7 +19,7 @@ import java.util.concurrent.TimeUnit;
 @Singleton
 public class WaitUtil {
     public static int DEFAULT_TIMEOUT = Integer.getInteger("webDriverDefaultTimeout", 20000);
-    public static final int RETRY_COUNT = 2;
+    public static final int RETRY_COUNT = 10;
 
     private Logger logger = Logger.getLogger(WaitUtil.class);
 
@@ -86,16 +86,70 @@ public class WaitUtil {
     }
 
     /**
+     * Send a clear to the element specified by the locator.
+     * Used for wiping out default entries in text fields.
+     * Will retry through a number of 'element not clickable'
+     * exceptions as defined by RETRY_COUNT.
+     * @param by The `By` identifier we are targeting
+     */
+    public void clear(By by) {
+        for (int i = 0; i < RETRY_COUNT + 1; i++) {
+            try {
+                until(ExpectedConditions.elementToBeClickable(by)).clear();
+                if (i > 0) {
+                    logger.info(String.format("Retry of clear successful on attempt " + i + " for %s", by.toString()));
+                }
+                return;
+            } catch (WebDriverException ex) {
+                if (ex.getMessage().contains("is not clickable at point")) {
+                    logger.warn(String.format("%s not clickable: will retry clear", by.toString()));
+                    logger.debug("exception: " + ex.getMessage());
+                } else {
+                    throw ex;
+                }
+            }
+        }
+    }
+
+
+    /**
      * Click the element specified by the locator.
      * Will retry click for 'element not clickable' exceptions
      * @param by
      */
     public void click(By by) {
-        for (int i = 0; i < RETRY_COUNT + 1; i++) {
+        for (int i = 1; i < RETRY_COUNT + 1; i++) {
             try {
                 until(ExpectedConditions.elementToBeClickable(by)).click();
+                if (i > 1) {
+                    logger.info(String.format("Retry click successful on attempt " + i + " for %s", by.toString()));
+                }
+                return;
+            } catch (WebDriverException ex) {
+                if (ex.getMessage().contains("is not clickable at point")) {
+                    logger.warn(String.format("%s not clickable on attempt " + i + ", will sleep 500ms and retry ", by.toString()));
+                    tinySleep();
+                    logger.debug("exception: " + ex.getMessage());
+                } else {
+                    throw ex;
+                }
+            }
+        }
+    }
+
+    /**
+     * Send a key sequence to the element specified by the locator.
+     * Will retry through a number of  'element not clickable'
+     * exceptions as defined by RETRY_COUNT
+     * @param by The `By` identifier we are targeting
+     * @param keySequence a String of characters to enter
+     */
+    public void sendKeys(By by, String keySequence) {
+        for (int i = 0; i < RETRY_COUNT + 1; i++) {
+            try {
+                until(ExpectedConditions.elementToBeClickable(by)).sendKeys(keySequence);
                 if (i > 0) {
-                    logger.info(String.format("retry click successful for %s", by.toString()));
+                    logger.info(String.format("Retry of sendKeys successful on attempt " + i + " for %s", by.toString()));
                 }
                 return;
             } catch (WebDriverException ex) {
@@ -135,4 +189,18 @@ public class WaitUtil {
         }
         return null;
     }
+
+    /**
+     * Sleep method to work around the occasional glitch with
+     * perfectly clickable buttons not behaving correctly
+     * in these tests.
+     */
+    public void tinySleep() {
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException ex) {
+            logger.info("Exception thrown by tinySleep");
+        }
+    }
+
 }

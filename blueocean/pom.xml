@@ -5,7 +5,7 @@
     <parent>
         <groupId>io.jenkins.blueocean</groupId>
         <artifactId>blueocean-parent</artifactId>
-        <version>1.5.0-beta-3-SNAPSHOT</version>
+        <version>1.6.0-beta-1-SNAPSHOT</version>
     </parent>
 
     <artifactId>blueocean</artifactId>
@@ -95,12 +95,7 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-pipeline-editor</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-jira</artifactId>
-        </dependency>
-
+        
         <!-- Bundled plugins for improved out of the box experience -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>

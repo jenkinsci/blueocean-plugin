@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 
 import { JTable, TableCell, TableRow, PlaceholderIcon, PlaceholderText, LiveStatusIndicator, TimeDuration, ReadableDate } from '@jenkins-cd/design-language';
 
-import { buildRunDetailsUrl } from '../../util/UrlUtils';
+import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 
 //--------------------------------------------------------------------------
 //  Downstream Runs component (renderer)
@@ -50,7 +50,7 @@ export class DownstreamRunsView extends Component {
                 const runResult = runDetails.result === 'UNKNOWN' ? runDetails.state : runDetails.result;
                 const isRunning = runResult === 'RUNNING' || runResult === 'PAUSED' || runResult === 'QUEUED';
 
-                const runDetailsUrl = buildRunDetailsUrl(runDetails.organization, runDetails.pipeline, runDetails.pipeline, runDetails.id, 'pipeline');
+                const runDetailsUrl = UrlBuilder.buildRunDetailsUrl(runDetails);
 
                 const { durationInMillis, estimatedDurationInMillis } = runDetails;
 
