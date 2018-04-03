@@ -3,15 +3,31 @@
   "version": "0.0.1",
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": {
-      "version": "0.0.171"
+      "version": "0.0.171",
+      "from": "@jenkins-cd/blueocean-core-js@0.0.171",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-core-js/-/blueocean-core-js-0.0.171.tgz",
+      "dependencies": {
+        "@jenkins-cd/blueocean-material-icons": {
+          "version": "0.0.6",
+          "from": "@jenkins-cd/blueocean-material-icons@0.0.6",
+          "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-material-icons/-/blueocean-material-icons-0.0.6.tgz"
+        },
+        "@jenkins-cd/design-language": {
+          "version": "0.0.161",
+          "from": "@jenkins-cd/design-language@0.0.161",
+          "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.161.tgz"
+        }
+      }
     },
     "@jenkins-cd/blueocean-material-icons": {
-      "version": "0.0.6",
-      "from": "@jenkins-cd/blueocean-material-icons@0.0.6",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-material-icons/-/blueocean-material-icons-0.0.6.tgz"
+      "version": "0.0.7",
+      "from": "@jenkins-cd/blueocean-material-icons@0.0.7",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-material-icons/-/blueocean-material-icons-0.0.7.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.161"
+      "version": "0.0.162",
+      "from": "@jenkins-cd/design-language@0.0.162",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.162.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -309,7 +325,7 @@
     },
     "arr-flatten": {
       "version": "1.1.0",
-      "from": "arr-flatten@>=1.1.0 <2.0.0",
+      "from": "arr-flatten@>=1.0.1 <2.0.0",
       "resolved": "https://registry.npmjs.org/arr-flatten/-/arr-flatten-1.1.0.tgz",
       "dev": true
     },
@@ -517,7 +533,7 @@
         },
         "source-map": {
           "version": "0.5.7",
-          "from": "source-map@>=0.5.7 <0.6.0",
+          "from": "source-map@>=0.5.6 <0.6.0",
           "resolved": "https://registry.npmjs.org/source-map/-/source-map-0.5.7.tgz",
           "dev": true
         }
@@ -2709,7 +2725,7 @@
     },
     "for-in": {
       "version": "1.0.2",
-      "from": "for-in@>=1.0.2 <2.0.0",
+      "from": "for-in@>=1.0.1 <2.0.0",
       "resolved": "https://registry.npmjs.org/for-in/-/for-in-1.0.2.tgz",
       "dev": true
     },
@@ -3267,7 +3283,7 @@
     },
     "has": {
       "version": "1.0.1",
-      "from": "has@>=1.0.1 <2.0.0",
+      "from": "has@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/has/-/has-1.0.1.tgz",
       "dev": true
     },
@@ -3379,7 +3395,7 @@
     },
     "homedir-polyfill": {
       "version": "1.0.1",
-      "from": "homedir-polyfill@>=1.0.1 <2.0.0",
+      "from": "homedir-polyfill@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/homedir-polyfill/-/homedir-polyfill-1.0.1.tgz",
       "dev": true
     },
@@ -3660,7 +3676,7 @@
     },
     "is-extendable": {
       "version": "0.1.1",
-      "from": "is-extendable@>=0.1.0 <0.2.0",
+      "from": "is-extendable@>=0.1.1 <0.2.0",
       "resolved": "https://registry.npmjs.org/is-extendable/-/is-extendable-0.1.1.tgz",
       "dev": true
     },
@@ -3754,7 +3770,7 @@
     },
     "is-plain-object": {
       "version": "2.0.4",
-      "from": "is-plain-object@>=2.0.4 <3.0.0",
+      "from": "is-plain-object@>=2.0.3 <3.0.0",
       "resolved": "https://registry.npmjs.org/is-plain-object/-/is-plain-object-2.0.4.tgz",
       "dev": true
     },
@@ -5388,7 +5404,7 @@
     },
     "map-cache": {
       "version": "0.2.2",
-      "from": "map-cache@>=0.2.2 <0.3.0",
+      "from": "map-cache@>=0.2.0 <0.3.0",
       "resolved": "https://registry.npmjs.org/map-cache/-/map-cache-0.2.2.tgz",
       "dev": true
     },
@@ -5796,7 +5812,7 @@
     },
     "normalize-path": {
       "version": "2.1.1",
-      "from": "normalize-path@>=2.1.1 <3.0.0",
+      "from": "normalize-path@>=2.0.1 <3.0.0",
       "resolved": "https://registry.npmjs.org/normalize-path/-/normalize-path-2.1.1.tgz",
       "dev": true
     },
@@ -5928,7 +5944,7 @@
     },
     "object.pick": {
       "version": "1.3.0",
-      "from": "object.pick@>=1.3.0 <2.0.0",
+      "from": "object.pick@>=1.2.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/object.pick/-/object.pick-1.3.0.tgz",
       "dev": true
     },
@@ -6769,7 +6785,7 @@
     },
     "repeat-string": {
       "version": "1.6.1",
-      "from": "repeat-string@>=1.6.1 <2.0.0",
+      "from": "repeat-string@>=1.5.2 <2.0.0",
       "resolved": "https://registry.npmjs.org/repeat-string/-/repeat-string-1.6.1.tgz",
       "dev": true
     },
@@ -7843,7 +7859,7 @@
     },
     "unc-path-regex": {
       "version": "0.1.2",
-      "from": "unc-path-regex@>=0.1.2 <0.2.0",
+      "from": "unc-path-regex@>=0.1.0 <0.2.0",
       "resolved": "https://registry.npmjs.org/unc-path-regex/-/unc-path-regex-0.1.2.tgz",
       "dev": true
     },
@@ -8205,7 +8221,7 @@
     },
     "which": {
       "version": "1.3.0",
-      "from": "which@>=1.2.14 <2.0.0",
+      "from": "which@>=1.2.12 <2.0.0",
       "resolved": "https://registry.npmjs.org/which/-/which-1.3.0.tgz",
       "dev": true
     },

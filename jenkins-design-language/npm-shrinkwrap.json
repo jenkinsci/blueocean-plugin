@@ -3,9 +3,9 @@
   "version": "0.0.161-xxx2",
   "dependencies": {
     "@jenkins-cd/blueocean-material-icons": {
-      "version": "0.0.6-xxx",
-      "from": "@jenkins-cd/blueocean-material-icons@0.0.6-xxx",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-material-icons/-/blueocean-material-icons-0.0.6-xxx.tgz"
+      "version": "0.0.7",
+      "from": "@jenkins-cd/blueocean-material-icons@0.0.7",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-material-icons/-/blueocean-material-icons-0.0.7.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
