@@ -4,7 +4,7 @@ import { ReplayButton, RunButton, LiveStatusIndicator, TimeHarmonizer as timeHar
 import Extensions from '@jenkins-cd/js-extensions';
 
 import { MULTIBRANCH_PIPELINE, SIMPLE_PIPELINE } from '../Capabilities';
-import { buildRunDetailsUrl } from '@jenkins-cd/blueocean-core-js';
+import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import IfCapability from './IfCapability';
 import RunMessageCell from './RunMessageCell';
 import RunIdCell from './RunIdCell';
@@ -31,8 +31,8 @@ class ActivityDetailsRow extends Component {
         }
 
         const resultRun = run.result === 'UNKNOWN' ? run.state : run.result;
-        const runDetailsUrl = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'pipeline');
-        const changesUrl = buildRunDetailsUrl(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'changes');
+        const runDetailsUrl = UrlBuilder.badName003(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'pipeline');
+        const changesUrl = UrlBuilder.badName003(pipeline.organization, pipeline.fullName, decodeURIComponent(run.pipeline), run.id, 'changes');
 
         const { durationInMillis, endTime, startTime } = getTimes({
             result: resultRun,

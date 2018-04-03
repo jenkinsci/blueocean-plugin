@@ -112,7 +112,7 @@ export {
     buildClassicConfigUrl,
     buildClassicInputUrl,
     buildClassicBuildUrl,
-    buildRunDetailsUrl,
+    badName003,
     doubleUriEncode,
     fetchAllSuffix,
     applyFetchAll,

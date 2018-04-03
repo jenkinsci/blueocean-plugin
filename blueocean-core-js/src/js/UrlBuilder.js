@@ -99,9 +99,9 @@ export function badName003(organizationName, pipelineFullName, branchOrPipelineN
 //  * @param {object|string} run
 //  * @returns {string}
 //  *
-//  * FIXME-JM: Unify this with buildRunDetailsUrl in blueocean-core-js/src/js/utils/UrlUtils.js - this is madness.
+//  * FIXME-JM: Unify this with badName003 in blueocean-core-js/src/js/utils/UrlUtils.js - this is madness.
 //  */
-// export const buildRunDetailsUrl = run => {
+// export const badName003 = run => {
 //
 //     // TODO: Remove this
 //     throw new Error("should not still be calling this");
@@ -119,5 +119,5 @@ export function badName003(organizationName, pipelineFullName, branchOrPipelineN
 // };
 //
 // export default {
-//     buildRunDetailsUrl,
+//     badName003,
 // };

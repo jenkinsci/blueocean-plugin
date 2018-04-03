@@ -5,7 +5,7 @@ import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 
 import { Icon } from '@jenkins-cd/design-language';
 
-import { rootPath, buildOrganizationUrl, buildPipelineUrl, buildRunDetailsUrl, buildClassicConfigUrl } from '@jenkins-cd/blueocean-core-js';
+import { rootPath, buildOrganizationUrl, buildPipelineUrl, UrlBuilder, buildClassicConfigUrl } from '@jenkins-cd/blueocean-core-js';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
@@ -104,7 +104,7 @@ class RunDetails extends Component {
     navigateToChanges = () => {
         const { location, params: { organization, pipeline, branch, runId } } = this.context;
 
-        const changesUrl = buildRunDetailsUrl(organization, pipeline, branch, runId, 'changes');
+        const changesUrl = UrlBuilder.badName003(organization, pipeline, branch, runId, 'changes');
         location.pathname = changesUrl;
         this.context.router.push(location);
     };
@@ -134,7 +134,7 @@ class RunDetails extends Component {
             return null;
         }
 
-        const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId, null);
+        const baseUrl = UrlBuilder.badName003(params.organization, params.pipeline, params.branch, params.runId, null);
         logger.debug('params', params.organization, params.pipeline, params.branch, params.runId);
         const currentRun = new RunRecord(run);
         const computedTitle = `${currentRun.organization} / ${pipeline.fullName} / ${params.pipeline === params.branch
