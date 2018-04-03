@@ -2,23 +2,7 @@
  * Created by cmeyers on 8/25/16.
  */
 
-const extractRestUrl = subject => {
-    let restUrl = null;
-
-    if (typeof subject === 'object') {
-        if (subject && subject._links && subject._links.self) {
-            restUrl = subject._links.self.href;
-        }
-    } else if (typeof subject === 'string') {
-        restUrl = subject;
-    }
-
-    if (!restUrl) {
-        throw new Error('Could not find input URL');
-    }
-
-    return restUrl;
-};
+// TODO: File docs
 
 /**
  * Return a new array with leading and trailing whitespace elements removed.
@@ -84,25 +68,23 @@ function parseRestRunUrl(restUrl) {
     };
 }
 
-// TODO: Docs - Run object to run details url
+// TODO: Docs - Run object -> run details url
 export function badName001(runDetails) {
     const restUrl = runDetails._links.self.href;
-
-    const { organizationName, fullName, detailName, runId } = parseRestRunUrl(restUrl);
-
-    return badName003(organizationName, fullName, detailName, runId);
+    return badName002(restUrl);
 }
 
-// TODO: Docs - Run link to run details url
+// TODO: Docs - Run link -> run details url
 export function badName002(restUrl) {
     const { organizationName, fullName, detailName, runId } = parseRestRunUrl(restUrl);
 
     return badName003(organizationName, fullName, detailName, runId);
 }
 
-// TODO: Rename, docs, check param names
+// TODO: Docs - individual run detail params -> run details url
+// TODO: check param names
 // TODO: Add some unit tests, ensuring the individual components are URLEncoded correctly
-function badName003(organizationName, pipelineFullName, branchOrPipelineName, runId, tabName = 'pipeline') {
+export function badName003(organizationName, pipelineFullName, branchOrPipelineName, runId, tabName = 'pipeline') {
     //   return `/organizations/${organizationName}` + `/${encodeURIComponent(fullName)}/detail` + `/${detailName}/${runId}/pipeline`;
 
     return (

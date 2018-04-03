@@ -3,7 +3,7 @@
  */
 import { assert } from 'chai';
 
-import { badName001, badName002 } from '../../src/js/UrlBuilder';
+import { badName001, badName002, badName003 } from '../../src/js/UrlBuilder';
 
 const createObjectFromLink = url => ({ _links: { self: { href: url } } });
 
@@ -85,6 +85,32 @@ describe('UrlBuilder', () => {
                 const url = badName001(multibranch);
                 assert.equal(url, '/organizations/jenkins/folder1%2Ffolder2%2Ffolder3%2Fjdl-2/detail/experiment%2Fbuild-locally-docker/21/pipeline');
             });
+        });
+    });
+
+    describe('badName003', () => {
+        // it('should build the baseUrl if tabName omitted', () => {
+        //     const url = badName003(
+        //         'jenkins',
+        //         'blueocean',
+        //         'master',
+        //         1,
+        //     );
+        //
+        //     assert.equal(url, '/organizations/jenkins/blueocean/detail/master/1');
+        // });
+        // TODO: Is there anywhere we're actually relying on this ^^^ (ie, will it fail ATH)?
+
+        it('should build the full url with tab name', () => {
+            const url = badName003('jenkins', 'blueocean', 'master', 1, 'changes');
+
+            assert.equal(url, '/organizations/jenkins/blueocean/detail/master/1/changes');
+        });
+
+        it('should escape characters correctly', () => {
+            const url = badName003('jenkins', 'blueocean', 'feature/JENKINS-666', 1, 'changes');
+
+            assert.equal(url, '/organizations/jenkins/blueocean/detail/feature%2FJENKINS-666/1/changes');
         });
     });
 });

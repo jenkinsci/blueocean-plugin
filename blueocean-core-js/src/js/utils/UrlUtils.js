@@ -1,4 +1,5 @@
 import AppConfig from '../config';
+import { badName003 } from '../UrlBuilder';
 
 /**
  * Gives classic jenkins job path prefix.
@@ -65,24 +66,6 @@ export const buildClassicBuildUrl = pipeline => {
         return `${rootPath(pipeline.fullName)}build?delay=0sec`;
     }
     return null;
-};
-
-/**
- * Build a root-relative URL to the run details screen.
- * @param organization
- * @param pipeline
- * @param branch
- * @param runId
- * @param tabName
- *
- * FIXME-JM: Unify this with buildRunDetailsUrl in blueocean-core-js/src/js/UrlBuilder.js - this is madness.
- */
-export const buildRunDetailsUrl = (organization, pipeline, branch, runId, tabName) => {
-    const baseUrl =
-        `/organizations/${encodeURIComponent(organization)}/` +
-        `${encodeURIComponent(pipeline)}/detail/` +
-        `${encodeURIComponent(branch)}/${encodeURIComponent(runId)}`;
-    return tabName ? `${baseUrl}/${tabName}` : baseUrl;
 };
 
 /**
