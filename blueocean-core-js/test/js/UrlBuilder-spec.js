@@ -89,17 +89,11 @@ describe('UrlBuilder', () => {
     });
 
     describe('badName003', () => {
-        // it('should build the baseUrl if tabName omitted', () => {
-        //     const url = badName003(
-        //         'jenkins',
-        //         'blueocean',
-        //         'master',
-        //         1,
-        //     );
-        //
-        //     assert.equal(url, '/organizations/jenkins/blueocean/detail/master/1');
-        // });
-        // TODO: Is there anywhere we're actually relying on this ^^^ (ie, will it fail ATH)?
+        it('should build the baseUrl if tabName null', () => {
+            const url = badName003('jenkins', 'blueocean', 'master', 1, null);
+
+            assert.equal(url, '/organizations/jenkins/blueocean/detail/master/1');
+        });
 
         it('should build the full url with tab name', () => {
             const url = badName003('jenkins', 'blueocean', 'master', 1, 'changes');

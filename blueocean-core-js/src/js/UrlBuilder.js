@@ -82,18 +82,14 @@ export function badName002(restUrl) {
 }
 
 // TODO: Docs - individual run detail params -> run details url
-// TODO: check param names
-// TODO: Add some unit tests, ensuring the individual components are URLEncoded correctly
 export function badName003(organizationName, pipelineFullName, branchOrPipelineName, runId, tabName = 'pipeline') {
-    //   return `/organizations/${organizationName}` + `/${encodeURIComponent(fullName)}/detail` + `/${detailName}/${runId}/pipeline`;
-
-    return (
+    const baseUrl =
         `/organizations/${encodeURIComponent(organizationName)}` +
         `/${encodeURIComponent(pipelineFullName)}` +
         `/detail/${encodeURIComponent(branchOrPipelineName)}` +
-        `/${encodeURIComponent(runId)}` +
-        `/${tabName}`
-    );
+        `/${encodeURIComponent(runId)}`;
+
+    return tabName === null ? baseUrl : baseUrl + `/${tabName}`;
 }
 
 // /**
