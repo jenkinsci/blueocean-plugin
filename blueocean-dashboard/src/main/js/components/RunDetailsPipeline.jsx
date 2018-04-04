@@ -47,7 +47,7 @@ export class RunDetailsPipeline extends Component {
     }
     // we bail out on arrow_up key
     _handleKeys(event) {
-        if (event.keyCode === 38 && this.augmenter.karaoke) {
+        if (event.keyCode === 38 && this.augmenter.karaoke && this.props.result.state !== 'PAUSED') {
             logger.debug('stop follow along by key up');
             this.augmenter.setKaraoke(false);
         }
@@ -55,7 +55,7 @@ export class RunDetailsPipeline extends Component {
     // need to register handler to step out of karaoke mode
     // we bail out on scroll up
     _onScrollHandler(elem) {
-        if (elem.deltaY < 0 && this.augmenter.karaoke) {
+        if (elem.deltaY < 0 && this.augmenter.karaoke && this.props.result.state !== 'PAUSED') {
             logger.debug('stop follow along by scroll up');
             this.augmenter.setKaraoke(false);
         }
