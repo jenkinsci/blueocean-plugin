@@ -1,11 +1,7 @@
-/**
- * Created by cmeyers on 8/25/16.
- */
-
 // TODO: File docs
 
 import AppConfig from './config';
-import { jobPrefixPath } from './utils/UrlUtils';
+import { classicOrganizationRoot } from './utils/UrlUtils';
 
 /**
  * Return a new array with leading and trailing whitespace elements removed.
@@ -55,7 +51,6 @@ function parseRestRunUrl(restUrl) {
     const runId = tokens[tokens.length - 1];
 
     const detailName = decodeURIComponent(isMultiBranch ? decodeURIComponent(branchName) : pipelineName);
-    // TODO: Look into why branch names are double-encoded, if I dare
 
     // fail fast
     if (!organizationName || !fullName || !detailName || !runId) {
@@ -115,46 +110,104 @@ export function buildPipelineUrl(organizationName, pipelineFullName, tabName) {
     return tabName ? `${baseUrl}/${tabName}` : baseUrl;
 }
 
+export function classicJobRoot(pipelineFullName) {
+    // TODO: check usages, adjust name to show classic-relatedness and param
+    const jenkinsUrl = AppConfig.getJenkinsRootURL();
+    return `${jenkinsUrl}${classicOrganizationRoot(AppConfig.getOrganizationGroup())}/job/${pipelineFullName.split('/').join('/job/')}`;
+}
+
 export function buildClassicCreateJobUrl() {
     const jenkinsUrl = AppConfig.getJenkinsRootURL();
-    return `${jenkinsUrl}${jobPrefixPath(AppConfig.getOrganizationGroup())}/newJob`;
+    return `${jenkinsUrl}${classicOrganizationRoot(AppConfig.getOrganizationGroup())}/newJob`;
 }
 
-export function rootPath(name) {
-    // TODO: check usages, adjust name to show classic-relatedness and param
-    // TODO: This seems not not urlencode the pipeline.fullName, look into that and attempt to make it do so for consistency
-    const jenkinsUrl = AppConfig.getJenkinsRootURL();
-    return `${jenkinsUrl}${jobPrefixPath(AppConfig.getOrganizationGroup())}/job/${name.split('/').join('/job/')}/`;
-}
-
-export function buildClassicConfigUrl(pipeline) {
-    // TODO: check usages, adjust name and param
-    // TODO: This seems not not urlencode the pipeline.fullName, look into that and attempt to make it do so for consistency
-    if (pipeline && pipeline.fullName) {
-        return `${rootPath(pipeline.fullName)}configure`;
+export function buildClassicConfigUrl(pipelineDetails) {
+    if (pipelineDetails && pipelineDetails.fullName) {
+        return `${classicJobRoot(pipelineDetails.fullName)}/configure`;
     }
     return null;
 }
 
-export function buildClassicInputUrl(pipeline, branch, runNumber) {
-    // TODO: check usages, adjust name and param
-    // TODO: This seems not not urlencode the pipeline.fullName, look into that and attempt to make it do so for consistency
-    if (pipeline && pipeline.fullName) {
-        if (pipeline.branchNames) {
-            return `${rootPath(pipeline.fullName)}job/${encodeURIComponent(branch)}/${encodeURIComponent(runNumber)}/input`;
+export function buildClassicInputUrl(pipelineDetails, branchName, runId) {
+    if (pipelineDetails && pipelineDetails.fullName) {
+        if (pipelineDetails.branchNames) {
+            return `${classicJobRoot(pipelineDetails.fullName)}/job/${encodeURIComponent(branchName)}/${encodeURIComponent(runId)}/input`;
         } else {
-            return `${rootPath(pipeline.fullName)}${encodeURIComponent(runNumber)}/input`;
+            return `${classicJobRoot(pipelineDetails.fullName)}/${encodeURIComponent(runId)}/input`;
         }
     }
     return null;
 }
 
 // http://localhost:8080/jenkins/job/scherler/job/Jenkins-40617-params/build?delay=0sec
-export function buildClassicBuildUrl(pipeline) {
-    // TODO: check usages, adjust name and param
-    // TODO: This seems not not urlencode the pipeline.fullName, look into that and attempt to make it do so for consistency
-    if (pipeline && pipeline.fullName) {
-        return `${rootPath(pipeline.fullName)}build?delay=0sec`;
+export function buildClassicBuildUrl(pipelineDetails) {
+    if (pipelineDetails && pipelineDetails.fullName) {
+        return `${classicJobRoot(pipelineDetails.fullName)}/build?delay=0sec`;
     }
     return null;
+}
+
+/**
+ * Check is the current Blue ocean page a pipeline page and if so,
+ * decode it to the corresponding classic Jenkins Job page.
+ * @returns {string|undefined} The classic job page, or undefined if
+ * it was unable to decode the page URL.
+ */
+export function toClassicJobPage(currentPageUrl, isMultibranch = false) {
+    const pageUrlTokens = currentPageUrl.split('/').filter(token => typeof token === 'string' && token !== '');
+
+    // Remove all path elements up to and including the Jenkins
+    // organization name.
+    let token = pageUrlTokens.shift();
+    while (token !== undefined && token !== 'organizations') {
+        token = pageUrlTokens.shift();
+    }
+
+    let classicJobFullName = classicOrganizationRoot(AppConfig.getOrganizationGroup());
+
+    if (pageUrlTokens.length > 1) {
+        // The next token is the actual organization name e.g. "jenkins".
+        // Remove that since we don't need it.
+        pageUrlTokens.shift();
+
+        // The next token is the "full" job name, URL encoded.
+        const fullJobName = decodeURIComponent(pageUrlTokens.shift());
+        const fullJobNameTokens = fullJobName.split('/');
+        if (fullJobName !== 'pipelines' && pageUrlTokens.length > 0) {
+            classicJobFullName = classicJobFullName + '/job/' + fullJobNameTokens.join('/job/');
+        }
+        if (pageUrlTokens.length > 1) {
+            // The next token being "detail" indicates that we're looking
+            // at a branch.
+            if (pageUrlTokens.shift() === 'detail') {
+                // is going to be something like one of:
+                // - detail/[freestyleA/activity]
+                // - detail/[freestyleA/2/pipeline]
+                if (isMultibranch) {
+                    const branchName = pageUrlTokens.shift(); // "freestyleA"
+                    const classicJobBranch = classicJobFullName + '/job/' + branchName;
+
+                    // And if there's more than one token left then we have
+                    // the detail/freestyleA/[2/pipeline] variant. The next
+                    // token is the runId
+                    if (pageUrlTokens.length > 1) {
+                        return classicJobBranch + '/' + pageUrlTokens.shift(); // "2"
+                    }
+
+                    return classicJobBranch;
+                } else if (pageUrlTokens.length > 2) {
+                    // And if there's more than two tokens left then we have
+                    // the detail/[freestyleA/2/pipeline] variant.
+                    // Next token is the branch name - not really a branch name !!
+                    // Ignoring it.
+                    pageUrlTokens.shift(); // "freestyleA"
+                    // And the next token is the runId.
+                    const runId = pageUrlTokens.shift(); // "2"
+                    return classicJobFullName + '/' + runId;
+                }
+            }
+        }
+    }
+
+    return classicJobFullName;
 }

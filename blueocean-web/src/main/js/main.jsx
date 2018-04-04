@@ -13,7 +13,7 @@ import {
     locationService,
     NotFound,
     SiteHeader,
-    toClassicJobPage,
+    UrlBuilder,
     User,
     loadingIndicator,
     LoginButton,
@@ -83,13 +83,7 @@ class App extends Component {
             </Extensions.Renderer>,
         ];
 
-        let classicUrl = toClassicJobPage(window.location.pathname);
-        if (classicUrl) {
-            // prepend with the jenkins root url
-            classicUrl = UrlConfig.getJenkinsRootURL() + classicUrl;
-        } else {
-            classicUrl = UrlConfig.getJenkinsRootURL();
-        }
+        let classicUrl = UrlConfig.getJenkinsRootURL() + UrlBuilder.toClassicJobPage(window.location.pathname);
 
         // Make sure there's a leading slash so that
         // the url is rooted...

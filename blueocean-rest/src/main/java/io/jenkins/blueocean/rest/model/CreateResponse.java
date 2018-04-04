@@ -31,7 +31,7 @@ public class CreateResponse implements HttpResponse {
     @Override
     public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
         rsp.setStatus(201);
-        String location = String.format("%s%s", req.getRootPath(), payload.getLink());
+        String location = String.format("%s%s", req.getclassicJobRoot(), payload.getLink());
         rsp.addHeader("Location", location);
 
         // Writes payload as a tree response

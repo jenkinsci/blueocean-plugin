@@ -4,7 +4,7 @@
 import { assert } from 'chai';
 
 import { UrlBuilder } from '../../src/js/';
-import { buildClassicConfigUrl } from '../../src/js/utils/UrlUtils';
+import { buildClassicConfigUrl, toClassicJobPage } from '../../src/js/utils/UrlUtils';
 
 const createObjectFromLink = url => ({ _links: { self: { href: url } } });
 
@@ -151,6 +151,32 @@ describe('UrlBuilder', () => {
         it('should build the url for classic config', () => {
             const url = UrlBuilder.buildClassicConfigUrl(testData);
             assert.equal(url, '/jenkins/job/foldey/job/nesty/job/woozle%20wozzle/job/mazzig/configure');
+        });
+    });
+
+    describe('toClassicJobPage', () => {
+        it('Supports Non Multibranch', () => {
+            assert.equal(UrlBuilder.toClassicJobPage('/jenkins/blue/organizations/jenkins/freestyleA/detail/freestyleA/activity', false), '/job/freestyleA');
+            assert.equal(
+                UrlBuilder.toClassicJobPage('/jenkins/blue/organizations/jenkins/freestyleA/detail/freestyleA/2/pipeline', false),
+                '/job/freestyleA/2'
+            );
+
+            // In a folder
+            assert.equal(UrlBuilder.toClassicJobPage('/jenkins/blue/organizations/jenkins/Foo%2FBar/activity', false), '/job/Foo/job/Bar');
+            assert.equal(UrlBuilder.toClassicJobPage('/jenkins/blue/organizations/jenkins/Foo%2FBar/detail/Bar/1/pipeline', false), '/job/Foo/job/Bar/1');
+        });
+
+        it('Supports Multibranch', () => {
+            // A job down in a folder
+            assert.equal(
+                UrlBuilder.toClassicJobPage('/jenkins/blue/organizations/jenkins/folder1%2Ffolder2%2FATH/activity', true),
+                '/job/folder1/job/folder2/job/ATH'
+            );
+            assert.equal(
+                UrlBuilder.toClassicJobPage('/jenkins/blue/organizations/jenkins/folder1%2Ffolder2%2FATH/detail/master/1/pipeline', true),
+                '/job/folder1/job/folder2/job/ATH/job/master/1'
+            );
         });
     });
 });
