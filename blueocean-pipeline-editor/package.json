@@ -56,7 +56,7 @@
   },
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": "0.0.171",
-    "@jenkins-cd/design-language": "0.0.161",
+    "@jenkins-cd/design-language": "0.0.162",
     "@jenkins-cd/js-extensions": "0.0.42",
     "@jenkins-cd/js-modules": "0.0.10",
     "lodash.debounce": "4.0.8",
@@ -106,7 +106,11 @@
     ],
     "plugin": [
       [
-        "tsify", {"allowJs": false, "project": "tsconfig.json"}
+        "tsify",
+        {
+          "allowJs": false,
+          "project": "tsconfig.json"
+        }
       ]
     ]
   }
