@@ -55,13 +55,11 @@ class SvgIcon extends Component {
             ...other
         } = this.props;
 
-        const mergedStyles = Object.assign(
-            {
-                height: size ? size : 24,
-                width: size ? size : 24,
-            },
-            style
-        );
+        const mergedStyles = {
+            height: size ? size : 24,
+            width: size ? size : 24,
+            ...style,
+        };
 
         delete other.iconName;
 
