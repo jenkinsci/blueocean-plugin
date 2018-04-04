@@ -5,7 +5,7 @@ import { CartesianGrid, Legend, Line, LineChart, Tooltip, XAxis, YAxis } from 'r
 import { capable, AppConfig, Fetch } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 
-import { buildPipelineUrl } from '@jenkins-cd/blueocean-core-js';
+import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import { ColumnFilter } from './ColumnFilter';
 
 export const MULTIBRANCH_PIPELINE = 'io.jenkins.blueocean.rest.model.BlueMultiBranchPipeline';
@@ -155,7 +155,7 @@ export class PipelineTrends extends Component {
     navigateToBranch = branch => {
         const organization = this.props.params.organization;
         const pipeline = this.props.params.pipeline;
-        const baseUrl = buildPipelineUrl(organization, pipeline);
+        const baseUrl = UrlBuilder.buildPipelineUrl(organization, pipeline);
         let activitiesURL = `${baseUrl}/trends`;
         if (branch) {
             activitiesURL += '?branch=' + encodeURIComponent(branch);

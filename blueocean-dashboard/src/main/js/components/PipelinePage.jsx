@@ -4,7 +4,7 @@ import Extensions from '@jenkins-cd/js-extensions';
 import { ExpandablePath, Page, TabLink, WeatherIcon } from '@jenkins-cd/design-language';
 import { AppConfig, ContentPageHeader, i18nTranslator, logging, NotFound, Paths, Security } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from '@jenkins-cd/design-language';
-import { buildPipelineUrl, buildClassicConfigUrl, UrlBuilder } from '@jenkins-cd/blueocean-core-js';
+import { buildClassicConfigUrl, UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import { documentTitle } from './DocumentTitle';
 import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
@@ -68,7 +68,7 @@ export class PipelinePage extends Component {
         const organizationDisplayName = organization === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : organization;
 
         const orgUrl = UrlBuilder.buildOrganizationUrl(organizationName);
-        const activityUrl = buildPipelineUrl(organizationName, fullName, 'activity');
+        const activityUrl = UrlBuilder.buildPipelineUrl(organizationName, fullName, 'activity');
         const isReady = !!pipeline;
 
         if (!pipeline && this.error) {
@@ -82,7 +82,7 @@ export class PipelinePage extends Component {
             setTitle(translate('common.pager.loading', { defaultValue: 'Loading...' }));
         }
 
-        const baseUrl = buildPipelineUrl(organizationName, fullName);
+        const baseUrl = UrlBuilder.buildPipelineUrl(organizationName, fullName);
         const trendsEnabled = AppConfig.isFeatureEnabled('trends');
 
         const pageTabLinks = [

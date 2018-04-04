@@ -389,7 +389,7 @@ class PipelineLoader extends React.Component {
         const { organization, pipeline, branch } = this.props.params;
         const { router } = this.context;
         const location = {};
-        location.pathname = branch == null ? '/' : buildPipelineUrl(organization, pipeline);
+        location.pathname = branch == null ? '/' : UrlBuilder.buildPipelineUrl(organization, pipeline);
         location.query = null;
 
         if (this.opener) {
@@ -402,7 +402,7 @@ class PipelineLoader extends React.Component {
     goToActivity() {
         const { organization, pipeline, branch } = this.props.params;
         const { router } = this.context;
-        const location = buildPipelineUrl(organization, pipeline);
+        const location = UrlBuilder.buildPipelineUrl(organization, pipeline);
         activityService.removeItem(activityService.pagerKey(organization, pipeline, branch));
         router.push(location);
     }

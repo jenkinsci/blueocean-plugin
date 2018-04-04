@@ -5,7 +5,7 @@ import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 
 import { Icon } from '@jenkins-cd/design-language';
 
-import { rootPath, buildOrganizationUrl, buildPipelineUrl, UrlBuilder, buildClassicConfigUrl } from '@jenkins-cd/blueocean-core-js';
+import { rootPath, UrlBuilder, buildClassicConfigUrl } from '@jenkins-cd/blueocean-core-js';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
@@ -96,7 +96,7 @@ class RunDetails extends Component {
     navigateToPipeline = () => {
         const { organization, fullName } = this.props.pipeline;
         const { location } = this.context;
-        const pipelineUrl = buildPipelineUrl(organization, fullName);
+        const pipelineUrl = UrlBuilder.buildPipelineUrl(organization, fullName);
         location.pathname = pipelineUrl;
         this.context.router.push(location);
     };
@@ -115,7 +115,7 @@ class RunDetails extends Component {
 
     afterClose = () => {
         const { router, params } = this.context;
-        router.push(buildPipelineUrl(params.organization, params.pipeline));
+        router.push(UrlBuilder.buildPipelineUrl(params.organization, params.pipeline));
     };
 
     render() {

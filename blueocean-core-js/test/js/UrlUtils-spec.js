@@ -30,24 +30,6 @@ describe('UrlUtils', () => {
         );
     });
 
-    describe('buildPipelineUrl', () => {
-        it('should build the baseUrl for top level pipeline', () => {
-            const url = buildPipelineUrl('jenkins', 'blueocean');
-
-            assert.equal(url, '/organizations/jenkins/blueocean');
-        });
-        it('should build the baseUrl for 1-level nested pipeline', () => {
-            const url = buildPipelineUrl('jenkins', 'folder/blueocean');
-
-            assert.equal(url, '/organizations/jenkins/folder%2Fblueocean');
-        });
-        it('should build the baseUrl for 3-level nested pipeline', () => {
-            const url = buildPipelineUrl('jenkins', 'folder1/folder2/folder3/blueocean');
-
-            assert.equal(url, '/organizations/jenkins/folder1%2Ffolder2%2Ffolder3%2Fblueocean');
-        });
-    });
-
     describe('calculate log url', () => {
         it('should build the logUrl with only url set', () => {
             const testUrl = '/some/thing/';

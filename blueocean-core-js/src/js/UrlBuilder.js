@@ -100,32 +100,14 @@ export function buildOrganizationUrl(organization) {
     return `/organizations/${encodeURIComponent(organization)}`;
 }
 
-// /**
-//  * Builds the proper URL to view Run Details for the specified run.
-//  * Run is either a run object with "_links.self.href" property, or the URL itself.
-//  *
-//  * @param {object|string} run
-//  * @returns {string}
-//  *
-//  * FIXME-JM: Unify this with badName003 in blueocean-core-js/src/js/utils/UrlUtils.js - this is madness.
-//  */
-// export const badName003 = run => {
-//
-//     // TODO: Remove this
-//     throw new Error("should not still be calling this");
-//
-//     const restUrl = extractRestUrl(run);
-//
-//     const {
-//         organizationName,
-//         fullName,
-//         detailName,
-//         runId
-//     } = parseRestRunUrl(restUrl);
-//
-//     return `/organizations/${organizationName}` + `/${encodeURIComponent(fullName)}/detail` + `/${detailName}/${runId}/pipeline`;
-// };
-//
-// export default {
-//     badName003,
-// };
+/**
+ * Build a root-relative URL to the pipeline details screen.
+ * @param organizationName
+ * @param pipelineFullName
+ * @param tabName
+ * @returns {string}
+ */
+export function buildPipelineUrl(organizationName, pipelineFullName, tabName) {
+    const baseUrl = `/organizations/${encodeURIComponent(organizationName)}/` + `${encodeURIComponent(pipelineFullName)}`;
+    return tabName ? `${baseUrl}/${tabName}` : baseUrl;
+}

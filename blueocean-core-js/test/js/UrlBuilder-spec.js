@@ -121,4 +121,24 @@ describe('UrlBuilder', () => {
             assert.equal(url, '/organizations/foo%2Fbar');
         });
     });
+
+    describe('buildPipelineUrl', () => {
+        it('should build the baseUrl for top level pipeline', () => {
+            const url = UrlBuilder.buildPipelineUrl('jenkins', 'blueocean');
+
+            assert.equal(url, '/organizations/jenkins/blueocean');
+        });
+
+        it('should build the baseUrl for 1-level nested pipeline', () => {
+            const url = UrlBuilder.buildPipelineUrl('jenkins', 'folder/blueocean');
+
+            assert.equal(url, '/organizations/jenkins/folder%2Fblueocean');
+        });
+
+        it('should build the baseUrl for 3-level nested pipeline', () => {
+            const url = UrlBuilder.buildPipelineUrl('jenkins', 'folder1/folder2/folder3/blueocean');
+
+            assert.equal(url, '/organizations/jenkins/folder1%2Ffolder2%2Ffolder3%2Fblueocean');
+        });
+    });
 });

@@ -5,7 +5,7 @@ import { observer } from 'mobx-react';
 import { ActivityDetailsRow } from './ActivityDetailsRow';
 import { ChangeSetRecord } from './records';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
-import { buildPipelineUrl } from '@jenkins-cd/blueocean-core-js';
+import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import { ColumnFilter } from './ColumnFilter';
 import { NoBranchesPlaceholder } from './placeholder/NoBranchesPlaceholder';
 import { NoRunsDefaultPlaceholder, NoRunsForBranchPlaceholder, NoRunsMultibranchPlaceholder } from './placeholder/NoRunsPlaceholder';
@@ -67,7 +67,7 @@ export class Activity extends Component {
     navigateToBranch = branch => {
         const organization = this.context.params.organization;
         const pipeline = this.context.params.pipeline;
-        const baseUrl = buildPipelineUrl(organization, pipeline);
+        const baseUrl = UrlBuilder.buildPipelineUrl(organization, pipeline);
         let activitiesURL = `${baseUrl}/activity`;
         if (branch) {
             activitiesURL += '?branch=' + encodeURIComponent(branch);
@@ -129,7 +129,7 @@ export class Activity extends Component {
                     return <NoRunsDefaultPlaceholder t={t} runButton={runButton} />;
                 } else if (!branch) {
                     const { params } = this.context;
-                    const branchesUrl = buildPipelineUrl(params.organization, params.pipeline, 'branches');
+                    const branchesUrl = UrlBuilder.buildPipelineUrl(params.organization, params.pipeline, 'branches');
                     return <NoRunsMultibranchPlaceholder t={t} branchName={branch} branchesUrl={branchesUrl} />;
                 }
             }

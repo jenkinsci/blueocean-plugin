@@ -4,7 +4,7 @@ import { UrlConfig, AppConfig, logging, ResultPageHeader, TimeManager } from '@j
 import { ExpandablePath, ReadableDate, TimeDuration, CommitId } from '@jenkins-cd/design-language';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import { Link } from 'react-router';
-import { buildPipelineUrl } from '@jenkins-cd/blueocean-core-js';
+import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import RunIdCell from './RunIdCell';
 
 class RunDetailsHeader extends Component {
@@ -65,7 +65,7 @@ class RunDetailsHeader extends Component {
         const dateFormatShort = t('common.date.readable.short', { defaultValue: 'MMM DD h:mma Z' });
         const dateFormatLong = t('common.date.readable.long', { defaultValue: 'MMM DD YYYY h:mma Z' });
 
-        const activityUrl = `${buildPipelineUrl(run.organization, pipeline.fullName)}/activity`;
+        const activityUrl = `${UrlBuilder.buildPipelineUrl(run.organization, pipeline.fullName)}/activity`;
 
         // Sub-trees
         const title = (
@@ -87,7 +87,7 @@ class RunDetailsHeader extends Component {
             </h1>
         );
 
-        const branchUrl = `${buildPipelineUrl(run.organization, pipeline.fullName)}/activity?branch=${run.pipeline}`;
+        const branchUrl = `${UrlBuilder.buildPipelineUrl(run.organization, pipeline.fullName)}/activity?branch=${run.pipeline}`;
         const labelClassName = run.pullRequest ? 'pullRequest' : '';
 
         const branchSourceDetails = (

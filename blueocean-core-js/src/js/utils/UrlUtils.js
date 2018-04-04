@@ -15,18 +15,6 @@ function jobPrefixPath(organizationGroup) {
     return '';
 }
 
-/**
- * Build a root-relative URL to the pipeline details screen.
- * @param organization
- * @param fullName
- * @param tabName
- * @returns {string}
- */
-/* TODO: Move to builder */ export const buildPipelineUrl = (organization, fullName, tabName) => {
-    const baseUrl = `/organizations/${encodeURIComponent(organization)}/` + `${encodeURIComponent(fullName)}`;
-
-    return tabName ? `${baseUrl}/${tabName}` : baseUrl;
-};
 /* TODO: Move to builder */ export const buildClassicCreateJobUrl = () => {
     const jenkinsUrl = AppConfig.getJenkinsRootURL();
     return `${jenkinsUrl}${jobPrefixPath(AppConfig.getOrganizationGroup())}/newJob`;
