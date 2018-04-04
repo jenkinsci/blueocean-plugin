@@ -49,7 +49,7 @@ export class PipelineGraph extends Component {
             smallLabels: [],
             measuredWidth: 0,
             measuredHeight: 0,
-            layout: Object.assign({}, defaultLayout, props.layout),
+            layout: { ...defaultLayout, ...props.layout },
             selectedStage: props.selectedStage,
         };
     }
@@ -63,7 +63,7 @@ export class PipelineGraph extends Component {
         let needsLayout = false;
 
         if (nextProps.layout != this.props.layout) {
-            newState = { ...newState, layout: Object.assign({}, defaultLayout, this.props.layout) };
+            newState = { ...newState, layout: { ...defaultLayout, ...this.props.layout }};
             needsLayout = true;
         }
 
@@ -120,10 +120,11 @@ export class PipelineGraph extends Component {
         const bottom = this.state.measuredHeight - details.y + labelOffsetV;
 
         // These are about layout more than appearance, so they're inline
-        const style = Object.assign({}, bigLabelStyle, {
+        const style = {
+            ...bigLabelStyle,
             bottom: bottom + 'px',
             left: x + 'px',
-        });
+        };
 
         const classNames = ['pipeline-big-label'];
         if (this.stageIsSelected(details.stage) || this.stageChildIsSelected(details.stage)) {

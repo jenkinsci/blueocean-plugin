@@ -1,11 +1,11 @@
 {
   "name": "@jenkins-cd/design-language",
-  "version": "0.0.161",
+  "version": "0.0.161-xxx2",
   "dependencies": {
     "@jenkins-cd/blueocean-material-icons": {
-      "version": "0.0.6",
-      "from": "@jenkins-cd/blueocean-material-icons@0.0.6",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-material-icons/-/blueocean-material-icons-0.0.6.tgz"
+      "version": "0.0.7",
+      "from": "@jenkins-cd/blueocean-material-icons@0.0.7",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-material-icons/-/blueocean-material-icons-0.0.7.tgz"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -686,7 +686,7 @@
     },
     "arr-flatten": {
       "version": "1.1.0",
-      "from": "arr-flatten@>=1.1.0 <2.0.0",
+      "from": "arr-flatten@>=1.0.1 <2.0.0",
       "resolved": "https://registry.npmjs.org/arr-flatten/-/arr-flatten-1.1.0.tgz",
       "dev": true
     },
@@ -4189,7 +4189,7 @@
     },
     "for-in": {
       "version": "1.0.2",
-      "from": "for-in@>=1.0.2 <2.0.0",
+      "from": "for-in@>=1.0.1 <2.0.0",
       "resolved": "https://registry.npmjs.org/for-in/-/for-in-1.0.2.tgz",
       "dev": true
     },
@@ -4269,9 +4269,9 @@
       "dev": true
     },
     "fsevents": {
-      "version": "1.1.3",
+      "version": "1.1.2",
       "from": "fsevents@>=1.0.0 <2.0.0",
-      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-1.1.3.tgz",
+      "resolved": "https://registry.npmjs.org/fsevents/-/fsevents-1.1.2.tgz",
       "dev": true,
       "optional": true,
       "dependencies": {
@@ -4429,7 +4429,8 @@
           "version": "2.0.5",
           "from": "cryptiles@2.0.5",
           "resolved": "https://registry.npmjs.org/cryptiles/-/cryptiles-2.0.5.tgz",
-          "dev": true
+          "dev": true,
+          "optional": true
         },
         "dashdash": {
           "version": "1.14.1",
@@ -4471,13 +4472,6 @@
           "version": "1.0.0",
           "from": "delegates@1.0.0",
           "resolved": "https://registry.npmjs.org/delegates/-/delegates-1.0.0.tgz",
-          "dev": true,
-          "optional": true
-        },
-        "detect-libc": {
-          "version": "1.0.2",
-          "from": "detect-libc@^1.0.2",
-          "resolved": "https://registry.npmjs.org/detect-libc/-/detect-libc-1.0.2.tgz",
           "dev": true,
           "optional": true
         },
@@ -4594,7 +4588,8 @@
           "version": "3.1.3",
           "from": "hawk@3.1.3",
           "resolved": "https://registry.npmjs.org/hawk/-/hawk-3.1.3.tgz",
-          "dev": true
+          "dev": true,
+          "optional": true
         },
         "hoek": {
           "version": "2.16.3",
@@ -4750,9 +4745,9 @@
           "optional": true
         },
         "node-pre-gyp": {
-          "version": "0.6.39",
-          "from": "node-pre-gyp@^0.6.39",
-          "resolved": "https://registry.npmjs.org/node-pre-gyp/-/node-pre-gyp-0.6.39.tgz",
+          "version": "0.6.36",
+          "from": "node-pre-gyp@^0.6.36",
+          "resolved": "https://registry.npmjs.org/node-pre-gyp/-/node-pre-gyp-0.6.36.tgz",
           "dev": true,
           "optional": true
         },
@@ -4916,7 +4911,8 @@
           "version": "1.0.9",
           "from": "sntp@1.0.9",
           "resolved": "https://registry.npmjs.org/sntp/-/sntp-1.0.9.tgz",
-          "dev": true
+          "dev": true,
+          "optional": true
         },
         "sshpk": {
           "version": "1.13.0",
@@ -6164,7 +6160,7 @@
     },
     "has": {
       "version": "1.0.1",
-      "from": "has@>=1.0.1 <2.0.0",
+      "from": "has@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/has/-/has-1.0.1.tgz",
       "dev": true
     },
@@ -6274,7 +6270,7 @@
     },
     "homedir-polyfill": {
       "version": "1.0.1",
-      "from": "homedir-polyfill@>=1.0.1 <2.0.0",
+      "from": "homedir-polyfill@>=1.0.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/homedir-polyfill/-/homedir-polyfill-1.0.1.tgz",
       "dev": true
     },
@@ -6710,7 +6706,7 @@
     },
     "is-extendable": {
       "version": "0.1.1",
-      "from": "is-extendable@>=0.1.0 <0.2.0",
+      "from": "is-extendable@>=0.1.1 <0.2.0",
       "resolved": "https://registry.npmjs.org/is-extendable/-/is-extendable-0.1.1.tgz",
       "dev": true
     },
@@ -6822,7 +6818,7 @@
     },
     "is-plain-object": {
       "version": "2.0.4",
-      "from": "is-plain-object@>=2.0.4 <3.0.0",
+      "from": "is-plain-object@>=2.0.3 <3.0.0",
       "resolved": "https://registry.npmjs.org/is-plain-object/-/is-plain-object-2.0.4.tgz",
       "dev": true
     },
@@ -8675,7 +8671,7 @@
     },
     "map-cache": {
       "version": "0.2.2",
-      "from": "map-cache@>=0.2.2 <0.3.0",
+      "from": "map-cache@>=0.2.0 <0.3.0",
       "resolved": "https://registry.npmjs.org/map-cache/-/map-cache-0.2.2.tgz",
       "dev": true
     },
@@ -9587,7 +9583,7 @@
     },
     "object.pick": {
       "version": "1.3.0",
-      "from": "object.pick@>=1.3.0 <2.0.0",
+      "from": "object.pick@>=1.2.0 <2.0.0",
       "resolved": "https://registry.npmjs.org/object.pick/-/object.pick-1.3.0.tgz",
       "dev": true
     },
@@ -10440,7 +10436,7 @@
     },
     "promise.prototype.finally": {
       "version": "3.1.0",
-      "from": "promise.prototype.finally@>=3.1.0 <4.0.0",
+      "from": "promise.prototype.finally@>=3.0.0 <4.0.0",
       "resolved": "https://registry.npmjs.org/promise.prototype.finally/-/promise.prototype.finally-3.1.0.tgz",
       "dev": true
     },
@@ -11001,7 +10997,7 @@
     },
     "repeat-string": {
       "version": "1.6.1",
-      "from": "repeat-string@>=1.6.1 <2.0.0",
+      "from": "repeat-string@>=1.5.2 <2.0.0",
       "resolved": "https://registry.npmjs.org/repeat-string/-/repeat-string-1.6.1.tgz",
       "dev": true
     },
@@ -12644,7 +12640,7 @@
     },
     "unc-path-regex": {
       "version": "0.1.2",
-      "from": "unc-path-regex@>=0.1.2 <0.2.0",
+      "from": "unc-path-regex@>=0.1.0 <0.2.0",
       "resolved": "https://registry.npmjs.org/unc-path-regex/-/unc-path-regex-0.1.2.tgz",
       "dev": true
     },
@@ -13198,7 +13194,7 @@
     },
     "which": {
       "version": "1.3.0",
-      "from": "which@>=1.2.14 <2.0.0",
+      "from": "which@>=1.2.12 <2.0.0",
       "resolved": "https://registry.npmjs.org/which/-/which-1.3.0.tgz",
       "dev": true
     },
