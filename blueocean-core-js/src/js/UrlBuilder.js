@@ -1,7 +1,6 @@
 // TODO: File docs
 
 import AppConfig from './config';
-import { classicOrganizationRoot } from './utils/UrlUtils';
 
 /**
  * Return a new array with leading and trailing whitespace elements removed.
@@ -99,6 +98,27 @@ export function buildOrganizationUrl(organization) {
 }
 
 /**
+ * Gives classic jenkins job path prefix.
+ * For organization group '/folder1/org1', job prefix is: /job/folder1/job/org1
+ * For root organization group '/', there is no prefix: ''.
+ * @param organizationGroupName organization group
+ * @returns {string}
+ */
+export function classicOrganizationRoot(organizationGroupName) {
+    if (organizationGroupName && organizationGroupName !== '/') {
+        return `${organizationGroupName.split('/').join('/job/')}`;
+    }
+    return '';
+}
+
+export function classicJobRoot(pipelineFullName) {
+    const jenkinsUrl = AppConfig.getJenkinsRootURL();
+    const orgRoot = classicOrganizationRoot(AppConfig.getOrganizationGroup());
+    const classicFolderPath = pipelineFullName.split('/').join('/job/');
+    return `${jenkinsUrl}${orgRoot}/job/${classicFolderPath}`;
+}
+
+/**
  * Build a root-relative URL to the pipeline details screen.
  * @param organizationName
  * @param pipelineFullName
@@ -108,12 +128,6 @@ export function buildOrganizationUrl(organization) {
 export function buildPipelineUrl(organizationName, pipelineFullName, tabName) {
     const baseUrl = `/organizations/${encodeURIComponent(organizationName)}/` + `${encodeURIComponent(pipelineFullName)}`;
     return tabName ? `${baseUrl}/${tabName}` : baseUrl;
-}
-
-export function classicJobRoot(pipelineFullName) {
-    // TODO: check usages, adjust name to show classic-relatedness and param
-    const jenkinsUrl = AppConfig.getJenkinsRootURL();
-    return `${jenkinsUrl}${classicOrganizationRoot(AppConfig.getOrganizationGroup())}/job/${pipelineFullName.split('/').join('/job/')}`;
 }
 
 export function buildClassicCreateJobUrl() {

@@ -1,21 +1,6 @@
 import AppConfig from '../config';
 
 /**
- * Gives classic jenkins job path prefix.
- * For organization group '/folder1/org1', job prefix is: /job/folder1/job/org1
- * For root organization group '/', there is no prefix: ''.
- * @param organizationGroupName organization group
- * @returns {string}
- */
-export function classicOrganizationRoot(organizationGroupName) {
-    // TODO: Move to UrlBuilder
-    if (organizationGroupName && organizationGroupName !== '/') {
-        return `${organizationGroupName.split('/').join('/job/')}`;
-    }
-    return '';
-}
-
-/**
  * Double encode name, feature/test#1 is encoded as feature%252Ftest%25231
  */
 export const doubleUriEncode = input => encodeURIComponent(encodeURIComponent(input));
