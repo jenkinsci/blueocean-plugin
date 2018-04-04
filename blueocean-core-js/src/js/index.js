@@ -107,9 +107,6 @@ export { LiveStatusIndicator };
 export {
     doubleUriEncode,
     fetchAllSuffix,
-    applyFetchAll,
-    calculateFetchAll,
-    calculateLogView,
     calculateLogUrl,
     calculateNodeBaseUrl,
     calculateStepsBaseUrl,

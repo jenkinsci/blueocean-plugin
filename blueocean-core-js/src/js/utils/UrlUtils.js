@@ -9,42 +9,13 @@ export const doubleUriEncode = input => encodeURIComponent(encodeURIComponent(in
 export const fetchAllSuffix = '?start=0';
 
 // Add fetchAllSuffix in case it is needed
-export function applyFetchAll(config, url) {
+function applyFetchAll(config, url) {
     // if we pass fetchAll means we want the full log -> start=0 will trigger that on the server
     if (config.fetchAll && !url.includes(fetchAllSuffix)) {
         return `${url}${fetchAllSuffix}`;
     }
     return url;
 }
-
-// using the hook 'location.search'.includes('start=0') to trigger fetchAll
-export function calculateFetchAll(props) {
-    const { location: { search } } = props;
-
-    if (search) {
-        const stepReg = /start=([0-9]{1,})/;
-        const match = stepReg.exec(search);
-        if (match && match[1] && Number(match[1]) === 0) {
-            return true;
-        }
-    }
-    return false;
-}
-
-// using the hook 'location.search'.includes('view=0') to trigger the logConsole view instead of steps
-export const calculateLogView = function(props) {
-    // TODO: find usages, change name to something sensible
-    const { location: { search } } = props;
-
-    if (search) {
-        const viewReg = /view=([0-9]{1,})/;
-        const match = viewReg.exec(search);
-        if (match && match[1] && Number(match[1]) === 0) {
-            return true;
-        }
-    }
-    return false;
-};
 
 /*
  * helper to calculate log url. When we have a node we get create a special url, otherwise we use the url passed to us

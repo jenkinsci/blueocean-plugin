@@ -1,5 +1,5 @@
 import React, { Component, PropTypes } from 'react';
-import { calculateLogView, logging, sseConnection } from '@jenkins-cd/blueocean-core-js';
+import { logging, sseConnection } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 import debounce from 'lodash.debounce';
@@ -17,6 +17,20 @@ import { DownstreamRuns } from '../../downstream-runs/DownstreamRuns';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pipeline');
 
+// using the hook 'location.search'.includes('view=0') to trigger the logConsole view instead of steps
+function isClassicLogView(props) {
+    const { search } = props.location;
+
+    if (search) {
+        const viewReg = /view=(\d+)/;
+        const match = viewReg.exec(search);
+        if (match && match[1] && Number(match[1]) === 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
 // NB: This is loaded into RunDetailsPipeline.jsx as a handler for the jenkins.pipeline.karaoke.pipeline.provider extension point
 @observer
 export default class Pipeline extends Component {
@@ -25,7 +39,7 @@ export default class Pipeline extends Component {
         this.listener = {};
         this.sseEventHandler = this.sseEventHandler.bind(this);
         // query parameter before preference
-        this.classicLog = calculateLogView(props) || KaraokeConfig.getPreference('runDetails.logView').value === 'classic';
+        this.classicLog = isClassicLogView(props) || KaraokeConfig.getPreference('runDetails.logView').value === 'classic';
         this.showPending = KaraokeConfig.getPreference('runDetails.pipeline.showPending').value !== 'never'; // Configure flag to show pending or not
         this.karaoke = KaraokeConfig.getPreference('runDetails.pipeline.karaoke').value === 'never' ? false : props.augmenter.karaoke; // initial karaoke state
         this.updateOnFinish = KaraokeConfig.getPreference('runDetails.pipeline.updateOnFinish').value;
