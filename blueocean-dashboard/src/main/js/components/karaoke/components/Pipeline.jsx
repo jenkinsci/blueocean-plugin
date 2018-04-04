@@ -10,7 +10,7 @@ import LogToolbar from './LogToolbar';
 import Steps from './Steps';
 import FreeStyle from './FreeStyle';
 import RunDescription from './RunDescription';
-import { buildClassicInputUrl } from '@jenkins-cd/blueocean-core-js';
+import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 
 import { KaraokeConfig } from '../';
 import { DownstreamRuns } from '../../downstream-runs/DownstreamRuns';
@@ -338,7 +338,7 @@ export default class Pipeline extends Component {
                             scrollToBottom={scrollToBottom}
                             router={router}
                             location={location}
-                            classicInputUrl={buildClassicInputUrl(pipeline, branch, run.id)}
+                            classicInputUrl={UrlBuilder.buildClassicInputUrl(pipeline, branch, run.id)}
                         />
                     )}
 

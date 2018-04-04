@@ -4,6 +4,7 @@
 import { assert } from 'chai';
 
 import { UrlBuilder } from '../../src/js/';
+import { buildClassicConfigUrl } from '../../src/js/utils/UrlUtils';
 
 const createObjectFromLink = url => ({ _links: { self: { href: url } } });
 
@@ -139,6 +140,17 @@ describe('UrlBuilder', () => {
             const url = UrlBuilder.buildPipelineUrl('jenkins', 'folder1/folder2/folder3/blueocean');
 
             assert.equal(url, '/organizations/jenkins/folder1%2Ffolder2%2Ffolder3%2Fblueocean');
+        });
+    });
+
+    describe('build classicConfigUrl', () => {
+        const testData = {
+            fullName: 'foldey/nesty/woozle%20wozzle/mazzig',
+        };
+
+        it('should build the url for classic config', () => {
+            const url = UrlBuilder.buildClassicConfigUrl(testData);
+            assert.equal(url, '/jenkins/job/foldey/job/nesty/job/woozle%20wozzle/job/mazzig/configure');
         });
     });
 });

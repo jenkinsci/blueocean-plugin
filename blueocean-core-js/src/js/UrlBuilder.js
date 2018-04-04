@@ -119,3 +119,42 @@ export function buildClassicCreateJobUrl() {
     const jenkinsUrl = AppConfig.getJenkinsRootURL();
     return `${jenkinsUrl}${jobPrefixPath(AppConfig.getOrganizationGroup())}/newJob`;
 }
+
+export function rootPath(name) {
+    // TODO: check usages, adjust name to show classic-relatedness and param
+    // TODO: This seems not not urlencode the pipeline.fullName, look into that and attempt to make it do so for consistency
+    const jenkinsUrl = AppConfig.getJenkinsRootURL();
+    return `${jenkinsUrl}${jobPrefixPath(AppConfig.getOrganizationGroup())}/job/${name.split('/').join('/job/')}/`;
+}
+
+export function buildClassicConfigUrl(pipeline) {
+    // TODO: check usages, adjust name and param
+    // TODO: This seems not not urlencode the pipeline.fullName, look into that and attempt to make it do so for consistency
+    if (pipeline && pipeline.fullName) {
+        return `${rootPath(pipeline.fullName)}configure`;
+    }
+    return null;
+}
+
+export function buildClassicInputUrl(pipeline, branch, runNumber) {
+    // TODO: check usages, adjust name and param
+    // TODO: This seems not not urlencode the pipeline.fullName, look into that and attempt to make it do so for consistency
+    if (pipeline && pipeline.fullName) {
+        if (pipeline.branchNames) {
+            return `${rootPath(pipeline.fullName)}job/${encodeURIComponent(branch)}/${encodeURIComponent(runNumber)}/input`;
+        } else {
+            return `${rootPath(pipeline.fullName)}${encodeURIComponent(runNumber)}/input`;
+        }
+    }
+    return null;
+}
+
+// http://localhost:8080/jenkins/job/scherler/job/Jenkins-40617-params/build?delay=0sec
+export function buildClassicBuildUrl(pipeline) {
+    // TODO: check usages, adjust name and param
+    // TODO: This seems not not urlencode the pipeline.fullName, look into that and attempt to make it do so for consistency
+    if (pipeline && pipeline.fullName) {
+        return `${rootPath(pipeline.fullName)}build?delay=0sec`;
+    }
+    return null;
+}

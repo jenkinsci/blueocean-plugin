@@ -105,10 +105,6 @@ export { TimeHarmonizer, TimeHarmonizerUtil } from './components/TimeHarmonizer'
 import LiveStatusIndicator from './components/LiveStatusIndicator';
 export { LiveStatusIndicator };
 export {
-    rootPath,
-    buildClassicConfigUrl,
-    buildClassicInputUrl,
-    buildClassicBuildUrl,
     doubleUriEncode,
     fetchAllSuffix,
     applyFetchAll,

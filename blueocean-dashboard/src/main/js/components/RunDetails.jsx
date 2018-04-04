@@ -22,7 +22,7 @@ const webTranslate = i18nTranslator('blueocean-web');
 const classicConfigLink = pipeline => {
     let link = null;
     if (Security.permit(pipeline).configure()) {
-        let url = buildClassicConfigUrl(pipeline);
+        let url = UrlBuilder.buildClassicConfigUrl(pipeline);
         link = (
             <a href={url} target="_blank" title={webTranslate('toast.configure', { defaultValue: 'Configure' })} style={{ height: '24px' }}>
                 <Icon size={24} icon="ActionSettings" />

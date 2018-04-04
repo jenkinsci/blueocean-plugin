@@ -15,37 +15,6 @@ export function jobPrefixPath(organizationGroup) {
     return '';
 }
 
-/* TODO: Move to builder */ export const rootPath = name => {
-    const jenkinsUrl = AppConfig.getJenkinsRootURL();
-    return `${jenkinsUrl}${jobPrefixPath(AppConfig.getOrganizationGroup())}/job/${name.split('/').join('/job/')}/`;
-};
-
-/* TODO: Move to builder */ export const buildClassicConfigUrl = pipeline => {
-    if (pipeline && pipeline.fullName) {
-        return `${rootPath(pipeline.fullName)}configure`;
-    }
-    return null;
-};
-
-/* TODO: Move to builder */ export const buildClassicInputUrl = (pipeline, branch, runNumber) => {
-    if (pipeline && pipeline.fullName) {
-        if (pipeline.branchNames) {
-            return `${rootPath(pipeline.fullName)}job/${encodeURIComponent(branch)}/${encodeURIComponent(runNumber)}/input`;
-        } else {
-            return `${rootPath(pipeline.fullName)}${encodeURIComponent(runNumber)}/input`;
-        }
-    }
-    return null;
-};
-
-// http://localhost:8080/jenkins/job/scherler/job/Jenkins-40617-params/build?delay=0sec
-/* TODO: Move to builder */ export const buildClassicBuildUrl = pipeline => {
-    if (pipeline && pipeline.fullName) {
-        return `${rootPath(pipeline.fullName)}build?delay=0sec`;
-    }
-    return null;
-};
-
 /**
  * Double encode name, feature/test#1 is encoded as feature%252Ftest%25231
  */

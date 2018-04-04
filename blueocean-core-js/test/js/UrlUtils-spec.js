@@ -95,17 +95,6 @@ describe('UrlUtils', () => {
         });
     });
 
-    describe('build classicConfigUrl', () => {
-        const testData = {
-            fullName: 'foldey/nesty/woozle%20wozzle/mazzig',
-        };
-
-        it('should build the url for classic config', () => {
-            const url = buildClassicConfigUrl(testData);
-            assert.equal(url, '/jenkins/job/foldey/job/nesty/job/woozle%20wozzle/job/mazzig/configure');
-        });
-    });
-
     describe('calculate calculateStepsBaseUrl', () => {
         const testData = {
             _appURLBase: '/some/thing',

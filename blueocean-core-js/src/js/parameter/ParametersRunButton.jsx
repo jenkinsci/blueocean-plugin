@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Alerts, Dialog } from '@jenkins-cd/design-language';
 
-import { buildClassicBuildUrl, capable, RunButtonBase as RunButton, ToastUtils } from '../index';
+import { UrlBuilder, capable, RunButtonBase as RunButton, ToastUtils } from '../index';
 
 import i18nTranslator from '../i18n/i18n';
 
@@ -127,7 +127,7 @@ export class ParametersRunButton extends Component {
         if (isMultiBranch) {
             pipe.fullName += `/${pipe.branch}`;
         }
-        const classicBuildUrl = buildClassicBuildUrl(pipe);
+        const classicBuildUrl = UrlBuilder.buildClassicBuildUrl(pipe);
         const sanity = parameters.filter(parameter => supportedInputTypesMapping[parameter.type] !== undefined);
         logger.debug('sane?', sanity.length === parameters.length, 'classicBuildUrl: ', classicBuildUrl);
         let dialog;
