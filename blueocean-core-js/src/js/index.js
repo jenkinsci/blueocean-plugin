@@ -106,7 +106,6 @@ import LiveStatusIndicator from './components/LiveStatusIndicator';
 export { LiveStatusIndicator };
 export {
     rootPath,
-    buildClassicCreateJobUrl,
     buildClassicConfigUrl,
     buildClassicInputUrl,
     buildClassicBuildUrl,

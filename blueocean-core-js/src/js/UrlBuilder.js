@@ -4,6 +4,9 @@
 
 // TODO: File docs
 
+import AppConfig from './config';
+import { jobPrefixPath } from './utils/UrlUtils';
+
 /**
  * Return a new array with leading and trailing whitespace elements removed.
  *
@@ -110,4 +113,9 @@ export function buildOrganizationUrl(organization) {
 export function buildPipelineUrl(organizationName, pipelineFullName, tabName) {
     const baseUrl = `/organizations/${encodeURIComponent(organizationName)}/` + `${encodeURIComponent(pipelineFullName)}`;
     return tabName ? `${baseUrl}/${tabName}` : baseUrl;
+}
+
+export function buildClassicCreateJobUrl() {
+    const jenkinsUrl = AppConfig.getJenkinsRootURL();
+    return `${jenkinsUrl}${jobPrefixPath(AppConfig.getOrganizationGroup())}/newJob`;
 }

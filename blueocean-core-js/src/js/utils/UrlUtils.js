@@ -8,17 +8,13 @@ import { badName003 } from '../UrlBuilder';
  * @param organizationGroup organization group
  * @returns {string}
  */
-function jobPrefixPath(organizationGroup) {
+export function jobPrefixPath(organizationGroup) {
     if (organizationGroup && organizationGroup !== '/') {
         return `${organizationGroup.split('/').join('/job/')}`;
     }
     return '';
 }
 
-/* TODO: Move to builder */ export const buildClassicCreateJobUrl = () => {
-    const jenkinsUrl = AppConfig.getJenkinsRootURL();
-    return `${jenkinsUrl}${jobPrefixPath(AppConfig.getOrganizationGroup())}/newJob`;
-};
 /* TODO: Move to builder */ export const rootPath = name => {
     const jenkinsUrl = AppConfig.getJenkinsRootURL();
     return `${jenkinsUrl}${jobPrefixPath(AppConfig.getOrganizationGroup())}/job/${name.split('/').join('/job/')}/`;
