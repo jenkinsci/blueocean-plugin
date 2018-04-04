@@ -19,7 +19,7 @@ function jobPrefixPath(organizationGroup) {
  * Build a root-relative URL to the organization's pipeline list screen.
  * @param organization
  */
-export const buildOrganizationUrl = organization => `/organizations/${encodeURIComponent(organization)}`;
+/* TODO: Move to builder */ export const buildOrganizationUrl = organization => `/organizations/${encodeURIComponent(organization)}`;
 
 /**
  * Build a root-relative URL to the pipeline details screen.
@@ -28,28 +28,28 @@ export const buildOrganizationUrl = organization => `/organizations/${encodeURIC
  * @param tabName
  * @returns {string}
  */
-export const buildPipelineUrl = (organization, fullName, tabName) => {
+/* TODO: Move to builder */ export const buildPipelineUrl = (organization, fullName, tabName) => {
     const baseUrl = `/organizations/${encodeURIComponent(organization)}/` + `${encodeURIComponent(fullName)}`;
 
     return tabName ? `${baseUrl}/${tabName}` : baseUrl;
 };
-export const buildClassicCreateJobUrl = () => {
+/* TODO: Move to builder */ export const buildClassicCreateJobUrl = () => {
     const jenkinsUrl = AppConfig.getJenkinsRootURL();
     return `${jenkinsUrl}${jobPrefixPath(AppConfig.getOrganizationGroup())}/newJob`;
 };
-export const rootPath = name => {
+/* TODO: Move to builder */ export const rootPath = name => {
     const jenkinsUrl = AppConfig.getJenkinsRootURL();
     return `${jenkinsUrl}${jobPrefixPath(AppConfig.getOrganizationGroup())}/job/${name.split('/').join('/job/')}/`;
 };
 
-export const buildClassicConfigUrl = pipeline => {
+/* TODO: Move to builder */ export const buildClassicConfigUrl = pipeline => {
     if (pipeline && pipeline.fullName) {
         return `${rootPath(pipeline.fullName)}configure`;
     }
     return null;
 };
 
-export const buildClassicInputUrl = (pipeline, branch, runNumber) => {
+/* TODO: Move to builder */ export const buildClassicInputUrl = (pipeline, branch, runNumber) => {
     if (pipeline && pipeline.fullName) {
         if (pipeline.branchNames) {
             return `${rootPath(pipeline.fullName)}job/${encodeURIComponent(branch)}/${encodeURIComponent(runNumber)}/input`;
@@ -61,7 +61,7 @@ export const buildClassicInputUrl = (pipeline, branch, runNumber) => {
 };
 
 // http://localhost:8080/jenkins/job/scherler/job/Jenkins-40617-params/build?delay=0sec
-export const buildClassicBuildUrl = pipeline => {
+/* TODO: Move to builder */ export const buildClassicBuildUrl = pipeline => {
     if (pipeline && pipeline.fullName) {
         return `${rootPath(pipeline.fullName)}build?delay=0sec`;
     }
@@ -101,6 +101,7 @@ export function calculateFetchAll(props) {
 
 // using the hook 'location.search'.includes('view=0') to trigger the logConsole view instead of steps
 export const calculateLogView = function(props) {
+    // TODO: find usages, change name to something sensible
     const { location: { search } } = props;
 
     if (search) {
@@ -117,6 +118,7 @@ export const calculateLogView = function(props) {
  * @param config { nodesBaseUrl, node, url}
  */
 export const calculateLogUrl = config => {
+    // TODO: Check usages, see if this is where it should be and named sensibly
     let returnUrl = config.url;
     if (config.node) {
         const { nodesBaseUrl, node } = config;
@@ -131,6 +133,7 @@ export const calculateLogUrl = config => {
  * @param config { name, runId, branch, _appURLBase, isMultiBranch}
  */
 export function calculateNodeBaseUrl(config) {
+    // TODO: Check usages, see if this is where it should be and named sensibly
     const { name, runId, branch, _appURLBase, isMultiBranch, organization } = config;
     const baseUrl = `${_appURLBase}/rest/organizations/${encodeURIComponent(organization)}/` + `pipelines/${name}`;
     if (isMultiBranch) {
@@ -146,6 +149,7 @@ export function calculateNodeBaseUrl(config) {
  * @param config { name, runId, branch, _appURLBase, isMultiBranch, node}
  */
 export function calculateStepsBaseUrl(config) {
+    // TODO: Check usages, see if this is where it should be and named sensibly
     const { name, runId, branch, _appURLBase, isMultiBranch, node, organization } = config;
     let baseUrl = `${_appURLBase}/rest/organizations/${encodeURIComponent(organization)}/` + `pipelines/${name}`;
     if (isMultiBranch) {
@@ -162,6 +166,7 @@ export function calculateStepsBaseUrl(config) {
  * @param config { name, runId, branch, _appURLBase, isMultiBranch}
  */
 export function calculateRunLogURLObject(config) {
+    // TODO: Check usages, see if this is where it should be and named sensibly
     const { name, runId, branch, _appURLBase, isMultiBranch, organization } = config;
     const baseUrl = `${_appURLBase}/rest/organizations/${encodeURIComponent(organization)}` + `/pipelines/${name}`;
     let url;
@@ -209,6 +214,7 @@ export function endSlash(str) {
  * and builds a path to the thing as best it can...
  */
 export function getRestUrl({ organization, pipeline, branch, runId }) {
+    // TODO: Check usages, see if this is where it should be and named sensibly
     const pipelineName = typeof pipeline === 'object' ? pipeline.fullName : pipeline;
     const organizationName = organization || (typeof pipeline === 'object' ? pipeline.organization : '');
     const jenkinsUrl = AppConfig.getJenkinsRootURL();
@@ -256,6 +262,7 @@ export function relativeUrl(location, ...args) {
  * it was unable to decode the page URL.
  */
 export function toClassicJobPage(pageUrl, isMultibranch = false) {
+    // TODO: Check usages, see if this is where it should be and named sensibly
     const pageUrlTokens = pageUrl.split('/').filter(token => typeof token === 'string' && token !== '');
 
     // Remove all path elements up to and including the Jenkins
