@@ -3,19 +3,19 @@
  */
 import { assert } from 'chai';
 
-import { badName001, badName002, badName003 } from '../../src/js/UrlBuilder';
+import { UrlBuilder } from '../../src/js/';
 
 const createObjectFromLink = url => ({ _links: { self: { href: url } } });
 
 describe('UrlBuilder', () => {
     describe('badName002', () => {
         it('throws sensible error for bad url', () => {
-            assert.throws(() => badName002('/a/b/c/d'), 'Could not extract URI components');
+            assert.throws(() => UrlBuilder.badName002('/a/b/c/d'), 'Could not extract URI components');
         });
 
         it('handles a URL', () => {
             const freestyle = '/blue/rest/organizations/jenkins/pipelines/freestyle-success-10m/runs/28/';
-            const url = badName002(freestyle);
+            const url = UrlBuilder.badName002(freestyle);
             assert.equal(url, '/organizations/jenkins/freestyle-success-10m/detail/freestyle-success-10m/28/pipeline');
         });
     });
@@ -25,12 +25,12 @@ describe('UrlBuilder', () => {
             it('handles an object', () => {
                 const freestyle = createObjectFromLink('/blue/rest/organizations/jenkins/pipelines/freestyle-success-10m/runs/28/');
 
-                const url = badName001(freestyle);
+                const url = UrlBuilder.badName001(freestyle);
                 assert.equal(url, '/organizations/jenkins/freestyle-success-10m/detail/freestyle-success-10m/28/pipeline');
             });
 
             it('throws sensible error for bad url', () => {
-                assert.throws(() => badName001(createObjectFromLink('/a/b/c/d')), 'Could not extract URI components');
+                assert.throws(() => UrlBuilder.badName001(createObjectFromLink('/a/b/c/d')), 'Could not extract URI components');
             });
         });
 
@@ -38,14 +38,14 @@ describe('UrlBuilder', () => {
             it('handles top-level job', () => {
                 const freestyle = createObjectFromLink('/blue/rest/organizations/jenkins/pipelines/freestyle-success-10m/runs/28/');
 
-                const url = badName001(freestyle);
+                const url = UrlBuilder.badName001(freestyle);
                 assert.equal(url, '/organizations/jenkins/freestyle-success-10m/detail/freestyle-success-10m/28/pipeline');
             });
 
             it('handles nested job', () => {
                 const freestyle = createObjectFromLink('/blue/rest/organizations/jenkins/pipelines/myfolder/pipelines/pipeline-2/runs/103/');
 
-                const url = badName001(freestyle);
+                const url = UrlBuilder.badName001(freestyle);
                 assert.equal(url, '/organizations/jenkins/myfolder%2Fpipeline-2/detail/pipeline-2/103/pipeline');
             });
         });
@@ -54,14 +54,14 @@ describe('UrlBuilder', () => {
             it('handles top-level job', () => {
                 const pipeline = createObjectFromLink('/blue/rest/organizations/jenkins/pipelines/pipeline-failure-15s/runs/42/');
 
-                const url = badName001(pipeline);
+                const url = UrlBuilder.badName001(pipeline);
                 assert.equal(url, '/organizations/jenkins/pipeline-failure-15s/detail/pipeline-failure-15s/42/pipeline');
             });
 
             it('handles nested job', () => {
                 const pipeline = createObjectFromLink('/blue/rest/organizations/jenkins/pipelines/pipeline-failure-15s/runs/42/');
 
-                const url = badName001(pipeline);
+                const url = UrlBuilder.badName001(pipeline);
                 assert.equal(url, '/organizations/jenkins/pipeline-failure-15s/detail/pipeline-failure-15s/42/pipeline');
             });
         });
@@ -72,7 +72,7 @@ describe('UrlBuilder', () => {
                     '/blue/rest/organizations/jenkins/pipelines/jdl1/branches/experiment%252Fbuild-locally-docker/runs/41/'
                 );
 
-                const url = badName001(multibranch);
+                const url = UrlBuilder.badName001(multibranch);
                 assert.equal(url, '/organizations/jenkins/jdl1/detail/experiment%2Fbuild-locally-docker/41/pipeline');
             });
 
@@ -82,7 +82,7 @@ describe('UrlBuilder', () => {
                         '/jdl-2/branches/experiment%252Fbuild-locally-docker/runs/21/'
                 );
 
-                const url = badName001(multibranch);
+                const url = UrlBuilder.badName001(multibranch);
                 assert.equal(url, '/organizations/jenkins/folder1%2Ffolder2%2Ffolder3%2Fjdl-2/detail/experiment%2Fbuild-locally-docker/21/pipeline');
             });
         });
@@ -90,21 +90,35 @@ describe('UrlBuilder', () => {
 
     describe('badName003', () => {
         it('should build the baseUrl if tabName null', () => {
-            const url = badName003('jenkins', 'blueocean', 'master', 1, null);
+            const url = UrlBuilder.badName003('jenkins', 'blueocean', 'master', 1, null);
 
             assert.equal(url, '/organizations/jenkins/blueocean/detail/master/1');
         });
 
         it('should build the full url with tab name', () => {
-            const url = badName003('jenkins', 'blueocean', 'master', 1, 'changes');
+            const url = UrlBuilder.badName003('jenkins', 'blueocean', 'master', 1, 'changes');
 
             assert.equal(url, '/organizations/jenkins/blueocean/detail/master/1/changes');
         });
 
         it('should escape characters correctly', () => {
-            const url = badName003('jenkins', 'blueocean', 'feature/JENKINS-666', 1, 'changes');
+            const url = UrlBuilder.badName003('jenkins', 'blueocean', 'feature/JENKINS-666', 1, 'changes');
 
             assert.equal(url, '/organizations/jenkins/blueocean/detail/feature%2FJENKINS-666/1/changes');
+        });
+    });
+
+    describe('buildOrganizationUrl', () => {
+        it('should build the proper url', () => {
+            const url = UrlBuilder.buildOrganizationUrl('jenkins');
+
+            assert.equal(url, '/organizations/jenkins');
+        });
+
+        it('should encode the url', () => {
+            const url = UrlBuilder.buildOrganizationUrl('foo/bar');
+
+            assert.equal(url, '/organizations/foo%2Fbar');
         });
     });
 });

@@ -88,7 +88,7 @@ class RunDetails extends Component {
     navigateToOrganization = () => {
         const { organization } = this.props.pipeline;
         const { location } = this.context;
-        const organizationUrl = buildOrganizationUrl(organization);
+        const organizationUrl = UrlBuilder.buildOrganizationUrl(organization);
         location.pathname = organizationUrl;
         this.context.router.push(location);
     };

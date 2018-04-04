@@ -16,12 +16,6 @@ function jobPrefixPath(organizationGroup) {
 }
 
 /**
- * Build a root-relative URL to the organization's pipeline list screen.
- * @param organization
- */
-/* TODO: Move to builder */ export const buildOrganizationUrl = organization => `/organizations/${encodeURIComponent(organization)}`;
-
-/**
  * Build a root-relative URL to the pipeline details screen.
  * @param organization
  * @param fullName

@@ -92,6 +92,14 @@ export function badName003(organizationName, pipelineFullName, branchOrPipelineN
     return tabName === null ? baseUrl : baseUrl + `/${tabName}`;
 }
 
+/**
+ * Build a root-relative URL to the organization's pipeline list screen.
+ * @param organization
+ */
+export function buildOrganizationUrl(organization) {
+    return `/organizations/${encodeURIComponent(organization)}`;
+}
+
 // /**
 //  * Builds the proper URL to view Run Details for the specified run.
 //  * Run is either a run object with "_links.self.href" property, or the URL itself.
