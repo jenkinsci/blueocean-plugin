@@ -104,16 +104,4 @@ export { TimeManager } from './utils/TimeManager';
 export { TimeHarmonizer, TimeHarmonizerUtil } from './components/TimeHarmonizer';
 import LiveStatusIndicator from './components/LiveStatusIndicator';
 export { LiveStatusIndicator };
-export {
-    doubleUriEncode,
-    fetchAllSuffix,
-    calculateLogUrl,
-    calculateNodeBaseUrl,
-    calculateStepsBaseUrl,
-    calculateRunLogURLObject,
-    paginateUrl,
-    endSlash,
-    getRestUrl,
-    buildUrl,
-    relativeUrl,
-} from './utils/UrlUtils';
+export { doubleUriEncode, fetchAllSuffix, ensureTrailingSlash, getRestUrl, buildUrl, relativeUrl } from './utils/UrlUtils';
