@@ -95,7 +95,12 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-pipeline-editor</artifactId>
         </dependency>
-        
+
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-jira</artifactId>
+        </dependency>
+
         <!-- Bundled plugins for improved out of the box experience -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
