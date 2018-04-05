@@ -281,7 +281,6 @@ export function toClassicJobPage(currentPageUrl, isMultibranch = false) {
  * @returns a URL string
  */
 export function buildRestUrl(organizationName, pipelineFullName, branchName, runId) {
-    // TODO: unit tests
     const jenkinsUrl = AppConfig.getJenkinsRootURL();
     let url = `${jenkinsUrl}/blue/rest/organizations/${encodeURIComponent(organizationName)}`;
 

@@ -179,4 +179,40 @@ describe('UrlBuilder', () => {
             );
         });
     });
+
+    describe('buildRestUrl', () => {
+        it('works in the happy cases', () => {
+            assert.equal(UrlBuilder.buildRestUrl('orgName'), '/jenkins/blue/rest/organizations/orgName/');
+            assert.equal(UrlBuilder.buildRestUrl('orgName', 'pipeline'), '/jenkins/blue/rest/organizations/orgName/pipelines/pipeline/');
+            assert.equal(
+                UrlBuilder.buildRestUrl('orgName', 'pipeline', 'branchName'),
+                '/jenkins/blue/rest/organizations/orgName/pipelines/pipeline/branches/branchName/'
+            );
+            assert.equal(
+                UrlBuilder.buildRestUrl('orgName', 'pipeline', 'branchName', '75'),
+                '/jenkins/blue/rest/organizations/orgName/pipelines/pipeline/branches/branchName/runs/75/'
+            );
+            assert.equal(UrlBuilder.buildRestUrl('orgName', 'pipeline', null, '75'), '/jenkins/blue/rest/organizations/orgName/pipelines/pipeline/runs/75/');
+        });
+
+        it('escapes like Clint Eastwood', () => {
+            // ensure team folder is encoded
+            assert.equal(UrlBuilder.buildRestUrl('division/teamName'), '/jenkins/blue/rest/organizations/division%2FteamName/');
+
+            // ensure pipeline folder hierarchy isn't encoded
+            assert.equal(UrlBuilder.buildRestUrl('orgName', 'f1/f2/pipeline'), '/jenkins/blue/rest/organizations/orgName/pipelines/f1/f2/pipeline/');
+
+            // Ensure the branch name is encoded twice, because reasons
+            assert.equal(
+                UrlBuilder.buildRestUrl('orgName', 'pipeline', 'feature/branchName'),
+                '/jenkins/blue/rest/organizations/orgName/pipelines/pipeline/branches/feature%252FbranchName/'
+            );
+
+            // Ensure run id is encoded for sanity, even though it is currently just a sequence number
+            assert.equal(
+                UrlBuilder.buildRestUrl('orgName', 'pipeline', 'branchName', 'xx/yy'),
+                '/jenkins/blue/rest/organizations/orgName/pipelines/pipeline/branches/branchName/runs/xx%2Fyy/'
+            );
+        });
+    });
 });
