@@ -1,7 +1,9 @@
 // TODO: File docs
 
+// TODO: Sort by topic
+
 import AppConfig from './config';
-import { UrlUtils } from './';
+import {UrlUtils} from './';
 
 /**
  * Return a new array with leading and trailing whitespace elements removed.
@@ -9,7 +11,7 @@ import { UrlUtils } from './';
  * @param {Array} tokens
  * @returns {Array}
  */
-const trimEmptyTokens = tokens => {
+function trimEmptyTokens(tokens) {
     const copy = tokens.slice();
 
     if (copy[0] === '') {
@@ -21,13 +23,24 @@ const trimEmptyTokens = tokens => {
     }
 
     return copy;
-};
+}
 
-// TODO: TS
+type ResourceIdentifiers = {
+    organizationName: string,
+    pipelineFullName: string, // Includes folder path
+    detailName: string, // Either the branchName or the pipeline short name if not multibranch
+    runId: string,
+}
 
-// TODO: Docs or remove
-function parseRestRunUrl(restUrl) {
-    // TODO: If keeping this, replace it with a regexp or a more sensible token handler, once we have tests that take into account the variable tokens length
+/**
+ * Parses the REST link to a pipeline run, extracts and unencodes the separate parts
+ *
+ * @param restUrl
+ * @returns {{organizationName: string; fullName: string; detailName: string; runId: string}}
+ */
+function parseRestRunUrl(restUrl: string): ResourceIdentifiers {
+
+    // FIXME: before exporting, make this more flexible so it can be a complete compliment to buildRestUrl
 
     const tokens = trimEmptyTokens(restUrl.split('/'));
 
@@ -41,7 +54,7 @@ function parseRestRunUrl(restUrl) {
     const fullNameEnd = isMultiBranch ? tokens.length - 4 : tokens.length - 2;
     // grab the tokens that make up the full name, then filter out the even values ('/pipelines')
     // so the clean folder path is returned, e.g. f1/pipelines/f2/pipelines/f3/pipelines/foo => f1/f2/f3/foo
-    const fullName = tokens
+    const pipelineFullName = tokens
         .slice(fullNameStart, fullNameEnd)
         .filter((name, index) => index % 2 === 1)
         .join('/');
@@ -53,30 +66,34 @@ function parseRestRunUrl(restUrl) {
     const detailName = decodeURIComponent(isMultiBranch ? decodeURIComponent(branchName) : pipelineName);
 
     // fail fast
-    if (!organizationName || !fullName || !detailName || !runId) {
+    if (!organizationName || !pipelineFullName || !detailName || !runId) {
         throw new Error('Could not extract URI components');
     }
 
-    // TODO: Create a type for this once in TS
     return {
         organizationName,
-        fullName,
+        pipelineFullName,
         detailName,
         runId,
     };
 }
 
+type RunDetailsWithSelfLink = {
+    // FIXME: We need a canonical typedef for run details object
+    _links: { self: { href: string } }
+};
+
 // TODO: Docs - Run object -> run details url
-export function badName001(runDetails) {
+export function badName001(runDetails: RunDetailsWithSelfLink) {
     const restUrl = runDetails._links.self.href;
     return badName002(restUrl);
 }
 
 // TODO: Docs - Run link -> run details url
-export function badName002(restUrl) {
-    const { organizationName, fullName, detailName, runId } = parseRestRunUrl(restUrl);
+export function badName002(restUrl: string) {
+    const {organizationName, pipelineFullName, detailName, runId} = parseRestRunUrl(restUrl);
 
-    return badName003(organizationName, fullName, detailName, runId);
+    return badName003(organizationName, pipelineFullName, detailName, runId);
 }
 
 // TODO: Docs - individual run detail params -> run details url
