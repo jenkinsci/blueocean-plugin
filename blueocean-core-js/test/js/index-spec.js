@@ -17,6 +17,7 @@ describe('@jenkins-cd/blueocean-core-js', () => {
     // Overkill for exported declarations, designed to catch re-exported imports or module-scoped consts.
 
     checkModuleExports('UrlBuilder', corejs.UrlBuilder);
+    checkModuleExports('UrlUtils', corejs.UrlUtils);
     checkModuleExports('FetchFunctions', corejs.FetchFunctions);
     checkModuleExports('Fetch', corejs.Fetch);
     checkModuleExports('UrlConfig', corejs.UrlConfig);

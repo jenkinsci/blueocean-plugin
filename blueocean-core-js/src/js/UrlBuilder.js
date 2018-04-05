@@ -1,7 +1,7 @@
 // TODO: File docs
 
 import AppConfig from './config';
-import { ensureTrailingSlash, doubleUriEncode } from './utils/UrlUtils';
+import { UrlUtils } from './';
 
 /**
  * Return a new array with leading and trailing whitespace elements removed.
@@ -243,12 +243,12 @@ export function buildRestUrl(organizationName, pipelineFullName, branchName, run
 
     if (branchName) {
         // JENKINS-37712 branch needs to be double-encoded for some reason
-        url += `/branches/${doubleUriEncode(branchName)}`;
+        url += `/branches/${UrlUtils.doubleUriEncode(branchName)}`;
     }
 
     if (runId) {
         url += `/runs/${encodeURIComponent(runId)}`;
     }
 
-    return ensureTrailingSlash(url);
+    return UrlUtils.ensureTrailingSlash(url);
 }

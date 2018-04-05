@@ -102,7 +102,8 @@ export const DEBUG = {
 export { TimeManager } from './utils/TimeManager';
 
 export { TimeHarmonizer, TimeHarmonizerUtil } from './components/TimeHarmonizer';
+
 import LiveStatusIndicator from './components/LiveStatusIndicator';
 export { LiveStatusIndicator };
-export { doubleUriEncode, fetchAllSuffix, ensureTrailingSlash } from './utils/UrlUtils';
-// TODO: replace these with utils as namespace, add namespace to index test
+
+export * as UrlUtils from './utils/UrlUtils';

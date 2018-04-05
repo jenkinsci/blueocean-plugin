@@ -4,6 +4,8 @@
 
 /**
  * Double encode name, feature/test#1 is encoded as feature%252Ftest%25231
+ *
+ * Branch names are double-encoded in REST urls due to issues on the backend on certain filesystems.
  */
 export function doubleUriEncode(input) {
     return encodeURIComponent(encodeURIComponent(input));
