@@ -9,29 +9,29 @@ import { buildClassicConfigUrl, toClassicJobPage } from '../../src/js/utils/UrlU
 const createObjectFromLink = url => ({ _links: { self: { href: url } } });
 
 describe('UrlBuilder', () => {
-    describe('badName002', () => {
+    describe('buildRunUrlForRestUrl', () => {
         it('throws sensible error for bad url', () => {
-            assert.throws(() => UrlBuilder.badName002('/a/b/c/d'), 'Could not extract URI components');
+            assert.throws(() => UrlBuilder.buildRunUrlForRestUrl('/a/b/c/d'), 'Could not extract URI components');
         });
 
         it('handles a URL', () => {
             const freestyle = '/blue/rest/organizations/jenkins/pipelines/freestyle-success-10m/runs/28/';
-            const url = UrlBuilder.badName002(freestyle);
+            const url = UrlBuilder.buildRunUrlForRestUrl(freestyle);
             assert.equal(url, '/organizations/jenkins/freestyle-success-10m/detail/freestyle-success-10m/28/pipeline');
         });
     });
 
-    describe('badName001', () => {
+    describe('buildRunUrlForDetails', () => {
         describe('handling input', () => {
             it('handles an object', () => {
                 const freestyle = createObjectFromLink('/blue/rest/organizations/jenkins/pipelines/freestyle-success-10m/runs/28/');
 
-                const url = UrlBuilder.badName001(freestyle);
+                const url = UrlBuilder.buildRunUrlForDetails(freestyle);
                 assert.equal(url, '/organizations/jenkins/freestyle-success-10m/detail/freestyle-success-10m/28/pipeline');
             });
 
             it('throws sensible error for bad url', () => {
-                assert.throws(() => UrlBuilder.badName001(createObjectFromLink('/a/b/c/d')), 'Could not extract URI components');
+                assert.throws(() => UrlBuilder.buildRunUrlForDetails(createObjectFromLink('/a/b/c/d')), 'Could not extract URI components');
             });
         });
 
@@ -39,14 +39,14 @@ describe('UrlBuilder', () => {
             it('handles top-level job', () => {
                 const freestyle = createObjectFromLink('/blue/rest/organizations/jenkins/pipelines/freestyle-success-10m/runs/28/');
 
-                const url = UrlBuilder.badName001(freestyle);
+                const url = UrlBuilder.buildRunUrlForDetails(freestyle);
                 assert.equal(url, '/organizations/jenkins/freestyle-success-10m/detail/freestyle-success-10m/28/pipeline');
             });
 
             it('handles nested job', () => {
                 const freestyle = createObjectFromLink('/blue/rest/organizations/jenkins/pipelines/myfolder/pipelines/pipeline-2/runs/103/');
 
-                const url = UrlBuilder.badName001(freestyle);
+                const url = UrlBuilder.buildRunUrlForDetails(freestyle);
                 assert.equal(url, '/organizations/jenkins/myfolder%2Fpipeline-2/detail/pipeline-2/103/pipeline');
             });
         });
@@ -55,14 +55,14 @@ describe('UrlBuilder', () => {
             it('handles top-level job', () => {
                 const pipeline = createObjectFromLink('/blue/rest/organizations/jenkins/pipelines/pipeline-failure-15s/runs/42/');
 
-                const url = UrlBuilder.badName001(pipeline);
+                const url = UrlBuilder.buildRunUrlForDetails(pipeline);
                 assert.equal(url, '/organizations/jenkins/pipeline-failure-15s/detail/pipeline-failure-15s/42/pipeline');
             });
 
             it('handles nested job', () => {
                 const pipeline = createObjectFromLink('/blue/rest/organizations/jenkins/pipelines/pipeline-failure-15s/runs/42/');
 
-                const url = UrlBuilder.badName001(pipeline);
+                const url = UrlBuilder.buildRunUrlForDetails(pipeline);
                 assert.equal(url, '/organizations/jenkins/pipeline-failure-15s/detail/pipeline-failure-15s/42/pipeline');
             });
         });
@@ -73,7 +73,7 @@ describe('UrlBuilder', () => {
                     '/blue/rest/organizations/jenkins/pipelines/jdl1/branches/experiment%252Fbuild-locally-docker/runs/41/'
                 );
 
-                const url = UrlBuilder.badName001(multibranch);
+                const url = UrlBuilder.buildRunUrlForDetails(multibranch);
                 assert.equal(url, '/organizations/jenkins/jdl1/detail/experiment%2Fbuild-locally-docker/41/pipeline');
             });
 
@@ -83,27 +83,27 @@ describe('UrlBuilder', () => {
                         '/jdl-2/branches/experiment%252Fbuild-locally-docker/runs/21/'
                 );
 
-                const url = UrlBuilder.badName001(multibranch);
+                const url = UrlBuilder.buildRunUrlForDetails(multibranch);
                 assert.equal(url, '/organizations/jenkins/folder1%2Ffolder2%2Ffolder3%2Fjdl-2/detail/experiment%2Fbuild-locally-docker/21/pipeline');
             });
         });
     });
 
-    describe('badName003', () => {
+    describe('buildRunUrl', () => {
         it('should build the baseUrl if tabName null', () => {
-            const url = UrlBuilder.badName003('jenkins', 'blueocean', 'master', 1, null);
+            const url = UrlBuilder.buildRunUrl('jenkins', 'blueocean', 'master', 1, null);
 
             assert.equal(url, '/organizations/jenkins/blueocean/detail/master/1');
         });
 
         it('should build the full url with tab name', () => {
-            const url = UrlBuilder.badName003('jenkins', 'blueocean', 'master', 1, 'changes');
+            const url = UrlBuilder.buildRunUrl('jenkins', 'blueocean', 'master', 1, 'changes');
 
             assert.equal(url, '/organizations/jenkins/blueocean/detail/master/1/changes');
         });
 
         it('should escape characters correctly', () => {
-            const url = UrlBuilder.badName003('jenkins', 'blueocean', 'feature/JENKINS-666', 1, 'changes');
+            const url = UrlBuilder.buildRunUrl('jenkins', 'blueocean', 'feature/JENKINS-666', 1, 'changes');
 
             assert.equal(url, '/organizations/jenkins/blueocean/detail/feature%2FJENKINS-666/1/changes');
         });

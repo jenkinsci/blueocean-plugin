@@ -87,7 +87,7 @@ export default class PullRequestRow extends Component {
 
         const result = latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
         const { fullName, organization } = contextPipeline;
-        const runDetailsUrl = UrlBuilder.badName003(organization, fullName, decodeURIComponent(latestRun.pipeline), latestRun.id, 'pipeline');
+        const runDetailsUrl = UrlBuilder.buildRunUrl(organization, fullName, decodeURIComponent(latestRun.pipeline), latestRun.id, 'pipeline');
 
         const statusIndicator = (
             <LiveStatusIndicator

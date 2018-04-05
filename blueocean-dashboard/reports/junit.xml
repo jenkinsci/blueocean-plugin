@@ -8,11 +8,11 @@
     </testcase>
     <testcase classname="UrlUtils buildPipelineUrl should build the baseUrl for 3-level nested pipeline" name="UrlUtils buildPipelineUrl should build the baseUrl for 3-level nested pipeline" time="0">
     </testcase>
-    <testcase classname="UrlUtils badName003 should build the baseUrl if tabName omitted" name="UrlUtils badName003 should build the baseUrl if tabName omitted" time="0.001">
+    <testcase classname="UrlUtils buildRunUrl should build the baseUrl if tabName omitted" name="UrlUtils buildRunUrl should build the baseUrl if tabName omitted" time="0.001">
     </testcase>
-    <testcase classname="UrlUtils badName003 should build the full url with tab name" name="UrlUtils badName003 should build the full url with tab name" time="0">
+    <testcase classname="UrlUtils buildRunUrl should build the full url with tab name" name="UrlUtils buildRunUrl should build the full url with tab name" time="0">
     </testcase>
-    <testcase classname="UrlUtils badName003 should escape characters correctly" name="UrlUtils badName003 should escape characters correctly" time="0">
+    <testcase classname="UrlUtils buildRunUrl should escape characters correctly" name="UrlUtils buildRunUrl should escape characters correctly" time="0">
     </testcase>
     <testcase classname="UrlUtils calculate log url should build the logUrl with only url set" name="UrlUtils calculate log url should build the logUrl with only url set" time="0.001">
     </testcase>

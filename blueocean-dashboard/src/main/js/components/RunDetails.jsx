@@ -104,7 +104,7 @@ class RunDetails extends Component {
     navigateToChanges = () => {
         const { location, params: { organization, pipeline, branch, runId } } = this.context;
 
-        const changesUrl = UrlBuilder.badName003(organization, pipeline, branch, runId, 'changes');
+        const changesUrl = UrlBuilder.buildRunUrl(organization, pipeline, branch, runId, 'changes');
         location.pathname = changesUrl;
         this.context.router.push(location);
     };
@@ -134,7 +134,7 @@ class RunDetails extends Component {
             return null;
         }
 
-        const baseUrl = UrlBuilder.badName003(params.organization, params.pipeline, params.branch, params.runId, null);
+        const baseUrl = UrlBuilder.buildRunUrl(params.organization, params.pipeline, params.branch, params.runId, null);
         logger.debug('params', params.organization, params.pipeline, params.branch, params.runId);
         const currentRun = new RunRecord(run);
         const computedTitle = `${currentRun.organization} / ${pipeline.fullName} / ${params.pipeline === params.branch

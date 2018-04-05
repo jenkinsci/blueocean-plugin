@@ -50,7 +50,7 @@ export class DownstreamRunsView extends Component {
                 const runResult = runDetails.result === 'UNKNOWN' ? runDetails.state : runDetails.result;
                 const isRunning = runResult === 'RUNNING' || runResult === 'PAUSED' || runResult === 'QUEUED';
 
-                const runDetailsUrl = UrlBuilder.badName001(runDetails);
+                const runDetailsUrl = UrlBuilder.buildRunUrlForDetails(runDetails);
 
                 const { durationInMillis, estimatedDurationInMillis } = runDetails;
 

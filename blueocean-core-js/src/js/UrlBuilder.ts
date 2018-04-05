@@ -84,20 +84,20 @@ type RunDetailsWithSelfLink = {
 };
 
 // TODO: Docs - Run object -> run details url
-export function badName001(runDetails: RunDetailsWithSelfLink) {
+export function buildRunUrlForDetails(runDetails: RunDetailsWithSelfLink) {
     const restUrl = runDetails._links.self.href;
-    return badName002(restUrl);
+    return buildRunUrlForRestUrl(restUrl);
 }
 
 // TODO: Docs - Run link -> run details url
-export function badName002(restUrl: string) {
+export function buildRunUrlForRestUrl(restUrl: string) {
     const {organizationName, pipelineFullName, detailName, runId} = parseRestRunUrl(restUrl);
 
-    return badName003(organizationName, pipelineFullName, detailName, runId);
+    return buildRunUrl(organizationName, pipelineFullName, detailName, runId);
 }
 
 // TODO: Docs - individual run detail params -> run details url
-export function badName003(organizationName, pipelineFullName, branchOrPipelineName, runId, tabName = 'pipeline') {
+export function buildRunUrl(organizationName, pipelineFullName, branchOrPipelineName, runId, tabName = 'pipeline') {
     const baseUrl =
         `/organizations/${encodeURIComponent(organizationName)}` +
         `/${encodeURIComponent(pipelineFullName)}` +

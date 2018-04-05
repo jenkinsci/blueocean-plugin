@@ -98,7 +98,7 @@ export class BranchDetailsRow extends Component {
             return noRun(branch, openRunDetails, t, this.context.store, columns);
         }
         const cleanBranchName = decodeURIComponent(branch.name);
-        const runDetailsUrl = UrlBuilder.badName003(branch.organization, pipeline.fullName, cleanBranchName, latestRun.id, 'pipeline');
+        const runDetailsUrl = UrlBuilder.buildRunUrl(branch.organization, pipeline.fullName, cleanBranchName, latestRun.id, 'pipeline');
 
         const statusIndicator = (
             <LiveStatusIndicator
