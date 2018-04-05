@@ -1,6 +1,12 @@
-// TODO: File docs
+/*********************************************************************************************
+ **********************************************************************************************
 
-// TODO: Sort by topic
+ Builders to specific screens, REST resources, and classic functionality
+
+ For general URL-wrangling helpers please see the UrlUtils module.
+
+ **********************************************************************************************
+ *********************************************************************************************/
 
 import AppConfig from './config';
 import {UrlUtils} from './';
@@ -122,6 +128,18 @@ export function buildOrganizationUrl(organization) {
 }
 
 /**
+ * Build a root-relative URL to the pipeline details screen.
+ * @param organizationName
+ * @param pipelineFullName
+ * @param tabName
+ * @returns {string}
+ */
+export function buildPipelineUrl(organizationName, pipelineFullName, tabName) {
+    const baseUrl = `/organizations/${encodeURIComponent(organizationName)}/` + `${encodeURIComponent(pipelineFullName)}`;
+    return tabName ? `${baseUrl}/${tabName}` : baseUrl;
+}
+
+/**
  * Gives classic jenkins job path prefix.
  * For organization group '/folder1/org1', job prefix is: /job/folder1/job/org1
  * For root organization group '/', there is no prefix: ''.
@@ -135,6 +153,11 @@ export function classicOrganizationRoot(organizationGroupName) {
     return '';
 }
 
+/**
+ * The root of a classic URL for a specific pipeline using the default org group
+ * @param pipelineFullName
+ * @returns {string}
+ */
 export function classicJobRoot(pipelineFullName) {
     const jenkinsUrl = AppConfig.getJenkinsRootURL();
     const orgRoot = classicOrganizationRoot(AppConfig.getOrganizationGroup());
@@ -143,22 +166,16 @@ export function classicJobRoot(pipelineFullName) {
 }
 
 /**
- * Build a root-relative URL to the pipeline details screen.
- * @param organizationName
- * @param pipelineFullName
- * @param tabName
- * @returns {string}
+ * URL to "create job" page in classic
  */
-export function buildPipelineUrl(organizationName, pipelineFullName, tabName) {
-    const baseUrl = `/organizations/${encodeURIComponent(organizationName)}/` + `${encodeURIComponent(pipelineFullName)}`;
-    return tabName ? `${baseUrl}/${tabName}` : baseUrl;
-}
-
 export function buildClassicCreateJobUrl() {
     const jenkinsUrl = AppConfig.getJenkinsRootURL();
     return `${jenkinsUrl}${classicOrganizationRoot(AppConfig.getOrganizationGroup())}/newJob`;
 }
 
+/**
+ * URL to the pipeline configuration screen in classic
+ */
 export function buildClassicConfigUrl(pipelineDetails) {
     if (pipelineDetails && pipelineDetails.fullName) {
         return `${classicJobRoot(pipelineDetails.fullName)}/configure`;
@@ -166,6 +183,9 @@ export function buildClassicConfigUrl(pipelineDetails) {
     return null;
 }
 
+/**
+ * URL to the classic input sceen for a specific run
+ */
 export function buildClassicInputUrl(pipelineDetails, branchName, runId) {
     if (pipelineDetails && pipelineDetails.fullName) {
         if (pipelineDetails.branchNames) {
@@ -177,7 +197,11 @@ export function buildClassicInputUrl(pipelineDetails, branchName, runId) {
     return null;
 }
 
-// http://localhost:8080/jenkins/job/scherler/job/Jenkins-40617-params/build?delay=0sec
+/**
+ * URL to classic to trigger a build
+ *
+ * example: http://localhost:8080/jenkins/job/scherler/job/Jenkins-40617-params/build?delay=0sec
+ */
 export function buildClassicBuildUrl(pipelineDetails) {
     if (pipelineDetails && pipelineDetails.fullName) {
         return `${classicJobRoot(pipelineDetails.fullName)}/build?delay=0sec`;
