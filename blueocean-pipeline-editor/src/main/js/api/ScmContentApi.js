@@ -1,4 +1,4 @@
-import { Fetch, getRestUrl } from '@jenkins-cd/blueocean-core-js';
+import { Fetch, UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import TypedError from './TypedError';
 
 const Base64 = {
@@ -18,7 +18,10 @@ export const LoadError = {
  */
 class ScmContentApi {
     loadContent({ organization, pipeline, branch, path = 'Jenkinsfile' }) {
-        let contentUrl = `${getRestUrl({ organization, pipeline })}scm/content?path=${path}`;
+        const pipelineFullName = typeof pipeline === 'object' ? pipeline.fullName : pipeline;
+        // TODO: check which kind of object ^^^ we get here and remove test if possible
+        const pipelineUrl = UrlBuilder.buildRestUrl(organization, pipelineFullName);
+        let contentUrl = `${pipelineUrl}scm/content?path=${path}`;
         if (branch) {
             contentUrl += `&branch=${encodeURIComponent(branch)}`;
         }

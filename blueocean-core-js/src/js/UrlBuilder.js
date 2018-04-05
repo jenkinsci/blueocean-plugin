@@ -1,6 +1,7 @@
 // TODO: File docs
 
 import AppConfig from './config';
+import { ensureTrailingSlash, doubleUriEncode } from './utils/UrlUtils';
 
 /**
  * Return a new array with leading and trailing whitespace elements removed.
@@ -224,4 +225,30 @@ export function toClassicJobPage(currentPageUrl, isMultibranch = false) {
     }
 
     return classicJobFullName;
+}
+
+/**
+ * TODO: Docs
+ */
+export function buildRestUrl(organizationName, pipelineFullName, branchName, runId) {
+    // TODO: unit tests
+    // TODO: double check this encodes (or not) the orgName consistent with the rest where org folders are involved
+    const jenkinsUrl = AppConfig.getJenkinsRootURL();
+    let url = `${jenkinsUrl}/blue/rest/organizations/${encodeURIComponent(organizationName)}`;
+
+    if (pipelineFullName) {
+        // pipelineFullName might include a folder path, and final component is already encoded
+        url += `/pipelines/${pipelineFullName}`;
+    }
+
+    if (branchName) {
+        // JENKINS-37712 branch needs to be double-encoded for some reason
+        url += `/branches/${doubleUriEncode(branchName)}`;
+    }
+
+    if (runId) {
+        url += `/runs/${encodeURIComponent(runId)}`;
+    }
+
+    return ensureTrailingSlash(url);
 }

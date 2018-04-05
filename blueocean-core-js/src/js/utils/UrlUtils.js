@@ -36,31 +36,6 @@ export function ensureTrailingSlash(str) {
 }
 
 /**
- * Examines the provided object for:
- * organization, pipeline, branch, runId
- * and builds a path to the thing as best it can...
- */
-export function getRestUrl({ organization, pipeline, branch, runId }) {
-    // TODO: Check usages, see if this is where it should be and named sensibly
-    const pipelineName = typeof pipeline === 'object' ? pipeline.fullName : pipeline;
-    const organizationName = organization || (typeof pipeline === 'object' ? pipeline.organization : '');
-    const jenkinsUrl = AppConfig.getJenkinsRootURL();
-    let url = `${jenkinsUrl}/blue/rest/organizations/${encodeURIComponent(organizationName)}`;
-    if (pipelineName) {
-        // pipelineName might include a folder path, don't encode it
-        url += `/pipelines/${pipelineName}`;
-    }
-    if (branch) {
-        // JENKINS-37712 branch needs to be double-encoded for some reason
-        url += `/branches/${encodeURIComponent(encodeURIComponent(branch))}`;
-    }
-    if (runId) {
-        url += `/runs/${encodeURIComponent(runId)}`;
-    }
-    return ensureTrailingSlash(url);
-}
-
-/**
  * Constructs an escaped url based on the arguments, with forward slashes between them
  * e.g. buildURL('organizations', orgName, 'runs', runId) => organizations/my%20org/runs/34
  */
