@@ -13,9 +13,6 @@ import {UrlUtils} from './';
 
 /**
  * Return a new array with leading and trailing whitespace elements removed.
- *
- * @param {Array} tokens
- * @returns {Array}
  */
 function trimEmptyTokens(tokens) {
     const copy = tokens.slice();

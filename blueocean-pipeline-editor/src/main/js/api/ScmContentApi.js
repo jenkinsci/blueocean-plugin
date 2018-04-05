@@ -61,7 +61,6 @@ class ScmContentApi {
     }
 
     saveContent({ organization, pipeline, repo, sourceBranch, targetBranch, sha, message, path = 'Jenkinsfile', content }) {
-        console.log('pipeline', pipeline); // TODO: RM
         const contentUrl = `${UrlBuilder.buildRestUrl(organization, pipeline)}scm/content/`;
 
         const body = this.buildSaveContentRequest({
