@@ -18,9 +18,7 @@ export const LoadError = {
  */
 class ScmContentApi {
     loadContent({ organization, pipeline, branch, path = 'Jenkinsfile' }) {
-        const pipelineFullName = typeof pipeline === 'object' ? pipeline.fullName : pipeline;
-        // TODO: check which kind of object ^^^ we get here and remove test if possible
-        const pipelineUrl = UrlBuilder.buildRestUrl(organization, pipelineFullName);
+        const pipelineUrl = UrlBuilder.buildRestUrl(organization, pipeline);
         let contentUrl = `${pipelineUrl}scm/content?path=${path}`;
         if (branch) {
             contentUrl += `&branch=${encodeURIComponent(branch)}`;
@@ -63,7 +61,8 @@ class ScmContentApi {
     }
 
     saveContent({ organization, pipeline, repo, sourceBranch, targetBranch, sha, message, path = 'Jenkinsfile', content }) {
-        const contentUrl = `${getRestUrl({ organization, pipeline })}scm/content/`;
+        console.log('pipeline', pipeline); // TODO: RM
+        const contentUrl = `${UrlBuilder.buildRestUrl(organization, pipeline)}scm/content/`;
 
         const body = this.buildSaveContentRequest({
             organization,
