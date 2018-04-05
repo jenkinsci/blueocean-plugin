@@ -83,20 +83,26 @@ type RunDetailsWithSelfLink = {
     _links: { self: { href: string } }
 };
 
-// TODO: Docs - Run object -> run details url
+/**
+ * Builds a run details view url from a RunDetails object
+ */
 export function buildRunUrlForDetails(runDetails: RunDetailsWithSelfLink) {
     const restUrl = runDetails._links.self.href;
     return buildRunUrlForRestUrl(restUrl);
 }
 
-// TODO: Docs - Run link -> run details url
+/**
+ * Builds a run details view url from a run's REST link URL
+ */
 export function buildRunUrlForRestUrl(restUrl: string) {
     const {organizationName, pipelineFullName, detailName, runId} = parseRestRunUrl(restUrl);
 
     return buildRunUrl(organizationName, pipelineFullName, detailName, runId);
 }
 
-// TODO: Docs - individual run detail params -> run details url
+/**
+ * Builds a run details view url from identifiers
+ */
 export function buildRunUrl(organizationName, pipelineFullName, branchOrPipelineName, runId, tabName = 'pipeline') {
     const baseUrl =
         `/organizations/${encodeURIComponent(organizationName)}` +
@@ -245,11 +251,16 @@ export function toClassicJobPage(currentPageUrl, isMultibranch = false) {
 }
 
 /**
- * TODO: Docs
+ * Build a REST resource URL from component identifiers.
+ *
+ * @param organizationName the name of the owning organisation, including org folders
+ * @param pipelineFullName (optional) the full name of a pipeline, including folders
+ * @param branchName (optional) branch name for multibranch projects
+ * @param runId (optional) identifies an individual run
+ * @returns a URL string
  */
 export function buildRestUrl(organizationName, pipelineFullName, branchName, runId) {
     // TODO: unit tests
-    // TODO: double check this encodes (or not) the orgName consistent with the rest where org folders are involved
     const jenkinsUrl = AppConfig.getJenkinsRootURL();
     let url = `${jenkinsUrl}/blue/rest/organizations/${encodeURIComponent(organizationName)}`;
 
