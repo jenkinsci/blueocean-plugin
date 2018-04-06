@@ -118,8 +118,6 @@ public class EditorPage {
             logger.info("Using branch master");
         }
         wait.click(By.xpath("//*[text()=\"Save & run\"]"));
-        // This prevents the browser from closing too quickly
-        // wait.tinySleep(1000);
     }
 
     /**
