@@ -1,8 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { ExpandablePath, WeatherIcon, TableRow, TableCell } from '@jenkins-cd/design-language';
 import Extensions from '@jenkins-cd/js-extensions';
-import { buildPipelineUrl } from '../util/UrlUtils';
-import { capable, UrlConfig } from '@jenkins-cd/blueocean-core-js';
+import { capable, UrlConfig, UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import { MATRIX_PIPELINE } from '../Capabilities';
 import { Icon } from '@jenkins-cd/design-language';
 
@@ -54,7 +53,7 @@ export class PipelineRowItem extends Component {
 
         const hasPullRequests = !simple && (numberOfSuccessfulPullRequests || numberOfFailingPullRequests);
 
-        const baseUrl = buildPipelineUrl(organization, fullName);
+        const baseUrl = UrlBuilder.buildPipelineUrl(organization, fullName);
         const multiBranchURL = `${baseUrl}/branches`;
         const pullRequestsURL = `${baseUrl}/pr`;
         const activitiesURL = `${baseUrl}/activity`;

@@ -5,12 +5,12 @@ import Extensions, { dataType } from '@jenkins-cd/js-extensions';
 
 import { Icon } from '@jenkins-cd/design-language';
 
-import { rootPath, buildOrganizationUrl, buildPipelineUrl, buildRunDetailsUrl, buildClassicConfigUrl } from '../util/UrlUtils';
+import { UrlBuilder, buildClassicConfigUrl } from '@jenkins-cd/blueocean-core-js';
 import { MULTIBRANCH_PIPELINE } from '../Capabilities';
 import { RunDetailsHeader } from './RunDetailsHeader';
 import { RunRecord } from './records';
 import { FullScreen } from './FullScreen';
-import { Paths, capable, locationService, Security } from '@jenkins-cd/blueocean-core-js';
+import { Paths, capable, Security } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 
 const { rest: RestPaths } = Paths;
@@ -22,7 +22,7 @@ const webTranslate = i18nTranslator('blueocean-web');
 const classicConfigLink = pipeline => {
     let link = null;
     if (Security.permit(pipeline).configure()) {
-        let url = buildClassicConfigUrl(pipeline);
+        let url = UrlBuilder.buildClassicConfigUrl(pipeline);
         link = (
             <a href={url} target="_blank" title={webTranslate('toast.configure', { defaultValue: 'Configure' })} style={{ height: '24px' }}>
                 <Icon size={24} icon="ActionSettings" />
@@ -35,9 +35,9 @@ const classicConfigLink = pipeline => {
 const classicJobRunLink = (pipeline, branch, runId) => {
     let runUrl;
     if (pipeline.branchNames) {
-        runUrl = `${rootPath(pipeline.fullName)}job/${encodeURIComponent(branch)}/${encodeURIComponent(runId)}`;
+        runUrl = `${UrlBuilder.classicJobRoot(pipeline.fullName)}/job/${encodeURIComponent(branch)}/${encodeURIComponent(runId)}`;
     } else {
-        runUrl = `${rootPath(pipeline.fullName)}${encodeURIComponent(runId)}`;
+        runUrl = `${UrlBuilder.classicJobRoot(pipeline.fullName)}/${encodeURIComponent(runId)}`;
     }
     return (
         <a className="rundetails_exit_to_app" href={runUrl} style={{ height: '24px' }} title={webTranslate('go.to.classic', { defaultValue: 'Go to classic' })}>
@@ -88,7 +88,7 @@ class RunDetails extends Component {
     navigateToOrganization = () => {
         const { organization } = this.props.pipeline;
         const { location } = this.context;
-        const organizationUrl = buildOrganizationUrl(organization);
+        const organizationUrl = UrlBuilder.buildOrganizationUrl(organization);
         location.pathname = organizationUrl;
         this.context.router.push(location);
     };
@@ -96,7 +96,7 @@ class RunDetails extends Component {
     navigateToPipeline = () => {
         const { organization, fullName } = this.props.pipeline;
         const { location } = this.context;
-        const pipelineUrl = buildPipelineUrl(organization, fullName);
+        const pipelineUrl = UrlBuilder.buildPipelineUrl(organization, fullName);
         location.pathname = pipelineUrl;
         this.context.router.push(location);
     };
@@ -104,7 +104,7 @@ class RunDetails extends Component {
     navigateToChanges = () => {
         const { location, params: { organization, pipeline, branch, runId } } = this.context;
 
-        const changesUrl = buildRunDetailsUrl(organization, pipeline, branch, runId, 'changes');
+        const changesUrl = UrlBuilder.buildRunUrl(organization, pipeline, branch, runId, 'changes');
         location.pathname = changesUrl;
         this.context.router.push(location);
     };
@@ -115,7 +115,7 @@ class RunDetails extends Component {
 
     afterClose = () => {
         const { router, params } = this.context;
-        router.push(buildPipelineUrl(params.organization, params.pipeline));
+        router.push(UrlBuilder.buildPipelineUrl(params.organization, params.pipeline));
     };
 
     render() {
@@ -134,7 +134,7 @@ class RunDetails extends Component {
             return null;
         }
 
-        const baseUrl = buildRunDetailsUrl(params.organization, params.pipeline, params.branch, params.runId);
+        const baseUrl = UrlBuilder.buildRunUrl(params.organization, params.pipeline, params.branch, params.runId, null);
         logger.debug('params', params.organization, params.pipeline, params.branch, params.runId);
         const currentRun = new RunRecord(run);
         const computedTitle = `${currentRun.organization} / ${pipeline.fullName} / ${params.pipeline === params.branch

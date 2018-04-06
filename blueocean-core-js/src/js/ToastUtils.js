@@ -3,7 +3,7 @@
  */
 
 import { ToastService as toastService } from './index';
-import { buildRunDetailsUrl } from './UrlBuilder';
+import { buildRunUrlForDetails } from './UrlBuilder';
 import i18nTranslator from './i18n/i18n';
 
 export default {
@@ -18,7 +18,7 @@ export default {
 
         const runId = run.id;
 
-        const runDetailsUrl = buildRunDetailsUrl(run);
+        const runDetailsUrl = buildRunUrlForDetails(run);
 
         const name = decodeURIComponent(runnable.name);
         const text = translate('toast.run.started', {

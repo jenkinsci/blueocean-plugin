@@ -4,7 +4,7 @@ import Extensions from '@jenkins-cd/js-extensions';
 import { ExpandablePath, Page, TabLink, WeatherIcon } from '@jenkins-cd/design-language';
 import { AppConfig, ContentPageHeader, i18nTranslator, logging, NotFound, Paths, Security } from '@jenkins-cd/blueocean-core-js';
 import { Icon } from '@jenkins-cd/design-language';
-import { buildOrganizationUrl, buildPipelineUrl, buildClassicConfigUrl } from '../util/UrlUtils';
+import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import { documentTitle } from './DocumentTitle';
 import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
@@ -17,7 +17,7 @@ const classicConfigLink = pipeline => {
     let link = null;
     if (Security.permit(pipeline).configure()) {
         link = (
-            <a href={buildClassicConfigUrl(pipeline)} title={webTranslate('toast.configure', { defaultValue: 'Configure' })} target="_blank">
+            <a href={UrlBuilder.buildClassicConfigUrl(pipeline)} title={webTranslate('toast.configure', { defaultValue: 'Configure' })} target="_blank">
                 <Icon size={24} icon="ActionSettings" style={{ verticalAlign: 'baseline' }} />
             </a>
         );
@@ -67,8 +67,8 @@ export class PipelinePage extends Component {
         const organizationName = organization || AppConfig.getOrganizationName();
         const organizationDisplayName = organization === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : organization;
 
-        const orgUrl = buildOrganizationUrl(organizationName);
-        const activityUrl = buildPipelineUrl(organizationName, fullName, 'activity');
+        const orgUrl = UrlBuilder.buildOrganizationUrl(organizationName);
+        const activityUrl = UrlBuilder.buildPipelineUrl(organizationName, fullName, 'activity');
         const isReady = !!pipeline;
 
         if (!pipeline && this.error) {
@@ -82,7 +82,7 @@ export class PipelinePage extends Component {
             setTitle(translate('common.pager.loading', { defaultValue: 'Loading...' }));
         }
 
-        const baseUrl = buildPipelineUrl(organizationName, fullName);
+        const baseUrl = UrlBuilder.buildPipelineUrl(organizationName, fullName);
         const trendsEnabled = AppConfig.isFeatureEnabled('trends');
 
         const pageTabLinks = [

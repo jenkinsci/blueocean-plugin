@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { ReadableDate, TableRow, TableCell } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
-import { buildRunDetailsUrl } from '../util/UrlUtils';
+import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import RunHistoryButton from './RunHistoryButton';
 
 function noRun(pr, openRunDetails, t, columns) {
@@ -87,7 +87,7 @@ export default class PullRequestRow extends Component {
 
         const result = latestRun.result === 'UNKNOWN' ? latestRun.state : latestRun.result;
         const { fullName, organization } = contextPipeline;
-        const runDetailsUrl = buildRunDetailsUrl(organization, fullName, decodeURIComponent(latestRun.pipeline), latestRun.id, 'pipeline');
+        const runDetailsUrl = UrlBuilder.buildRunUrl(organization, fullName, decodeURIComponent(latestRun.pipeline), latestRun.id, 'pipeline');
 
         const statusIndicator = (
             <LiveStatusIndicator

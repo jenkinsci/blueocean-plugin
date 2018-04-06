@@ -1,32 +1,37 @@
 import { assert } from 'chai';
 
-import { toClassicJobPage } from '../../src/js/utils/UrlUtils';
+import * as UrlUtils from '../../src/js/utils/UrlUtils';
 
 describe('UrlUtils', () => {
-    it('toClassicJobPage - Non Multibranch', () => {
-        assert.equal(toClassicJobPage(
-            '/jenkins/blue/organizations/jenkins/freestyleA/detail/freestyleA/activity', false),
-            '/job/freestyleA');
-        assert.equal(toClassicJobPage(
-            '/jenkins/blue/organizations/jenkins/freestyleA/detail/freestyleA/2/pipeline', false),
-            '/job/freestyleA/2');
+    describe('ensureTrailingSlash', () => {
+        it('adds a slash when needed', () => {
+            assert.equal(UrlUtils.ensureTrailingSlash('http://www.example.org'), 'http://www.example.org/', 'adds slash');
+            assert.equal(UrlUtils.ensureTrailingSlash('x'), 'x/', 'adds slash');
+        });
 
-        // In a folder
-        assert.equal(toClassicJobPage(
-            '/jenkins/blue/organizations/jenkins/Foo%2FBar/activity', false),
-            '/job/Foo/job/Bar');
-        assert.equal(toClassicJobPage(
-            '/jenkins/blue/organizations/jenkins/Foo%2FBar/detail/Bar/1/pipeline', false),
-            '/job/Foo/job/Bar/1');
+        it("doesn't add slash when not needed", () => {
+            assert.equal(UrlUtils.ensureTrailingSlash('http://www.example.org/'), 'http://www.example.org/', "doesn't add slash");
+            assert.equal(UrlUtils.ensureTrailingSlash(''), '', "doesn't add slash");
+            assert.equal(UrlUtils.ensureTrailingSlash('/'), '/', "doesn't add slash");
+        });
     });
 
-    it('toClassicJobPage - Multibranch', () => {
-        // A job down in a folder
-        assert.equal(toClassicJobPage(
-            '/jenkins/blue/organizations/jenkins/folder1%2Ffolder2%2FATH/activity', true),
-            '/job/folder1/job/folder2/job/ATH');
-        assert.equal(toClassicJobPage(
-            '/jenkins/blue/organizations/jenkins/folder1%2Ffolder2%2FATH/detail/master/1/pipeline', true),
-            '/job/folder1/job/folder2/job/ATH/job/master/1');
+    describe('doubleUriEncode', () => {
+        it('encodes twice', () => {
+            const gibberish = 'asdf^%$/\\xx';
+            assert.equal(UrlUtils.doubleUriEncode(gibberish), encodeURIComponent(encodeURIComponent(gibberish)));
+        });
+
+        it('gives a blank string for null or undefined', () => {
+            assert.equal(UrlUtils.doubleUriEncode(), '');
+            assert.equal(UrlUtils.doubleUriEncode(null), '');
+        });
+
+        it("gives it a red hot go on other things that aren't strings", () => {
+            assert.equal(UrlUtils.doubleUriEncode(false), 'false');
+            assert.equal(UrlUtils.doubleUriEncode(true), 'true');
+            assert.equal(UrlUtils.doubleUriEncode(0), '0');
+            assert.equal(UrlUtils.doubleUriEncode(7), '7');
+        });
     });
 });
