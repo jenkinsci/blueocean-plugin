@@ -81,6 +81,7 @@ public class GitReadSaveService extends ScmContentProvider {
     @Override
     public String getApiUrl(@Nonnull Item item) {
         if (item instanceof org.jenkinsci.plugins.workflow.multibranch.WorkflowMultiBranchProject) {
+            MultiBranchProject<?,?> mbp = (MultiBranchProject<?,?>)item;
             return mbp.getSCMSources().stream()
                     .filter(s->s instanceof GitSCMSource)
                     .map(s -> ((GitSCMSource)s).getRemote())
@@ -140,6 +141,7 @@ public class GitReadSaveService extends ScmContentProvider {
     }
 
     private GitReadSaveRequest makeSaveRequest(Item item, StaplerRequest req) {
+        System.out.println("makeSaveRequest(Item item, StaplerRequest req)"); // TODO:RM
         String branch = req.getParameter("branch");
         return makeSaveRequest(item,
                                branch,
@@ -151,8 +153,10 @@ public class GitReadSaveService extends ScmContentProvider {
     }
 
     private GitReadSaveRequest makeSaveRequest(Item item, JSONObject json) {
+        System.out.println("makeSaveRequest(Item item, JSONObject json)"); // TODO:RM
         JSONObject content = json.getJSONObject("content");
-        String branch = content.getString("branch");
+        // TODO: String branch = content.getString("branch");
+        String branch = "master";
         return makeSaveRequest(item,
                                branch,
                                content.getString("message"),
