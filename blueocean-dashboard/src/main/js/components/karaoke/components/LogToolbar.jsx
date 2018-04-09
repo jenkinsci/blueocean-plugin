@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { Icon, TimeDuration } from '@jenkins-cd/design-language';
-import { fetchAllSuffix as suffix } from '../../../util/UrlUtils';
+import { UrlUtils } from '@jenkins-cd/blueocean-core-js';
 
 const { string } = PropTypes;
 
@@ -12,7 +12,7 @@ export default class LogToolbar extends Component {
         if (!url) {
             return null;
         }
-        const logUrl = url.includes(suffix) ? url : `${url}${suffix}`;
+        const logUrl = url.includes(UrlUtils.fetchAllSuffix) ? url : `${url}${UrlUtils.fetchAllSuffix}`;
 
         return (
             <div className="log-header">

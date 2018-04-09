@@ -1,4 +1,4 @@
-import React, { Component, PropTypes } from 'react';
+import { Component, PropTypes } from 'react';
 import { capabilityStore } from './Capability';
 
 class IfCapability extends Component {

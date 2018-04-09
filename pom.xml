@@ -42,7 +42,7 @@
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
     <jenkins-test-harness.version>2.30</jenkins-test-harness.version>
     <scm-api.version>2.2.2</scm-api.version>
-    <git.version>3.6.0</git.version>
+    <git.version>3.8.0</git.version>
   </properties>
 
   <scm>
@@ -137,6 +137,7 @@
     <module>blueocean-git-pipeline</module>
     <module>blueocean-bitbucket-pipeline</module>
     <module>blueocean-pipeline-editor</module>
+    <module>blueocean-jira</module>
   </modules>
 
   <repositories>
@@ -300,6 +301,12 @@
             <version>1.2.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>blueocean-jira</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- TODO: should be moved out of blueocean repo as separate plugin -->
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -331,7 +338,13 @@
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-model-definition</artifactId>
-            <version>1.2.5</version>
+            <version>1.2.7</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.jenkins-ci.plugins</groupId>
+                    <artifactId>git-client</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -468,6 +481,12 @@
             <version>3.5.0</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>apache-httpcomponents-client-4-api</artifactId>
+            <version>4.5.3-2.1</version>
+        </dependency>
+
         <!-- Other -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -488,6 +507,45 @@
                 <exclusion>
                     <groupId>org.jenkins-ci</groupId>
                     <artifactId>annotation-indexer</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>jira</artifactId>
+            <version>2.4.2</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+
+                <!-- Upper bound dependency fix
+                    TODO: Remove it after https://github.com/jenkinsci/jira-plugin/pull/130 is merged and released.
+                -->
+                <exclusion>
+                    <groupId>com.atlassian.httpclient</groupId>
+                    <artifactId>atlassian-httpclient-plugin</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.springframework</groupId>
+                    <artifactId>spring-beans</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpclient</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpmime</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpcore</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.objenesis</groupId>
+                    <artifactId>objenesis</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -803,24 +861,9 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>fluent-hc</artifactId>
-            <version>4.5.3</version>
-        </dependency>
-        <dependency>
             <groupId>com.damnhandy</groupId>
             <artifactId>handy-uri-templates</artifactId>
             <version>2.1.6</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpmime</artifactId>
-            <version>4.5.3</version>
         </dependency>
     </dependencies>
   </dependencyManagement>

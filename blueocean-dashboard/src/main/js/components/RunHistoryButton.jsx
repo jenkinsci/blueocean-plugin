@@ -1,12 +1,12 @@
 import React, { PropTypes } from 'react';
 
 import { Icon } from '@jenkins-cd/design-language';
-import { buildPipelineUrl } from '../util/UrlUtils';
+import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import { Link } from 'react-router';
 
 const RunHistoryButton = props => {
     const { pipeline, branchName, t } = props;
-    const historyButtonUrl = `${buildPipelineUrl(pipeline.organization, pipeline.fullName)}/activity?branch=${encodeURIComponent(branchName)}`;
+    const historyButtonUrl = `${UrlBuilder.buildPipelineUrl(pipeline.organization, pipeline.fullName)}/activity?branch=${encodeURIComponent(branchName)}`;
 
     return (
         <div className="history-button-component">

@@ -17,7 +17,7 @@ export logging from './logging';
 export loadingIndicator from './LoadingIndicator';
 
 export { Fetch, FetchFunctions } from './fetch';
-export UrlBuilder from './UrlBuilder';
+export * as UrlBuilder from './UrlBuilder';
 export UrlConfig from './urlconfig';
 export JWT from './jwt';
 export TestUtils from './testutils';
@@ -53,7 +53,7 @@ export {
     supportedInputTypesMapping,
     ParametersRender,
 } from './parameter';
-export { BlueLogo, BlueOceanIcon } from './components/BlueLogo';
+export { BlueLogo } from './components/BlueLogo';
 export { ContentPageHeader, SiteHeader } from './components/ContentPageHeader';
 export { ResultPageHeader } from './components/ResultPageHeader';
 
@@ -102,30 +102,8 @@ export const DEBUG = {
 export { TimeManager } from './utils/TimeManager';
 
 export { TimeHarmonizer, TimeHarmonizerUtil } from './components/TimeHarmonizer';
+
 import LiveStatusIndicator from './components/LiveStatusIndicator';
 export { LiveStatusIndicator };
-export {
-    buildOrganizationUrl,
-    buildPipelineUrl,
-    rootPath,
-    buildClassicCreateJobUrl,
-    buildClassicConfigUrl,
-    buildClassicInputUrl,
-    buildClassicBuildUrl,
-    buildRunDetailsUrl,
-    doubleUriEncode,
-    fetchAllSuffix,
-    applyFetchAll,
-    calculateFetchAll,
-    calculateLogView,
-    calculateLogUrl,
-    calculateNodeBaseUrl,
-    calculateStepsBaseUrl,
-    calculateRunLogURLObject,
-    paginateUrl,
-    endSlash,
-    getRestUrl,
-    buildUrl,
-    relativeUrl,
-    toClassicJobPage,
-} from './utils/UrlUtils';
+
+export * as UrlUtils from './utils/UrlUtils';

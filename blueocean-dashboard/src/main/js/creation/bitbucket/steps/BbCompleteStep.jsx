@@ -1,7 +1,7 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
 
-import { buildPipelineUrl } from '../../../util/UrlUtils';
+import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 
 import FlowStep from '../../flow2/FlowStep';
 import FlowStepStatus from '../../flow2/FlowStepStatus';
@@ -22,7 +22,7 @@ export default class BbCompleteStep extends React.Component {
     navigatePipeline() {
         const { pipeline } = this.props.flowManager;
         const { organization, fullName } = pipeline;
-        const url = buildPipelineUrl(organization, fullName, 'activity');
+        const url = UrlBuilder.buildPipelineUrl(organization, fullName, 'activity');
         this.props.flowManager.completeFlow({ url });
     }
 

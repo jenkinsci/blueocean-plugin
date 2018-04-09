@@ -1,4 +1,4 @@
-import { Fetch, getRestUrl } from '@jenkins-cd/blueocean-core-js';
+import { Fetch, UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import TypedError from './TypedError';
 
 const Base64 = {
@@ -18,7 +18,8 @@ export const LoadError = {
  */
 class ScmContentApi {
     loadContent({ organization, pipeline, branch, path = 'Jenkinsfile' }) {
-        let contentUrl = `${getRestUrl({ organization, pipeline })}scm/content?path=${path}`;
+        const pipelineUrl = UrlBuilder.buildRestUrl(organization, pipeline);
+        let contentUrl = `${pipelineUrl}scm/content?path=${path}`;
         if (branch) {
             contentUrl += `&branch=${encodeURIComponent(branch)}`;
         }
@@ -60,7 +61,7 @@ class ScmContentApi {
     }
 
     saveContent({ organization, pipeline, repo, sourceBranch, targetBranch, sha, message, path = 'Jenkinsfile', content }) {
-        const contentUrl = `${getRestUrl({ organization, pipeline })}scm/content/`;
+        const contentUrl = `${UrlBuilder.buildRestUrl(organization, pipeline)}scm/content/`;
 
         const body = this.buildSaveContentRequest({
             organization,
