@@ -93,7 +93,7 @@
     "run-sequence": "1.2.2",
     "sinon": "1.17.6",
     "ts-jest": "19.0.2",
-    "tsify": "3.0.4",
+    "tsify": "3.0.2",
     "typescript": "2.7.2",
     "watchify": "3.7.0"
   },
