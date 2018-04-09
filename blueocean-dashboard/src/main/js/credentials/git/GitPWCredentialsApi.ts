@@ -1,29 +1,37 @@
-import { Fetch, UrlConfig, Utils, AppConfig } from '@jenkins-cd/blueocean-core-js';
-import { TypedError } from '../TypedError';
+import { Fetch,
+    UrlConfig,
+    Utils,
+    AppConfig
+} from '@jenkins-cd/blueocean-core-js';
 
-export const LoadError = {
-    TOKEN_NOT_FOUND: 'TOKEN_NOT_FOUND',
-    TOKEN_INVALID: 'TOKEN_INVALID',
-    TOKEN_REVOKED: 'TOKEN_REVOKED',
-};
+import { TypedError} from "../TypedError";
 
-export const SaveError = {
-    INVALID_CREDENTIAL: 'INVALID_CREDENTIAL',
-    UNKNOWN_ERROR: 'UNKNOWN_ERROR',
-};
+import {
+    LoadError,
+    SaveError,
+} from '../bitbucket/BbCredentialsApi'; // TODO: move these out of BB tree?
 
-class BbCredentialsApi {
+// TODO: Docs
+export class GitPWCredentialsApi {
+
+    _fetch: any; // TODO: not any
+    organization: string;
+    scmId: string;
+
     constructor(scmId) {
         this._fetch = Fetch.fetchJSON;
         this.organization = AppConfig.getOrganizationName();
         this.scmId = scmId;
     }
 
-    findExistingCredential(apiUrl) {
+    findExistingCredential(repositoryUrl) {
         const path = UrlConfig.getJenkinsRootURL();
-        const credUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/?apiUrl=${apiUrl}`);
+        const credUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/?repositoryUrl=${repositoryUrl}`);
+        // TODO: move Utils.cleanSlashes into UrlUtils
 
         return this._fetch(credUrl).then(result => this._findExistingCredentialSuccess(result), error => this._findExistingCredentialFailure(error));
+        // TODO: do we have to use 2-func "then" here?
+        // TODO: Do we need to have success / failure as instance methods rather than inline?
     }
 
     _findExistingCredentialSuccess(credential) {
@@ -44,14 +52,14 @@ class BbCredentialsApi {
         throw new TypedError(LoadError.TOKEN_INVALID, responseBody);
     }
 
-    createBbCredential(apiUrl, userName, password) {
+    createCredential(repositoryUrl, userName, password) {
         const path = UrlConfig.getJenkinsRootURL();
         const validateCredUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/validate`);
 
         const requestBody = {
             userName,
             password,
-            apiUrl,
+            repositoryUrl,
         };
 
         const fetchOptions = {
@@ -62,10 +70,13 @@ class BbCredentialsApi {
             body: JSON.stringify(requestBody),
         };
 
-        return this._fetch(validateCredUrl, { fetchOptions }).catch(error => this._createAccessTokenFailure(error));
+        return this._fetch(validateCredUrl, { fetchOptions }).catch(error => this._createCredentialFailure(error));
     }
 
-    _createAccessTokenFailure(error) {
+    _createCredentialFailure(error) {
+        // TODO: inline this to create method
+        // TODO: move error creation into sync code
+
         const { code } = error.responseBody;
 
         if (code === 401) {
@@ -75,5 +86,3 @@ class BbCredentialsApi {
         throw new TypedError(SaveError.UNKNOWN_ERROR, error);
     }
 }
-
-export default BbCredentialsApi;

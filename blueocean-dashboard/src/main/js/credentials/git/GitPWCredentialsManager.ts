@@ -23,13 +23,15 @@ export class GitPWCredentialsManager {
     _api: GitPWCredentialsApi;
 
     constructor() {
-        // TODO: Allow construct with alt/mock API
-        this._api = new GitPWCredentialsApi();
     }
 
+    // @action
     configure(scmId, apiUrl) {
         this.scmId = scmId;
         this.apiUrl = apiUrl;
+
+        // TODO: Allow construct with alt/mock API
+        this._api = new GitPWCredentialsApi(scmId);
     }
 
     @action
@@ -59,7 +61,7 @@ export class GitPWCredentialsManager {
         this.pendingValidation = true;
 
         return this._api
-            .createGitPWCredential(this.apiUrl, userName, password)
+            .createCredential(this.apiUrl, userName, password)
             .then(...delayBoth(MIN_DELAY))
             .then(response => this._createCredentialSuccess(response))
             .catch(error => this._onCreateCredentialFailure(error));
