@@ -168,18 +168,17 @@ public class GithubEditorTest {
      */
     @Test
     public void testEditorChangeAgentSetting() throws IOException {
-        String newBranchName = "made-by-testEditorChangeAgent";
-        String newStageName = "Stage made by ATH";
+        String newBranchName = "made-by-testEditorChangeAgentSetting";
         creationPage.createPipeline(token, organization, repo, true);
         MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
         editorPage.simplePipeline();
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
-        driver.navigate().refresh();
         sseClient.untilEvents(pipeline.buildsFinished);
         sseClient.clear();
         BranchPage branchPage = activityPage.clickBranchTab();
         branchPage.openEditor("master");
-        editorPage.addStageToPipeline(pipeline, newBranchName, newStageName);
+        editorPage.changeAgentLabel("none");
+        editorPage.saveBranch(newBranchName);
         activityPage.checkUrl();
         activityPage.getRunRowForBranch(newBranchName);
         sseClient.untilEvents(pipeline.buildsFinished);

@@ -75,7 +75,6 @@ public class EditorPage {
     /**
      * Changes the agent label from one thing to something else.
      *
-     * @param oldAgentLabel the name of the agent label we are changing away from.
      * @param newAgentLabel the name of the new agent we'll change to
      *
      * TODO: Needs the ability to select something like `docker` and be
@@ -91,26 +90,15 @@ public class EditorPage {
     }
     */
 
-    public void changeAgentLabel(String oldAgentLabel, String newAgentLabel) {
-        logger.info("Changing agent label of " + oldAgentLabel + " to " + newAgentLabel);
-        // Click the start node of the pipeline, just in case
-        // it wasn't already
+    public void changeAgentLabel(String newAgentLabel) {
+        logger.info("Changing agent label to " + newAgentLabel);
+        // Click the start node of the pipeline, in case it wasn't already
         wait.click(By.id("pipeline-node-hittarget-1-start"));
-        // Here we'll click on the dropdown
-        wait.click(By.cssSelector("Dropdown-menu-open"));
-        // Now we want to click this:
-        // //*[@id="root"]/div/main/div/div[2]/div/div[2]/span/div/div[2]/div/div/div[1]/div[2]/div/div/div/ul/li[1]/a
-        // #root > div > main > div > div.pipeline-editor > div > div.sheet-container > span > div > div.sheet-body > div > div > div.agent-select > div.Dropdown.Dropdown-menu-open > div > div > div > ul > li:nth-child(1) > a
-        wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"sh\"]"));
-        wait.sendKeys(By.cssSelector("textarea.editor-step-detail-script"),"whoami");
-        // This selector makes sure we always click on the back arrow in the active sheet.
-        wait.click(By.cssSelector("div.sheet.active a.back-from-sheet"));
-        logger.info("Adding an echo step");
-        wait.click(By.cssSelector("button.btn-primary.add"));
-        wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"echo\"]"));
-        wait.sendKeys(By.cssSelector("input.TextInput-control"),"Echo step added by ATH");
-        wait.click(By.cssSelector("div.sheet.active a.back-from-sheet"));
-        logger.info("Agent label changed from " + oldAgentLabel + " to " + newAgentLabel);
+        // Click the agent dropdown to display the list
+        wait.click(By.cssSelector("button.Dropdown-button"));
+        // wait.click(By.xpath("//*[text()='none']"));
+        wait.click(By.xpath("//*[text()='" + newAgentLabel + "']"));
+        logger.info("Agent label changed to " + newAgentLabel);
     }
 
     /**
