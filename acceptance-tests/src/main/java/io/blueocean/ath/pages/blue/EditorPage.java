@@ -79,22 +79,12 @@ public class EditorPage {
      *       able to add strings to the resulting popup
      */
 
-    /*
-    Can learn from this
-    public RunDetailsPipelinePage clickRunButton(String prNumber) {
-    wait.click(By.cssSelector("a[data-pr='" + prNumber + "'] a.run-button"));
-    logger.info("Clicked Run button to build the PR");
-    return runDetailsPipelinePageFactory.withPipeline(pipeline);
-    }
-    */
-
     public void changeAgentLabel(String newAgentLabel) {
         logger.info("Changing agent label to " + newAgentLabel);
         // Click the start node of the pipeline, in case it wasn't already
         wait.click(By.id("pipeline-node-hittarget-1-start"));
         // Click the agent dropdown to display the list
         wait.click(By.cssSelector("button.Dropdown-button"));
-        // wait.click(By.xpath("//*[text()='none']"));
         wait.click(By.xpath("//*[text()='" + newAgentLabel + "']"));
         logger.info("Agent label changed to " + newAgentLabel);
     }
