@@ -109,6 +109,7 @@ public class EditorPage {
         wait.click(By.cssSelector("div.sheet.active a.back-from-sheet"));
         wait.click(By.xpath("//*[text()='Save']"));
         wait.sendKeys(By.cssSelector("textarea[placeholder=\"What changed?\"]"),"We changed some things via ATH");
+        logger.info("Attempting to save simple pipeline");
         if(!Strings.isNullOrEmpty(newBranch)) {
             wait.click(By.xpath("//*[text()='Commit to new branch']"));
             logger.info("Committed to new branch " + newBranch);
@@ -117,7 +118,6 @@ public class EditorPage {
             logger.info("Using branch master");
         }
         wait.click(By.xpath("//*[text()=\"Save & run\"]"));
-        logger.info("Simple pipeline saved");
     }
 
     /**
