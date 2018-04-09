@@ -1,35 +1,41 @@
-import { action, observable } from 'mobx';
+import {action} from "mobx";
+
+import {BbCredentialsState} from '../bitbucket/BbCredentialsState';
+import {
+    LoadError,
+    SaveError,
+} from '../bitbucket/BbCredentialsApi'; // TODO: move these out of BB tree?
+
+import {GitPWCredentialsApi} from './GitPWCredentialsApi';
 
 import PromiseDelayUtils from '../../util/PromiseDelayUtils';
-import BbCredentialsApi from './BbCredentialsApi';
-import BbCredentialsState from './BbCredentialsState';
-import { LoadError, SaveError } from './BbCredentialsApi';
-
 const MIN_DELAY = 500;
 const { delayBoth } = PromiseDelayUtils;
 
-/**
- * Manages retrieving, validating and saving Bitbucket credential
- * Also holds the state of the credential for use in BbCredentialStep.
- */
-class BbCredentialsManager {
-    @observable stateId = null;
+// TODO: Docs
+export class GitPWCredentialsManager {
 
-    @observable pendingValidation = false;
+    scmId: string;
+    apiUrl?: string; // TODO: Rename to repo url
+    pendingValidation: boolean = false;
+    stateId: BbCredentialsState;
 
-    configure(scmId, apiUrl) {
-        this._credentialsApi = new BbCredentialsApi(scmId);
-        this.apiUrl = apiUrl;
+    _api: GitPWCredentialsApi;
+
+    constructor() {
+        // TODO: Allow construct with alt/mock API
+        this._api = new GitPWCredentialsApi();
     }
 
-    constructor(credentialsApi) {
-        this._credentialsApi = credentialsApi;
+    configure(scmId, apiUrl) {
+        this.scmId = scmId;
+        this.apiUrl = apiUrl;
     }
 
     @action
     findExistingCredential() {
         this.stateId = BbCredentialsState.PENDING_LOADING_CREDS;
-        return this._credentialsApi
+        return this._api
             .findExistingCredential(this.apiUrl)
             .then(...delayBoth(MIN_DELAY))
             .catch(error => this._findExistingCredentialFailure(error));
@@ -52,11 +58,11 @@ class BbCredentialsManager {
     createCredential(userName, password) {
         this.pendingValidation = true;
 
-        return this._credentialsApi
-            .createBbCredential(this.apiUrl, userName, password)
+        return this._api
+            .createGitPWCredential(this.apiUrl, userName, password)
             .then(...delayBoth(MIN_DELAY))
             .then(response => this._createCredentialSuccess(response))
-            .catch(error => this._onCreateTokenFailure(error));
+            .catch(error => this._onCreateCredentialFailure(error));
     }
 
     @action
@@ -67,7 +73,7 @@ class BbCredentialsManager {
     }
 
     @action
-    _onCreateTokenFailure(error) {
+    _onCreateCredentialFailure(error) {
         this.pendingValidation = false;
 
         if (error.type === SaveError.INVALID_CREDENTIAL) {
@@ -77,5 +83,3 @@ class BbCredentialsManager {
         }
     }
 }
-
-export default BbCredentialsManager;
