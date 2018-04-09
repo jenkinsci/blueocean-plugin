@@ -42,7 +42,7 @@ node() {
           }
           junit '**/target/surefire-reports/TEST-*.xml'
           junit '**/target/jest-reports/*.xml'
-          archive '*/target/code-coverage/**/*.html'
+          archive '*/target/code-coverage/**/*'
           archive '*/target/*.hpi'
         }
 

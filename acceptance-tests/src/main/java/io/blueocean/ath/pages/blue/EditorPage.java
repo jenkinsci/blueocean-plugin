@@ -6,6 +6,7 @@ import io.blueocean.ath.model.MultiBranchPipeline;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
@@ -68,6 +69,81 @@ public class EditorPage {
         wait.click(By.xpath("//*[text()=\"Save & run\"]"));
         logger.info("Pipeline saved with edited stages in place");
     }
+
+    /**
+     * Changes the agent label from one thing to something else.
+     *
+     * @param oldAgentLabel the name of the agent label we are changing away from.
+     * @param newAgentLabel the name of the new agent we'll change to
+     *
+     * TODO: Needs the ability to select something like `docker` and be
+     *       able to add strings to the resulting popup
+     */
+
+    /*
+    Can learn from this
+    public RunDetailsPipelinePage clickRunButton(String prNumber) {
++   wait.click(By.cssSelector("a[data-pr='" + prNumber + "'] a.run-button"));
++   logger.info("Clicked Run button to build the PR");
++   return runDetailsPipelinePageFactory.withPipeline(pipeline);
++   }
+     */
+
+    public void changeAgentLabel(String oldAgentLabel, String newAgentLabel) {
+        logger.info("Changing agent label of " + oldAgentLabel + " to " + newAgentLabel);
+        // Click the start node of the pipeline, just in case
+        // it wasn't already
+        wait.click(By.id("pipeline-node-hittarget-1-start"));
+        // Here we'll click on the dropdown
+        wait.click(By.cssSelector("Dropdown-menu-open"));
+        // Now we want to click this:
+        // //*[@id="root"]/div/main/div/div[2]/div/div[2]/span/div/div[2]/div/div/div[1]/div[2]/div/div/div/ul/li[1]/a
+        // #root > div > main > div > div.pipeline-editor > div > div.sheet-container > span > div > div.sheet-body > div > div > div.agent-select > div.Dropdown.Dropdown-menu-open > div > div > div > ul > li:nth-child(1) > a
+        wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"sh\"]"));
+        wait.sendKeys(By.cssSelector("textarea.editor-step-detail-script"),"whoami");
+        // This selector makes sure we always click on the back arrow in the active sheet.
+        wait.click(By.cssSelector("div.sheet.active a.back-from-sheet"));
+        logger.info("Adding an echo step");
+        wait.click(By.cssSelector("button.btn-primary.add"));
+        wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"echo\"]"));
+        wait.sendKeys(By.cssSelector("input.TextInput-control"),"Echo step added by ATH");
+        wait.click(By.cssSelector("div.sheet.active a.back-from-sheet"));
+        logger.info("Agent label changed from " + oldAgentLabel + " to " + newAgentLabel);
+    }
+
+    /**
+     * Deletes a stage by name.
+     *
+     * @param stageToDelete the name of the stage we intend to delete.
+     *
+     */
+    public void deleteStage(String stageToDelete) {
+        logger.info("Deleting stage with name matching " + stageToDelete);
+        // wait.click(By.xpath("//*[text()='Save']"));
+        wait.click(By.cssSelector("THE NAME OF THE STAGE"));
+        wait.click(By.cssSelector("THE DELETE BUTTON"));
+        logger.info("Stage " + stageToDelete + " deleted");
+    }
+
+    /**
+     * Deletes a step inside of an existing stage.
+     *
+     * @param targetStage  Name of the stage which contains the step we want to delete
+     * @param stepToDelete the name of the new branch we'll save to. If null,
+     *              we save to master.
+     *
+     * Maybe if targetStage is null we can just pattern match against
+     * the step name?
+     */
+    public void deleteStep(String targetStage, String stepToDelete) {
+        logger.info("Deleting step with name matching " + stepToDelete + " in stage " + targetStage);
+        // wait.click(By.xpath("//*[text()='Save']"));
+        wait.click(By.cssSelector("THE STAGE"));
+        wait.click(By.cssSelector("THE STEP"));
+        wait.click(By.cssSelector("THE DELETE BUTTON"));
+        logger.info("Step " + stepToDelete + " in stage " + targetStage + " deleted");
+    }
+
 
     /**
      * Saves the pipeline to a branch
