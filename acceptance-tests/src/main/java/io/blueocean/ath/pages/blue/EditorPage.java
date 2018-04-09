@@ -6,14 +6,12 @@ import io.blueocean.ath.model.MultiBranchPipeline;
 import org.apache.log4j.Logger;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 
 import javax.inject.Inject;
 
 public class EditorPage {
-    private String commitMessageForSaves = "Saved by Pipeline Editor";
 
     private Logger logger = Logger.getLogger(EditorPage.class);
 
