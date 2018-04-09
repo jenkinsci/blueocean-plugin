@@ -103,6 +103,7 @@ class GitCredentialsPicker extends React.Component {
         if (!this.state.credential) {
             return null;
         }
+        console.log('this.state.credential', this.state.credential); // TODO: RM
         return (
             <div className="credentials-picker-git">
                 <p className="instructions">

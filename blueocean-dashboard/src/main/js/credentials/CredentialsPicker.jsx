@@ -37,6 +37,7 @@ class CredentialsPicker extends React.Component {
     render() {
         const type = this.resolveType(this.props);
         const scmSource = this.resolveScmSource(this.props);
+        const { repositoryUrl } = this.props;
 
         let children = null;
 
@@ -45,8 +46,7 @@ class CredentialsPicker extends React.Component {
         } else if (type === 'bitbucket-cloud' || type === 'bitbucket-server') {
             children = <BbCredentialsPicker scmId={scmSource.id} apiUrl={scmSource.apiUrl} />;
         } else if (type === 'git') {
-            // children = <GitCredentialsPicker scmId={scmSource.id} />;
-            children = <BbCredentialsPicker scmId={scmSource.id} apiUrl={scmSource.apiUrl} />;
+            children = <GitCredentialsPicker scmId={scmSource.id} repositoryUrl={repositoryUrl} />;
         } else {
             children = <div>No credential picker could be found for type={type}</div>;
         }

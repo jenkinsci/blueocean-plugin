@@ -187,43 +187,43 @@ export default class GitConnectStep extends React.Component {
                     transitionEnterTimeout={300}
                     transitionLeaveTimeout={300}
                 >
-                    {isSshRepositoryUrl(this.state.repositoryUrl) && (
-                        <Extensions.Renderer
-                            extensionPoint="jenkins.credentials.selection"
-                            onComplete={credential => this._onCreateCredentialClosed(credential)}
-                            type="git"
-                            repositoryUrl={this.state.repositoryUrl}
-                        />
-                    )}
+                    {/*{isSshRepositoryUrl(this.state.repositoryUrl) && (*/}
+                    <Extensions.Renderer
+                        extensionPoint="jenkins.credentials.selection"
+                        onComplete={credential => this._onCreateCredentialClosed(credential)}
+                        type="git"
+                        repositoryUrl={this.state.repositoryUrl}
+                    />
+                    {/* )} */}
 
-                    {isNonSshRepositoryUrl(this.state.repositoryUrl) && (
-                        <div>
-                            <div style={{ marginTop: 16, marginBottom: 10 }}>
-                                <Alerts
-                                    type="Warning"
-                                    message={
-                                        <div style={{ marginTop: 6, marginBottom: 6 }}>
-                                            Saving Pipelines is unsupported using http/https repositories. Please use SSH instead.
-                                        </div>
-                                    }
-                                />
-                            </div>
-                            <FormElement title={t('creation.git.step1.credentials')} errorMessage={credentialErrorMsg}>
-                                <Dropdown
-                                    ref={dropdown => this._bindDropdown(dropdown)}
-                                    className="dropdown-credentials"
-                                    options={flowManager.credentials}
-                                    defaultOption={noCredentialsOption}
-                                    labelField="displayName"
-                                    onChange={opt => this._selectedCredentialChange(opt)}
-                                />
+                    {/*{isNonSshRepositoryUrl(this.state.repositoryUrl) && (*/}
+                    {/*<div>*/}
+                    {/*<div style={{ marginTop: 16, marginBottom: 10 }}>*/}
+                    {/*<Alerts*/}
+                    {/*type="Warning"*/}
+                    {/*message={*/}
+                    {/*<div style={{ marginTop: 6, marginBottom: 6 }}>*/}
+                    {/*Saving Pipelines is unsupported using http/https repositories. Please use SSH instead.*/}
+                    {/*</div>*/}
+                    {/*}*/}
+                    {/*/>*/}
+                    {/*</div>*/}
+                    {/*<FormElement title={t('creation.git.step1.credentials')} errorMessage={credentialErrorMsg}>*/}
+                    {/*<Dropdown*/}
+                    {/*ref={dropdown => this._bindDropdown(dropdown)}*/}
+                    {/*className="dropdown-credentials"*/}
+                    {/*options={flowManager.credentials}*/}
+                    {/*defaultOption={noCredentialsOption}*/}
+                    {/*labelField="displayName"*/}
+                    {/*onChange={opt => this._selectedCredentialChange(opt)}*/}
+                    {/*/>*/}
 
-                                <button className="button-create-credential btn-secondary" onClick={() => this._onCreateCredentialClick()}>
-                                    {t('creation.git.step1.create_credential_button')}
-                                </button>
-                            </FormElement>
-                        </div>
-                    )}
+                    {/*<button className="button-create-credential btn-secondary" onClick={() => this._onCreateCredentialClick()}>*/}
+                    {/*{t('creation.git.step1.create_credential_button')}*/}
+                    {/*</button>*/}
+                    {/*</FormElement>*/}
+                    {/*</div>*/}
+                    {/*)}*/}
                 </ReactCSSTransitionGroup>
 
                 {this.state.showCreateCredentialDialog && (
