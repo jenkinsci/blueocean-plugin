@@ -13,6 +13,8 @@ import org.openqa.selenium.support.ui.ExpectedConditions;
 import javax.inject.Inject;
 
 public class EditorPage {
+    private String commitMessageForSaves = "Saved by Pipeline Editor";
+
     private Logger logger = Logger.getLogger(EditorPage.class);
 
     private MultiBranchPipeline pipeline;
@@ -83,11 +85,11 @@ public class EditorPage {
     /*
     Can learn from this
     public RunDetailsPipelinePage clickRunButton(String prNumber) {
-+   wait.click(By.cssSelector("a[data-pr='" + prNumber + "'] a.run-button"));
-+   logger.info("Clicked Run button to build the PR");
-+   return runDetailsPipelinePageFactory.withPipeline(pipeline);
-+   }
-     */
+    wait.click(By.cssSelector("a[data-pr='" + prNumber + "'] a.run-button"));
+    logger.info("Clicked Run button to build the PR");
+    return runDetailsPipelinePageFactory.withPipeline(pipeline);
+    }
+    */
 
     public void changeAgentLabel(String oldAgentLabel, String newAgentLabel) {
         logger.info("Changing agent label of " + oldAgentLabel + " to " + newAgentLabel);
@@ -152,9 +154,9 @@ public class EditorPage {
      *               we save to master.
      */
     public void saveBranch(String branch) {
-        logger.info("Editing pipeline - saving now");
+        logger.info("saveBranch method called");
         wait.click(By.xpath("//*[text()='Save']"));
-        wait.sendKeys(By.cssSelector("textarea[placeholder=\"What changed?\"]"), "We changed some things.");
+        wait.sendKeys(By.cssSelector("textarea[placeholder=\"What changed?\"]"), "ATH made changes and is saving");
         if(!Strings.isNullOrEmpty(branch)) {
             wait.click(By.xpath("//span[text()='Commit to new branch']"));
             wait.sendKeys(By.cssSelector("input[placeholder='my-new-branch']:enabled"),branch);
@@ -165,7 +167,7 @@ public class EditorPage {
             logger.info("Using branch master");
         }
         wait.click(By.xpath("//*[text()=\"Save & run\"]"));
-        logger.info("Saved new branch");
+        logger.info("Saved branch");
     }
 
     /**
@@ -183,17 +185,7 @@ public class EditorPage {
         wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"echo\"]"));
         wait.sendKeys(By.cssSelector("input.TextInput-control"),"simplePipeline creating echo message");
         wait.click(By.cssSelector("div.sheet.active a.back-from-sheet"));
-        wait.click(By.xpath("//*[text()='Save']"));
-        wait.sendKeys(By.cssSelector("textarea[placeholder=\"What changed?\"]"),"We changed some things via ATH");
-        logger.info("Attempting to save simple pipeline");
-        if(!Strings.isNullOrEmpty(newBranch)) {
-            wait.click(By.xpath("//*[text()='Commit to new branch']"));
-            logger.info("Committed to new branch " + newBranch);
-            wait.sendKeys(By.cssSelector("input[placeholder='my-new-branch']:enabled"),newBranch);
-        } else {
-            logger.info("Using branch master");
-        }
-        wait.click(By.xpath("//*[text()=\"Save & run\"]"));
+        saveBranch(newBranch);
     }
 
     /**

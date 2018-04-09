@@ -163,6 +163,29 @@ public class GithubEditorTest {
     }
 
     /**
+     * This test covers creation of a pipeline, and subsequently adds a
+     * stage within that same pipeline, then saves it to a new branch.
+     */
+    @Test
+    public void testEditorChangeAgentSetting() throws IOException {
+        String newBranchName = "made-by-testEditorChangeAgent";
+        String newStageName = "Stage made by ATH";
+        creationPage.createPipeline(token, organization, repo, true);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
+        editorPage.simplePipeline();
+        ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
+        driver.navigate().refresh();
+        sseClient.untilEvents(pipeline.buildsFinished);
+        sseClient.clear();
+        BranchPage branchPage = activityPage.clickBranchTab();
+        branchPage.openEditor("master");
+        editorPage.addStageToPipeline(pipeline, newBranchName, newStageName);
+        activityPage.checkUrl();
+        activityPage.getRunRowForBranch(newBranchName);
+        sseClient.untilEvents(pipeline.buildsFinished);
+    }
+
+    /**
      * Make sure we can paste a bad token that has whitespace added.
      */
     @Test
