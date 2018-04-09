@@ -1,11 +1,3 @@
-# BlueOCean REST API implementation
+# Blue Ocean REST API implementation
 
-Implementation of BlueOcean REST API from `blueocean-rest` module.
-
-See README.md in `blueocean-rest` module.    
-    
-
-
-    
-
-    
+Implementation of the Blue Ocean REST API, from the `blueocean-rest` module. See [its README.md ](https://github.com/kshultzCB/blueocean-plugin/tree/master/blueocean-rest) more information.
