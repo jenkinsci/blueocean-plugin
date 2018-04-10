@@ -185,6 +185,28 @@ public class GithubEditorTest {
     }
 
     /**
+     * This test covers creation of a pipeline, and subsequently adds a
+     * stage within that same pipeline, then saves it to a new branch.
+     */
+    @Test
+    public void testEditorSetEnvironmentVariables() throws IOException {
+        String newBranchName = "made-by-testEditorSetEnvironmentVariables";
+        creationPage.createPipeline(token, organization, repo, true);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
+        editorPage.simplePipeline();
+        ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
+        sseClient.untilEvents(pipeline.buildsFinished);
+        sseClient.clear();
+        BranchPage branchPage = activityPage.clickBranchTab();
+        branchPage.openEditor("master");
+        editorPage.setEnvironmentVariable("NY_NEW_VAR", "MY_NEW_VALUE");
+        editorPage.saveBranch(newBranchName);
+        activityPage.checkUrl();
+        activityPage.getRunRowForBranch(newBranchName);
+        sseClient.untilEvents(pipeline.buildsFinished);
+    }
+
+    /**
      * Make sure we can paste a bad token that has whitespace added.
      */
     @Test

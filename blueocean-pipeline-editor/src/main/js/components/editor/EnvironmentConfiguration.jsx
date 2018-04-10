@@ -114,6 +114,7 @@ export class EnvironmentConfiguration extends Component<DefaultProps, Props, Sta
                                 <InputText
                                     hasError={pristine !== env.id && !isValidEnvironmentKey(env.key)}
                                     defaultValue={env.key}
+                                    className="env-key"
                                     onChange={val => {
                                         env.key = val;
                                         this.setState({ pristine: null });
@@ -123,6 +124,7 @@ export class EnvironmentConfiguration extends Component<DefaultProps, Props, Sta
                                 />
                                 <TextInput
                                     defaultValue={env.value.value}
+                                    className="env-value"
                                     onChange={val => {
                                         env.value.value = val;
                                         this.props.onChange();

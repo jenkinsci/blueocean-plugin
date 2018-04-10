@@ -89,6 +89,27 @@ public class EditorPage {
         logger.info("Agent label changed to " + newAgentLabel);
     }
 
+    //
+    /**
+     * Sets a new environment variable for a pipeline. This
+     * sets a pipeline-wide variable, not a per-stage variable.
+     *
+     * @param envVarKey the the new environment variable
+     * @param envVarValue the value for the environment
+     *
+     */
+
+    public void setEnvironmentVariable(String envVarKey, String envVarValue) {
+        logger.info("Setting a new variable " + envVarKey + " to " + envVarValue);
+        // Click the button which indicates the start of our pipeline
+        wait.click(By.id("pipeline-node-hittarget-1-start"));
+        // Click the button to bring up the environment variable input boxes
+        wait.click(By.cssSelector("button.environment-add-delete-icon.add"));
+        wait.sendKeys(By.cssSelector("div.TextInput.env-key input.TextInput-control"),envVarKey);
+        wait.sendKeys(By.cssSelector("div.TextInput.env-value input.TextInput-control"),envVarValue);
+        logger.info("Environment variable " + envVarKey + " now set to " + envVarValue);
+    }
+
     /**
      * Deletes a stage by name.
      *
