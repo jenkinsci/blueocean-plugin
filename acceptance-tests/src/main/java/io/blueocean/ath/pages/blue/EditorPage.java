@@ -111,40 +111,6 @@ public class EditorPage {
     }
 
     /**
-     * Deletes a stage by name.
-     *
-     * @param stageToDelete the name of the stage we intend to delete.
-     *
-     */
-    public void deleteStage(String stageToDelete) {
-        logger.info("Deleting stage with name matching " + stageToDelete);
-        // wait.click(By.xpath("//*[text()='Save']"));
-        wait.click(By.cssSelector("THE NAME OF THE STAGE"));
-        wait.click(By.cssSelector("THE DELETE BUTTON"));
-        logger.info("Stage " + stageToDelete + " deleted");
-    }
-
-    /**
-     * Deletes a step inside of an existing stage.
-     *
-     * @param targetStage  Name of the stage which contains the step we want to delete
-     * @param stepToDelete the name of the new branch we'll save to. If null,
-     *              we save to master.
-     *
-     * Maybe if targetStage is null we can just pattern match against
-     * the step name?
-     */
-    public void deleteStep(String targetStage, String stepToDelete) {
-        logger.info("Deleting step with name matching " + stepToDelete + " in stage " + targetStage);
-        // wait.click(By.xpath("//*[text()='Save']"));
-        wait.click(By.cssSelector("THE STAGE"));
-        wait.click(By.cssSelector("THE STEP"));
-        wait.click(By.cssSelector("THE DELETE BUTTON"));
-        logger.info("Step " + stepToDelete + " in stage " + targetStage + " deleted");
-    }
-
-
-    /**
      * Saves the pipeline to a branch
      *
      * @param branch the name of the new branch we'll save to. If null,

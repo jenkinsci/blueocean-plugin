@@ -163,8 +163,7 @@ public class GithubEditorTest {
     }
 
     /**
-     * This test covers creation of a pipeline, and subsequently adds a
-     * stage within that same pipeline, then saves it to a new branch.
+     * This test covers creation of a pipeline, and changes agent settings within it.
      */
     @Test
     public void testEditorChangeAgentSetting() throws IOException {
@@ -185,8 +184,8 @@ public class GithubEditorTest {
     }
 
     /**
-     * This test covers creation of a pipeline, and subsequently adds a
-     * stage within that same pipeline, then saves it to a new branch.
+     * This test covers creation of a pipeline, and adds an environment
+     * variable to it.
      */
     @Test
     public void testEditorSetEnvironmentVariables() throws IOException {
