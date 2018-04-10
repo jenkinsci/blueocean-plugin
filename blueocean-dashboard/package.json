@@ -68,6 +68,7 @@
     "immutable": "3.8.1",
     "isomorphic-fetch": "2.2.1",
     "keymirror": "0.1.1",
+    "lodash.debounce": "4.0.8",
     "mobx": "2.6.0",
     "mobx-react": "3.5.7",
     "mobx-utils": "1.1.2",

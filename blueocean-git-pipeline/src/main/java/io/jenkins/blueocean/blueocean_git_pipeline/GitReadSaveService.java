@@ -155,8 +155,7 @@ public class GitReadSaveService extends ScmContentProvider {
     private GitReadSaveRequest makeSaveRequest(Item item, JSONObject json) {
         System.out.println("makeSaveRequest(Item item, JSONObject json)"); // TODO:RM
         JSONObject content = json.getJSONObject("content");
-        // TODO: String branch = content.getString("branch");
-        String branch = "master";
+        String branch = content.getString("branch");
         return makeSaveRequest(item,
                                branch,
                                content.getString("message"),

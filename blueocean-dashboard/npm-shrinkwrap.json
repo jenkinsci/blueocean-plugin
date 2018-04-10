@@ -15542,7 +15542,7 @@
     "typescript": {
       "version": "2.7.2",
       "resolved": "https://registry.npmjs.org/typescript/-/typescript-2.7.2.tgz",
-      "integrity": "sha512-p5TCYZDAO0m4G344hD+wx/LATebLWZNkkh2asWUFqSsD2OrDNhbAHuSjobrmsUmdzjJjEeZVU9g1h3O6vpstnw==",
+      "integrity": "sha1-LWFaHvSu5PV0Qlzf9wJu34GRmDY=",
       "dev": true
     },
     "ua-parser-js": {

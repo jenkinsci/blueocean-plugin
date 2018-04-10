@@ -126,17 +126,16 @@ public class GitScm extends AbstractScm {
 
     @Override
     public HttpResponse validateAndCreate(@JsonBody JSONObject request) {
-        boolean requirePush = true;
-        // TODO (once we've fixed up the git JS to be more like the BB one): boolean requirePush = request.has("requirePush");
+        boolean requirePush = request.has("requirePush");
         final String repositoryUrl;
         final AbstractGitSCMSource scmSource;
         if (request.has("repositoryUrl")) {
             scmSource = null;
             repositoryUrl = request.getString("repositoryUrl");
-        } else if (request.has("apiUrl")) {
-            // TODO: Remove this branch once we've updated the git JS credentials to work - they should send repositoryUrl
-            scmSource = null;
-            repositoryUrl = request.getString("apiUrl");
+//        } else if (request.has("apiUrl")) {
+//            // TODO: Remove this branch once we've updated the git JS credentials to work - they should send repositoryUrl
+//            scmSource = null;
+//            repositoryUrl = request.getString("apiUrl");
         } else{
             try {
                 String fullName = request.getJSONObject("pipeline").getString("fullName");
