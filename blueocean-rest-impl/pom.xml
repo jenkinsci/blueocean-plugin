@@ -50,8 +50,8 @@
 
         <!-- Test plugins -->
         <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>fluent-hc</artifactId>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>apache-httpcomponents-client-4-api</artifactId>
             <scope>test</scope>
         </dependency>
         <dependency>

@@ -127,8 +127,8 @@ public class WaitUtil {
                 return;
             } catch (WebDriverException ex) {
                 if (ex.getMessage().contains("is not clickable at point")) {
-                    logger.warn(String.format("%s not clickable on attempt " + i + ", will sleep 500ms and retry ", by.toString()));
-                    tinySleep();
+                    logger.warn(String.format("%s not clickable on attempt " + i + ", will sleep and retry ", by.toString()));
+                    tinySleep(500);
                     logger.debug("exception: " + ex.getMessage());
                 } else {
                     throw ex;
@@ -145,16 +145,17 @@ public class WaitUtil {
      * @param keySequence a String of characters to enter
      */
     public void sendKeys(By by, String keySequence) {
-        for (int i = 0; i < RETRY_COUNT + 1; i++) {
+        for (int i = 1; i < RETRY_COUNT + 1; i++) {
             try {
                 until(ExpectedConditions.elementToBeClickable(by)).sendKeys(keySequence);
-                if (i > 0) {
+                if (i > 1) {
                     logger.info(String.format("Retry of sendKeys successful on attempt " + i + " for %s", by.toString()));
                 }
                 return;
             } catch (WebDriverException ex) {
                 if (ex.getMessage().contains("is not clickable at point")) {
-                    logger.warn(String.format("%s not clickable: will retry click", by.toString()));
+                    logger.warn(String.format("%s not clickable on attempt " + i + ", will sleep and retry ", by.toString()));
+                    tinySleep(500);
                     logger.debug("exception: " + ex.getMessage());
                 } else {
                     throw ex;
@@ -195,9 +196,9 @@ public class WaitUtil {
      * perfectly clickable buttons not behaving correctly
      * in these tests.
      */
-    public void tinySleep() {
+    public void tinySleep(long timeToSleep) {
         try {
-            Thread.sleep(500);
+            Thread.sleep(timeToSleep);
         } catch (InterruptedException ex) {
             logger.info("Exception thrown by tinySleep");
         }
