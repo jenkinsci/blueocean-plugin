@@ -1,15 +1,17 @@
-import React, {  Component } from 'react';
+import * as React from 'react';
+import {  PropTypes, Component } from 'react';
 import {  i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 import {GitPWCredentialsManager} from './GitPWCredentialsManager';
+import * as debounce from 'lodash.debounce';
+
+import { Button } from '../../creation/github/Button';
 
 import {
     FormElement,
     PasswordInput,
     TextInput,
-    Button
 } from '@jenkins-cd/design-language';
 
-import debounce from 'lodash.debounce';
 
 import {BbCredentialsState} from '../bitbucket/BbCredentialsState';
 
@@ -34,6 +36,8 @@ interface State {
 
 // TODO: Quick descriptive doc
 export class GitCredentialsPickerPassword extends Component<Props, State> {
+
+    static propTypes:any;
 
     credentialsManager: GitPWCredentialsManager;
 
@@ -170,6 +174,11 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
     // TODO: }, 200);
 
     render() {
+
+        if (this.state.loading) {
+            return null;
+        }
+
         const errorMessage = this._getErrorMessage(this.credentialsManager.stateId);
 
         let result:string|null = null;
@@ -184,33 +193,29 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
             result,
         };
 
-        console.log('FormElement',    !!FormElement); // TODO: RM
-        console.log('PasswordInput',    !!PasswordInput); // TODO: RM
-        console.log('TextInput',    !!TextInput); // TODO: RM
-        console.log('Button',     !!Button); // TODO: RM
-
-
-        if (FormElement && PasswordInput && TextInput && Button) {
-            return (
-                !this.state.loading && (
-                    <div className="credentials-picker-bitbucket">
-                        <p className="instructions">{t('creation.bitbucket.connect.authorize')}. &nbsp;</p>
-                        <FormElement className="credentials-new" errorMessage={errorMessage} verticalLayout>
-                            <FormElement title={t('creation.git.create_credential.username_title')} errorMessage={this.state.usernameErrorMsg}>
-                                <TextInput className="text-username" onChange={val => this._usernameChange(val)} />
-                            </FormElement>
-                            <FormElement title={t('creation.git.create_credential.password_title')} errorMessage={this.state.passwordErrorMsg}>
-                                <PasswordInput className="text-password" onChange={val => this._passwordChange(val)} />
-                            </FormElement>
+        return (
+            !this.state.loading && (
+                <div className="credentials-picker-bitbucket">
+                    <p className="instructions">{t('creation.bitbucket.connect.authorize')}. &nbsp;</p>
+                    <FormElement className="credentials-new" errorMessage={errorMessage} verticalLayout>
+                        <FormElement title={t('creation.git.create_credential.username_title')} errorMessage={this.state.usernameErrorMsg}>
+                            <TextInput className="text-username" onChange={val => this._usernameChange(val)} />
                         </FormElement>
-                        <Button className="button-create-credental" status={status} onClick={() => this._createCredential()}>
-                            Connect
-                        </Button>
-                    </div>
-                )
-            );
-        }
-
-        return <h1>WTAF</h1>;
+                        <FormElement title={t('creation.git.create_credential.password_title')} errorMessage={this.state.passwordErrorMsg}>
+                            <PasswordInput className="text-password" onChange={val => this._passwordChange(val)} />
+                        </FormElement>
+                    </FormElement>
+                    <Button className="button-create-credental" status={status} onClick={() => this._createCredential()}>
+                        Connect
+                    </Button>
+                </div>
+            )
+        );
     }
 }
+
+GitCredentialsPickerPassword.propTypes = {
+    onStatus: PropTypes.func,
+    onComplete: PropTypes.func,
+
+};
