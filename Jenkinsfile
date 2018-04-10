@@ -43,6 +43,7 @@ node() {
           junit '**/target/surefire-reports/TEST-*.xml'
           junit '**/target/jest-reports/*.xml'
           archive '*/target/code-coverage/**/*'
+          archive '*/reports/*.xml'
           archive '*/target/*.hpi'
         }
 
