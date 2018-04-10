@@ -176,7 +176,7 @@ public class GithubEditorTest {
         sseClient.clear();
         BranchPage branchPage = activityPage.clickBranchTab();
         branchPage.openEditor("master");
-        editorPage.changeAgentLabel("none");
+        editorPage.setAgentLabel("none");
         editorPage.saveBranch(newBranchName);
         activityPage.checkUrl();
         activityPage.getRunRowForBranch(newBranchName);

@@ -78,8 +78,7 @@ public class EditorPage {
      * TODO: Needs the ability to select something like `docker` and be
      *       able to add strings to the resulting popup
      */
-
-    public void changeAgentLabel(String newAgentLabel) {
+    public void setAgentLabel(String newAgentLabel) {
         logger.info("Changing agent label to " + newAgentLabel);
         // Click the start node of the pipeline, in case it wasn't already
         wait.click(By.id("pipeline-node-hittarget-1-start"));
@@ -89,7 +88,6 @@ public class EditorPage {
         logger.info("Agent label changed to " + newAgentLabel);
     }
 
-    //
     /**
      * Sets a new environment variable for a pipeline. This
      * sets a pipeline-wide variable, not a per-stage variable.
@@ -98,7 +96,6 @@ public class EditorPage {
      * @param envVarValue the value for the environment
      *
      */
-
     public void setEnvironmentVariable(String envVarKey, String envVarValue) {
         logger.info("Setting a new variable " + envVarKey + " to " + envVarValue);
         // Click the button which indicates the start of our pipeline
