@@ -1,10 +1,11 @@
 import * as React from 'react';
-import {  PropTypes, Component } from 'react';
-import {  i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import {Component} from 'react';
+import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
 import {GitPWCredentialsManager} from './GitPWCredentialsManager';
 import * as debounce from 'lodash.debounce';
+// TODO: Do we actually need debounce?
 
-import { Button } from '../../creation/github/Button';
+import {Button} from '../../creation/github/Button';
 
 import {
     FormElement,
@@ -12,9 +13,7 @@ import {
     TextInput,
 } from '@jenkins-cd/design-language';
 
-
 import {BbCredentialsState} from '../bitbucket/BbCredentialsState';
-
 
 
 const t = i18nTranslator('blueocean-dashboard');
@@ -22,8 +21,8 @@ const t = i18nTranslator('blueocean-dashboard');
 interface Props {
     onStatus?: Function,
     onComplete?: Function,
-    scmId: string,
-    apiUrl?: string,
+    repositoryUrl: string,
+    branch?: string,
 }
 
 interface State {
@@ -37,14 +36,10 @@ interface State {
 // TODO: Quick descriptive doc
 export class GitCredentialsPickerPassword extends Component<Props, State> {
 
-    static propTypes:any;
-
     credentialsManager: GitPWCredentialsManager;
 
     constructor(props) {
         super(props);
-
-        console.log('debounce is', debounce);
 
         this.credentialsManager = new GitPWCredentialsManager();
 
@@ -57,7 +52,6 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
         };
     }
 
-
     componentWillMount() {
         this.setState({
             loading: true,
@@ -69,21 +63,24 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
     }
 
     componentDidMount() {
-        this._configure(this.props);
+        const {repositoryUrl, branch} = this.props;
+        this.credentialsManager.configure(repositoryUrl, branch);
         this.credentialsManager.findExistingCredential().then(credential => this._findExistingCredentialComplete(credential));
     }
 
-    _configure(props) {
-        this.credentialsManager.configure(props.scmId, props.apiUrl);
-    }
-
     _findExistingCredentialComplete(credential) {
+        // TODO: Inline this
+
+        console.log('GitCredentialsPickerPassword._findExistingCredentialComplete', JSON.stringify(credential, null, 4)); // TODO: RM
+
+
         this.setState({
             loading: false,
         });
 
         if (credential && this.props.onComplete) {
             this.props.onComplete(credential, 'autoSelected');
+            // TODO: set state to "credential found"
         } else if (this.props.onStatus) {
             this.props.onStatus('promptReady');
         }
@@ -100,6 +97,7 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
     }
 
     _onCreateCredentialSuccess(credential) {
+        console.log('GitCredentialsPickerPassword._onCreateCredentialSuccess', JSON.stringify(credential, null, 4));// TODO: RM
         if (credential && this.props.onComplete) {
             this.props.onComplete(credential, 'userSelected');
         }
@@ -145,15 +143,13 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
         this._updateUsernameErrorMsg(false);
     }
 
-    // TODO: _updateUsernameErrorMsg = debounce(reset => {
-    _updateUsernameErrorMsg = (reset => {
+    _updateUsernameErrorMsg = debounce(reset => {
         if (reset || (this.state.usernameErrorMsg && this.state.usernameValue)) {
             this.setState({
                 usernameErrorMsg: null,
             });
         }
-    });
-    // TODO: }, 200);
+    }, 200);
 
     _passwordChange(value) {
         this.setState({
@@ -163,15 +159,13 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
         this._updatePasswordErrorMsg(false);
     }
 
-    // TODO: _updatePasswordErrorMsg = debounce(reset => {
-    _updatePasswordErrorMsg = (reset => {
+    _updatePasswordErrorMsg = debounce(reset => {
         if (reset || (this.state.passwordErrorMsg && this.state.passwordValue)) {
             this.setState({
                 passwordErrorMsg: null,
             });
         }
-    });
-    // TODO: }, 200);
+    }, 200);
 
     render() {
 
@@ -181,7 +175,7 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
 
         const errorMessage = this._getErrorMessage(this.credentialsManager.stateId);
 
-        let result:string|null = null;
+        let result: string | null = null;
 
         if (this.credentialsManager.pendingValidation) {
             result = 'running';
@@ -192,6 +186,11 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
         const status = {
             result,
         };
+
+        // TODO: Find all the messages, extract them for git-bundle
+        // TODO: needs padding below connect button
+
+        // TODO: "use selected / add new / proceed without credentials" functionality
 
         return (
             !this.state.loading && (
@@ -213,9 +212,3 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
         );
     }
 }
-
-GitCredentialsPickerPassword.propTypes = {
-    onStatus: PropTypes.func,
-    onComplete: PropTypes.func,
-
-};

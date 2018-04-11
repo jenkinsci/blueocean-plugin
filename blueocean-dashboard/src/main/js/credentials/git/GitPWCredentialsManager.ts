@@ -9,14 +9,16 @@ import {
 import {GitPWCredentialsApi} from './GitPWCredentialsApi';
 
 import PromiseDelayUtils from '../../util/PromiseDelayUtils';
+
 const MIN_DELAY = 500;
-const { delayBoth } = PromiseDelayUtils;
+const {delayBoth} = PromiseDelayUtils;
 
 // TODO: Docs
+// TODO: Unit tests
 export class GitPWCredentialsManager {
 
-    scmId: string;
-    apiUrl?: string; // TODO: Rename to repo url
+    repositoryUrl?: string;
+    branch: string = 'master';
     pendingValidation: boolean = false;
     stateId: BbCredentialsState;
 
@@ -26,25 +28,28 @@ export class GitPWCredentialsManager {
     }
 
     // @action
-    configure(scmId, apiUrl) {
-        this.scmId = scmId;
-        this.apiUrl = apiUrl;
+    configure(repositoryUrl: string, branch?: string, api?: GitPWCredentialsApi) {
+        this.repositoryUrl = repositoryUrl;
 
-        // TODO: Allow construct with alt/mock API
-        this._api = new GitPWCredentialsApi(scmId);
+        if (typeof branch === 'string') {
+            this.branch = branch;
+        }
+
+        this._api = api || new GitPWCredentialsApi();
     }
 
     @action
     findExistingCredential() {
         this.stateId = BbCredentialsState.PENDING_LOADING_CREDS;
         return this._api
-            .findExistingCredential(this.apiUrl)
+            .findExistingCredential(this.repositoryUrl)
             .then(...delayBoth(MIN_DELAY))
             .catch(error => this._findExistingCredentialFailure(error));
     }
 
     @action
     _findExistingCredentialFailure(error) {
+        // console.log('GitPWCredentialsManager._findExistingCredentialFailure', error.type, JSON.stringify(error, null, 4)); // TODO: RM
         if (error.type === LoadError.TOKEN_NOT_FOUND) {
             this.stateId = BbCredentialsState.NEW_REQUIRED;
         } else if (error.type === LoadError.TOKEN_INVALID) {
@@ -61,7 +66,7 @@ export class GitPWCredentialsManager {
         this.pendingValidation = true;
 
         return this._api
-            .createCredential(this.apiUrl, userName, password)
+            .createCredential(this.repositoryUrl, userName, password)
             .then(...delayBoth(MIN_DELAY))
             .then(response => this._createCredentialSuccess(response))
             .catch(error => this._onCreateCredentialFailure(error));

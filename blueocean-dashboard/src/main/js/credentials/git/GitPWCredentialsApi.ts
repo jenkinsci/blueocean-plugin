@@ -16,33 +16,36 @@ export class GitPWCredentialsApi {
 
     _fetch: any; // TODO: not any
     organization: string;
-    scmId: string;
 
-    constructor(scmId) {
+    constructor() {
         this._fetch = Fetch.fetchJSON;
         this.organization = AppConfig.getOrganizationName();
-        this.scmId = scmId;
     }
 
     findExistingCredential(repositoryUrl) {
-        const path = UrlConfig.getJenkinsRootURL();
-        const credUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/?repositoryUrl=${repositoryUrl}`);
+        // TODO: make sure this succeeeds when we already have a credential for this repourl
+        const root = UrlConfig.getJenkinsRootURL();
+        const credUrl = Utils.cleanSlashes(`${root}/blue/rest/organizations/${this.organization}/scm/git/?repositoryUrl=${repositoryUrl}`);
         // TODO: move Utils.cleanSlashes into UrlUtils
+
+        // console.log('findExistingCredential', credUrl); // TODO: RM
 
         return this._fetch(credUrl).then(result => this._findExistingCredentialSuccess(result), error => this._findExistingCredentialFailure(error));
         // TODO: do we have to use 2-func "then" here?
         // TODO: Do we need to have success / failure as instance methods rather than inline?
     }
 
-    _findExistingCredentialSuccess(credential) {
-        if (credential && credential.credentialId) {
-            return credential;
+    _findExistingCredentialSuccess(gitScm) {
+        // console.log('GitPWCredentialsApi._findExistingCredentialSuccess\n' + JSON.stringify(gitScm,null,4)); // TODO: RM
+        if (gitScm && gitScm.credentialId) {
+            return gitScm;
         }
 
         throw new TypedError(LoadError.TOKEN_NOT_FOUND);
     }
 
     _findExistingCredentialFailure(error) {
+        // console.log('GitPWCredentialsApi._findExistingCredentialFailure', JSON.stringify(error,null,4)); // TODO: RM
         const { responseBody } = error;
 
         if (responseBody.message.indexOf('Existing credential failed') >= 0) {
@@ -54,13 +57,15 @@ export class GitPWCredentialsApi {
 
     createCredential(repositoryUrl, userName, password) {
         const path = UrlConfig.getJenkinsRootURL();
-        const validateCredUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/${this.scmId}/validate`);
+        const validateCredUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/git/validate`);
 
         const requestBody = {
             userName,
             password,
             repositoryUrl,
         };
+
+        console.log('createCredential', validateCredUrl, JSON.stringify(requestBody,null,4)); // TODO: RM
 
         const fetchOptions = {
             method: 'PUT',

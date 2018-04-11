@@ -142,7 +142,7 @@ export default class GitFlowManager extends FlowManager {
                 }
             }
         } else if (this.selectedCredential !== this.noCredentialsOption) {
-            credentialId = this.selectedCredential.id;
+            credentialId = this.selectedCredential.credentialId;
         }
 
         LOGGER.debug('creating pipeline with parameters', this.repositoryUrl, credentialId, this.pipelineName);

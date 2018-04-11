@@ -8,6 +8,7 @@ import com.cloudbees.plugins.credentials.common.StandardUsernamePasswordCredenti
 import com.cloudbees.plugins.credentials.domains.DomainRequirement;
 import com.cloudbees.plugins.credentials.domains.DomainSpecification;
 import com.cloudbees.plugins.credentials.impl.UsernamePasswordCredentialsImpl;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import hudson.Extension;
 import hudson.model.User;
@@ -33,6 +34,8 @@ import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
 import org.eclipse.jgit.lib.Repository;
 import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.Stapler;
+import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.json.JsonBody;
 
 import javax.annotation.Nonnull;
@@ -109,8 +112,23 @@ public class GitScm extends AbstractScm {
         return "";
     }
 
+    protected StaplerRequest getStaplerRequest(){
+        StaplerRequest request = Stapler.getCurrentRequest();
+        Preconditions.checkNotNull(request, "Must be called in HTTP request context");
+        return request;
+    }
+
     @Override
     public String getCredentialId() {
+        // TODO: unit test
+        String repositoryUrl = getStaplerRequest().getParameter("repositoryUrl");
+        String credentialId = getCredentialId(repositoryUrl);
+
+        //check if this credentialId could be found
+        StandardUsernamePasswordCredentials credential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+        if(credential != null){
+            return credentialId;
+        }
         return null;
     }
 
@@ -126,6 +144,7 @@ public class GitScm extends AbstractScm {
 
     @Override
     public HttpResponse validateAndCreate(@JsonBody JSONObject request) {
+        System.out.println("validateAndCreate"); // TODO: RM
         boolean requirePush = request.has("requirePush");
         final String repositoryUrl;
         final AbstractGitSCMSource scmSource;
