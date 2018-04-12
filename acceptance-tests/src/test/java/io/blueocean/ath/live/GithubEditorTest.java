@@ -163,6 +163,49 @@ public class GithubEditorTest {
     }
 
     /**
+     * This test covers creation of a pipeline, and changes agent settings within it.
+     */
+    @Test
+    public void testEditorChangeAgentSetting() throws IOException {
+        String newBranchName = "made-by-testEditorChangeAgentSetting";
+        creationPage.createPipeline(token, organization, repo, true);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
+        editorPage.simplePipeline();
+        ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
+        sseClient.untilEvents(pipeline.buildsFinished);
+        sseClient.clear();
+        BranchPage branchPage = activityPage.clickBranchTab();
+        branchPage.openEditor("master");
+        editorPage.setAgentLabel("none");
+        editorPage.saveBranch(newBranchName);
+        activityPage.checkUrl();
+        activityPage.getRunRowForBranch(newBranchName);
+        sseClient.untilEvents(pipeline.buildsFinished);
+    }
+
+    /**
+     * This test covers creation of a pipeline, and adds an environment
+     * variable to it.
+     */
+    @Test
+    public void testEditorSetEnvironmentVariables() throws IOException {
+        String newBranchName = "made-by-testEditorSetEnvironmentVariables";
+        creationPage.createPipeline(token, organization, repo, true);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
+        editorPage.simplePipeline();
+        ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
+        sseClient.untilEvents(pipeline.buildsFinished);
+        sseClient.clear();
+        BranchPage branchPage = activityPage.clickBranchTab();
+        branchPage.openEditor("master");
+        editorPage.setEnvironmentVariable("NY_NEW_VAR", "MY_NEW_VALUE");
+        editorPage.saveBranch(newBranchName);
+        activityPage.checkUrl();
+        activityPage.getRunRowForBranch(newBranchName);
+        sseClient.untilEvents(pipeline.buildsFinished);
+    }
+
+    /**
      * Make sure we can paste a bad token that has whitespace added.
      */
     @Test

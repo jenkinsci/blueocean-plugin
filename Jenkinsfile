@@ -42,8 +42,9 @@ node() {
           }
           junit '**/target/surefire-reports/TEST-*.xml'
           junit '**/target/jest-reports/*.xml'
-          archive '*/target/code-coverage/**/*.html'
+          archive '*/target/code-coverage/**/*'
           archive '*/target/*.hpi'
+          archive '*/target/jest-coverage/**/*'
         }
 
         stage('ATH - Jenkins 2.73.3') {
