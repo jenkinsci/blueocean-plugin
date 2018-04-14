@@ -49,7 +49,7 @@
   "dependencies": {
     "@jenkins-cd/blueocean-core-js": "0.0.171",
     "@jenkins-cd/design-language": "0.0.162",
-    "@jenkins-cd/js-extensions": "0.0.42",
+    "@jenkins-cd/js-extensions": "0.0.43",
     "@jenkins-cd/js-modules": "0.0.10",
     "mobx": "2.6.0",
     "mobx-react": "3.5.7",
