@@ -5,14 +5,14 @@
 import React from 'react';
 import { assert } from 'chai';
 
-import utils from '../../src/js/utils';
+import { Utils } from '../../src/js/utils';
 import { User } from '../../src/js/User';
 
 
 describe('User', () => {
     describe('permissions', () => {
         it('User has pipeline permissions', () => {
-            const user = new User(utils.clone(require('./data/user-1.json')));
+            const user = new User(Utils.clone(require('./data/user-1.json')));
             assert.equal(user.id, 'blah');
             assert.isTrue(user.permissions.pipeline.create());
             assert.isTrue(user.permissions.pipeline.read());
@@ -22,7 +22,7 @@ describe('User', () => {
         });
 
         it('User has credential permissions', () => {
-            const user = new User(utils.clone(require('./data/user-1.json')));
+            const user = new User(Utils.clone(require('./data/user-1.json')));
             assert.equal(user.id, 'blah');
             assert.isTrue(user.permissions.credential.create());
             assert.isTrue(user.permissions.credential.delete());

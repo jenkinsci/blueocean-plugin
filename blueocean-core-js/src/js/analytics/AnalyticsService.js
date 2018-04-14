@@ -1,16 +1,16 @@
 import { Fetch } from '../fetch';
-import urlConfig from '../urlconfig';
-import utils from '../utils';
-import config from '../config';
+import { UrlConfig } from '../urlconfig';
+import { Utils } from '../utils';
+import { Config } from '../config';
 
 export class AnalyticsService {
     track(eventName, properties) {
         // Don't scare anyone by posting back stats tracking when usage stats are off
-        if (!config.getAnalyticsEnabled()) return false;
+        if (!Config.getAnalyticsEnabled()) return false;
 
         // Go ahead and record usage stats
-        const path = urlConfig.getJenkinsRootURL();
-        const url = utils.cleanSlashes(`${path}/blue/rest/analytics/track`);
+        const path = UrlConfig.getJenkinsRootURL();
+        const url = Utils.cleanSlashes(`${path}/blue/rest/analytics/track`);
         const fetchOptions = {
             method: 'POST',
             headers: {

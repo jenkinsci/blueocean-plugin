@@ -1,7 +1,7 @@
 import { Pager } from './Pager';
-import RestPaths from '../paths/rest';
+import { RestPaths } from '../paths/rest';
 import { Fetch } from '../fetch';
-import utils from '../utils';
+import { Utils } from '../utils';
 import { BunkerService } from './BunkerService';
 import { action } from 'mobx';
 /**
@@ -72,7 +72,7 @@ export class PipelineService extends BunkerService {
      * @return {Object} mapped pipelineData with latestRun set to be a mobx computed value.
      */
     bunkerMapper = pipelineData => {
-        const data = utils.clone(pipelineData);
+        const data = Utils.clone(pipelineData);
         const latestRun = data.latestRun;
 
         if (latestRun) {

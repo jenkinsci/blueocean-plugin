@@ -8,8 +8,8 @@
  **********************************************************************************************
  *********************************************************************************************/
 
-import AppConfig from './config';
-import {UrlUtils} from './';
+import { AppConfig } from './config';
+import { UrlUtils } from './utils/UrlUtils';
 
 /**
  * Return a new array with leading and trailing whitespace elements removed.
@@ -81,7 +81,7 @@ function parseRestRunUrl(restUrl: string): ResourceIdentifiers {
     };
 }
 
-type RunDetailsWithSelfLink = {
+export type RunDetailsWithSelfLink = {
     // FIXME: We need a canonical typedef for run details object
     _links: { self: { href: string } }
 };

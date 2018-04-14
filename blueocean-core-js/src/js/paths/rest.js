@@ -1,8 +1,8 @@
-import JenkinsEncode from '../utils/jenkins-encode';
+import { JenkinsEncode } from '../utils/jenkins-encode';
 /**
  * This object defines rest paths
  */
-export default {
+export const RestPaths = {
     _convertSlashes(pipeline) {
         return pipeline.replace(/\//g, '/pipelines/');
     },

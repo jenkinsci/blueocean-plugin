@@ -1,4 +1,4 @@
-export default class JenkinsEncode {
+export class JenkinsEncode {
     static _uriMap = null;
     static _getUrlMap() {
         if (this._uriMap == null) {

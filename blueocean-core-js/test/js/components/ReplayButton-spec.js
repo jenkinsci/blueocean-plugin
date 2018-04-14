@@ -2,7 +2,7 @@ import React from 'react';
 import { assert } from 'chai';
 import { shallow } from 'enzyme';
 
-import utils from '../../../src/js/utils';
+import { Utils } from '../../../src/js/utils';
 import { ReplayButton } from '../../../src/js/components/ReplayButton';
 
 
@@ -13,7 +13,7 @@ describe('ReplayButton', () => {
     let pipeline;
 
     beforeEach(() => {
-        pipeline = utils.clone(require('../data/pipeline-1.json'));
+        pipeline = Utils.clone(require('../data/pipeline-1.json'));
     });
 
     it('renders without errors when no props are specified', () => {

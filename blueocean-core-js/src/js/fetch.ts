@@ -2,13 +2,13 @@ import * as Promise from 'bluebird';
 
 import 'isomorphic-fetch';
 
-import jwt from './jwt';
-import utils from './utils';
-import config from './config';
-import dedupe from './utils/dedupe-calls';
-import urlconfig from './urlconfig';
+import { JWT } from './jwt';
+import { Utils } from './utils';
+import { AppConfig } from './config';
+import { dedupe } from './utils/dedupe-calls';
+import { UrlConfig } from './urlconfig';
 import { prefetchdata } from './scopes';
-import loadingIndicator from './LoadingIndicator';
+import { loadingIndicator }from './LoadingIndicator';
 import { capabilityAugmenter } from './capability/index';
 
 let refreshToken: string | null = null;
@@ -16,7 +16,7 @@ let refreshToken: string | null = null;
 function isGetRequest(fetchOptions: RequestInit): boolean {
     return !fetchOptions || !fetchOptions.method || 'get'.localeCompare(fetchOptions.method) === 0;
 }
-interface RawFetchOpts {
+export interface RawFetchOpts {
     onSuccess?: <A, B>(success: A) => B
     onError?: <A, B>(error: A) => B
     fetchOptions?: RequestInit
@@ -44,8 +44,8 @@ export const FetchFunctions = {
             return url;
         }
 
-        if (urlconfig.getJenkinsRootURL() !== '' && !url.startsWith(urlconfig.getJenkinsRootURL())) {
-            return `${urlconfig.getJenkinsRootURL()}${url}`;
+        if (UrlConfig.getJenkinsRootURL() !== '' && !url.startsWith(UrlConfig.getJenkinsRootURL())) {
+            return `${UrlConfig.getJenkinsRootURL()}${url}`;
         }
 
         return url;
@@ -66,7 +66,7 @@ export const FetchFunctions = {
 
         // We need to refresh the page now!
         if (refreshToken !== _refreshToken) {
-            utils.refreshPage();
+            Utils.refreshPage();
             throw new Error('refreshing apge');
         }
         return response;
@@ -95,7 +95,7 @@ export const FetchFunctions = {
      * Adds same-origin option to the fetch.
      */
     sameOriginFetchOption(options: RequestInit = {}): RequestInit {
-        const newOpts: RequestInit = utils.clone(options);
+        const newOpts: RequestInit = Utils.clone(options);
         newOpts.credentials = newOpts.credentials || 'same-origin';
         return newOpts;
     },
@@ -105,7 +105,7 @@ export const FetchFunctions = {
      * if not using fetch or fetchJson.
      */
     jwtFetchOption(token: string, options: RequestInit = {}): RequestInit {
-        const newOpts: RequestInit = utils.clone(options);
+        const newOpts: RequestInit = Utils.clone(options);
         newOpts.headers = newOpts.headers || {};
         newOpts.headers["Authorization"] = newOpts.headers["Authorization"] || `Bearer ${token}`;
         return newOpts;
@@ -301,10 +301,10 @@ export const Fetch = {
     fetchJSON(url, { onSuccess, onError, fetchOptions, disableCapabilites, disableLoadingIndicator, ignoreRefreshHeader }: FetchOpts = {}) {
         const fixedUrl = FetchFunctions.prefixUrl(url);
         let future;
-        if (!config.isJWTEnabled()) {
+        if (!AppConfig.isJWTEnabled()) {
             future = FetchFunctions.rawFetchJSON(fixedUrl, { onSuccess, onError, fetchOptions, disableLoadingIndicator, ignoreRefreshHeader });
         } else {
-            future = jwt.getToken().then(token =>
+            future = JWT.getToken().then(token =>
                 FetchFunctions.rawFetchJSON(fixedUrl, {
                     onSuccess,
                     onError,
@@ -314,7 +314,7 @@ export const Fetch = {
         }
 
         if (!disableCapabilites) {
-            return future.then(data => capabilityAugmenter.augmentCapabilities(utils.clone(data)));
+            return future.then(data => capabilityAugmenter.augmentCapabilities(Utils.clone(data)));
         }
 
         return future;
@@ -335,11 +335,11 @@ export const Fetch = {
     fetch(url, { onSuccess, onError, fetchOptions, disableLoadingIndicator, ignoreRefreshHeader }: FetchOpts = {}) {
         const fixedUrl = FetchFunctions.prefixUrl(url);
 
-        if (!config.isJWTEnabled()) {
+        if (!AppConfig.isJWTEnabled()) {
             return FetchFunctions.rawFetch(fixedUrl, { onSuccess, onError, fetchOptions, disableLoadingIndicator, ignoreRefreshHeader });
         }
 
-        return jwt.getToken().then(token =>
+        return JWT.getToken().then(token =>
             FetchFunctions.rawFetch(fixedUrl, {
                 onSuccess,
                 onError,

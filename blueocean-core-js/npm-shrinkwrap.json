@@ -8,9 +8,7 @@
       "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-material-icons/-/blueocean-material-icons-0.0.7.tgz"
     },
     "@jenkins-cd/design-language": {
-      "version": "0.0.162",
-      "from": "@jenkins-cd/design-language@0.0.162",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.162.tgz"
+      "version": "0.0.162"
     },
     "@jenkins-cd/eslint-config-jenkins": {
       "version": "0.0.2",
@@ -399,6 +397,12 @@
       "version": "3.5.0",
       "from": "@types/bluebird-global@3.5.0",
       "resolved": "https://registry.npmjs.org/@types/bluebird-global/-/bluebird-global-3.5.0.tgz",
+      "dev": true
+    },
+    "@types/node": {
+      "version": "9.6.4",
+      "from": "@types/node@latest",
+      "resolved": "https://registry.npmjs.org/@types/node/-/node-9.6.4.tgz",
       "dev": true
     },
     "abab": {

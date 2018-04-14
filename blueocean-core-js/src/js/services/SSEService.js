@@ -1,5 +1,5 @@
-import Utils from '../utils';
-import AppConfig from '../config';
+import { Utils } from '../utils';
+import { AppConfig } from '../config';
 
 export class SSEService {
     constructor(connection) {

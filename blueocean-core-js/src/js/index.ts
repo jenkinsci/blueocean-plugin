@@ -7,26 +7,28 @@ import * as sse from '@jenkins-cd/sse-gateway';
 import { RunApi } from './rest/RunApi';
 
 import { SseBus } from './sse/SseBus';
+
 import { ToastService } from './ToastService';
 import { AnalyticsService } from './analytics/AnalyticsService';
 
 // export i18n provider
-export i18nTranslator, { defaultLngDetector } from './i18n/i18n';
+export { i18nTranslator, defaultLngDetector } from './i18n/i18n';
 
-export logging from './logging';
-export loadingIndicator from './LoadingIndicator';
+export { logging } from './logging';
+export { loadingIndicator } from './LoadingIndicator';
 
 export { Fetch, FetchFunctions } from './fetch';
-export * as UrlBuilder from './UrlBuilder';
-export UrlConfig from './urlconfig';
-export JWT from './jwt';
-export TestUtils from './testutils';
-export ToastUtils from './ToastUtils';
-export Utils from './utils';
+import * as UrlBuilder from './UrlBuilder';
+export { UrlBuilder }
+export { UrlConfig } from './urlconfig';
+export { JWT } from './jwt';
+export { TestUtils } from './testutils';
+export { ToastUtils } from './ToastUtils';
+export { Utils }  from './utils';
 export { User } from './User';
-export AppConfig from './config';
-export Security from './security';
-export Paths from './paths/index';
+export { AppConfig } from './config';
+export { Security } from './security';
+export { Paths } from './paths/index';
 
 import { Pager, PagerService, PipelineService, SSEService, ActivityService, DefaultSSEHandler, LocationService } from './services/index';
 export { Pager, PagerService, PipelineService, SSEService, ActivityService };
@@ -34,8 +36,8 @@ export { Pager, PagerService, PipelineService, SSEService, ActivityService };
 import * as stringUtil from './stringUtil';
 export { stringUtil as StringUtil };
 
-export Fullscreen from './Fullscreen';
-export NotFound from './NotFound';
+export { Fullscreen } from './Fullscreen';
+export { NotFound } from './NotFound';
 
 export { ShowMoreButton } from './components/ShowMoreButton';
 export { ReplayButton } from './components/ReplayButton';
@@ -103,7 +105,8 @@ export { TimeManager } from './utils/TimeManager';
 
 export { TimeHarmonizer, TimeHarmonizerUtil } from './components/TimeHarmonizer';
 
-import LiveStatusIndicator from './components/LiveStatusIndicator';
+import { LiveStatusIndicator } from './components/LiveStatusIndicator';
 export { LiveStatusIndicator };
 
-export * as UrlUtils from './utils/UrlUtils';
+import { UrlUtils } from './utils/UrlUtils';
+export { UrlUtils };

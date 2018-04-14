@@ -2,18 +2,19 @@ import React from 'react';
 import { assert } from 'chai';
 import { shallow } from 'enzyme';
 
-import utils from '../../../src/js/utils';
-import { RunButton } from '../../../src/js/components/RunButton';
+import { Utils } from '../../../src/js/utils';
 
-
+jest.unmock('../../../src/js/index');
 jest.mock('../../../src/js/i18n/i18n');
 
+
+import { RunButton } from '../../../src/js/components/RunButton';
 
 describe('RunButton', () => {
     let pipeline;
 
     beforeEach(() => {
-        pipeline = utils.clone(require('../data/pipeline-1.json'));
+        pipeline = Utils.clone(require('../data/pipeline-1.json'));
     });
 
     it('renders without errors when no props are specified', () => {

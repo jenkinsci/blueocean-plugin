@@ -32,3 +32,9 @@ export function ensureTrailingSlash(url: string) {
     }
     return url;
 }
+
+export const UrlUtils = {
+    doubleUriEncode,
+    fetchAllSuffix,
+    ensureTrailingSlash
+};
