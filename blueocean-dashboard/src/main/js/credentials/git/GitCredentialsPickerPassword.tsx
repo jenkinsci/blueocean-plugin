@@ -11,12 +11,15 @@ import {
     FormElement,
     PasswordInput,
     TextInput,
+    RadioButtonGroup,
 } from '@jenkins-cd/design-language';
 
 import {BbCredentialsState} from '../bitbucket/BbCredentialsState';
 
 
 const t = i18nTranslator('blueocean-dashboard');
+
+type Credential = any; // FIXME: canonical types in core-js
 
 interface Props {
     onStatus?: Function,
@@ -31,7 +34,17 @@ interface State {
     usernameErrorMsg: string | null,
     passwordValue: string | null,
     passwordErrorMsg: string | null,
+    existingCredential?: Credential,
+    selectedRadio: RadioOption
 }
+
+enum RadioOption {
+    USE_EXISTING = 'useExisting',
+    CREATE_NEW = 'createNew',
+}
+
+const radioOptions = Object.values(RadioOption);
+
 
 // TODO: Quick descriptive doc
 export class GitCredentialsPickerPassword extends Component<Props, State> {
@@ -49,6 +62,7 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
             usernameErrorMsg: null,
             passwordValue: null,
             passwordErrorMsg: null,
+            selectedRadio: RadioOption.USE_EXISTING,
         };
     }
 
@@ -68,22 +82,28 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
         this.credentialsManager.findExistingCredential().then(credential => this._findExistingCredentialComplete(credential));
     }
 
-    _findExistingCredentialComplete(credential) {
+    _findExistingCredentialComplete(credential: Credential | null) {
         // TODO: Inline this
 
-        console.log('GitCredentialsPickerPassword._findExistingCredentialComplete', JSON.stringify(credential, null, 4)); // TODO: RM
+        console.log('GitCredentialsPickerPassword._findExistingCredentialComplete', credential && credential.id); // TODO: RM
 
-
-        this.setState({
+        const newState: any = {
             loading: false,
-        });
+            existingCredential: credential,
+        };
 
         if (credential && this.props.onComplete) {
-            this.props.onComplete(credential, 'autoSelected');
-            // TODO: set state to "credential found"
+            newState.selectedRadio = RadioOption.USE_EXISTING;
+
+            if (this.props.onComplete) {
+                this.props.onComplete(credential, 'autoSelected');
+            }
+
         } else if (this.props.onStatus) {
             this.props.onStatus('promptReady');
         }
+
+        this.setState(newState);
     }
 
     _createCredential() {
@@ -91,14 +111,24 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
         if (!valid) {
             return;
         }
+
+        this.setState({
+            existingCredential: undefined
+        });
         this.credentialsManager
             .createCredential(this.state.usernameValue, this.state.passwordValue)
             .then(credential => this._onCreateCredentialSuccess(credential));
     }
 
     _onCreateCredentialSuccess(credential) {
-        console.log('GitCredentialsPickerPassword._onCreateCredentialSuccess', JSON.stringify(credential, null, 4));// TODO: RM
-        if (credential && this.props.onComplete) {
+        console.log('GitCredentialsPickerPassword._onCreateCredentialSuccess', credential);// TODO: RM
+
+        this.setState({
+            existingCredential: credential,
+            selectedRadio: RadioOption.USE_EXISTING
+        });
+
+        if (this.props.onComplete) {
             this.props.onComplete(credential, 'userSelected');
         }
     }
@@ -167,48 +197,84 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
         }
     }, 200);
 
+    _radioLabel = (option) => {
+        // TODO: Message resources
+
+        const {existingCredential} = this.state;
+        const displayName = existingCredential && existingCredential.displayName || '';
+
+        switch (option) {
+            case RadioOption.CREATE_NEW:
+                return t('creation.git.create_credential.option_create_new');
+            case RadioOption.USE_EXISTING:
+                return t('creation.git.create_credential.option_existing', [displayName]);
+        }
+        return "";
+    };
+
+    _radioChanged = (selectedRadio: RadioOption) => {
+        const {onComplete} = this.props;
+
+        if (onComplete) {
+            onComplete(selectedRadio === RadioOption.USE_EXISTING ? this.state.existingCredential : undefined);
+        }
+
+        this.setState({selectedRadio});
+    };
+
     render() {
 
         if (this.state.loading) {
             return null;
         }
 
-        const errorMessage = this._getErrorMessage(this.credentialsManager.stateId);
+        const managerState = this.credentialsManager.stateId;
+        const errorMessage = this._getErrorMessage(managerState);
+        const isPendingValidation = this.credentialsManager.pendingValidation;
 
-        let result: string | null = null;
+        const connectButtonStatus = {result: null as string | null};
 
-        if (this.credentialsManager.pendingValidation) {
-            result = 'running';
-        } else if (this.credentialsManager.stateId === BbCredentialsState.SAVE_SUCCESS) {
-            result = 'success';
+        if (isPendingValidation) {
+            connectButtonStatus.result = 'running';
+        } else if (managerState === BbCredentialsState.SAVE_SUCCESS) {
+            connectButtonStatus.result = 'success';
         }
 
-        const status = {
-            result,
-        };
+        const {existingCredential, selectedRadio} = this.state;
+
+        const hasExistingCredential = !!existingCredential;
+        const useExistingCredential = hasExistingCredential && selectedRadio === RadioOption.USE_EXISTING;
+        const disableForm = isPendingValidation || useExistingCredential;
 
         // TODO: Find all the messages, extract them for git-bundle
         // TODO: needs padding below connect button
 
-        // TODO: "use selected / add new / proceed without credentials" functionality
+        const labelInstructions = t('creation.git.create_credential.pw_instructions');
+        const labelUsername = t('creation.git.create_credential.username_title');
+        const labelPassword = t('creation.git.create_credential.password_title');
+        const labelButton = t('creation.git.create_credential.button_create'); // TODO: resource
 
         return (
-            !this.state.loading && (
-                <div className="credentials-picker-bitbucket">
-                    <p className="instructions">{t('creation.bitbucket.connect.authorize')}. &nbsp;</p>
-                    <FormElement className="credentials-new" errorMessage={errorMessage} verticalLayout>
-                        <FormElement title={t('creation.git.create_credential.username_title')} errorMessage={this.state.usernameErrorMsg}>
-                            <TextInput className="text-username" onChange={val => this._usernameChange(val)} />
-                        </FormElement>
-                        <FormElement title={t('creation.git.create_credential.password_title')} errorMessage={this.state.passwordErrorMsg}>
-                            <PasswordInput className="text-password" onChange={val => this._passwordChange(val)} />
-                        </FormElement>
+            <div className="credentials-picker-bitbucket">
+                <p className="instructions">{labelInstructions}</p>
+                {hasExistingCredential && (
+                    <RadioButtonGroup options={radioOptions}
+                                      labelFunction={this._radioLabel}
+                                      defaultOption={RadioOption.USE_EXISTING}
+                                      onChange={this._radioChanged} />
+                )}
+                <FormElement className="credentials-new" errorMessage={errorMessage} verticalLayout>
+                    <FormElement title={labelUsername} errorMessage={this.state.usernameErrorMsg}>
+                        <TextInput disabled={disableForm} className="text-username" onChange={val => this._usernameChange(val)} />
                     </FormElement>
-                    <Button className="button-create-credental" status={status} onClick={() => this._createCredential()}>
-                        Connect
-                    </Button>
-                </div>
-            )
+                    <FormElement title={labelPassword} errorMessage={this.state.passwordErrorMsg}>
+                        <PasswordInput disabled={disableForm} className="text-password" onChange={val => this._passwordChange(val)} />
+                    </FormElement>
+                </FormElement>
+                <Button disabled={disableForm} className="button-create-credental" status={connectButtonStatus} onClick={() => this._createCredential()}>
+                    {labelButton}
+                </Button>
+            </div>
         );
     }
 }

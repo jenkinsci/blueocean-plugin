@@ -1,7 +1,9 @@
-import { Fetch,
+import {
+    Fetch,
     UrlConfig,
     Utils,
-    AppConfig
+    AppConfig,
+    UrlBuilder,
 } from '@jenkins-cd/blueocean-core-js';
 
 import { TypedError} from "../TypedError";
@@ -36,12 +38,23 @@ export class GitPWCredentialsApi {
     }
 
     _findExistingCredentialSuccess(gitScm) {
-        // console.log('GitPWCredentialsApi._findExistingCredentialSuccess\n' + JSON.stringify(gitScm,null,4)); // TODO: RM
-        if (gitScm && gitScm.credentialId) {
-            return gitScm;
+        console.log('GitPWCredentialsApi._findExistingCredentialSuccess', (gitScm && gitScm.credentialId || gitScm)); // TODO: RM
+
+        const credentialId = gitScm && gitScm.credentialId;
+
+        if (!credentialId) {
+            throw new TypedError(LoadError.TOKEN_NOT_FOUND);
         }
 
-        throw new TypedError(LoadError.TOKEN_NOT_FOUND);
+        return this.getCredential(credentialId);
+    }
+
+    getCredential(credentialId) {
+        const orgUrl = UrlBuilder.buildRestUrl(this.organization);
+        const credentialUrl = `${orgUrl}credentials/user/domains/blueocean-git-domain/credentials/${encodeURIComponent(credentialId)}/`;
+        // TODO: move this ^^ into UrlBuilder
+
+        return this._fetch(credentialUrl);
     }
 
     _findExistingCredentialFailure(error) {

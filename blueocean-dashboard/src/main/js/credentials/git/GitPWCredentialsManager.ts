@@ -19,8 +19,8 @@ export class GitPWCredentialsManager {
 
     repositoryUrl?: string;
     branch: string = 'master';
-    pendingValidation: boolean = false;
-    stateId: BbCredentialsState;
+    pendingValidation: boolean = false; // TODO: replace with enum
+    stateId: BbCredentialsState;  // TODO: replace with enum
 
     _api: GitPWCredentialsApi;
 
@@ -73,10 +73,12 @@ export class GitPWCredentialsManager {
     }
 
     @action
-    _createCredentialSuccess(credential) {
+    _createCredentialSuccess(result) {
         this.pendingValidation = false;
         this.stateId = BbCredentialsState.SAVE_SUCCESS;
-        return credential;
+
+        // FIXME: make GitScm on the server return the credential id
+        return this.findExistingCredential();
     }
 
     @action

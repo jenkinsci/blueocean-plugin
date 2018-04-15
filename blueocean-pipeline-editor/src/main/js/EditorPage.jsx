@@ -289,6 +289,7 @@ class PipelineLoader extends React.Component {
             .fetchPipeline(this.href, { useCache: true })
             .then(pipeline => this._savePipelineMetadata(pipeline))
             .catch(err => {
+                console.log('EditorPage.loadPipelineMetadata', err); // TODO: RM
                 this.showErrorDialog(err);
             });
     }
@@ -352,6 +353,7 @@ class PipelineLoader extends React.Component {
                 });
             })
             .catch(err => {
+                console.log('EditorPage.loadContent err', err); // TODO: RM
                 if (err.type === LoadError.JENKINSFILE_NOT_FOUND) {
                     if (onComplete) onComplete();
                     this.makeEmptyPipeline();

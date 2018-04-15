@@ -56,6 +56,7 @@ public class GitScm extends AbstractScm {
 
     public GitScm(Reachable parent) {
         this.parent = parent;
+        System.out.println("Creating a new GitScm"); // TODO: RM
     }
 
     public static String getCredentialId(String repositoryUrl) {
@@ -121,15 +122,27 @@ public class GitScm extends AbstractScm {
     @Override
     public String getCredentialId() {
         // TODO: unit test
-        String repositoryUrl = getStaplerRequest().getParameter("repositoryUrl");
-        String credentialId = getCredentialId(repositoryUrl);
 
-        //check if this credentialId could be found
-        StandardUsernamePasswordCredentials credential = CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+        //check credentialId could be found
+        StandardUsernamePasswordCredentials credential = getCredentialForCurrentRequest();
         if(credential != null){
-            return credentialId;
+            return credential.getId();
         }
         return null;
+    }
+
+    protected StandardUsernamePasswordCredentials getCredentialForCurrentRequest() {
+        final StaplerRequest request = getStaplerRequest();
+
+        if (!request.hasParameter("repositoryUrl")) {
+            // No linked credential unless a specific repo
+            return null;
+        }
+
+        String repositoryUrl = request.getParameter("repositoryUrl");
+        String credentialId = getCredentialId(repositoryUrl);
+
+        return CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
     }
 
     @Override
@@ -151,10 +164,6 @@ public class GitScm extends AbstractScm {
         if (request.has("repositoryUrl")) {
             scmSource = null;
             repositoryUrl = request.getString("repositoryUrl");
-//        } else if (request.has("apiUrl")) {
-//            // TODO: Remove this branch once we've updated the git JS credentials to work - they should send repositoryUrl
-//            scmSource = null;
-//            repositoryUrl = request.getString("apiUrl");
         } else{
             try {
                 String fullName = request.getJSONObject("pipeline").getString("fullName");
@@ -238,6 +247,7 @@ public class GitScm extends AbstractScm {
             if (creds == null) {
                 throw new ServiceException.NotFoundException("No credentials found for: " + credentialId);
             }
+            // TODO: do we need this code above now?
 
             if (requirePush) {
                 String branch = request.getString("branch");
