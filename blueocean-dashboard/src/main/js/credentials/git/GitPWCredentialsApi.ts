@@ -68,15 +68,20 @@ export class GitPWCredentialsApi {
         throw new TypedError(LoadError.TOKEN_INVALID, responseBody);
     }
 
-    createCredential(repositoryUrl, userName, password) {
+    createCredential(repositoryUrl, userName, password, branchName, requirePush) {
         const path = UrlConfig.getJenkinsRootURL();
         const validateCredUrl = Utils.cleanSlashes(`${path}/blue/rest/organizations/${this.organization}/scm/git/validate`);
 
-        const requestBody = {
+        const requestBody: any = {
             userName,
             password,
             repositoryUrl,
+            requirePush
         };
+
+        if (branchName) {
+            requestBody.branch = branchName;
+        }
 
         console.log('createCredential', validateCredUrl, JSON.stringify(requestBody,null,4)); // TODO: RM
 
@@ -95,7 +100,7 @@ export class GitPWCredentialsApi {
         // TODO: inline this to create method
         // TODO: move error creation into sync code
 
-        const { code } = error.responseBody;
+        const { code = -1 } = error.responseBody || {};
 
         if (code === 401) {
             throw new TypedError(SaveError.INVALID_CREDENTIAL, error);

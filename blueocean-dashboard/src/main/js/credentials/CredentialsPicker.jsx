@@ -35,18 +35,27 @@ class CredentialsPicker extends React.Component {
     }
 
     render() {
+        console.log('CredentialsPicker render()'); // TODO: RM
         const type = this.resolveType(this.props);
         const scmSource = this.resolveScmSource(this.props);
+
+        console.log('                 scmSource', JSON.stringify(scmSource, null, 4)); // TODO: RM
+        console.log('                      type', type); // TODO: RM
 
         let children = null;
 
         if (type === 'github' || type === 'github-enterprise') {
+            console.log('CredentialsPicker render A'); // TODO: RM
             children = <GithubCredentialsPicker scmId={scmSource.id} apiUrl={scmSource.apiUrl} />;
         } else if (type === 'bitbucket-cloud' || type === 'bitbucket-server') {
+            console.log('CredentialsPicker render B'); // TODO: RM
             children = <BbCredentialsPicker scmId={scmSource.id} apiUrl={scmSource.apiUrl} />;
         } else if (type === 'git') {
-            children = <GitCredentialsPicker />;
+            const repositoryUrl = this.props.repositoryUrl || scmSource.apiUrl;
+            console.log('CredentialsPicker render C'); // TODO: RM
+            children = <GitCredentialsPicker repositoryUrl={repositoryUrl} />;
         } else {
+            console.log('CredentialsPicker render D'); // TODO: RM
             children = <div>No credential picker could be found for type={type}</div>;
         }
 
@@ -63,6 +72,7 @@ CredentialsPicker.propTypes = {
     dialog: PropTypes.bool,
     pipeline: PropTypes.object,
     repositoryUrl: PropTypes.string,
+    existingFailed: PropTypes.bool,
     scmSource: PropTypes.shape({
         id: PropTypes.string,
         apiUrl: PropTypes.string,

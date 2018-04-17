@@ -62,11 +62,11 @@ export class GitPWCredentialsManager {
     }
 
     @action
-    createCredential(userName, password) {
+    createCredential(userName, password, requirePush: boolean) {
         this.pendingValidation = true;
 
         return this._api
-            .createCredential(this.repositoryUrl, userName, password)
+            .createCredential(this.repositoryUrl, userName, password, this.branch, requirePush)
             .then(...delayBoth(MIN_DELAY))
             .then(response => this._createCredentialSuccess(response))
             .catch(error => this._onCreateCredentialFailure(error));

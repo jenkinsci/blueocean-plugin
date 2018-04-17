@@ -29,6 +29,8 @@ class GitCredentialsPicker extends React.Component {
     render() {
         const { repositoryUrl } = this.props;
 
+        console.log('GitCredentialsPicker render() repositoryUrl', repositoryUrl); // TODO: RM
+
         if (!repositoryUrl) {
             return null; // Repo URL decides wether we show certificate or un/pw
         }

@@ -26,6 +26,8 @@ interface Props {
     onComplete?: Function,
     repositoryUrl: string,
     branch?: string,
+    existingFailed?: boolean, // if true we shouldn't bother looking it up
+    requirePush?: boolean,
 }
 
 interface State {
@@ -67,9 +69,10 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
     }
 
     componentWillMount() {
-        this.setState({
+
+        this.setState(state => ({
             loading: true,
-        });
+        }));
 
         if (this.props.onStatus) {
             this.props.onStatus('promptLoading');
@@ -77,9 +80,25 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
     }
 
     componentDidMount() {
-        const {repositoryUrl, branch} = this.props;
-        this.credentialsManager.configure(repositoryUrl, branch);
-        this.credentialsManager.findExistingCredential().then(credential => this._findExistingCredentialComplete(credential));
+        const {repositoryUrl, branch, existingFailed, onStatus} = this.props;
+        const credentialsManager = this.credentialsManager;
+        credentialsManager.configure(repositoryUrl, branch);
+
+        if (existingFailed) {
+            console.log('GitCredentialsPickerPassword no need to load existing'); // TODO: RM
+            this.setState(state=> ({
+                loading:false,
+                existingCredential: undefined
+            }));
+
+            if (onStatus) {
+                onStatus('promptReady');
+            }
+
+        } else {
+            credentialsManager.findExistingCredential()
+                .then(credential => this._findExistingCredentialComplete(credential));
+        }
     }
 
     _findExistingCredentialComplete(credential: Credential | null) {
@@ -116,7 +135,7 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
             existingCredential: undefined
         });
         this.credentialsManager
-            .createCredential(this.state.usernameValue, this.state.passwordValue)
+            .createCredential(this.state.usernameValue, this.state.passwordValue, !!this.props.requirePush)
             .then(credential => this._onCreateCredentialSuccess(credential));
     }
 
@@ -223,16 +242,20 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
     };
 
     render() {
-
+        console.log('GitCredentialsPickerPassword.render', this.state.loading); // TODO: RM
         if (this.state.loading) {
             return null;
         }
+
+        console.log('GitCredentialsPickerPassword.render AAA'); // TODO: RM
+
 
         const managerState = this.credentialsManager.stateId;
         const errorMessage = this._getErrorMessage(managerState);
         const isPendingValidation = this.credentialsManager.pendingValidation;
 
         const connectButtonStatus = {result: null as string | null};
+        console.log('GitCredentialsPickerPassword.render BBB'); // TODO: RM
 
         if (isPendingValidation) {
             connectButtonStatus.result = 'running';
@@ -254,6 +277,7 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
         const labelPassword = t('creation.git.create_credential.password_title');
         const labelButton = t('creation.git.create_credential.button_create'); // TODO: resource
 
+        console.log('GitCredentialsPickerPassword.render CCC'); // TODO: RM
         return (
             <div className="credentials-picker-bitbucket">
                 <p className="instructions">{labelInstructions}</p>
