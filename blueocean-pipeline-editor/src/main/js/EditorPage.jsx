@@ -289,7 +289,6 @@ class PipelineLoader extends React.Component {
             .fetchPipeline(this.href, { useCache: true })
             .then(pipeline => this._savePipelineMetadata(pipeline))
             .catch(err => {
-                console.log('EditorPage.loadPipelineMetadata', err); // TODO: RM
                 this.showErrorDialog(err);
             });
     }
@@ -353,13 +352,11 @@ class PipelineLoader extends React.Component {
                 });
             })
             .catch(err => {
-                console.log('EditorPage.loadContent err', err); // TODO: RM
                 if (err.type === LoadError.JENKINSFILE_NOT_FOUND) {
                     if (onComplete) onComplete();
                     this.makeEmptyPipeline();
                 } else if (err.type === LoadError.TOKEN_NOT_FOUND || err.type === LoadError.TOKEN_REVOKED) {
                     // if there already is a dialog, make sure to show it: an invalid credential was selected
-                    console.log('attempt show credential dialog', this.showCredentialDialog, this); // TODO:RM
                     this.showCredentialDialog({ loading: !this.state.dialog });
                 } else {
                     if (onComplete) onComplete();
@@ -459,7 +456,6 @@ class PipelineLoader extends React.Component {
     }
 
     showCredentialDialog({ loading = false } = {}) {
-        console.log('showCredentialDialog!'); // TODO: RM
         const { branch = this.defaultBranch } = this.props.params;
         const pipeline = pipelineService.getPipeline(this.href);
         const { scmSource } = pipeline;
@@ -475,7 +471,6 @@ class PipelineLoader extends React.Component {
         // so we don't want to prompt them for another, instead they should contact someone
         // to fix the permissions
         if (this.state.credential && this.state.credential.id && scmSource.id !== 'git') {
-            console.log('showCredentialDialog.A'); // TODO: RM
             this.showLoadingError('', 'You do not appear to be able to save to this repository', 'No save access');
             return;
         }
@@ -488,12 +483,11 @@ class PipelineLoader extends React.Component {
         // hide the dialog until it reports as ready (i.e. credential fetch is done)
         const dialogClassName = `dialog-token ${loading ? 'loading' : ''}`;
 
-        console.log('showCredentialDialog.B - loading is', loading); // TODO: RM
+        //FIXME: should show a message about existing credentials failing
 
         this.setState({
             dialog: (
                 <Dialog title={title} className={dialogClassName} buttons={[]} onDismiss={() => this.cancel()}>
-                    TODO: remove me
                     <Extensions.Renderer
                         extensionPoint="jenkins.credentials.selection"
                         onStatus={status => this.onCredentialStatus(status)}
@@ -622,8 +616,6 @@ class PipelineLoader extends React.Component {
         if (branch || repo) {
             title += ' / ' + (branch || repo);
         }
-
-        console.log('EditorPage render, dialog is', this.state.dialog); // TODO: RM
 
         return (
             <div className="pipeline-page">

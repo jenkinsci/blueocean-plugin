@@ -56,7 +56,6 @@ public class GitScm extends AbstractScm {
 
     public GitScm(Reachable parent) {
         this.parent = parent;
-        System.out.println("Creating a new GitScm"); // TODO: RM
     }
 
     public static String getCredentialId(String repositoryUrl) {
@@ -157,7 +156,9 @@ public class GitScm extends AbstractScm {
 
     @Override
     public HttpResponse validateAndCreate(@JsonBody JSONObject request) {
-        System.out.println("validateAndCreate"); // TODO: RM
+
+        // TODO: Break up this method, it's unweildy
+
         boolean requirePush = request.has("requirePush");
         final String repositoryUrl;
         final AbstractGitSCMSource scmSource;
@@ -186,8 +187,6 @@ public class GitScm extends AbstractScm {
             throw new ServiceException.UnauthorizedException("Not authenticated");
         }
 
-        // TODO: Break this method up, it's too long.
-
         String credentialId = null;
 
         if (request.has("credentialId")) {
@@ -211,10 +210,6 @@ public class GitScm extends AbstractScm {
                                                 requestUsername,
                                                 requestPassword);
 
-        System.out.println("validateAndCreate - "); // TODO: RM
-        System.out.println("    existing cred : " + existingCredential); // TODO: RM
-        System.out.println("         new cred : " + newCredential); // TODO: RM
-
         try {
             if (existingCredential == null) {
                 CredentialsUtils.createCredentialsInUserStore(newCredential,
@@ -229,7 +224,6 @@ public class GitScm extends AbstractScm {
                                                               ImmutableList.<DomainSpecification>of(new BlueOceanDomainSpecification()));
             }
         } catch (IOException e) {
-            e.printStackTrace();  // TODO: RM
             throw new ServiceException.UnexpectedErrorException("Could not persist credential", e);
         }
 
