@@ -7,6 +7,7 @@ import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.CustomJenkinsServer;
 import io.blueocean.ath.Login;
+import io.blueocean.ath.Retry;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.WebDriverMixin;
 import io.blueocean.ath.api.classic.ClassicJobApi;
@@ -66,6 +67,7 @@ public class BitbucketServerTest implements WebDriverMixin {
     }
 
     @Test
+    @Retry(3)
     public void testCreationNoJenkinsfile() throws InterruptedException {
         BitbucketClient client = BitbucketClient.builder()
             .endPoint(ENDPOINT_URL)
