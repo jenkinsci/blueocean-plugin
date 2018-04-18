@@ -49,7 +49,7 @@ public class GitScm extends AbstractScm {
 
     public static final String ID = "git";
 
-    static final String CREDENTIAL_DOMAIN_NAME ="blueocean-git-domain";
+    static final String CREDENTIAL_DOMAIN_NAME = "blueocean-git-domain";
     static final String CREDENTIAL_DESCRIPTION_PW = "Git username/password";
 
     protected final Reachable parent;
@@ -60,7 +60,20 @@ public class GitScm extends AbstractScm {
 
     public static String getCredentialId(String repositoryUrl) {
         // TODO: reduce visibility if not needed elsewhere
-        return ID + ":" + normalizeServerUrl(repositoryUrl);
+        final String normalizedUrl = normalizeServerUrl(repositoryUrl);
+
+        try {
+            // Only http(s) urls have a default credential ID keyed to the repo right now
+            String scheme = new URI(normalizedUrl).getScheme();
+            if (scheme.startsWith("http")) {
+                return ID + ":" + normalizedUrl;
+            }
+        } catch (URISyntaxException e) {
+            // Fall through
+        }
+
+        // Bad URL, or not a http(s) url
+        return null;
     }
 
     public static String normalizeServerUrl(String serverUrl) {
@@ -112,7 +125,7 @@ public class GitScm extends AbstractScm {
         return "";
     }
 
-    protected StaplerRequest getStaplerRequest(){
+    protected StaplerRequest getStaplerRequest() {
         StaplerRequest request = Stapler.getCurrentRequest();
         Preconditions.checkNotNull(request, "Must be called in HTTP request context");
         return request;
@@ -124,7 +137,7 @@ public class GitScm extends AbstractScm {
 
         //check credentialId could be found
         StandardUsernamePasswordCredentials credential = getCredentialForCurrentRequest();
-        if(credential != null){
+        if (credential != null) {
             return credential.getId();
         }
         return null;
@@ -133,13 +146,23 @@ public class GitScm extends AbstractScm {
     protected StandardUsernamePasswordCredentials getCredentialForCurrentRequest() {
         final StaplerRequest request = getStaplerRequest();
 
-        if (!request.hasParameter("repositoryUrl")) {
-            // No linked credential unless a specific repo
-            return null;
+        String credentialId = null;
+
+        if (request.hasParameter("credentialId")) {
+            credentialId = request.getParameter("credentialId");
+        } else {
+            if (!request.hasParameter("repositoryUrl")) {
+                // No linked credential unless a specific repo
+                return null;
+            }
+
+            String repositoryUrl = request.getParameter("repositoryUrl");
+            credentialId = getCredentialId(repositoryUrl);
         }
 
-        String repositoryUrl = request.getParameter("repositoryUrl");
-        String credentialId = getCredentialId(repositoryUrl);
+        if (credentialId == null) {
+            return null;
+        }
 
         return CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
     }
@@ -159,13 +182,15 @@ public class GitScm extends AbstractScm {
 
         // TODO: Break up this method, it's unweildy
 
+        // --[ Grab repo url and SCMSource ]----------------------------------------------------------
+
         boolean requirePush = request.has("requirePush");
         final String repositoryUrl;
         final AbstractGitSCMSource scmSource;
         if (request.has("repositoryUrl")) {
             scmSource = null;
             repositoryUrl = request.getString("repositoryUrl");
-        } else{
+        } else {
             try {
                 String fullName = request.getJSONObject("pipeline").getString("fullName");
                 SCMSourceOwner item = Jenkins.getInstance().getItemByFullName(fullName, SCMSourceOwner.class);
@@ -175,17 +200,21 @@ public class GitScm extends AbstractScm {
                 } else {
                     return HttpResponses.errorJSON("No repository found for: " + fullName);
                 }
-            } catch(JSONException e) {
+            } catch (JSONException e) {
                 return HttpResponses.errorJSON("No repositoryUrl or pipeline.fullName specified in request.");
-            } catch(RuntimeException e) {
+            } catch (RuntimeException e) {
                 return HttpResponses.errorWithoutStack(ServiceException.INTERNAL_SERVER_ERROR, e.getMessage());
             }
         }
+
+        // --[ Grab user ]-------------------------------------------------------------------------------------
 
         User user = User.current();
         if (user == null) {
             throw new ServiceException.UnauthorizedException("Not authenticated");
         }
+
+        // --[ Get credential id from request or create from repo url ]----------------------------------------
 
         String credentialId = null;
 
@@ -195,13 +224,60 @@ public class GitScm extends AbstractScm {
             credentialId = getCredentialId(repositoryUrl);
         }
 
-        String requestUsername = request.getString("userName");
-        String requestPassword = request.getString("password");
+        // --[ Load or create credentials ]--------------------------------------------------------------------
+
+        // Create new is only for username + password
+        if (request.has("userName") || request.has("password")) {
+            createPWCredentials(credentialId, user, request);
+        }
+
+        final StandardCredentials creds = CredentialsMatchers.firstOrNull(
+            CredentialsProvider.lookupCredentials(
+                StandardCredentials.class,
+                Jenkins.getInstance(),
+                Jenkins.getAuthentication(),
+                (List<DomainRequirement>) null),
+            CredentialsMatchers.allOf(CredentialsMatchers.withId(credentialId))
+        );
+
+        if (creds == null) {
+            throw new ServiceException.NotFoundException("No credentials found for: " + credentialId);
+        }
+
+        try {
+
+            if (requirePush) {
+                String branch = request.getString("branch");
+                new GitBareRepoReadSaveRequest(scmSource, branch, null, branch, null, null)
+                    .invokeOnScm(new GitSCMFileSystem.FSFunction<Void>() {
+                        @Override
+                        public Void invoke(Repository repository) throws IOException, InterruptedException {
+                            GitUtils.validatePushAccess(repository, repositoryUrl, creds);
+                            return null;
+                        }
+                    });
+            } else {
+                List<ErrorMessage.Error> errors = GitUtils.validateCredentials(repositoryUrl, creds);
+                if (!errors.isEmpty()) {
+                    throw new ServiceException.UnauthorizedException(errors.get(0).getMessage());
+                }
+            }
+        } catch (Exception e) {
+            return HttpResponses.errorWithoutStack(ServiceException.PRECONDITION_REQUIRED, e.getMessage());
+        }
+
+        return HttpResponses.okJSON();
+    }
+
+    private void createPWCredentials(String credentialId, User user, @JsonBody JSONObject request) {
 
         StandardUsernamePasswordCredentials existingCredential =
             CredentialsUtils.findCredential(credentialId,
                                             StandardUsernamePasswordCredentials.class,
                                             new BlueOceanDomainRequirement());
+
+        String requestUsername = request.getString("userName");
+        String requestPassword = request.getString("password");
 
         final StandardUsernamePasswordCredentials newCredential =
             new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
@@ -226,51 +302,13 @@ public class GitScm extends AbstractScm {
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException("Could not persist credential", e);
         }
-
-        try {
-
-            final StandardCredentials creds = CredentialsMatchers.firstOrNull(
-                CredentialsProvider.lookupCredentials(
-                    StandardCredentials.class,
-                    Jenkins.getInstance(),
-                    Jenkins.getAuthentication(),
-                    (List<DomainRequirement>) null),
-                CredentialsMatchers.allOf(CredentialsMatchers.withId(credentialId))
-            );
-
-            if (creds == null) {
-                throw new ServiceException.NotFoundException("No credentials found for: " + credentialId);
-            }
-            // TODO: do we need this code above now?
-
-            if (requirePush) {
-                String branch = request.getString("branch");
-                new GitBareRepoReadSaveRequest(scmSource, branch, null, branch, null, null)
-                    .invokeOnScm(new GitSCMFileSystem.FSFunction<Void>() {
-                         @Override
-                         public Void invoke(Repository repository) throws IOException, InterruptedException {
-                             GitUtils.validatePushAccess(repository, repositoryUrl, creds);
-                             return null;
-                         }
-                     });
-            } else {
-                List<ErrorMessage.Error> errors = GitUtils.validateCredentials(repositoryUrl, creds);
-                if (!errors.isEmpty()) {
-                    throw new ServiceException.UnauthorizedException(errors.get(0).getMessage());
-                }
-            }
-        } catch(Exception e) {
-            return HttpResponses.errorWithoutStack(ServiceException.PRECONDITION_REQUIRED, e.getMessage());
-        }
-
-        return HttpResponses.okJSON();
     }
 
     @Extension
     public static class GitScmFactory extends ScmFactory {
         @Override
         public Scm getScm(@Nonnull String id, @Nonnull Reachable parent) {
-            if(id.equals(ID)){
+            if (id.equals(ID)) {
                 return new GitScm(parent);
             }
             return null;
