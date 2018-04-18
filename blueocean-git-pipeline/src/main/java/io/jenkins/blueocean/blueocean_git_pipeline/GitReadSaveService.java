@@ -182,7 +182,7 @@ public class GitReadSaveService extends ScmContentProvider {
             final byte[] reqData = r.read();
             String encoded = Base64.encode(reqData);
 
-            System.out.println("           - got " + reqData.length + " bytes"); // TODO: RM
+            System.out.println("           - got " + (reqData == null ? "null" : reqData.length + " bytes")); // TODO: RM
             System.out.println("           - about to make gitcontent"); // TODO: RM
 
             final GitContent content = new GitContent(r.filePath, user.getId(), r.gitSource.getRemote(), r.filePath, 0, "sha", encoded, "", r.branch, r.sourceBranch, true, "");
