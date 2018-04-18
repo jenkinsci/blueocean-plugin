@@ -39,6 +39,9 @@ import static org.junit.Assert.*;
  */
 @RunWith(Parameterized.class)
 public class GitScmTest extends PipelineBaseTest {
+    public static final String HTTPS_GITHUB_NO_JENKINSFILE = "https://github.com/vivek/test-no-jenkins-file.git";
+    public static final String HTTPS_GITHUB_PUBLIC = "https://github.com/sophistifunk/editor-test-repo.git";
+    // TODO: use something more long-term than this ^^^^^^^^^
     @Rule
     public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();
 
@@ -99,8 +102,8 @@ public class GitScmTest extends PipelineBaseTest {
                 .post("/organizations/" + getOrgName() + "/pipelines/")
                 .data(ImmutableMap.of("name", "demo",
                         "$class", "io.jenkins.blueocean.blueocean_git_pipeline.GitPipelineCreateRequest",
-                        "scmConfig", ImmutableMap.of("uri", "https://github.com/vivek/test-no-jenkins-file.git",
-                                "credentialId", credentialId)
+                        "scmConfig", ImmutableMap.of("uri", HTTPS_GITHUB_NO_JENKINSFILE,
+                                                     "credentialId", credentialId)
                 )).build(Map.class);
 
         assertEquals("demo", r.get("name"));
@@ -354,6 +357,59 @@ public class GitScmTest extends PipelineBaseTest {
         assertNull(getOrgRoot().getItem("demo"));
     }
 
+    @Test
+    public void shouldNotProvideIdForMissingCredentials() throws Exception {
+        User user = login();
+        String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
+        String repoPath = scmPath + "?repositoryUrl=" + HTTPS_GITHUB_PUBLIC;
+
+        Map resp = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .get(repoPath)
+            .build(Map.class);
+
+        assertEquals(null, resp.get("credentialId"));
+    }
+
+    @Test
+    public void shouldCreateCredentialsWithDefaultId() throws Exception {
+        User user = login();
+
+        String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
+
+        // First create a credential
+        String scmValidatePath = scmPath + "validate";
+
+        // We're relying on github letting you do a git-ls for repos with bad creds so long as they're public
+        Map params = ImmutableMap.of(
+            "userName", "someguy",
+            "password", "password",
+            "repositoryUrl", HTTPS_GITHUB_PUBLIC
+        );
+
+        Map resp = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .data(params)
+            .put(scmValidatePath)
+            .build(Map.class);
+
+        assertEquals("ok", resp.get("status"));
+
+        // Now get the default credentialId
+
+        String repoPath = scmPath + "?repositoryUrl=" + HTTPS_GITHUB_PUBLIC;
+
+        Map resp2 = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .get(repoPath)
+            .build(Map.class);
+
+        assertEquals("git:" + HTTPS_GITHUB_PUBLIC, resp2.get("credentialId"));
+    }
+
     private String createMbp(User user) throws UnirestException {
         Map<String,Object> resp = new RequestBuilder(baseUrl)
                 .status(201)
@@ -395,8 +451,8 @@ public class GitScmTest extends PipelineBaseTest {
         sampleRepo.write("file", "subsequent content1");
         sampleRepo.git("commit", "--all", "--message=tweaked1");
     }
-    
-    
+
+
 
     private String getOrgName() {
         return OrganizationFactory.getInstance().list().iterator().next().getName();
@@ -408,9 +464,9 @@ public class GitScmTest extends PipelineBaseTest {
 
     @TestExtension
     public static class TestOrganizationFactoryImpl extends OrganizationFactoryImpl {
-        
+
         public static String orgRoot;
-        
+
         private OrganizationImpl instance;
 
         public TestOrganizationFactoryImpl() {
@@ -426,7 +482,7 @@ public class GitScmTest extends PipelineBaseTest {
                 } catch (IOException e) {
                     throw new RuntimeException("Test setup failed!", e);
                 }
-                
+
             }
             else {
                 instance = new OrganizationImpl("jenkins", Jenkins.getInstance());

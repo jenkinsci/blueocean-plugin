@@ -76,11 +76,14 @@ export class GitPWCredentialsApi {
             userName,
             password,
             repositoryUrl,
-            requirePush
         };
 
         if (branchName) {
             requestBody.branch = branchName;
+        }
+
+        if (requirePush) {
+            requestBody.repositoryUrl = true; // Only set if true!
         }
 
         console.log('createCredential', validateCredUrl, JSON.stringify(requestBody,null,4)); // TODO: RM
