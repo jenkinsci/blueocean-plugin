@@ -121,6 +121,7 @@ builder.src([
 //
 
 builder.bundle('target/tstemp/js/index.js', 'blueocean-core-js.js')
+    .onStartup('./target/tstemp/js/bundleStartup.js')
     .inDir('target/classes/io/jenkins/blueocean')
     .less('src/less/blueocean-core-js.less')
     .import('react@any', {

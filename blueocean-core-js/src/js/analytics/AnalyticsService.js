@@ -1,12 +1,12 @@
 import { Fetch } from '../fetch';
 import { UrlConfig } from '../urlconfig';
 import { Utils } from '../utils';
-import { Config } from '../config';
+import { AppConfig } from '../config';
 
 export class AnalyticsService {
     track(eventName, properties) {
         // Don't scare anyone by posting back stats tracking when usage stats are off
-        if (!Config.getAnalyticsEnabled()) return false;
+        if (!AppConfig.getAnalyticsEnabled()) return false;
 
         // Go ahead and record usage stats
         const path = UrlConfig.getJenkinsRootURL();
