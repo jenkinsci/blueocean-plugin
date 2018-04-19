@@ -2,7 +2,6 @@ import React, { PropTypes, Component } from 'react';
 import { FormElement } from '@jenkins-cd/design-language';
 import { Fetch, AppConfig, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 import { Button } from '../../creation/github/Button';
-import GitCredentialsPicker from './GitCredentialsPicker';
 const t = i18nTranslator('blueocean-dashboard');
 
 function copySelectionText() {
@@ -23,7 +22,9 @@ function clearSelection() {
     }
 }
 
-// TODO: Quick descriptive doc
+/**
+ * Public key credentials UI for git repos via ssh:// or git://
+ */
 export class GitCredentialsPickerSSH extends Component {
     constructor(props) {
         super(props);
@@ -59,7 +60,6 @@ export class GitCredentialsPickerSSH extends Component {
     }
 
     testCredentialAndCloseDialog() {
-        // TODO: Move most of this logic to service class
         const { onComplete, repositoryUrl, pipeline, requirePush, branch } = this.props;
         const body = {
             repositoryUrl,

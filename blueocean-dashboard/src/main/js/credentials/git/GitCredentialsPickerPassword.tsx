@@ -44,7 +44,9 @@ enum RadioOption {
 const radioOptions = Object.values(RadioOption);
 
 
-// TODO: Quick descriptive doc
+/**
+ * Component to handle lookup / creation of username+password credentials for git repositories over http(s)
+ */
 export class GitCredentialsPickerPassword extends Component<Props, State> {
 
     credentialsManager: GitPWCredentialsManager;

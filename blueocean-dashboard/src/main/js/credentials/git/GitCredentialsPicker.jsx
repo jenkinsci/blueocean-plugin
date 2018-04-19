@@ -1,10 +1,6 @@
 import React, { PropTypes } from 'react';
-import { FormElement } from '@jenkins-cd/design-language';
-import { Fetch, AppConfig, i18nTranslator } from '@jenkins-cd/blueocean-core-js';
-import { Button } from '../../creation/github/Button';
 import { GitCredentialsPickerSSH } from './GitCredentialsPickerSSH';
 import { GitCredentialsPickerPassword } from './GitCredentialsPickerPassword';
-const t = i18nTranslator('blueocean-dashboard');
 
 function isSshRepositoryUrl(url) {
     if (typeof url !== 'string' || url.trim().length === 0) {
@@ -24,12 +20,12 @@ function isSshRepositoryUrl(url) {
     return false;
 }
 
-// TODO: Quick descriptive doc
+/**
+ * Just a wrapper to decide between the SSH component and username/pw component based on repositoryUrl
+ */
 class GitCredentialsPicker extends React.Component {
     render() {
         const { repositoryUrl } = this.props;
-
-        console.log('GitCredentialsPicker render() repositoryUrl', repositoryUrl); // TODO: RM
 
         if (!repositoryUrl) {
             return null; // Repo URL decides wether we show certificate or un/pw
