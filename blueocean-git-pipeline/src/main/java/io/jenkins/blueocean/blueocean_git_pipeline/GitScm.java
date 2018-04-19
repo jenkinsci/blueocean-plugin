@@ -58,8 +58,13 @@ public class GitScm extends AbstractScm {
         this.parent = parent;
     }
 
-    public static String getCredentialId(String repositoryUrl) {
-        // TODO: reduce visibility if not needed elsewhere
+    /**
+     * Create the credentialId for a specific repositoryUrl (which will be normalized)
+     * @param repositoryUrl
+     * @return credentialId string
+     */
+    public static String makeCredentialId(String repositoryUrl) {
+        // TODO: test
         final String normalizedUrl = normalizeServerUrl(repositoryUrl);
 
         try {
@@ -76,8 +81,7 @@ public class GitScm extends AbstractScm {
         return null;
     }
 
-    public static String normalizeServerUrl(String serverUrl) {
-        // TODO: reduce visibility if not needed elsewhere
+    private static String normalizeServerUrl(String serverUrl) {
         try {
             java.net.URI uri = new URI(serverUrl).normalize();
             String scheme = uri.getScheme();
@@ -133,17 +137,15 @@ public class GitScm extends AbstractScm {
 
     @Override
     public String getCredentialId() {
-        // TODO: unit test
-
-        //check credentialId could be found
-        StandardUsernamePasswordCredentials credential = getCredentialForCurrentRequest();
+        // Only return the generated id if we actually have a credential that matches it
+        StandardCredentials credential = getCredentialForCurrentRequest();
         if (credential != null) {
             return credential.getId();
         }
         return null;
     }
 
-    protected StandardUsernamePasswordCredentials getCredentialForCurrentRequest() {
+    protected StandardCredentials getCredentialForCurrentRequest() {
         final StaplerRequest request = getStaplerRequest();
 
         String credentialId = null;
@@ -157,14 +159,14 @@ public class GitScm extends AbstractScm {
             }
 
             String repositoryUrl = request.getParameter("repositoryUrl");
-            credentialId = getCredentialId(repositoryUrl);
+            credentialId = makeCredentialId(repositoryUrl);
         }
 
         if (credentialId == null) {
             return null;
         }
 
-        return CredentialsUtils.findCredential(credentialId, StandardUsernamePasswordCredentials.class, new BlueOceanDomainRequirement());
+        return CredentialsUtils.findCredential(credentialId, StandardCredentials.class, new BlueOceanDomainRequirement());
     }
 
     @Override
@@ -180,13 +182,13 @@ public class GitScm extends AbstractScm {
     @Override
     public HttpResponse validateAndCreate(@JsonBody JSONObject request) {
 
-        // TODO: Break up this method, it's unweildy
+        boolean requirePush = request.has("requirePush");
 
         // --[ Grab repo url and SCMSource ]----------------------------------------------------------
 
-        boolean requirePush = request.has("requirePush");
         final String repositoryUrl;
         final AbstractGitSCMSource scmSource;
+
         if (request.has("repositoryUrl")) {
             scmSource = null;
             repositoryUrl = request.getString("repositoryUrl");
@@ -221,7 +223,7 @@ public class GitScm extends AbstractScm {
         if (request.has("credentialId")) {
             credentialId = request.getString("credentialId");
         } else {
-            credentialId = getCredentialId(repositoryUrl);
+            credentialId = makeCredentialId(repositoryUrl);
         }
 
         // --[ Load or create credentials ]--------------------------------------------------------------------

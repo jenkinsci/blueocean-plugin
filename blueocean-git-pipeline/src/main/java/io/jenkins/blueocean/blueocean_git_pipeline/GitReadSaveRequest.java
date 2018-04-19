@@ -64,23 +64,24 @@ abstract class GitReadSaveRequest  {
 
     @CheckForNull
     StandardCredentials getCredential() {
-        StandardCredentials credential;
+        StandardCredentials credential = null;
 
         User user = User.current();
         if (user == null) {
             throw new ServiceException.UnauthorizedException("Not authenticated");
         }
 
+        // Get committer info and credentials
         if (GitUtils.isSshUrl(gitSource.getRemote()) || GitUtils.isLocalUnixFileUrl(gitSource.getRemote())) {
-            // Get committer info and credentials
             credential = UserSSHKeyManager.getOrCreate(user);
         } else {
-            String repositoryUrl = gitSource.getRemote();
+            String credentialId = GitScm.makeCredentialId(gitSource.getRemote());
 
-            String credentialId = GitScm.ID + ":" + GitScm.normalizeServerUrl(repositoryUrl);
-            credential = CredentialsUtils.findCredential(credentialId,
-                                                         StandardUsernamePasswordCredentials.class,
-                                                         new BlueOceanDomainRequirement());
+            if (credentialId != null) {
+                credential = CredentialsUtils.findCredential(credentialId,
+                                                             StandardCredentials.class,
+                                                             new BlueOceanDomainRequirement());
+            }
         }
         return credential;
     }
