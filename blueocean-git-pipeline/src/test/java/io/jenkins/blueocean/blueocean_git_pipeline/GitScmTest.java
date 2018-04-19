@@ -40,8 +40,7 @@ import static org.junit.Assert.*;
 @RunWith(Parameterized.class)
 public class GitScmTest extends PipelineBaseTest {
     public static final String HTTPS_GITHUB_NO_JENKINSFILE = "https://github.com/vivek/test-no-jenkins-file.git";
-    public static final String HTTPS_GITHUB_PUBLIC = "https://github.com/sophistifunk/editor-test-repo.git";
-    // TODO: use something more long-term than this ^^^^^^^^^
+    public static final String HTTPS_GITHUB_PUBLIC = "https://github.com/cloudbeers/multibranch-demo.git";
 
     @Rule
     public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();

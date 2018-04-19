@@ -64,13 +64,21 @@ public class GitScm extends AbstractScm {
      * @return credentialId string
      */
     public static String makeCredentialId(String repositoryUrl) {
-        // TODO: test
+
         final String normalizedUrl = normalizeServerUrl(repositoryUrl);
 
         try {
+            final java.net.URI uri = new URI(normalizedUrl);
+
+            // Require a host
+            String host = uri.getHost();
+            if (host == null || host.length() == 0) {
+                return null;
+            }
+
             // Only http(s) urls have a default credential ID keyed to the repo right now
-            String scheme = new URI(normalizedUrl).getScheme();
-            if (scheme.startsWith("http")) {
+            String scheme = uri.getScheme();
+            if (scheme != null && scheme.startsWith("http")) {
                 return ID + ":" + normalizedUrl;
             }
         } catch (URISyntaxException e) {
@@ -82,6 +90,11 @@ public class GitScm extends AbstractScm {
     }
 
     private static String normalizeServerUrl(String serverUrl) {
+
+        if (serverUrl == null) {
+            return "";
+        }
+
         try {
             java.net.URI uri = new URI(serverUrl).normalize();
             String scheme = uri.getScheme();

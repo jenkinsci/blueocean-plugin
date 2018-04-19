@@ -222,10 +222,13 @@ public class GitReadSaveService extends ScmContentProvider {
         }
 
         String credentialId = GitScm.makeCredentialId(repositoryUrl);
-        StandardUsernamePasswordCredentials credential = credentialId == null ? null :
-            CredentialsUtils.findCredential(credentialId,
+        StandardUsernamePasswordCredentials credential = null;
+
+        if (credentialId != null) {
+            credential = CredentialsUtils.findCredential(credentialId,
                                             StandardUsernamePasswordCredentials.class,
                                             new BlueOceanDomainRequirement());
+        }
 
         if (credential == null) {
             throw new ServiceException.UnauthorizedException("No credential found for " + credentialId + " for user " + user.getDisplayName());
