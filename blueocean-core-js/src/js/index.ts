@@ -94,6 +94,7 @@ sseService.registerHandler(defaultSSEhandler.handleEvents);
 // Export some debugging stuff client code may need
 
 import { enableMocksForI18n, disableMocksForI18n } from './i18n/i18n';
+export { execute as i18nBundleStartup } from './i18n/bundle-startup';
 
 export const DEBUG = {
     enableMocksForI18n,
