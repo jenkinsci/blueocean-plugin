@@ -5,7 +5,7 @@
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/design-language';
 
-import { RunApi as runApi } from '../rest/RunApi';
+import { RunApi as runApi } from '../';
 import { ToastUtils } from '../ToastUtils';
 import { Security } from '../security';
 import { stopProp } from '../utils';
