@@ -47,6 +47,7 @@
   "dependencies": {
     "@jenkins-cd/blueocean-material-icons": "0.0.7",
     "@jenkins-cd/js-modules": "0.0.10",
+    "@jenkins-cd/js-extensions": "0.0.44",
     "linkifyjs": "2.1.4",
     "lodash.debounce": "4.0.8",
     "moment": "2.19.3",
@@ -59,7 +60,6 @@
   "devDependencies": {
     "@jenkins-cd/js-builder": "0.0.63",
     "@jenkins-cd/js-builder-jest": "0.0.4",
-    "@jenkins-cd/js-extensions": "0.0.44",
     "@kadira/storybook": "2.35.3",
     "babel-eslint": "7.0.0",
     "babel-polyfill": "6.16.0",
