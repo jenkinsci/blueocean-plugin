@@ -141,7 +141,6 @@ public class GitReadSaveService extends ScmContentProvider {
     }
 
     private GitReadSaveRequest makeSaveRequest(Item item, StaplerRequest req) {
-        System.out.println("makeSaveRequest(Item item, StaplerRequest req)"); // TODO:RM
         String branch = req.getParameter("branch");
         return makeSaveRequest(item,
                                branch,
@@ -153,7 +152,6 @@ public class GitReadSaveService extends ScmContentProvider {
     }
 
     private GitReadSaveRequest makeSaveRequest(Item item, JSONObject json) {
-        System.out.println("makeSaveRequest(Item item, JSONObject json)"); // TODO:RM
         JSONObject content = json.getJSONObject("content");
         String branch = content.getString("branch");
         return makeSaveRequest(item,
@@ -176,26 +174,15 @@ public class GitReadSaveService extends ScmContentProvider {
         GitReadSaveRequest r = makeSaveRequest(item, req);
 
         try {
-            System.out.println("getContent - r is " + r); // TODO: RM
-            System.out.println("           - about to read"); // TODO: RM
-
             final byte[] reqData = r.read();
             String encoded = Base64.encode(reqData);
 
-            System.out.println("           - got " + (reqData == null ? "null" : reqData.length + " bytes")); // TODO: RM
-            System.out.println("           - about to make gitcontent"); // TODO: RM
-
             final GitContent content = new GitContent(r.filePath, user.getId(), r.gitSource.getRemote(), r.filePath, 0, "sha", encoded, "", r.branch, r.sourceBranch, true, "");
-            System.out.println("           - got " + content); // TODO: RM
-            System.out.println("           - about to make gitfile"); // TODO: RM
             final GitFile gitFile = new GitFile(content);
-            System.out.println("           - got " + gitFile + " so returning"); // TODO: RM
             return gitFile;
         } catch (ServiceException.UnauthorizedException e) {
-            e.printStackTrace(); // TODO: RM
             throw new ServiceException.PreconditionRequired("Invalid credential", e);
         } catch (IOException e) {
-            e.printStackTrace(); // TODO: RM
             throw new ServiceException.UnexpectedErrorException("Unable to get file content", e);
         }
     }
@@ -239,9 +226,6 @@ public class GitReadSaveService extends ScmContentProvider {
             CredentialsUtils.findCredential(credentialId,
                                             StandardUsernamePasswordCredentials.class,
                                             new BlueOceanDomainRequirement());
-
-        System.out.println("GitScmParams - credential id is " + credentialId); // TODO: RM
-        System.out.println("             - credential is " + credential); // TODO: RM
 
         if (credential == null) {
             throw new ServiceException.UnauthorizedException("No credential found for " + credentialId + " for user " + user.getDisplayName());

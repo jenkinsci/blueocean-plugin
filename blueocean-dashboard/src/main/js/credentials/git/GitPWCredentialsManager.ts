@@ -1,6 +1,5 @@
 import {action} from "mobx";
 
-import {BbCredentialsState} from '../bitbucket/BbCredentialsState';
 import {
     LoadError,
     SaveError,
@@ -13,6 +12,16 @@ import PromiseDelayUtils from '../../util/PromiseDelayUtils';
 const MIN_DELAY = 500;
 const {delayBoth} = PromiseDelayUtils;
 
+export enum ManagerState {
+    PENDING_LOADING_CREDS,
+    NEW_REQUIRED,
+    SAVE_SUCCESS,
+    INVALID_CREDENTIAL,
+    REVOKED_CREDENTIAL,
+    UNEXPECTED_ERROR_CREDENTIAL,
+    PENDING_VALIDATION,
+}
+
 // TODO: Docs
 // TODO: Unit tests
 export class GitPWCredentialsManager {
@@ -20,14 +29,14 @@ export class GitPWCredentialsManager {
     repositoryUrl?: string;
     branch: string = 'master';
     pendingValidation: boolean = false; // TODO: replace with enum
-    stateId: BbCredentialsState;  // TODO: replace with enum
+    // stateId: BbCredentialsState;  // TODO: replace with enum
+    state: ManagerState;
 
     _api: GitPWCredentialsApi;
 
     constructor() {
     }
 
-    // @action
     configure(repositoryUrl: string, branch?: string, api?: GitPWCredentialsApi) {
         this.repositoryUrl = repositoryUrl;
 
@@ -40,7 +49,7 @@ export class GitPWCredentialsManager {
 
     @action
     findExistingCredential() {
-        this.stateId = BbCredentialsState.PENDING_LOADING_CREDS;
+        this.state = ManagerState.PENDING_LOADING_CREDS;
         return this._api
             .findExistingCredential(this.repositoryUrl)
             .then(...delayBoth(MIN_DELAY))
@@ -49,15 +58,14 @@ export class GitPWCredentialsManager {
 
     @action
     _findExistingCredentialFailure(error) {
-        // console.log('GitPWCredentialsManager._findExistingCredentialFailure', error.type, JSON.stringify(error, null, 4)); // TODO: RM
         if (error.type === LoadError.TOKEN_NOT_FOUND) {
-            this.stateId = BbCredentialsState.NEW_REQUIRED;
+            this.state = ManagerState.NEW_REQUIRED;
         } else if (error.type === LoadError.TOKEN_INVALID) {
-            this.stateId = BbCredentialsState.INVALID_CREDENTIAL;
+            this.state = ManagerState.INVALID_CREDENTIAL;
         } else if (error.type === LoadError.TOKEN_REVOKED) {
-            this.stateId = BbCredentialsState.REVOKED_CREDENTIAL;
+            this.state = ManagerState.REVOKED_CREDENTIAL;
         } else {
-            this.stateId = BbCredentialsState.UNEXPECTED_ERROR_CREDENTIAL;
+            this.state = ManagerState.UNEXPECTED_ERROR_CREDENTIAL;
         }
     }
 
@@ -73,11 +81,10 @@ export class GitPWCredentialsManager {
     }
 
     @action
-    _createCredentialSuccess(result) {
+    _createCredentialSuccess(ignored) {
         this.pendingValidation = false;
-        this.stateId = BbCredentialsState.SAVE_SUCCESS;
+        this.state = ManagerState.SAVE_SUCCESS;
 
-        // FIXME: make GitScm on the server return the credential id
         return this.findExistingCredential();
     }
 
@@ -86,7 +93,7 @@ export class GitPWCredentialsManager {
         this.pendingValidation = false;
 
         if (error.type === SaveError.INVALID_CREDENTIAL) {
-            this.stateId = BbCredentialsState.INVALID_CREDENTIAL;
+            this.state = ManagerState.INVALID_CREDENTIAL;
         } else {
             throw error;
         }

@@ -1,9 +1,8 @@
 import * as React from 'react';
 import {Component} from 'react';
 import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
-import {GitPWCredentialsManager} from './GitPWCredentialsManager';
+import {GitPWCredentialsManager, ManagerState} from './GitPWCredentialsManager';
 import * as debounce from 'lodash.debounce';
-// TODO: Do we actually need debounce?
 
 import {Button} from '../../creation/github/Button';
 
@@ -13,9 +12,6 @@ import {
     TextInput,
     RadioButtonGroup,
 } from '@jenkins-cd/design-language';
-
-import {BbCredentialsState} from '../bitbucket/BbCredentialsState';
-
 
 const t = i18nTranslator('blueocean-dashboard');
 
@@ -85,7 +81,6 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
         credentialsManager.configure(repositoryUrl, branch);
 
         if (existingFailed) {
-            console.log('GitCredentialsPickerPassword no need to load existing'); // TODO: RM
             this.setState(state=> ({
                 loading:false,
                 existingCredential: undefined
@@ -97,32 +92,26 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
 
         } else {
             credentialsManager.findExistingCredential()
-                .then(credential => this._findExistingCredentialComplete(credential));
+                .then(credential => {
+                    const newState: any = {
+                        loading: false,
+                        existingCredential: credential,
+                    };
+
+                    if (credential && this.props.onComplete) {
+                        newState.selectedRadio = RadioOption.USE_EXISTING;
+
+                        if (this.props.onComplete) {
+                            this.props.onComplete(credential, 'autoSelected');
+                        }
+
+                    } else if (this.props.onStatus) {
+                        this.props.onStatus('promptReady');
+                    }
+
+                    this.setState(newState);
+                });
         }
-    }
-
-    _findExistingCredentialComplete(credential: Credential | null) {
-        // TODO: Inline this
-
-        console.log('GitCredentialsPickerPassword._findExistingCredentialComplete', credential && credential.id); // TODO: RM
-
-        const newState: any = {
-            loading: false,
-            existingCredential: credential,
-        };
-
-        if (credential && this.props.onComplete) {
-            newState.selectedRadio = RadioOption.USE_EXISTING;
-
-            if (this.props.onComplete) {
-                this.props.onComplete(credential, 'autoSelected');
-            }
-
-        } else if (this.props.onStatus) {
-            this.props.onStatus('promptReady');
-        }
-
-        this.setState(newState);
     }
 
     _createCredential() {
@@ -134,32 +123,28 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
         this.setState({
             existingCredential: undefined
         });
+
         this.credentialsManager
             .createCredential(this.state.usernameValue, this.state.passwordValue, !!this.props.requirePush)
-            .then(credential => this._onCreateCredentialSuccess(credential));
+            .then(credential => {
+                this.setState({
+                    existingCredential: credential,
+                    selectedRadio: RadioOption.USE_EXISTING
+                });
+
+                if (this.props.onComplete) {
+                    this.props.onComplete(credential, 'userSelected');
+                }
+            });
     }
 
-    _onCreateCredentialSuccess(credential) {
-        console.log('GitCredentialsPickerPassword._onCreateCredentialSuccess', credential);// TODO: RM
-
-        this.setState({
-            existingCredential: credential,
-            selectedRadio: RadioOption.USE_EXISTING
-        });
-
-        if (this.props.onComplete) {
-            this.props.onComplete(credential, 'userSelected');
-        }
-    }
-
-    _getErrorMessage(stateId) {
-        // TODO: Lookup / create replacements for these error label resources
-        if (stateId === BbCredentialsState.INVALID_CREDENTIAL) {
-            return t('creation.bitbucket.connect.invalid_username_password');
-        } else if (stateId === BbCredentialsState.REVOKED_CREDENTIAL) {
-            return t('creation.bitbucket.connect.revoked_credential');
-        } else if (stateId === BbCredentialsState.UNEXPECTED_ERROR_CREDENTIAL) {
-            return t('creation.bitbucket.connect.unexpected_error');
+    _getErrorMessage(state: ManagerState) {
+        if (state === ManagerState.INVALID_CREDENTIAL) {
+            return t('creation.git.create_credential.invalid_username_password');
+        } else if (state === ManagerState.REVOKED_CREDENTIAL) {
+            return t('creation.git.create_credential.revoked_credential');
+        } else if (state === ManagerState.UNEXPECTED_ERROR_CREDENTIAL) {
+            return t('creation.git.create_credential.unexpected_error');
         }
         return null;
     }
@@ -217,8 +202,6 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
     }, 200);
 
     _radioLabel = (option) => {
-        // TODO: Message resources
-
         const {existingCredential} = this.state;
         const displayName = existingCredential && existingCredential.displayName || '';
 
@@ -242,24 +225,19 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
     };
 
     render() {
-        console.log('GitCredentialsPickerPassword.render', this.state.loading); // TODO: RM
         if (this.state.loading) {
             return null;
         }
 
-        console.log('GitCredentialsPickerPassword.render AAA'); // TODO: RM
-
-
-        const managerState = this.credentialsManager.stateId;
+        const managerState: ManagerState = this.credentialsManager.state;
         const errorMessage = this._getErrorMessage(managerState);
         const isPendingValidation = this.credentialsManager.pendingValidation;
 
         const connectButtonStatus = {result: null as string | null};
-        console.log('GitCredentialsPickerPassword.render BBB'); // TODO: RM
 
         if (isPendingValidation) {
             connectButtonStatus.result = 'running';
-        } else if (managerState === BbCredentialsState.SAVE_SUCCESS) {
+        } else if (managerState === ManagerState.SAVE_SUCCESS) {
             connectButtonStatus.result = 'success';
         }
 
@@ -269,17 +247,13 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
         const useExistingCredential = hasExistingCredential && selectedRadio === RadioOption.USE_EXISTING;
         const disableForm = isPendingValidation || useExistingCredential;
 
-        // TODO: Find all the messages, extract them for git-bundle
-        // TODO: needs padding below connect button
-
         const labelInstructions = t('creation.git.create_credential.pw_instructions');
         const labelUsername = t('creation.git.create_credential.username_title');
         const labelPassword = t('creation.git.create_credential.password_title');
-        const labelButton = t('creation.git.create_credential.button_create'); // TODO: resource
+        const labelButton = t('creation.git.create_credential.button_create');
 
-        console.log('GitCredentialsPickerPassword.render CCC'); // TODO: RM
         return (
-            <div className="credentials-picker-bitbucket">
+            <div className="credentials-picker-git">
                 <p className="instructions">{labelInstructions}</p>
                 {hasExistingCredential && (
                     <RadioButtonGroup options={radioOptions}

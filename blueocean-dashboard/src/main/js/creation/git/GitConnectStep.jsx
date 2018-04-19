@@ -90,7 +90,6 @@ export default class GitConnectStep extends React.Component {
     }, 200);
 
     _selectedCredentialChange(credential) {
-        console.log('_selectedCredentialChange', credential && credential.displayName + ' - ' + credential.id); // TODO: RM
         this.setState({
             selectedCredential: credential,
         });

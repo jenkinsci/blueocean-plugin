@@ -1,7 +1,5 @@
 import { Enum } from '../../creation/flow2/Enum';
 
-// TODO: Move this up out of BB-specific tree?
-
 /**
  * Valid stateId's for BitBucketCredentialsStep
  */

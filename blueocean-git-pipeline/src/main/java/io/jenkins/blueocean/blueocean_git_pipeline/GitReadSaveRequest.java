@@ -62,37 +62,25 @@ abstract class GitReadSaveRequest  {
         this.contents = contents == null ? null : contents.clone(); // grr findbugs
     }
 
-    @CheckForNull StandardCredentials getCredential() {
-        StandardCredentials credential = null;
+    @CheckForNull
+    StandardCredentials getCredential() {
+        StandardCredentials credential;
 
-            User user = User.current();
-            if (user == null) {
-                throw new ServiceException.UnauthorizedException("Not authenticated");
-            }
+        User user = User.current();
+        if (user == null) {
+            throw new ServiceException.UnauthorizedException("Not authenticated");
+        }
 
         if (GitUtils.isSshUrl(gitSource.getRemote()) || GitUtils.isLocalUnixFileUrl(gitSource.getRemote())) {
             // Get committer info and credentials
             credential = UserSSHKeyManager.getOrCreate(user);
         } else {
-//            throw new ServiceException.UnauthorizedException("Editing only supported for repositories using SSH");
+            String repositoryUrl = gitSource.getRemote();
 
-            String apiUrl = gitSource.getRemote();
-
-            String credentialId = GitScm.ID + ":" + GitScm.normalizeServerUrl(apiUrl);
-            /*StandardUsernamePasswordCredentials */ credential =
-                CredentialsUtils.findCredential(credentialId,
-                                                StandardUsernamePasswordCredentials.class,
-                                                new BlueOceanDomainRequirement());
-
-            System.out.println("GitReadSaveRequest - credential id is " + credentialId); // TODO: RM
-            System.out.println("                   - credential is " + credential); // TODO: RM
-
-//            if (credential == null) {
-//                throw new ServiceException.UnauthorizedException("No credential found for " + credentialId + " for user " + user.getDisplayName());
-//            }
-//
-//            return credential;
-
+            String credentialId = GitScm.ID + ":" + GitScm.normalizeServerUrl(repositoryUrl);
+            credential = CredentialsUtils.findCredential(credentialId,
+                                                         StandardUsernamePasswordCredentials.class,
+                                                         new BlueOceanDomainRequirement());
         }
         return credential;
     }
