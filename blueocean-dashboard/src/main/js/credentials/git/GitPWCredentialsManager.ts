@@ -1,9 +1,9 @@
-import {action} from "mobx";
+import {action, observable} from "mobx";
 
 import {
     LoadError,
     SaveError,
-} from '../bitbucket/BbCredentialsApi'; // TODO: move these out of BB tree?
+} from '../bitbucket/BbCredentialsApi';
 
 import {GitPWCredentialsApi} from './GitPWCredentialsApi';
 
@@ -22,15 +22,15 @@ export enum ManagerState {
     PENDING_VALIDATION,
 }
 
-// TODO: Docs
-// TODO: Unit tests
+/**
+ * Acts as a mobx store and api intermediary on behalf of GitCredentialsPickerPassword
+ */
 export class GitPWCredentialsManager {
+    // TODO: Unit tests
 
     repositoryUrl?: string;
     branch: string = 'master';
-    pendingValidation: boolean = false; // TODO: replace with enum
-    // stateId: BbCredentialsState;  // TODO: replace with enum
-    state: ManagerState;
+    @observable state: ManagerState = ManagerState.PENDING_LOADING_CREDS;
 
     _api: GitPWCredentialsApi;
 
@@ -53,49 +53,37 @@ export class GitPWCredentialsManager {
         return this._api
             .findExistingCredential(this.repositoryUrl)
             .then(...delayBoth(MIN_DELAY))
-            .catch(error => this._findExistingCredentialFailure(error));
-    }
-
-    @action
-    _findExistingCredentialFailure(error) {
-        if (error.type === LoadError.TOKEN_NOT_FOUND) {
-            this.state = ManagerState.NEW_REQUIRED;
-        } else if (error.type === LoadError.TOKEN_INVALID) {
-            this.state = ManagerState.INVALID_CREDENTIAL;
-        } else if (error.type === LoadError.TOKEN_REVOKED) {
-            this.state = ManagerState.REVOKED_CREDENTIAL;
-        } else {
-            this.state = ManagerState.UNEXPECTED_ERROR_CREDENTIAL;
-        }
+            .catch(action((error: any) => {
+                if (error.type === LoadError.TOKEN_NOT_FOUND) {
+                    this.state = ManagerState.NEW_REQUIRED;
+                } else if (error.type === LoadError.TOKEN_INVALID) {
+                    this.state = ManagerState.INVALID_CREDENTIAL;
+                } else if (error.type === LoadError.TOKEN_REVOKED) {
+                    this.state = ManagerState.REVOKED_CREDENTIAL;
+                } else {
+                    this.state = ManagerState.UNEXPECTED_ERROR_CREDENTIAL;
+                }
+            }));
     }
 
     @action
     createCredential(userName, password, requirePush: boolean) {
-        this.pendingValidation = true;
+        this.state = ManagerState.PENDING_VALIDATION;
 
         return this._api
             .createCredential(this.repositoryUrl, userName, password, this.branch, requirePush)
             .then(...delayBoth(MIN_DELAY))
-            .then(response => this._createCredentialSuccess(response))
-            .catch(error => this._onCreateCredentialFailure(error));
-    }
-
-    @action
-    _createCredentialSuccess(ignored) {
-        this.pendingValidation = false;
-        this.state = ManagerState.SAVE_SUCCESS;
-
-        return this.findExistingCredential();
-    }
-
-    @action
-    _onCreateCredentialFailure(error) {
-        this.pendingValidation = false;
-
-        if (error.type === SaveError.INVALID_CREDENTIAL) {
-            this.state = ManagerState.INVALID_CREDENTIAL;
-        } else {
-            throw error;
-        }
+            .then(action(() => {
+                this.state = ManagerState.SAVE_SUCCESS;
+                return this.findExistingCredential(); // Because create service doesn't return the new id
+            }))
+            .catch(action((error: any) => {
+                if (error.type === SaveError.INVALID_CREDENTIAL) {
+                    this.state = ManagerState.INVALID_CREDENTIAL;
+                } else {
+                    this.state = ManagerState.UNEXPECTED_ERROR_CREDENTIAL;
+                    throw error;
+                }
+            }));
     }
 }

@@ -43,6 +43,16 @@ enum RadioOption {
 
 const radioOptions = Object.values(RadioOption);
 
+function getErrorMessage(state: ManagerState) {
+    if (state === ManagerState.INVALID_CREDENTIAL) {
+        return t('creation.git.create_credential.invalid_username_password');
+    } else if (state === ManagerState.REVOKED_CREDENTIAL) {
+        return t('creation.git.create_credential.revoked_credential');
+    } else if (state === ManagerState.UNEXPECTED_ERROR_CREDENTIAL) {
+        return t('creation.git.create_credential.unexpected_error');
+    }
+    return null;
+}
 
 /**
  * Component to handle lookup / creation of username+password credentials for git repositories over http(s)
@@ -140,17 +150,6 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
             });
     }
 
-    _getErrorMessage(state: ManagerState) {
-        if (state === ManagerState.INVALID_CREDENTIAL) {
-            return t('creation.git.create_credential.invalid_username_password');
-        } else if (state === ManagerState.REVOKED_CREDENTIAL) {
-            return t('creation.git.create_credential.revoked_credential');
-        } else if (state === ManagerState.UNEXPECTED_ERROR_CREDENTIAL) {
-            return t('creation.git.create_credential.unexpected_error');
-        }
-        return null;
-    }
-
     _performValidation() {
         let result = true;
         if (!this.state.usernameValue) {
@@ -232,8 +231,8 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
         }
 
         const managerState: ManagerState = this.credentialsManager.state;
-        const errorMessage = this._getErrorMessage(managerState);
-        const isPendingValidation = this.credentialsManager.pendingValidation;
+        const errorMessage = getErrorMessage(managerState);
+        const isPendingValidation = managerState == ManagerState.PENDING_VALIDATION;
 
         const connectButtonStatus = {result: null as string | null};
 
