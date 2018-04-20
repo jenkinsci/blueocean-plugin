@@ -19,6 +19,7 @@ export const propTypes = {
             'TextParameterDefinition',
             'StringParameterDefinition',
             'PasswordParameterDefinition',
+            'WHideParameterDefinition',
         ]),
     }),
 };

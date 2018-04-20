@@ -4,7 +4,8 @@ import { Choice } from './components/Choice';
 import { String } from './components/String';
 import { Text } from './components/Text';
 import { Password } from './components/Password';
-export { Boolean, Choice, String, Text, Password };
+import { Hidden } from './components/Hidden';
+export { Boolean, Choice, String, Text, Password, Hidden };
 // Renderer
 export { ParametersRender } from './renderer/ParametersRender';
 export { DebugRender } from './renderer/DebugRender';
@@ -23,6 +24,7 @@ export const supportedInputTypesMapping = {
     TextParameterDefinition: Text,
     StringParameterDefinition: String,
     PasswordParameterDefinition: Password,
+    WHideParameterDefinition: Hidden,
 };
 /**
  * all input types that we know of
