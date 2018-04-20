@@ -27,12 +27,11 @@ interface Props {
 }
 
 interface State {
-    loading: boolean,
     usernameValue: string | null,
     usernameErrorMsg: string | null,
     passwordValue: string | null,
     passwordErrorMsg: string | null,
-    existingCredential?: Credential,
+    existingCredential?: Credential, // TODO: Replace with manager state!
     selectedRadio: RadioOption
 }
 
@@ -67,7 +66,6 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
         this.credentialsManager = new GitPWCredentialsManager();
 
         this.state = {
-            loading: false,
             usernameValue: null,
             usernameErrorMsg: null,
             passwordValue: null,
@@ -77,11 +75,6 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
     }
 
     componentWillMount() {
-
-        this.setState(state => ({
-            loading: true,
-        }));
-
         if (this.props.onStatus) {
             this.props.onStatus('promptLoading');
         }
@@ -94,7 +87,6 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
 
         if (existingFailed) {
             this.setState(state=> ({
-                loading:false,
                 existingCredential: undefined
             }));
 
@@ -106,7 +98,6 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
             credentialsManager.findExistingCredential()
                 .then(credential => {
                     const newState: any = {
-                        loading: false,
                         existingCredential: credential,
                     };
 
@@ -138,6 +129,9 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
 
         this.credentialsManager
             .createCredential(this.state.usernameValue, this.state.passwordValue, !!this.props.requirePush)
+            .catch(error => {
+                return undefined; // Error details handled by manager state
+            })
             .then(credential => {
                 this.setState({
                     existingCredential: credential,
@@ -145,9 +139,10 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
                 });
 
                 if (this.props.onComplete) {
+                    // Notify even if credential undefined, so owner knows "unselected"
                     this.props.onComplete(credential, 'userSelected');
                 }
-            });
+            })
     }
 
     _performValidation() {
@@ -226,11 +221,12 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
     };
 
     render() {
-        if (this.state.loading) {
+        const managerState: ManagerState = this.credentialsManager.state;
+
+        if (managerState === ManagerState.PENDING_LOADING_CREDS) {
             return null;
         }
 
-        const managerState: ManagerState = this.credentialsManager.state;
         const errorMessage = getErrorMessage(managerState);
         const isPendingValidation = managerState == ManagerState.PENDING_VALIDATION;
 

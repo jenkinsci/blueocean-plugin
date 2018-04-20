@@ -13,10 +13,15 @@ import {
     SaveError,
 } from '../bitbucket/BbCredentialsApi';
 
+export interface GitPWCredentialsApiPublic {
+    findExistingCredential(repositoryUrl);
+    createCredential(repositoryUrl, userName, password, branchName, requirePush);
+}
+
 /**
  * Api class to interact with GitScm class when working with username+password credentials for http(s) repos
  */
-export class GitPWCredentialsApi {
+export class GitPWCredentialsApi implements GitPWCredentialsApiPublic {
 
     _fetch: Function;
     organization: string;
@@ -54,10 +59,10 @@ export class GitPWCredentialsApi {
             throw new TypedError(LoadError.TOKEN_NOT_FOUND);
         }
 
-        return this.getCredential(credentialId);
+        return this._getCredential(credentialId);
     }
 
-    getCredential(credentialId) {
+    _getCredential(credentialId) {
         const orgUrl = UrlBuilder.buildRestUrl(this.organization);
         const credentialUrl = `${orgUrl}credentials/user/domains/blueocean-git-domain/credentials/${encodeURIComponent(credentialId)}/`;
 
@@ -104,5 +109,6 @@ export class GitPWCredentialsApi {
                 throw possibleError.populate(SaveError.UNKNOWN_ERROR, error);
             });
     }
-
 }
+
+
