@@ -326,7 +326,21 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public Links getLinks() {
-        return super.getLinks().add("parent", parent.getLink());
+        Links links = super.getLinks().add("parent", parent.getLink());
+        Run nextRun = run.getNextBuild();
+        Run prevRun = run.getPreviousBuild();
+
+        if(nextRun != null) {
+            Link nextRunLink = organization.getLink().rel(String.format("pipelines/%s/runs/%s", run.getParent().getName(), nextRun.getId()));
+            links.add("nextRun", nextRunLink);
+        }
+
+        if(prevRun != null) {
+            Link prevRunLink = organization.getLink().rel(String.format("pipelines/%s/runs/%s", run.getParent().getName(), prevRun.getId()));
+            links.add("prevRun", prevRunLink);
+        }
+
+        return links;
     }
 
     public static class BlueCauseImpl extends BlueCause {

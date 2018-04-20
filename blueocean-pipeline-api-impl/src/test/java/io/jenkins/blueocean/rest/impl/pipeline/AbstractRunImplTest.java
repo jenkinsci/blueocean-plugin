@@ -238,6 +238,37 @@ public class AbstractRunImplTest extends PipelineBaseTest {
         Assert.assertEquals("Waiting for next available executor", latestRun.get("causeOfBlockage"));
     }
 
+    @Test
+    public void pipelineRunIncludesNextPrevLinks() throws Exception {
+        WorkflowJob p = createWorkflowJobWithJenkinsfile(getClass(),"latestRunIncludesQueued.jenkinsfile");
+
+        // Ensure null before first run
+        Map pipeline = request().get(String.format("/organizations/jenkins/pipelines/%s/", p.getName())).build(Map.class);
+        Assert.assertNull(pipeline.get("latestRun"));
+
+        // Run until completed
+        Run r = p.scheduleBuild2(0).waitForStart();
+        j.waitForCompletion(r);
+
+        // Make the next runs queue
+        j.jenkins.setNumExecutors(0);
+
+        // Schedule another run so it goes in the queue
+        WorkflowRun r2 = p.scheduleBuild2(0).waitForStart();
+        j.waitForMessage("Still waiting to schedule task", r2);
+
+        // Get latest run for this pipeline
+        pipeline = request().get(String.format("/organizations/jenkins/pipelines/%s/", p.getName())).build(Map.class);
+        Map secondRun = (Map) pipeline.get("latestRun");
+        String prevRunUrl = ((Map)((Map)secondRun.get("_links")).get("prevRun")).get("href").toString();
+
+        //check the run id of the second run
+        Assert.assertEquals("2", secondRun.get("id"));
+
+        //check that id in previous run url is 1
+        Assert.assertEquals("1", prevRunUrl.substring(prevRunUrl.length() - 2, prevRunUrl.length() - 1));
+    }
+
     @Issue("JENKINS-44981")
     @Test
     public void queuedSingleNode() throws Exception {
