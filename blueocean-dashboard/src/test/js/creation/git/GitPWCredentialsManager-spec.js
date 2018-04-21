@@ -117,7 +117,7 @@ describe('GitPWCredentialsManager', () => {
 
             return promise.catch(error => {
                 expect(error).toBeDefined();
-                expect(error.__TypedError).toBeTruthy();
+                expect(error).toBeInstanceOf(TypedError);
                 expect(manager.state).toBe(ManagerState.INVALID_CREDENTIAL);
                 expect(apiMock.capturedCreateParams).toMatchObject({
                     repositoryUrl: repoUrl,
@@ -143,7 +143,7 @@ describe('GitPWCredentialsManager', () => {
 
             return promise.catch(error => {
                 expect(error).toBeDefined();
-                expect(error.__TypedError).toBeTruthy();
+                expect(error).toBeInstanceOf(TypedError);
                 expect(manager.state).toBe(ManagerState.UNEXPECTED_ERROR_CREDENTIAL);
                 expect(apiMock.capturedCreateParams).toMatchObject({
                     repositoryUrl: repoUrl,
