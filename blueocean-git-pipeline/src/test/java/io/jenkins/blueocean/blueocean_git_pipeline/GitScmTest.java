@@ -373,6 +373,22 @@ public class GitScmTest extends PipelineBaseTest {
     }
 
     @Test
+    public void shouldBePoliteAboutBadUrl() throws Exception {
+        User user = login();
+        String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
+        // Let's say the user has only started typing a url
+        String repoPath = scmPath + "?repositoryUrl=htt";
+
+        Map resp = new RequestBuilder(baseUrl)
+            .status(200)
+            .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .get(repoPath)
+            .build(Map.class);
+
+        assertEquals(null, resp.get("credentialId"));
+    }
+
+    @Test
     public void shouldCreateCredentialsWithDefaultId() throws Exception {
         User user = login();
 
@@ -408,6 +424,66 @@ public class GitScmTest extends PipelineBaseTest {
             .build(Map.class);
 
         assertEquals("git:" + HTTPS_GITHUB_PUBLIC, resp2.get("credentialId"));
+    }
+
+    /**
+     * Check that we get an error when using an invalid URL
+     * @throws Exception
+     */
+    @Test
+    public void shouldNotCreateCredentialsForBadUrl1() throws Exception {
+        User user = login();
+
+        String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
+
+        // First create a credential
+        String scmValidatePath = scmPath + "validate";
+
+        // We're relying on github letting you do a git-ls for repos with bad creds so long as they're public
+        Map params = ImmutableMap.of(
+            "userName", "someguy",
+            "password", "password",
+            "repositoryUrl", "htt"
+        );
+
+        Map resp = new RequestBuilder(baseUrl)
+            .status(400)
+            .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .data(params)
+            .put(scmValidatePath)
+            .build(Map.class);
+
+        assertTrue(resp.get("message").toString().toLowerCase().contains("invalid url"));
+    }
+
+    /**
+     * Check that we get an error when using a valid but non-answering URL
+     * @throws Exception
+     */
+    @Test
+    public void shouldNotCreateCredentialsForBadUrl2() throws Exception {
+        User user = login();
+
+        String scmPath = "/organizations/" + getOrgName() + "/scm/git/";
+
+        // First create a credential
+        String scmValidatePath = scmPath + "validate";
+
+        // We're relying on github letting you do a git-ls for repos with bad creds so long as they're public
+        Map params = ImmutableMap.of(
+            "userName", "someguy",
+            "password", "password",
+            "repositoryUrl", "http://example.org/has/no/repos.git"
+        );
+
+        Map resp = new RequestBuilder(baseUrl)
+            .status(428)
+            .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
+            .data(params)
+            .put(scmValidatePath)
+            .build(Map.class);
+
+        assertTrue(resp.get("message").toString().toLowerCase().contains("url unreachable"));
     }
 
     private String createMbp(User user) throws UnirestException {

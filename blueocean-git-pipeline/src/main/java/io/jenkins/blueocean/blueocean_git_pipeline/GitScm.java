@@ -235,8 +235,15 @@ public class GitScm extends AbstractScm {
 
         if (request.has("credentialId")) {
             credentialId = request.getString("credentialId");
-        } else {
+        }
+
+        if (credentialId == null) {
             credentialId = makeCredentialId(repositoryUrl);
+        }
+
+        if (credentialId == null) {
+            // Still null? Must be a bad repoURL
+            throw new ServiceException.BadRequestException("Invalid URL \"" + repositoryUrl + "\"");
         }
 
         // --[ Load or create credentials ]--------------------------------------------------------------------
@@ -278,7 +285,13 @@ public class GitScm extends AbstractScm {
                 }
             }
         } catch (Exception e) {
-            return HttpResponses.errorWithoutStack(ServiceException.PRECONDITION_REQUIRED, e.getMessage());
+            String message = e.getMessage();
+
+            if (message.contains("TransportException")) {
+                message = "Repository URL unreachable: " + repositoryUrl;
+            }
+
+            throw new ServiceException.PreconditionRequired(message);
         }
 
         return HttpResponses.okJSON();
