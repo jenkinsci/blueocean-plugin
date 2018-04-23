@@ -34,17 +34,18 @@ export class GitPWCredentialsManager {
 
     _api: GitPWCredentialsApi;
 
-    constructor() {
+    constructor(api?: GitPWCredentialsApi) {
+        this._api = api || new GitPWCredentialsApi();
     }
 
-    configure(repositoryUrl: string, branch?: string, api?: GitPWCredentialsApi) {
+    configure(repositoryUrl: string, branch: string | undefined, originalFailed: boolean) {
         this.repositoryUrl = repositoryUrl;
 
         if (typeof branch === 'string') {
             this.branch = branch;
+        } else {
+            this.branch = 'master';
         }
-
-        this._api = api || new GitPWCredentialsApi();
     }
 
     @action
@@ -53,11 +54,12 @@ export class GitPWCredentialsManager {
         return this._api
             .findExistingCredential(this.repositoryUrl)
             .then(...delayBoth(MIN_DELAY))
-            .then(credential => {
+            .then(action(credential => {
                 this.state = ManagerState.EXISTING_FOUND;
                 return credential;
-            })
+            }))
             .catch(action((error: any) => {
+                console.log('manager findExistingCredential error', error); // TODO: RM
                 if (error.type === LoadError.TOKEN_NOT_FOUND) {
                     this.state = ManagerState.NEW_REQUIRED;
                 } else if (error.type === LoadError.TOKEN_INVALID) {
@@ -86,11 +88,12 @@ export class GitPWCredentialsManager {
                 // the state to change until it's done
                 return this._api.findExistingCredential(repositoryUrl);
             }))
-            .then(credential => {
+            .then(action(credential => {
                 this.state = ManagerState.SAVE_SUCCESS;
                 return credential
-            })
+            }))
             .catch(action((error: any) => {
+                console.log('manager createCredential error', error); // TODO: RM
                 if (error.type === SaveError.INVALID_CREDENTIAL) {
                     this.state = ManagerState.INVALID_CREDENTIAL;
                 } else {

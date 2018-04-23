@@ -72,6 +72,9 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
             passwordErrorMsg: null,
             selectedRadio: RadioOption.USE_EXISTING,
         };
+
+        const {repositoryUrl, branch, existingFailed = false} = this.props;
+        this._repositoryChanged(repositoryUrl, branch, existingFailed);
     }
 
     componentWillMount() {
@@ -80,13 +83,24 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
         }
     }
 
-    componentDidMount() {
-        const {repositoryUrl, branch, existingFailed, onStatus} = this.props;
+    componentWillReceiveProps(nextProps: Props) {
+        const {repositoryUrl, branch, existingFailed = false} = nextProps;
+        if (branch !== this.props.branch
+            || repositoryUrl !== this.props.repositoryUrl
+            || existingFailed !== this.props.existingFailed) {
+            this._repositoryChanged(repositoryUrl, branch, existingFailed);
+        }
+    }
+
+    _repositoryChanged(repositoryUrl: string, branch: string | undefined, existingFailed: boolean) {
+
+        const {onStatus} = this.props;
         const credentialsManager = this.credentialsManager;
-        credentialsManager.configure(repositoryUrl, branch);
+
+        credentialsManager.configure(repositoryUrl, branch, existingFailed);
 
         if (existingFailed) {
-            this.setState(state=> ({
+            this.setState(state => ({
                 existingCredential: undefined
             }));
 
@@ -266,7 +280,7 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
                         <PasswordInput disabled={disableForm} className="text-password" onChange={val => this._passwordChange(val)} />
                     </FormElement>
                 </FormElement>
-                <Button disabled={disableForm} className="button-create-credental" status={connectButtonStatus} onClick={() => this._createCredential()}>
+                <Button disabled={disableForm} className="button-create-credential" status={connectButtonStatus} onClick={() => this._createCredential()}>
                     {labelButton}
                 </Button>
             </div>

@@ -19,7 +19,7 @@ describe('GitPWCredentialsManager', () => {
 
     beforeEach(() => {
         apiMock = new GitPWCredentialsApiMock();
-        manager = new GitPWCredentialsManager();
+        manager = new GitPWCredentialsManager(apiMock);
         manager.configure(repoUrl, 'master', apiMock);
     });
 
