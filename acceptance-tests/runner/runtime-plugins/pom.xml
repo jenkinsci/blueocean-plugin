@@ -7,7 +7,7 @@
   <version>2.0-SNAPSHOT</version>
   <packaging>pom</packaging>
 
-  <name>Blue Ocean Parent</name>
+  <name>Blue Ocean ATH Parent</name>
 
   <modules>
     <module>fake-security-realm-plugin</module>

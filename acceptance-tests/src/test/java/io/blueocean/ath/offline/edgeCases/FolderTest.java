@@ -1,5 +1,6 @@
 package io.blueocean.ath.offline.edgeCases;
 
+import com.mashape.unirest.http.exceptions.UnirestException;
 import com.offbytwo.jenkins.model.FolderJob;
 import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.BaseUrl;
@@ -18,6 +19,8 @@ import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import io.blueocean.ath.pages.blue.RunDetailsTestsPage;
 import io.blueocean.ath.sse.SSEClientRule;
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -34,7 +37,7 @@ import static org.junit.Assert.assertTrue;
 public class FolderTest extends BlueOceanAcceptanceTest {
     private Logger logger = Logger.getLogger(FolderTest.class);
 
-    private Folder folder = Folder.folders("a folder", "bfolder", "cfolder");
+    private static final Folder folder = Folder.folders("a folder", "bfolder", "cfolder");
 
     @Rule
     @Inject
@@ -80,34 +83,40 @@ public class FolderTest extends BlueOceanAcceptanceTest {
     }
 
     @Test
-    public void foldersTest() throws IOException, GitAPIException {
+    public void foldersTest() throws IOException, GitAPIException, UnirestException, InterruptedException {
         String pipelineName = "Sohn";
 
         Folder folder = Folder.folders("firstFolder","三百", "ñba","七");
-        FolderJob folderJob = jobApi.createFolders(folder, false);
+        FolderJob folderJob = jobApi.createFolders(folder, true);
         jobApi.createFreeStyleJob(folderJob, pipelineName, "echo 'hello world!'");
-        driver.get(base);
+        driver.get(folderJob.getUrl()+"/job/"+pipelineName+"/");
         driver.findElement(By.xpath("//a[contains(@class, 'task-link') and text()='Open Blue Ocean']")).click();
-        driver.findElement(By.cssSelector(".PlaceholderContent.NoRuns"));
-        assertTrue(driver.getCurrentUrl().endsWith("/blue/organizations/jenkins/firstFolder%2F三百%2Fñba%2F七%2FSohn/activity"));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".PlaceholderContent.NoRuns")));
+        String activityPage = driver.getCurrentUrl();
+        assertTrue(activityPage.endsWith(getNestedPipelinePath("firstFolder") +
+                "Sohn/activity"));
     }
 
     @Test
-    public void anotherFoldersTest() throws IOException, GitAPIException {
+    public void anotherFoldersTest() throws IOException, GitAPIException, UnirestException {
         Folder anotherFolder =  Folder.folders("anotherFolder", "三百", "ñba", "七");
-        jobApi.createFolders(anotherFolder, true);
+        FolderJob folderJob = jobApi.createFolders(anotherFolder, true);
 
         git.writeJenkinsFile(loadJenkinsFile());
+        git.writeFile("TEST-failure.TestThisWillFailAbunch.xml", loadResource("/TEST-failure.TestThisWillFailAbunch.xml"));
+        git.writeFile("TEST-failure.TestThisWontFail.xml", loadResource("/TEST-failure.TestThisWontFail.xml"));
         git.addAll();
         git.commit("First");
         git.createBranch("feature/1");
 
-        MultiBranchPipeline p = mbpFactory.pipeline(folder, "NestedFolderTest_multiBranchFolderTest").createPipeline(git);
+        String pipelineName = "NestedFolderTest_multiBranchFolderTest";
+        MultiBranchPipeline p = mbpFactory.pipeline(anotherFolder, pipelineName)
+                .createPipeline(folderJob, git);
         client.untilEvents(p.buildsFinished);
 
         //check dashboard
         driver.get(base+"/blue/pipelines/");
-        driver.findElement(By.cssSelector(".Header-topNav nav a[href="+base+"/blue/pipelines/]"));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".Header-topNav nav a[href=\"/blue/pipelines\"]")));
         driver.findElement(By.cssSelector(".pipelines-table"));
         driver.findElement(By.cssSelector(".Site-footer"));
 
@@ -115,45 +124,54 @@ public class FolderTest extends BlueOceanAcceptanceTest {
 
         //check dashboard has 1 run
         ActivityPage activityPage = p.getActivityPage().open();
-        activityPage.testNumberRunsComplete(1);
+        activityPage.testNumberRunsComplete(1, "unstable");
 
         //validate run details
         //JENKINS-36616 - Unable to load multibranch projects in a folder
         RunDetailsPipelinePage runDetails = p.getRunDetailsPipelinePage();
-        runDetails.open("feature/1", 1);
+        runDetails.open("feature%2F1", 1);
         assertTrue(runDetails.checkTitle("feature/1"));
         assertEquals(0, runDetails.getDriver().findElements(By.className("a.authors")).size());
         runDetails.click(".ResultPageHeader-close");
+        wait.tinySleep(1000);
+        assertTrue(driver.findElements(By.cssSelector(".RunDetails-content")).size() == 0);
+
 
         //after closing we should be back to activity page
-        assertEquals(base+"/blue/organizations/jenkins/blueocean/activity", driver.getCurrentUrl());
+        assertEquals(base+getNestedPipelinePath("anotherFolder") +
+                pipelineName+"/activity", driver.getCurrentUrl());
 
         //validate artifacts page
         RunDetailsArtifactsPage runDetailsArtifactsPage = p.getRunDetailsArtifactsPage();
         runDetailsArtifactsPage.open("feature/1", 1);
-        runDetailsArtifactsPage.checkNumberOfArtifacts(1);
+        runDetailsArtifactsPage.checkNumberOfArtifacts(3);
 
         //Check whether the test tab shows failing tests
         //@see {@link https://issues.jenkins-ci.org/browse/JENKINS-36674|JENKINS-36674} Tests are not being reported
         RunDetailsTestsPage testPage = p.getRunDetailsTestsPage();
-        testPage.open("feature-1", 1);
-        testPage.checkResults("failure", 2);
+        testPage.open("feature%2F1", 1);
+        testPage.checkResults("failure", 3);
 
         //Jobs can be started from branch tab. - RUN
         //@see {@link https://issues.jenkins-ci.org/browse/JENKINS-36615|JENKINS-36615} the multibranch project has the branch 'feature/1'
+
+        activityPage = p.getActivityPage().open();
         BranchPage branchPage = activityPage.clickBranchTab();
-        wait.until(branchPage.find("a.run-button")).click();
-        runDetails.open("feature/1", 2);
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("a.run-button")));
+
+        driver.findElement(By.cssSelector("a.run-button")).click();
+        runDetails.open("feature%2F1", 2);
         client.untilEvents(p.buildsFinished);
         activityPage.open();
-        activityPage.testNumberRunsComplete(2);
+        activityPage.testNumberRunsComplete(2, "unstable");
 
         // test open blueocean from classic - run details
         // make sure the open blue ocean button works. In this case,
         // it should bring the browser to the run details page for the first run
-        driver.get(base+"anotherFolder/job/三百/job/ñba/job/七/job/Sohn/job/feature%252F1/1/");
+        driver.get(base+"/job/anotherFolder/job/三百/job/ñba/job/七/job/"+pipelineName+"/job/feature%252F1/1/");
         wait.until(By.xpath("//a[contains(@class, 'task-link') and text()='Open Blue Ocean']")).click();
-        assertTrue(driver.getCurrentUrl().endsWith("/blue/organizations/jenkins/anotherFolder%2F三百%2Fñba%2F七%2FSohn/detail/feature%2F1/1/pipeline"));
+        assertEquals(driver.getCurrentUrl(), base+getNestedPipelinePath("anotherFolder") +
+                pipelineName+"/detail/feature%2F1/1/");
         wait.until(ExpectedConditions.or(
                 ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RunDetails-content .log-wrapper")),
                 ExpectedConditions.presenceOfElementLocated(By.cssSelector(".RunDetails-content .Steps .logConsole"))
@@ -162,11 +180,19 @@ public class FolderTest extends BlueOceanAcceptanceTest {
         // make sure the open blue ocean button works. In this case,
         // it should bring the browser to the main top-level pipelines page.
         // See https://issues.jenkins-ci.org/browse/JENKINS-39842
-        driver.get(base+"job/anotherFolder/job/三百/job/ñba");
+        driver.get(base+"/job/anotherFolder/job/三百/job/ñba");
         wait.until(By.xpath("//a[contains(@class, 'task-link') and text()='Open Blue Ocean']")).click();
-        assertTrue(driver.getCurrentUrl().endsWith("/blue/pipelines"));
-        wait.until(By.cssSelector(".Header-topNav nav a[href="+base+"/blue/pipelines/]"));
-        wait.until(driver.findElement(By.cssSelector(".pipelines-table")));
-        wait.until(driver.findElement(By.cssSelector(".Site-footer")));
+
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector(".Header-topNav nav a[href=\"/blue/pipelines\"]")));
+        driver.findElement(By.cssSelector(".pipelines-table"));
+        driver.findElement(By.cssSelector(".Site-footer"));
+        assertTrue(driver.getCurrentUrl().endsWith("/pipelines"));
+    }
+
+    private String getNestedPipelinePath(String rootFolder) throws UnsupportedEncodingException {
+        return "/blue/organizations/jenkins/"+rootFolder+"%2F"
+                + URLEncoder.encode("三百", "UTF-8")+ "%2F"
+                + URLEncoder.encode("ñba", "UTF-8")+ "%2F"
+                + URLEncoder.encode("七", "UTF-8")+ "%2F";
     }
 }

@@ -86,7 +86,8 @@ public class RunDetailsPipelinePage implements WebDriverMixin {
     }
 
     public boolean checkTitle(String title){
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector(".ResultPageHeader-main")));
         WebElement element = driver.findElement(By.cssSelector(".ResultPageHeader-main"));
-        return element.getText().endsWith(title);
+        return element.getText().contains(title);
     }
 }
