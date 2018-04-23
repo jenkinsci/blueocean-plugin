@@ -156,7 +156,8 @@ public class GithubEditorTest {
         sseClient.clear();
         BranchPage branchPage = activityPage.clickBranchTab();
         branchPage.openEditor("master");
-        editorPage.addStageToPipeline(pipeline, newBranchName, newStageName);
+        editorPage.addStageToPipeline(pipeline, newStageName);
+        editorPage.saveBranch(newBranchName);
         activityPage.checkUrl();
         activityPage.getRunRowForBranch(newBranchName);
         sseClient.untilEvents(pipeline.buildsFinished);
