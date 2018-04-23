@@ -47,8 +47,8 @@ node() {
           archive '*/target/jest-coverage/**/*'
         }
 
-        stage('ATH - Jenkins 2.73.3') {
-          sh "cd acceptance-tests && ./run.sh -v=2.73.3 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+        stage('ATH - Jenkins 2.107.2') {
+          sh "cd acceptance-tests && ./run.sh -v=2.107.2 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
           junit 'acceptance-tests/target/surefire-reports/*.xml'
           archive 'acceptance-tests/target/screenshots/**/*'
         }
@@ -60,6 +60,10 @@ node() {
           }
           stage('ATH - Jenkins 2.73.3') {
             sh "cd acceptance-tests && ./run.sh -v=2.73.3 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+            junit 'acceptance-tests/target/surefire-reports/*.xml'
+          }
+          stage('ATH - Jenkins 2.107.2') {
+            sh "cd acceptance-tests && ./run.sh -v=2.107.2 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
             junit 'acceptance-tests/target/surefire-reports/*.xml'
           }
         }
