@@ -1,5 +1,6 @@
 import * as React from 'react';
 import {Component} from 'react';
+import {observer} from 'mobx-react';
 import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
 import {GitPWCredentialsManager, ManagerState} from './GitPWCredentialsManager';
 import * as debounce from 'lodash.debounce';
@@ -53,6 +54,7 @@ function getErrorMessage(state: ManagerState) {
 /**
  * Component to handle lookup / creation of username+password credentials for git repositories over http(s)
  */
+@observer
 export class GitCredentialsPickerPassword extends Component<Props, State> {
 
     credentialsManager: GitPWCredentialsManager;
@@ -98,7 +100,7 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
         }
     }
 
-    _repositoryChanged(repositoryUrl: string, branch: string | undefined, existingFailed: boolean) {
+    _repositoryChanged = debounce((repositoryUrl: string, branch: string | undefined, existingFailed: boolean) => {
 
         const {onStatus, onComplete} = this.props;
         const credentialsManager = this.credentialsManager;
@@ -120,17 +122,13 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
                     }
                 });
         }
-    }
+    }, 500, {leading:true});
 
     _createCredential() {
         const valid = this._performValidation();
         if (!valid) {
             return;
         }
-
-        // this.setState({
-        //     existingCredential: undefined
-        // });
 
         this.credentialsManager
             .createCredential(this.state.usernameValue, this.state.passwordValue, !!this.props.requirePush)
@@ -139,7 +137,6 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
             })
             .then(credential => {
                 this.setState({
-                    // existingCredential: credential,
                     selectedRadio: RadioOption.USE_EXISTING
                 });
 

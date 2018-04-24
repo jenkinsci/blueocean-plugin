@@ -57,7 +57,13 @@ export class GitPWCredentialsManager {
         this.state = ManagerState.PENDING_LOADING_CREDS;
         return this.api
             .findExistingCredential(this.repositoryUrl)
+            .then(r => {
+                return r;
+            })
             .then(...delayBoth(MIN_DELAY))
+            .then(r => {
+                return r;
+            })
             .then(action(credential => {
                 this.state = ManagerState.EXISTING_FOUND;
                 this.existingCredential = credential;
