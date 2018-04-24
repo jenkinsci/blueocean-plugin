@@ -71,14 +71,6 @@ public class BranchPage implements WebDriverMixin {
     public BranchPage clickRunButton(String branch) {
         wait.click(By.cssSelector("div[data-branch='" + branch + "'] a.run-button"));
         logger.info("Clicked run button of branch " + branch);
-        // return activityPageFactory.withPipeline(pipeline).checkUrl(branch);
-        return this;
-    }
-
-    public BranchPage open() {
-        driver.get(pipeline.getUrl() + "/branches");
-        checkUrl();
-        logger.info("Opened branch page for " + pipeline);
         return this;
     }
 
@@ -88,6 +80,12 @@ public class BranchPage implements WebDriverMixin {
         return this;
     }
 
+    public BranchPage open() {
+        driver.get(pipeline.getUrl() + "/branches");
+        checkUrl();
+        logger.info("Opened branch page for " + pipeline);
+        return this;
+    }
 
     public EditorPage openEditor(String branch) {
         wait.until(By.cssSelector("div[data-branch='" + branch + "'] a.pipeline-editor-link")).click();

@@ -17,7 +17,7 @@ pipeline {
     stage('take a big nap') {
       steps {
         echo 'We need this to take a while so the Stop button is clickable'
-        sleep 5
+        sleep 3
       }
     }
   }
