@@ -122,7 +122,7 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
                     }
                 });
         }
-    }, 500, {leading:true});
+    }, 500);
 
     _createCredential() {
         const valid = this._performValidation();
