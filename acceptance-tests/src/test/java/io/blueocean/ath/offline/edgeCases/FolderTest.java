@@ -79,7 +79,9 @@ public class FolderTest extends BlueOceanAcceptanceTest {
 
         MultiBranchPipeline p = mbpFactory.pipeline(folder, pipelineName).createPipeline(git);
         client.untilEvents(p.buildsFinished);
-        p.getActivityPage().open();
+        ActivityPage activityPage = p.getActivityPage();
+        activityPage.open();
+        activityPage.checkBasicDomElements();
     }
 
     @Test
@@ -95,6 +97,17 @@ public class FolderTest extends BlueOceanAcceptanceTest {
         String activityPage = driver.getCurrentUrl();
         assertTrue(activityPage.endsWith(getNestedPipelinePath("firstFolder") +
                 "Sohn/activity"));
+        wait.until(By.cssSelector("nav a.activity"));
+        wait.until(By.cssSelector("nav a.branches"));
+        wait.until(By.cssSelector("nav a.pr"));
+        wait.until(By.cssSelector("a.main_exit_to_app"));
+        driver.findElement(By.cssSelector("a.main_exit_to_app")).click();
+        wait.until(By.xpath("//a[contains(@class, 'task-link') and text()='Open Blue Ocean']"));
+        assertEquals(base+"/job/firstFolder/job/"+
+                URLEncoder.encode("三百", "UTF-8")
+                +"/job/"+URLEncoder.encode("ñba", "UTF-8")
+                +"/job/"+URLEncoder.encode("七", "UTF-8")
+                +"/job/Sohn/", driver.getCurrentUrl());
     }
 
     @Test
