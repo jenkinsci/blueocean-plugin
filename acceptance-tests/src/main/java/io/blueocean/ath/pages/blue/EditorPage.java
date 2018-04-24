@@ -37,12 +37,11 @@ public class EditorPage {
      * with two steps in it.
      *
      * @param pipelineToEdit the AbstractPipeline object we're working with
-     * @param newBranch the name of the new branch we'll save to
      * @param newStageName the name of the new stage we'll create
      */
-    public void addStageToPipeline(MultiBranchPipeline pipelineToEdit, String newBranch, String newStageName) {
+    public void addStageToPipeline(MultiBranchPipeline pipelineToEdit, String newStageName) {
         pipeline = pipelineToEdit;
-        logger.info("Editing pipeline " + pipeline.getName() + ", saving to branch " + newBranch + ", with new stage " + newStageName);
+        logger.info("Editing pipeline " + pipeline.getName() + "to add a new stage " + newStageName);
         wait.click(By.id("pipeline-node-hittarget-3-add"));
         wait.sendKeys(By.cssSelector("input.stage-name-edit"),newStageName);
         logger.info("Adding a shell step");
@@ -56,18 +55,7 @@ public class EditorPage {
         wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"echo\"]"));
         wait.sendKeys(By.cssSelector("input.TextInput-control"),"Echo step added by ATH");
         wait.click(By.cssSelector("div.sheet.active a.back-from-sheet"));
-        logger.info("Stages added, about to save");
-        wait.click(By.xpath("//*[text()='Save']"));
-        wait.sendKeys(By.cssSelector("textarea[placeholder=\"What changed?\"]"),"We added a stage");
-        if(!Strings.isNullOrEmpty(newBranch)) {
-            wait.click(By.xpath("//*[text()='Commit to new branch']"));
-            wait.sendKeys(By.cssSelector("input[placeholder='my-new-branch']:enabled"),newBranch);
-            logger.info("Using branch " + newBranch);
-        } else {
-            logger.info("Using branch master");
-        }
-        wait.click(By.xpath("//*[text()=\"Save & run\"]"));
-        logger.info("Pipeline saved with edited stages in place");
+        logger.info("Stages added, ready to save");
     }
 
     /**
