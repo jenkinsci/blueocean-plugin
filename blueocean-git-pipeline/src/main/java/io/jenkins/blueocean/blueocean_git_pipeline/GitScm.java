@@ -286,12 +286,11 @@ public class GitScm extends AbstractScm {
             }
         } catch (Exception e) {
             String message = e.getMessage();
-
-            if (message.contains("TransportException")) {
-                message = "Repository URL unreachable: " + repositoryUrl;
+            if (message != null && message.contains("TransportException")) {
+                throw new ServiceException.PreconditionRequired("Repository URL unreachable: " + repositoryUrl);
             }
 
-            throw new ServiceException.PreconditionRequired(message);
+            return HttpResponses.errorWithoutStack(ServiceException.PRECONDITION_REQUIRED, message);
         }
 
         return HttpResponses.okJSON();
