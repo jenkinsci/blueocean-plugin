@@ -23,6 +23,8 @@ export enum ManagerState {
     PENDING_VALIDATION = 'PENDING_VALIDATION',
 }
 
+type Credential = any; // FIXME: canonical types in core-js
+
 /**
  * Acts as a mobx store and api intermediary on behalf of GitCredentialsPickerPassword
  */
@@ -30,15 +32,17 @@ export class GitPWCredentialsManager {
 
     repositoryUrl?: string;
     branch: string = 'master';
-    @observable state: ManagerState = ManagerState.PENDING_LOADING_CREDS;
 
-    _api: GitPWCredentialsApi;
+    @observable state: ManagerState = ManagerState.PENDING_LOADING_CREDS;
+    @observable existingCredential?: Credential;
+
+    private api: GitPWCredentialsApi;
 
     constructor(api?: GitPWCredentialsApi) {
-        this._api = api || new GitPWCredentialsApi();
+        this.api = api || new GitPWCredentialsApi();
     }
 
-    configure(repositoryUrl: string, branch: string | undefined, originalFailed: boolean) {
+    configure(repositoryUrl: string, branch?: string) {
         this.repositoryUrl = repositoryUrl;
 
         if (typeof branch === 'string') {
@@ -51,15 +55,15 @@ export class GitPWCredentialsManager {
     @action
     findExistingCredential() {
         this.state = ManagerState.PENDING_LOADING_CREDS;
-        return this._api
+        return this.api
             .findExistingCredential(this.repositoryUrl)
             .then(...delayBoth(MIN_DELAY))
             .then(action(credential => {
                 this.state = ManagerState.EXISTING_FOUND;
+                this.existingCredential = credential;
                 return credential;
             }))
             .catch(action((error: any) => {
-                console.log('manager findExistingCredential error', error); // TODO: RM
                 if (error.type === LoadError.TOKEN_NOT_FOUND) {
                     this.state = ManagerState.NEW_REQUIRED;
                 } else if (error.type === LoadError.TOKEN_INVALID) {
@@ -75,25 +79,26 @@ export class GitPWCredentialsManager {
     @action
     createCredential(userName, password, requirePush: boolean) {
         this.state = ManagerState.PENDING_VALIDATION;
+        this.existingCredential = undefined;
 
         const repositoryUrl = this.repositoryUrl;
         const branchName = this.branch;
 
-        return this._api
+        return this.api
             .createCredential(repositoryUrl, userName, password, branchName, requirePush)
             .then(...delayBoth(MIN_DELAY))
             .then(action(() => {
                 // Need to look up the existing credential because create service doesn't return the new id
                 // Need to use _api directly rather than this.findExistingCredential because we don't want
                 // the state to change until it's done
-                return this._api.findExistingCredential(repositoryUrl);
+                return this.api.findExistingCredential(repositoryUrl);
             }))
             .then(action(credential => {
                 this.state = ManagerState.SAVE_SUCCESS;
+                this.existingCredential = credential;
                 return credential
             }))
             .catch(action((error: any) => {
-                console.log('manager createCredential error', error); // TODO: RM
                 if (error.type === SaveError.INVALID_CREDENTIAL) {
                     this.state = ManagerState.INVALID_CREDENTIAL;
                 } else {

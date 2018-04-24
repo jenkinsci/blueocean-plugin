@@ -20,19 +20,21 @@ describe('GitPWCredentialsManager', () => {
     beforeEach(() => {
         apiMock = new GitPWCredentialsApiMock();
         manager = new GitPWCredentialsManager(apiMock);
-        manager.configure(repoUrl, 'master', apiMock);
+        manager.configure(repoUrl, 'master');
     });
 
     describe('findExistingCredential', () => {
 
         it('behaves when not found', () => {
-            expect.assertions(3);
+            expect.assertions(5);
 
             expect(manager.state).toBe(ManagerState.PENDING_LOADING_CREDS);
+            expect(manager.existingCredential).not.toBeDefined();
 
             return manager.findExistingCredential()
                 .then(credential => {
                     expect(manager.state).toBe(ManagerState.NEW_REQUIRED);
+                    expect(manager.existingCredential).not.toBeDefined();
                     expect(credential).not.toBeDefined();
                 });
         });
@@ -40,14 +42,17 @@ describe('GitPWCredentialsManager', () => {
         it('behaves when found', () => {
             apiMock.findExistingCredentialShouldSucceed = true;
 
-            expect.assertions(4);
+            expect.assertions(7);
             expect(manager.state).toBe(ManagerState.PENDING_LOADING_CREDS);
+            expect(manager.existingCredential).not.toBeDefined();
 
             return manager.findExistingCredential()
                 .then(credential => {
                     expect(manager.state).toBe(ManagerState.EXISTING_FOUND);
                     expect(credential).toBeDefined();
                     expect(credential.credentialId).toBe(apiMock.credentialId);
+                    expect(manager.existingCredential).toBeDefined();
+                    expect(manager.existingCredential.credentialId).toBe(apiMock.credentialId);
                 });
         });
     });
@@ -57,18 +62,22 @@ describe('GitPWCredentialsManager', () => {
         it('updates state when create succeeds', () => {
             apiMock.findExistingCredentialShouldSucceed = true;
 
-            expect.assertions(6);
+            expect.assertions(10);
 
             expect(manager.state).toBe(ManagerState.PENDING_LOADING_CREDS);
+            expect(manager.existingCredential).not.toBeDefined();
 
             const promise = manager.createCredential('userNameX', 'passwordX');
 
             expect(manager.state).toBe(ManagerState.PENDING_VALIDATION);
+            expect(manager.existingCredential).not.toBeDefined();
 
             return promise.then(credential => {
                 expect(manager.state).toBe(ManagerState.SAVE_SUCCESS);
                 expect(credential).toBeDefined();
                 expect(credential.credentialId).toBe(apiMock.credentialId);
+                expect(manager.existingCredential).toBeDefined();
+                expect(manager.existingCredential.credentialId).toBe(apiMock.credentialId);
                 expect(apiMock.capturedCreateParams).toMatchObject({
                     repositoryUrl: repoUrl,
                     userName: 'userNameX',
@@ -104,10 +113,49 @@ describe('GitPWCredentialsManager', () => {
             });
         });
 
+        it('clears existing while creating', () => {
+            apiMock.createCredentialShouldSucceed = true;
+            apiMock.findExistingCredentialShouldSucceed = true;
+
+            expect.assertions(13);
+
+            return manager.findExistingCredential()
+                .then(credential => {
+                    expect(manager.state).toBe(ManagerState.EXISTING_FOUND);
+                    expect(credential).toBeDefined();
+                    expect(credential.credentialId).toBe(apiMock.credentialId);
+                    expect(manager.existingCredential).toBeDefined();
+                    expect(manager.existingCredential.credentialId).toBe(apiMock.credentialId);
+
+                    apiMock.credentialId = "newId";
+
+                    const nextPromise = manager.createCredential('userNameX', 'passwordX', true);
+
+                    expect(manager.state).toBe(ManagerState.PENDING_VALIDATION);
+                    expect(manager.existingCredential).not.toBeDefined();
+
+                    return nextPromise;
+                })
+                .then(credential => {
+                    expect(manager.state).toBe(ManagerState.SAVE_SUCCESS);
+                    expect(credential).toBeDefined();
+                    expect(credential.credentialId).toBe(apiMock.credentialId);
+                    expect(manager.existingCredential).toBeDefined();
+                    expect(manager.existingCredential.credentialId).toBe(apiMock.credentialId);
+                    expect(apiMock.capturedCreateParams).toMatchObject({
+                        repositoryUrl: repoUrl,
+                        userName: 'userNameX',
+                        password: 'passwordX',
+                        branchName: 'master',
+                        requirePush: true,
+                    });
+                });
+        });
+
         it('updates state when create fails with not found', () => {
             apiMock.createCredentialShouldSucceed = false;
 
-            expect.assertions(6);
+            expect.assertions(7);
 
             expect(manager.state).toBe(ManagerState.PENDING_LOADING_CREDS);
 
@@ -119,6 +167,7 @@ describe('GitPWCredentialsManager', () => {
                 expect(error).toBeDefined();
                 expect(error).toBeInstanceOf(TypedError);
                 expect(manager.state).toBe(ManagerState.INVALID_CREDENTIAL);
+                expect(manager.existingCredential).not.toBeDefined();
                 expect(apiMock.capturedCreateParams).toMatchObject({
                     repositoryUrl: repoUrl,
                     userName: 'userNameX',
@@ -133,7 +182,7 @@ describe('GitPWCredentialsManager', () => {
             apiMock.createCredentialShouldSucceed = false;
             apiMock.createCredentialShouldHaveWeirdFailure = true;
 
-            expect.assertions(6);
+            expect.assertions(7);
 
             expect(manager.state).toBe(ManagerState.PENDING_LOADING_CREDS);
 
@@ -145,6 +194,7 @@ describe('GitPWCredentialsManager', () => {
                 expect(error).toBeDefined();
                 expect(error).toBeInstanceOf(TypedError);
                 expect(manager.state).toBe(ManagerState.UNEXPECTED_ERROR_CREDENTIAL);
+                expect(manager.existingCredential).not.toBeDefined();
                 expect(apiMock.capturedCreateParams).toMatchObject({
                     repositoryUrl: repoUrl,
                     userName: 'userNameX',

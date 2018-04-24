@@ -15,8 +15,6 @@ import {
 
 const t = i18nTranslator('blueocean-dashboard');
 
-type Credential = any; // FIXME: canonical types in core-js
-
 interface Props {
     onStatus?: Function,
     onComplete?: Function,
@@ -31,7 +29,6 @@ interface State {
     usernameErrorMsg: string | null,
     passwordValue: string | null,
     passwordErrorMsg: string | null,
-    existingCredential?: Credential, // TODO: Replace with manager state!
     selectedRadio: RadioOption
 }
 
@@ -92,41 +89,35 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
         }
     }
 
-    _repositoryChanged(repositoryUrl: string, branch: string | undefined, existingFailed: boolean) {
-
-        const {onStatus} = this.props;
-        const credentialsManager = this.credentialsManager;
-
-        credentialsManager.configure(repositoryUrl, branch, existingFailed);
-
+    componentDidMount() {
+        const {existingFailed, onStatus} = this.props;
         if (existingFailed) {
-            this.setState(state => ({
-                existingCredential: undefined
-            }));
-
             if (onStatus) {
                 onStatus('promptReady');
             }
+        }
+    }
 
-        } else {
+    _repositoryChanged(repositoryUrl: string, branch: string | undefined, existingFailed: boolean) {
+
+        const {onStatus, onComplete} = this.props;
+        const credentialsManager = this.credentialsManager;
+
+        credentialsManager.configure(repositoryUrl, branch);
+
+        if (!existingFailed) {
             credentialsManager.findExistingCredential()
                 .then(credential => {
-                    const newState: any = {
-                        existingCredential: credential,
-                    };
+                    if (credential && onComplete) {
+                        this.setState({selectedRadio: RadioOption.USE_EXISTING});
 
-                    if (credential && this.props.onComplete) {
-                        newState.selectedRadio = RadioOption.USE_EXISTING;
-
-                        if (this.props.onComplete) {
-                            this.props.onComplete(credential, 'autoSelected');
+                        if (onComplete) {
+                            onComplete(credential, 'autoSelected');
                         }
 
-                    } else if (this.props.onStatus) {
-                        this.props.onStatus('promptReady');
+                    } else if (onStatus) {
+                        onStatus('promptReady');
                     }
-
-                    this.setState(newState);
                 });
         }
     }
@@ -137,9 +128,9 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
             return;
         }
 
-        this.setState({
-            existingCredential: undefined
-        });
+        // this.setState({
+        //     existingCredential: undefined
+        // });
 
         this.credentialsManager
             .createCredential(this.state.usernameValue, this.state.passwordValue, !!this.props.requirePush)
@@ -148,7 +139,7 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
             })
             .then(credential => {
                 this.setState({
-                    existingCredential: credential,
+                    // existingCredential: credential,
                     selectedRadio: RadioOption.USE_EXISTING
                 });
 
@@ -212,7 +203,7 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
     }, 200);
 
     _radioLabel = (option) => {
-        const {existingCredential} = this.state;
+        const {existingCredential} = this.credentialsManager;
         const displayName = existingCredential && existingCredential.displayName || '';
 
         switch (option) {
@@ -228,7 +219,7 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
         const {onComplete} = this.props;
 
         if (onComplete) {
-            onComplete(selectedRadio === RadioOption.USE_EXISTING ? this.state.existingCredential : undefined);
+            onComplete(selectedRadio === RadioOption.USE_EXISTING ? this.credentialsManager.existingCredential : undefined);
         }
 
         this.setState({selectedRadio});
@@ -252,7 +243,8 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
             connectButtonStatus.result = 'success';
         }
 
-        const {existingCredential, selectedRadio} = this.state;
+        const {selectedRadio} = this.state;
+        const {existingCredential} = this.credentialsManager;
 
         const hasExistingCredential = !!existingCredential;
         const useExistingCredential = hasExistingCredential && selectedRadio === RadioOption.USE_EXISTING;
