@@ -15,6 +15,7 @@ const copy = require('gulp-copy');
 const fs = require('fs');
 const ts = require('gulp-typescript');
 const tsProject = ts.createProject('./tsconfig.json');
+
 // Options, src/dest folders, etc
 
 const config = {
@@ -24,7 +25,8 @@ const config = {
     },
     ts: {
         sources: ["src/**/*.{ts,tsx}"],
-        dest: "dist"
+        dest: "dist",
+        destBundle: "target/tstemp"
     },
     less: {
         sources: "src/less/core.less",
@@ -68,7 +70,15 @@ gulp.task("compile-typescript", () =>
     gulp.src(config.ts.sources)
         .pipe(tsProject())
         .pipe(gulp.dest(config.ts.dest)));
-        
+   
+gulp.task('copy-src', () => 
+        gulp.src("src/js/**/*")
+            .pipe(gulp.dest(config.ts.destBundle+'/js')));
+gulp.task("compile-typescript-bundle", ['copy-src'], () =>
+        gulp.src(config.ts.sources)
+            .pipe(tsProject())
+            .pipe(gulp.dest(config.ts.destBundle)));
+
 gulp.task("less", () =>
     gulp.src(config.less.sources)
         .pipe(sourcemaps.init())
@@ -103,13 +113,15 @@ gulp.task("validate", ["lint", "test"], () => {
 var builder = require('@jenkins-cd/js-builder');
 
 builder.src([
-    'src/js',
+    config.ts.destBundle,
     'less']);
 
 //
 // Create the main bundle.
 //
-builder.bundle('src/js/index.js', 'blueocean-core-js.js')
+
+builder.bundle('target/tstemp/js/index.js', 'blueocean-core-js.js')
+    .onStartup('./target/tstemp/js/bundleStartup.js')
     .inDir('target/classes/io/jenkins/blueocean')
     .less('src/less/blueocean-core-js.less')
     .import('react@any', {
@@ -120,3 +132,6 @@ builder.bundle('src/js/index.js', 'blueocean-core-js.js')
     .export("@jenkins-cd/js-extensions")
     .export("@jenkins-cd/logging")
     .export('mobx');
+
+//megaultrahax
+gulp.tasks['js_bundle_blueocean-core-js_bundle_1'].dep=['compile-typescript-bundle'];

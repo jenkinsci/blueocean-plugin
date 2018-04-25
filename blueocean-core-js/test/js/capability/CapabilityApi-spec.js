@@ -4,7 +4,7 @@
 import { assert } from 'chai';
 import sinon from 'sinon';
 
-import testutils from '../../../src/js/testutils';
+import { TestUtils } from '../../../src/js/testutils';
 
 import { CapabilityApi } from '../../../src/js/capability/CapabilityApi';
 
@@ -19,12 +19,12 @@ describe('CapabilityApi', () => {
     let capabilityApi;
 
     beforeEach(() => {
-        testutils.patchFetch(fetchJSON, fetch);
+        TestUtils.patchFetch(fetchJSON, fetch);
         capabilityApi = new CapabilityApi();
     });
 
     afterEach(() => {
-        testutils.restoreFetch();
+        TestUtils.restoreFetch();
     });
 
     describe('fetchCapabilities', () => {

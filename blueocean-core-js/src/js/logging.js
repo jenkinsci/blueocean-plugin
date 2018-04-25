@@ -28,4 +28,4 @@
  */
 
 import * as logging from '@jenkins-cd/logging';
-export default logging;
+export { logging };

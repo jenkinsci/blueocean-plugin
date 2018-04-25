@@ -1,7 +1,7 @@
 import { assert } from 'chai';
 import nock from 'nock';
 
-import TestUtils from '../../src/js/testutils';
+import { TestUtils } from '../../src/js/testutils';
 import { Fetch } from '../../src/js/fetch';
 
 

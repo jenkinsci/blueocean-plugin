@@ -32,7 +32,7 @@ function loadConfig() {
     }
 }
 
-export default {
+export const UrlConfig = {
     getJenkinsRootURL() {
         if (!loaded) {
             loadConfig();

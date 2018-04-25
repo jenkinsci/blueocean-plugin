@@ -5,12 +5,12 @@ import { shallow, render, mount } from 'enzyme';
 import WithContext from '@jenkins-cd/design-language/dist/js/stories/WithContext';
 
 import moment from 'moment';
-import { TimeHarmonizer, TimeHarmonizerUtil } from '../../../src/js';
+import { TimeHarmonizer, TimeHarmonizerUtil } from '../../../src/js/components/TimeHarmonizer';
 
 
 jest.mock('../../../src/js/i18n/i18n');
 
-
+@TimeHarmonizer
 class UselessComponent extends Component {
 
     render() {
@@ -64,11 +64,9 @@ class UselessComponent extends Component {
 }
 
 describe('TimeHarmonizer', () => {
-    const HarmonizedUselessComponent = TimeHarmonizer(UselessComponent);
-
     it('/ renders', () => {
         const wrapper = shallow(
-            <HarmonizedUselessComponent/>
+            <UselessComponent/>
         );
     });
 
@@ -105,7 +103,7 @@ describe('TimeHarmonizer', () => {
             result: 'running',
         };
 
-        let wrapper = mount(<HarmonizedUselessComponent {...timeRelatedProps}/>);
+        let wrapper = mount(<UselessComponent {...timeRelatedProps}/>);
 
         // Input
 
@@ -161,7 +159,7 @@ describe('TimeHarmonizer', () => {
 
         let wrapper = mount(
             <WithContext context={ctx}>
-                <HarmonizedUselessComponent {...timeRelatedProps}/>
+                <UselessComponent {...timeRelatedProps}/>
             </WithContext>
         );
 
@@ -219,7 +217,7 @@ describe('TimeHarmonizer', () => {
 
         let wrapper = mount(
             <WithContext context={ctx}>
-                <HarmonizedUselessComponent {...timeRelatedProps}/>
+                <UselessComponent {...timeRelatedProps}/>
             </WithContext>
         );
 

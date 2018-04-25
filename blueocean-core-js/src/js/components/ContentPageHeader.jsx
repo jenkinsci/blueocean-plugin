@@ -58,5 +58,3 @@ ContentPageHeader.propTypes = {
     children: PropTypes.node,
     pageTabBase: PropTypes.string,
 };
-
-export default ContentPageHeader;

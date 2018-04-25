@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import urlConfig from '../../src/js/urlconfig';
+import { UrlConfig } from '../../src/js/urlconfig';
 
 function setAppUrl(url) {
     const headElement = document.getElementsByTagName('head')[0];
@@ -15,13 +15,13 @@ function setAppUrl(url) {
 
 describe('urlconfig', () => {
     beforeEach(() => {
-        urlConfig.enableReload();
+        UrlConfig.enableReload();
     });
 
     describe('getRestBaseURL', () => {
         it('should build the proper URL when "data-appurl" is supplied', () => {
             setAppUrl('/jenkins/blue');
-            assert.equal(urlConfig.getRestBaseURL(), '/jenkins/blue/rest');
+            assert.equal(UrlConfig.getRestBaseURL(), '/jenkins/blue/rest');
         });
     });
 

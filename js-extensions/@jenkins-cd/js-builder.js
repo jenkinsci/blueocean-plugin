@@ -50,9 +50,7 @@ exports.install = function(builder) {
 
     // This because core-js init is more complex
     builder.onSetupBundle(function(bundle, packageJson) {
-        if (packageJson.name === '@jenkins-cd/blueocean-core-js') {
-            bundle.onStartup('@jenkins-cd/js-extensions/dist/init/blueocean-core-js');
-        } else if (!packageJson.name.startsWith('@jenkins-cd')) {
+        if (!packageJson.name.startsWith('@jenkins-cd')) {
             bundle.onStartup('@jenkins-cd/js-extensions/dist/init/extension');
         }
     });

@@ -46,6 +46,6 @@ const deDupeCallTracker = new DeDupeCallTracker();
  * @promiseCreator: function that will return an initial promise, e.g. () => fetch(...)
  * @return a Promise
  */
-export default function dedupe(key, promiseCreator) {
+export function dedupe(key, promiseCreator) {
     return deDupeCallTracker.dedupe(key, promiseCreator);
 }

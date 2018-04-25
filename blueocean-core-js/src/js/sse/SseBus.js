@@ -2,9 +2,9 @@
  * Created by cmeyers on 7/29/16.
  */
 import defaultFetch from 'isomorphic-fetch';
-import config from '../urlconfig';
-import utils from '../utils';
-import AppConfig from '../config';
+import { UrlConfig } from '../urlconfig';
+import { Utils } from '../utils';
+import { AppConfig } from '../config';
 
 /**
  * Wraps the SSE Gateway and fetches data related to events from REST API.
@@ -113,7 +113,7 @@ export class SseBus {
 
         queuedRun.pipeline = event.job_ismultibranch ? event.blueocean_job_branch_name : event.blueocean_job_pipeline_name;
 
-        const runUrl = utils.cleanSlashes(`${event.blueocean_job_rest_url}/runs/${event.job_run_queueId}`);
+        const runUrl = Utils.cleanSlashes(`${event.blueocean_job_rest_url}/runs/${event.job_run_queueId}`);
 
         queuedRun._links = {
             self: {
@@ -130,11 +130,11 @@ export class SseBus {
     }
 
     _updateJob(event, listeners) {
-        const baseUrl = config.getJenkinsRootURL();
-        const url = utils.cleanSlashes(`${baseUrl}/${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`);
+        const baseUrl = UrlConfig.getJenkinsRootURL();
+        const url = Utils.cleanSlashes(`${baseUrl}/${event.blueocean_job_rest_url}/runs/${event.jenkins_object_id}`);
 
         this.fetch(url).then(data => {
-            const updatedRun = utils.clone(data);
+            const updatedRun = Utils.clone(data);
 
             // FIXME: Talk to CMeyers why we cannot use the data.state?
             // in many cases the SSE and subsequent REST call occur so quickly
