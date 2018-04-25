@@ -58,6 +58,51 @@ public class EditorPage {
         logger.info("Stages added, ready to save");
     }
 
+
+    /**
+     * Deletes a step inside of a stage within a pipeline.
+     *
+     * @param containingStage the stage our step is inside of
+     *
+     */
+    public void deleteStep(String containingStage) {
+        logger.info("Deleting a step in stage " + containingStage);
+        // Click the name of the stage
+        wait.click(By.cssSelector("pipeline-node-hittarget-10"));
+        // wait.click(By.xpath("//*[text()=" + containingStage + "]"));
+        // wait.click(By.xpath("//*[text()='Save']"));
+        // Click the step on the right
+        wait.click(By.cssSelector("div.more-menu"));
+        // Click the little popup button
+        wait.click(By.cssSelector("THE BUTTON"));
+        // Click Delete
+        wait.click(By.cssSelector("a.Delete"));
+        logger.info("Successfully deleted a step in stage " + containingStage);
+    }
+
+    /**
+     * Deletes an entire stage of a pipeline.
+     *
+     * @param stageToDelete the step we want to delete
+     *
+     */
+    public void deleteStage(String stageToDelete) {
+        logger.info("Deleting stage " + stageToDelete);
+        // Click the name of the stage
+        wait.click(By.id("THE NAME OF THE STAGE"));
+        // Click the little popup button
+        wait.click(By.cssSelector("THE BUTTON"));
+        // Click Delete
+        wait.click(By.cssSelector("DELETE"));
+        logger.info("Successfully deleted stage " + stageToDelete);
+    }
+
+
+
+
+
+
+
     /**
      * Changes the agent label from one thing to something else.
      *
@@ -139,15 +184,10 @@ public class EditorPage {
     /**
      * Creates a parallel pipeline from scratch.
      *
-     * @param newBranch the name of the new branch we'll save to. If null,
-     *                  we save to master.
+     * @param numberOfParallels number of parallel branches we want to create.
      */
-    public void parallelPipeline(String newBranch, int numberOfParallels) {
+    public void parallelPipeline(int numberOfParallels) {
         logger.info("Editing a parallel pipeline");
-        /*
-        We'll create as many parallel stages as we were told to
-        via int numberOfParallels when we were called.
-        */
         for (int i = 1; i < numberOfParallels; i++) {
             logger.info("Create stage Parallel-" + i);
             /*
@@ -171,24 +211,7 @@ public class EditorPage {
         wait.click(By.cssSelector("div.pipeline-big-label.top-level-parallel"));
         wait.clear(By.cssSelector("input.stage-name-edit"));
         wait.sendKeys(By.cssSelector("input.stage-name-edit"),"Top Level Parallel Wrapper Stage");
-        wait.click(By.cssSelector("button.btn-primary.inverse"));
-        wait.sendKeys(By.cssSelector("textarea[placeholder=\"What changed?\"]"),"Parallel pipeline");
-        if(!Strings.isNullOrEmpty(newBranch)) {
-            logger.info("Saving to branch " + newBranch);
-            wait.click(By.xpath("//*[text()='Commit to new branch']"));
-            wait.sendKeys(By.cssSelector("input[placeholder='my-new-branch']:enabled"),newBranch);
-        } else {
-            /*
-            This mimics the user changing picking a new branch, and then
-            changing their mind and committing to master after all.
-            */
-            wait.click(By.xpath("//*[text()='Commit to new branch']"));
-            wait.sendKeys(By.cssSelector("input[placeholder='my-new-branch']:enabled"),"i-am-changing-my-mind");
-            wait.click(By.xpath("//*[text()='Commit to master']"));
-            logger.info("Using branch master");
-        }
-        wait.click(By.xpath("//*[text()=\"Save & run\"]"));
-        logger.info("Save & run clicked, Parallel pipeline saved");
+        logger.info("Parallel pipeline created and ready to save");
     }
 
 }

@@ -223,18 +223,14 @@ public class GithubEditorTest {
      */
     @Test
     public void testEditorParallel() throws IOException {
+        String branchNameForParallelPipeline = "branch-with-parallels";
         creationPage.createPipeline(token, organization, repo, true);
         MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
-        editorPage.parallelPipeline("branch-with-parallels", 4);
+        editorPage.parallelPipeline(4);
+        editorPage.saveBranch(branchNameForParallelPipeline);
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
-        driver.navigate().refresh();
         sseClient.untilEvents(pipeline.buildsFinished);
         sseClient.clear();
-        BranchPage branchPage = activityPage.clickBranchTab();
-        branchPage.openEditor("branch-with-parallels");
-        editorPage.saveBranch("new - branch");
-        activityPage.checkUrl();
         activityPage.getRunRowForBranch("branch-with-parallels");
-        sseClient.untilEvents(pipeline.buildsFinished);
     }
 }
