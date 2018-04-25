@@ -402,7 +402,8 @@ export class EditorPipelineGraph extends Component<DefaultProps, Props, State> {
             }
         }
         return (
-            <div className={classNames.join(' ')} style={style} key={key} onClick={e => this.nodeClicked({ isPlaceholder: false, stage }, e)}>
+            // The id is in here to facilitate easier test automation.
+            <div className={classNames.join(' ')} id={`stage-label-${details.text ? `${details.text}` : ""}`} style={style} key={key} onClick={e => this.nodeClicked({ isPlaceholder: false, stage }, e)}>
                 {details.text || NBSP}
                 {inner}
             </div>
