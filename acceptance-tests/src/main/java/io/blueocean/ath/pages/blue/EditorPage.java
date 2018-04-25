@@ -55,9 +55,26 @@ public class EditorPage {
         wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"echo\"]"));
         wait.sendKeys(By.cssSelector("input.TextInput-control"),"Echo step added by ATH");
         wait.click(By.cssSelector("div.sheet.active a.back-from-sheet"));
-        logger.info("Stages added, ready to save");
+        logger.info("Stage " + newStageName + " added");
     }
 
+    /**
+     * Deletes an entire stage of a pipeline.
+     *
+     * @param stageName the step we want to delete
+     *
+     */
+    public void deleteStage(String stageName) {
+        logger.info("Deleting stage " + stageName);
+        // Click the name of the stage
+        wait.click(By.id("pipeline-big-label-" + stageName));
+        // Click the little popup button
+        wait.click(By.cssSelector("div.more-menu"));
+        // Click Delete
+        // TODO: Ongoing work to get rid of text-based selectors. This is one.
+        wait.click(By.xpath("//*[text()=\"Delete\"]"));
+        logger.info("Successfully deleted stage " + stageName);
+    }
 
     /**
      * Deletes a step inside of a stage within a pipeline.
@@ -68,39 +85,17 @@ public class EditorPage {
     public void deleteStep(String containingStage) {
         logger.info("Deleting a step in stage " + containingStage);
         // Click the name of the stage
-        wait.click(By.cssSelector("pipeline-node-hittarget-10"));
-        // wait.click(By.xpath("//*[text()=" + containingStage + "]"));
-        // wait.click(By.xpath("//*[text()='Save']"));
-        // Click the step on the right
-        wait.click(By.cssSelector("div.more-menu"));
+        wait.click(By.id("pipeline-big-label-" + containingStage));
+        // TODO: We need a better way to identify these steps.
+        logger.info("Clicking on Shell Script");
+        // wait.click(By.xpath("//*[text()=\"Shell Script\"]"));
+        wait.click(By.xpath("//span[text()='Shell Script']"));
         // Click the little popup button
-        wait.click(By.cssSelector("THE BUTTON"));
+        wait.click(By.cssSelector("div.more-menu"));
         // Click Delete
-        wait.click(By.cssSelector("a.Delete"));
+        wait.click(By.xpath("//*[text()=\"Delete\"]"));
         logger.info("Successfully deleted a step in stage " + containingStage);
     }
-
-    /**
-     * Deletes an entire stage of a pipeline.
-     *
-     * @param stageToDelete the step we want to delete
-     *
-     */
-    public void deleteStage(String stageToDelete) {
-        logger.info("Deleting stage " + stageToDelete);
-        // Click the name of the stage
-        wait.click(By.id("THE NAME OF THE STAGE"));
-        // Click the little popup button
-        wait.click(By.cssSelector("THE BUTTON"));
-        // Click Delete
-        wait.click(By.cssSelector("DELETE"));
-        logger.info("Successfully deleted stage " + stageToDelete);
-    }
-
-
-
-
-
 
 
     /**
@@ -164,7 +159,8 @@ public class EditorPage {
     }
 
     /**
-     * Creates a simple pipeline from scratch.
+     * Creates a simple pipeline from scratch, and saves it as the
+     * branch specified when called.
      *
      * @param newBranch the name of the new branch we'll save to. If null,
      *                  we save to master.
@@ -190,24 +186,18 @@ public class EditorPage {
         logger.info("Editing a parallel pipeline");
         for (int i = 1; i < numberOfParallels; i++) {
             logger.info("Create stage Parallel-" + i);
-            /*
-            We're only creating one stage. So the "add" button will always have
-            the id pipeline-node-hittarget-2-add, because it is the second
-            column in the "grid," so to speak.
-             */
+            // The "add" Button will always have the id pipeline-node-hittarget-2-add
+            // since it's the second column in the grid.
             wait.click(By.id("pipeline-node-hittarget-2-add"));
             wait.sendKeys(By.cssSelector("input.stage-name-edit"),("Parallel-" + i));
             wait.click(By.cssSelector("button.btn-primary.add"));
             wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"sh\"]"));
-            wait.sendKeys(By.cssSelector("textarea.editor-step-detail-script"),"netstat -a");
+            wait.sendKeys(By.cssSelector("textarea.editor-step-detail-script"),"whoami");
             logger.info("Clicking on active sheet div.sheet.active a.back-from-sheet");
             wait.click(By.cssSelector("div.sheet.active a.back-from-sheet"));
             logger.info("Stage Parallel-" + i + " created");
         }
-        /*
-        Now we need to name the "wrapper" stage to something other than what
-        got automatically put in.
-        */
+        // Rename the "wrapper" stage to something non-default
         wait.click(By.cssSelector("div.pipeline-big-label.top-level-parallel"));
         wait.clear(By.cssSelector("input.stage-name-edit"));
         wait.sendKeys(By.cssSelector("input.stage-name-edit"),"Top Level Parallel Wrapper Stage");
