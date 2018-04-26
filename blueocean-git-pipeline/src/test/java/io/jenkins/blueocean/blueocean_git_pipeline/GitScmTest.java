@@ -41,6 +41,8 @@ import static org.junit.Assert.*;
 public class GitScmTest extends PipelineBaseTest {
     public static final String HTTPS_GITHUB_NO_JENKINSFILE = "https://github.com/vivek/test-no-jenkins-file.git";
     public static final String HTTPS_GITHUB_PUBLIC = "https://github.com/cloudbeers/multibranch-demo.git";
+    public static final String HTTPS_GITHUB_PUBLIC_HASH = "d3ce6cb66c15ed83d093b9ce94028eda46106245e29d626bc3a6810a2d5e5fd0";
+    // ^ is DigestUtils.sha256Hex(normalizedUrl)
 
     @Rule
     public GitSampleRepoRule sampleRepo = new GitSampleRepoRule();
@@ -423,7 +425,7 @@ public class GitScmTest extends PipelineBaseTest {
             .get(repoPath)
             .build(Map.class);
 
-        assertEquals("git:" + HTTPS_GITHUB_PUBLIC, resp2.get("credentialId"));
+        assertEquals("git:" + HTTPS_GITHUB_PUBLIC_HASH, resp2.get("credentialId"));
     }
 
     /**

@@ -32,6 +32,7 @@ import jenkins.plugins.git.GitSCMFileSystem;
 import jenkins.scm.api.SCMSourceOwner;
 import net.sf.json.JSONException;
 import net.sf.json.JSONObject;
+import org.apache.commons.codec.digest.DigestUtils;
 import org.eclipse.jgit.lib.Repository;
 import org.kohsuke.stapler.HttpResponse;
 import org.kohsuke.stapler.Stapler;
@@ -79,7 +80,7 @@ public class GitScm extends AbstractScm {
             // Only http(s) urls have a default credential ID keyed to the repo right now
             String scheme = uri.getScheme();
             if (scheme != null && scheme.startsWith("http")) {
-                return ID + ":" + normalizedUrl;
+                return String.format("%s:%s", ID, DigestUtils.sha256Hex(normalizedUrl));
             }
         } catch (URISyntaxException e) {
             // Fall through
@@ -250,7 +251,7 @@ public class GitScm extends AbstractScm {
 
         // Create new is only for username + password
         if (request.has("userName") || request.has("password")) {
-            createPWCredentials(credentialId, user, request);
+            createPWCredentials(credentialId, user, request, repositoryUrl);
         }
 
         final StandardCredentials creds = CredentialsMatchers.firstOrNull(
@@ -296,7 +297,7 @@ public class GitScm extends AbstractScm {
         return HttpResponses.okJSON();
     }
 
-    private void createPWCredentials(String credentialId, User user, @JsonBody JSONObject request) {
+    private void createPWCredentials(String credentialId, User user, @JsonBody JSONObject request, String repositoryUrl) {
 
         StandardUsernamePasswordCredentials existingCredential =
             CredentialsUtils.findCredential(credentialId,
@@ -306,10 +307,13 @@ public class GitScm extends AbstractScm {
         String requestUsername = request.getString("userName");
         String requestPassword = request.getString("password");
 
+        // Un-normalized repositoryUrl so the description matches user input.
+        String description = String.format("%s for %s", CREDENTIAL_DESCRIPTION_PW, repositoryUrl);
+
         final StandardUsernamePasswordCredentials newCredential =
             new UsernamePasswordCredentialsImpl(CredentialsScope.USER,
                                                 credentialId,
-                                                CREDENTIAL_DESCRIPTION_PW,
+                                                description,
                                                 requestUsername,
                                                 requestPassword);
 
