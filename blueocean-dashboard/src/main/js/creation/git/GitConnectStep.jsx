@@ -1,14 +1,11 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
-import { toJS } from 'mobx';
 import debounce from 'lodash.debounce';
 import Extensions from '@jenkins-cd/js-extensions';
-import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
-import { Alerts, Dropdown, FormElement, TextInput } from '@jenkins-cd/design-language';
+import { FormElement, TextInput } from '@jenkins-cd/design-language';
 
 import FlowStep from '../flow2/FlowStep';
 
-import { CreateCredentialDialog } from '../credentials/CreateCredentialDialog';
 import { CreatePipelineOutcome } from './GitCreationApi';
 import STATE from './GitCreationState';
 
@@ -32,13 +29,6 @@ export function isSshRepositoryUrl(url) {
     }
 
     return false;
-}
-
-function isNonSshRepositoryUrl(url) {
-    if (!validateUrl(url)) {
-        return false;
-    }
-    return !isSshRepositoryUrl(url) && /[^@:]+:\/\/.*/.test(url);
 }
 
 /**
@@ -140,6 +130,7 @@ export default class GitConnectStep extends React.Component {
 
     render() {
         const { flowManager } = this.props;
+        const { repositoryUrl } = this.state;
         const repositoryErrorMsg = this._getRepositoryErrorMsg(flowManager.outcome);
         const credentialErrorMsg = this._getCredentialErrorMsg(flowManager.outcome);
 
@@ -159,27 +150,18 @@ export default class GitConnectStep extends React.Component {
                     <TextInput className="text-repository-url" onChange={val => this._repositoryUrlChange(val)} />
                 </FormElement>
 
-                <ReactCSSTransitionGroup
-                    transitionName="slide-down"
-                    transitionAppear
-                    transitionAppearTimeout={300}
-                    transitionEnterTimeout={300}
-                    transitionLeaveTimeout={300}
-                >
-                    {/* TODO: make this slide dealie work again */}
-                    <Extensions.Renderer
-                        extensionPoint="jenkins.credentials.selection"
-                        className="credentials-selection-git"
-                        onComplete={this._onCreateCredentialClosed}
-                        type="git"
-                        repositoryUrl={this.state.repositoryUrl}
-                    />
-                </ReactCSSTransitionGroup>
+                <Extensions.Renderer
+                    extensionPoint="jenkins.credentials.selection"
+                    className="credentials-selection-git"
+                    onComplete={this._onCreateCredentialClosed}
+                    type="git"
+                    repositoryUrl={repositoryUrl}
+                />
 
-                {isSshRepositoryUrl(this.state.repositoryUrl) &&
+                {isSshRepositoryUrl(repositoryUrl) &&
                     credentialErrorMsg && <FormElement className="public-key-display" errorMessage={t('creation.git.step1.credentials_publickey_invalid')} />}
 
-                <button className="button-create-pipeline" onClick={() => this._beginCreation()} disabled={!validateUrl(this.state.repositoryUrl)}>
+                <button className="button-create-pipeline" onClick={() => this._beginCreation()} disabled={!validateUrl(repositoryUrl)}>
                     {createButtonLabel}
                 </button>
             </FlowStep>
