@@ -280,7 +280,7 @@ export function toClassicJobPage(currentPageUrl, isMultibranch = false) {
  * @param runId (optional) identifies an individual run
  * @returns a URL string
  */
-export function buildRestUrl(organizationName, pipelineFullName, branchName, runId) {
+export function buildRestUrl(organizationName: string, pipelineFullName?: string, branchName?: string, runId?: string) {
     const jenkinsUrl = AppConfig.getJenkinsRootURL();
     let url = `${jenkinsUrl}/blue/rest/organizations/${encodeURIComponent(organizationName)}`;
 
