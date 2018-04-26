@@ -23,21 +23,19 @@ function isSshRepositoryUrl(url) {
 /**
  * Just a wrapper to decide between the SSH component and username/pw component based on repositoryUrl
  */
-class GitCredentialsPicker extends React.Component {
-    render() {
-        const { repositoryUrl } = this.props;
+const GitCredentialsPicker = props => {
+    const { repositoryUrl } = props;
 
-        if (!repositoryUrl) {
-            return null; // Repo URL decides wether we show certificate or un/pw
-        }
-
-        if (isSshRepositoryUrl(this.props.repositoryUrl)) {
-            return <GitCredentialsPickerSSH {...this.props} />;
-        }
-
-        return <GitCredentialsPickerPassword {...this.props} />;
+    if (!repositoryUrl) {
+        return null; // Repo URL decides wether we show certificate or un/pw
     }
-}
+
+    if (isSshRepositoryUrl(repositoryUrl)) {
+        return <GitCredentialsPickerSSH {...props} />;
+    }
+
+    return <GitCredentialsPickerPassword {...props} />;
+};
 
 GitCredentialsPicker.propTypes = {
     onStatus: PropTypes.func,

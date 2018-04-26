@@ -1,5 +1,6 @@
 import React, { PropTypes } from 'react';
 import { observer } from 'mobx-react';
+import { toJS } from 'mobx';
 import debounce from 'lodash.debounce';
 import Extensions from '@jenkins-cd/js-extensions';
 import ReactCSSTransitionGroup from 'react-addons-css-transition-group';
@@ -90,6 +91,12 @@ export default class GitConnectStep extends React.Component {
     }, 200);
 
     _selectedCredentialChange(credential) {
+        const oldId = this.state.selectedCredential && this.state.selectedCredential.id;
+        const newId = credential && credential.id;
+        if (oldId === newId) {
+            return;
+        }
+
         this.setState({
             selectedCredential: credential,
         });
@@ -105,9 +112,9 @@ export default class GitConnectStep extends React.Component {
         return null;
     }
 
-    _onCreateCredentialClosed(credential) {
+    _onCreateCredentialClosed = credential => {
         this._selectedCredentialChange(credential || this.props.flowManager.noCredentialsOption);
-    }
+    };
 
     _performValidation() {
         if (!validateUrl(this.state.repositoryUrl)) {
@@ -159,18 +166,15 @@ export default class GitConnectStep extends React.Component {
                     transitionEnterTimeout={300}
                     transitionLeaveTimeout={300}
                 >
+                    {/* TODO: make this slide dealie work again */}
                     <Extensions.Renderer
                         extensionPoint="jenkins.credentials.selection"
                         className="credentials-selection-git"
-                        onComplete={credential => this._onCreateCredentialClosed(credential)}
+                        onComplete={this._onCreateCredentialClosed}
                         type="git"
                         repositoryUrl={this.state.repositoryUrl}
                     />
                 </ReactCSSTransitionGroup>
-
-                {this.state.showCreateCredentialDialog && (
-                    <CreateCredentialDialog flowManager={flowManager} onClose={cred => this._onCreateCredentialClosed(cred)} />
-                )}
 
                 {isSshRepositoryUrl(this.state.repositoryUrl) &&
                     credentialErrorMsg && <FormElement className="public-key-display" errorMessage={t('creation.git.step1.credentials_publickey_invalid')} />}

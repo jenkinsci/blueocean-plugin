@@ -83,11 +83,12 @@ export class GitCredentialsPickerPassword extends Component<Props, State> {
     }
 
     componentWillReceiveProps(nextProps: Props) {
-        const {repositoryUrl, branch, existingFailed = false} = nextProps;
+        const {repositoryUrl, branch, existingFailed} = nextProps;
         if (branch !== this.props.branch
             || repositoryUrl !== this.props.repositoryUrl
             || existingFailed !== this.props.existingFailed) {
-            this._repositoryChanged(repositoryUrl, branch, existingFailed);
+
+            this._repositoryChanged(repositoryUrl, branch, !!existingFailed);
         }
     }
 
