@@ -2,11 +2,11 @@
  * Created by cmeyers on 9/21/16.
  */
 
-import { ToastService as toastService } from './index';
+import { ToastService as toastService } from './';
 import { buildRunUrlForDetails } from './UrlBuilder';
-import i18nTranslator from './i18n/i18n';
+import { i18nTranslator } from './i18n/i18n';
 
-export default {
+export const ToastUtils = {
     /**
      *
      * @param runnable

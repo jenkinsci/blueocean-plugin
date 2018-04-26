@@ -1,0 +1,24 @@
+pipeline {
+  agent any
+  stages {
+    stage('first-stage') {
+      steps {
+        echo 'One!'
+        echo 'Two!'
+        echo 'Three!'
+      }
+    }
+    stage('second-stage') {
+      steps {
+        echo 'This is a stage too.'
+        sh 'netstat -a'
+      }
+    }
+    stage('take a big nap') {
+      steps {
+        echo 'We need this to take a while so the Stop button is clickable'
+        sleep 3
+      }
+    }
+  }
+}

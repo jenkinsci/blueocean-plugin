@@ -1,4 +1,4 @@
-"use strict";
+'use strict';
 
 process.env.SKIP_BLUE_IMPORTS = 'YES';
 
@@ -15,79 +15,90 @@ const copy = require('gulp-copy');
 const fs = require('fs');
 const ts = require('gulp-typescript');
 const tsProject = ts.createProject('./tsconfig.json');
+
 // Options, src/dest folders, etc
 
 const config = {
     react: {
-        sources: ["src/**/*.{js,jsx}", "!**/__mocks__/**"],
-        dest: "dist"
+        sources: ['src/**/*.{js,jsx}', '!**/__mocks__/**'],
+        dest: 'dist',
     },
     ts: {
-        sources: ["src/**/*.{ts,tsx}"],
-        dest: "dist"
+        sources: ['src/**/*.{ts,tsx}'],
+        dest: 'dist',
+        destBundle: 'target/tstemp',
     },
     less: {
-        sources: "src/less/core.less",
+        sources: 'src/less/core.less',
         watch: 'src/less/**/*.{less,css}',
-        dest: "dist/assets/css",
+        dest: 'dist/assets/css',
     },
     copy: {
         less_assets: {
-            sources: "src/less/**/*.svg",
-            dest: "dist/assets/css"
+            sources: 'src/less/**/*.svg',
+            dest: 'dist/assets/css',
         },
     },
 };
 
-
 // Watch all
 
-gulp.task("watch", ["build"], () => {
-    gulp.watch(config.react.sources, ["compile-react"]);
-    gulp.watch(config.less.watch, ["less"]);
+gulp.task('watch', ['build'], () => {
+    gulp.watch(config.react.sources, ['compile-react']);
+    gulp.watch(config.less.watch, ['less']);
 });
 
 // Default to all
 
-gulp.task("default", ["validate"]);
+gulp.task('default', ['validate']);
 
 // Build all
 
-gulp.task("build", ["compile-typescript", "compile-react", "less", "copy"]);
+gulp.task('build', ['compile-typescript', 'compile-react', 'less', 'copy']);
 
 // Compile react sources
 
-gulp.task("compile-react", () =>
-    gulp.src(config.react.sources)
+gulp.task('compile-react', () =>
+    gulp
+        .src(config.react.sources)
         .pipe(sourcemaps.init())
         .pipe(babel(config.react.babel))
-        .pipe(sourcemaps.write("."))
-        .pipe(gulp.dest(config.react.dest)));
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest(config.react.dest))
+);
 
-gulp.task("compile-typescript", () =>
-    gulp.src(config.ts.sources)
+gulp.task('compile-typescript', () =>
+    gulp
+        .src(config.ts.sources)
         .pipe(tsProject())
-        .pipe(gulp.dest(config.ts.dest)));
-        
-gulp.task("less", () =>
-    gulp.src(config.less.sources)
+        .pipe(gulp.dest(config.ts.dest))
+);
+
+gulp.task('copy-src', () => gulp.src('src/js/**/*').pipe(gulp.dest(config.ts.destBundle + '/js')));
+gulp.task('compile-typescript-bundle', ['copy-src'], () =>
+    gulp
+        .src(config.ts.sources)
+        .pipe(tsProject())
+        .pipe(gulp.dest(config.ts.destBundle))
+);
+
+gulp.task('less', () =>
+    gulp
+        .src(config.less.sources)
         .pipe(sourcemaps.init())
         .pipe(less())
-        .pipe(rename("blueocean-core-js.css"))
-        .pipe(sourcemaps.write("."))
-        .pipe(gulp.dest(config.less.dest)));
+        .pipe(rename('blueocean-core-js.css'))
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest(config.less.dest))
+);
 
-gulp.task("copy", ["copy-less-assets"]);
+gulp.task('copy', ['copy-less-assets']);
 
-gulp.task("copy-less-assets", () =>
-    gulp.src(config.copy.less_assets.sources)
-        .pipe(copy(config.copy.less_assets.dest, { prefix: 2 })));
+gulp.task('copy-less-assets', () => gulp.src(config.copy.less_assets.sources).pipe(copy(config.copy.less_assets.dest, { prefix: 2 })));
 
 // Validate contents
-gulp.task("validate", ["lint", "test"], () => {
-    const paths = [
-        config.react.dest,
-    ];
+gulp.task('validate', ['lint', 'test'], () => {
+    const paths = [config.react.dest];
 
     for (const path of paths) {
         try {
@@ -99,24 +110,27 @@ gulp.task("validate", ["lint", "test"], () => {
     }
 });
 
-
 var builder = require('@jenkins-cd/js-builder');
 
-builder.src([
-    'src/js',
-    'less']);
+builder.src([config.ts.destBundle, 'less']);
 
 //
 // Create the main bundle.
 //
-builder.bundle('src/js/index.js', 'blueocean-core-js.js')
+
+builder
+    .bundle('target/tstemp/js/index.js', 'blueocean-core-js.js')
+    .onStartup('./target/tstemp/js/bundleStartup.js')
     .inDir('target/classes/io/jenkins/blueocean')
     .less('src/less/blueocean-core-js.less')
     .import('react@any', {
-        aliases: ['react/lib/React'] // in case a module requires react through the back door
+        aliases: ['react/lib/React'], // in case a module requires react through the back door
     })
     .import('react-dom@any')
-    .import("react-router@any")
-    .export("@jenkins-cd/js-extensions")
-    .export("@jenkins-cd/logging")
+    .import('react-router@any')
+    .export('@jenkins-cd/js-extensions')
+    .export('@jenkins-cd/logging')
     .export('mobx');
+
+//megaultrahax
+gulp.tasks['js_bundle_blueocean-core-js_bundle_1'].dep = ['compile-typescript-bundle'];

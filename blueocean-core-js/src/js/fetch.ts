@@ -2,13 +2,13 @@ import * as Promise from 'bluebird';
 
 import 'isomorphic-fetch';
 
-import jwt from './jwt';
-import utils from './utils';
-import config from './config';
-import dedupe from './utils/dedupe-calls';
-import urlconfig from './urlconfig';
+import { JWT } from './jwt';
+import { Utils } from './utils';
+import { AppConfig } from './config';
+import { dedupe } from './utils/dedupe-calls';
+import { UrlConfig } from './urlconfig';
 import { prefetchdata } from './scopes';
-import loadingIndicator from './LoadingIndicator';
+import { loadingIndicator }from './LoadingIndicator';
 import { capabilityAugmenter } from './capability/index';
 
 let refreshToken: string | null = null;
@@ -16,42 +16,46 @@ let refreshToken: string | null = null;
 function isGetRequest(fetchOptions: RequestInit): boolean {
     return !fetchOptions || !fetchOptions.method || 'get'.localeCompare(fetchOptions.method) === 0;
 }
-interface RawFetchOpts {
-    onSuccess?: <A, B>(success: A) => B
-    onError?: <A, B>(error: A) => B
-    fetchOptions?: RequestInit
-    disableDedupe?: boolean
-    disableLoadingIndicator?: boolean
-    ignoreRefreshHeader?: boolean
+export namespace FetchFunctions {
+    export interface RawFetchOpts {
+        onSuccess?: <A, B>(success: A) => B
+        onError?: <A, B>(error: A) => B
+        fetchOptions?: RequestInit
+        disableDedupe?: boolean
+        disableLoadingIndicator?: boolean
+        ignoreRefreshHeader?: boolean
+    }
+}
+export namespace Fetch {
+    export interface FetchOpts {
+        onSuccess?: <A, B>(success: A) => B
+        onError?: <A, B>(error: A) => B
+        fetchOptions?: RequestInit
+        disableCapabilites?: boolean
+        disableLoadingIndicator?: boolean
+        ignoreRefreshHeader?: boolean
+    }
 }
 
-export interface FetchOpts {
-    onSuccess?: <A, B>(success: A) => B
-    onError?: <A, B>(error: A) => B
-    fetchOptions?: RequestInit
-    disableCapabilites?: boolean
-    disableLoadingIndicator?: boolean
-    ignoreRefreshHeader?: boolean
-}
-export const FetchFunctions = {
+export class FetchFunctions {
     /**
      * Ensures the URL starts with jenkins path if not an absolute URL.
      * @param url
      * @returns {string}
      */
-    prefixUrl(url: string): string {
+    static prefixUrl(url: string): string {
         if (url.indexOf('http') === 0) {
             return url;
         }
 
-        if (urlconfig.getJenkinsRootURL() !== '' && !url.startsWith(urlconfig.getJenkinsRootURL())) {
-            return `${urlconfig.getJenkinsRootURL()}${url}`;
+        if (UrlConfig.getJenkinsRootURL() !== '' && !url.startsWith(UrlConfig.getJenkinsRootURL())) {
+            return `${UrlConfig.getJenkinsRootURL()}${url}`;
         }
 
         return url;
-    },
+    }
 
-    checkRefreshHeader(response: Response): Response {
+    static checkRefreshHeader(response: Response): Response {
         const _refreshToken = response.headers.get('X-Blueocean-Refresher');
         // No token in response, lets just ignore.
         if (!_refreshToken) {
@@ -66,17 +70,17 @@ export const FetchFunctions = {
 
         // We need to refresh the page now!
         if (refreshToken !== _refreshToken) {
-            utils.refreshPage();
+            Utils.refreshPage();
             throw new Error('refreshing apge');
         }
         return response;
-    },
+    }
 
     /**
      * This method checks for for 2XX http codes. Throws error it it is not.
      * This should only be used if not using fetch or fetchJson.
      */
-    checkStatus(response: Response): Response {
+    static checkStatus(response: Response): Response {
         if (response.status >= 300 || response.status < 200) {
             const message = `fetch failed: ${response.status} for ${response.url}`;
             const error: any = new Error(message); //FIXME
@@ -84,32 +88,32 @@ export const FetchFunctions = {
             throw error;
         }
         return response;
-    },
+    }
 
-    stopLoadingIndicator(response: Response): Response {
+    static stopLoadingIndicator(response: Response): Response {
         loadingIndicator.hide();
         return response;
-    },
+    }
 
     /**
      * Adds same-origin option to the fetch.
      */
-    sameOriginFetchOption(options: RequestInit = {}): RequestInit {
-        const newOpts: RequestInit = utils.clone(options);
+    static sameOriginFetchOption(options: RequestInit = {}): RequestInit {
+        const newOpts: RequestInit = Utils.clone(options);
         newOpts.credentials = newOpts.credentials || 'same-origin';
         return newOpts;
-    },
+    }
 
     /**
      * Enhances the fetchOptions with the JWT bearer token. Will only be needed
      * if not using fetch or fetchJson.
      */
-    jwtFetchOption(token: string, options: RequestInit = {}): RequestInit {
-        const newOpts: RequestInit = utils.clone(options);
+    static jwtFetchOption(token: string, options: RequestInit = {}): RequestInit {
+        const newOpts: RequestInit = Utils.clone(options);
         newOpts.headers = newOpts.headers || {};
         newOpts.headers["Authorization"] = newOpts.headers["Authorization"] || `Bearer ${token}`;
         return newOpts;
-    },
+    }
 
     /**
      * REturns the json body from the response. It is only needed if
@@ -118,7 +122,7 @@ export const FetchFunctions = {
      * Usage:
      * FetchUtils.fetch(..).then(FetchUtils.parseJSON)
      */
-    parseJSON<T>(response: Response): Promise<T> {
+    static parseJSON<T>(response: Response): Promise<T> {
         return (
             response
                 .json()
@@ -131,13 +135,13 @@ export const FetchFunctions = {
                     throw error;
                 })
         );
-    },
+    }
 
     /* eslint-disable no-param-reassign */
     /**
      * Parses the response body for the error generated in checkStatus.
      */
-    parseErrorJson(error: any): any  {
+    static parseErrorJson(error: any): any  {
         return error.response.json().then(
             body => {
                 error.responseBody = body;
@@ -148,7 +152,7 @@ export const FetchFunctions = {
                 throw error;
             }
         );
-    },
+    }
     /* eslint-enable no-param-reassign */
 
     /**
@@ -157,9 +161,9 @@ export const FetchFunctions = {
      * Usage;
      * fetchJson(..).catch(FetchUtils.consoleError)
      */
-    consoleError(error: any): void {
+    static consoleError(error: any): void {
         console.error(error); // eslint-disable-line no-console
-    },
+    }
 
     /**
      * Error function helper to call a callback on a rejected promise.
@@ -169,7 +173,7 @@ export const FetchFunctions = {
      * Usage;
      * fetchJson(..).catch(FetchUtils.onError(error => //do something)
      */
-    onError(errorFunc: (any) => any): (any) => void {
+    static onError(errorFunc: (any) => any): (any) => void {
         return error => {
             if (errorFunc) {
                 errorFunc(error);
@@ -177,7 +181,7 @@ export const FetchFunctions = {
                 FetchFunctions.consoleError(error);
             }
         };
-    },
+    }
 
     /**
      * Raw fetch that returns the json body.
@@ -194,7 +198,7 @@ export const FetchFunctions = {
      * @param {boolean} [options.disableLoadingIndicator] - Optional flag to disable loading indicator for this request.
      * @returns JSON body
      */
-    rawFetchJSON(url, { onSuccess , onError, fetchOptions, disableDedupe, disableLoadingIndicator, ignoreRefreshHeader }: RawFetchOpts = {}) {
+    static rawFetchJSON(url, { onSuccess , onError, fetchOptions, disableDedupe, disableLoadingIndicator, ignoreRefreshHeader }: FetchFunctions.RawFetchOpts = {}) {
         const request = () => {
             let future = getPrefetchedDataFuture(url); // eslint-disable-line no-use-before-define
 
@@ -231,7 +235,7 @@ export const FetchFunctions = {
         }
 
         return dedupe(url, request);
-    },
+    }
     /**
      * Raw fetch.
      *
@@ -247,7 +251,7 @@ export const FetchFunctions = {
      * @param {boolean} [options.disableLoadingIndicator] - Optional flag to disable loading indicator for this request.
      * @returns fetch response
      */
-    rawFetch(url, { onSuccess, onError, fetchOptions, disableDedupe, disableLoadingIndicator, ignoreRefreshHeader }: RawFetchOpts = {}) {
+    static rawFetch(url, { onSuccess, onError, fetchOptions, disableDedupe, disableLoadingIndicator, ignoreRefreshHeader }: FetchFunctions.RawFetchOpts = {}) {
         const request = () => {
             let future = getPrefetchedDataFuture(url); // eslint-disable-line no-use-before-define
             if (!future){
@@ -282,10 +286,10 @@ export const FetchFunctions = {
         }
 
         return dedupe(url, request);
-    },
+    }
 };
 
-export const Fetch = {
+export class Fetch {
     /**
      * Fetch JSON data.
      * <p>
@@ -298,13 +302,13 @@ export const Fetch = {
      * @param {Object} [options.fetchOptions] - Optional isomorphic-fetch options.
      * @returns JSON body.
      */
-    fetchJSON(url, { onSuccess, onError, fetchOptions, disableCapabilites, disableLoadingIndicator, ignoreRefreshHeader }: FetchOpts = {}) {
+    static fetchJSON(url, { onSuccess, onError, fetchOptions, disableCapabilites, disableLoadingIndicator, ignoreRefreshHeader }: Fetch.FetchOpts = {}) {
         const fixedUrl = FetchFunctions.prefixUrl(url);
         let future;
-        if (!config.isJWTEnabled()) {
+        if (!AppConfig.isJWTEnabled()) {
             future = FetchFunctions.rawFetchJSON(fixedUrl, { onSuccess, onError, fetchOptions, disableLoadingIndicator, ignoreRefreshHeader });
         } else {
-            future = jwt.getToken().then(token =>
+            future = JWT.getToken().then(token =>
                 FetchFunctions.rawFetchJSON(fixedUrl, {
                     onSuccess,
                     onError,
@@ -314,11 +318,11 @@ export const Fetch = {
         }
 
         if (!disableCapabilites) {
-            return future.then(data => capabilityAugmenter.augmentCapabilities(utils.clone(data)));
+            return future.then(data => capabilityAugmenter.augmentCapabilities(Utils.clone(data)));
         }
 
         return future;
-    },
+    }
 
     /**
      * Fetch data.
@@ -332,21 +336,21 @@ export const Fetch = {
      * @param {Object} [options.fetchOptions] - Optional isomorphic-fetch options.
      * @returns fetch body.
      */
-    fetch(url, { onSuccess, onError, fetchOptions, disableLoadingIndicator, ignoreRefreshHeader }: FetchOpts = {}) {
+    static fetch(url, { onSuccess, onError, fetchOptions, disableLoadingIndicator, ignoreRefreshHeader }: Fetch.FetchOpts = {}) {
         const fixedUrl = FetchFunctions.prefixUrl(url);
 
-        if (!config.isJWTEnabled()) {
+        if (!AppConfig.isJWTEnabled()) {
             return FetchFunctions.rawFetch(fixedUrl, { onSuccess, onError, fetchOptions, disableLoadingIndicator, ignoreRefreshHeader });
         }
 
-        return jwt.getToken().then(token =>
+        return JWT.getToken().then(token =>
             FetchFunctions.rawFetch(fixedUrl, {
                 onSuccess,
                 onError,
                 fetchOptions: FetchFunctions.jwtFetchOption(token, fetchOptions),
             })
         );
-    },
+    }
 };
 
 function trimRestUrl(url) {

@@ -119,7 +119,14 @@ public class ActivityPage {
     }
 
     public void testNumberRunsComplete(int atLeast) {
+        testNumberRunsComplete(atLeast, "success");
         By selector = By.cssSelector("div[data-pipeline='" + pipeline.getName() + "'].JTable-row circle.success");
+        wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(selector, atLeast - 1));
+        logger.info("At least " + atLeast + " runs are complete");
+    }
+
+    public void testNumberRunsComplete(int atLeast, String status) {
+        By selector = By.cssSelector("div[data-pipeline='" + pipeline.getName() + "'].JTable-row circle."+status);
         wait.until(ExpectedConditions.numberOfElementsToBeMoreThan(selector, atLeast - 1));
         logger.info("At least " + atLeast + " runs are complete");
     }

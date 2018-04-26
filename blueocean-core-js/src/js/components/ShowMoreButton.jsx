@@ -1,6 +1,6 @@
 import React, { PropTypes } from 'react';
 
-import i18nTranslator from '../i18n/i18n';
+import { i18nTranslator } from '../i18n/i18n';
 
 const translate = i18nTranslator('blueocean-web');
 

@@ -28,9 +28,9 @@
  * Ensures that i18n resources are loaded before the bundle starts to execute.
  */
 
-import config from '../config';
-import logging from '../logging';
-import i18nTranslator from './i18n';
+import { AppConfig } from '../config';
+import { logging } from '../logging';
+import { i18nTranslator } from './i18n';
 
 const logger = logging.logger('io.jenkins.blueocean.i18n.startup');
 
@@ -42,7 +42,7 @@ const logger = logging.logger('io.jenkins.blueocean.i18n.startup');
  */
 export function execute(done, bundleConfig) {
     if (bundleConfig.hpiPluginId) {
-        const pluginInfo = config.getPluginInfo(bundleConfig.hpiPluginId);
+        const pluginInfo = AppConfig.getPluginInfo(bundleConfig.hpiPluginId);
         if (pluginInfo) {
             if (pluginInfo.i18nBundles && pluginInfo.i18nBundles.length > 0) {
                 logger.debug(`Plugin ${bundleConfig.hpiPluginId} defines i18n resource bundles that must be loaded:`, pluginInfo.i18nBundles);

@@ -5,14 +5,14 @@ import com.google.inject.assistedinject.Assisted;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.model.AbstractPipeline;
+import java.net.URLEncoder;
+import javax.inject.Inject;
 import org.apache.log4j.Logger;
 import org.junit.Assert;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
-
-import javax.inject.Inject;
-import java.net.URLEncoder;
 
 public class  RunDetailsArtifactsPage {
     private Logger logger = Logger.getLogger(RunDetailsArtifactsPage.class);
@@ -69,4 +69,11 @@ public class  RunDetailsArtifactsPage {
     public RunDetailsArtifactsPage open(int runNumber) {
         return open(null, runNumber);
     }
+
+    public RunDetailsArtifactsPage checkNumberOfArtifacts(int expected) {
+        wait.until(ExpectedConditions.numberOfElementsToBe(By.cssSelector(".artifacts-table .JTable-row"),
+                expected+1)); //1 for heading
+        return this;
+    }
+
 }

@@ -2,8 +2,8 @@
  * Created by cmeyers on 9/8/16.
  */
 import { Fetch } from '../fetch';
-import config from '../urlconfig';
-import utils from '../utils';
+import { UrlConfig } from '../urlconfig';
+import { Utils } from '../utils';
 
 export class CapabilityApi {
     /**
@@ -15,8 +15,8 @@ export class CapabilityApi {
      */
     fetchCapabilities(classNames) {
         const noDuplicates = classNames.filter((item, index, self) => self.indexOf(item) === index);
-        const path = config.getJenkinsRootURL();
-        const classesUrl = utils.cleanSlashes(`${path}/blue/rest/classes/`);
+        const path = UrlConfig.getJenkinsRootURL();
+        const classesUrl = Utils.cleanSlashes(`${path}/blue/rest/classes/`);
 
         const fetchOptions = {
             method: 'POST',

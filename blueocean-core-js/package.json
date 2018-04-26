@@ -3,6 +3,7 @@
   "version": "0.0.171",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
+  "types": "dist/js/index.d.ts",
   "scripts": {
     "start-storybook": "start-storybook --static-dir ./dist/assets/,./node_modules/@jenkins-cd/design-language/dist/assets/",
     "storybook": "npm run start-storybook -- -p 9001",
@@ -36,11 +37,11 @@
   },
   "dependencies": {
     "@jenkins-cd/design-language": "0.0.162",
-    "@jenkins-cd/js-extensions": "0.0.42",
     "@jenkins-cd/js-modules": "0.0.10",
     "@jenkins-cd/logging": "0.0.6",
     "@jenkins-cd/sse-gateway": "0.0.21",
     "@jenkins-cd/storage": "0.0.6",
+    "@jenkins-cd/js-extensions": "0.0.44",
     "bluebird": "3.5.0",
     "cd": "0.3.3",
     "i18next": "3.5.2",
@@ -64,6 +65,7 @@
     "@kadira/storybook": "2.20.1",
     "@types/bluebird": "3.5.0",
     "@types/bluebird-global": "3.5.0",
+    "@types/node": "9.6.4",
     "babel-eslint": "7.0.0",
     "babel-plugin-transform-decorators-legacy": "1.3.4",
     "babel-polyfill": "6.16.0",
@@ -86,6 +88,7 @@
     "gulp-sourcemaps": "1.6.0",
     "gulp-typescript": "4.0.1",
     "jest": "19.0.2",
+    "jest-cli": "19.0.2",
     "less": "2.7.2",
     "nock": "9.0.14",
     "react-addons-test-utils": "15.4.2",
@@ -124,21 +127,6 @@
       "jsx",
       "json",
       "node"
-    ]
-  },
-  "browserify": {
-    "extensions": [
-      ".js",
-      ".es6",
-      ".jsx",
-      ".hbs",
-      ".ts",
-      ".tsx"
-    ],
-    "plugin": [
-      [
-        "tsify"
-      ]
     ]
   }
 }

@@ -53,7 +53,7 @@ public class CommitMessagesTest extends BlueOceanAcceptanceTest {
         Files.copy(new File(jenkinsFile.getFile()), new File(git.gitDirectory, "Jenkinsfile"));
         git.addAll();
         git.commit("initial commit");
-        logger.info("Commited Jenkinsfile");
+        logger.info("Committed Jenkinsfile");
 
         MultiBranchPipeline pipeline = mbpFactory.pipeline(pipelineName).createPipeline(git);
         sseClientRule.untilEvents(pipeline.buildsFinished);
@@ -63,7 +63,7 @@ public class CommitMessagesTest extends BlueOceanAcceptanceTest {
         git.addAll();
         git.commit("2nd commit");
 
-        logger.info("Commited a second time");
+        logger.info("Committed a second time");
 
         pipeline.buildBranch(branchName);
         sseClientRule.untilEvents(pipeline.buildsFinished);

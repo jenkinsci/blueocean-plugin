@@ -5,9 +5,9 @@
 import React from 'react';
 import { assert } from 'chai';
 
-import utils from '../../src/js/utils';
-import Security from '../../src/js/security';
-import config from '../../src/js/config';
+import { Utils } from '../../src/js/utils';
+import { Security } from '../../src/js/security';
+import { AppConfig } from '../../src/js/config';
 import { TestUtil as UserTestUtil } from '../../src/js/User';
 
 const { permit } = Security;
@@ -17,7 +17,7 @@ describe('Security', () => {
         let pipeline;
 
         beforeEach(() => {
-            pipeline = utils.clone(require('./data/pipeline-1.json'));
+            pipeline = Utils.clone(require('./data/pipeline-1.json'));
         });
 
         it('returns true when user has permission', () => {
@@ -40,7 +40,7 @@ describe('Security', () => {
 
     describe('isSecurityEnabled', () => {
         it('returns true when active', () => {
-            config._setJenkinsConfig({
+            AppConfig._setJenkinsConfig({
                 security: {
                     enabled: true,
                 },

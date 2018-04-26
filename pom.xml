@@ -25,8 +25,7 @@
 
   <properties>
     <java.level>8</java.level>
-    <jackson.version>2.8.9</jackson.version>
-    <jenkins.version>2.73.3</jenkins.version> <!-- Should be kept in sync with Dockerfile FROM statement-->
+    <jenkins.version>2.107.2</jenkins.version> <!-- Should be kept in sync with Dockerfile FROM statement-->
     <javadoc.exec.goal>javadoc-no-fork</javadoc.exec.goal> <!-- stop initialize phase plugins executing twice -->
     <frontend-version>1.6</frontend-version>
     <node.version>6.4.0</node.version>
@@ -40,8 +39,8 @@
     <jacoco.line.coverage>0.70</jacoco.line.coverage>
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
-    <jenkins-test-harness.version>2.30</jenkins-test-harness.version>
-    <scm-api.version>2.2.2</scm-api.version>
+    <jenkins-test-harness.version>2.38</jenkins-test-harness.version>
+    <scm-api.version>2.2.6</scm-api.version>
     <git.version>3.8.0</git.version>
   </properties>
 
@@ -260,12 +259,6 @@
         </dependency>
 
         <dependency>
-            <groupId>io.jenkins.blueocean.rest.annotation</groupId>
-            <artifactId>capability-annotation</artifactId>
-            <version>1.2</version>
-        </dependency>
-
-        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-pipeline-scm-api</artifactId>
             <version>${project.version}</version>
@@ -296,12 +289,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>blueocean-autofavorite</artifactId>
-            <version>1.2.0</version>
-        </dependency>
-
-        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-jira</artifactId>
             <version>${project.version}</version>
@@ -329,16 +316,11 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- Pipeline -->
-        <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>branch-api</artifactId>
-            <version>2.0.11</version>
-        </dependency>
+        <!-- Pipeline plugins -->
         <dependency>
             <groupId>org.jenkinsci.plugins</groupId>
             <artifactId>pipeline-model-definition</artifactId>
-            <version>1.2.7</version>
+            <version>1.2.9</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.jenkins-ci.plugins</groupId>
@@ -347,24 +329,19 @@
             </exclusions>
         </dependency>
         <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>plain-credentials</artifactId>
-            <version>1.3</version>
-        </dependency>
-        <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-cps</artifactId>
-            <version>2.42</version>
+            <version>2.46</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-api</artifactId>
-            <version>2.22</version>
+            <version>2.25</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-job</artifactId>
-            <version>2.14.1</version>
+            <version>2.17</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -372,14 +349,9 @@
             <version>1.6</version>
         </dependency>
         <dependency>
-            <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>github-branch-source</artifactId>
-            <version>2.2.3</version>
-        </dependency>
-        <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-multibranch</artifactId>
-            <version>2.16</version>
+            <version>2.17</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
@@ -389,17 +361,17 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-durable-task-step</artifactId>
-            <version>2.13</version>
+            <version>2.18</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-support</artifactId>
-            <version>2.14</version>
+            <version>2.18</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins.workflow</groupId>
             <artifactId>workflow-support</artifactId>
-            <version>2.14</version>
+            <version>2.18</version>
             <classifier>tests</classifier>
         </dependency>
         <dependency>
@@ -415,7 +387,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>pipeline-stage-step</artifactId>
-            <version>2.2</version>
+            <version>2.3</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -435,7 +407,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>script-security</artifactId>
-            <version>1.39</version>
+            <version>1.44</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -445,16 +417,9 @@
         <dependency>
             <groupId>com.coravy.hudson.plugins.github</groupId>
             <artifactId>github</artifactId>
-            <version>1.28.0</version>
+            <version>1.29.0</version>
             <exclusions>
-                <!-- Upper bound fix.
-                     TODO: Remove it once github plugin commit
-                     https://github.com/jenkinsci/github-plugin/commit/a9308f124eeb5e599b2564d6355c5dd5cdafee34
-                     is released -->
-                <exclusion>
-                    <groupId>org.jenkins-ci</groupId>
-                    <artifactId>symbol-annotation</artifactId>
-                </exclusion>
+
                 <!-- Upper bound fix: Remove it once token-micro plugin is fixed to remove dependency on asm-tree
                      PR: https://github.com/jenkinsci/token-macro-plugin/pull/31
                 -->
@@ -469,18 +434,24 @@
             </exclusions>
         </dependency>
 
-        <!-- Bitbucket dependencies -->
+        <!-- scm plugins -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>cloudbees-bitbucket-branch-source</artifactId>
-            <version>2.2.9</version>
+            <artifactId>scm-api</artifactId>
+            <version>${scm-api.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.apache.maven</groupId>
-            <artifactId>maven-artifact</artifactId>
-            <version>3.5.0</version>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>branch-api</artifactId>
+            <version>2.0.18</version>
+            <exclusions>
+                <!-- Upper dependency fix: annotation-indexer comes from core, exclude from git -->
+                <exclusion>
+                    <groupId>org.jenkins-ci</groupId>
+                    <artifactId>annotation-indexer</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
-
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>apache-httpcomponents-client-4-api</artifactId>
@@ -490,13 +461,18 @@
         <!-- Other -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>blueocean-display-url</artifactId>
-            <version>2.2.0</version>
+            <artifactId>github-branch-source</artifactId>
+            <version>2.3.2</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
-            <artifactId>scm-api</artifactId>
-            <version>${scm-api.version}</version>
+            <artifactId>cloudbees-bitbucket-branch-source</artifactId>
+            <version>2.2.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-artifact</artifactId>
+            <version>3.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -510,6 +486,29 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        <!-- Upper bound dependency fix as git plugin brings new version of it than others -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>git-client</artifactId>
+            <version>2.7.0</version>
+        </dependency>
+
+        <!-- Other -->
+        <dependency>
+            <groupId>io.jenkins.blueocean.rest.annotation</groupId>
+            <artifactId>capability-annotation</artifactId>
+            <version>1.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>blueocean-autofavorite</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>blueocean-display-url</artifactId>
+            <version>2.2.0</version>
+        </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>jira</artifactId>
@@ -519,10 +518,14 @@
                     <groupId>com.google.guava</groupId>
                     <artifactId>guava</artifactId>
                 </exclusion>
-
-                <!-- Upper bound dependency fix
-                    TODO: Remove it after https://github.com/jenkinsci/jira-plugin/pull/130 is merged and released.
-                -->
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-core</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>com.atlassian.httpclient</groupId>
                     <artifactId>atlassian-httpclient-plugin</artifactId>
@@ -552,7 +555,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>credentials</artifactId>
-            <version>2.1.14</version>
+            <version>2.1.16</version>
+        </dependency>
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>plain-credentials</artifactId>
+            <version>1.4</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -562,12 +570,12 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>cloudbees-folder</artifactId>
-            <version>6.1.2</version>
+            <version>6.3</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>matrix-project</artifactId>
-            <version>1.11</version>
+            <version>1.12</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.main</groupId>
@@ -584,7 +592,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>structs</artifactId>
-            <version>1.10</version>
+            <version>1.14</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
@@ -608,38 +616,14 @@
         </dependency>
 
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-annotations</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-core</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>github-api</artifactId>
-            <version>1.86</version>
-            <exclusions>
-                <!-- Upper bound fix
-                     TODO: Remove when PR https://github.com/jenkinsci/github-api-plugin/pull/15 is merged and released
-                -->
-                <exclusion>
-                    <groupId>com.infradna.tool</groupId>
-                    <artifactId>bridge-method-annotation</artifactId>
-                </exclusion>
-            </exclusions>
+            <version>1.90</version>
         </dependency>
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>jackson2-api</artifactId>
-            <version>2.7.3</version>
+            <version>2.8.10.1</version>
         </dependency>
         <dependency>
             <groupId>commons-codec</groupId>
@@ -698,6 +682,13 @@
             <groupId>io.keen</groupId>
             <artifactId>keen-client-api-java</artifactId>
             <version>5.2.0</version>
+            <exclusions>
+                <!-- upper bound fix, git plugin pulls in later versions -->
+                <exclusion>
+                    <groupId>com.fasterxml.jackson.core</groupId>
+                    <artifactId>jackson-databind</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- Included in core -->

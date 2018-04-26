@@ -3,11 +3,11 @@ import { Alerts, Dialog } from '@jenkins-cd/design-language';
 
 import { UrlBuilder, capable, RunButtonBase as RunButton, ToastUtils } from '../index';
 
-import i18nTranslator from '../i18n/i18n';
+import { i18nTranslator } from '../i18n/i18n';
 
 import { ParameterApi as parameterApi, ParameterService, ParametersRender, supportedInputTypesMapping } from './index';
 
-import logging from '../logging';
+import { logging } from '../logging';
 const logger = logging.logger('io.jenkins.blueocean.core.ParametersRunButton');
 
 /**
