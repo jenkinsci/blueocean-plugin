@@ -1,8 +1,7 @@
 import * as React from 'react';
-import {Component} from 'react';
 import {observer} from 'mobx-react';
 import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
-import {GitPWCredentialsManager, ManagerState} from './GitPWCredentialsManager';
+import {GitPWCredentialsManager, ManagerState, Credential} from './GitPWCredentialsManager';
 import * as debounce from 'lodash.debounce';
 
 import {Button} from '../../creation/github/Button';
@@ -17,8 +16,8 @@ import {
 const t = i18nTranslator('blueocean-dashboard');
 
 interface Props {
-    onStatus?: Function,
-    onComplete?: Function,
+    onStatus?: (status: string) => void,
+    onComplete?: (selectedCredential: Credential | undefined, cause?: string) => void,
     repositoryUrl: string,
     branch?: string,
     existingFailed?: boolean, // if true we shouldn't bother looking it up
@@ -55,7 +54,7 @@ function getErrorMessage(state: ManagerState) {
  * Component to handle lookup / creation of username+password credentials for git repositories over http(s)
  */
 @observer
-export class GitCredentialsPickerPassword extends Component<Props, State> {
+export class GitCredentialsPickerPassword extends React.Component<Props, State> {
 
     credentialsManager: GitPWCredentialsManager;
 

@@ -23,7 +23,10 @@ export enum ManagerState {
     PENDING_VALIDATION = 'PENDING_VALIDATION',
 }
 
-type Credential = any; // FIXME: canonical types in core-js
+export interface Credential { // FIXME: Canonical types in core-js
+    id: string,
+    displayName: string
+}
 
 /**
  * Acts as a mobx store and api intermediary on behalf of GitCredentialsPickerPassword
@@ -64,7 +67,7 @@ export class GitPWCredentialsManager {
             .then(r => {
                 return r;
             })
-            .then(action(credential => {
+            .then(action((credential: Credential)  => {
                 this.state = ManagerState.EXISTING_FOUND;
                 this.existingCredential = credential;
                 return credential;
@@ -99,7 +102,7 @@ export class GitPWCredentialsManager {
                 // the state to change until it's done
                 return this.api.findExistingCredential(repositoryUrl);
             }))
-            .then(action(credential => {
+            .then(action((credential: Credential) => {
                 this.state = ManagerState.SAVE_SUCCESS;
                 this.existingCredential = credential;
                 return credential
