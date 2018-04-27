@@ -130,14 +130,19 @@ export class GitCredentialsPickerPassword extends React.Component<Props, State> 
             return;
         }
 
+        const {usernameValue, passwordValue} = this.state;
+        const {requirePush = false} = this.props;
+
         this.credentialsManager
-            .createCredential(this.state.usernameValue, this.state.passwordValue, !!this.props.requirePush)
+            .createCredential(usernameValue, passwordValue, requirePush)
             .catch(error => {
                 return undefined; // Error details handled by manager state
             })
             .then(credential => {
                 this.setState({
-                    selectedRadio: RadioOption.USE_EXISTING
+                    selectedRadio: RadioOption.USE_EXISTING,
+                    usernameValue: null,
+                    passwordValue: null,
                 });
 
                 if (this.props.onComplete) {
@@ -233,19 +238,19 @@ export class GitCredentialsPickerPassword extends React.Component<Props, State> 
         const isPendingValidation = managerState == ManagerState.PENDING_VALIDATION;
 
         const connectButtonStatus = {result: null as string | null};
-
-        if (isPendingValidation) {
-            connectButtonStatus.result = 'running';
-        } else if (managerState === ManagerState.SAVE_SUCCESS) {
-            connectButtonStatus.result = 'success';
-        }
-
         const {selectedRadio} = this.state;
+
         const {existingCredential} = this.credentialsManager;
 
         const hasExistingCredential = !!existingCredential;
         const useExistingCredential = hasExistingCredential && selectedRadio === RadioOption.USE_EXISTING;
         const disableForm = isPendingValidation || useExistingCredential;
+
+        if (isPendingValidation) {
+            connectButtonStatus.result = 'running';
+        } else if (managerState === ManagerState.SAVE_SUCCESS && useExistingCredential) {
+            connectButtonStatus.result = 'success';
+        }
 
         const labelInstructions = t('creation.git.create_credential.pw_instructions');
         const labelUsername = t('creation.git.create_credential.username_title');
