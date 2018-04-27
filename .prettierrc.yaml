@@ -4,10 +4,16 @@ parser: babylon
 tabWidth: 4
 trailingComma: es5
 singleQuote: true
+overrides:
+    - files: "**/*.ts"
+      options:
+            parser: typescript
 jenkins:
     extensions:
         - .js
         - .jsx
+        - .ts
+        - .tsx
     ignoreGlobs:
         - "**/svg-icons/**"
         - "**/src/test/**"
