@@ -90,14 +90,19 @@ public class GitScm extends AbstractScm {
         return null;
     }
 
-    private static String normalizeServerUrl(String serverUrl) {
+    /**
+     * Normalize the URL to protocol, port, and host to use as part of the credential id
+     * @param repositoryUrl
+     * @return a normalized url without path, query, or fragment components
+     */
+    private static String normalizeServerUrl(String repositoryUrl) {
 
-        if (serverUrl == null) {
+        if (repositoryUrl == null) {
             return "";
         }
 
         try {
-            java.net.URI uri = new URI(serverUrl).normalize();
+            java.net.URI uri = new URI(repositoryUrl).normalize();
             String scheme = uri.getScheme();
 
             String host = uri.getHost() == null ? null : uri.getHost().toLowerCase(Locale.ENGLISH);
@@ -111,19 +116,19 @@ public class GitScm extends AbstractScm {
             } else if ("git".equals(scheme) && port == 9418) {
                 port = -1;
             }
-            serverUrl = new URI(
+            return new URI(
                 scheme,
                 uri.getUserInfo(),
                 host,
                 port,
-                uri.getPath(),
-                uri.getQuery(),
-                uri.getFragment()
-            ).toASCIIString();
+                null,
+                null,
+                null
+            ).toASCIIString().replaceAll("/$", "");
         } catch (URISyntaxException e) {
-            // ignore, this was a best effort tidy-up
+            // Bad URL
+            return "";
         }
-        return serverUrl.replaceAll("/$", "");
     }
 
     @Override
