@@ -22,7 +22,7 @@ const fs = require('graceful-fs'); // Will backoff on EMFILE
 // --[ Configuration ]------------------------------------------------------------------------
 
 // These globs are used to exlude certain files from formatting for various reasons
-const IGNORE_GLOBS = ['**/svg-icons/**', '**/src/test/**', '**/stories/**'];
+const IGNORE_GLOBS = ['**/svg-icons/**', '**/src/test/**', '**/stories/**', '**/*.min.js'];
 
 // Extensions we're interested in, for TypeScript and JavaScript batches - keep them lcase!
 const EXTENSIONS = {
