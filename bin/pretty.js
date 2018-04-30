@@ -1,11 +1,6 @@
 #! /usr/bin/env node
 'use strict';
 
-const prettier = require('prettier');
-const path = require('path');
-const glob = require('glob');
-const fs = require('graceful-fs'); // Will backoff on EMFILE
-
 /**
  * This script formats TypeScript and JavaScript source files using prettier.js
  *
@@ -15,16 +10,21 @@ const fs = require('graceful-fs'); // Will backoff on EMFILE
  * We load the prettier config from .prettierrc.yaml in the root of the project, but it is
  * altered at runtime to ensure different parsers are used for TypeScript and JavaScript files.
  * We do this because the babylon parser does not support all the features we're using for
- * TS, and some of our JS files contain flowtype annotations which the typescript parser can't
+ * TS, and many of our JS files contain flowtype annotations which the typescript parser can't
  * handle.
  */
+
+const prettier = require('prettier');
+const path = require('path');
+const glob = require('glob');
+const fs = require('graceful-fs'); // Will backoff on EMFILE
 
 // --[ Configuration ]------------------------------------------------------------------------
 
 // These globs are used to exlude certain files from formatting for various reasons
 const IGNORE_GLOBS = ['**/svg-icons/**', '**/src/test/**', '**/stories/**'];
 
-// Extensions we're interested in, for TypeScript and JavaScript batches
+// Extensions we're interested in, for TypeScript and JavaScript batches - keep them lcase!
 const EXTENSIONS = {
     js: ['.js', '.jsx'],
     ts: ['.ts', '.tsx'],
@@ -78,16 +78,38 @@ if (sourceGlobs.length === 0) {
 
 // --[ Helpers ]------------------------------------------------------------------------------
 
+// Check filename against a list of extensions
 function fileMatchesExtension(fileName, validExtensions) {
     return validExtensions.indexOf(path.extname(fileName).toLowerCase()) !== -1;
 }
 
-// --[ Main Process Steps ]-------------------------------------------------------------------
-
-function getConfig(projectBaseDir) {
-    return prettier.resolveConfig(projectBaseDir);
+// Load w promise
+function loadSource(sourcePath) {
+    return new Promise((fulfil, reject) => {
+        fs.readFile(sourcePath, 'utf8', (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                fulfil(data);
+            }
+        });
+    });
 }
 
+// Save w promise
+function saveSource(sourcePath, data) {
+    return new Promise((fulfil, reject) => {
+        fs.writeFile(sourcePath, data, 'utf8', err => {
+            if (err) {
+                reject(err);
+            } else {
+                fulfil(true);
+            }
+        });
+    });
+}
+
+// Calls out to glob, but returns a promise
 function getSourceFilesFromGlob(globPattern, ignoreGlobs) {
     return new Promise((fulfil, reject) => {
         glob(globPattern, { ignore: ignoreGlobs }, (err, files) => {
@@ -111,6 +133,12 @@ function filterFiles(files, validExtensions) {
     }
 
     return accepted;
+}
+
+// --[ Main Process Steps ]-------------------------------------------------------------------
+
+function getConfig(projectBaseDir) {
+    return prettier.resolveConfig(projectBaseDir);
 }
 
 function getSourceFilesForAllGlobs(config) {
@@ -144,30 +172,6 @@ function splitFilesIntoBatches(files, config) {
     });
 
     return batches;
-}
-
-function loadSource(sourcePath) {
-    return new Promise((fulfil, reject) => {
-        fs.readFile(sourcePath, 'utf8', (err, data) => {
-            if (err) {
-                reject(err);
-            } else {
-                fulfil(data);
-            }
-        });
-    });
-}
-
-function saveSource(sourcePath, data) {
-    return new Promise((fulfil, reject) => {
-        fs.writeFile(sourcePath, data, 'utf8', err => {
-            if (err) {
-                reject(err);
-            } else {
-                fulfil(true);
-            }
-        });
-    });
 }
 
 function prettifyFiles(files, config) {
