@@ -29,11 +29,11 @@ function trimEmptyTokens(tokens) {
 }
 
 type ResourceIdentifiers = {
-    organizationName: string,
-    pipelineFullName: string, // Includes folder path
-    detailName: string, // Either the branchName or the pipeline short name if not multibranch
-    runId: string,
-}
+    organizationName: string;
+    pipelineFullName: string; // Includes folder path
+    detailName: string; // Either the branchName or the pipeline short name if not multibranch
+    runId: string;
+};
 
 /**
  * Parses the REST link to a pipeline run, extracts and unencodes the separate parts
@@ -42,7 +42,6 @@ type ResourceIdentifiers = {
  * @returns {{organizationName: string; fullName: string; detailName: string; runId: string}}
  */
 function parseRestRunUrl(restUrl: string): ResourceIdentifiers {
-
     // FIXME: before exporting, make this more flexible so it can be a complete compliment to buildRestUrl
 
     const tokens = trimEmptyTokens(restUrl.split('/'));
@@ -83,7 +82,7 @@ function parseRestRunUrl(restUrl: string): ResourceIdentifiers {
 
 export type RunDetailsWithSelfLink = {
     // FIXME: We need a canonical typedef for run details object
-    _links: { self: { href: string } }
+    _links: { self: { href: string } };
 };
 
 /**
@@ -98,7 +97,7 @@ export function buildRunUrlForDetails(runDetails: RunDetailsWithSelfLink) {
  * Builds a run details view url from a run's REST link URL
  */
 export function buildRunUrlForRestUrl(restUrl: string) {
-    const {organizationName, pipelineFullName, detailName, runId} = parseRestRunUrl(restUrl);
+    const { organizationName, pipelineFullName, detailName, runId } = parseRestRunUrl(restUrl);
 
     return buildRunUrl(organizationName, pipelineFullName, detailName, runId);
 }

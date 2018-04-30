@@ -16,7 +16,13 @@ export class Choice extends Component {
     }
 
     render() {
-        const { defaultParameterValue: { value }, description, name, choices, onChange } = this.props;
+        const {
+            defaultParameterValue: { value },
+            description,
+            name,
+            choices,
+            onChange,
+        } = this.props;
         const uxChoice = this.radioOrDropDown(choices);
         const cleanName = removeMarkupTags(name);
         const cleanDescription = removeMarkupTags(description);

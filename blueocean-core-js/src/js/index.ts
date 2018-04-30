@@ -20,12 +20,12 @@ export { loadingIndicator } from './LoadingIndicator';
 export { Fetch, FetchFunctions } from './fetch';
 
 import * as UrlBuilder from './UrlBuilder';
-export { UrlBuilder }
+export { UrlBuilder };
 export { UrlConfig } from './urlconfig';
 export { JWT } from './jwt';
 export { TestUtils } from './testutils';
 export { ToastUtils } from './ToastUtils';
-export { Utils }  from './utils';
+export { Utils } from './utils';
 export { User } from './User';
 export { AppConfig } from './config';
 export { Security } from './security';

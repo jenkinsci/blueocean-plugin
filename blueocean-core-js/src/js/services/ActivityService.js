@@ -93,8 +93,8 @@ export class ActivityService extends BunkerService {
         return this.pagerService.getPager({
             key: `${runHref}artifacts/`,
             /**
-                 * Lazily generate the pager incase its needed.
-                 */
+             * Lazily generate the pager incase its needed.
+             */
             lazyPager: () => new Pager(`${runHref}artifacts/`, 100, this),
         });
     }

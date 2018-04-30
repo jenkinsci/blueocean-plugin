@@ -10,14 +10,14 @@ export class Sheet extends React.Component {
     render() {
         const child = React.Children.only(this.props.children);
         return (
-            <div className={`sheet ${this.props.active ? "active":"" }`}>
+            <div className={`sheet ${this.props.active ? 'active' : ''}`}>
                 <div className="sheet-header">
-                    {child.props.onClose &&
+                    {child.props.onClose && (
                         <a className="back-from-sheet" onClick={e => this.onClose()}>
                             <Icon icon="NavigationArrowBack" />
                         </a>
-                    }
-                    {child.getTitle && child.getTitle() || child.props.title}
+                    )}
+                    {(child.getTitle && child.getTitle()) || child.props.title}
                 </div>
                 <div className="sheet-body">{child}</div>
             </div>
@@ -56,7 +56,11 @@ export class Sheets extends React.Component {
         }
         const { transitionDuration = 400, transitionClass = 'sheet' } = this.props;
         const sheets = this.getActiveSheets();
-        const sheetChildren = this.getActiveSheets().map((c,i) => <Sheet active={i==sheets.length-1} key={c.key}>{c}</Sheet>);
+        const sheetChildren = this.getActiveSheets().map((c, i) => (
+            <Sheet active={i == sheets.length - 1} key={c.key}>
+                {c}
+            </Sheet>
+        ));
         return (
             <div className="sheet-container">
                 <ReactCSSTransitionGroup
@@ -74,7 +78,7 @@ export class Sheets extends React.Component {
 }
 
 Sheet.propTypes = {
-    active: React.PropTypes.bool
+    active: React.PropTypes.bool,
 };
 
 Sheets.propTypes = {

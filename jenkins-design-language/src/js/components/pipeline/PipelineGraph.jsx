@@ -63,7 +63,7 @@ export class PipelineGraph extends Component {
         let needsLayout = false;
 
         if (nextProps.layout != this.props.layout) {
-            newState = { ...newState, layout: { ...defaultLayout, ...this.props.layout }};
+            newState = { ...newState, layout: { ...defaultLayout, ...this.props.layout } };
             needsLayout = true;
         }
 

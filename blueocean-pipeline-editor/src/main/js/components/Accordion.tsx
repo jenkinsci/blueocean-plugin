@@ -15,8 +15,8 @@ export class Accordion extends React.Component<Props, State> {
     };
     constructor(props: Props) {
         super(props);
-        
-        this.state = ({ selected: props.show && '.$' + props.show || ''});
+
+        this.state = { selected: (props.show && '.$' + props.show) || '' };
     }
     render() {
         const children = React.Children.toArray(this.props.children);

@@ -57,7 +57,10 @@ export default class Pipeline extends Component {
     componentWillMount() {
         // starting pipeline service when we have an augmenter
         if (this.props.augmenter) {
-            const { augmenter, params: { node } } = this.props;
+            const {
+                augmenter,
+                params: { node },
+            } = this.props;
             this.pager = KaraokeService.pipelinePager(augmenter, { node });
         }
     }

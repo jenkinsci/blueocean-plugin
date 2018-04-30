@@ -3,13 +3,12 @@
  */
 
 export interface ServerError {
-    code?: number,
-    message?: string,
-    errors?: Array<string>
+    code?: number;
+    message?: string;
+    errors?: Array<string>;
 }
 
 export class TypedError extends Error {
-
     type: string;
     code: number;
     errors: Array<string>;
@@ -30,12 +29,7 @@ export class TypedError extends Error {
     }
 
     populate(type: string, serverError?: ServerError) {
-
-        const {
-            code = -1,
-            message = undefined,
-            errors = []
-        } = serverError || {};
+        const { code = -1, message = undefined, errors = [] } = serverError || {};
 
         this.type = type;
         this.code = code;

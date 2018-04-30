@@ -16,9 +16,9 @@ import React, { Component } from 'react';
 export const documentTitle = ComposedComponent =>
     class extends Component {
         /**
-     * Set the title of the document
-     * @param title {String}
-     */
+         * Set the title of the document
+         * @param title {String}
+         */
         setTitle(title) {
             if (document) {
                 document.title = title;
