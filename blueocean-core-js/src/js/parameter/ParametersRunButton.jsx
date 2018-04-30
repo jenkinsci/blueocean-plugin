@@ -66,7 +66,11 @@ export class ParametersRunButton extends Component {
         const { runnable } = props;
         if (runnable) {
             const { config = {} } = this.context;
-            const { _links: { self: { href } } } = runnable;
+            const {
+                _links: {
+                    self: { href },
+                },
+            } = runnable;
             this.setState({
                 href: `${config._rootURL}${href}/runs/`,
                 visible: false,

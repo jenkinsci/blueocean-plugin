@@ -62,7 +62,11 @@ export class RunDetailsPipeline extends Component {
     }
     augment(props) {
         // we do not want to follow any builds that are finished
-        const { result: run, pipeline, params: { branch } } = props;
+        const {
+            result: run,
+            pipeline,
+            params: { branch },
+        } = props;
         const followAlong = (props && props.result && props.result.state !== 'FINISHED') || false;
         this.augmenter = new Augmenter(pipeline, branch, run, followAlong);
     }

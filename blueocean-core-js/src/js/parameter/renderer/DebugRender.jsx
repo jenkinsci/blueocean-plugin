@@ -3,7 +3,12 @@ import { propTypes } from '../commonProptypes';
 
 export class DebugRender extends Component {
     render() {
-        const { defaultParameterValue: { value }, description, name, type } = this.props;
+        const {
+            defaultParameterValue: { value },
+            description,
+            name,
+            type,
+        } = this.props;
         return (
             <ul>
                 <li>name: {name}</li>

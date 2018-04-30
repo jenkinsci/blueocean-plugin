@@ -1,35 +1,30 @@
 import * as React from 'react';
-import {observer} from 'mobx-react';
-import {i18nTranslator} from '@jenkins-cd/blueocean-core-js';
-import {GitPWCredentialsManager, ManagerState, Credential} from './GitPWCredentialsManager';
+import { observer } from 'mobx-react';
+import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
+import { GitPWCredentialsManager, ManagerState, Credential } from './GitPWCredentialsManager';
 import * as debounce from 'lodash.debounce';
 
-import {Button} from '../../creation/github/Button';
+import { Button } from '../../creation/github/Button';
 
-import {
-    FormElement,
-    PasswordInput,
-    TextInput,
-    RadioButtonGroup,
-} from '@jenkins-cd/design-language';
+import { FormElement, PasswordInput, TextInput, RadioButtonGroup } from '@jenkins-cd/design-language';
 
 const t = i18nTranslator('blueocean-dashboard');
 
 interface Props {
-    onStatus?: (status: string) => void,
-    onComplete?: (selectedCredential: Credential | undefined, cause?: string) => void,
-    repositoryUrl: string,
-    branch?: string,
-    existingFailed?: boolean, // if true we shouldn't bother looking it up
-    requirePush?: boolean,
+    onStatus?: (status: string) => void;
+    onComplete?: (selectedCredential: Credential | undefined, cause?: string) => void;
+    repositoryUrl: string;
+    branch?: string;
+    existingFailed?: boolean; // if true we shouldn't bother looking it up
+    requirePush?: boolean;
 }
 
 interface State {
-    usernameValue: string | null,
-    usernameErrorMsg: string | null,
-    passwordValue: string | null,
-    passwordErrorMsg: string | null,
-    selectedRadio: RadioOption
+    usernameValue: string | null;
+    usernameErrorMsg: string | null;
+    passwordValue: string | null;
+    passwordErrorMsg: string | null;
+    selectedRadio: RadioOption;
 }
 
 enum RadioOption {
@@ -55,7 +50,6 @@ function getErrorMessage(state: ManagerState) {
  */
 @observer
 export class GitCredentialsPickerPassword extends React.Component<Props, State> {
-
     credentialsManager: GitPWCredentialsManager;
 
     constructor(props) {
@@ -71,7 +65,7 @@ export class GitCredentialsPickerPassword extends React.Component<Props, State> 
             selectedRadio: RadioOption.USE_EXISTING,
         };
 
-        const {repositoryUrl, branch, existingFailed = false} = this.props;
+        const { repositoryUrl, branch, existingFailed = false } = this.props;
         this._repositoryChanged(repositoryUrl, branch, existingFailed);
     }
 
@@ -82,17 +76,14 @@ export class GitCredentialsPickerPassword extends React.Component<Props, State> 
     }
 
     componentWillReceiveProps(nextProps: Props) {
-        const {repositoryUrl, branch, existingFailed} = nextProps;
-        if (branch !== this.props.branch
-            || repositoryUrl !== this.props.repositoryUrl
-            || existingFailed !== this.props.existingFailed) {
-
+        const { repositoryUrl, branch, existingFailed } = nextProps;
+        if (branch !== this.props.branch || repositoryUrl !== this.props.repositoryUrl || existingFailed !== this.props.existingFailed) {
             this._repositoryChanged(repositoryUrl, branch, !!existingFailed);
         }
     }
 
     componentDidMount() {
-        const {existingFailed, onStatus} = this.props;
+        const { existingFailed, onStatus } = this.props;
         if (existingFailed) {
             if (onStatus) {
                 onStatus('promptReady');
@@ -101,26 +92,23 @@ export class GitCredentialsPickerPassword extends React.Component<Props, State> 
     }
 
     _repositoryChanged = debounce((repositoryUrl: string, branch: string | undefined, existingFailed: boolean) => {
-
-        const {onStatus, onComplete} = this.props;
+        const { onStatus, onComplete } = this.props;
         const credentialsManager = this.credentialsManager;
 
         credentialsManager.configure(repositoryUrl, branch);
 
         if (!existingFailed) {
-            credentialsManager.findExistingCredential()
-                .then(credential => {
-                    if (credential && onComplete) {
-                        this.setState({selectedRadio: RadioOption.USE_EXISTING});
+            credentialsManager.findExistingCredential().then(credential => {
+                if (credential && onComplete) {
+                    this.setState({ selectedRadio: RadioOption.USE_EXISTING });
 
-                        if (onComplete) {
-                            onComplete(credential, 'autoSelected');
-                        }
-
-                    } else if (onStatus) {
-                        onStatus('promptReady');
+                    if (onComplete) {
+                        onComplete(credential, 'autoSelected');
                     }
-                });
+                } else if (onStatus) {
+                    onStatus('promptReady');
+                }
+            });
         }
     }, 500);
 
@@ -130,8 +118,8 @@ export class GitCredentialsPickerPassword extends React.Component<Props, State> 
             return;
         }
 
-        const {usernameValue, passwordValue} = this.state;
-        const {requirePush = false} = this.props;
+        const { usernameValue, passwordValue } = this.state;
+        const { requirePush = false } = this.props;
 
         this.credentialsManager
             .createCredential(usernameValue, passwordValue, requirePush)
@@ -149,7 +137,7 @@ export class GitCredentialsPickerPassword extends React.Component<Props, State> 
                     // Notify even if credential undefined, so owner knows "unselected"
                     this.props.onComplete(credential, 'userSelected');
                 }
-            })
+            });
     }
 
     _performValidation() {
@@ -204,9 +192,9 @@ export class GitCredentialsPickerPassword extends React.Component<Props, State> 
         }
     }, 200);
 
-    _radioLabel = (option) => {
-        const {existingCredential} = this.credentialsManager;
-        const displayName = existingCredential && existingCredential.displayName || '';
+    _radioLabel = option => {
+        const { existingCredential } = this.credentialsManager;
+        const displayName = (existingCredential && existingCredential.displayName) || '';
 
         switch (option) {
             case RadioOption.CREATE_NEW:
@@ -214,17 +202,17 @@ export class GitCredentialsPickerPassword extends React.Component<Props, State> 
             case RadioOption.USE_EXISTING:
                 return t('creation.git.create_credential.option_existing', [displayName]);
         }
-        return "";
+        return '';
     };
 
     _radioChanged = (selectedRadio: RadioOption) => {
-        const {onComplete} = this.props;
+        const { onComplete } = this.props;
 
         if (onComplete) {
             onComplete(selectedRadio === RadioOption.USE_EXISTING ? this.credentialsManager.existingCredential : undefined);
         }
 
-        this.setState({selectedRadio});
+        this.setState({ selectedRadio });
     };
 
     render() {
@@ -237,10 +225,10 @@ export class GitCredentialsPickerPassword extends React.Component<Props, State> 
         const errorMessage = getErrorMessage(managerState);
         const isPendingValidation = managerState == ManagerState.PENDING_VALIDATION;
 
-        const connectButtonStatus = {result: null as string | null};
-        const {selectedRadio} = this.state;
+        const connectButtonStatus = { result: null as string | null };
+        const { selectedRadio } = this.state;
 
-        const {existingCredential} = this.credentialsManager;
+        const { existingCredential } = this.credentialsManager;
 
         const hasExistingCredential = !!existingCredential;
         const useExistingCredential = hasExistingCredential && selectedRadio === RadioOption.USE_EXISTING;
@@ -261,10 +249,12 @@ export class GitCredentialsPickerPassword extends React.Component<Props, State> 
             <div className="credentials-picker-git">
                 <p className="instructions">{labelInstructions}</p>
                 {hasExistingCredential && (
-                    <RadioButtonGroup options={radioOptions}
-                                      labelFunction={this._radioLabel}
-                                      defaultOption={RadioOption.USE_EXISTING}
-                                      onChange={this._radioChanged} />
+                    <RadioButtonGroup
+                        options={radioOptions}
+                        labelFunction={this._radioLabel}
+                        defaultOption={RadioOption.USE_EXISTING}
+                        onChange={this._radioChanged}
+                    />
                 )}
                 <FormElement className="credentials-new" errorMessage={errorMessage} verticalLayout>
                     <FormElement title={labelUsername} errorMessage={this.state.usernameErrorMsg}>

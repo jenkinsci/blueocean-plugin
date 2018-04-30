@@ -29,10 +29,10 @@ function trimEmptyTokens(tokens) {
 }
 
 type ResourceIdentifiers = {
-    organizationName: string,
-    pipelineFullName: string, // Includes folder path
-    detailName: string, // Either the branchName or the pipeline short name if not multibranch
-    runId: string,
+    organizationName: string;
+    pipelineFullName: string; // Includes folder path
+    detailName: string; // Either the branchName or the pipeline short name if not multibranch
+    runId: string;
 };
 
 /**
@@ -82,7 +82,7 @@ function parseRestRunUrl(restUrl: string): ResourceIdentifiers {
 
 export type RunDetailsWithSelfLink = {
     // FIXME: We need a canonical typedef for run details object
-    _links: { self: { href: string } },
+    _links: { self: { href: string } };
 };
 
 /**

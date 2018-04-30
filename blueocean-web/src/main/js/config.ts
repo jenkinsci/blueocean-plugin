@@ -8,7 +8,7 @@ export default class Config {
     private _rootURL: string;
     private _resourceURL: string;
     private _adjunctURL: string;
-    private _serverBrowserTimeSkewMillis: string
+    private _serverBrowserTimeSkewMillis: string;
 
     constructor(options: any /* FIXME later */) {
         this._appURLBase = options.appURLBase || '';
@@ -34,7 +34,7 @@ export default class Config {
         return this._adjunctURL;
     }
 
-    getServerBrowserTimeSkewMillis()/*fix type */ {
+    getServerBrowserTimeSkewMillis() /*fix type */ {
         return this._serverBrowserTimeSkewMillis;
     }
 }

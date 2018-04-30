@@ -3,16 +3,16 @@ import { pipelineService, activityService } from '@jenkins-cd/blueocean-core-js'
 import navState from './DashboardNavState';
 
 interface Props {
-    params: object
-    children?: React.ReactNode
-    location: object
+    params: object;
+    children?: React.ReactNode;
+    location: object;
 }
 
 interface DashboardContext {
-    pipelineService?: object
-    activityService?: object
-    params?: object
-    location?: object
+    pipelineService?: object;
+    activityService?: object;
+    params?: object;
+    location?: object;
 }
 class Dashboard extends React.Component<Props> {
     static childContextTypes = {
@@ -21,12 +21,12 @@ class Dashboard extends React.Component<Props> {
         pipelineService: React.PropTypes.object,
         activityService: React.PropTypes.object,
     };
-    private _context: DashboardContext
+    private _context: DashboardContext;
 
     constructor(props) {
         super(props);
-        this._context = { pipelineService, activityService }
-      }
+        this._context = { pipelineService, activityService };
+    }
 
     getChildContext() {
         this._context.params = this.props.params;

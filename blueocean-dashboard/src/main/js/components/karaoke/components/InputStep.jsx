@@ -58,7 +58,12 @@ export default class InputStep extends Component {
         // console.log({ step });
         if (step) {
             const { config = {} } = this.context;
-            const { input: { id }, _links: { self: { href } } } = step;
+            const {
+                input: { id },
+                _links: {
+                    self: { href },
+                },
+            } = step;
             this.setState({
                 id,
                 href: `${config._rootURL}${href}`,
@@ -119,7 +124,9 @@ export default class InputStep extends Component {
                 </div>
             );
         }
-        const { input: { message, ok } } = this.props.step;
+        const {
+            input: { message, ok },
+        } = this.props.step;
         const cancelCaption = translate('rundetail.input.cancel', { defaultValue: 'Cancel' });
         const cancelButton = (
             <button title={cancelCaption} onClick={() => this.cancelForm()} className="btn btn-secondary inputStepCancel">

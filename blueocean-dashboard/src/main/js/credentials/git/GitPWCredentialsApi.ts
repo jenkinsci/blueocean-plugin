@@ -1,17 +1,8 @@
-import {
-    Fetch,
-    UrlConfig,
-    Utils,
-    AppConfig,
-    UrlBuilder,
-} from '@jenkins-cd/blueocean-core-js';
+import { Fetch, UrlConfig, Utils, AppConfig, UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 
-import {TypedError} from "../TypedError";
+import { TypedError } from '../TypedError';
 
-import {
-    LoadError,
-    SaveError,
-} from '../bitbucket/BbCredentialsApi';
+import { LoadError, SaveError } from '../bitbucket/BbCredentialsApi';
 
 export interface GitPWCredentialsApiPublic {
     findExistingCredential(repositoryUrl);
@@ -22,7 +13,6 @@ export interface GitPWCredentialsApiPublic {
  * Api class to interact with GitScm class when working with username+password credentials for http(s) repos
  */
 export class GitPWCredentialsApi implements GitPWCredentialsApiPublic {
-
     _fetch: Function;
     organization: string;
 
@@ -38,18 +28,18 @@ export class GitPWCredentialsApi implements GitPWCredentialsApiPublic {
         // Create error in sync code for better stack trace
         const possibleError = new TypedError();
 
-        return this._fetch(credUrl)
-            .then(
-                result => this._findExistingCredentialSuccess(result),
-                error => {
-                    const {responseBody} = error;
+        return this._fetch(credUrl).then(
+            result => this._findExistingCredentialSuccess(result),
+            error => {
+                const { responseBody } = error;
 
-                    if (responseBody.message.indexOf('Existing credential failed') >= 0) {
-                        throw possibleError.populate(LoadError.TOKEN_REVOKED, responseBody);
-                    }
+                if (responseBody.message.indexOf('Existing credential failed') >= 0) {
+                    throw possibleError.populate(LoadError.TOKEN_REVOKED, responseBody);
+                }
 
-                    throw possibleError.populate(LoadError.TOKEN_INVALID, responseBody);
-                });
+                throw possibleError.populate(LoadError.TOKEN_INVALID, responseBody);
+            }
+        );
     }
 
     _findExistingCredentialSuccess(gitScm) {
@@ -98,17 +88,14 @@ export class GitPWCredentialsApi implements GitPWCredentialsApiPublic {
         // Create error in sync code for better stack trace
         const possibleError = new TypedError();
 
-        return this._fetch(validateCredUrl, {fetchOptions})
-            .catch(error => {
-                const {code = -1} = error.responseBody || {};
+        return this._fetch(validateCredUrl, { fetchOptions }).catch(error => {
+            const { code = -1 } = error.responseBody || {};
 
-                if (code === 401) {
-                    throw possibleError.populate(SaveError.INVALID_CREDENTIAL, error);
-                }
+            if (code === 401) {
+                throw possibleError.populate(SaveError.INVALID_CREDENTIAL, error);
+            }
 
-                throw possibleError.populate(SaveError.UNKNOWN_ERROR, error);
-            });
+            throw possibleError.populate(SaveError.UNKNOWN_ERROR, error);
+        });
     }
 }
-
-
