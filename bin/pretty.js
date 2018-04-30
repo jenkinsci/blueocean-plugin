@@ -22,11 +22,7 @@ const fs = require('graceful-fs'); // Will backoff on EMFILE
 // --[ Configuration ]------------------------------------------------------------------------
 
 // These globs are used to exlude certain files from formatting for various reasons
-const IGNORE_GLOBS = [
-    '**/svg-icons/**',
-    '**/src/test/**',
-    '**/stories/**',
-];
+const IGNORE_GLOBS = ['**/svg-icons/**', '**/src/test/**', '**/stories/**'];
 
 // Extensions we're interested in, for TypeScript and JavaScript batches
 const EXTENSIONS = {
@@ -104,7 +100,6 @@ function getSourceFilesFromGlob(globPattern, ignoreGlobs) {
     });
 }
 
-
 // Make sure we only use valid extensions, and each fileName appears only once
 function filterFiles(files, validExtensions) {
     const accepted = [];
@@ -119,7 +114,6 @@ function filterFiles(files, validExtensions) {
 }
 
 function getSourceFilesForAllGlobs(config) {
-
     const validExtensions = EXTENSIONS.js.concat(EXTENSIONS.ts);
 
     return Promise.all(sourceGlobs.map(sourceGlob => getSourceFilesFromGlob(sourceGlob, IGNORE_GLOBS)))
@@ -134,9 +128,8 @@ function getSourceFilesForAllGlobs(config) {
  */
 function splitFilesIntoBatches(files, config) {
     // We need to specifiy a different parser for TS files
-    const configTS = Object.assign({
-        parser: 'typescript',
-    }, config);
+    const configTS = Object.assign({}, config);
+    configTS.parser = 'typescript';
 
     const batches = [];
 
@@ -217,21 +210,27 @@ function prettifyFiles(files, config) {
 }
 
 /**
- * Runs prettifyFiles for each batch, then merges the results to the same format.
+ * Runs prettifyFiles for each batch.
  */
 function prettifyBatches(batches) {
+    return Promise.all(batches.map(({ files, config }) => prettifyFiles(files, config)));
+}
+
+/**
+ * Merge the results from each batch into a single result of the same format
+ */
+function mergeBatchResults(batches) {
     let files = [];
     let unformattedFiles = [];
     let formattedFiles = [];
     let errors = [];
 
-    batches.map(({ files, config }) => prettifyFiles(files, config))
-        .forEach(batch => {
-            files.push(...batch.files);
-            unformattedFiles.push(...batch.unformattedFiles);
-            formattedFiles.push(...batch.formattedFiles);
-            errors.push(...batch.errors);
-        });
+    batches.forEach(batch => {
+        files.push(...batch.files);
+        unformattedFiles.push(...batch.unformattedFiles);
+        formattedFiles.push(...batch.formattedFiles);
+        errors.push(...batch.errors);
+    });
 
     return { files, formattedFiles, unformattedFiles, errors };
 }
@@ -282,17 +281,16 @@ function debugPoint(result) {
     if (isDebug) {
         console.log(
             '\x1b[33m\n--- DEBUG --- \n    ' +
-            JSON.stringify(result, null, 4)
-                .split('\n')
-                .join('\n    ') +
-            '\n--- /DEBUG --- \x1b[m\n',
+                JSON.stringify(result, null, 4)
+                    .split('\n')
+                    .join('\n    ') +
+                '\n--- /DEBUG --- \x1b[m\n'
         );
     }
     return result;
 }
 
 // --[ Main ]---------------------------------------------------------------------------------
-
 
 getConfig(projectBaseDir)
     .then(debugPoint)
@@ -301,6 +299,9 @@ getConfig(projectBaseDir)
     .then(({ files, config }) => splitFilesIntoBatches(files, config))
     .then(debugPoint)
     .then(batches => prettifyBatches(batches))
+    .then(debugPoint)
+    .then(batches => mergeBatchResults(batches))
+    .then(debugPoint)
     .then(({ files, formattedFiles, unformattedFiles, errors }) => showResults(files, formattedFiles, unformattedFiles, errors))
     .then(debugPoint)
     .catch(err => {
