@@ -52,7 +52,7 @@
     "nock": "8.0.0",
     "react-addons-test-utils": "15.4.2",
     "ts-jest": "19.0.2",
-    "tsify": "3.0.4",
+    "tsify": "4.0.0",
     "typescript": "2.7.2"
   },
   "dependencies": {

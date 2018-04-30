@@ -1,5 +1,5 @@
 import { Fetch, UrlBuilder } from '@jenkins-cd/blueocean-core-js';
-import TypedError from './TypedError';
+import { TypedError } from './TypedError';
 
 const Base64 = {
     encode: data => btoa(data),

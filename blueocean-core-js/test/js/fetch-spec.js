@@ -4,7 +4,6 @@ import nock from 'nock';
 import { TestUtils } from '../../src/js/testutils';
 import { Fetch } from '../../src/js/fetch';
 
-
 describe('Fetch', () => {
     describe('fetchJSON', () => {
         let nockServer = null;
@@ -22,75 +21,59 @@ describe('Fetch', () => {
 
         describe('2xx success', () => {
             it('with simple object response body', () => {
-                nockServer
-                    .get('/success/simple')
-                    .reply(200, { foo: 'bar' });
+                nockServer.get('/success/simple').reply(200, { foo: 'bar' });
 
                 requestUrl += '/success/simple';
 
-                return Fetch.fetchJSON(requestUrl)
-                    .then(
-                        response => {
-                            assert.isOk(response);
-                            assert.equal(response.foo, 'bar');
-                        }
-                    );
+                return Fetch.fetchJSON(requestUrl).then(response => {
+                    assert.isOk(response);
+                    assert.equal(response.foo, 'bar');
+                });
             });
 
             it('with empty response body', () => {
-                nockServer
-                    .get('/success/empty')
-                    .reply(200, null);
+                nockServer.get('/success/empty').reply(200, null);
 
                 requestUrl += '/success/empty';
 
-                return Fetch.fetchJSON(requestUrl)
-                    .then(
-                        response => {
-                            assert.isOk(response);
-                        }
-                    );
+                return Fetch.fetchJSON(requestUrl).then(response => {
+                    assert.isOk(response);
+                });
             });
         });
 
         describe('4xx failure', () => {
             it('with simple object response body', () => {
-                nockServer
-                    .get('/failure/simple')
-                    .reply(400, { message: 'validation' });
+                nockServer.get('/failure/simple').reply(400, { message: 'validation' });
 
                 requestUrl += '/failure/simple';
 
-                return Fetch.fetchJSON(requestUrl)
-                    .then(
-                        () => {
-                            assert.fail(null, null, 'should not call success handler');
-                        },
-                        error => {
-                            assert.isOk(error);
-                            assert.isOk(error.responseBody);
-                            assert.equal(error.responseBody.message, 'validation');
-                        }
-                    );
+                return Fetch.fetchJSON(requestUrl).then(
+                    () => {
+                        assert.fail(null, null, 'should not call success handler');
+                    },
+                    error => {
+                        assert.isOk(error);
+                        assert.isOk(error.responseBody);
+                        assert.equal(error.responseBody.message, 'validation');
+                    }
+                );
             });
 
             it('with empty response body', () => {
-                nockServer
-                    .get('/failure/empty')
-                    .reply(400, null);
+                nockServer.get('/failure/empty').reply(400, null);
 
                 requestUrl += '/failure/empty';
 
-                return Fetch.fetchJSON(requestUrl)
-                    .then(
-                        () => {
-                            assert.fail(null, null, 'should not call success handler');
-                        },
-                        error => {
-                            assert.isOk(error);
-                            assert.isNull(error.responseBody);
-                        }
-                    );
+                return Fetch.fetchJSON(requestUrl).then(
+                    () => {
+                        assert.fail(null, null, 'should not call success handler');
+                    },
+                    error => {
+                        assert.isOk(error);
+                        assert.isNull(error.responseBody);
+                    }
+                );
             });
         });
 
@@ -98,6 +81,5 @@ describe('Fetch', () => {
         // TODO: dedupe?
         // TODO: preloader
         // TODO: loading indicator
-
     });
 });

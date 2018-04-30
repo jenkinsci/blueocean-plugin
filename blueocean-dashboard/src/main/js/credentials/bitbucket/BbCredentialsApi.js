@@ -1,5 +1,5 @@
 import { Fetch, UrlConfig, Utils, AppConfig } from '@jenkins-cd/blueocean-core-js';
-import TypedError from '../TypedError';
+import { TypedError } from '../TypedError';
 
 export const LoadError = {
     TOKEN_NOT_FOUND: 'TOKEN_NOT_FOUND',

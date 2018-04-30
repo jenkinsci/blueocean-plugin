@@ -9,7 +9,7 @@ export function execute(done, config) {
     const Extensions = require('@jenkins-cd/js-extensions');
     const appRoot = document.getElementsByTagName('head')[0].getAttribute('data-appurl');
     const CoreJs = modules.requireModule('jenkins-cd-blueocean-core-js:jenkins-cd-blueocean-core-js@any');
-   
+
     Extensions.init({
         extensionData: window.$blueocean.jsExtensions,
         classMetadataProvider: (type, cb) => {

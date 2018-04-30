@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { LiveStatusIndicator as LiveStatusIndicatorJdl } from '@jenkins-cd/design-language';
-import { TimeHarmonizer} from '../components/TimeHarmonizer';
+import { TimeHarmonizer } from '../components/TimeHarmonizer';
 import { logging } from '../logging';
 const logger = logging.logger('io.jenkins.blueocean.core.LiveStatusIndicator');
 

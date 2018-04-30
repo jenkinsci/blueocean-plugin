@@ -14,6 +14,7 @@ import org.junit.Rule;
 import org.junit.Test;
 
 import java.io.File;
+import java.io.Serializable;
 import java.util.Map;
 
 public class GitUtilsTest extends PipelineBaseTest {
@@ -110,12 +111,12 @@ public class GitUtilsTest extends PipelineBaseTest {
         String id = (String)resp.get("id");
         Assert.assertTrue(id != null);
 
-        resp = put("/organizations/jenkins/scm/git/validate/",
-            ImmutableMap.of(
-                "repositoryUrl", "git@github.com:vivek/capability-annotation.git",
-                "credentialId", id,
-                "requirePush", true,
-                "branch", "master")
-            , 428);
+        final Map<String, Object> body = ImmutableMap.of(
+            "repositoryUrl", "git@github.com:vivek/capability-annotation.git",
+            "credentialId", id,
+            "requirePush", true,
+            "branch", "master");
+
+        put("/organizations/jenkins/scm/git/validate/", body, 428);
     }
 }

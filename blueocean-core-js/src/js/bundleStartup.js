@@ -8,7 +8,7 @@ export function execute(done, config) {
     // have a special handling for core-js, must load the web bundle...
     const Extensions = require('@jenkins-cd/js-extensions');
     const appRoot = document.getElementsByTagName('head')[0].getAttribute('data-appurl');
-   
+
     Extensions.init({
         extensionData: window.$blueocean.jsExtensions,
         classMetadataProvider: (type, cb) => {

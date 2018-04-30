@@ -90,8 +90,7 @@ public class BitbucketServerTest implements WebDriverMixin {
         wait.click(By.cssSelector(".button-next-step"));
         wait.sendKeys(By.cssSelector(".text-username input"),"admin");
         wait.sendKeys(By.cssSelector(".text-password input"),"admin");
-        // TODO: fix spelling of credental to credential
-        wait.click(By.cssSelector(".button-create-credental"));
+        wait.click(By.cssSelector(".button-create-credential"));
         LOGGER.info("Bitbucket server created successfully");
         // Select project
         creationPage.selectOrganization(BB_PROJECT_NAME);
