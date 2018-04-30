@@ -1,20 +1,12 @@
 # .prettierrc
+#
+# This is the base configuration for prettier, but we do not run it directly. The main script is bin/pretty.js and
+# automatic formatting during commit is coordinated by bin/pre-commit.js by means of invoking bin/pretty.js
+#
+# There is extra configuration in those files specific to the Blue Ocean build process and mix of source languages.
+
 printWidth: 160
 parser: babylon
 tabWidth: 4
 trailingComma: es5
 singleQuote: true
-overrides:
-    - files: "**/*.ts"
-      options:
-            parser: typescript
-jenkins:
-    extensions:
-        - .js
-        - .jsx
-        - .ts
-        - .tsx
-    ignoreGlobs:
-        - "**/svg-icons/**"
-        - "**/src/test/**"
-        - "**/stories/**"

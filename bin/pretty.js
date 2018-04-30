@@ -6,6 +6,36 @@ const path = require('path');
 const glob = require('glob');
 const fs = require('graceful-fs'); // Will backoff on EMFILE
 
+/**
+ * This script formats TypeScript and JavaScript source files using prettier.js
+ *
+ * You may invoke it directly, it will pring usage instructions. It is also invoked as a
+ * pre-commit hook by the script pre-commit.js in this same directory.
+ *
+ * We load the prettier config from .prettierrc.yaml in the root of the project, but it is
+ * altered at runtime to ensure different parsers are used for TypeScript and JavaScript files.
+ * We do this because the babylon parser does not support all the features we're using for
+ * TS, and some of our JS files contain flowtype annotations which the typescript parser can't
+ * handle.
+ */
+
+// --[ Configuration ]------------------------------------------------------------------------
+
+// These globs are used to exlude certain files from formatting for various reasons
+const IGNORE_GLOBS = [
+    '**/svg-icons/**',
+    '**/src/test/**',
+    '**/stories/**',
+];
+
+// Extensions we're interested in, for TypeScript and JavaScript batches
+const EXTENSIONS = {
+    js: ['.js', '.jsx'],
+    ts: ['.ts', '.tsx'],
+};
+
+const projectBaseDir = path.resolve(__dirname, '..');
+
 // --[ Parse args ]---------------------------------------------------------------------------
 
 function usage() {
@@ -50,7 +80,13 @@ if (sourceGlobs.length === 0) {
     return;
 }
 
-// --[ Steps ]--------------------------------------------------------------------------------
+// --[ Helpers ]------------------------------------------------------------------------------
+
+function fileMatchesExtension(fileName, validExtensions) {
+    return validExtensions.indexOf(path.extname(fileName).toLowerCase()) !== -1;
+}
+
+// --[ Main Process Steps ]-------------------------------------------------------------------
 
 function getConfig(projectBaseDir) {
     return prettier.resolveConfig(projectBaseDir);
@@ -68,12 +104,13 @@ function getSourceFilesFromGlob(globPattern, ignoreGlobs) {
     });
 }
 
+
 // Make sure we only use valid extensions, and each fileName appears only once
 function filterFiles(files, validExtensions) {
     const accepted = [];
 
     for (const fileName of files) {
-        if (accepted.indexOf(fileName) === -1 && validExtensions.indexOf(path.extname(fileName).toLowerCase()) !== -1) {
+        if (accepted.indexOf(fileName) === -1 && fileMatchesExtension(fileName, validExtensions)) {
             accepted.push(fileName);
         }
     }
@@ -82,13 +119,38 @@ function filterFiles(files, validExtensions) {
 }
 
 function getSourceFilesForAllGlobs(config) {
-    const ignoreGlobs = config.jenkins.ignoreGlobs;
-    const validExtensions = config.jenkins.extensions;
 
-    return Promise.all(sourceGlobs.map(sourceGlob => getSourceFilesFromGlob(sourceGlob, ignoreGlobs)))
+    const validExtensions = EXTENSIONS.js.concat(EXTENSIONS.ts);
+
+    return Promise.all(sourceGlobs.map(sourceGlob => getSourceFilesFromGlob(sourceGlob, IGNORE_GLOBS)))
         .then(filesArrays => Array.prototype.concat.apply([], filesArrays)) // Flatten
         .then(files => filterFiles(files, validExtensions))
         .then(files => ({ files, config }));
+}
+
+/**
+ * Takes a list of files and initial config, and splits into two batches, each consisting of a subset of files and
+ * the specific config for that batch.
+ */
+function splitFilesIntoBatches(files, config) {
+    // We need to specifiy a different parser for TS files
+    const configTS = Object.assign({
+        parser: 'typescript',
+    }, config);
+
+    const batches = [];
+
+    batches.push({
+        files: files.filter(fileName => fileMatchesExtension(fileName, EXTENSIONS.js)),
+        config: config,
+    });
+
+    batches.push({
+        files: files.filter(fileName => fileMatchesExtension(fileName, EXTENSIONS.ts)),
+        config: configTS,
+    });
+
+    return batches;
 }
 
 function loadSource(sourcePath) {
@@ -154,6 +216,26 @@ function prettifyFiles(files, config) {
     return Promise.all(filePromises).then(() => ({ files, formattedFiles, unformattedFiles, errors }));
 }
 
+/**
+ * Runs prettifyFiles for each batch, then merges the results to the same format.
+ */
+function prettifyBatches(batches) {
+    let files = [];
+    let unformattedFiles = [];
+    let formattedFiles = [];
+    let errors = [];
+
+    batches.map(({ files, config }) => prettifyFiles(files, config))
+        .forEach(batch => {
+            files.push(...batch.files);
+            unformattedFiles.push(...batch.unformattedFiles);
+            formattedFiles.push(...batch.formattedFiles);
+            errors.push(...batch.errors);
+        });
+
+    return { files, formattedFiles, unformattedFiles, errors };
+}
+
 // Display results to user
 function showResults(files, formattedFiles, unformattedFiles, errors) {
     const formattedCount = formattedFiles.length;
@@ -200,10 +282,10 @@ function debugPoint(result) {
     if (isDebug) {
         console.log(
             '\x1b[33m\n--- DEBUG --- \n    ' +
-                JSON.stringify(result, null, 4)
-                    .split('\n')
-                    .join('\n    ') +
-                '\n--- /DEBUG --- \x1b[m\n'
+            JSON.stringify(result, null, 4)
+                .split('\n')
+                .join('\n    ') +
+            '\n--- /DEBUG --- \x1b[m\n',
         );
     }
     return result;
@@ -211,13 +293,14 @@ function debugPoint(result) {
 
 // --[ Main ]---------------------------------------------------------------------------------
 
-const projectBaseDir = path.resolve(__dirname, '..');
 
 getConfig(projectBaseDir)
     .then(debugPoint)
     .then(config => getSourceFilesForAllGlobs(config))
     .then(debugPoint)
-    .then(({ files, config }) => prettifyFiles(files, config))
+    .then(({ files, config }) => splitFilesIntoBatches(files, config))
+    .then(debugPoint)
+    .then(batches => prettifyBatches(batches))
     .then(({ files, formattedFiles, unformattedFiles, errors }) => showResults(files, formattedFiles, unformattedFiles, errors))
     .then(debugPoint)
     .catch(err => {
