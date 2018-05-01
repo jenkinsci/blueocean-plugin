@@ -455,7 +455,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>apache-httpcomponents-client-4-api</artifactId>
-            <version>4.5.3-2.1</version>
+            <version>4.5.5-2.1</version>
         </dependency>
 
         <!-- Other -->
@@ -512,7 +512,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>jira</artifactId>
-            <version>2.4.2</version>
+            <version>2.5.2-20180501.231733-2</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
