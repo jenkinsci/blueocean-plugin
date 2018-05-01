@@ -35,7 +35,7 @@ export default class GithubCredentialsStep extends React.Component {
         const scmId = this.props.flowManager.getScmId();
         const loading = this.state.loading;
         const disabled = this.state.complete;
-        const title = loading ? 'Loading...' : 'Connect to Github';
+        const title = loading ? 'Loading...' : 'Connect to GitHub';
 
         const githubConfig = {
             scmId,
