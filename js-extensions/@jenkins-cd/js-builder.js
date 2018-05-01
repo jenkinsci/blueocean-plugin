@@ -36,11 +36,12 @@ exports.install = function(builder) {
     // a bit painful.
     //
     process.env.NODE_ENV = builder.args.argvValue('--NODE_ENV', 'production');
-    builder.onPreBundle(function (bundler) { // See https://github.com/jenkinsci/js-builder#onprebundle-listeners
+    builder.onPreBundle(function(bundler) {
+        // See https://github.com/jenkinsci/js-builder#onprebundle-listeners
         bundler.transform(require('envify'));
     });
 
-    builder.onPreBundle(function (bundler) {
+    builder.onPreBundle(function(bundler) {
         var basedir = bundler._mdeps.basedir; // TODO is there a better way to get this info?
         var packageJson = require(basedir + '/package.json');
         var bundle = this;
@@ -67,12 +68,11 @@ exports.install = function(builder) {
             .import('@jenkins-cd/blueocean-core-js@any')
             .import('@jenkins-cd/logging')
             .import('react@any', {
-                aliases: ['react/lib/React'] // in case a module requires react through the back door
+                aliases: ['react/lib/React'], // in case a module requires react through the back door
             })
             .import('react-dom@any')
             .import('react-addons-css-transition-group@any')
-            .import('redux@any')
-        ;
+            .import('redux@any');
     }
 
     if (!packageJson.name.startsWith('@jenkins-cd')) {

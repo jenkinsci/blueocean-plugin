@@ -460,10 +460,10 @@ class PipelineLoader extends React.Component {
         const pipeline = pipelineService.getPipeline(this.href);
         const { scmSource } = pipeline;
 
-        if (!scmSource || !scmSource.id || (scmSource.id === 'git' && !isSshRepositoryUrl(scmSource.apiUrl))) {
-            this.showLoadingError('', 'Saving Pipelines is unsupported using http/https repositories. Please use SSH instead.', 'No save access');
-            return;
-        }
+        // if (!scmSource || !scmSource.id || (scmSource.id === 'git' && !isSshRepositoryUrl(scmSource.apiUrl))) {
+        //     this.showLoadingError('', 'Saving Pipelines is unsupported using http/https repositories. Please use SSH instead.', 'No save access');
+        //     return;
+        // }
 
         // if showing this dialog with a credential, the write test failed
         // except for git, where we need to prompt with the user's public key so they can continue
@@ -483,6 +483,8 @@ class PipelineLoader extends React.Component {
         // hide the dialog until it reports as ready (i.e. credential fetch is done)
         const dialogClassName = `dialog-token ${loading ? 'loading' : ''}`;
 
+        //FIXME: should show a message about existing credentials failing
+
         this.setState({
             dialog: (
                 <Dialog title={title} className={dialogClassName} buttons={[]} onDismiss={() => this.cancel()}>
@@ -496,6 +498,7 @@ class PipelineLoader extends React.Component {
                         requirePush
                         branch={branch}
                         dialog
+                        existingFailed
                     />
                 </Dialog>
             ),
@@ -613,6 +616,7 @@ class PipelineLoader extends React.Component {
         if (branch || repo) {
             title += ' / ' + (branch || repo);
         }
+
         return (
             <div className="pipeline-page">
                 <Extensions.Renderer extensionPoint="pipeline.editor.css" />

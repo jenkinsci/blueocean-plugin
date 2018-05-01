@@ -47,28 +47,45 @@ public class GitCreationPage {
         return this;
     }
 
-    public MultiBranchPipeline createPipeline(SSEClientRule sseCLient, String pipelineName, String url, String sshPrivateKey, String user, String pass) throws IOException {
+    public MultiBranchPipeline createPipelineSSH(SSEClientRule sseCLient, String pipelineName, String url, String sshPrivateKey) throws IOException {
         jobApi.deletePipeline(pipelineName);
         dashboardPage.clickNewPipelineBtn();
         clickGitCreationOption();
         wait.until(By.cssSelector("div.text-repository-url input")).sendKeys(url);
         wait.until(By.cssSelector("button.button-create-credential")).click();
 
-        if(!Strings.isNullOrEmpty(sshPrivateKey)) {
-            wait.until(By.xpath("//span[text()='SSH Key']")).click();
-            wait.until(By.cssSelector("textarea.TextArea-control")).sendKeys(sshPrivateKey);
-            wait.until(By.cssSelector(".Dialog-button-bar button.button-create-credental")).click();
-            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".create-credential-dialog")));
-            logger.info("Created credential");
-        } else if(!Strings.isNullOrEmpty(user) && !Strings.isNullOrEmpty(pass)) {
-            wait.until(By.xpath("//span[text()='Username & Password']")).click();
-            wait.until(By.cssSelector("div.text-username input")).sendKeys(user);
-            wait.until(By.cssSelector("div.text-password input")).sendKeys(pass);
-            wait.until(By.cssSelector(".Dialog-button-bar button.button-create-credental")).click();
-            wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".create-credential-dialog")));
-            logger.info("Created user/pass credential");
-        }
+        wait.until(By.xpath("//span[text()='SSH Key']")).click();
+        wait.until(By.cssSelector("textarea.TextArea-control")).sendKeys(sshPrivateKey);
+        wait.until(By.cssSelector(".Dialog-button-bar button.button-create-credential")).click();
+        wait.until(ExpectedConditions.invisibilityOfElementLocated(By.cssSelector(".create-credential-dialog")));
+        logger.info("Created credential");
 
+        wait.until(By.cssSelector(".button-create-pipeline")).click();
+        logger.info("Click create pipeline button");
+
+        MultiBranchPipeline pipeline = multiBranchPipelineFactory.pipeline(pipelineName);
+        wait.until(ExpectedConditions.urlContains(pipeline.getUrl() + "/activity"), 30000);
+        sseCLient.untilEvents(SSEEvents.activityComplete(pipeline.getName()));
+        driver.navigate().refresh();
+        pipeline.getActivityPage().checkUrl();
+        return pipeline;
+    }
+
+    public MultiBranchPipeline createPipelinePW(SSEClientRule sseCLient, String pipelineName, String url, String user, String pass) throws IOException {
+        jobApi.deletePipeline(pipelineName);
+        dashboardPage.clickNewPipelineBtn();
+        clickGitCreationOption();
+        wait.until(By.cssSelector("div.text-repository-url input")).sendKeys(url);
+
+        wait.until(By.xpath("//*[contains(text(), 'Jenkins needs a user credential')]"));
+
+        wait.until(By.cssSelector("div.text-username input")).sendKeys(user);
+        wait.until(By.cssSelector("div.text-password input")).sendKeys(pass);
+        wait.until(By.cssSelector(".button-create-credential")).click();
+
+        wait.until(By.xpath("//*[contains(text(), 'Use existing credential')]"));
+
+        logger.info("Created user/pass credential");
         wait.until(By.cssSelector(".button-create-pipeline")).click();
         logger.info("Click create pipeline button");
 

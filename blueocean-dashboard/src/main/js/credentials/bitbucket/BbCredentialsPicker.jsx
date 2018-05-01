@@ -162,7 +162,7 @@ class BbCredentialsPicker extends React.Component {
                             <PasswordInput className="text-password" onChange={val => this._passwordChange(val)} />
                         </FormElement>
                     </FormElement>
-                    <Button className="button-create-credental" status={status} onClick={() => this._createCredential()}>
+                    <Button className="button-create-credential" status={status} onClick={() => this._createCredential()}>
                         Connect
                     </Button>
                 </div>

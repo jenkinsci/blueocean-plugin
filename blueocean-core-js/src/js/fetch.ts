@@ -8,7 +8,7 @@ import { AppConfig } from './config';
 import { dedupe } from './utils/dedupe-calls';
 import { UrlConfig } from './urlconfig';
 import { prefetchdata } from './scopes';
-import { loadingIndicator }from './LoadingIndicator';
+import { loadingIndicator } from './LoadingIndicator';
 import { capabilityAugmenter } from './capability/index';
 
 let refreshToken: string | null = null;
@@ -18,22 +18,22 @@ function isGetRequest(fetchOptions: RequestInit): boolean {
 }
 export namespace FetchFunctions {
     export interface RawFetchOpts {
-        onSuccess?: <A, B>(success: A) => B
-        onError?: <A, B>(error: A) => B
-        fetchOptions?: RequestInit
-        disableDedupe?: boolean
-        disableLoadingIndicator?: boolean
-        ignoreRefreshHeader?: boolean
+        onSuccess?: <A, B>(success: A) => B;
+        onError?: <A, B>(error: A) => B;
+        fetchOptions?: RequestInit;
+        disableDedupe?: boolean;
+        disableLoadingIndicator?: boolean;
+        ignoreRefreshHeader?: boolean;
     }
 }
 export namespace Fetch {
     export interface FetchOpts {
-        onSuccess?: <A, B>(success: A) => B
-        onError?: <A, B>(error: A) => B
-        fetchOptions?: RequestInit
-        disableCapabilites?: boolean
-        disableLoadingIndicator?: boolean
-        ignoreRefreshHeader?: boolean
+        onSuccess?: <A, B>(success: A) => B;
+        onError?: <A, B>(error: A) => B;
+        fetchOptions?: RequestInit;
+        disableCapabilites?: boolean;
+        disableLoadingIndicator?: boolean;
+        ignoreRefreshHeader?: boolean;
     }
 }
 
@@ -111,7 +111,7 @@ export class FetchFunctions {
     static jwtFetchOption(token: string, options: RequestInit = {}): RequestInit {
         const newOpts: RequestInit = Utils.clone(options);
         newOpts.headers = newOpts.headers || {};
-        newOpts.headers["Authorization"] = newOpts.headers["Authorization"] || `Bearer ${token}`;
+        newOpts.headers['Authorization'] = newOpts.headers['Authorization'] || `Bearer ${token}`;
         return newOpts;
     }
 
@@ -141,7 +141,7 @@ export class FetchFunctions {
     /**
      * Parses the response body for the error generated in checkStatus.
      */
-    static parseErrorJson(error: any): any  {
+    static parseErrorJson(error: any): any {
         return error.response.json().then(
             body => {
                 error.responseBody = body;
@@ -198,7 +198,10 @@ export class FetchFunctions {
      * @param {boolean} [options.disableLoadingIndicator] - Optional flag to disable loading indicator for this request.
      * @returns JSON body
      */
-    static rawFetchJSON(url, { onSuccess , onError, fetchOptions, disableDedupe, disableLoadingIndicator, ignoreRefreshHeader }: FetchFunctions.RawFetchOpts = {}) {
+    static rawFetchJSON(
+        url,
+        { onSuccess, onError, fetchOptions, disableDedupe, disableLoadingIndicator, ignoreRefreshHeader }: FetchFunctions.RawFetchOpts = {}
+    ) {
         const request = () => {
             let future = getPrefetchedDataFuture(url); // eslint-disable-line no-use-before-define
 
@@ -254,7 +257,7 @@ export class FetchFunctions {
     static rawFetch(url, { onSuccess, onError, fetchOptions, disableDedupe, disableLoadingIndicator, ignoreRefreshHeader }: FetchFunctions.RawFetchOpts = {}) {
         const request = () => {
             let future = getPrefetchedDataFuture(url); // eslint-disable-line no-use-before-define
-            if (!future){
+            if (!future) {
                 if (!disableLoadingIndicator) {
                     loadingIndicator.show();
                 }
@@ -287,7 +290,7 @@ export class FetchFunctions {
 
         return dedupe(url, request);
     }
-};
+}
 
 export class Fetch {
     /**
@@ -351,7 +354,7 @@ export class Fetch {
             })
         );
     }
-};
+}
 
 function trimRestUrl(url) {
     const REST_PREFIX = 'blue/rest/';

@@ -3,7 +3,7 @@ import { Enum } from '../../creation/flow2/Enum';
 /**
  * Valid stateId's for BitBucketCredentialsStep
  */
-const BbCredentialState = new Enum({
+export const BbCredentialsState = new Enum({
     PENDING_LOADING_CREDS: 'PENDING_LOADING_CREDS',
     NEW_REQUIRED: 'new_required',
     SAVE_SUCCESS: 'save_success',
@@ -12,4 +12,4 @@ const BbCredentialState = new Enum({
     UNEXPECTED_ERROR_CREDENTIAL: 'unexpected_error_credential',
 });
 
-export default BbCredentialState;
+export default BbCredentialsState;

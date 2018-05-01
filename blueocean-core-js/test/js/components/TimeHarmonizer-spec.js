@@ -7,29 +7,18 @@ import WithContext from '@jenkins-cd/design-language/dist/js/stories/WithContext
 import moment from 'moment';
 import { TimeHarmonizer, TimeHarmonizerUtil } from '../../../src/js/components/TimeHarmonizer';
 
-
 jest.mock('../../../src/js/i18n/i18n');
 
 @TimeHarmonizer
 class UselessComponent extends Component {
-
     render() {
-        const {
-            isRunning,
-            startTime,
-            endTime,
-            durationInMillis,
-            getTimes,
-            getDuration,
-            getI18nTitle,
-            result,
-        } = this.props;
+        const { isRunning, startTime, endTime, durationInMillis, getTimes, getDuration, getI18nTitle, result } = this.props;
 
         const processedTimes = getTimes({
             startTime,
             endTime,
             durationInMillis,
-            result
+            result,
         });
 
         return (
@@ -37,37 +26,35 @@ class UselessComponent extends Component {
                 <h3>Input</h3>
                 <dl>
                     <dt>startTime</dt>
-                    <dd className="in-startTime">{ String(startTime) }</dd>
+                    <dd className="in-startTime">{String(startTime)}</dd>
                     <dt>endTime</dt>
-                    <dd className="in-endTime">{ String(endTime) }</dd>
+                    <dd className="in-endTime">{String(endTime)}</dd>
                     <dt>durationInMillis</dt>
-                    <dd className="in-durationInMillis">{ String(durationInMillis) }</dd>
+                    <dd className="in-durationInMillis">{String(durationInMillis)}</dd>
                     <dt>isRunning</dt>
-                    <dd className="in-isRunning">{ String(isRunning) }</dd>
+                    <dd className="in-isRunning">{String(isRunning)}</dd>
                 </dl>
                 <h3>Synced</h3>
                 <dl>
                     <dt>startTime</dt>
-                    <dd className="syn-startTime">{ String(processedTimes.startTime) }</dd>
+                    <dd className="syn-startTime">{String(processedTimes.startTime)}</dd>
                     <dt>endTime</dt>
-                    <dd className="syn-endTime">{ String(processedTimes.endTime) }</dd>
+                    <dd className="syn-endTime">{String(processedTimes.endTime)}</dd>
                     <dt>durationInMillis</dt>
-                    <dd className="syn-durationInMillis">{ String(processedTimes.durationInMillis) }</dd>
+                    <dd className="syn-durationInMillis">{String(processedTimes.durationInMillis)}</dd>
                     <dt>getDuration</dt>
-                    <dd className="syn-getDuration">{ String(getDuration()) }</dd>
+                    <dd className="syn-getDuration">{String(getDuration())}</dd>
                     <dt>getI18nTitle</dt>
-                    <dd className="syn-getI18nTitle">{ String(getI18nTitle(result)) }</dd>
+                    <dd className="syn-getI18nTitle">{String(getI18nTitle(result))}</dd>
                 </dl>
             </div>
-        )
+        );
     }
 }
 
 describe('TimeHarmonizer', () => {
     it('/ renders', () => {
-        const wrapper = shallow(
-            <UselessComponent/>
-        );
+        const wrapper = shallow(<UselessComponent />);
     });
 
     const time1Europe = '2017-01-25T10:28:34.755+0100';
@@ -90,9 +77,7 @@ describe('TimeHarmonizer', () => {
         TimeHarmonizerUtil.timeManager.currentTime = oldClock;
     });
 
-
     it('/ renders with time props', () => {
-
         TimeHarmonizerUtil.timeManager.currentTime = () => moment(time1ZuluPlus5m);
 
         let timeRelatedProps = {
@@ -103,7 +88,7 @@ describe('TimeHarmonizer', () => {
             result: 'running',
         };
 
-        let wrapper = mount(<UselessComponent {...timeRelatedProps}/>);
+        let wrapper = mount(<UselessComponent {...timeRelatedProps} />);
 
         // Input
 
@@ -138,15 +123,14 @@ describe('TimeHarmonizer', () => {
     });
 
     it('/ renders with time props and context without drift', () => {
-
         TimeHarmonizerUtil.timeManager.currentTime = () => moment(time2ZuluPlus10m);
 
         let ctx = {
             config: {
                 getServerBrowserTimeSkewMillis: () => {
                     return 0;
-                }
-            }
+                },
+            },
         };
 
         let timeRelatedProps = {
@@ -159,7 +143,7 @@ describe('TimeHarmonizer', () => {
 
         let wrapper = mount(
             <WithContext context={ctx}>
-                <UselessComponent {...timeRelatedProps}/>
+                <UselessComponent {...timeRelatedProps} />
             </WithContext>
         );
 
@@ -196,15 +180,14 @@ describe('TimeHarmonizer', () => {
     });
 
     it('/ renders with time props and context with drift and endTime', () => {
-
         TimeHarmonizerUtil.timeManager.currentTime = () => moment(time2ZuluPlus10m);
 
         let ctx = {
             config: {
                 getServerBrowserTimeSkewMillis: () => {
                     return -5 * 60 * 60 * 1000; // -5 hours
-                }
-            }
+                },
+            },
         };
 
         let timeRelatedProps = {
@@ -217,7 +200,7 @@ describe('TimeHarmonizer', () => {
 
         let wrapper = mount(
             <WithContext context={ctx}>
-                <UselessComponent {...timeRelatedProps}/>
+                <UselessComponent {...timeRelatedProps} />
             </WithContext>
         );
 

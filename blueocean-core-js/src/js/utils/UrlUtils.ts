@@ -36,5 +36,5 @@ export function ensureTrailingSlash(url: string) {
 export const UrlUtils = {
     doubleUriEncode,
     fetchAllSuffix,
-    ensureTrailingSlash
+    ensureTrailingSlash,
 };

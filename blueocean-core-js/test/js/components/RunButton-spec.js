@@ -7,7 +7,6 @@ import { Utils } from '../../../src/js/utils';
 jest.unmock('../../../src/js/index');
 jest.mock('../../../src/js/i18n/i18n');
 
-
 import { RunButton } from '../../../src/js/components/RunButton';
 
 describe('RunButton', () => {

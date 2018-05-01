@@ -12,7 +12,6 @@ function setAppUrl(url) {
     }
 }
 
-
 describe('urlconfig', () => {
     beforeEach(() => {
         UrlConfig.enableReload();

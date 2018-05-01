@@ -5,9 +5,7 @@ import { shallow } from 'enzyme';
 import { Utils } from '../../../src/js/utils';
 import { ReplayButton } from '../../../src/js/components/ReplayButton';
 
-
 jest.mock('../../../src/js/i18n/i18n');
-
 
 describe('ReplayButton', () => {
     let pipeline;

@@ -8,7 +8,6 @@ import { assert } from 'chai';
 import { Utils } from '../../src/js/utils';
 import { User } from '../../src/js/User';
 
-
 describe('User', () => {
     describe('permissions', () => {
         it('User has pipeline permissions', () => {

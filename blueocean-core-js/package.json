@@ -3,6 +3,7 @@
   "version": "0.0.171",
   "description": "Shared JavaScript libraries for use with Jenkins Blue Ocean",
   "main": "dist/js/index.js",
+  "types": "dist/js/index.d.ts",
   "scripts": {
     "start-storybook": "start-storybook --static-dir ./dist/assets/,./node_modules/@jenkins-cd/design-language/dist/assets/",
     "storybook": "npm run start-storybook -- -p 9001",
@@ -95,7 +96,7 @@
     "run-sequence": "1.2.2",
     "sinon": "1.17.6",
     "ts-jest": "19.0.2",
-    "tsify": "3.0.4",
+    "tsify": "4.0.0",
     "typescript": "2.7.2",
     "watchify": "3.7.0"
   },
