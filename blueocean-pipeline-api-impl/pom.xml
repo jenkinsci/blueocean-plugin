@@ -138,6 +138,14 @@
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
         </dependency>
+
+        <!-- as async is excluded from unirest-java this one is missing for tests -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>apache-httpcomponents-client-4-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+
         <dependency>
             <!--
             jsoup HTML parser library @ http://jsoup.org/
