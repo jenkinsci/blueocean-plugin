@@ -531,10 +531,6 @@
                     <artifactId>jackson-core</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.atlassian.httpclient</groupId>
-                    <artifactId>atlassian-httpclient-plugin</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-beans</artifactId>
                 </exclusion>
