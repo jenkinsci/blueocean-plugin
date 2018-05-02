@@ -457,22 +457,6 @@
             <artifactId>apache-httpcomponents-client-4-api</artifactId>
             <version>4.5.5-2.0</version>
         </dependency>
-        <!-- to enforce version -->
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpasyncclient</artifactId>
-            <version>4.1.3</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.5</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
-            <version>4.4.9</version>
-        </dependency>
 
         <!-- Other -->
         <dependency>
@@ -499,6 +483,10 @@
                 <exclusion>
                     <groupId>org.jenkins-ci</groupId>
                     <artifactId>annotation-indexer</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpasyncclient</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -781,6 +769,10 @@
                 <exclusion>
                     <groupId>org.apache.httpcomponents</groupId>
                     <artifactId>httpcore</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpasyncclient</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>

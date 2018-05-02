@@ -106,20 +106,6 @@
             <artifactId>plain-credentials</artifactId>
         </dependency>
 
-        <!-- to enforce version -->
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpasyncclient</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpcore</artifactId>
-        </dependency>
-
         <!-- Needed to read the "upstreamNode" action -->
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
