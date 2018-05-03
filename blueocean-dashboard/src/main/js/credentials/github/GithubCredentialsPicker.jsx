@@ -114,14 +114,14 @@ class GithubCredentialsPicker extends React.Component {
             !this.state.loading && (
                 <div className="credentials-picker-github">
                     <p className="instructions">
-                        Jenkins needs an access key to authorize itself with Github. <br />
+                        Jenkins needs an access token to authorize itself with GitHub. <br />
                         <a href={tokenUrl} target="_blank">
-                            Create an access key here.
+                            Create an access token here.
                         </a>
                     </p>
 
                     <FormElement errorMessage={errorMessage}>
-                        <PasswordInput className="text-token" placeholder="Your Github access token" onChange={val => this._tokenChange(val)} />
+                        <PasswordInput className="text-token" placeholder="Your GitHub access token" onChange={val => this._tokenChange(val)} />
 
                         <Button className="button-connect" status={status} onClick={() => this._createToken()}>
                             Connect
