@@ -61,6 +61,7 @@
       <artifactId>wiremock-standalone</artifactId>
       <scope>test</scope>
     </dependency>
+
   </dependencies>
 
 </project>
