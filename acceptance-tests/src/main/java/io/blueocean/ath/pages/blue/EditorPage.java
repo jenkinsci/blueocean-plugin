@@ -77,28 +77,6 @@ public class EditorPage {
     }
 
     /**
-     * Deletes a step inside of a stage within a pipeline.
-     *
-     * @param containingStage the stage our step is inside of
-     *
-     */
-    public void deleteStep(String containingStage) {
-        logger.info("Deleting a step in stage " + containingStage);
-        // Click the name of the stage
-        wait.click(By.id("pipeline-big-label-" + containingStage));
-        // TODO: We need a better way to identify these steps.
-        logger.info("Clicking on Shell Script");
-        // wait.click(By.xpath("//*[text()=\"Shell Script\"]"));
-        wait.click(By.xpath("//span[text()='Shell Script']"));
-        // Click the little popup button
-        wait.click(By.cssSelector("div.more-menu"));
-        // Click Delete
-        wait.click(By.xpath("//*[text()=\"Delete\"]"));
-        logger.info("Successfully deleted a step in stage " + containingStage);
-    }
-
-
-    /**
      * Changes the agent label from one thing to something else.
      *
      * @param newAgentLabel the name of the new agent we'll change to
