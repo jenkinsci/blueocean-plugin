@@ -229,7 +229,13 @@ export function toClassicJobPage(currentPageUrl, isMultibranch = false) {
         pageUrlTokens.shift();
 
         // The next token is the "full" job name, URL encoded.
-        const fullJobName = decodeURIComponent(pageUrlTokens.shift());
+        let fullJobName = decodeURIComponent(pageUrlTokens.shift());
+
+        // If the URL comes from pipeline-editor then the "full" job name is the next token
+        if (fullJobName === 'pipeline-editor' && pageUrlTokens.length === 2) {
+            fullJobName = decodeURIComponent(pageUrlTokens.shift());
+        }
+
         const fullJobNameTokens = fullJobName.split('/');
         if (fullJobName !== 'pipelines' && pageUrlTokens.length > 0) {
             classicJobFullName = classicJobFullName + '/job/' + fullJobNameTokens.join('/job/');

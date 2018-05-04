@@ -455,7 +455,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>apache-httpcomponents-client-4-api</artifactId>
-            <version>4.5.3-2.1</version>
+            <version>4.5.5-2.0</version>
         </dependency>
 
         <!-- Other -->
@@ -483,6 +483,10 @@
                 <exclusion>
                     <groupId>org.jenkins-ci</groupId>
                     <artifactId>annotation-indexer</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpasyncclient</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -512,7 +516,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>jira</artifactId>
-            <version>2.4.2</version>
+            <version>2.5.2</version>
             <exclusions>
                 <exclusion>
                     <groupId>com.google.guava</groupId>
@@ -527,24 +531,8 @@
                     <artifactId>jackson-core</artifactId>
                 </exclusion>
                 <exclusion>
-                    <groupId>com.atlassian.httpclient</groupId>
-                    <artifactId>atlassian-httpclient-plugin</artifactId>
-                </exclusion>
-                <exclusion>
                     <groupId>org.springframework</groupId>
                     <artifactId>spring-beans</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpclient</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpmime</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.apache.httpcomponents</groupId>
-                    <artifactId>httpcore</artifactId>
                 </exclusion>
                 <exclusion>
                     <groupId>org.objenesis</groupId>
@@ -765,6 +753,10 @@
                 <exclusion>
                     <groupId>org.apache.httpcomponents</groupId>
                     <artifactId>httpcore</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.httpcomponents</groupId>
+                    <artifactId>httpasyncclient</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
