@@ -1,4 +1,5 @@
 import React, { PropTypes } from 'react';
+import { Link } from 'react-router';
 
 const JenkinsLogo = () => (
     <svg
@@ -76,12 +77,8 @@ const JenkinsLogo = () => (
     </svg>
 );
 
-export const BlueLogo = props => (
-    <a href={props.href || '#'} className="BlueOceanLogo">
+export const BlueLogo = () => (
+    <Link to={'/'} className="BlueOceanLogo">
         <JenkinsLogo />
-    </a>
+    </Link>
 );
-
-BlueLogo.propTypes = {
-    href: PropTypes.string,
-};
