@@ -15,6 +15,8 @@ const copy = require('gulp-copy');
 const fs = require('fs');
 const ts = require('gulp-typescript');
 const tsProject = ts.createProject('./tsconfig.json');
+const eslint = require('gulp-eslint');
+
 
 // Options, src/dest folders, etc
 
@@ -96,6 +98,7 @@ gulp.task('copy', ['copy-less-assets']);
 
 gulp.task('copy-less-assets', () => gulp.src(config.copy.less_assets.sources).pipe(copy(config.copy.less_assets.dest, { prefix: 2 })));
 
+
 // Validate contents
 gulp.task('validate', ['lint', 'test'], () => {
     const paths = [config.react.dest];
@@ -112,6 +115,20 @@ gulp.task('validate', ['lint', 'test'], () => {
 
 var builder = require('@jenkins-cd/js-builder');
 
+builder.defineTask('lint', () => gulp.src([process.cwd()+"/src/**/*.{js,jsx}", process.cwd()+"/test/**/*.{js,jsx}"])
+    .pipe(eslint(process.cwd()+'/../.eslintrc'))
+    .pipe(eslint.format())
+    .pipe(eslint.results(function (results) {
+        if (results.errorCount > 0 || results.warningCount > 0) {
+            gutil.log(gutil.colors.magenta('Oops, there are some eslint errors/warnings:'));
+            if (results.warningCount > 0) {
+                gutil.log(gutil.colors.magenta('\tWarnings: ' + results.warningCount));
+            }
+            if (results.errorCount > 0) {
+                gutil.log(gutil.colors.red('\tErrors:   ' + results.errorCount));
+                process.exit(1);
+            }
+        }})))
 builder.src([config.ts.destBundle, 'less']);
 
 //
