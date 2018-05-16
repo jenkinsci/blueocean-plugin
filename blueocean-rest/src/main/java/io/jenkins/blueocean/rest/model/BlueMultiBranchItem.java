@@ -8,37 +8,37 @@ public interface BlueMultiBranchItem {
     /**
      * @return total number of branches
      */
-    @Exported(name = BlueMultiBranchPipeline.TOTAL_NUMBER_OF_BRANCHES)
+    @Exported(name = "totalNumberOfBranches")
     int getTotalNumberOfBranches();
 
     /**
      * @return total number of failing branches
      */
-    @Exported(name = BlueMultiBranchPipeline.NUMBER_OF_FAILING_BRANCHES)
+    @Exported(name = "numberOfFailingBranches")
     int getNumberOfFailingBranches();
 
     /**
      * @return total number of successful branches
      */
-    @Exported(name = BlueMultiBranchPipeline.NUMBER_OF_SUCCESSFULT_BRANCHES)
+    @Exported(name = "numberOfSuccessfulBranches")
     int getNumberOfSuccessfulBranches();
 
     /**
      * @return total number of pull requests
      */
-    @Exported(name = BlueMultiBranchPipeline.TOTAL_NUMBER_OF_PULL_REQUESTS)
+    @Exported(name = "totalNumberOfPullRequests")
     int getTotalNumberOfPullRequests();
 
     /**
      * @return total number of pull requests
      */
-    @Exported(name = BlueMultiBranchPipeline.NUMBER_OF_FAILING_PULL_REQUESTS)
+    @Exported(name = "numberOfFailingPullRequests")
     int getNumberOfFailingPullRequests();
 
     /**
      * @return total number of pull requests
      */
-    @Exported(name = BlueMultiBranchPipeline.NUMBER_OF_SUCCESSFULT_PULL_REQUESTS)
+    @Exported(name = "numberOfSuccessfulPullRequests")
     int getNumberOfSuccessfulPullRequests();
 
     /**
@@ -49,6 +49,6 @@ public interface BlueMultiBranchItem {
     /**
      * @return Gives array of branch names
      */
-    @Exported(name = BlueMultiBranchPipeline.BRANCH_NAMES)
+    @Exported(name = "branchNames")
     Collection<String> getBranchNames();
 }

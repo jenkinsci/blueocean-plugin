@@ -23,38 +23,38 @@ public interface BluePipelineItem extends Reachable {
     /**
      * @return name of the organization that owns this item
      */
-    @Exported(name = BluePipeline.ORGANIZATION)
+    @Exported(name = "organization")
     String getOrganizationName();
 
     /**
      * @return name of the pipeline
      */
-    @Exported(name = BluePipeline.NAME)
+    @Exported(name = "name")
     String getName();
 
     /**
      * @return human readable name of this pipeline
      */
-    @Exported(name = BluePipeline.DISPLAY_NAME)
+    @Exported(name = "displayName")
     String getDisplayName();
 
     /**
      * @return Includes parent folders names if any. For example folder1/folder2/p1
      */
-    @Exported(name = BluePipeline.FULL_NAME)
+    @Exported(name = "fullName")
     String getFullName();
 
     /**
      * @return Includes display names of parent folders if any. For example folder1/myFolder2/p1
      */
-    @Exported(name = BluePipeline.FULL_DISPLAY_NAME)
+    @Exported(name = "fullDisplayName")
     String getFullDisplayName();
 
     /**
      * @return Gives Actions associated with this Run
      */
     @Navigable
-    @Exported(name = BluePipeline.ACTIONS, inline = true)
+    @Exported(name = "actions", inline = true)
     Collection<BlueActionProxy> getActions();
 
 }

@@ -9,20 +9,19 @@ public interface BlueRunnableItem /* extends BluePipelineItem */ {
     /**
      * @return weather health score percentile
      */
-    @Exported(name = BluePipeline.WEATHER_SCORE)
+    @Exported(name = "weatherScore")
     Integer getWeatherScore();
 
     /**
      * @return The Latest Run for the branch
      */
-    @Exported(name = BluePipeline.LATEST_RUN, inline = true)
+    @Exported(name = "latestRun", inline = true)
     BlueRun getLatestRun();
 
     /**
      * @return Estimated duration based on last pipeline runs. -1 is returned if there is no estimate available.
-     *
      */
-    @Exported(name = BluePipeline.ESTIMATED_DURATION)
+    @Exported(name = "estimatedDurationInMillis")
     Long getEstimatedDurationInMillis();
 
     /**
