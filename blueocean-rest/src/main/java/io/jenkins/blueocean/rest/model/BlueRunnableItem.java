@@ -5,6 +5,10 @@ import org.kohsuke.stapler.export.Exported;
 
 import java.util.List;
 
+/**
+ * Common interface to be implemented by pipeline items that are runnable and hence have expected run-times, a
+ * run history, etc.
+ */
 public interface BlueRunnableItem /* extends BluePipelineItem */ {
     /**
      * @return weather health score percentile

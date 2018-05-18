@@ -4,7 +4,12 @@ import org.kohsuke.stapler.export.Exported;
 
 import java.util.Collection;
 
-public interface BlueMultiBranchItem {
+/**
+ * Common interface for container items that exist to group multiple branches of the same source project.
+ *
+ * Should not be tied to a specific repository kind / scm vendor etc.
+ */
+public interface BlueMultiBranchItem /* extends BlueContainerItem */ {
 
     // TODO: Replace all the ints with Integers etc
 

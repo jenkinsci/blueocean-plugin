@@ -2,7 +2,13 @@ package io.jenkins.blueocean.rest.model;
 
 import org.kohsuke.stapler.export.Exported;
 
-public interface BlueContainerItem {
+/**
+ * Common interface for items in the pipeline "namespace" that aggregate or contain other pipeline items, such as team
+ * or organization folders, or the collection of pipelines that forms a BlueMultiBranchItem.
+ *
+ * These may or may not be also runnable, so we want to keep that facet in BlueRunnableItem and not here.
+ */
+public interface BlueContainerItem /* extends BluePipelineItem */ {
     /**
      * @return Gives pipeline container
      */
