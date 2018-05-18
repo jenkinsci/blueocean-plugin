@@ -37,7 +37,7 @@ public interface BlueContainerItem {
     Integer getNumberOfPipelines();
 
     @Exported(skipNull = true)
-    BlueIcon getIcon();
+    BlueIcon getIcon(); // TODO: Can't seem to find any @Exported properties on any subclasses of BlueIcon, why even is this?
 
     /**
      * Returns pipeline folder names present in this folder.

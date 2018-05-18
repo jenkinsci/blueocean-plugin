@@ -5,6 +5,9 @@ import org.kohsuke.stapler.export.Exported;
 import java.util.Collection;
 
 public interface BlueMultiBranchItem {
+
+    // TODO: Replace all the ints with Integers etc
+
     /**
      * @return total number of branches
      */
