@@ -25,7 +25,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_RUN;
  * @author Vivek Pandey
  */
 @Capability(BLUE_RUN)
-public abstract class BlueRun extends Resource {
+public abstract class BlueRun extends Resource implements IBlueRun {
     public static final String ORGANIZATION="organization";
     public static final String ID="id";
     public static final String PIPELINE="pipeline";

@@ -83,7 +83,40 @@ namespace Model {
 
     export type ItemIcon = any; // TODO: Figure this out
 
+    // From io.jenkins.blueocean.rest.model.IBlueRun
     export interface Run {
+        organization: string;
+        id: string;
+        pipeline: string;
+        name: string;
+        description: string;
+        changeSet: Array<Change>;
+        startTime: string;
+        enQueueTime: string;
+        endTime: string;
+        durationInMillis: number;
+        estimatedDurationInMillis: number;
+        state: RunState;
+        result: RunResult;
+        runSummary: string;
+        type: string;
+        artifactsZipFile: string;
+        actions: Array<Action>;
+        testSummary?: TestSummary;
+        causes: Array<RunCause>;
+        causeOfBlockage: string;
+        replayable: boolean;
+    }
+
+    export interface Change {
+        // TODO: define
+    }
+
+    export interface TestSummary {
+        // TODO: define
+    }
+
+    export interface RunCause {
         // TODO: define
     }
 }
