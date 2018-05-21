@@ -66,8 +66,7 @@ public class EditorPage {
      */
     public void deleteStage(String stageName) {
         logger.info("Deleting stage " + stageName);
-        // Click the name of the stage
-        wait.click(By.id("pipeline-big-label-" + stageName));
+        wait.click(By.xpath("//*[@data-stagename=\"" + stageName + "\"]"));
         // Click the little popup button
         wait.click(By.cssSelector("div.more-menu"));
         // Click Delete
