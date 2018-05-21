@@ -1,13 +1,17 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
+
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE_FOLDER;
 
 /**
  * Common interface for items in the pipeline "namespace" that aggregate or contain other pipeline items, such as team
  * or organization folders, or the collection of pipelines that forms a BlueMultiBranchItem.
- *
+ * <p>
  * These may or may not be also runnable, so we want to keep that facet in BlueRunnableItem and not here.
  */
+@Capability(BLUE_PIPELINE_FOLDER)
 public interface BlueContainerItem /* extends BluePipelineItem */ {
     /**
      * @return Gives pipeline container

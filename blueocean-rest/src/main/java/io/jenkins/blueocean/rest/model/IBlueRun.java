@@ -1,16 +1,20 @@
 package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.rest.Navigable;
+import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
+
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_RUN;
 
 /**
  * Common interface for job run details
  * <p>
  * TODO: This isn't C#. Figure out what to call io.jenkins.blueocean.rest.model.BlueRun so we can call this BlueRun
  */
+@Capability(BLUE_RUN)
 public interface IBlueRun {
 
     /**

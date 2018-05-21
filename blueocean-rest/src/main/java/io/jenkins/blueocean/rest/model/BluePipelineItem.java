@@ -2,10 +2,13 @@ package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.annotation.Capability;
 import org.kohsuke.stapler.export.Exported;
 
 import javax.annotation.Nonnull;
 import java.util.Collection;
+
+import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE;
 
 /**
  * Minimal interface for all Blue Ocean items that live in the "pipeline namespace"
@@ -13,6 +16,7 @@ import java.util.Collection;
  * This includes various kinds of jobs that can be run, but also things that exist only as containers like folders and
  * multibranch parents, and as such doesn't contain any references to runs, build times, etc.
  */
+@Capability(BLUE_PIPELINE)
 public interface BluePipelineItem extends Reachable {
     /**
      * @return the organization that owns this item
