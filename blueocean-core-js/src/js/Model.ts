@@ -66,7 +66,7 @@ namespace Model {
     export interface ContainerItem extends PipelineItem {
         numberOfFolders: number;
         numberOfPipelines: number;
-        icon?: ItemIcon;
+        icon?: Reachable;
         pipelineFolderNames: Array<string>;
     }
 
@@ -80,8 +80,6 @@ namespace Model {
         numberOfSuccessfulPullRequests: number;
         branchNames: Array<string>;
     }
-
-    export type ItemIcon = any; // TODO: Figure this out
 
     // From io.jenkins.blueocean.rest.model.IBlueRun
     export interface Run {
@@ -108,15 +106,52 @@ namespace Model {
         replayable: boolean;
     }
 
+    // From io.jenkins.blueocean.rest.model.BlueChangeSetEntry
     export interface Change {
-        // TODO: define
+        author: User;
+        commitId: string;
+        timestamp: string;
+        msg: string;
+        affectedPaths: Array<string>;
+        url: string;
+        issues?: Array<Issue>;
     }
 
+    // From io.jenkins.blueocean.rest.model.BlueTestSummary
     export interface TestSummary {
-        // TODO: define
+        total: number;
+        skipped: number;
+        failed: number;
+        passed: number;
+        fixed: number;
+        existingFailed: number;
+        regressions: number;
     }
 
+    // No nice interface for this, and no impl fields marked @Exported
     export interface RunCause {
-        // TODO: define
+        shortDescription: string;
+    }
+
+    // From io.jenkins.blueocean.rest.model.BlueUser
+    export interface User {
+        id: string;
+        fullName: string;
+        email?: string;
+        permission: UserPermission;
+        avatar: string;
+    }
+
+    // From io.jenkins.blueocean.rest.model.BlueIssue
+    export interface Issue {
+        id: string;
+        url: string;
+    }
+
+    // From: io.jenkins.blueocean.rest.model.BlueUserPermission
+    export interface UserPermission {
+        administrator: boolean;
+        pipeline: Map<string, boolean>;
+        credential: Map<string, boolean>;
     }
 }
