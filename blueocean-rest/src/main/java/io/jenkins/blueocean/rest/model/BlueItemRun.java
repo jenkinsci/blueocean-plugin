@@ -11,11 +11,9 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_RUN;
 
 /**
  * Common interface for job run details
- * <p>
- * TODO: This isn't C#. Figure out what to call io.jenkins.blueocean.rest.model.BlueRun so we can call this BlueRun
  */
 @Capability(BLUE_RUN)
-public interface IBlueRun {
+public interface BlueItemRun {
 
     /**
      * @return name of the organization
