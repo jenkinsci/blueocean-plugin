@@ -81,8 +81,8 @@ namespace Model {
         branchNames: Array<string>;
     }
 
-    // From io.jenkins.blueocean.rest.model.IBlueRun
-    export interface Run {
+    // From io.jenkins.blueocean.rest.model.BlueItemRun
+    export interface Run extends Reachable, WithClass {
         organization: string;
         id: string;
         pipeline: string;
@@ -107,7 +107,7 @@ namespace Model {
     }
 
     // From io.jenkins.blueocean.rest.model.BlueChangeSetEntry
-    export interface Change {
+    export interface Change extends Reachable, WithClass {
         author: User;
         commitId: string;
         timestamp: string;
@@ -134,7 +134,7 @@ namespace Model {
     }
 
     // From io.jenkins.blueocean.rest.model.BlueUser
-    export interface User {
+    export interface User extends Reachable, WithClass {
         id: string;
         fullName: string;
         email?: string;
