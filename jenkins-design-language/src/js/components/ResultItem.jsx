@@ -42,7 +42,7 @@ export class ResultItem extends Component {
 
         this.infiniteRotationRunning = false;
         this.infiniteRotateDegrees = 0;
-        this.isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
+        this.isEdgeOrIE = (!!window.MSInputMethodContext && !!document.documentMode) || window.navigator.userAgent.indexOf('Edge') > -1;
     }
 
     infiniteLoadingTimer = () => {
@@ -128,7 +128,7 @@ export class ResultItem extends Component {
             },
         };
 
-        if (resultClean === 'running' && !this.infiniteRotationRunning && this.isIE11) {
+        if (resultClean === 'running' && !this.infiniteRotationRunning && this.isEdgeOrIE) {
             requestAnimationFrame(this.infiniteLoadingTimer);
             this.infiniteRotationRunning = true;
         }

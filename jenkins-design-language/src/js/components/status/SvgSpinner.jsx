@@ -9,7 +9,7 @@ export default class SvgSpinner extends Component {
     componentWillMount() {
         this.infiniteRotationRunning = false;
         this.infiniteRotateDegrees = 0;
-        this.isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
+        this.isEdgeOrIE = (!!window.MSInputMethodContext && !!document.documentMode) || window.navigator.userAgent.indexOf('Edge') > -1;
     }
 
     infiniteLoadingTimer = () => {
@@ -47,7 +47,7 @@ export default class SvgSpinner extends Component {
             groupClasses.push('spin');
             percentage = 25;
 
-            if (!this.infiniteRotationRunning && this.isIE11) {
+            if (!this.infiniteRotationRunning && this.isEdgeOrIE) {
                 requestAnimationFrame(this.infiniteLoadingTimer);
 
                 this.infiniteRotationRunning = true;
