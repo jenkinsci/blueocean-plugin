@@ -8,24 +8,18 @@ export const strokeWidth = 3.5; // px. Maybe we can fetch this from CSS at runti
 export default class SvgSpinner extends Component {
     componentWillMount() {
         this.infiniteRotationRunning = false;
-        this.setState({
-            infiniteRotateDegrees: 0,
-        });
+        this.infiniteRotateDegrees = 0;
+        this.isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
     }
 
     infiniteLoadingTimer = () => {
-        let infiniteRotateDegrees = this.state.infiniteRotateDegrees;
+        this.infiniteRotateDegrees += 1.5;
 
-        infiniteRotateDegrees += 1.5;
-
-        if (infiniteRotateDegrees >= 360) {
-            infiniteRotateDegrees = 0;
+        if (this.infiniteRotateDegrees >= 360) {
+            this.infiniteRotateDegrees = 0;
         }
 
-        this.setState({
-            infiniteRotateDegrees: infiniteRotateDegrees,
-        });
-
+        this.animatedElement.setAttribute('transform', `rotate(${this.infiniteRotateDegrees})`);
         this.requestAnimationFrameId = requestAnimationFrame(this.infiniteLoadingTimer);
     };
 
@@ -53,7 +47,7 @@ export default class SvgSpinner extends Component {
             groupClasses.push('spin');
             percentage = 25;
 
-            if (!this.infiniteRotationRunning) {
+            if (!this.infiniteRotationRunning && this.isIE11) {
                 requestAnimationFrame(this.infiniteLoadingTimer);
 
                 this.infiniteRotationRunning = true;
@@ -66,7 +60,7 @@ export default class SvgSpinner extends Component {
         const innerRadius = radius / 3;
 
         return (
-            <g className={groupClasses.join(' ')} transform={`rotate(${this.state.infiniteRotateDegrees})`}>
+            <g className={groupClasses.join(' ')} ref={c => (this.animatedElement = c)}>
                 <circle cx="0" cy="0" r={radius} strokeWidth={strokeWidth} />
                 <circle className="inner" cx="0" cy="0" r={innerRadius} />
                 {percentage ? <path className={result} fill="none" strokeWidth={strokeWidth} d={d} /> : null}

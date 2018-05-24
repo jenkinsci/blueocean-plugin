@@ -41,24 +41,18 @@ export class ResultItem extends Component {
         this.handleProps(this.props, this.props);
 
         this.infiniteRotationRunning = false;
-        this.setState({
-            infiniteRotateDegrees: 0,
-        });
+        this.infiniteRotateDegrees = 0;
+        this.isIE11 = !!window.MSInputMethodContext && !!document.documentMode;
     }
 
     infiniteLoadingTimer = () => {
-        let infiniteRotateDegrees = this.state.infiniteRotateDegrees;
+        this.infiniteRotateDegrees += 1.5;
 
-        infiniteRotateDegrees += 1.5;
-
-        if (infiniteRotateDegrees >= 360) {
-            infiniteRotateDegrees = 0;
+        if (this.infiniteRotateDegrees >= 360) {
+            this.infiniteRotateDegrees = 0;
         }
 
-        this.setState({
-            infiniteRotateDegrees: infiniteRotateDegrees,
-        });
-
+        this.animatedElement.setAttribute('transform', `rotate(${this.infiniteRotateDegrees})`);
         this.requestAnimationFrameId = requestAnimationFrame(this.infiniteLoadingTimer);
     };
 
@@ -126,6 +120,7 @@ export class ResultItem extends Component {
 
         const outerClassName = classes.join(' ');
         const iconClassName = `result-item-icon result-bg ${resultClean}`;
+        const isIconSpinning = resultClean === 'running' && !this.infiniteRotationRunning ? 'spinAnimation' : '';
 
         const linkifyOptions = {
             attributes: {
@@ -133,7 +128,7 @@ export class ResultItem extends Component {
             },
         };
 
-        if (resultClean === 'running' && !this.infiniteRotationRunning) {
+        if (resultClean === 'running' && !this.infiniteRotationRunning && this.isIE11) {
             requestAnimationFrame(this.infiniteLoadingTimer);
             this.infiniteRotationRunning = true;
         }
@@ -144,7 +139,9 @@ export class ResultItem extends Component {
                     <span className={iconClassName}>
                         <svg width="28" height="34">
                             <g transform="translate(14 18)" className="result-status-glyph">
-                                <g transform={`rotate(${this.state.infiniteRotateDegrees})`}>{statusGlyph}</g>
+                                <g className={isIconSpinning} ref={c => (this.animatedElement = c)}>
+                                    {statusGlyph}
+                                </g>
                             </g>
                         </svg>
                     </span>
