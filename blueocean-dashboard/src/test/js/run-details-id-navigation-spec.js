@@ -2,7 +2,7 @@ import React from 'react';
 import { assert } from 'chai';
 import { shallow } from 'enzyme';
 
-import { RunIdNavigation } from '../../main/js/components/RunDetailsHeader';
+import { RunIdNavigation } from '../../main/js/components/RunIdNavigation';
 
 import { i18nTranslator } from '@jenkins-cd/blueocean-core-js';
 const t = i18nTranslator('blueocean-dashboard');

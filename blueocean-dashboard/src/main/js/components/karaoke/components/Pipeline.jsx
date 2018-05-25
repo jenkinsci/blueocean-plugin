@@ -239,6 +239,7 @@ export default class Pipeline extends Component {
         logger.debug('isQueued', run.isQueued(), 'noResultsToDisplay', noResultsToDisplay, 'isPipelineQueued', isPipelineQueued);
         const supportsNodes = this.pager.nodes === undefined;
         if (!this.pager.pending && (this.classicLog || (noResultsToDisplay && supportsNodes))) {
+            // TODO: when can this branch be executed?
             // no information? fallback to freeStyle
             logger.debug('EarlyOut - We do not have any information we can display or we opt-out by preference, falling back to freeStyle rendering');
             return <FreeStyle {...this.props} />;

@@ -1,50 +1,15 @@
 import React, { Component, PropTypes } from 'react';
-import { Icon } from '@jenkins-cd/design-language';
-import { UrlConfig, AppConfig, logging, ResultPageHeader, TimeManager, UrlBuilder } from '@jenkins-cd/blueocean-core-js';
-import { ExpandablePath, ReadableDate, TimeDuration, CommitId } from '@jenkins-cd/design-language';
+import { CommitId, ExpandablePath, Icon, ReadableDate, TimeDuration } from '@jenkins-cd/design-language';
+import { AppConfig, logging, ResultPageHeader, TimeManager, UrlBuilder, UrlConfig } from '@jenkins-cd/blueocean-core-js';
 import ChangeSetToAuthors from './ChangeSetToAuthors';
 import { Link } from 'react-router';
-import RunIdCell from './RunIdCell';
+import { RunIdNavigation } from './RunIdNavigation';
 
-export class RunIdNavigation extends Component {
-    render() {
-        const { run, pipeline, branchName, t } = this.props;
-
-        const nextRunId = run._links.nextRun ? /[\/].*runs\/*([0-9]*)/g.exec(run._links.nextRun.href)[1] : '';
-        const prevRunId = run._links.prevRun ? /[\/].*runs\/*([0-9]*)/g.exec(run._links.prevRun.href)[1] : '';
-
-        const nextRunUrl = nextRunId ? UrlBuilder.buildRunUrl(pipeline.organization, pipeline.fullName, branchName, nextRunId, 'pipeline') : '';
-        const prevRunUrl = prevRunId ? UrlBuilder.buildRunUrl(pipeline.organization, pipeline.fullName, branchName, prevRunId, 'pipeline') : '';
-
-        return (
-            <span className="run-nav-container">
-                {prevRunUrl && (
-                    <Link to={prevRunUrl} title={t('rundetail.header.prev_run', { defaultValue: 'Previous Run' })}>
-                        <Icon size={24} icon="HardwareKeyboardArrowLeft" style={{ verticalAlign: 'bottom' }} />
-                    </Link>
-                )}
-                <RunIdCell run={run} />
-                {nextRunUrl && (
-                    <Link to={nextRunUrl} title={t('rundetail.header.next_run', { defaultValue: 'Next Run' })}>
-                        <Icon size={24} icon="HardwareKeyboardArrowRight" style={{ verticalAlign: 'bottom' }} />
-                    </Link>
-                )}
-            </span>
-        );
-    }
-}
-
-RunIdNavigation.propTypes = {
-    run: PropTypes.object,
-    pipeline: PropTypes.object,
-    branchName: PropTypes.string,
-    t: PropTypes.func,
-};
-
-class RunDetailsHeader extends Component {
+export class RunDetailsHeader extends Component {
     componentWillMount() {
         this._setDuration(this.props);
     }
+
     componentWillReceiveProps(nextProps) {
         this._setDuration(nextProps);
     }
@@ -253,5 +218,3 @@ RunDetailsHeader.propTypes = {
 RunDetailsHeader.contextTypes = {
     config: PropTypes.object.isRequired,
 };
-
-export { RunDetailsHeader };
