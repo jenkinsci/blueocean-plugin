@@ -43,6 +43,7 @@ import javax.annotation.Nonnull;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 import java.util.concurrent.TimeoutException;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_WORKFLOW_RUN;
@@ -260,21 +261,24 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     public static class FactoryImpl extends BlueRunFactory {
 
         @Override
-        public BlueRun getRun(Run run, Reachable parent, BlueOrganization organization) {
+        public BlueRun getRun( Run run, Reachable parent, BlueOrganization organization) {
             if(run instanceof WorkflowRun) {
-                return new PipelineRunImpl((WorkflowRun) run, parent, organization);
+                PipelineRunImpl pipelineRun = new PipelineRunImpl((WorkflowRun) run, parent, organization);
+                try {
+                    pipelineRun.getTestSummary();
+                } catch ( Exception e ) {
+                    // ignore exception here
+                }
+                return pipelineRun;
             }
             return null;
         }
     }
 
-    static final Comparator<BlueRun> LATEST_RUN_START_TIME_COMPARATOR = new Comparator<BlueRun>() {
-        @Override
-        public int compare(BlueRun o1, BlueRun o2) {
+    static final Comparator<BlueRun> LATEST_RUN_START_TIME_COMPARATOR = (o1, o2) -> {
             Long t1 = (o1 != null  && o1.getStartTime() != null) ? o1.getStartTime().getTime() : 0;
             Long t2 = (o2 != null  && o2.getStartTime() != null) ? o2.getStartTime().getTime() : 0;
             return t2.compareTo(t1);
-        }
-    };
+        };
 
 }

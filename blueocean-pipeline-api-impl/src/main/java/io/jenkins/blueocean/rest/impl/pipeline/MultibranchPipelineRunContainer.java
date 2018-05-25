@@ -100,14 +100,12 @@ public class MultibranchPipelineRunContainer extends BlueRunContainer{
     }
 
     static void sortBranchesByLatestRun(List<BluePipeline> branches) {
-        Collections.sort(branches, new Comparator<BluePipeline>() {
-            @Override
-            public int compare(BluePipeline o1, BluePipeline o2) {
+        Collections.sort(branches, ( o1, o2 ) -> {
                 BlueRun o1LatestRun = o1.getLatestRun();
                 BlueRun o2LatestRun = o2.getLatestRun();
                 return LATEST_RUN_START_TIME_COMPARATOR.compare(o1LatestRun, o2LatestRun);
             }
-        });
+        );
     }
 
     private boolean retry(boolean[] retries) {

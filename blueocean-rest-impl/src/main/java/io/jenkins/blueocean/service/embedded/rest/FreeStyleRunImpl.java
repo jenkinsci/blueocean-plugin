@@ -19,6 +19,7 @@ import org.kohsuke.stapler.QueryParameter;
 import javax.annotation.Nonnull;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.concurrent.Callable;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_FREE_STYLE_BUILD;
 
@@ -62,9 +63,10 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
     @Extension
     public static class FactoryImpl extends BlueRunFactory {
         @Override
-        public BlueRun getRun(Run run, Reachable parent, BlueOrganization organization) {
-            if (run instanceof FreeStyleBuild) {
-                return new FreeStyleRunImpl((FreeStyleBuild)run, parent, organization);
+        public BlueRun getRun( Run run, Reachable parent, BlueOrganization organization) {
+            if ( run instanceof FreeStyleBuild )
+            {
+                return new FreeStyleRunImpl( (FreeStyleBuild) run, parent, organization );
             }
             return null;
         }

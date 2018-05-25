@@ -86,7 +86,7 @@ public class RunContainerImpl extends BlueRunContainer {
         } else {
             run = runList.getLastBuild();
         }
-        return  BlueRunFactory.getRun(run, pipeline);
+        return BlueRunFactory.getRun(run, pipeline);
     }
 
     @Override
