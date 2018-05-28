@@ -1,15 +1,35 @@
-import React, { Component, PropTypes } from 'react';
+import * as React from 'react';
 import { Icon } from '@jenkins-cd/design-language';
 import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import { Link } from 'react-router';
-import RunIdCell from './RunIdCell';
+import * as RunIdCell from './RunIdCell';
 
-export class RunIdNavigation extends Component {
+import { Model } from '@jenkins-cd/blueocean-core-js';
+
+type Props = {
+    run: Model.Run;
+    pipeline: Model.RunnableItem;
+    branchName: string;
+    t: Function;
+};
+
+function getRunId(link?: Model.Link) {
+    if (!link || !link.href) {
+        return null;
+    }
+    const pattern = /[\/].*runs\/*([0-9]*)/g;
+    const match = pattern.exec(link.href);
+    return match && match[1];
+}
+
+export class RunIdNavigation extends React.Component {
+    props: Props;
+
     render() {
         const { run, pipeline, branchName, t } = this.props;
 
-        const nextRunId = run._links.nextRun ? /[\/].*runs\/*([0-9]*)/g.exec(run._links.nextRun.href)[1] : '';
-        const prevRunId = run._links.prevRun ? /[\/].*runs\/*([0-9]*)/g.exec(run._links.prevRun.href)[1] : '';
+        const nextRunId = getRunId(run._links.nextRun) || '';
+        const prevRunId = getRunId(run._links.prevRun) || '';
 
         const nextRunUrl = nextRunId ? UrlBuilder.buildRunUrl(pipeline.organization, pipeline.fullName, branchName, nextRunId, 'pipeline') : '';
         const prevRunUrl = prevRunId ? UrlBuilder.buildRunUrl(pipeline.organization, pipeline.fullName, branchName, prevRunId, 'pipeline') : '';
@@ -31,10 +51,3 @@ export class RunIdNavigation extends Component {
         );
     }
 }
-
-RunIdNavigation.propTypes = {
-    run: PropTypes.object,
-    pipeline: PropTypes.object,
-    branchName: PropTypes.string,
-    t: PropTypes.func,
-};
