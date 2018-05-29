@@ -25,6 +25,8 @@ const Cause = ({ run }) => {
     );
 };
 
+Cause.propTypes = { run: {} }; // TODO: RM
+
 export class RunDetailsHeader extends Component {
     componentWillMount() {
         this._setDuration(this.props);

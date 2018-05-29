@@ -37,7 +37,7 @@ export namespace Model {
     // From io.jenkins.blueocean.rest.model.Resource
     export interface Resource {
         link: Link;
-        _links: Map<string, Link>;
+        _links: { [key: string]: Link };
     }
 
     // From io.jenkins.blueocean.rest.model.BlueActionProxy
@@ -152,7 +152,7 @@ export namespace Model {
     // From: io.jenkins.blueocean.rest.model.BlueUserPermission
     export interface UserPermission {
         administrator: boolean;
-        pipeline: Map<string, boolean>;
-        credential: Map<string, boolean>;
+        pipeline: { [key: string]: boolean };
+        credential: { [key: string]: boolean };
     }
 }
