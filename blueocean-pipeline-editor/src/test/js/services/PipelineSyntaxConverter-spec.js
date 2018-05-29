@@ -354,6 +354,121 @@ describe('Pipeline Syntax Converter', () => {
         assert(out.pipeline.stages[0].parallel[1].name == 'stage 2', "Bad parallel conversion");
     });
 
+    it('reads sequential stages with nested stages nested in a parallel without failing due to unknown stage type', () => {
+        const p = {"pipeline": {
+                "stages": [  {
+                    "name": "foo",
+                    "parallel":     [
+                        {
+                            "name": "first",
+                            "branches": [        {
+                                "name": "default",
+                                "steps": [          {
+                                    "name": "echo",
+                                    "arguments": [            {
+                                        "key": "message",
+                                        "value":               {
+                                            "isLiteral": false,
+                                            "value": "\"First stage, ${WHICH_AGENT}\""
+                                        }
+                                    }]
+                                }]
+                            }],
+                            "agent":         {
+                                "type": "label",
+                                "argument":           {
+                                    "isLiteral": true,
+                                    "value": "first-agent"
+                                }
+                            }
+                        },
+                        {
+                            "name": "second",
+                            "stages":         [
+                                {
+                                    "name": "inner-first",
+                                    "branches": [            {
+                                        "name": "default",
+                                        "steps":               [
+                                            {
+                                                "name": "echo",
+                                                "arguments": [                  {
+                                                    "key": "message",
+                                                    "value":                     {
+                                                        "isLiteral": false,
+                                                        "value": "\"Second stage, ${WHICH_AGENT}\""
+                                                    }
+                                                }]
+                                            },
+                                            {
+                                                "name": "script",
+                                                "arguments": [                  {
+                                                    "key": "scriptBlock",
+                                                    "value":                     {
+                                                        "isLiteral": true,
+                                                        "value": "if (isUnix()) {\n                                    sh 'mvn --version'\n                                } else {\n                                    bat 'mvn --version'\n                                }"
+                                                    }
+                                                }]
+                                            }
+                                        ]
+                                    }],
+                                    "agent":             {
+                                        "type": "label",
+                                        "argument":               {
+                                            "isLiteral": true,
+                                            "value": "second-agent"
+                                        }
+                                    },
+                                    "tools": [            {
+                                        "key": "maven",
+                                        "value":               {
+                                            "isLiteral": true,
+                                            "value": "apache-maven-3.0.1"
+                                        }
+                                    }]
+                                },
+                                {
+                                    "name": "inner-second",
+                                    "branches": [            {
+                                        "name": "default",
+                                        "steps": [              {
+                                            "name": "echo",
+                                            "arguments": [                {
+                                                "key": "message",
+                                                "value":                   {
+                                                    "isLiteral": true,
+                                                    "value": "WE SHOULD NEVER GET HERE"
+                                                }
+                                            }]
+                                        }]
+                                    }],
+                                    "when": {"conditions": [            {
+                                            "name": "expression",
+                                            "arguments": [              {
+                                                "key": "scriptBlock",
+                                                "value":                 {
+                                                    "isLiteral": true,
+                                                    "value": "return false"
+                                                }
+                                            }]
+                                        }]}
+                                }
+                            ]
+                        }
+                    ]
+                }],
+                "agent": {"type": "none"}
+            }};
+
+        const internal = convertJsonToInternalModel(p);
+        assert(internal.children[0].children.length == 2, "Stages not parallel");
+        assert(internal.children[0].steps.length == 0, "Steps not at correct stage");
+        assert(internal.children[0].children[0].name == 'first', "Wrong stage name");
+        assert(internal.children[0].children[1].name == 'second', "Wrong stage name");
+        assert(internal.children[0].children[1].steps.length == 0, "Stage containing sequential stages incorrectly has steps");
+        // TODO: Actually test the conversion into nested sequential stages once that capacity is added.
+    });
+
     it('reads sequential stages with nested stages without failing due to unknown stage type', () => {
         const p = {"pipeline": {
                 "stages": [  {
