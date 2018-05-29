@@ -354,4 +354,52 @@ describe('Pipeline Syntax Converter', () => {
         assert(out.pipeline.stages[0].parallel[1].name == 'stage 2', "Bad parallel conversion");
     });
 
+    it('reads sequential stages with nested stages without failing due to unknown stage type', () => {
+        const p = {"pipeline": {
+                "stages": [  {
+                    "name": "foo",
+                    "stages":     [
+                        {
+                            "name": "bar",
+                            "branches": [        {
+                                "name": "default",
+                                "steps": [          {
+                                    "name": "echo",
+                                    "arguments": [            {
+                                        "key": "message",
+                                        "value":               {
+                                            "isLiteral": false,
+                                            "value": "\"In stage ${STAGE_NAME} in group foo\""
+                                        }
+                                    }]
+                                }]
+                            }]
+                        },
+                        {
+                            "name": "baz",
+                            "branches": [        {
+                                "name": "default",
+                                "steps": [          {
+                                    "name": "echo",
+                                    "arguments": [            {
+                                        "key": "message",
+                                        "value":               {
+                                            "isLiteral": false,
+                                            "value": "\"In stage ${STAGE_NAME} in group foo\""
+                                        }
+                                    }]
+                                }]
+                            }]
+                        }
+                    ]
+                }],
+                "agent": {"type": "none"}
+            }};
+
+        const internal = convertJsonToInternalModel(p);
+        assert(internal.children.length == 1, "Parent of sequential stages not read");
+        assert(internal.children[0].steps.length == 0, "Steps not at correct stage");
+        // TODO: Actually test the conversion into nested sequential stages once that capacity is added.
+    });
+
 });
