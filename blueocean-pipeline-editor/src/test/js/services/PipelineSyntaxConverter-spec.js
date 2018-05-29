@@ -466,7 +466,9 @@ describe('Pipeline Syntax Converter', () => {
         assert(internal.children[0].children[0].name == 'first', "Wrong stage name");
         assert(internal.children[0].children[1].name == 'second', "Wrong stage name");
         assert(internal.children[0].children[1].steps.length == 0, "Stage containing sequential stages incorrectly has steps");
+
         // TODO: Actually test the conversion into nested sequential stages once that capacity is added.
+        assert(!Array.isArray(internal.children[0].children[1].stages), "Nested stage contains sequential stages - update tests");
     });
 
     it('reads sequential stages with nested stages without failing due to unknown stage type', () => {
@@ -514,7 +516,9 @@ describe('Pipeline Syntax Converter', () => {
         const internal = convertJsonToInternalModel(p);
         assert(internal.children.length == 1, "Parent of sequential stages not read");
         assert(internal.children[0].steps.length == 0, "Steps not at correct stage");
+
         // TODO: Actually test the conversion into nested sequential stages once that capacity is added.
+        assert(!Array.isArray(internal.children[0].stages == null), "Nested stage contains sequential stages - update tests");
     });
 
 });
