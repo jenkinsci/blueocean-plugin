@@ -5,6 +5,26 @@ import ChangeSetToAuthors from './ChangeSetToAuthors';
 import { Link } from 'react-router';
 import { RunIdNavigation } from './RunIdNavigation';
 
+const Cause = ({ run }) => {
+    const lastCause = (run && run.causes.length > 0 && run.causes[run.causes.length - 1]) || null;
+    if (lastCause && lastCause.upstreamProject) {
+        const activityUrl = `${UrlConfig.getJenkinsRootURL()}/${lastCause.upstreamUrl}display/redirect?provider=blueocean`;
+        const runUrl = `${UrlConfig.getJenkinsRootURL()}/${lastCause.upstreamUrl}${lastCause.upstreamBuild}/display/redirect?provider=blueocean`;
+
+        return (
+            <div className="causes" title={lastCause.shortDescription}>
+                Started by upstream pipeline "<a href={activityUrl}>{lastCause.upstreamProject}</a>" build <a href={runUrl}>#{lastCause.upstreamBuild}</a>
+            </div>
+        );
+    }
+    const causeMessage = (lastCause && lastCause.shortDescription) || null;
+    return (
+        <div className="causes" title={causeMessage}>
+            {causeMessage}
+        </div>
+    );
+};
+
 export class RunDetailsHeader extends Component {
     componentWillMount() {
         this._setDuration(this.props);
@@ -148,27 +168,6 @@ export class RunDetailsHeader extends Component {
             </div>
         );
 
-        const cause = run => {
-            const lastCause = (run && run.causes.length > 0 && run.causes[run.causes.length - 1]) || null;
-            if (lastCause && lastCause.upstreamProject) {
-                const activityUrl = `${UrlConfig.getJenkinsRootURL()}/${lastCause.upstreamUrl}display/redirect?provider=blueocean`;
-                const runUrl = `${UrlConfig.getJenkinsRootURL()}/${lastCause.upstreamUrl}${lastCause.upstreamBuild}/display/redirect?provider=blueocean`;
-
-                return (
-                    <div className="causes" title={lastCause.shortDescription}>
-                        Started by upstream pipeline "<a href={activityUrl}>{lastCause.upstreamProject}</a>" build{' '}
-                        <a href={runUrl}>#{lastCause.upstreamBuild}</a>
-                    </div>
-                );
-            }
-            const causeMessage = (lastCause && lastCause.shortDescription) || null;
-            return (
-                <div className="causes" title={causeMessage}>
-                    {causeMessage}
-                </div>
-            );
-        };
-
         return (
             <ResultPageHeader
                 startTime={startTime}
@@ -191,7 +190,7 @@ export class RunDetailsHeader extends Component {
                 </div>
                 <div className="RunDetailsHeader-messages">
                     <ChangeSetToAuthors changeSet={changeSet} onAuthorsClick={onAuthorsClick} t={t} />
-                    {cause(run)}
+                    <Cause run={run} />
                 </div>
             </ResultPageHeader>
         );
