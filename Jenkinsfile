@@ -38,16 +38,17 @@ node() {
           try {
             sh "mvn clean install -B -DcleanNode -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -Dmaven.test.failure.ignore -s settings.xml -Dmaven.artifact.threads=30"
           } catch(e) {
-            archive '*/target/code-coverage/**/*.html'
             throw e;
           }
           junit '**/target/surefire-reports/TEST-*.xml'
           junit '**/target/jest-reports/*.xml'
+          archive '*/target/code-coverage/**/*'
           archive '*/target/*.hpi'
+          archive '*/target/jest-coverage/**/*'
         }
 
-        stage('ATH - Jenkins 2.73.3') {
-          sh "cd acceptance-tests && ./run.sh -v=2.73.3 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+        stage('ATH - Jenkins 2.107.2') {
+          sh "cd acceptance-tests && ./run.sh -v=2.107.2 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
           junit 'acceptance-tests/target/surefire-reports/*.xml'
           archive 'acceptance-tests/target/screenshots/**/*'
         }
@@ -59,6 +60,10 @@ node() {
           }
           stage('ATH - Jenkins 2.73.3') {
             sh "cd acceptance-tests && ./run.sh -v=2.73.3 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
+            junit 'acceptance-tests/target/surefire-reports/*.xml'
+          }
+          stage('ATH - Jenkins 2.107.2') {
+            sh "cd acceptance-tests && ./run.sh -v=2.107.2 --no-selenium --settings='-s ${env.WORKSPACE}/settings.xml'"
             junit 'acceptance-tests/target/surefire-reports/*.xml'
           }
         }

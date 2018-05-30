@@ -6,11 +6,11 @@ import TestSection from './TestSection';
 /* eslint-disable max-len */
 
 interface Props {
-    pipeline: any,
-    run: any,
-    t: (key: string) => string,
-    locale: string,
-    testService: any
+    pipeline: any;
+    run: any;
+    t: (key: string) => string;
+    locale: string;
+    testService: any;
 }
 
 @observer

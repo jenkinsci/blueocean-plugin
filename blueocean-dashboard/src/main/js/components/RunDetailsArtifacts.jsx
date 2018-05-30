@@ -2,7 +2,6 @@ import React, { Component, PropTypes } from 'react';
 import { FileSize, JTable, TableRow, TableCell, TableHeaderRow } from '@jenkins-cd/design-language';
 import { Icon } from '@jenkins-cd/design-language';
 import { observer } from 'mobx-react';
-import mobxUtils from 'mobx-utils';
 import { logging, UrlConfig, ShowMoreButton } from '@jenkins-cd/blueocean-core-js';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.artifacts');

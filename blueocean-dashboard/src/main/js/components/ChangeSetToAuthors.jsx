@@ -31,7 +31,10 @@ export default class ChangeSetToAuthors extends Component {
     }
 
     render() {
-        const { props: { changeSet, onAuthorsClick, t }, state: { condense } } = this;
+        const {
+            props: { changeSet, onAuthorsClick, t },
+            state: { condense },
+        } = this;
         const authors = changeSet && changeSet.map ? [...(new Set(changeSet.map(change => change.author.fullName)): any)] : [];
         let children = t('rundetail.header.changes.none', {
             defaultValue: 'No changes',

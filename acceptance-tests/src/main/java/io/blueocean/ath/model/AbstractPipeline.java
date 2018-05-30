@@ -6,10 +6,12 @@ import com.google.common.net.UrlEscapers;
 import com.google.inject.Inject;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.factory.ActivityPageFactory;
+import io.blueocean.ath.factory.BranchPageFactory;
 import io.blueocean.ath.factory.RunDetailsArtifactsPageFactory;
 import io.blueocean.ath.factory.RunDetailsPipelinePageFactory;
 import io.blueocean.ath.factory.RunDetailsTestsPageFactory;
 import io.blueocean.ath.pages.blue.ActivityPage;
+import io.blueocean.ath.pages.blue.BranchPage;
 import io.blueocean.ath.pages.blue.RunDetailsArtifactsPage;
 import io.blueocean.ath.pages.blue.RunDetailsPipelinePage;
 import io.blueocean.ath.pages.blue.RunDetailsTestsPage;
@@ -27,6 +29,9 @@ public abstract class AbstractPipeline {
 
     @Inject
     ActivityPageFactory activityPageFactory;
+
+    @Inject
+    BranchPageFactory branchPageFactory;
 
     @Inject
     RunDetailsPipelinePageFactory runDetailsPipelinePageFactory;
@@ -92,6 +97,10 @@ public abstract class AbstractPipeline {
 
     public ActivityPage getActivityPage() {
         return activityPageFactory.withPipeline(this);
+    }
+
+    public BranchPage getBranchPage() {
+        return branchPageFactory.withPipeline(this);
     }
 
     public RunDetailsPipelinePage getRunDetailsPipelinePage() {

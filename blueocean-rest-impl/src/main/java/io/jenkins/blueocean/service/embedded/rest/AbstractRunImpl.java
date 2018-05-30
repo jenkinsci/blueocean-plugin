@@ -13,6 +13,7 @@ import io.jenkins.blueocean.commons.ServiceException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.hal.LinkResolver;
 import io.jenkins.blueocean.rest.hal.Links;
 import io.jenkins.blueocean.rest.model.BlueActionProxy;
 import io.jenkins.blueocean.rest.model.BlueArtifactContainer;
@@ -326,7 +327,21 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public Links getLinks() {
-        return super.getLinks().add("parent", parent.getLink());
+        Links links = super.getLinks().add("parent", parent.getLink());
+        Run nextRun = run.getNextBuild();
+        Run prevRun = run.getPreviousBuild();
+
+        if(nextRun != null) {
+            Link nextRunLink = LinkResolver.resolveLink(nextRun);
+            links.add("nextRun", nextRunLink);
+        }
+
+        if(prevRun != null) {
+            Link prevRunLink = LinkResolver.resolveLink(prevRun);
+            links.add("prevRun", prevRunLink);
+        }
+
+        return links;
     }
 
     public static class BlueCauseImpl extends BlueCause {

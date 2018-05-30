@@ -1,4 +1,4 @@
-import { AppConfig, capable, doubleUriEncode, logging } from '@jenkins-cd/blueocean-core-js';
+import { AppConfig, capable, UrlUtils, logging } from '@jenkins-cd/blueocean-core-js';
 
 import { MULTIBRANCH_PIPELINE } from '../../../Capabilities';
 
@@ -15,7 +15,7 @@ export const generateDetailUrl = (pipeline, branch, runId) => {
     const isMultiBranchPipeline = capable(pipeline, MULTIBRANCH_PIPELINE);
     let returnUrl;
     if (isMultiBranchPipeline) {
-        returnUrl = `${baseUrl}/branches/${doubleUriEncode(branch)}/runs/${runId}`;
+        returnUrl = `${baseUrl}/branches/${UrlUtils.doubleUriEncode(branch)}/runs/${runId}`;
     } else {
         returnUrl = `${baseUrl}/runs/${runId}`;
     }

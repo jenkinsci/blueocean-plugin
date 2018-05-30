@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
 import { TimeManager } from '../utils/TimeManager';
-import logging from '../logging';
-import i18nTranslator from '../i18n/i18n';
+import { logging } from '../logging';
+import { i18nTranslator } from '../i18n/i18n';
 
 function jobStillActive(status) {
     switch (String(status).toUpperCase()) {

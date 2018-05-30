@@ -25,7 +25,7 @@ if (query) {
                 })
     );
 }
-export default {
+export const AppConfig = {
     loadUrls() {
         try {
             const headElement = document.getElementsByTagName('head')[0];

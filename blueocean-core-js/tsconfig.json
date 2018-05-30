@@ -6,7 +6,8 @@
 		"target": "es5",
 		"jsx": "react",
 		"allowJs": false,
-		"allowSyntheticDefaultImports": true,
+		"declaration" :true,
+		"allowSyntheticDefaultImports": false,
 		"experimentalDecorators": true,
 		"forceConsistentCasingInFileNames": true,
         "noImplicitReturns": true,
@@ -15,7 +16,8 @@
         "suppressImplicitAnyIndexErrors": true,
 		"noUnusedLocals": true,
 		"types": [
-			"bluebird-global"
+			"bluebird-global",
+			"node"
 		],
 		"lib": [
 			"dom",

@@ -254,7 +254,8 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                             node={pipelineStore.pipeline}
                             onChange={agent =>
                                 (selectedStage && agent.type == 'none' ? delete pipelineStore.pipeline.agent : (pipelineStore.pipeline.agent = agent)) &&
-                                this.pipelineUpdated()}
+                                this.pipelineUpdated()
+                            }
                         />
                         <EnvironmentConfiguration
                             key={'env' + pipelineStore.pipeline.id}
@@ -319,7 +320,8 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                                     node={selectedStage}
                                     onChange={agent =>
                                         (selectedStage && agent.type == 'none' ? delete selectedStage.agent : (selectedStage.agent = agent)) &&
-                                        this.pipelineUpdated()}
+                                        this.pipelineUpdated()
+                                    }
                                 />
                             )}
                             <EnvironmentConfiguration node={selectedStage} onChange={e => this.pipelineUpdated()} />
@@ -375,7 +377,8 @@ export class EditorMain extends Component<DefaultProps, Props, State> {
                 <div
                     className="editor-main-graph"
                     onClick={e =>
-                        cleanPristine(pipelineStore.pipeline) || pipelineValidator.validate() || this.setState({ selectedStage: null, selectedSteps: [] })}
+                        cleanPristine(pipelineStore.pipeline) || pipelineValidator.validate() || this.setState({ selectedStage: null, selectedSteps: [] })
+                    }
                 >
                     <ValidationMessageList errors={_getStageErrors(pipelineStore.pipeline, 'children')} />
                     {pipelineStore.pipeline && (

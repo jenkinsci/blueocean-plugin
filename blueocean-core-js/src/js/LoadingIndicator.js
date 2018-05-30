@@ -34,7 +34,7 @@ function setLoaderClass(c, t) {
 /**
  * Simple mostly css-based loading animation
  */
-export default {
+export const loadingIndicator = {
     show() {
         if (loadbar) {
             if (loadingCount === 0) {

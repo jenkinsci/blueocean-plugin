@@ -11,7 +11,7 @@
   "devDependencies": {
     "async": "^2.0.1",
     "graceful-fs": "4.1.11",
-    "prettier": "1.7.4",
+    "prettier": "1.12.1",
     "prompt": "^1.0.0"
   },
   "dependencies": {}

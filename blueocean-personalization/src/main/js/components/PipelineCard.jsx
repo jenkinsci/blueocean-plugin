@@ -103,7 +103,7 @@ export class PipelineCard extends Component {
     }
 
     _navigateToRunDetails = () => {
-        const runUrl = UrlBuilder.buildRunDetailsUrl(this.props.runnable.latestRun);
+        const runUrl = UrlBuilder.buildRunUrlForDetails(this.props.runnable.latestRun);
 
         this.props.router.push({
             pathname: runUrl,

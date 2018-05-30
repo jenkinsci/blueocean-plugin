@@ -2,9 +2,6 @@ package io.blueocean.ath.model;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Iterables;
-
-import java.net.URLEncoder;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,6 +24,10 @@ public class Folder {
 
     public String getPath() {
         return Joiner.on("/").join(folders);
+    }
+
+    public String getClassJobPath(){
+        return Joiner.on("/job/").join(folders);
     }
 
     public String get(int i) {

@@ -4,13 +4,13 @@ import com.google.common.base.Predicate;
 import com.google.inject.Inject;
 import com.google.inject.assistedinject.Assisted;
 import com.google.inject.assistedinject.AssistedInject;
+import com.offbytwo.jenkins.model.FolderJob;
 import io.blueocean.ath.GitRepositoryRule;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.sse.SSEEvents;
-import org.json.JSONObject;
-
 import java.io.IOException;
 import java.util.List;
+import org.json.JSONObject;
 
 public class MultiBranchPipeline extends AbstractPipeline {
 
@@ -30,6 +30,12 @@ public class MultiBranchPipeline extends AbstractPipeline {
         jobApi.createMultiBranchPipeline(jobApi.getFolder(getFolder(), true), getName(), git);
         return this;
     }
+
+    public MultiBranchPipeline createPipeline(FolderJob folderJob, GitRepositoryRule git) throws IOException {
+        jobApi.createMultiBranchPipeline(folderJob, getName(), git);
+        return this;
+    }
+
 
     public Predicate<List<JSONObject>> buildsFinished = list -> SSEEvents.activityComplete(getFolder().getPath(getName())).apply(list);
 

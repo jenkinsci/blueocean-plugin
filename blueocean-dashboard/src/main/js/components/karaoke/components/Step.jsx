@@ -73,7 +73,10 @@ export class Step extends Component {
      * When we trigger a log-0 that means we want to see the full log
      */
     isFocused(props, state = {}) {
-        const { step, location: { hash: anchorName } } = props;
+        const {
+            step,
+            location: { hash: anchorName },
+        } = props;
         const stateFocus = state.expanded;
 
         let isFocused = false;

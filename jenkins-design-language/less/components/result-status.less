@@ -12,6 +12,10 @@
     opacity: 0;
 }
 
+.svgResultStatus {
+    transform: translateZ(0);
+ }
+
 .svgResultStatus circle.success {
     stroke: none;
     fill: @brand-success-lite;
@@ -81,6 +85,16 @@
         fill: @brand-info-lite;
         stroke: @brand-info-lite;
     }
+}
+
+.progress-spinner.running.spin {
+    animation: progress-spinner-rotate 4s linear;
+    animation-iteration-count: infinite;
+}
+
+@keyframes progress-spinner-rotate {
+    0% { transform: rotate(0deg) }
+    100% { transform: rotate(360deg) }
 }
 
 .progress-spinner circle.inner,
@@ -194,7 +208,13 @@
 .result-item-icon {
     display:flex;
     align-items:flex-start;
-    margin: -1px 0 -1px -1px
+    margin: -1px 0 -1px -1px;
+    transform: translateZ(0);
+
+    .spinAnimation {
+        animation: progress-spinner-rotate 4s linear;
+        animation-iteration-count: infinite;
+    }
 }
 
 .result-item-title {
@@ -294,9 +314,8 @@
 }
 
 .pipeline-selection-highlight circle {
-    fill: none; //@brand-selection;
-    //stroke: @brand-selection;
-    stroke: @brand-grey-lite;
+    fill: none;
+    stroke: @brand-primary;
 }
 
 //--[ /PipelineGraph ]-----------------------------------------------------------

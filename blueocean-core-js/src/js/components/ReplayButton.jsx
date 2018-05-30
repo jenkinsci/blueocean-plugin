@@ -5,10 +5,11 @@
 import React, { Component, PropTypes } from 'react';
 import { Icon } from '@jenkins-cd/design-language';
 
-import { RunApi as runApi, ToastUtils } from '../index';
-import Security from '../security';
+import { RunApi as runApi } from '../';
+import { ToastUtils } from '../ToastUtils';
+import { Security } from '../security';
 import { stopProp } from '../utils';
-import i18nTranslator from '../i18n/i18n';
+import { i18nTranslator } from '../i18n/i18n';
 
 const { permit } = Security;
 const translate = i18nTranslator('blueocean-web');

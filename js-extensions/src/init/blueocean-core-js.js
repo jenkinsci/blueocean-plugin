@@ -8,18 +8,17 @@ export function execute(done, config) {
     // have a special handling for core-js, must load the web bundle...
     const Extensions = require('@jenkins-cd/js-extensions');
     const appRoot = document.getElementsByTagName('head')[0].getAttribute('data-appurl');
+    const CoreJs = modules.requireModule('jenkins-cd-blueocean-core-js:jenkins-cd-blueocean-core-js@any');
 
     Extensions.init({
         extensionData: window.$blueocean.jsExtensions,
         classMetadataProvider: (type, cb) => {
-            const fetch = require('../../../../../src/js/fetch').Fetch;
+            const fetch = CoreJs.Fetch;
             fetch
                 .fetchJSON(`${appRoot}/rest/classes/${type}/`)
                 .then(cb)
                 .catch(fetch.consoleError);
         },
     });
-
-    // core-js has references to blueocean-web translations
-    require('../../../../../src/js/i18n/bundle-startup').execute(done, { hpiPluginId: 'blueocean-web' });
+    CoreJs.i18nBundleStartup(done, { hpiPluginId: 'blueocean-web' });
 }

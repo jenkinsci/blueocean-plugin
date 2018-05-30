@@ -29,7 +29,7 @@
 
 import * as storage from '@jenkins-cd/storage';
 import { blueocean } from './scopes';
-import config from './config';
+import { AppConfig } from './config';
 
 export const jenkinsNS = storage.jenkinsNamespace();
 export const installInfo = jenkinsNS.subspace('installInfo');
@@ -114,7 +114,7 @@ export const _clearJenkinsNS = (installVersion, installPluginList) => {
 };
 
 // Call the clear function automatically.
-const installVersion = config.getJenkinsConfig().version;
+const installVersion = AppConfig.getJenkinsConfig().version;
 const installPluginList = blueocean.jsExtensions;
 if (installVersion && installPluginList) {
     _clearJenkinsNS(installVersion, installPluginList);

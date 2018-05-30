@@ -3,8 +3,8 @@ import LngDetector from 'i18next-browser-languagedetector';
 import { store } from '@jenkins-cd/js-extensions';
 import XHR from 'i18next-xhr-backend';
 
-import urlConfig from '../urlconfig';
-import logging from '../logging';
+import { UrlConfig } from '../urlconfig';
+import { logging } from '../logging';
 import { Fetch } from '../fetch';
 
 const logger = logging.logger('io.jenkins.blueocean.i18n');
@@ -21,7 +21,7 @@ export const defaultLngDetector = new LngDetector(null, {
     // trigger the browsers auto-translate, which is quite annoying.
     htmlTag: window.document ? window.document.head : undefined,
 });
-const prefix = urlConfig.getJenkinsRootURL() || '';
+const prefix = UrlConfig.getJenkinsRootURL() || '';
 const FALLBACK_LANG = '';
 
 function newPluginXHR(pluginName) {
@@ -136,7 +136,7 @@ function buildCacheKey(pluginName, namespace = toDefaultNamespace(pluginName)) {
  * for the "blueocean-dashboard" plugin.
  * @return An i18n Translator instance.
  */
-export default function i18nTranslator(pluginName, namespace, onLoad) {
+export function i18nTranslator(pluginName, namespace, onLoad) {
     assertPluginNameDefined(pluginName);
 
     const translatorCacheKey = buildCacheKey(pluginName, namespace);

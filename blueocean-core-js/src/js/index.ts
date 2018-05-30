@@ -7,26 +7,29 @@ import * as sse from '@jenkins-cd/sse-gateway';
 import { RunApi } from './rest/RunApi';
 
 import { SseBus } from './sse/SseBus';
+
 import { ToastService } from './ToastService';
 import { AnalyticsService } from './analytics/AnalyticsService';
 
 // export i18n provider
-export i18nTranslator, { defaultLngDetector } from './i18n/i18n';
+export { i18nTranslator, defaultLngDetector } from './i18n/i18n';
 
-export logging from './logging';
-export loadingIndicator from './LoadingIndicator';
+export { logging } from './logging';
+export { loadingIndicator } from './LoadingIndicator';
 
 export { Fetch, FetchFunctions } from './fetch';
-export UrlBuilder from './UrlBuilder';
-export UrlConfig from './urlconfig';
-export JWT from './jwt';
-export TestUtils from './testutils';
-export ToastUtils from './ToastUtils';
-export Utils from './utils';
+
+import * as UrlBuilder from './UrlBuilder';
+export { UrlBuilder };
+export { UrlConfig } from './urlconfig';
+export { JWT } from './jwt';
+export { TestUtils } from './testutils';
+export { ToastUtils } from './ToastUtils';
+export { Utils } from './utils';
 export { User } from './User';
-export AppConfig from './config';
-export Security from './security';
-export Paths from './paths/index';
+export { AppConfig } from './config';
+export { Security } from './security';
+export { Paths } from './paths/index';
 
 import { Pager, PagerService, PipelineService, SSEService, ActivityService, DefaultSSEHandler, LocationService } from './services/index';
 export { Pager, PagerService, PipelineService, SSEService, ActivityService };
@@ -34,8 +37,8 @@ export { Pager, PagerService, PipelineService, SSEService, ActivityService };
 import * as stringUtil from './stringUtil';
 export { stringUtil as StringUtil };
 
-export Fullscreen from './Fullscreen';
-export NotFound from './NotFound';
+export { Fullscreen } from './Fullscreen';
+export { NotFound } from './NotFound';
 
 export { ShowMoreButton } from './components/ShowMoreButton';
 export { ReplayButton } from './components/ReplayButton';
@@ -53,7 +56,7 @@ export {
     supportedInputTypesMapping,
     ParametersRender,
 } from './parameter';
-export { BlueLogo, BlueOceanIcon } from './components/BlueLogo';
+export { BlueLogo } from './components/BlueLogo';
 export { ContentPageHeader, SiteHeader } from './components/ContentPageHeader';
 export { ResultPageHeader } from './components/ResultPageHeader';
 
@@ -91,7 +94,6 @@ sseService.registerHandler(defaultSSEhandler.handleEvents);
 // Export some debugging stuff client code may need
 
 import { enableMocksForI18n, disableMocksForI18n } from './i18n/i18n';
-
 export { execute as i18nBundleStartup } from './i18n/bundle-startup';
 
 export const DEBUG = {
@@ -102,30 +104,9 @@ export const DEBUG = {
 export { TimeManager } from './utils/TimeManager';
 
 export { TimeHarmonizer, TimeHarmonizerUtil } from './components/TimeHarmonizer';
-import LiveStatusIndicator from './components/LiveStatusIndicator';
+
+import { LiveStatusIndicator } from './components/LiveStatusIndicator';
 export { LiveStatusIndicator };
-export {
-    buildOrganizationUrl,
-    buildPipelineUrl,
-    rootPath,
-    buildClassicCreateJobUrl,
-    buildClassicConfigUrl,
-    buildClassicInputUrl,
-    buildClassicBuildUrl,
-    buildRunDetailsUrl,
-    doubleUriEncode,
-    fetchAllSuffix,
-    applyFetchAll,
-    calculateFetchAll,
-    calculateLogView,
-    calculateLogUrl,
-    calculateNodeBaseUrl,
-    calculateStepsBaseUrl,
-    calculateRunLogURLObject,
-    paginateUrl,
-    endSlash,
-    getRestUrl,
-    buildUrl,
-    relativeUrl,
-    toClassicJobPage,
-} from './utils/UrlUtils';
+
+import { UrlUtils } from './utils/UrlUtils';
+export { UrlUtils };

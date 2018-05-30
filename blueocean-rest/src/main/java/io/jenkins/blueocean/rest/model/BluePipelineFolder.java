@@ -19,7 +19,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_ABSTRACT
  * @see BluePipelineContainer
  */
 @Capability({BLUE_PIPELINE_FOLDER, JENKINS_ABSTRACT_FOLDER})
-public abstract class BluePipelineFolder extends BluePipeline {
+public abstract class BluePipelineFolder extends BluePipeline implements BlueContainerItem {
 
     private static final String NUMBER_OF_PIPELINES = "numberOfPipelines";
     private static final String NUMBER_OF_FOLDERS = "numberOfFolders";

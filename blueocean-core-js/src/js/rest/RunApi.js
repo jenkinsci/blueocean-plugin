@@ -2,13 +2,13 @@
  * Created by cmeyers on 8/29/16.
  */
 import { Fetch } from '../fetch';
-import config from '../urlconfig';
-import utils from '../utils';
+import { UrlConfig } from '../urlconfig';
+import { Utils } from '../utils';
 
 export class RunApi {
     startRun(item) {
-        const path = config.getJenkinsRootURL();
-        const runUrl = utils.cleanSlashes(`${path}/${item._links.self.href}/runs/`);
+        const path = UrlConfig.getJenkinsRootURL();
+        const runUrl = Utils.cleanSlashes(`${path}/${item._links.self.href}/runs/`);
 
         const fetchOptions = {
             method: 'POST',
@@ -21,9 +21,9 @@ export class RunApi {
     }
 
     stopRun(run) {
-        const path = config.getJenkinsRootURL();
+        const path = UrlConfig.getJenkinsRootURL();
         const runUrl = run._links.self.href;
-        const stopUrl = utils.cleanSlashes(`${path}/${runUrl}/stop/?blocking=true&timeOutInSecs=10`);
+        const stopUrl = Utils.cleanSlashes(`${path}/${runUrl}/stop/?blocking=true&timeOutInSecs=10`);
 
         const fetchOptions = {
             method: 'PUT',
@@ -36,9 +36,9 @@ export class RunApi {
     }
 
     replayRun(run) {
-        const path = config.getJenkinsRootURL();
+        const path = UrlConfig.getJenkinsRootURL();
         const runUrl = run._links.self.href;
-        const replayPipelineUrl = utils.cleanSlashes(`${path}/${runUrl}/replay/`);
+        const replayPipelineUrl = Utils.cleanSlashes(`${path}/${runUrl}/replay/`);
 
         const fetchOptions = {
             method: 'POST',

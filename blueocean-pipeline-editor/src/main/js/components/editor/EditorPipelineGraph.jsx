@@ -402,7 +402,7 @@ export class EditorPipelineGraph extends Component<DefaultProps, Props, State> {
             }
         }
         return (
-            <div className={classNames.join(' ')} style={style} key={key} onClick={e => this.nodeClicked({ isPlaceholder: false, stage }, e)}>
+            <div className={classNames.join(' ')} data-stagename={`${details.text ? `${details.text}` : ""}`} style={style} key={key} onClick={e => this.nodeClicked({ isPlaceholder: false, stage }, e)}>
                 {details.text || NBSP}
                 {inner}
             </div>
@@ -552,6 +552,7 @@ export class EditorPipelineGraph extends Component<DefaultProps, Props, State> {
                 r={mouseTargetRadius}
                 cursor="pointer"
                 className="pipeline-node-hittarget"
+                id={`pipeline-node-hittarget${node.nodeId}${node.type ? `-${node.type}` : ''}`}
                 fillOpacity="0"
                 stroke="none"
                 onClick={e => this.nodeClicked(node, e)}

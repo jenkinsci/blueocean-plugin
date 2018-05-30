@@ -5,7 +5,7 @@ import Extensions from '@jenkins-cd/js-extensions';
 import { observer } from 'mobx-react';
 
 import RunMessageCell from './RunMessageCell';
-import { buildRunDetailsUrl } from '../util/UrlUtils';
+import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import RunHistoryButton from './RunHistoryButton';
 
 const { sortByOrdinal } = Extensions.Utils;
@@ -98,7 +98,7 @@ export class BranchDetailsRow extends Component {
             return noRun(branch, openRunDetails, t, this.context.store, columns);
         }
         const cleanBranchName = decodeURIComponent(branch.name);
-        const runDetailsUrl = buildRunDetailsUrl(branch.organization, pipeline.fullName, cleanBranchName, latestRun.id, 'pipeline');
+        const runDetailsUrl = UrlBuilder.buildRunUrl(branch.organization, pipeline.fullName, cleanBranchName, latestRun.id, 'pipeline');
 
         const statusIndicator = (
             <LiveStatusIndicator

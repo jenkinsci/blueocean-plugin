@@ -1,8 +1,8 @@
 import { Pager } from './Pager';
-import RestPaths from '../paths/rest';
+import { RestPaths } from '../paths/rest';
 import { Fetch } from '../fetch';
 import { BunkerService } from './BunkerService';
-import utils from '../utils';
+import { Utils } from '../utils';
 import mobxUtils from 'mobx-utils';
 
 /*
@@ -71,7 +71,7 @@ export class ActivityService extends BunkerService {
             .then(data => {
                 // Should really have dedupe on methods like these, but for now
                 // just clone data so that we dont modify other instances.
-                const run = utils.clone(data);
+                const run = Utils.clone(data);
                 return this.setItem(run);
             })
             .catch(err => {
@@ -93,8 +93,8 @@ export class ActivityService extends BunkerService {
         return this.pagerService.getPager({
             key: `${runHref}artifacts/`,
             /**
-                 * Lazily generate the pager incase its needed.
-                 */
+             * Lazily generate the pager incase its needed.
+             */
             lazyPager: () => new Pager(`${runHref}artifacts/`, 100, this),
         });
     }

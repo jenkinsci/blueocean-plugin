@@ -1,10 +1,36 @@
 #! /usr/bin/env node
 'use strict';
 
+/**
+ * This script formats TypeScript and JavaScript source files using prettier.js
+ *
+ * You may invoke it directly, it will pring usage instructions. It is also invoked as a
+ * pre-commit hook by the script pre-commit.js in this same directory.
+ *
+ * We load the prettier config from .prettierrc.yaml in the root of the project, but it is
+ * altered at runtime to ensure different parsers are used for TypeScript and JavaScript files.
+ * We do this because the babylon parser does not support all the features we're using for
+ * TS, and many of our JS files contain flowtype annotations which the typescript parser can't
+ * handle.
+ */
+
 const prettier = require('prettier');
 const path = require('path');
 const glob = require('glob');
 const fs = require('graceful-fs'); // Will backoff on EMFILE
+
+// --[ Configuration ]------------------------------------------------------------------------
+
+// These globs are used to exlude certain files from formatting for various reasons
+const IGNORE_GLOBS = ['**/svg-icons/**', '**/src/test/**', '**/stories/**', '**/*.min.js'];
+
+// Extensions we're interested in, for TypeScript and JavaScript batches - keep them lcase!
+const EXTENSIONS = {
+    js: ['.js', '.jsx'],
+    ts: ['.ts', '.tsx'],
+};
+
+const projectBaseDir = path.resolve(__dirname, '..');
 
 // --[ Parse args ]---------------------------------------------------------------------------
 
@@ -50,12 +76,40 @@ if (sourceGlobs.length === 0) {
     return;
 }
 
-// --[ Steps ]--------------------------------------------------------------------------------
+// --[ Helpers ]------------------------------------------------------------------------------
 
-function getConfig(projectBaseDir) {
-    return prettier.resolveConfig(projectBaseDir);
+// Check filename against a list of extensions
+function fileMatchesExtension(fileName, validExtensions) {
+    return validExtensions.indexOf(path.extname(fileName).toLowerCase()) !== -1;
 }
 
+// Load w promise
+function loadSource(sourcePath) {
+    return new Promise((fulfil, reject) => {
+        fs.readFile(sourcePath, 'utf8', (err, data) => {
+            if (err) {
+                reject(err);
+            } else {
+                fulfil(data);
+            }
+        });
+    });
+}
+
+// Save w promise
+function saveSource(sourcePath, data) {
+    return new Promise((fulfil, reject) => {
+        fs.writeFile(sourcePath, data, 'utf8', err => {
+            if (err) {
+                reject(err);
+            } else {
+                fulfil(true);
+            }
+        });
+    });
+}
+
+// Calls out to glob, but returns a promise
 function getSourceFilesFromGlob(globPattern, ignoreGlobs) {
     return new Promise((fulfil, reject) => {
         glob(globPattern, { ignore: ignoreGlobs }, (err, files) => {
@@ -73,7 +127,7 @@ function filterFiles(files, validExtensions) {
     const accepted = [];
 
     for (const fileName of files) {
-        if (accepted.indexOf(fileName) === -1 && validExtensions.indexOf(path.extname(fileName).toLowerCase()) !== -1) {
+        if (accepted.indexOf(fileName) === -1 && fileMatchesExtension(fileName, validExtensions)) {
             accepted.push(fileName);
         }
     }
@@ -81,38 +135,43 @@ function filterFiles(files, validExtensions) {
     return accepted;
 }
 
-function getSourceFilesForAllGlobs(config) {
-    const ignoreGlobs = config.jenkins.ignoreGlobs;
-    const validExtensions = config.jenkins.extensions;
+// --[ Main Process Steps ]-------------------------------------------------------------------
 
-    return Promise.all(sourceGlobs.map(sourceGlob => getSourceFilesFromGlob(sourceGlob, ignoreGlobs)))
+function getConfig(projectBaseDir) {
+    return prettier.resolveConfig(projectBaseDir);
+}
+
+function getSourceFilesForAllGlobs(config) {
+    const validExtensions = EXTENSIONS.js.concat(EXTENSIONS.ts);
+
+    return Promise.all(sourceGlobs.map(sourceGlob => getSourceFilesFromGlob(sourceGlob, IGNORE_GLOBS)))
         .then(filesArrays => Array.prototype.concat.apply([], filesArrays)) // Flatten
         .then(files => filterFiles(files, validExtensions))
         .then(files => ({ files, config }));
 }
 
-function loadSource(sourcePath) {
-    return new Promise((fulfil, reject) => {
-        fs.readFile(sourcePath, 'utf8', (err, data) => {
-            if (err) {
-                reject(err);
-            } else {
-                fulfil(data);
-            }
-        });
-    });
-}
+/**
+ * Takes a list of files and initial config, and splits into two batches, each consisting of a subset of files and
+ * the specific config for that batch.
+ */
+function splitFilesIntoBatches(files, config) {
+    // We need to specifiy a different parser for TS files
+    const configTS = Object.assign({}, config);
+    configTS.parser = 'typescript';
 
-function saveSource(sourcePath, data) {
-    return new Promise((fulfil, reject) => {
-        fs.writeFile(sourcePath, data, 'utf8', err => {
-            if (err) {
-                reject(err);
-            } else {
-                fulfil(true);
-            }
-        });
+    const batches = [];
+
+    batches.push({
+        files: files.filter(fileName => fileMatchesExtension(fileName, EXTENSIONS.js)),
+        config: config,
     });
+
+    batches.push({
+        files: files.filter(fileName => fileMatchesExtension(fileName, EXTENSIONS.ts)),
+        config: configTS,
+    });
+
+    return batches;
 }
 
 function prettifyFiles(files, config) {
@@ -152,6 +211,32 @@ function prettifyFiles(files, config) {
     });
 
     return Promise.all(filePromises).then(() => ({ files, formattedFiles, unformattedFiles, errors }));
+}
+
+/**
+ * Runs prettifyFiles for each batch.
+ */
+function prettifyBatches(batches) {
+    return Promise.all(batches.map(({ files, config }) => prettifyFiles(files, config)));
+}
+
+/**
+ * Merge the results from each batch into a single result of the same format
+ */
+function mergeBatchResults(batches) {
+    let files = [];
+    let unformattedFiles = [];
+    let formattedFiles = [];
+    let errors = [];
+
+    batches.forEach(batch => {
+        files.push(...batch.files);
+        unformattedFiles.push(...batch.unformattedFiles);
+        formattedFiles.push(...batch.formattedFiles);
+        errors.push(...batch.errors);
+    });
+
+    return { files, formattedFiles, unformattedFiles, errors };
 }
 
 // Display results to user
@@ -211,13 +296,16 @@ function debugPoint(result) {
 
 // --[ Main ]---------------------------------------------------------------------------------
 
-const projectBaseDir = path.resolve(__dirname, '..');
-
 getConfig(projectBaseDir)
     .then(debugPoint)
     .then(config => getSourceFilesForAllGlobs(config))
     .then(debugPoint)
-    .then(({ files, config }) => prettifyFiles(files, config))
+    .then(({ files, config }) => splitFilesIntoBatches(files, config))
+    .then(debugPoint)
+    .then(batches => prettifyBatches(batches))
+    .then(debugPoint)
+    .then(batches => mergeBatchResults(batches))
+    .then(debugPoint)
     .then(({ files, formattedFiles, unformattedFiles, errors }) => showResults(files, formattedFiles, unformattedFiles, errors))
     .then(debugPoint)
     .catch(err => {

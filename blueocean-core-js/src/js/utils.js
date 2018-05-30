@@ -51,7 +51,7 @@ export function stopProp(event) {
     event.preventDefault(); // Keeps event from triggering DOM builtins such as <a> elements
 }
 
-export default {
+export const Utils = {
     stopProp,
     cleanSlashes,
     randomId,

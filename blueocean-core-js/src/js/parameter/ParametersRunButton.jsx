@@ -1,13 +1,13 @@
 import React, { Component, PropTypes } from 'react';
 import { Alerts, Dialog } from '@jenkins-cd/design-language';
 
-import { buildClassicBuildUrl, capable, RunButtonBase as RunButton, ToastUtils } from '../index';
+import { UrlBuilder, capable, RunButtonBase as RunButton, ToastUtils } from '../index';
 
-import i18nTranslator from '../i18n/i18n';
+import { i18nTranslator } from '../i18n/i18n';
 
 import { ParameterApi as parameterApi, ParameterService, ParametersRender, supportedInputTypesMapping } from './index';
 
-import logging from '../logging';
+import { logging } from '../logging';
 const logger = logging.logger('io.jenkins.blueocean.core.ParametersRunButton');
 
 /**
@@ -66,7 +66,11 @@ export class ParametersRunButton extends Component {
         const { runnable } = props;
         if (runnable) {
             const { config = {} } = this.context;
-            const { _links: { self: { href } } } = runnable;
+            const {
+                _links: {
+                    self: { href },
+                },
+            } = runnable;
             this.setState({
                 href: `${config._rootURL}${href}/runs/`,
                 visible: false,
@@ -127,7 +131,7 @@ export class ParametersRunButton extends Component {
         if (isMultiBranch) {
             pipe.fullName += `/${pipe.branch}`;
         }
-        const classicBuildUrl = buildClassicBuildUrl(pipe);
+        const classicBuildUrl = UrlBuilder.buildClassicBuildUrl(pipe);
         const sanity = parameters.filter(parameter => supportedInputTypesMapping[parameter.type] !== undefined);
         logger.debug('sane?', sanity.length === parameters.length, 'classicBuildUrl: ', classicBuildUrl);
         let dialog;

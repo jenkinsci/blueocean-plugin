@@ -57,7 +57,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
 
     private FlowNode currentStage;
 
-    private ArrayDeque<String> stages = new ArrayDeque<>();
+    private ArrayDeque<FlowNode> stages = new ArrayDeque<>();
     private InputAction inputAction;
     private StepEndNode closestEndNode;
     private StepStartNode agentNode = null;
@@ -94,7 +94,7 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
     public void chunkStart(@Nonnull FlowNode startNode, @CheckForNull FlowNode beforeBlock, @Nonnull ForkScanner scanner) {
         super.chunkStart(startNode, beforeBlock, scanner);
         if(PipelineNodeUtil.isStage(startNode) && !PipelineNodeUtil.isSyntheticStage(startNode)){
-            stages.push(startNode.getId());
+            stages.push(startNode);
         }
     }
 
@@ -217,18 +217,18 @@ public class PipelineStepVisitor extends StandardChunkVisitor {
             if(PipelineNodeUtil.isSkippedStage(node)){
                 return Collections.emptyList();
             }
-            String first=null;
-            String last=null;
+            FlowNode first=null;
+            FlowNode last=null;
             if(!stages.isEmpty()) {
                 first = stages.getFirst();
                 last = stages.getLast();
             }
 
-            if(first!= null && node.getId().equals(first)){
+            if(first!= null && node.equals(first)){
                 s.addAll(preSteps);
             }
             s.addAll(steps);
-            if(last!= null && node.getId().equals(last)){
+            if(last!= null && (node.equals(last) || PipelineNodeUtil.isSkippedStage(last))){
                 s.addAll(postSteps);
             }
 

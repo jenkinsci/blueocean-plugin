@@ -2,8 +2,7 @@ import React from 'react';
 import Extensions from '@jenkins-cd/js-extensions';
 import {
     Fetch,
-    getRestUrl,
-    buildPipelineUrl,
+    UrlBuilder,
     locationService,
     ContentPageHeader,
     pipelineService,
@@ -302,8 +301,8 @@ class PipelineLoader extends React.Component {
             const team = split[0];
             const repo = split.length > 1 ? split[1] : team;
             const { id: scmId, apiUrl } = this.state.scmSource;
-            // TODO: bitbucket isn't passing the pipeline in "orgname/reponame" format so this request 404's with bogus team name
-            let repositoryUrl = `${getRestUrl({ organization })}scm/${scmId}/organizations/${team}/repositories/${repo}/`;
+            const orgRestUrl = UrlBuilder.buildRestUrl(organization);
+            let repositoryUrl = `${orgRestUrl}scm/${scmId}/organizations/${team}/repositories/${repo}/`;
             if (apiUrl) {
                 repositoryUrl += `?apiUrl=${apiUrl}`;
             }
@@ -389,7 +388,7 @@ class PipelineLoader extends React.Component {
         const { organization, pipeline, branch } = this.props.params;
         const { router } = this.context;
         const location = {};
-        location.pathname = branch == null ? '/' : buildPipelineUrl(organization, pipeline);
+        location.pathname = branch == null ? '/' : UrlBuilder.buildPipelineUrl(organization, pipeline);
         location.query = null;
 
         if (this.opener) {
@@ -402,7 +401,7 @@ class PipelineLoader extends React.Component {
     goToActivity() {
         const { organization, pipeline, branch } = this.props.params;
         const { router } = this.context;
-        const location = buildPipelineUrl(organization, pipeline);
+        const location = UrlBuilder.buildPipelineUrl(organization, pipeline);
         activityService.removeItem(activityService.pagerKey(organization, pipeline, branch));
         router.push(location);
     }
@@ -461,10 +460,10 @@ class PipelineLoader extends React.Component {
         const pipeline = pipelineService.getPipeline(this.href);
         const { scmSource } = pipeline;
 
-        if (!scmSource || !scmSource.id || (scmSource.id === 'git' && !isSshRepositoryUrl(scmSource.apiUrl))) {
-            this.showLoadingError('', 'Saving Pipelines is unsupported using http/https repositories. Please use SSH instead.', 'No save access');
-            return;
-        }
+        // if (!scmSource || !scmSource.id || (scmSource.id === 'git' && !isSshRepositoryUrl(scmSource.apiUrl))) {
+        //     this.showLoadingError('', 'Saving Pipelines is unsupported using http/https repositories. Please use SSH instead.', 'No save access');
+        //     return;
+        // }
 
         // if showing this dialog with a credential, the write test failed
         // except for git, where we need to prompt with the user's public key so they can continue
@@ -484,6 +483,8 @@ class PipelineLoader extends React.Component {
         // hide the dialog until it reports as ready (i.e. credential fetch is done)
         const dialogClassName = `dialog-token ${loading ? 'loading' : ''}`;
 
+        //FIXME: should show a message about existing credentials failing
+
         this.setState({
             dialog: (
                 <Dialog title={title} className={dialogClassName} buttons={[]} onDismiss={() => this.cancel()}>
@@ -497,6 +498,7 @@ class PipelineLoader extends React.Component {
                         requirePush
                         branch={branch}
                         dialog
+                        existingFailed
                     />
                 </Dialog>
             ),
@@ -614,6 +616,7 @@ class PipelineLoader extends React.Component {
         if (branch || repo) {
             title += ' / ' + (branch || repo);
         }
+
         return (
             <div className="pipeline-page">
                 <Extensions.Renderer extensionPoint="pipeline.editor.css" />

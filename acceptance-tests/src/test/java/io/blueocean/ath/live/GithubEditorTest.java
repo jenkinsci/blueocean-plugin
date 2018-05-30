@@ -140,6 +140,82 @@ public class GithubEditorTest {
     }
 
     /**
+     * This test covers creation of a pipeline, and changes agent settings within it.
+     */
+    @Test
+    public void testEditorChangeAgentSetting() throws IOException {
+        String newBranchName = "made-by-testEditorChangeAgentSetting";
+        creationPage.createPipeline(token, organization, repo, true);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
+        editorPage.simplePipeline();
+        ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
+        sseClient.untilEvents(pipeline.buildsFinished);
+        sseClient.clear();
+        BranchPage branchPage = activityPage.clickBranchTab();
+        branchPage.openEditor("master");
+        editorPage.setAgentLabel("none");
+        editorPage.saveBranch(newBranchName);
+        activityPage.checkUrl();
+        activityPage.getRunRowForBranch(newBranchName);
+        sseClient.untilEvents(pipeline.buildsFinished);
+    }
+
+    /**
+     * This test covers creation of a pipeline, and subsequently adds a
+     * stage within that same pipeline, then saves it to a new branch.
+     */
+    @Test
+    public void testEditorAddAndDeleteStage() throws IOException {
+        String firstBranchName = "branch-before-delete";
+        String secondBranchName = "branch-after-delete";
+        String stageToDelete = "stage to be deleted";
+        creationPage.createPipeline(token, organization, repo, true);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
+        editorPage.simplePipeline();
+        ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
+        sseClient.untilEvents(pipeline.buildsFinished);
+        sseClient.clear();
+        BranchPage branchPage = activityPage.clickBranchTab();
+        branchPage.openEditor("master");
+        editorPage.addStageToPipeline(pipeline, stageToDelete);
+        editorPage.saveBranch(firstBranchName);
+        activityPage.checkUrl();
+        activityPage.getRunRowForBranch(firstBranchName);
+        sseClient.untilEvents(pipeline.buildsFinished);
+        sseClient.clear();
+        branchPage.open();
+        // The delete operations are here.
+        branchPage.openEditor(firstBranchName);
+        editorPage.deleteStage(stageToDelete);
+        editorPage.saveBranch(secondBranchName);
+        activityPage.checkUrl();
+        activityPage.getRunRowForBranch(secondBranchName);
+        sseClient.untilEvents(pipeline.buildsFinished);
+    }
+
+    /**
+     * This test covers creation of a pipeline, and adds an environment
+     * variable to it.
+     */
+    @Test
+    public void testEditorSetEnvironmentVariables() throws IOException {
+        String newBranchName = "made-by-testEditorSetEnvironmentVariables";
+        creationPage.createPipeline(token, organization, repo, true);
+        MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
+        editorPage.simplePipeline();
+        ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
+        sseClient.untilEvents(pipeline.buildsFinished);
+        sseClient.clear();
+        BranchPage branchPage = activityPage.clickBranchTab();
+        branchPage.openEditor("master");
+        editorPage.setEnvironmentVariable("NY_NEW_VAR", "MY_NEW_VALUE");
+        editorPage.saveBranch(newBranchName);
+        activityPage.checkUrl();
+        activityPage.getRunRowForBranch(newBranchName);
+        sseClient.untilEvents(pipeline.buildsFinished);
+    }
+
+    /**
      * Make sure we can paste a bad token that has whitespace added.
      */
     @Test
@@ -156,18 +232,14 @@ public class GithubEditorTest {
      */
     @Test
     public void testEditorParallel() throws IOException {
+        String branchNameForParallelPipeline = "branch-with-parallels";
         creationPage.createPipeline(token, organization, repo, true);
         MultiBranchPipeline pipeline = mbpFactory.pipeline(repo);
-        editorPage.parallelPipeline("branch-with-parallels", 3);
+        editorPage.parallelPipeline(4);
+        editorPage.saveBranch(branchNameForParallelPipeline);
         ActivityPage activityPage = pipeline.getActivityPage().checkUrl();
-        driver.navigate().refresh();
         sseClient.untilEvents(pipeline.buildsFinished);
         sseClient.clear();
-        BranchPage branchPage = activityPage.clickBranchTab();
-        branchPage.openEditor("branch-with-parallels");
-        editorPage.saveBranch("new - branch");
-        activityPage.checkUrl();
         activityPage.getRunRowForBranch("branch-with-parallels");
-        sseClient.untilEvents(pipeline.buildsFinished);
     }
 }

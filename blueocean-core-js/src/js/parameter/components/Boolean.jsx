@@ -5,7 +5,12 @@ import { removeMarkupTags } from '../../stringUtil';
 
 export class Boolean extends Component {
     render() {
-        const { defaultParameterValue: { value }, description, name, onChange } = this.props;
+        const {
+            defaultParameterValue: { value },
+            description,
+            name,
+            onChange,
+        } = this.props;
         const cleanName = removeMarkupTags(name);
         const cleanDescription = removeMarkupTags(description);
         return (

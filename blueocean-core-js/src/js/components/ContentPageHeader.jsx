@@ -23,7 +23,7 @@ export const SiteHeader = props => {
         <BasicHeader className="ContentPageHeader">
             <TopNav>
                 <Extensions.Renderer extensionPoint="jenkins.header.logo">
-                    <BlueLogo href={`${props.homeURL}/`} />
+                    <BlueLogo />
                 </Extensions.Renderer>
                 <div className="u-flex-grow" />
                 {topNavLinks}
@@ -58,5 +58,3 @@ ContentPageHeader.propTypes = {
     children: PropTypes.node,
     pageTabBase: PropTypes.string,
 };
-
-export default ContentPageHeader;

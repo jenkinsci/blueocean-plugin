@@ -1,6 +1,6 @@
 import { assert } from 'chai';
 
-import Utils from '../../src/js/utils';
+import { Utils } from '../../src/js/utils';
 
 const missingSlashUrl = '/jenkins/blue/rest/organizations/jenkins/pipelines';
 const cleanUrl = `${missingSlashUrl}/`;

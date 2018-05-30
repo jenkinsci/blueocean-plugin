@@ -189,7 +189,7 @@ export class CreateCredentialDialog extends React.Component {
         const disabled = this.state.creationPending;
 
         const buttons = [
-            <button className="button-create-credental" disabled={disabled} onClick={() => this._onCreateClick()}>
+            <button className="button-create-credential" disabled={disabled} onClick={() => this._onCreateClick()}>
                 {t('creation.git.create_credential.button_create')}
             </button>,
             <button className="btn-secondary" disabled={disabled} onClick={() => this._onCloseClick()}>

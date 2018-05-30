@@ -7,10 +7,13 @@ import io.blueocean.ath.ATHJUnitRunner;
 import io.blueocean.ath.BaseUrl;
 import io.blueocean.ath.CustomJenkinsServer;
 import io.blueocean.ath.Login;
+import io.blueocean.ath.Retry;
 import io.blueocean.ath.WaitUtil;
 import io.blueocean.ath.WebDriverMixin;
 import io.blueocean.ath.api.classic.ClassicJobApi;
+import io.blueocean.ath.pages.blue.ActivityPage;
 import io.blueocean.ath.pages.blue.DashboardPage;
+import io.blueocean.ath.pages.blue.EditorPage;
 import io.blueocean.ath.pages.blue.GithubCreationPage;
 import io.jenkins.blueocean.util.HttpRequest;
 import org.apache.commons.codec.digest.DigestUtils;
@@ -36,7 +39,13 @@ public class BitbucketServerTest implements WebDriverMixin {
     WaitUtil wait;
 
     @Inject
+    ActivityPage activityPage;
+
+    @Inject
     DashboardPage dashboardPage;
+
+    @Inject
+    EditorPage editorPage;
 
     @Inject
     GithubCreationPage creationPage;
@@ -58,6 +67,7 @@ public class BitbucketServerTest implements WebDriverMixin {
     }
 
     @Test
+    @Retry(3)
     public void testCreationNoJenkinsfile() throws InterruptedException {
         BitbucketClient client = BitbucketClient.builder()
             .endPoint(ENDPOINT_URL)
@@ -76,17 +86,19 @@ public class BitbucketServerTest implements WebDriverMixin {
 
         wait.until(By.cssSelector(".text-name input")).sendKeys("bitbucketserver");
         wait.until(By.cssSelector(".text-url input")).sendKeys(ENDPOINT_URL);
-        click(".button-create-server");
-
-        click(".button-next-step");
-
-        wait.until(By.cssSelector(".text-username input")).sendKeys("admin");
-        wait.until(By.cssSelector(".text-password input")).sendKeys("admin");
-        click(".button-create-credental");
-
+        wait.click(By.cssSelector(".button-create-server"));
+        wait.click(By.cssSelector(".button-next-step"));
+        wait.sendKeys(By.cssSelector(".text-username input"),"admin");
+        wait.sendKeys(By.cssSelector(".text-password input"),"admin");
+        wait.click(By.cssSelector(".button-create-credential"));
+        LOGGER.info("Bitbucket server created successfully");
+        // Select project
         creationPage.selectOrganization(BB_PROJECT_NAME);
         creationPage.selectPipelineToCreate(BB_REPO_NAME);
         creationPage.clickCreatePipelineButton();
+        editorPage.simplePipeline();
+        wait.tinySleep(5000);
+        activityPage.getRunRowForBranch("master");
     }
 
     private void cleanupEndpoint(String endpointUrl) throws IOException {
