@@ -1,6 +1,7 @@
 package io.jenkins.blueocean.auth.jwt.impl;
 
 import com.gargoylesoftware.htmlunit.Page;
+import com.gargoylesoftware.htmlunit.util.Cookie;
 import hudson.model.User;
 import hudson.tasks.Mailer;
 import net.sf.json.JSONObject;
@@ -15,7 +16,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.jvnet.hudson.test.JenkinsRule;
 
+import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * @author Vivek Pandey
@@ -37,8 +42,7 @@ public class JwtAuthenticationServiceImplTest {
 
         webClient.login("alice");
 
-        Page page = webClient.goTo("jwt-auth/token/", null);
-        String token = page.getWebResponse().getResponseHeaderValue("X-BLUEOCEAN-JWT");
+        String token = getToken(webClient);
 
         Assert.assertNotNull(token);
 
@@ -56,7 +60,7 @@ public class JwtAuthenticationServiceImplTest {
 
         Assert.assertNotNull(kid);
 
-        page = webClient.goTo("jwt-auth/jwks/"+kid+"/", "application/json");
+        Page page = webClient.goTo("jwt-auth/jwks/"+kid+"/", "application/json");
 
 //        for(NameValuePair valuePair: page.getWebResponse().getResponseHeaders()){
 //            System.out.println(valuePair);
@@ -88,11 +92,8 @@ public class JwtAuthenticationServiceImplTest {
     @Test
     public void anonymousUserToken() throws Exception{
         j.jenkins.setSecurityRealm(j.createDummySecurityRealm());
-
         JenkinsRule.WebClient webClient = j.createWebClient();
-        Page page = webClient.goTo("jwt-auth/token/", null);
-        String token = page.getWebResponse().getResponseHeaderValue("X-BLUEOCEAN-JWT");
-
+        String token = getToken(webClient);
         Assert.assertNotNull(token);
 
 
@@ -107,7 +108,7 @@ public class JwtAuthenticationServiceImplTest {
 
         Assert.assertNotNull(kid);
 
-        page = webClient.goTo("jwt-auth/jwks/"+kid+"/", "application/json");
+        Page page = webClient.goTo("jwt-auth/jwks/"+kid+"/", "application/json");
 
 //        for(NameValuePair valuePair: page.getWebResponse().getResponseHeaders()){
 //            System.out.println(valuePair);
@@ -131,5 +132,19 @@ public class JwtAuthenticationServiceImplTest {
         Map<String,Object> context = (Map<String, Object>) claimMap.get("context");
         Map<String,String> userContext = (Map<String, String>) context.get("user");
         Assert.assertEquals("anonymous", userContext.get("id"));
+    }
+
+    // webclient has problems with pages returning 204, so we use HttpURLConnection directly to handle the token
+    private String getToken(JenkinsRule.WebClient webClient) throws IOException {
+        URL tokenUrl = new URL(webClient.getContextPath() + "jwt-auth/token/");
+        HttpURLConnection  connection = (HttpURLConnection) tokenUrl.openConnection();
+        Set<Cookie> cookies = webClient.getCookies(tokenUrl);
+        for (Cookie cookie : cookies) {
+            connection.addRequestProperty("Cookie", cookie.getName() + "=" + cookie.getValue());
+        }
+        Assert.assertEquals(connection.getResponseCode(), 204);
+        String token = connection.getHeaderField("X-BLUEOCEAN-JWT");
+        connection.disconnect();
+        return token;
     }
 }

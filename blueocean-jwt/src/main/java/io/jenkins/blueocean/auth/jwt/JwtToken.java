@@ -80,7 +80,10 @@ public class JwtToken implements HttpResponse {
      */
     @Override
     public void generateResponse(StaplerRequest req, StaplerResponse rsp, Object node) throws IOException, ServletException {
-        rsp.setStatus(200);
+        rsp.setStatus(204);
+        /* https://httpstatuses.com/204 No Content
+        The server has successfully fulfilled the request and
+        that there is no additional content to send in the response payload body */
         rsp.addHeader(X_BLUEOCEAN_JWT, sign());
     }
 }
