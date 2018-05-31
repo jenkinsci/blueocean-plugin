@@ -89,7 +89,7 @@ public final class BlueTestSummary extends Resource {
     @Override
     public Link getLink()
     {
-        return this.selfLink == null ? parent.rel( "/testSummary" ) : this.selfLink;
+        return this.selfLink == null ? parent.rel( "/blueTestSummary" ) : this.selfLink;
     }
 
     public void setLink(Link link)
