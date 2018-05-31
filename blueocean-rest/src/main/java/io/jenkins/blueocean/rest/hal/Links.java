@@ -3,6 +3,7 @@ package io.jenkins.blueocean.rest.hal;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
+import org.apache.commons.lang.StringUtils;
 import org.jvnet.tiger_types.Types;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
@@ -142,9 +143,9 @@ public final class Links extends HashMap<String,Link>{
         if(exportedAnn != null && !exportedAnn.name().trim().isEmpty())
             return exportedAnn.name();
         if(methodName.startsWith("get")){
-            return methodName.substring(3).toLowerCase();
+            return methodName.substring(3, 4).toLowerCase() + methodName.substring(4);
         }else if(methodName.startsWith("do")){
-            return methodName.substring(2).toLowerCase();
+            return methodName.substring(2, 3).toLowerCase() + methodName.substring(3);
         }else{
             return "";
         }

@@ -251,8 +251,11 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
         } else {
             blueTestSummary =  BlueTestResultFactory.resolve(run, this).summary;
         }
-        // .../runs/123/testSummary
-        return Containers.fromResource( this.getLink().rel("../"), Arrays.asList( blueTestSummary ));
+        // .../runs/123/testSummaryContainer
+
+        Link link = this.getLink().rel("testSummaryContainer");
+        blueTestSummary.setLink( link );
+        return Containers.fromResource( null, Arrays.asList( blueTestSummary ));
     }
 
     public Collection<BlueActionProxy> getActions() {

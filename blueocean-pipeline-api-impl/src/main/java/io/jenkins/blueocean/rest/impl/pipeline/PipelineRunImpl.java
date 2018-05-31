@@ -263,13 +263,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         @Override
         public BlueRun getRun( Run run, Reachable parent, BlueOrganization organization) {
             if(run instanceof WorkflowRun) {
-                PipelineRunImpl pipelineRun = new PipelineRunImpl((WorkflowRun) run, parent, organization);
-                try {
-                    pipelineRun.getTestSummary();
-                } catch ( Exception e ) {
-                    // ignore exception here
-                }
-                return pipelineRun;
+                return new PipelineRunImpl((WorkflowRun) run, parent, organization);
             }
             return null;
         }

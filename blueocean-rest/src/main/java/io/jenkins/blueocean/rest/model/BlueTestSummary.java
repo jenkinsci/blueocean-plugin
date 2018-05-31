@@ -24,6 +24,7 @@ public final class BlueTestSummary extends Resource {
     private final long total;
 
     private final Link parent;
+    private Link selfLink;
 
     public BlueTestSummary(long passedTotal, long failedTotal, long fixedTotal, long existingFailedTotal,
                            long regressionsTotal, long skippedTotal, long total, Link parent) {
@@ -88,6 +89,11 @@ public final class BlueTestSummary extends Resource {
     @Override
     public Link getLink()
     {
-        return parent.rel( "/testSummary" );
+        return this.selfLink == null ? parent.rel( "/testSummary" ) : this.selfLink;
+    }
+
+    public void setLink(Link link)
+    {
+        this.selfLink = link;
     }
 }
