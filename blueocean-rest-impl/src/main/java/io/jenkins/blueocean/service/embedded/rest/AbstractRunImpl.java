@@ -232,7 +232,7 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
     }
 
     @Override
-    public Container<BlueTestSummary> getTestSummaryContainer() {
+    public BlueTestSummary getBlueTestSummary() {
         BlueTestSummary blueTestSummary;
         if (getStateObj() == BlueRunState.FINISHED) {
             try {
@@ -253,9 +253,9 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
         }
         // .../runs/123/testSummaryContainer
 
-        Link link = this.getLink().rel("testSummaryContainer");
+        Link link = this.getLink().rel("blueTestSummary");
         blueTestSummary.setLink( link );
-        return Containers.fromResource( null, Arrays.asList( blueTestSummary ));
+        return blueTestSummary;
     }
 
     public Collection<BlueActionProxy> getActions() {

@@ -212,7 +212,7 @@ public abstract class BlueRun extends Resource implements BlueItemRun {
     public abstract BlueTestSummary getTestSummary();
 
     @Navigable
-    public abstract Container<BlueTestSummary> getTestSummaryContainer();
+    public abstract BlueTestSummary getBlueTestSummary();
 
     /**
      * @return Instance of stapler aware instance that can do the following:

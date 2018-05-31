@@ -189,7 +189,7 @@ public class OrganizationFolderRunImpl extends BlueRun {
     }
 
     @Override
-    public Container<BlueTestSummary> getTestSummaryContainer()
+    public BlueTestSummary getBlueTestSummary()
     {
         return null;
     }
