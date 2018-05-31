@@ -3,7 +3,6 @@ package io.jenkins.blueocean.rest.hal;
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Resource;
-import org.apache.commons.lang.StringUtils;
 import org.jvnet.tiger_types.Types;
 import org.kohsuke.stapler.Stapler;
 import org.kohsuke.stapler.export.Exported;
@@ -91,7 +90,7 @@ public final class Links extends HashMap<String,Link>{
     private void populateReferences(){
         Class clazz = self.getClass();
         /** Find if there is method returning a {@link Container}, add this as link */
-        for (Method m : findMethods(clazz,clazz,new ArrayList<Method>())) {
+        for (Method m : findMethods(clazz,clazz,new ArrayList<>())) {
             String p = getPathFromMethodName(m);
             put(p, createLinkRef(p));
         }

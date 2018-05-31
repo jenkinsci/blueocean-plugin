@@ -9,8 +9,6 @@ import io.jenkins.blueocean.rest.model.BlueRun;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
-import java.util.concurrent.Callable;
-
 /**
  * Catch all for any run implementation
  */

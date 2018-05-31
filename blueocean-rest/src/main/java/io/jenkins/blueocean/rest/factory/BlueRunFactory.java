@@ -8,8 +8,6 @@ import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueRun;
 
-import java.util.concurrent.Callable;
-
 /**
  * Factory that gives instance of {@link BlueRun}
  *
