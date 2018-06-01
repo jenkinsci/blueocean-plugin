@@ -40,7 +40,10 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
         for (ChangeLogSet.Entry e : run.getChangeSet()) {
             cnt++;
             String id = e.getCommitId();
-            if (id==null)   id = String.valueOf(cnt);
+            if (id==null)
+            {
+                id = String.valueOf(cnt);
+            }
             m.put(id, new ChangeSetResource(organization, e, this));
         }
         return Containers.fromResourceMap(this.getLink(),m);

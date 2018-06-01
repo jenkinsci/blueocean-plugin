@@ -91,7 +91,10 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
                 for (ChangeLogSet.Entry e : cs) {
                     cnt++;
                     String id = e.getCommitId();
-                    if (id == null) id = String.valueOf(cnt);
+                    if (id == null)
+                    {
+                        id = String.valueOf( cnt );
+                    }
                     m.put(id, new ChangeSetResource(organization, e, this));
                 }
             }
