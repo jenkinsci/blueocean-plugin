@@ -150,7 +150,6 @@ export class DefaultSSEHandler {
         this.loggingEnabled && console.log(`fetch ${logMessage}`);
 
         this.activityService.fetchActivity(href, { useCache: false, disableLoadingIndicator: true }).then(run => {
-            this.activityService.setItem(run);
             for (const key of this.branchPagerKeys(event)) {
                 const pager = this.pagerService.getPager({ key });
                 if (pager && !pager.has(href)) {
@@ -158,6 +157,7 @@ export class DefaultSSEHandler {
                 }
             }
             this.pipelineService.updateLatestRun(run);
+            // TODO: Need to re-fetch the test result, also
         });
     }
 

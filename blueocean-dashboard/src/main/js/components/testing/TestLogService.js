@@ -11,7 +11,7 @@ class Item {
 export default class TestLogService extends BunkerService {
     loadStdOut(test) {
         if (this.hasItem(test)) return;
-        Fetch.fetch(test._links.stdout.href)
+        Fetch.fetch(test._links.stdOut.href)
             .then(
                 res => res.text(),
                 e => {
@@ -27,7 +27,7 @@ export default class TestLogService extends BunkerService {
 
     loadStdErr(test) {
         if (this.hasItem(test)) return;
-        Fetch.fetch(test._links.stderr.href)
+        Fetch.fetch(test._links.stdErr.href)
             .then(
                 res => res.text(),
                 e => {
@@ -42,17 +42,17 @@ export default class TestLogService extends BunkerService {
     }
 
     getStdOut(test) {
-        const item = this.getItem(test._links.stdout.href);
+        const item = this.getItem(test._links.stdOut.href);
         return item && item.value;
     }
 
     getStdErr(test) {
-        const item = this.getItem(test._links.stderr.href);
+        const item = this.getItem(test._links.stdErr.href);
         return item && item.value;
     }
 
     bunkerKey(data) {
         const links = data.value.test._links;
-        return data.value.isStdOut ? links.stdout.href : links.stderr.href;
+        return data.value.isStdOut ? links.stdOut.href : links.stdErr.href;
     }
 }

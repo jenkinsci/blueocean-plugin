@@ -52,6 +52,10 @@ export class ActivityService extends BunkerService {
         return this.getItem(href);
     }
 
+    getTestSummary(href) {
+        return this.getItem(href);
+    }
+
     /**
      * Fetches an activity from rest api.
      *
@@ -63,19 +67,45 @@ export class ActivityService extends BunkerService {
      * @returns {Promise} Promise of fetched data.
      */
     fetchActivity(href, { useCache, disableLoadingIndicator } = {}) {
+        console.log('fetchActivity', href); // TODO: RM
         if (useCache && this.hasItem(href)) {
+            console.log('   ...have in cache'); // TODO: RM
+            console.log(JSON.stringify(this.getItem(href), null, 4)); // TODO: RM
             return Promise.resolve(this.getItem(href));
         }
+        console.log('   ...fetching'); // TODO: RM
 
         return Fetch.fetchJSON(href, { disableLoadingIndicator })
             .then(data => {
-                // Should really have dedupe on methods like these, but for now
-                // just clone data so that we dont modify other instances.
-                const run = Utils.clone(data);
-                return this.setItem(run);
+                return this.setItem(data);
             })
             .catch(err => {
-                console.log('There has been an error while trying to get the data.', err); // FIXME: Ivan what is the way to return an "error" opbject so underlying component are aware of the problem and can react
+                console.log('There has been an error while trying to get the run data.', err); // FIXME: Ivan what is the way to return an "error" opbject so underlying component are aware of the problem and can react
+            });
+    }
+
+    /**
+     * Fetch a TestSummary for a run
+     *
+     * @param href (eg: myRun._links.testSummary.href )
+     */
+    fetchTestSummary(href) {
+        console.log('fetchTestSummary', href); // TODO: RM
+        if (this.hasItem(href)) {
+            console.log('   ...have in cache'); // TODO: RM
+            console.log(JSON.stringify(this.getItem(href), null, 4)); // TODO: RM
+            return Promise.resolve(this.getItem(href));
+        }
+
+        console.log('   ...fetching'); // TODO: RM
+        return Fetch.fetchJSON(href)
+            .then(data => {
+                const testSummary = Array.isArray(data) ? data[0] : data; // FIXME: This should go away at some point.
+                console.log('got testSummary', testSummary); // TODO: RM
+                return this.setItem(testSummary);
+            })
+            .catch(err => {
+                console.log('There has been an error while trying to get the TestSummary data.', err); // FIXME: Ivan what is the way to return an "error" opbject so underlying component are aware of the problem and can react
             });
     }
 
