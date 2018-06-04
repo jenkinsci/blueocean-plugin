@@ -55,14 +55,8 @@ export default class TestCaseResultRow extends Component {
             this.setState({ isFocused: false });
         };
 
-        try {
-            // TODO: Remove the try?
-            this.stdout = this.logService.getStdOut(testCase);
-            this.stderr = this.logService.getStdErr(testCase);
-        } catch (e) {
-            console.log(e);
-            console.log('testcase', testCase);
-        }
+        this.stdout = this.logService.getStdOut(testCase);
+        this.stderr = this.logService.getStdErr(testCase);
 
         const testDetails = showTestCase ? (
             <TestDetails

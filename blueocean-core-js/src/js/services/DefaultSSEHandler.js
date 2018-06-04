@@ -164,12 +164,8 @@ export class DefaultSSEHandler {
              */
 
             const testResultUrl = run._links.blueTestSummary && run._links.blueTestSummary.href;
-            console.log('reloaded run, checking test summary', testResultUrl); // TODO: RM
             if (this.activityService.hasItem(testResultUrl)) {
-                console.log('   ...in memory, so re-load'); // TODO: RM
                 this.activityService.fetchTestSummary(testResultUrl, { useCache: false, disableLoadingIndicator: true });
-            } else {
-                console.log('   ...not in memory, so ignore'); // TODO: RM
             }
         });
     }

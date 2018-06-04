@@ -67,19 +67,15 @@ export class ActivityService extends BunkerService {
      * @returns {Promise} Promise of fetched data.
      */
     fetchActivity(href, { useCache, disableLoadingIndicator } = {}) {
-        console.log('fetchActivity', href); // TODO: RM
         if (useCache && this.hasItem(href)) {
-            console.log('   ...have in cache'); // TODO: RM
             return Promise.resolve(this.getItem(href));
         }
-        console.log('   ...fetching'); // TODO: RM
-
         return Fetch.fetchJSON(href, { disableLoadingIndicator })
             .then(data => {
                 return this.setItem(data);
             })
             .catch(err => {
-                console.log('There has been an error while trying to get the run data.', err); // FIXME: Ivan what is the way to return an "error" opbject so underlying component are aware of the problem and can react
+                console.log('There has been an error while trying to get the run data.', err);
             });
     }
 
@@ -89,21 +85,16 @@ export class ActivityService extends BunkerService {
      * @param href (eg: myRun._links.testSummary.href )
      */
     fetchTestSummary(href, { useCache, disableLoadingIndicator } = {}) {
-        console.log('fetchTestSummary', href); // TODO: RM
         if (useCache && this.hasItem(href)) {
-            console.log('   ...have in cache'); // TODO: RM
             return Promise.resolve(this.getItem(href));
         }
 
-        console.log('   ...fetching'); // TODO: RM
         return Fetch.fetchJSON(href, { disableLoadingIndicator })
             .then(data => {
-                const testSummary = Array.isArray(data) ? data[0] : data; // TODO: Remove the array check once everything works.
-                console.log('got testSummary', testSummary); // TODO: RM
-                return this.setItem(testSummary);
+                return this.setItem(data);
             })
             .catch(err => {
-                console.log('There has been an error while trying to get the TestSummary data.', err); // FIXME: Ivan what is the way to return an "error" opbject so underlying component are aware of the problem and can react
+                console.log('There has been an error while trying to get the TestSummary data.', err);
             });
     }
 
