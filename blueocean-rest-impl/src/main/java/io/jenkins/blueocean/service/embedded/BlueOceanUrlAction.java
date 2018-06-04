@@ -48,7 +48,7 @@ public final class BlueOceanUrlAction implements Action {
         return DoNotShowPersistedBlueOceanUrlActions.INSTANCE;
     }
 
-    private static final class DoNotShowPersistedBlueOceanUrlActions extends InvisibleAction {
+    protected static final class DoNotShowPersistedBlueOceanUrlActions extends InvisibleAction {
         private static final DoNotShowPersistedBlueOceanUrlActions INSTANCE = new DoNotShowPersistedBlueOceanUrlActions();
     }
 }
