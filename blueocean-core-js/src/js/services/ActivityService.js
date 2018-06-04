@@ -70,7 +70,6 @@ export class ActivityService extends BunkerService {
         console.log('fetchActivity', href); // TODO: RM
         if (useCache && this.hasItem(href)) {
             console.log('   ...have in cache'); // TODO: RM
-            console.log(JSON.stringify(this.getItem(href), null, 4)); // TODO: RM
             return Promise.resolve(this.getItem(href));
         }
         console.log('   ...fetching'); // TODO: RM
@@ -89,18 +88,17 @@ export class ActivityService extends BunkerService {
      *
      * @param href (eg: myRun._links.testSummary.href )
      */
-    fetchTestSummary(href) {
+    fetchTestSummary(href, { useCache, disableLoadingIndicator } = {}) {
         console.log('fetchTestSummary', href); // TODO: RM
-        if (this.hasItem(href)) {
+        if (useCache && this.hasItem(href)) {
             console.log('   ...have in cache'); // TODO: RM
-            console.log(JSON.stringify(this.getItem(href), null, 4)); // TODO: RM
             return Promise.resolve(this.getItem(href));
         }
 
         console.log('   ...fetching'); // TODO: RM
-        return Fetch.fetchJSON(href)
+        return Fetch.fetchJSON(href, { disableLoadingIndicator })
             .then(data => {
-                const testSummary = Array.isArray(data) ? data[0] : data; // FIXME: This should go away at some point.
+                const testSummary = Array.isArray(data) ? data[0] : data; // TODO: Remove the array check once everything works.
                 console.log('got testSummary', testSummary); // TODO: RM
                 return this.setItem(testSummary);
             })

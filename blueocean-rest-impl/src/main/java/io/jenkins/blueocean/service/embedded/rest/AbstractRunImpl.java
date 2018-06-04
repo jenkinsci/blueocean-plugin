@@ -249,7 +249,12 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
             }
         } else {
             blueTestSummary =  BlueTestResultFactory.resolve(run, this).summary;
+            if (blueTestSummary == null) {
+                // Just use an empty one while we wait
+                blueTestSummary = new BlueTestSummary(0,0,0,0,0,0,0,this.getLink());
+            }
         }
+
         // .../runs/123/testSummaryContainer
 
         Link link = this.getLink().rel("blueTestSummary");

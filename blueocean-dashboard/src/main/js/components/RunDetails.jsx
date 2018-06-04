@@ -47,8 +47,8 @@ const classicJobRunLink = (pipeline, branch, runId) => {
 };
 
 function getTestSummaryUrl(runDetails) {
-    if (runDetails && runDetails._links.testSummaryContainer) {
-        return runDetails._links.testSummaryContainer.href;
+    if (runDetails && runDetails._links.blueTestSummary) {
+        return runDetails._links.blueTestSummary.href;
     }
     return null;
 }
@@ -90,7 +90,7 @@ class RunDetails extends Component {
 
             this.context.activityService.fetchActivity(this.href, { useCache: true }).then(run => {
                 const testSummaryUrl = getTestSummaryUrl(run);
-                console.dir(this.context.activityService); // TODO: RM
+                console.log('RunDetails - got run, testSummaryUrl is', testSummaryUrl);
                 return testSummaryUrl && this.context.activityService.fetchTestSummary(testSummaryUrl);
             });
         }

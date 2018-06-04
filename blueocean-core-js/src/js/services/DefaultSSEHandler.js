@@ -157,7 +157,20 @@ export class DefaultSSEHandler {
                 }
             }
             this.pipelineService.updateLatestRun(run);
-            // TODO: Need to re-fetch the test result, also
+
+            /*
+                Check to see if the TestSummary has been loaded and if so then reload it. Otherwise don't because
+                it's expensive to calculate.
+             */
+
+            const testResultUrl = run._links.blueTestSummary && run._links.blueTestSummary.href;
+            console.log('reloaded run, checking test summary', testResultUrl); // TODO: RM
+            if (this.activityService.hasItem(testResultUrl)) {
+                console.log('   ...in memory, so re-load'); // TODO: RM
+                this.activityService.fetchTestSummary(testResultUrl, { useCache: false, disableLoadingIndicator: true });
+            } else {
+                console.log('   ...not in memory, so ignore'); // TODO: RM
+            }
         });
     }
 
