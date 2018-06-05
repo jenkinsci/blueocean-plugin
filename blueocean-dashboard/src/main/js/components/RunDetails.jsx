@@ -90,7 +90,6 @@ class RunDetails extends Component {
 
             this.context.activityService.fetchActivity(this.href, { useCache: true }).then(run => {
                 const testSummaryUrl = getTestSummaryUrl(run);
-                console.log('RunDetails - got run, testSummaryUrl is', testSummaryUrl);
                 return testSummaryUrl && this.context.activityService.fetchTestSummary(testSummaryUrl);
             });
         }
