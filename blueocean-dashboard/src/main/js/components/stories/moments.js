@@ -7,7 +7,6 @@ storiesOf('TimeDuration', module)
     <TimeDuration
       millis={50000}
       locale="de"
-      hintFormat="M [mos], d [Tage], h[Std.], m[m], s[s]"
       liveFormat="m[ Minuten] s[ Sekunden]"
     />
   ))
@@ -16,7 +15,6 @@ storiesOf('TimeDuration', module)
       updatePeriod={3000}
       millis={3.5 * 1000 * 60 * 60 * 24 * 7 * 4 * 6 + 1001 * 60 * 60 * 4.75}
       locale="de"
-      hintFormat="M [Monate], d [Tage], h[h], m[m], s[s]"
       liveFormat="m[ Minuten] s[ Sekunden]"
     />
   ))
