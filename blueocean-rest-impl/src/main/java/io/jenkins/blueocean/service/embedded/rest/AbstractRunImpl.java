@@ -256,7 +256,10 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
         }
 
         // .../runs/123/testSummaryContainer
-
+        if (blueTestSummary == null)
+        {
+            return null;
+        }
         Link link = this.getLink().rel("blueTestSummary");
         blueTestSummary.setLink( link );
         return blueTestSummary;

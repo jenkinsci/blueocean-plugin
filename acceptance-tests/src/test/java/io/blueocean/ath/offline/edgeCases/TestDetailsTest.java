@@ -51,5 +51,6 @@ public class TestDetailsTest extends BlueOceanAcceptanceTest{
     public void testTests(){
         RunDetailsTestsPage runDetailsTestsPage = pipeline.getRunDetailsTestsPage().open("master", 1);
         runDetailsTestsPage.checkResults("success", 10);
+
     }
 }
