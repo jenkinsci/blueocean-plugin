@@ -53,8 +53,7 @@ export class ActivityService extends BunkerService {
     }
 
     getTestSummary(href) {
-        const testSummary = this.getItem(href);
-        return testSummary?testSummary:this.fetchTestSummary(href);
+        return this.getItem(href);
     }
 
     /**
