@@ -22,7 +22,7 @@ public abstract class BlueArtifact extends Resource{
 
     @Exported(name= ID)
     public final String getId() {
-        return this.getClass().getName() + ":" + rawEncode(getName());
+        return this.getClass().getName() + ":" + rawEncode(getPath());
     }
 
     @Exported(name=NAME)
