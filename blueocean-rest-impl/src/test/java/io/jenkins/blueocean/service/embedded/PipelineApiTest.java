@@ -503,15 +503,14 @@ public class PipelineApiTest extends BaseTest {
         assertEquals(1, artifacts.size());
         assertEquals("fizz", ((Map) artifacts.get(0)).get("name"));
 
-        String artifactName = (String) ((Map) artifacts.get(0)).get("name");
-        String name = ArtifactImpl.class.getName() + ":" + artifactName;
+        String artifactId = (String) ((Map) artifacts.get(0)).get("id");
         ArtifactContainerImpl container = new ArtifactContainerImpl(b, new Reachable() {
             @Override
             public Link getLink() {
                 return new Link("/blue/rest/organizations/jenkins/pipelines/pipeline1/runs/1/artifacts/");
             }
         });
-        BlueArtifact blueArtifact = container.get(name);
+        BlueArtifact blueArtifact = container.get(artifactId);
         assertNotNull(blueArtifact);
     }
 
