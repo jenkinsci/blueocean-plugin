@@ -189,6 +189,7 @@ export function convertStageFromJson(topStage: PipelineStage): StageInfo {
         }
     } else if (topStage.stages) {
         // TODO: Will need to be filled in when we actually have the ability to do something with sequential stages.
+        console.error(`Stage named '${topStage.name}' contains sequential parallel stages which are not currently supported`, topStage.stages);
     } else {
         throw new Error('Unable to determine stage type: ' + JSON.stringify(topStage));
     }
