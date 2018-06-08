@@ -323,6 +323,18 @@ class PipelineLoader extends React.Component {
         });
     }
 
+    checkForNestedSequentialStages(internalModelPipeline, handler) {
+        for (let i = 0; i < internalModelPipeline.children.length; i++) {
+            for (let j = 0; j < internalModelPipeline.children[i].children.length; j++) {
+                if (typeof internalModelPipeline.children[i].children[j].stages !== 'undefined') {
+                    handler(internalModelPipeline.children[i].children[j].name); //name of stage that contains sequential parallel stages
+                }
+            }
+        }
+
+        handler(false);
+    }
+
     loadContent(onComplete) {
         const { organization, pipeline, branch } = this.props.params;
         this.contentApi
@@ -333,9 +345,24 @@ class PipelineLoader extends React.Component {
                 }
                 const pipelineScript = Base64.decode(content.base64Data);
                 this.setState({ sha: content.sha });
+
                 convertPipelineToJson(pipelineScript, (p, err) => {
                     if (!err) {
                         const internal = convertJsonToInternalModel(p);
+
+                        //check if pipeline contains sequential parallel stages and show error if it does
+                        this.checkForNestedSequentialStages(internal, errParentStageName => {
+                            if (errParentStageName) {
+                                const nestedSequentialStagesError = [
+                                    {
+                                        error: t('editor.page.common.pipeline.nestedSequentialStagesError', { 0: errParentStageName }),
+                                    },
+                                ];
+
+                                this.showLoadingError(nestedSequentialStagesError);
+                            }
+                        });
+
                         if (onComplete) {
                             onComplete(internal);
                         } else {
