@@ -1,10 +1,10 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
 import com.cloudbees.hudson.plugins.folder.AbstractFolder;
-import com.google.common.collect.Iterators;
 import hudson.model.Item;
 import hudson.plugins.favorite.Favorites;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.Utils;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueFavorite;
 import io.jenkins.blueocean.rest.model.BlueFavoriteContainer;
@@ -70,7 +70,7 @@ public class FavoriteContainerImpl extends BlueFavoriteContainer {
         List<BlueFavorite> favorites = new ArrayList<>();
 
         Iterator<Item> favoritesIterator = Favorites.getFavorites(user.user).iterator();
-        Iterators.skip(favoritesIterator, start);
+        Utils.skip(favoritesIterator, start);
         int count = 0;
         while(count < limit && favoritesIterator.hasNext()) {
             Item item = favoritesIterator.next();
