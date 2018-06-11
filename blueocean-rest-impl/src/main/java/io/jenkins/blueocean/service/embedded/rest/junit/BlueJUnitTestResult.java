@@ -172,5 +172,12 @@ public class BlueJUnitTestResult extends BlueTestResult {
         {
             return caseResult.getStderr();
         }
+
+        // findbugs complains if not overriding.....
+        @Override
+        public boolean equals( Object obj )
+        {
+            return super.equals( obj );
+        }
     }
 }
