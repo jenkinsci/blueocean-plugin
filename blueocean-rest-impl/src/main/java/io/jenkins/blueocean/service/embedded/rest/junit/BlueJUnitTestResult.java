@@ -179,5 +179,12 @@ public class BlueJUnitTestResult extends BlueTestResult {
         {
             return super.equals( obj );
         }
+
+        // findbugs complains if not overriding.....
+        @Override
+        public int hashCode()
+        {
+            return super.hashCode();
+        }
     }
 }
