@@ -24,11 +24,11 @@ import static org.apache.commons.lang.StringUtils.isEmpty;
 @Restricted(NoExternalUse.class)
 public class BlueJUnitTestResult extends BlueTestResult {
 
-    private final BlueCaseResult testResult;
+    protected final CaseResult testResult;
 
     public BlueJUnitTestResult(CaseResult testResult, Link parent) {
         super(parent);
-        this.testResult = new BlueCaseResult( testResult );
+        this.testResult = testResult;
     }
 
     @Override
@@ -140,51 +140,51 @@ public class BlueJUnitTestResult extends BlueTestResult {
     }
 
 
-    protected static class BlueCaseResult extends CaseResult {
-
-        private CaseResult caseResult;
-
-        public BlueCaseResult( CaseResult caseResult )
-        {
-            super( caseResult.getSuiteResult(), caseResult.getName(),
-                   caseResult.getErrorStackTrace(), caseResult.getErrorDetails() );
-            this.caseResult = caseResult;
-        }
-
-        public String getStdOut()
-        {
-            return caseResult.getStdout();
-        }
-
-        @Override
-        public String getStdout()
-        {
-            return caseResult.getStdout();
-        }
-
-        public String getStdErr()
-        {
-            return caseResult.getStderr();
-        }
-
-        @Override
-        public String getStderr()
-        {
-            return caseResult.getStderr();
-        }
-
-        // findbugs complains if not overriding.....
-        @Override
-        public boolean equals( Object obj )
-        {
-            return super.equals( obj );
-        }
-
-        // findbugs complains if not overriding.....
-        @Override
-        public int hashCode()
-        {
-            return super.hashCode();
-        }
-    }
+//    protected static class BlueCaseResult extends CaseResult {
+//
+//        private CaseResult caseResult;
+//
+//        public BlueCaseResult( CaseResult caseResult )
+//        {
+//            super( caseResult.getSuiteResult(), caseResult.getName(),
+//                   caseResult.getErrorStackTrace(), caseResult.getErrorDetails() );
+//            this.caseResult = caseResult;
+//        }
+//
+//        public String getStdOut()
+//        {
+//            return caseResult.getStdout();
+//        }
+//
+//        @Override
+//        public String getStdout()
+//        {
+//            return caseResult.getStdout();
+//        }
+//
+//        public String getStdErr()
+//        {
+//            return caseResult.getStderr();
+//        }
+//
+//        @Override
+//        public String getStderr()
+//        {
+//            return caseResult.getStderr();
+//        }
+//
+//        // findbugs complains if not overriding.....
+//        @Override
+//        public boolean equals( Object obj )
+//        {
+//            return super.equals( obj );
+//        }
+//
+//        // findbugs complains if not overriding.....
+//        @Override
+//        public int hashCode()
+//        {
+//            return super.hashCode();
+//        }
+//    }
 }
