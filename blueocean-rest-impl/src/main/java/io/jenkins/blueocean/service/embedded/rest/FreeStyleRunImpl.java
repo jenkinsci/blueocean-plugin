@@ -63,7 +63,7 @@ public class FreeStyleRunImpl extends AbstractRunImpl<FreeStyleBuild> {
     @Extension
     public static class FactoryImpl extends BlueRunFactory {
         @Override
-        public BlueRun getRun( Run run, Reachable parent, BlueOrganization organization) {
+        public BlueRun getRun(Run run, Reachable parent, BlueOrganization organization) {
             if ( run instanceof FreeStyleBuild )
             {
                 return new FreeStyleRunImpl( (FreeStyleBuild) run, parent, organization );

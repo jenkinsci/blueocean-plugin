@@ -21,7 +21,7 @@ public final class DefaultRunImpl extends AbstractRunImpl {
     @Extension(ordinal = -1)
     public static class FactoryImpl extends BlueRunFactory {
         @Override
-        public BlueRun getRun( Run run, Reachable parent, BlueOrganization organization) {
+        public BlueRun getRun(Run run, Reachable parent, BlueOrganization organization) {
             return new DefaultRunImpl(run,  parent, organization);
         }
     }

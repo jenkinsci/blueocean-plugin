@@ -255,7 +255,7 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
             }
         }
 
-        // .../runs/123/testSummaryContainer
+        // .../runs/123/blueTestSummary
         if (blueTestSummary == null)
         {
             return null;

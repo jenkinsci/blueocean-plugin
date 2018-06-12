@@ -50,13 +50,9 @@ public class TestResultsTest
     @Test
     public void testTests(){
         RunDetailsTestsPage runDetailsTestsPage = pipeline.getRunDetailsTestsPage().open("master", 1);
-        //runDetailsTestsPage.getDriver().findElement( By.xpath( "//span[contains(text(), 'StdOut')]" ) ).click();
         runDetailsTestsPage.getWaitUntil().click( By.xpath( "//span[contains(text(), 'StdOut')]" ) );
-        //runDetailsTestsPage.getDriver().findElement( By.xpath( "//div[@class='test-console']/h4[contains(text(), 'Stacktrace')]"));
         runDetailsTestsPage.getWaitUntil().until( By.xpath( "//div[@class='test-console']/h4[contains(text(), 'Stacktrace')]") );
-        //runDetailsTestsPage.getDriver().findElement( By.xpath( "//div[@class='test-console']/h4[contains(text(), 'Standard Error')]"));
         runDetailsTestsPage.getWaitUntil().until( By.xpath( "//div[@class='test-console']/h4[contains(text(), 'Standard Error')]"));
-        //runDetailsTestsPage.getDriver().findElement( By.xpath( "//div[@class='test-console']/h4[contains(text(), 'Standard Output')]"));
         runDetailsTestsPage.getWaitUntil().until( By.xpath( "//div[@class='test-console']/h4[contains(text(), 'Standard Output')]"));
 
     }

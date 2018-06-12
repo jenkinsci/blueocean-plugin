@@ -22,7 +22,7 @@ public abstract class BlueRunFactory implements ExtensionPoint {
      * @param organization that the parent is a child of
      * @return null if it doesn't knows about this instance of run object, otherwise instance of BlueRun
      */
-    public abstract BlueRun getRun( Run run, Reachable parent, BlueOrganization organization);
+    public abstract BlueRun getRun(Run run, Reachable parent, BlueOrganization organization);
 
     /**
      * @param r run
@@ -42,5 +42,4 @@ public abstract class BlueRunFactory implements ExtensionPoint {
         }
         return null;
     }
-
 }

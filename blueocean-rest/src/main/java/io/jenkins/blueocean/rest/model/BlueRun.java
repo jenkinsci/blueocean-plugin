@@ -207,7 +207,6 @@ public abstract class BlueRun extends Resource implements BlueItemRun {
     /**
      * @return Gives the test summary for this run
      */
-    //@Exported(name = TEST_SUMMARY, inline = true, skipNull = true)
     @Deprecated
     public abstract BlueTestSummary getTestSummary();
 
