@@ -188,6 +188,11 @@ public class QueuedBlueRun extends BlueRun {
     }
 
     @Override
+    public BlueTestSummary getBlueTestSummary() {
+        return null;
+    }
+
+    @Override
     public Collection<BlueCause> getCauses() {
         return item.getCauses();
     }

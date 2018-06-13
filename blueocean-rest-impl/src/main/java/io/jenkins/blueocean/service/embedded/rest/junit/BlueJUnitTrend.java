@@ -81,12 +81,7 @@ public class BlueJUnitTrend extends BlueTrend {
 
             @Override
             public Iterator<BlueTableRow> iterator() {
-                return Iterators.transform(runs, new Function<BlueRun, BlueTableRow>() {
-                    @Override
-                    public BlueTableRow apply(BlueRun run) {
-                        return new BlueJUnitTrendRow(run.getTestSummary(), run.getId());
-                    }
-                });
+                return Iterators.transform(runs,run -> new BlueJUnitTrendRow(run.getBlueTestSummary(), run.getId()));
             }
         };
     }

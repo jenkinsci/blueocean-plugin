@@ -150,7 +150,6 @@ export class DefaultSSEHandler {
         this.loggingEnabled && console.log(`fetch ${logMessage}`);
 
         this.activityService.fetchActivity(href, { useCache: false, disableLoadingIndicator: true }).then(run => {
-            this.activityService.setItem(run);
             for (const key of this.branchPagerKeys(event)) {
                 const pager = this.pagerService.getPager({ key });
                 if (pager && !pager.has(href)) {
@@ -158,6 +157,16 @@ export class DefaultSSEHandler {
                 }
             }
             this.pipelineService.updateLatestRun(run);
+
+            /*
+                Check to see if the TestSummary has been loaded and if so then reload it. Otherwise don't because
+                it's expensive to calculate.
+             */
+
+            const testResultUrl = run._links.blueTestSummary && run._links.blueTestSummary.href;
+            if (this.activityService.hasItem(testResultUrl)) {
+                this.activityService.fetchTestSummary(testResultUrl, { useCache: false, disableLoadingIndicator: true });
+            }
         });
     }
 

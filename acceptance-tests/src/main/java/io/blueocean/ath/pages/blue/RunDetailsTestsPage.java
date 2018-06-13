@@ -76,4 +76,8 @@ public class RunDetailsTestsPage implements WebDriverMixin {
         return this;
     }
 
+    public WaitUtil getWaitUntil() {
+        return wait;
+    }
+
 }

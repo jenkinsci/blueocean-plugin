@@ -46,6 +46,13 @@ const classicJobRunLink = (pipeline, branch, runId) => {
     );
 };
 
+function getTestSummaryUrl(runDetails) {
+    if (runDetails && runDetails._links.blueTestSummary) {
+        return runDetails._links.blueTestSummary.href;
+    }
+    return null;
+}
+
 @observer
 class RunDetails extends Component {
     constructor(props) {
@@ -81,7 +88,10 @@ class RunDetails extends Component {
                 runId: props.params.runId,
             });
 
-            this.context.activityService.fetchActivity(this.href, { useCache: true });
+            this.context.activityService.fetchActivity(this.href, { useCache: true }).then(run => {
+                const testSummaryUrl = getTestSummaryUrl(run);
+                return testSummaryUrl && this.context.activityService.fetchTestSummary(testSummaryUrl);
+            });
         }
     }
 
@@ -122,7 +132,11 @@ class RunDetails extends Component {
     };
 
     render() {
-        const run = this.context.activityService.getActivity(this.href);
+        const activityService = this.context.activityService;
+        const run = activityService.getActivity(this.href);
+        const testSummaryUrl = run && getTestSummaryUrl(run);
+        const testSummary = testSummaryUrl && activityService.getTestSummary(testSummaryUrl);
+
         // early out
         if (!this.context.params || !run) {
             return null;
@@ -152,7 +166,7 @@ class RunDetails extends Component {
 
         const base = { base: baseUrl };
 
-        const failureCount = Math.min(99, (currentRun.testSummary && parseInt(currentRun.testSummary.failed)) || 0);
+        const failureCount = Math.min(99, (testSummary && parseInt(testSummary.failed)) || 0);
         const testsBadge = failureCount > 0 && <div className="TabBadgeIcon">{failureCount}</div>;
 
         const tabs = [
@@ -211,8 +225,9 @@ class RunDetails extends Component {
                 <div className="RunDetails-content">
                     {run &&
                         React.cloneElement(this.props.children, {
-                            locale: translate.lng,
                             baseUrl,
+                            testSummary,
+                            locale: translate.lng,
                             t: translate,
                             result: currentRun,
                             isMultiBranch: this.isMultiBranch,

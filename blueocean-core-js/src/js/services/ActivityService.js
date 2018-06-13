@@ -52,6 +52,10 @@ export class ActivityService extends BunkerService {
         return this.getItem(href);
     }
 
+    getTestSummary(href) {
+        return this.getItem(href);
+    }
+
     /**
      * Fetches an activity from rest api.
      *
@@ -66,16 +70,31 @@ export class ActivityService extends BunkerService {
         if (useCache && this.hasItem(href)) {
             return Promise.resolve(this.getItem(href));
         }
+        return Fetch.fetchJSON(href, { disableLoadingIndicator })
+            .then(data => {
+                return this.setItem(data);
+            })
+            .catch(err => {
+                console.log('There has been an error while trying to get the run data.', err);
+            });
+    }
+
+    /**
+     * Fetch a TestSummary for a run
+     *
+     * @param href (eg: myRun._links.testSummary.href )
+     */
+    fetchTestSummary(href, { useCache, disableLoadingIndicator } = {}) {
+        if (useCache && this.hasItem(href)) {
+            return Promise.resolve(this.getItem(href));
+        }
 
         return Fetch.fetchJSON(href, { disableLoadingIndicator })
             .then(data => {
-                // Should really have dedupe on methods like these, but for now
-                // just clone data so that we dont modify other instances.
-                const run = Utils.clone(data);
-                return this.setItem(run);
+                return this.setItem(data);
             })
             .catch(err => {
-                console.log('There has been an error while trying to get the data.', err); // FIXME: Ivan what is the way to return an "error" opbject so underlying component are aware of the problem and can react
+                console.log('There has been an error while trying to get the TestSummary data.', err);
             });
     }
 

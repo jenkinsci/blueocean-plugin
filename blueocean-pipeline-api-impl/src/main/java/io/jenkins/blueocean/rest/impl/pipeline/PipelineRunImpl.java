@@ -91,7 +91,10 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
                 for (ChangeLogSet.Entry e : cs) {
                     cnt++;
                     String id = e.getCommitId();
-                    if (id == null) id = String.valueOf(cnt);
+                    if (id == null)
+                    {
+                        id = String.valueOf( cnt );
+                    }
                     m.put(id, new ChangeSetResource(organization, e, this));
                 }
             }
@@ -260,7 +263,7 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
     public static class FactoryImpl extends BlueRunFactory {
 
         @Override
-        public BlueRun getRun(Run run, Reachable parent, BlueOrganization organization) {
+        public BlueRun getRun( Run run, Reachable parent, BlueOrganization organization) {
             if(run instanceof WorkflowRun) {
                 return new PipelineRunImpl((WorkflowRun) run, parent, organization);
             }
@@ -268,13 +271,10 @@ public class PipelineRunImpl extends AbstractRunImpl<WorkflowRun> {
         }
     }
 
-    static final Comparator<BlueRun> LATEST_RUN_START_TIME_COMPARATOR = new Comparator<BlueRun>() {
-        @Override
-        public int compare(BlueRun o1, BlueRun o2) {
+    static final Comparator<BlueRun> LATEST_RUN_START_TIME_COMPARATOR = (o1, o2) -> {
             Long t1 = (o1 != null  && o1.getStartTime() != null) ? o1.getStartTime().getTime() : 0;
             Long t2 = (o2 != null  && o2.getStartTime() != null) ? o2.getStartTime().getTime() : 0;
             return t2.compareTo(t1);
-        }
-    };
+        };
 
 }

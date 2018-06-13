@@ -11,6 +11,7 @@ interface Props {
     t: (key: string) => string;
     locale: string;
     testService: any;
+    testSummary: any; // Fixme-JM: update types from core-js once they're fixed
 }
 
 @observer
@@ -40,16 +41,16 @@ export default class TestResults extends React.Component<Props> {
     }
 
     render() {
-        const { t: translation, locale, run } = this.props;
+        const { t: translation, locale, testSummary } = this.props;
         return (
             <div>
                 <TestSummary
                     translate={translation}
-                    passing={run.testSummary.passed}
-                    fixed={run.testSummary.fixed}
-                    failuresNew={run.testSummary.regressions}
-                    failuresExisting={run.testSummary.existingFailed}
-                    skipped={run.testSummary.skipped}
+                    passing={testSummary.passed}
+                    fixed={testSummary.fixed}
+                    failuresNew={testSummary.regressions}
+                    failuresExisting={testSummary.existingFailed}
+                    skipped={testSummary.skipped}
                 />
                 <TestSection
                     titleKey="rundetail.tests.results.errors.new.count"
@@ -57,7 +58,7 @@ export default class TestResults extends React.Component<Props> {
                     extraClasses="new-failure-block"
                     locale={locale}
                     t={translation}
-                    total={run.testSummary.regressions}
+                    total={testSummary.regressions}
                     testService={this.props.testService}
                 />
                 <TestSection
@@ -66,7 +67,7 @@ export default class TestResults extends React.Component<Props> {
                     extraClasses="existing-failure-block"
                     locale={locale}
                     t={translation}
-                    total={run.testSummary.existingFailed}
+                    total={testSummary.existingFailed}
                     testService={this.props.testService}
                 />
                 <TestSection
@@ -75,7 +76,7 @@ export default class TestResults extends React.Component<Props> {
                     extraClasses="fixed-block"
                     locale={locale}
                     t={translation}
-                    total={run.testSummary.fixed}
+                    total={testSummary.fixed}
                     testService={this.props.testService}
                 />
                 <TestSection
@@ -84,7 +85,7 @@ export default class TestResults extends React.Component<Props> {
                     extraClasses="skipped-block"
                     locale={locale}
                     t={translation}
-                    total={run.testSummary.skipped}
+                    total={testSummary.skipped}
                     testService={this.props.testService}
                 />
                 <TestSection
@@ -93,7 +94,7 @@ export default class TestResults extends React.Component<Props> {
                     extraClasses=""
                     locale={locale}
                     t={translation}
-                    total={run.testSummary.passed}
+                    total={testSummary.passed}
                     testService={this.props.testService}
                 />
             </div>

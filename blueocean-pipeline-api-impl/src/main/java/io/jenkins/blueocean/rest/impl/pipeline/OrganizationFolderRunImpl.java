@@ -189,6 +189,12 @@ public class OrganizationFolderRunImpl extends BlueRun {
     }
 
     @Override
+    public BlueTestSummary getBlueTestSummary()
+    {
+        return null;
+    }
+
+    @Override
     public Object getLog() {
         return new LogResource(folderComputation.getLogText());
     }

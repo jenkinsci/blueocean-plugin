@@ -105,7 +105,7 @@ describe('TestResults', () => {
 
         const testService = new MockTestService({fixed: fixed, skipped: skipped, existingFailed: existingFailed});
 
-        const wrapper = mount(<TestResults t={t} run={run} testService={testService} pipeline={pipeline} />);
+        const wrapper = mount(<TestResults t={t} testSummary={run.testSummary} testService={testService} pipeline={pipeline} />);
         const output = wrapper.html();
         assert(output.indexOf('summary.failing_title') >= 0, 'should show failing title');
         assert(output.indexOf('new-failure-block') === -1, 'should not have failure block');
@@ -142,7 +142,7 @@ describe('TestResults', () => {
             }
         };
 
-        const wrapper = mount(<TestResults t={t} run={run} testService={testService} pipeline={pipeline} />);
+        const wrapper = mount(<TestResults t={t} testSummary={run.testSummary} testService={testService} pipeline={pipeline} />);
         const newFailed = wrapper.find('.new-failure-block h4').text();
         assert.equal(newFailed, 'rundetail.tests.results.errors.new.count');
 
@@ -170,7 +170,7 @@ describe('TestResults', () => {
             }
         };
 
-        const wrapper = mount(<TestResults t={t} run={run} testService={testService} pipeline={pipeline} />);
+        const wrapper = mount(<TestResults t={t} testSummary={run.testSummary} testService={testService} pipeline={pipeline} />);
         const output = wrapper.html();
         assert(output.indexOf('summary.passing_title') >= 0, 'should show all passing title');
         assert(output.indexOf('-failure-block') < 0, 'should not find any failure blocks');
@@ -195,7 +195,7 @@ describe('TestResults', () => {
         };
         const testService = new MockTestService({passed: fixed});
 
-        const wrapper = mount(<TestResults t={t} run={run} testService={testService} pipeline={pipeline} />);
+        const wrapper = mount(<TestResults t={t} testSummary={run.testSummary} testService={testService} pipeline={pipeline} />);
         const output = wrapper.html();
         assert(output.indexOf('summary.passing_after_fixes_title') >= 0, 'should show passing with fixes title');
         assert(output.indexOf('-failure-block') < 0, 'should not find any failure blocks');
@@ -225,7 +225,7 @@ describe('TestResults', () => {
         };
         const testService = new MockTestService({existingFailed: existingFailed});
         // Lets mount it to that it renders children.
-        const wrapper = mount(<TestResults t={t} run={run} testService={testService} pipeline={pipeline} />);
+        const wrapper = mount(<TestResults t={t} testSummary={run.testSummary} testService={testService} pipeline={pipeline} />);
 
         // Expend the test result
         wrapper.find('.result-item-head').simulate('click');
