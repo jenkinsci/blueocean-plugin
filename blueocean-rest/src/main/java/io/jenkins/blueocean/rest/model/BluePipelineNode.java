@@ -69,6 +69,9 @@ public abstract class BluePipelineNode extends BluePipelineStep {
     @Navigable
     public abstract BluePipelineStepContainer getSteps();
 
+    @Exported
+    public abstract boolean isRestartable();
+
     /**
      * Represents edge of pipeline flow graph
      */

@@ -59,7 +59,7 @@ public class QueueItemImpl extends BlueQueueItem {
 
     @Override
     public String getPipeline() {
-        return pipeline.getName();
+        return pipeline == null ? "" : pipeline.getName();
     }
 
     @Override

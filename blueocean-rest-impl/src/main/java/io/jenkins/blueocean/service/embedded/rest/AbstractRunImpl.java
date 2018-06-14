@@ -38,6 +38,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * Basic {@link BlueRun} implementation.
@@ -388,7 +389,7 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
         }
 
         static Collection<BlueCause> getCauses(Collection<hudson.model.Cause> causes) {
-            return Collections2.transform(causes, input ->  new BlueCauseImpl(input));
+            return causes.stream().map( input -> new BlueCauseImpl(input)).collect(Collectors.toList());
         }
     }
 }
