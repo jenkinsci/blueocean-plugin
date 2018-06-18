@@ -42,9 +42,7 @@
     <jenkins-test-harness.version>2.38</jenkins-test-harness.version>
     <scm-api.version>2.2.6</scm-api.version>
     <git.version>3.8.0</git.version>
-    <!-- upgrading to parent 3.15 introduce a new version which is VERY MORE MORE restrictive so skip it
-    as this need a lot of changes.... -->
-    <access-modifier-checker.failOnError>false</access-modifier-checker.failOnError>
+    <access-modifier-checker.failOnError>true</access-modifier-checker.failOnError>
   </properties>
 
   <scm>
