@@ -121,6 +121,7 @@ public class EditorPage {
     public void saveBranch(String branch) {
         logger.info("saveBranch method called");
         wait.click(By.xpath("//*[text()='Save']"));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("textarea[placeholder=\"What changed?\"]")));
         wait.sendKeys(By.cssSelector("textarea[placeholder=\"What changed?\"]"), "ATH made changes and is saving");
         if(!Strings.isNullOrEmpty(branch)) {
             wait.click(By.xpath("//span[text()='Commit to new branch']"));
