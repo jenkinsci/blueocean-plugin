@@ -21,7 +21,7 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package io.jenkins.blueocean.commons;
+package io.jenkins.blueocean.preload;
 
 import org.junit.Assert;
 import org.junit.Test;

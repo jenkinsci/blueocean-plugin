@@ -5,7 +5,7 @@
   <parent>
     <groupId>org.jenkins-ci.plugins</groupId>
     <artifactId>plugin</artifactId>
-    <version>2.35</version>
+    <version>3.15</version>
   </parent>
 
   <groupId>io.jenkins.blueocean</groupId>
@@ -40,8 +40,9 @@
     <jacoco.missedclass.coverage>0.00</jacoco.missedclass.coverage>
     <hpi.dependencyResolution>runtime</hpi.dependencyResolution>
     <jenkins-test-harness.version>2.38</jenkins-test-harness.version>
-    <scm-api.version>2.2.6</scm-api.version>
+    <scm-api.version>2.2.7</scm-api.version>
     <git.version>3.8.0</git.version>
+    <access-modifier-checker.failOnError>true</access-modifier-checker.failOnError>
   </properties>
 
   <scm>
@@ -443,7 +444,7 @@
         <dependency>
             <groupId>org.jenkins-ci.plugins</groupId>
             <artifactId>branch-api</artifactId>
-            <version>2.0.18</version>
+            <version>2.0.20</version>
             <exclusions>
                 <!-- Upper dependency fix: annotation-indexer comes from core, exclude from git -->
                 <exclusion>
@@ -854,6 +855,13 @@
   <build>
       <pluginManagement>
           <plugins>
+              <plugin>
+                  <groupId>org.kohsuke</groupId>
+                  <artifactId>access-modifier-checker</artifactId>
+                  <configuration>
+                      <failOnError>${access-modifier-checker.failOnError}</failOnError>
+                  </configuration>
+              </plugin>
               <plugin>
                   <groupId>org.apache.maven.plugins</groupId>
                   <artifactId>maven-javadoc-plugin</artifactId>
