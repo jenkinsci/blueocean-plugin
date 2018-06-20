@@ -88,7 +88,17 @@ export class Dropdown extends React.Component {
         // console.log('_onDropdownMouseEvent');
         // prevent navigation if anchor was clicked
         event.preventDefault();
-        this._toggleDropdownMenu();
+        /*
+         * Some browser will fire a click event when you set focus on this element while in an another
+         * event loop if those browser fire this event it will be from 0 0 hence not a real click.
+         *
+         * Another workaround could have been to create a timeout and set the focus after a certain time,
+         * however that has the problem that the timeout can vary, leaving the whole component in a focus limbo
+         */
+        const { clientX, clientY } = event;
+        if( clientY !== 0 && clientX !== 0) {
+            this._toggleDropdownMenu();
+        }
     };
 
     _handleKeyEvent = event => {
@@ -131,6 +141,20 @@ export class Dropdown extends React.Component {
             case KeyCodes.ENTER:
                 event.preventDefault();
                 this._selectFocusedItem();
+                break;
+            default:
+                break;
+        }
+    };
+
+    _keyEvent = event => {
+        const { keyCode } = event;
+
+        switch (keyCode) {
+            case KeyCodes.SPACEBAR:
+            case KeyCodes.ENTER:
+                event.preventDefault();
+                this._toggleDropdownMenu();
                 break;
             default:
                 break;
@@ -306,6 +330,7 @@ export class Dropdown extends React.Component {
                     disabled={buttonDisabled}
                     title={buttonTitle}
                     onClick={this._onDropdownMouseEvent}
+                    onKeyDown={ this._keyEvent }
                 >
                     {buttonLabel}
                 </button>
