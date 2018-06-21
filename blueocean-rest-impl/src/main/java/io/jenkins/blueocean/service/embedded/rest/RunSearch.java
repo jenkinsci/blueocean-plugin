@@ -184,11 +184,14 @@ public class RunSearch extends OmniSearch<BlueRun> {
         }
         int n = callables.size();
         LOGGER.debug( "before submit size:{}", n );
+        if(n<1){
+            return Collections.emptyList();
+        }
         ExecutorService
             executorService =  new ThreadPoolExecutor( n < COLLECT_THREADS? n : COLLECT_THREADS,
                                                        n < COLLECT_THREADS? n : COLLECT_THREADS,
                                                        60L, TimeUnit.MILLISECONDS,
-                                                       new ArrayBlockingQueue<>( limit ));
+                                                       new ArrayBlockingQueue<>( n ));
         ExecutorCompletionService<BlueRun> ecs = new ExecutorCompletionService( executorService );
         for(Callable<BlueRun> callable : callables) {
             ecs.submit( callable );
