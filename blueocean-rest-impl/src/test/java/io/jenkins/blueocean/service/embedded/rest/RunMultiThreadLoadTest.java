@@ -2,9 +2,6 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-import hudson.model.Run;
-import io.jenkins.blueocean.rest.factory.BlueRunFactory;
-import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
@@ -17,14 +14,9 @@ import org.jvnet.hudson.test.Issue;
 import org.jvnet.hudson.test.JenkinsRule;
 
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 public class RunMultiThreadLoadTest
 {
