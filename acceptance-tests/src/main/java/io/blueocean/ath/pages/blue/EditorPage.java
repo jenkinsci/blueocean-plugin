@@ -121,6 +121,7 @@ public class EditorPage {
     public void saveBranch(String branch) {
         logger.info("saveBranch method called");
         wait.click(By.xpath("//*[text()='Save']"));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("textarea[placeholder=\"What changed?\"]")));
         wait.sendKeys(By.cssSelector("textarea[placeholder=\"What changed?\"]"), "ATH made changes and is saving");
         if(!Strings.isNullOrEmpty(branch)) {
             wait.click(By.xpath("//span[text()='Commit to new branch']"));
@@ -151,7 +152,7 @@ public class EditorPage {
         wait.click(By.cssSelector(".editor-step-selector div[data-functionName=\"echo\"]"));
         wait.sendKeys(By.cssSelector("input.TextInput-control"),"simplePipeline creating echo message");
         wait.click(By.cssSelector("div.sheet.active a.back-from-sheet"));
-        saveBranch(newBranch);
+        logger.info("Pipeline created and ready to be saved");
     }
 
     /**
@@ -180,5 +181,4 @@ public class EditorPage {
         wait.sendKeys(By.cssSelector("input.stage-name-edit"),"Top Level Parallel Wrapper Stage");
         logger.info("Parallel pipeline created and ready to save");
     }
-
 }
