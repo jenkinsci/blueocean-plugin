@@ -92,12 +92,7 @@ public class RunSearch extends OmniSearch<BlueRun> {
             RunList<? extends Run> runList = p.getBuilds();
 
             for (Run r : runList) {
-                BlueRun run = BlueRunFactory.getRun(r, new Reachable() {
-                    @Override
-                    public Link getLink() {
-                        return parent;
-                    }
-                });
+                BlueRun run = BlueRunFactory.getRun(r, () -> parent);
                 if (run != null) {
                     runs.add(run);
                 }
@@ -133,7 +128,9 @@ public class RunSearch extends OmniSearch<BlueRun> {
         return runs;
     }
 
-    private static final int COLLECT_THREADS = Integer.getInteger( "blueocean.collectRuns.threads", 0 );
+    public static final String COLLECT_THREADS_KEY = "blueocean.collectRuns.threads";
+
+    private static final int COLLECT_THREADS = Integer.getInteger( COLLECT_THREADS_KEY, 0 );
 
     private static List<BlueRun> collectRuns(Iterator<? extends Run> runIterator, final Link parent, int start, int limit){
         if (COLLECT_THREADS > 1) {
@@ -184,11 +181,14 @@ public class RunSearch extends OmniSearch<BlueRun> {
         }
         int n = callables.size();
         LOGGER.debug( "before submit size:{}", n );
+        if(n<1){
+            return Collections.emptyList();
+        }
         ExecutorService
             executorService =  new ThreadPoolExecutor( n < COLLECT_THREADS? n : COLLECT_THREADS,
                                                        n < COLLECT_THREADS? n : COLLECT_THREADS,
                                                        60L, TimeUnit.MILLISECONDS,
-                                                       new ArrayBlockingQueue<>( limit ));
+                                                       new ArrayBlockingQueue<>( n ));
         ExecutorCompletionService<BlueRun> ecs = new ExecutorCompletionService( executorService );
         for(Callable<BlueRun> callable : callables) {
             ecs.submit( callable );
