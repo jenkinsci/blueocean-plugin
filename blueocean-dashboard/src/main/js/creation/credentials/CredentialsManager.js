@@ -14,8 +14,8 @@ export class CredentialsManager {
 
     listAllCredentials() {
         return this._api.listAllCredentials().then(result => {
-            this._setCredentials(result);
-            return result;
+            this._setCredentials(result.credentials);
+            return this.credentials;
         });
     }
 
