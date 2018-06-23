@@ -186,28 +186,4 @@ public class CredentialApiTest extends PipelineBaseTest {
         Assert.assertEquals("SSH Username with private key", resp.get("typeName"));
         Assert.assertEquals("blueocean-git-domain", resp.get("domain"));
     }
-
-    @Test
-    public void createSshCredentialUsingDefaultSshOnMasterInUserStore() throws IOException, UnirestException {
-        User user = login();
-
-        Map resp = new RequestBuilder(baseUrl)
-                .status(201)
-                .jwtToken(getJwtToken(j.jenkins,user.getId(), user.getId()))
-                .post("/organizations/jenkins/credentials/user/")
-                .data(                ImmutableMap.of("credentials",
-                        new ImmutableMap.Builder<String,Object>()
-                                .put("privateKeySource", ImmutableMap.of("stapler-class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$UsersPrivateKeySource"))
-                                .put("passphrase", "ssh2")
-                                .put("scope", "USER")
-                                .put("description", "ssh2 desc")
-                                .put("$class", "com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey")
-                                .put("username", "ssh2").build()
-                        )
-                ).build(Map.class);
-
-        Assert.assertEquals("SSH Username with private key", resp.get("typeName"));
-        Assert.assertEquals("blueocean-domain", resp.get("domain"));
-    }
-
 }
