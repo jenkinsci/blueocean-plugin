@@ -132,16 +132,7 @@ export default class GitFlowManager extends FlowManager {
 
         let credentialId = null;
 
-        if (this.selectedCredential === this.noCredentialsOption) {
-            if (!this._isHttpRepositoryUrl(this.repositoryUrl)) {
-                if (this.credentialsManager.systemSSHCredential) {
-                    LOGGER.debug('using default system SSH key credential for creation');
-                    credentialId = this.credentialsManager.systemSSHCredential.id;
-                } else {
-                    LOGGER.warn('attempting to create from Git repo w/ SSH URL but no default SSH credential exists');
-                }
-            }
-        } else if (this.selectedCredential !== this.noCredentialsOption) {
+        if (this.selectedCredential !== this.noCredentialsOption) {
             credentialId = this.selectedCredential.id;
         }
 
