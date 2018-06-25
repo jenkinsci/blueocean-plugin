@@ -185,6 +185,12 @@ public class BlueTestResultContainerImplTest extends BaseTest {
             }
 
             @Override
+            public boolean hasStdLog()
+            {
+                return false;
+            }
+
+            @Override
             public Link getLink()
             {
                 return new Link( getName() );

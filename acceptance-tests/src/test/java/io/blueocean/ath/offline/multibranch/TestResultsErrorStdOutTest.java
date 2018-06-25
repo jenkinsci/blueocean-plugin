@@ -19,7 +19,7 @@ import org.openqa.selenium.WebElement;
 import java.io.IOException;
 
 @RunWith(ATHJUnitRunner.class)
-public class TestResultsTest
+public class TestResultsErrorStdOutTest
     extends BlueOceanAcceptanceTest{
 
     @Inject
@@ -40,20 +40,27 @@ public class TestResultsTest
         git.writeJenkinsFile(loadJenkinsFile());
         git.writeFile("TEST-io.blueocean.StdoutStderr.xml" ,loadResource("TEST-io.blueocean.StdoutStderr.xml"));
         git.writeFile("TEST-io.blueocean.NoErrorMessage.xml" ,loadResource("TEST-io.blueocean.NoErrorMessage.xml"));
+        git.writeFile("TEST-io.blueocean.Success.xml" ,loadResource("TEST-io.blueocean.Success.xml"));
+
         git.addAll();
         git.commit("First");
 
-        pipeline = mbpFactory.pipeline("TestResultsTest").createPipeline(git);
+        pipeline = mbpFactory.pipeline("TestResultsErrorStdOutTest").createPipeline(git);
         sseClient.untilEvents(pipeline.buildsFinished);
     }
 
     @Test
-    public void testTests(){
+    public void std_out_visible(){
         RunDetailsTestsPage runDetailsTestsPage = pipeline.getRunDetailsTestsPage().open("master", 1);
         runDetailsTestsPage.getWaitUntil().click( By.xpath( "//span[contains(text(), 'StdOut')]" ) );
         runDetailsTestsPage.getWaitUntil().until( By.xpath( "//div[@class='test-console']/h4[contains(text(), 'Stacktrace')]") );
         runDetailsTestsPage.getWaitUntil().until( By.xpath( "//div[@class='test-console']/h4[contains(text(), 'Standard Error')]"));
         runDetailsTestsPage.getWaitUntil().until( By.xpath( "//div[@class='test-console']/h4[contains(text(), 'Standard Output')]"));
+        runDetailsTestsPage.getWaitUntil().until( By.xpath( "//span[@class='line-content' and contains(text(), 'stdout msg')]") );
+
+        runDetailsTestsPage.getWaitUntil().click( By.xpath( "//span[contains(text(), 'ExportTest')]" ) );
+        runDetailsTestsPage.getWaitUntil().until( By.xpath( "//span[@class='line-content' and contains(text(), 'success_stdout_msg')]") );
+        runDetailsTestsPage.getWaitUntil().until( By.xpath( "//span[@class='line-content' and contains(text(), 'success_stderr_msg')]") );
 
     }
 }

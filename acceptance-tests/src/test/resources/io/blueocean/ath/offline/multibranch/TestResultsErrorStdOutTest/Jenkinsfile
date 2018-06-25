@@ -1,3 +1,5 @@
+package io.blueocean.ath.offline.multibranch.TestResultsErrorStdOutTes
+
 node {
     stage 'Stage 1 - scm'
     echo 'Stage 1 - scm'

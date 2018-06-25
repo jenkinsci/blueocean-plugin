@@ -22,7 +22,7 @@ export default class TestCaseResultRow extends Component {
     render() {
         const { testCase, translation, locale = 'en' } = this.props;
         const duration = TimeDuration.format(testCase.duration, translation, locale);
-        const showTestCase = testCase.errorStackTrace || testCase.errorDetails || this.stdout || this.stderr;
+        const showTestCase = testCase.errorStackTrace || testCase.errorDetails || testCase.hasStdLog;
         let statusIndicator = null;
         switch (testCase.status) {
             case 'FAILED':
