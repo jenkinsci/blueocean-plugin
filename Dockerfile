@@ -3,10 +3,11 @@
 # You can build everything needed and this Dockerfile by invoking `bin/build-in-docker.sh -m`
 #
 
-# Should be kept in sync with jenkins.properties of pom.xml
+# Effective version should be kept in sync with jenkins.properties of pom.xml
+# Use `docker run jenkins/jenkins:lts --version` to obtain latest LTS version
 # Patch version is not to be considered, we prefer to base the image off the latest LTS of the line
 # and keep the dependency on the baseline in pom.xml
-FROM jenkins:2.107.2
+FROM jenkins/jenkins:lts
 
 USER root
 
