@@ -52,13 +52,13 @@ public class TestResultsErrorStdOutTest
     @Test
     public void std_out_visible(){
         RunDetailsTestsPage runDetailsTestsPage = pipeline.getRunDetailsTestsPage().open("master", 1);
-        runDetailsTestsPage.getWaitUntil().click( By.xpath( "//span[contains(text(), 'StdOut')]" ) );
-        runDetailsTestsPage.getWaitUntil().until( By.xpath( "//div[@class='test-console']/h4[contains(text(), 'Stacktrace')]") );
-        runDetailsTestsPage.getWaitUntil().until( By.xpath( "//div[@class='test-console']/h4[contains(text(), 'Standard Error')]"));
-        runDetailsTestsPage.getWaitUntil().until( By.xpath( "//div[@class='test-console']/h4[contains(text(), 'Standard Output')]"));
+        runDetailsTestsPage.getWaitUntil().click( By.xpath( "//span[contains(text(), 'io.blueocean.TestResults.StdOut')]" ) );
+        runDetailsTestsPage.getWaitUntil().until( By.xpath( "//h4[contains(text(), 'Stacktrace')]") );
+        runDetailsTestsPage.getWaitUntil().until( By.xpath( "//h4[contains(text(), 'Standard Error')]"));
+        runDetailsTestsPage.getWaitUntil().until( By.xpath( "//h4[contains(text(), 'Standard Output')]"));
         runDetailsTestsPage.getWaitUntil().until( By.xpath( "//span[@class='line-content' and contains(text(), 'stdout msg')]") );
 
-        runDetailsTestsPage.getWaitUntil().click( By.xpath( "//span[contains(text(), 'ExportTest')]" ) );
+        runDetailsTestsPage.getWaitUntil().click( By.xpath( "//span[contains(text(), 'io.jenkins.blueocean.commons.ExportTest')]" ) );
         runDetailsTestsPage.getWaitUntil().until( By.xpath( "//span[@class='line-content' and contains(text(), 'success_stdout_msg')]") );
         runDetailsTestsPage.getWaitUntil().until( By.xpath( "//span[@class='line-content' and contains(text(), 'success_stderr_msg')]") );
 
