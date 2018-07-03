@@ -10,6 +10,7 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
+import org.apache.commons.lang.StringUtils;
 import org.kohsuke.accmod.Restricted;
 import org.kohsuke.accmod.restrictions.NoExternalUse;
 
@@ -120,6 +121,13 @@ public class BlueJUnitTestResult extends BlueTestResult {
             throw new NotFoundException("No log");
         }
         return log;
+    }
+
+    @Override
+    public boolean hasStdLog()
+    {
+        return StringUtils.isNotBlank( testResult.getStderr() ) //
+            || StringUtils.isNotBlank( testResult.getStdout() );
     }
 
     @Extension
