@@ -171,15 +171,12 @@ public class PipelineNodeImpl extends BluePipelineNode {
     }
 
     @Override
-    public boolean isRestartable()
-    {
+    public boolean isRestartable() {
         RestartDeclarativePipelineAction restartDeclarativePipelineAction =
             this.run.getAction( RestartDeclarativePipelineAction.class );
-        if ( restartDeclarativePipelineAction != null )
-        {
+        if ( restartDeclarativePipelineAction != null ) {
             List<String> restartableStages = restartDeclarativePipelineAction.getRestartableStages();
-            if ( restartableStages != null )
-            {
+            if ( restartableStages != null ) {
                 return restartableStages.contains(this.getDisplayName())
                     && this.getStateObj() == BlueRun.BlueRunState.FINISHED;
             }
@@ -194,12 +191,15 @@ public class PipelineNodeImpl extends BluePipelineNode {
 
     @Override
     public HttpResponse submitInputStep(StaplerRequest request) {
+        return null;
+    }
+
+    public HttpResponse restart(StaplerRequest request) {
         try
         {
             JSONObject body = JSONObject.fromObject( IOUtils.toString( request.getReader() ) );
             boolean restart = body.getBoolean( "restart" );
-            if ( restart && isRestartable() )
-            {
+            if ( restart && isRestartable() ) {
                 LOGGER.debug( "submitInputStep, restart: {}, step: {}", restart, this.getDisplayName() );
 
                 RestartDeclarativePipelineAction restartDeclarativePipelineAction =
@@ -231,20 +231,6 @@ public class PipelineNodeImpl extends BluePipelineNode {
             throw new ServiceException.UnexpectedErrorException( e.getMessage());
         }
         return null;
-    }
-
-    private int findExpectedBuildNumber(Queue.Item item) {
-        try
-        {
-            int number = ((WorkflowJob) item.task).getNextBuildNumber();
-            LOGGER.debug( "findExpectedBuildNumber: {}", number );
-            return number > 0 ? number - 1:1;
-        }
-        catch ( Exception e )
-        {
-            LOGGER.warn( "fail to find expected build number: " + e.getMessage(), e );
-        }
-        return 1;
     }
 
     public static class EdgeImpl extends Edge {

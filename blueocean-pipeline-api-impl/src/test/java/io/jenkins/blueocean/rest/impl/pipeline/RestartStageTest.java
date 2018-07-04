@@ -51,7 +51,7 @@ public class RestartStageTest extends PipelineBaseTest
         Map restartMap = new HashMap( 1 );
         restartMap.put( "restart", true );
         Map restartResult = post( "/organizations/jenkins/pipelines/" + p.getName()
-                                      + "/runs/1/nodes/" + res.get( "id" ) + "/",
+                                      + "/runs/1/nodes/" + res.get( "id" ) + "/restart",
                                   restartMap);
 
         assertEquals( QueuedBlueRun.class.getName(), restartResult.get( "_class" ) );
