@@ -83,6 +83,6 @@ public class RestartStageTest extends PipelineBaseTest
             runResult = get( "/organizations/jenkins/pipelines/" + p.getName() + "/runs/2");
         }
         LOGGER.info( "runResult: {}", runResult );
-        //Assert.assertEquals( "SUCCESS", runResult,get( "result" ) );
+        Assert.assertNotEquals( "FAILURE", runResult.get( "result" ) );
     }
 }
