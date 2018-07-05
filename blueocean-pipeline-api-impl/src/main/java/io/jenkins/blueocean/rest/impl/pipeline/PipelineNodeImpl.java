@@ -214,11 +214,11 @@ public class PipelineNodeImpl extends BluePipelineNode {
                         rsp.getOutputStream().print( Export.toJson( queueItem.toRun() ) );
                     };
                 }
-                WorkflowRun replayedRun = QueueUtil.getRun(run.getParent(), item.getId());
-                if (replayedRun != null) {
+                WorkflowRun restartRun = QueueUtil.getRun(run.getParent(), item.getId());
+                if (restartRun != null) {
                     return ( req, rsp, node1 ) -> {
                         rsp.setStatus( HttpServletResponse.SC_OK );
-                        rsp.getOutputStream().print( Export.toJson( new PipelineRunImpl(replayedRun, parent,
+                        rsp.getOutputStream().print( Export.toJson( new PipelineRunImpl(restartRun, parent,
                                                                                         bluePipeline.getOrganization()) ) );
                     };
                 } else { // For some reason could not be added to the queue
