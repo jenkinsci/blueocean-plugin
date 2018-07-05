@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import hudson.FilePath;
 import hudson.model.Label;
 import io.jenkins.blueocean.service.embedded.rest.QueueItemImpl;
 import io.jenkins.blueocean.service.embedded.rest.QueuedBlueRun;
@@ -29,16 +30,30 @@ public class RestartStageTest extends PipelineBaseTest
         Assert.assertNull( pipeline.get( "latestRun"));
         j.createOnlineSlave( Label.get( "first"));
 
+        FilePath ws = j.jenkins.getWorkspaceFor(p);
+        FilePath noErrorMessageFile = ws.child( "TEST-io.blueocean.NoErrorMessage.xml");
+        noErrorMessageFile.copyFrom(RestartStageTest.class.getResource("TEST-io.blueocean.NoErrorMessage.xml"));
+
+        FilePath stdoutStderrFile = ws.child( "TEST-io.blueocean.StdoutStderr.xml");
+        stdoutStderrFile.copyFrom(RestartStageTest.class.getResource("TEST-io.blueocean.StdoutStderr.xml"));
+
         // Run until completed
         WorkflowRun r = p.scheduleBuild2( 0).waitForStart();
         j.waitForCompletion( r );
 
+        Map runResult = get( "/organizations/jenkins/pipelines/" + p.getName() + "/runs/1");
+        while (runResult.get( "state" ).equals( "RUNNING" )) {
+            runResult = get( "/organizations/jenkins/pipelines/" + p.getName() + "/runs/1");
+        }
+
+        Assert.assertEquals( "SUCCESS", runResult.get( "result" ) );
+
         // Ensure we find stage with restartable flag
         List<Map> resp = get( "/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
-        assertEquals(2, resp.size());
+        assertEquals(10, resp.size());
 
         Optional<Map> optionalMap = resp.stream()
-            .filter( map -> map.get( "displayName" ).equals( "Stage test" ) )
+            .filter( map -> map.get( "displayName" ).equals( "Static Analysis" ) )
             .findFirst();
         assertTrue(optionalMap.isPresent());
 
@@ -46,6 +61,9 @@ public class RestartStageTest extends PipelineBaseTest
         assertEquals( true, res.get( "restartable" ) );
 
         LOGGER.info( "buildNumber: {}", r.getNumber() );
+
+        noErrorMessageFile.delete();
+        stdoutStderrFile.delete();
 
         // restart the stage
         Map restartMap = new HashMap( 1 );
@@ -60,12 +78,11 @@ public class RestartStageTest extends PipelineBaseTest
         // depending on build still in queue or not when guessing the build number
         assertTrue(  id >= r.getNumber());
 
-        //check if buid finished ??
-
-        Map runResult = get( "/organizations/jenkins/pipelines/" + p.getName() + "/runs/2");
+        runResult = get( "/organizations/jenkins/pipelines/" + p.getName() + "/runs/2");
+        while (runResult.get( "state" ).equals( "RUNNING" )) {
+            runResult = get( "/organizations/jenkins/pipelines/" + p.getName() + "/runs/2");
+        }
         LOGGER.info( "runResult: {}", runResult );
-
-
-
+        //Assert.assertEquals( "SUCCESS", runResult,get( "result" ) );
     }
 }
