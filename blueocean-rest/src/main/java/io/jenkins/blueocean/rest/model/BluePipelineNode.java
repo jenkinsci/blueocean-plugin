@@ -2,8 +2,12 @@ package io.jenkins.blueocean.rest.model;
 
 import io.jenkins.blueocean.rest.Navigable;
 import io.jenkins.blueocean.rest.annotation.Capability;
+import org.kohsuke.stapler.HttpResponse;
+import org.kohsuke.stapler.StaplerRequest;
+import org.kohsuke.stapler.WebMethod;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
+import org.kohsuke.stapler.verb.POST;
 
 import java.util.List;
 
@@ -68,6 +72,21 @@ public abstract class BluePipelineNode extends BluePipelineStep {
      */
     @Navigable
     public abstract BluePipelineStepContainer getSteps();
+
+    /**
+     * @return <code>true</code> if the pipeline can be restarted from this node
+     */
+    @Exported
+    public abstract boolean isRestartable();
+
+    /**
+     *
+     * @param request To restart the content must be simple json body with a field <code>restart</code> will value <code>true</code>
+     * @return the response content will be {@link BlueRun}
+     */
+    @POST
+    @WebMethod(name = "restart")
+    public abstract HttpResponse restart( StaplerRequest request);
 
     /**
      * Represents edge of pipeline flow graph
