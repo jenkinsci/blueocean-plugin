@@ -21,6 +21,8 @@ import io.jenkins.blueocean.rest.model.Resource;
 import io.jenkins.blueocean.service.embedded.rest.PipelineContainerImpl;
 import io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl;
 
+import java.util.Collections;
+
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_MATRIX_PROJECT;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.NO_FAVORITE;
 
@@ -73,7 +75,7 @@ public class MatrixProjectImpl extends PipelineFolderImpl {
 
     @Override
     public BluePipelineContainer getPipelines() {
-        return new PipelineContainerImpl(getOrganization(), this.matrixProject, this);
+        return null;
     }
 
     @Override

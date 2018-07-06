@@ -186,7 +186,11 @@ public class PipelineFolderImpl extends BluePipelineFolder {
 
     @Override
     public Iterable<String> getPipelineFolderNames() {
-        return Iterables.transform(getPipelines(), input -> {
+        BluePipelineContainer bluePipelineContainer = getPipelines();
+        if(bluePipelineContainer==null) {
+            return Collections.emptyList();
+        }
+        return Iterables.transform(bluePipelineContainer, input -> {
             if (input != null && input instanceof BluePipelineFolder) {
                 return input.getName();
             }
