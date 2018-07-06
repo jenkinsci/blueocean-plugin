@@ -18,6 +18,7 @@ import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.Resource;
+import io.jenkins.blueocean.service.embedded.rest.PipelineContainerImpl;
 import io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_MATRIX_PROJECT;
@@ -72,7 +73,7 @@ public class MatrixProjectImpl extends PipelineFolderImpl {
 
     @Override
     public BluePipelineContainer getPipelines() {
-        return null;
+        return new PipelineContainerImpl(getOrganization(), this.matrixProject, this);
     }
 
     @Override
