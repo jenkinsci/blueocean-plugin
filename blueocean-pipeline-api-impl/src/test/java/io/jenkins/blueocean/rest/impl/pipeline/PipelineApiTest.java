@@ -17,7 +17,6 @@ import org.jenkinsci.plugins.workflow.test.steps.SemaphoreStep;
 import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
-import org.jvnet.hudson.test.Bug;
 import org.jvnet.hudson.test.Issue;
 import org.kohsuke.stapler.AcceptHeader;
 import org.kohsuke.stapler.export.Exported;
