@@ -1,9 +1,5 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-/**
- * @author Vivek Pandey
- */
-
 import hudson.Extension;
 import hudson.matrix.MatrixProject;
 import hudson.model.Item;
@@ -18,10 +14,7 @@ import io.jenkins.blueocean.rest.model.BluePipelineContainer;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.Resource;
-import io.jenkins.blueocean.service.embedded.rest.PipelineContainerImpl;
 import io.jenkins.blueocean.service.embedded.rest.PipelineFolderImpl;
-
-import java.util.Collections;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.JENKINS_MATRIX_PROJECT;
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.NO_FAVORITE;
