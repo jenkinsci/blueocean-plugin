@@ -78,7 +78,12 @@ public class RestartStageTest extends PipelineBaseTest
         // depending on build still in queue or not when guessing the build number
         assertTrue(  id >= r.getNumber());
 
+        // wait until the build get started
         r = p.getBuildByNumber( 2 );
+        while(r==null){
+            Thread.sleep( 100 );
+            r = p.getBuildByNumber( 2 );
+        }
         j.waitForCompletion( r );
 
         runResult = get( "/organizations/jenkins/pipelines/" + p.getName() + "/runs/2");
