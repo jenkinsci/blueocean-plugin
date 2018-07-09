@@ -4,11 +4,15 @@ import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.io.Resources;
+import com.mashape.unirest.http.Unirest;
 import hudson.FilePath;
 import hudson.model.FreeStyleProject;
+import hudson.model.Label;
 import hudson.model.Result;
 import hudson.model.Run;
+import hudson.model.Slave;
 import hudson.model.queue.QueueTaskFuture;
+import hudson.slaves.EnvironmentVariablesNodeProperty;
 import hudson.util.RunList;
 import io.jenkins.blueocean.listeners.NodeDownstreamBuildAction;
 import jenkins.branch.BranchSource;
@@ -2356,6 +2360,44 @@ public class PipelineNodeTest extends PipelineBaseTest {
         assertEquals("48", steps.get(3).get("id"));
         assertEquals("Wait for interactive input", steps.get(3).get("displayName"));
     }
+
+    @Test
+    @Issue("JENKINS-49050")
+    public void parallelStagesGroupsAndNestedStages() throws Exception {
+        WorkflowJob p = createWorkflowJobWithJenkinsfile( getClass(), "parallelStagesGroupsAndStages.jenkinsfile");
+        Slave s = j.createOnlineSlave();
+        s.setLabelString( "foo" );
+        s.setNumExecutors(4);
+        s.getNodeProperties().add(new EnvironmentVariablesNodeProperty( new EnvironmentVariablesNodeProperty.Entry( "ONAGENT", "true"),new EnvironmentVariablesNodeProperty.Entry("WHICH_AGENT", "second")));
+
+        // Run until completed
+        WorkflowRun run = p.scheduleBuild2( 0).waitForStart();
+        j.waitForCompletion( run );
+
+        Unirest.setTimeouts( 10000, 600000000 );
+        List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
+
+        assertEquals(5, nodes.size());
+    }
+
+
+    @Test
+    public void nestedStagesGroups() throws Exception {
+        WorkflowJob p = createWorkflowJobWithJenkinsfile( getClass(), "nestedStagesGroups.jenkinsfile");
+        Slave s = j.createOnlineSlave();
+        s.setLabelString( "foo" );
+        s.setNumExecutors(4);
+
+        // Run until completed
+        WorkflowRun run = p.scheduleBuild2( 0).waitForStart();
+        j.waitForCompletion( run );
+
+        Unirest.setTimeouts( 10000, 600000000 );
+        List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
+
+        assertEquals(7, nodes.size());
+    }
+
 
     @Test
     public void pipelineLogError() throws Exception {
