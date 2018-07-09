@@ -1,0 +1,48 @@
+
+pipeline {
+    agent any
+    stages {
+        stage("foo") {
+            stages {
+                stage("first") {
+                    stages {
+                        stage("first-inner-first") {
+                            steps {
+                                echo "#1 second-inner-first"
+                                echo "#2 second-inner-first"
+                                echo "#3 second-inner-first"
+                                echo "#4 second-inner-first"
+                            }
+                        }
+                        stage("first-inner-second") {
+                            steps {
+                                echo "first-inner-second"
+                            }
+                        }
+                    }
+
+                }
+                stage("second") {
+                    stages {
+                        stage("second-inner-first") {
+                            steps {
+                                echo "second-inner-first"
+                            }
+                        }
+                        stage("second-inner-second") {
+                            when {
+                                expression {
+                                    return false
+                                }
+                            }
+                            steps {
+                                echo "WE SHOULD NEVER GET HERE"
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+}

@@ -1,0 +1,34 @@
+
+pipeline {
+    agent any
+    stages {
+        stage("foo") {
+            parallel {
+                stage("first") {
+                    steps {
+                        echo "First stage"
+                    }
+                }
+                stage("second") {
+                    stages {
+                        stage("second-inner-first") {
+                            steps {
+                                echo "Second stage"
+                            }
+                        }
+                        stage("second-inner-second") {
+                            when {
+                                expression {
+                                    return false
+                                }
+                            }
+                            steps {
+                                echo "WE SHOULD NEVER GET HERE"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
