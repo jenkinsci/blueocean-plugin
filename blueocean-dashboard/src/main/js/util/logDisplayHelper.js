@@ -61,6 +61,7 @@ export const getNodesInformation = nodes => {
             startTime: item.startTime || undefined,
             result: item.result || undefined,
             state: item.state || undefined,
+            restartable: item.restartable,
             hasLogs,
             logUrl: hasLogs ? logActions[0]._links.self.href : undefined,
             isParallel,
