@@ -77,7 +77,7 @@ class StageRestartLink extends React.Component<Props, State> {
         return (
             <a className="restart-stage" onClick={() => this._onRestartStageClick()}>
                 <RestartStageIcon />
-                {this.props.t('rundetail.logToolbar.restartStage', { 0: this.props.title })}
+                <span>{this.props.t('rundetail.logToolbar.restartStage', { 0: this.props.title })}</span>
             </a>
         );
     }
