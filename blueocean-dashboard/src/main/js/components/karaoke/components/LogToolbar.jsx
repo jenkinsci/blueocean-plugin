@@ -1,6 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { Icon, TimeDuration } from '@jenkins-cd/design-language';
-
 import { UrlUtils } from '@jenkins-cd/blueocean-core-js';
 
 const { string } = PropTypes;

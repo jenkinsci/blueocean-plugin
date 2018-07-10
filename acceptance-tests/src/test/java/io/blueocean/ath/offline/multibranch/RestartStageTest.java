@@ -41,7 +41,7 @@ public class RestartStageTest extends BlueOceanAcceptanceTest {
     MultiBranchPipelineFactory mbpFactory;
 
     /**
-     * This tests the commit messages are being picked up from git and displayed on the run in activity.
+     * This tests the restart stage functionality in the run details screen.
      */
     @Test
     public void restartStageTest() throws IOException, GitAPIException, InterruptedException {
