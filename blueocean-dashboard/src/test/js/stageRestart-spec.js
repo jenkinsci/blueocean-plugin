@@ -38,9 +38,6 @@ describe('Stage Restart', () => {
         //find the restartable stage link
         assert.equal(wrapper.find('a.restart-stage').length, 1);
 
-        //check that the icon gets rendered
-        assert.equal(wrapper.find('a.restart-stage svg').length, 1);
-
         //check that the link text gets rendered in the expected markup
         assert.equal(wrapper.find('a.restart-stage span').text(), 'Restart Stage Title');
     });
