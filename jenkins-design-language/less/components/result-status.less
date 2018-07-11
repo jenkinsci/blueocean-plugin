@@ -14,36 +14,34 @@
 
 .svgResultStatus {
     transform: translateZ(0);
- }
 
-.svgResultStatus circle.success {
-    stroke: none;
-    fill: @brand-success-lite;
-}
+    > circle {
+        stroke: white;
+        stroke-width: 2px;
 
-.svgResultStatus circle.failure {
-    stroke: none;
-    fill: @brand-danger-lite;
-}
+        &.success {
+            fill: @brand-success-lite;
+        }
+        &.failure {
+            fill: @brand-danger-lite;
+        }
+        &.unstable {
+            fill: @brand-warning-lite;
+        }
+        &.aborted {
+            fill: @brand-grey-lite;
+        }
+        &.paused {
+            fill: @brand-paused-lite;
+        }
+        &.unknown {
+            fill: @brand-unknown-lite;
+        }
 
-.svgResultStatus circle.unstable {
-    stroke: none;
-    fill: @brand-warning-lite;
-}
-
-.svgResultStatus circle.aborted {
-    stroke: none;
-    fill: @brand-grey-lite;
-}
-
-.svgResultStatus circle.paused {
-    stroke: none;
-    fill: @brand-paused-lite;
-}
-
-.svgResultStatus circle.unknown {
-    stroke: none;
-    fill: @brand-unknown-lite;
+        .pipeline-node-selected & {
+            stroke: none;
+        }
+    }
 }
 
 .jdl-table td .svgResultStatus {
@@ -316,6 +314,10 @@
 .pipeline-selection-highlight circle {
     fill: none;
     stroke: @brand-primary;
+
+    &.white-highlight {
+        stroke: white;
+    }
 }
 
 //--[ /PipelineGraph ]-----------------------------------------------------------

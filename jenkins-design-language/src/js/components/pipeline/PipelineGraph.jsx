@@ -541,7 +541,7 @@ export class PipelineGraph extends Component {
      */
     renderSelectionHighlight(elements: SVGChildren) {
         const { nodeRadius, connectorStrokeWidth } = this.state.layout;
-        const highlightRadius = nodeRadius + 0.49 * connectorStrokeWidth + 1;
+        const highlightRadius = Math.ceil(nodeRadius + 0.5 * connectorStrokeWidth + 1);
         let selectedNode = null;
 
         columnLoop: for (const column of this.state.nodeColumns) {
@@ -560,6 +560,7 @@ export class PipelineGraph extends Component {
 
             elements.push(
                 <g className="pipeline-selection-highlight" transform={transform} key="selection-highlight">
+                    <circle className="white-highlight" r={highlightRadius - 2} strokeWidth={10} />
                     <circle r={highlightRadius} strokeWidth={2} />
                 </g>
             );
@@ -622,11 +623,11 @@ export class PipelineGraph extends Component {
 
         const visualElements = []; // Buffer for children of the SVG
 
-        this.renderSelectionHighlight(visualElements);
-
         connections.forEach(connection => {
             this.renderCompositeConnection(connection, visualElements);
         });
+
+        this.renderSelectionHighlight(visualElements);
 
         for (const column of nodeColumns) {
             for (const row of column.rows) {

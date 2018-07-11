@@ -49,4 +49,22 @@ export class RunApi {
 
         return Fetch.fetchJSON(replayPipelineUrl, { fetchOptions });
     }
+
+    restartStage(run, nodeId) {
+        const path = UrlConfig.getJenkinsRootURL();
+        const runUrl = run._links.self.href;
+        const restartStageUrl = Utils.cleanSlashes(`${path}/${runUrl}/nodes/${nodeId}/restart`);
+
+        const fetchOptions = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                restart: 'true',
+            }),
+        };
+
+        return Fetch.fetchJSON(restartStageUrl, { fetchOptions });
+    }
 }
