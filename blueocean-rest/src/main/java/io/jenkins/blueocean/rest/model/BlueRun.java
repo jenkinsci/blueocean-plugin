@@ -25,7 +25,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_RUN;
  * @author Vivek Pandey
  */
 @Capability(BLUE_RUN)
-public abstract class BlueRun extends Resource {
+public abstract class BlueRun extends Resource implements BlueItemRun {
     public static final String ORGANIZATION="organization";
     public static final String ID="id";
     public static final String PIPELINE="pipeline";
@@ -207,8 +207,11 @@ public abstract class BlueRun extends Resource {
     /**
      * @return Gives the test summary for this run
      */
-    @Exported(name = TEST_SUMMARY, inline = true, skipNull = true)
+    @Deprecated
     public abstract BlueTestSummary getTestSummary();
+
+    @Navigable
+    public abstract BlueTestSummary getBlueTestSummary();
 
     /**
      * @return Instance of stapler aware instance that can do the following:

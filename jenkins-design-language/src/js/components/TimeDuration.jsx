@@ -10,11 +10,9 @@ import 'moment/min/locales.min';
 type Props = {
     millis: number,
     updatePeriod: number,
-    hint?: string,
     liveUpdate: boolean,
     displayFormat: ?string,
     liveFormat: ?string,
-    hintFormat: ?string,
     locale: ?string,
 };
 
@@ -25,13 +23,10 @@ type State = {
 /**
  * Displays a millisecond duration as text in moment-duration-format's "humanize()" format,
  * e.g. "a few seconds", "2 hours", etc.
- * Also displays tooltip with more precise duration in "mos, days, hours, mins, secs" format.
- * Tooltip text can be overridden via "hint" property.
  * Set liveUpdate=true to tick the duration up as time elapses.
  *
  * Properties:
  * "millis": number or string.
- * "hint": string to use for tooltip.
  * "liveUpdate": boolean
  */
 export class TimeDuration extends Component {
@@ -111,18 +106,13 @@ export class TimeDuration extends Component {
 
         if (!isNaN(millis)) {
             if (millis < 1000) {
-                return <span title={this.props.hint ? this.props.hint : '<1s'}>&#x3C;1s</span>;
+                return <span>&#x3C;1s</span>;
             }
 
             const { locale = 'en', t } = this.props;
-
             const duration = TimeDuration.format(millis, t, locale);
-            const hintFormat = t('common.date.duration.hint.format', { defaultValue: 'M [month], d [days], h[h], m[m], s[s]' });
 
-            moment.locale(locale);
-            const hint = this.props.hint ? this.props.hint : moment.duration(millis).format(hintFormat);
-
-            return <span title={hint}>{duration}</span>;
+            return <span>{duration}</span>;
         }
 
         return <span>-</span>;
@@ -132,7 +122,6 @@ export class TimeDuration extends Component {
 TimeDuration.propTypes = {
     millis: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     updatePeriod: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
-    hint: PropTypes.string,
     liveUpdate: PropTypes.bool,
     locale: PropTypes.string,
     t: PropTypes.func,

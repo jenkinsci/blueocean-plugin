@@ -1,6 +1,5 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Function;
 import com.google.common.base.Optional;
 import com.google.common.cache.Cache;
 import com.google.common.cache.CacheBuilder;
@@ -28,19 +27,19 @@ import io.jenkins.blueocean.rest.model.Container;
 import io.jenkins.blueocean.rest.model.Containers;
 import io.jenkins.blueocean.rest.model.GenericResource;
 import jenkins.util.SystemProperties;
+import org.apache.commons.lang.BooleanUtils;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.kohsuke.stapler.QueryParameter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import javax.annotation.Nullable;
 import java.util.Collection;
 import java.util.Date;
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * Basic {@link BlueRun} implementation.
@@ -52,7 +51,7 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
     public static final String BLUEOCEAN_FEATURE_RUN_DESCRIPTION_ENABLED = "blueocean.feature.run.description.enabled";
 
     public static final DateTimeFormatter DATE_FORMAT = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-    private static final Logger LOGGER = Logger.getLogger(AbstractRunImpl.class.getName());
+    private static final Logger LOGGER = LoggerFactory.getLogger( AbstractRunImpl.class.getName());
 
     private static final long TEST_SUMMARY_CACHE_MAX_SIZE = Long.getLong("TEST_SUMMARY_CACHE_MAX_SIZE", 10000);
     private static final Cache<String, Optional<BlueTestSummary>> TEST_SUMMARY = CacheBuilder.newBuilder()
@@ -99,7 +98,8 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public String getDescription() {
-        return SystemProperties.getBoolean(BLUEOCEAN_FEATURE_RUN_DESCRIPTION_ENABLED, true) ? run.getDescription() : null;
+        String descriptionEnabled = System.getProperty( BLUEOCEAN_FEATURE_RUN_DESCRIPTION_ENABLED, "true" );
+        return BooleanUtils.toBoolean( descriptionEnabled ) ? run.getDescription() : null;
     }
 
     @Override
@@ -230,22 +230,42 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public BlueTestSummary getTestSummary() {
+        return null;
+    }
+
+    @Override
+    public BlueTestSummary getBlueTestSummary() {
+        BlueTestSummary blueTestSummary;
         if (getStateObj() == BlueRunState.FINISHED) {
             try {
-                return TEST_SUMMARY.get(run.getExternalizableId(), new Callable<Optional<BlueTestSummary>>() {
-                    @Override
-                    public Optional<BlueTestSummary> call() throws Exception {
-                        BlueTestSummary summary = BlueTestResultFactory.resolve(run, parent).summary;
-                        return summary == null ? Optional.<BlueTestSummary>absent() : Optional.of(summary);
-                    }
-                }).orNull();
+                blueTestSummary =  TEST_SUMMARY.get(run.getExternalizableId(),  () -> {
+                                            LOGGER.debug( "load test summary {} thread {}", //
+                                                          run.getExternalizableId(), //
+                                                          Thread.currentThread().getName() );
+                                            BlueTestSummary summary = BlueTestResultFactory.resolve(run, parent).summary;
+                                            return summary == null ? Optional.absent() : Optional.of(summary);
+                                        }
+                ).orNull();
             } catch (ExecutionException e) {
-                LOGGER.log(Level.SEVERE, "Could not load summary from cache", e);
+                LOGGER.error("Could not load test summary from cache", e);
                 return null;
             }
         } else {
-            return BlueTestResultFactory.resolve(run, this).summary;
+            blueTestSummary =  BlueTestResultFactory.resolve(run, this).summary;
+            if (blueTestSummary == null) {
+                // Just use an empty one while we wait
+                blueTestSummary = new BlueTestSummary(0,0,0,0,0,0,0,this.getLink());
+            }
         }
+
+        // .../runs/123/blueTestSummary
+        if (blueTestSummary == null)
+        {
+            return null;
+        }
+        Link link = this.getLink().rel("blueTestSummary");
+        blueTestSummary.setLink( link );
+        return blueTestSummary;
     }
 
     public Collection<BlueActionProxy> getActions() {
@@ -371,12 +391,7 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
         }
 
         static Collection<BlueCause> getCauses(Collection<hudson.model.Cause> causes) {
-            return Collections2.transform(causes, new Function<hudson.model.Cause, BlueCause>() {
-                @Override
-                public BlueCause apply(@Nullable hudson.model.Cause input) {
-                    return new BlueCauseImpl(input);
-                }
-            });
+            return causes.stream().map( input -> new BlueCauseImpl(input)).collect(Collectors.toList());
         }
     }
 }

@@ -18,7 +18,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_MULTI_BRANC
  * @author Vivek Pandey
  */
 @Capability(BLUE_MULTI_BRANCH_PIPELINE)
-public abstract class BlueMultiBranchPipeline extends BluePipelineFolder{
+public abstract class BlueMultiBranchPipeline extends BluePipelineFolder implements BlueMultiBranchItem {
     public static final String TOTAL_NUMBER_OF_BRANCHES="totalNumberOfBranches";
     public static final String NUMBER_OF_FAILING_BRANCHES="numberOfFailingBranches";
     public static final String NUMBER_OF_SUCCESSFULT_BRANCHES="numberOfSuccessfulBranches";

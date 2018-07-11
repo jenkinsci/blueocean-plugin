@@ -1,10 +1,11 @@
 package io.jenkins.blueocean.rest.model;
 
+import io.jenkins.blueocean.rest.hal.Link;
 import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 
 @ExportedBean
-public final class BlueTestSummary {
+public final class BlueTestSummary extends Resource {
 
     public static final String TOTAL = "total";
     public static final String SKIPPED = "skipped";
@@ -22,7 +23,11 @@ public final class BlueTestSummary {
     private final long skippedTotal;
     private final long total;
 
-    public BlueTestSummary(long passedTotal, long failedTotal, long fixedTotal, long existingFailedTotal, long regressionsTotal, long skippedTotal, long total) {
+    private final Link parent;
+    private Link selfLink;
+
+    public BlueTestSummary(long passedTotal, long failedTotal, long fixedTotal, long existingFailedTotal,
+                           long regressionsTotal, long skippedTotal, long total, Link parent) {
         this.passedTotal = passedTotal;
         this.failedTotal = failedTotal;
         this.fixedTotal = fixedTotal;
@@ -30,6 +35,7 @@ public final class BlueTestSummary {
         this.regressionsTotal = regressionsTotal;
         this.skippedTotal = skippedTotal;
         this.total = total;
+        this.parent = parent;
     }
 
     @Exported(name = PASSED)
@@ -75,7 +81,19 @@ public final class BlueTestSummary {
             this.existingFailedTotal + summary.existingFailedTotal,
             this.regressionsTotal + summary.regressionsTotal,
             this.skippedTotal + summary.skippedTotal,
-            this.total + summary.total
+            this.total + summary.total,
+             summary.parent
         );
+    }
+
+    @Override
+    public Link getLink()
+    {
+        return this.selfLink == null ? parent.rel( "/blueTestSummary" ) : this.selfLink;
+    }
+
+    public void setLink(Link link)
+    {
+        this.selfLink = link;
     }
 }

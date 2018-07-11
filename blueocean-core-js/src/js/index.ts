@@ -110,3 +110,5 @@ export { LiveStatusIndicator };
 
 import { UrlUtils } from './utils/UrlUtils';
 export { UrlUtils };
+
+export { Model } from './Model';

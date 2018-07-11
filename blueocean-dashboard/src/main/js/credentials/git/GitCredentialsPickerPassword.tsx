@@ -32,7 +32,10 @@ enum RadioOption {
     CREATE_NEW = 'createNew',
 }
 
-const radioOptions = Object.values(RadioOption);
+let radioOptions: string[] = [];
+Object.keys(RadioOption).forEach(function(key) {
+    radioOptions.push(RadioOption[key]);
+});
 
 function getErrorMessage(state: ManagerState) {
     if (state === ManagerState.INVALID_CREDENTIAL) {

@@ -57,7 +57,7 @@ import static org.junit.Assert.fail;
  * @author Vivek Pandey
  */
 public abstract class PipelineBaseTest{
-    private static  final Logger LOGGER = LoggerFactory.getLogger(PipelineBaseTest.class);
+    protected final Logger LOGGER = LoggerFactory.getLogger(getClass());
 
     @BeforeClass
     public static void enableJWT() {

@@ -32,7 +32,7 @@ public class WaitUtil {
 
     public <T> T until(Function<WebDriver, T> function, long timeoutInMS, String errorMessage) {
         try {
-            return new FluentWait<WebDriver>(driver)
+            return new FluentWait<>(driver)
                 .pollingEvery(100, TimeUnit.MILLISECONDS)
                 .withTimeout(timeoutInMS, TimeUnit.MILLISECONDS)
                 .ignoring(NoSuchElementException.class)

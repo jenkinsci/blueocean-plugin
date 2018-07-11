@@ -17,6 +17,7 @@ export default class RunDetailsTests extends Component {
         fetchTypeInfo: PropTypes.func,
         t: PropTypes.func,
         locale: PropTypes.string,
+        testSummary: PropTypes.object,
     };
 
     contextTypes = {
@@ -28,13 +29,20 @@ export default class RunDetailsTests extends Component {
     }
 
     render() {
-        const { t, locale } = this.props;
+        const { t, locale, testSummary } = this.props;
 
         let result;
-        if (this.props.result.testSummary.total || this.props.result.testSummary.total > 0) {
+        if (testSummary && (testSummary.total || testSummary.total > 0)) {
             result = (
                 <div className="test-results-container">
-                    <TestResults locale={locale} t={t} pipeline={this.props.pipeline} run={this.props.result} testService={this.testService} />
+                    <TestResults
+                        locale={locale}
+                        t={t}
+                        pipeline={this.props.pipeline}
+                        run={this.props.result}
+                        testService={this.testService}
+                        testSummary={testSummary}
+                    />
                 </div>
             );
         } else {

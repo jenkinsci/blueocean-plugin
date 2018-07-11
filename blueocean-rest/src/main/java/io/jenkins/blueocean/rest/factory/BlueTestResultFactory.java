@@ -7,6 +7,7 @@ import hudson.ExtensionList;
 import hudson.ExtensionPoint;
 import hudson.model.Run;
 import io.jenkins.blueocean.rest.Reachable;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
 import io.jenkins.blueocean.rest.model.BlueTestSummary;
@@ -67,7 +68,11 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
             long existingFailedTotal = 0;
             long fixedTotal = 0;
             long total = 0;
+            Link parent = null;
             for (BlueTestResult result : results) {
+                if(parent==null) {
+                    parent = result.getLink();
+                }
                 switch (result.getStatus()) {
                     case SKIPPED:
                         skipped++;
@@ -97,7 +102,8 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
             if (total == 0) {
                 return notFound();
             } else {
-                BlueTestSummary summary = new BlueTestSummary(passed, failed, fixedTotal, existingFailedTotal, regressions, skipped, total);
+                BlueTestSummary summary =
+                    new BlueTestSummary(passed, failed, fixedTotal, existingFailedTotal, regressions, skipped, total, parent);
                 return new Result(results, summary);
             }
         }
@@ -112,7 +118,8 @@ public abstract class BlueTestResultFactory implements ExtensionPoint {
 
     public static Result resolve(Run<?,?> run, Reachable parent) {
         Iterable<BlueTestResult> results = ImmutableList.of();
-        BlueTestSummary summary = new BlueTestSummary(0, 0, 0, 0, 0, 0, 0);
+        BlueTestSummary summary = new BlueTestSummary(0, 0, 0, 0, 0, 0, 0, //
+                                                      parent == null ? null : parent.getLink());
         for (BlueTestResultFactory factory : allFactories()) {
             Result result = factory.getBlueTestResults(run, parent);
             if (result != null && result.results != null && result.summary != null) {

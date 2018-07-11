@@ -1,7 +1,7 @@
 package io.jenkins.blueocean.service.embedded.rest;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.Extension;
 import hudson.model.AbstractItem;
 import hudson.model.Item;
@@ -185,15 +185,17 @@ public class PipelineFolderImpl extends BluePipelineFolder {
     }
 
     @Override
+    @SuppressFBWarnings(value = "RCN_REDUNDANT_NULLCHECK_OF_NONNULL_VALUE", justification = "getPipelines() can definitely be null see MatrixProjectImpl so findbugs is wrong...")
     public Iterable<String> getPipelineFolderNames() {
-        return Iterables.transform(getPipelines(), new Function<BluePipeline, String>() {
-            @Override
-            public String apply(@Nullable BluePipeline input) {
-                if (input != null && input instanceof BluePipelineFolder) {
-                    return input.getName();
-                }
-                return null;
+        BluePipelineContainer bluePipelineContainer = getPipelines();
+        if(bluePipelineContainer==null) {
+            return Collections.emptyList();
+        }
+        return Iterables.transform(bluePipelineContainer, input -> {
+            if (input != null && input instanceof BluePipelineFolder) {
+                return input.getName();
             }
+            return null;
         });
     }
 

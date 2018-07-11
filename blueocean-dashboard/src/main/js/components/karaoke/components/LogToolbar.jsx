@@ -6,7 +6,7 @@ const { string } = PropTypes;
 
 export default class LogToolbar extends Component {
     render() {
-        const { url, title, duration, t, running } = this.props;
+        const { url, title, duration, t, running, stageRestartLink } = this.props;
 
         // early out
         if (!url) {
@@ -26,6 +26,7 @@ export default class LogToolbar extends Component {
                     )}
                 </div>
                 <div className="log-header__section download-log-button">
+                    {stageRestartLink}
                     <a
                         {...{
                             title: 'Display the log in new window',
@@ -57,4 +58,5 @@ LogToolbar.propTypes = {
     duration: PropTypes.oneOfType([PropTypes.number, PropTypes.string]),
     t: PropTypes.func,
     running: PropTypes.bool,
+    stageRestartLink: PropTypes.element,
 };

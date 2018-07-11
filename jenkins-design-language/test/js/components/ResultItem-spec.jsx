@@ -6,38 +6,39 @@ import '../utils/rAf';
 import { ResultItem } from '../../../src/js/components';
 
 describe('ResultItem', () => {
-
     describe('expanded prop', () => {
         it('is visible when expanded=true', () => {
-            const wrapper = shallow(<ResultItem result="success" label="Label" expanded={true}>Contents</ResultItem>);
+            const wrapper = shallow(
+                <ResultItem result="success" label="Label" expanded={true}>
+                    Contents
+                </ResultItem>
+            );
 
             assert.isTrue(wrapper.contains('Contents'));
         });
 
         it('is hidden when expanded=false', () => {
-            const wrapper = shallow(<ResultItem result="success" label="Label" expanded={false}>Contents</ResultItem>);
+            const wrapper = shallow(
+                <ResultItem result="success" label="Label" expanded={false}>
+                    Contents
+                </ResultItem>
+            );
 
             assert.isFalse(wrapper.contains('Contents'));
         });
 
         it('is hidden by default', () => {
-            const wrapper = shallow(<ResultItem result="success" label="Label">Contents</ResultItem>);
+            const wrapper = shallow(
+                <ResultItem result="success" label="Label">
+                    Contents
+                </ResultItem>
+            );
 
             assert.isFalse(wrapper.contains('Contents'));
         });
     });
 
-    describe('icon animation', () => {
-        it('icon is animating while running', () => {
-            const wrapper = shallow(<ResultItem result="running" label="Label" expanded={false}>Contents</ResultItem>);
-
-            wrapper.setState({ infiniteRotateDegrees: '1' });
-            assert.equal(wrapper.find('.result-status-glyph > g').prop('transform'), 'rotate(1)');
-        });
-    });
-
     describe('url handling', () => {
-
         const component = (
             // <ResultItem result="success" label="Foo bar baz"/>
             <ResultItem result="success" label="Foo http://example.org/deezNuts/ bar example.com baz" />
@@ -54,5 +55,4 @@ describe('ResultItem', () => {
             assert.isFalse(html.indexOf('bar example.com baz') === -1, 'example.com should not become a link');
         });
     });
-
 });

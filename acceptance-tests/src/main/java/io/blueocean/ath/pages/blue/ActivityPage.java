@@ -133,6 +133,7 @@ public class ActivityPage {
 
     public void checkBasicDomElements() {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.cssSelector("article.activity")));
+        logger.info("checkBasicDomElements: Activity tab found");
     }
 
     public void checkFavoriteStatus(boolean isFavorited) {

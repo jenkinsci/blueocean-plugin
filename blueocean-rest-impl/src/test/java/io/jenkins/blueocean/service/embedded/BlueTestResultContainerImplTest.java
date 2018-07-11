@@ -8,6 +8,7 @@ import hudson.tasks.junit.TestResultAction;
 import io.jenkins.blueocean.commons.ServiceException.NotFoundException;
 import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.BlueTestResultFactory;
+import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BlueTestResult;
 import io.jenkins.blueocean.rest.model.BlueTestResult.State;
 import io.jenkins.blueocean.rest.model.BlueTestResult.Status;
@@ -181,6 +182,18 @@ public class BlueTestResultContainerImplTest extends BaseTest {
             @Override
             protected String getUniqueId() {
                 return name;
+            }
+
+            @Override
+            public boolean hasStdLog()
+            {
+                return false;
+            }
+
+            @Override
+            public Link getLink()
+            {
+                return new Link( getName() );
             }
         }
     }

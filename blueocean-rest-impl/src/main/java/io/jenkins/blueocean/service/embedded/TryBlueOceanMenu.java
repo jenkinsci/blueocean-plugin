@@ -41,39 +41,21 @@ public class TryBlueOceanMenu extends TransientActionFactory<ModelObject> {
     public Collection<? extends Action> createFor(@Nonnull ModelObject target) {
         // we do not report actions as it might appear multiple times, we simply add it to Actionable
         BlueOceanUrlObjectFactory f = getFirst();
-        if(f != null){
+        if(f != null) {
+            // TODO remove this if block once we are using a core > 2.126
+            // Work around JENKINS-51584
+            if (target instanceof hudson.model.Queue.Item) {
+                return Collections.emptyList();
+            }
             BlueOceanUrlObject blueOceanUrlObject = f.get(target);
             BlueOceanUrlAction a = new BlueOceanUrlAction(blueOceanUrlObject);
-            if(target instanceof Actionable){
-                if(exists((Actionable) target, a)){
-                    return Collections.emptyList();
-                }
-                try {
-                    // Possibly not needed. Maybe only needed if there is a bug in exists(). Which
-                    // thee was. Unsure exactly how this code works so leaving it in
-                    ((Actionable) target).removeActions(BlueOceanUrlAction.class);
-                }catch (Throwable e){
-                    //ignore, replace is not supported
-                    //JENKINS-44964 sometimes replaceAction will fail because one of the actions inserted is null
-                    //only seen in the wild when the maven plugin is available
-                }
-                return Collections.singleton(a);
-            }
+            return Collections.singleton(a);
         }
         return Collections.emptyList();
     }
 
-    private boolean exists(Actionable actionable, BlueOceanUrlAction blueOceanUrlAction){
-        for(Action a: actionable.getActions()) {
-            // JENKINS-44926 only call getURLName on these actions if action is BLueOceanUrlAction
-            if (a instanceof BlueOceanUrlAction) {
-                String blueUrl  = blueOceanUrlAction.getUrlName();
-                String thisUrl = a.getUrlName();
-                if(thisUrl != null && thisUrl.equals(blueUrl)){
-                    return true;
-                }
-            }
-        }
-        return false;
+    @Override
+    public Class<? extends Action> actionType() {
+        return BlueOceanUrlAction.class;
     }
 }

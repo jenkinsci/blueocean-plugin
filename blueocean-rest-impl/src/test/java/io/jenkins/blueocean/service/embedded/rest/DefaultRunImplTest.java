@@ -19,17 +19,10 @@ public class DefaultRunImplTest {
 
     @Test
     public void unknownRunTypeResolvesToDefaultRunImpl() throws Exception {
-        Reachable parent = new Reachable() {
-            @Override
-            public Link getLink() {
-                return new Link("foo");
-            }
-        };
-
         Run run = mock(Run.class);
         when(run.getParent()).thenReturn(j.createFreeStyleProject());
 
-        BlueRun blueRun = BlueRunFactory.getRun(run, parent);
+        BlueRun blueRun = BlueRunFactory.getRun(run, () -> new Link("foo"));
         Assert.assertNotNull(blueRun);
         Assert.assertTrue(blueRun instanceof DefaultRunImpl);
     }

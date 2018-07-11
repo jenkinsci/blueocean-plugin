@@ -46,12 +46,9 @@ public class BlueTestResultContainerImpl extends BlueTestResultContainer {
         if (resolved.summary == null || resolved.results == null) {
             throw new NotFoundException("no tests");
         }
-        BlueTestResult testResult = Iterables.find(resolved.results, new Predicate<BlueTestResult>() {
-            @Override
-            public boolean apply(@Nullable BlueTestResult input) {
-                return input != null && input.getId().equals(name);
-            }
-        }, null);
+        BlueTestResult testResult = Iterables.find(resolved.results, //
+                                                   input -> input != null && input.getId().equals(name), //
+                                                   null);
         if (testResult == null) {
             throw new NotFoundException("not found");
         }

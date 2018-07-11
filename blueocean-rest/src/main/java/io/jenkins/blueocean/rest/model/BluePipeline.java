@@ -21,7 +21,7 @@ import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE;
  * @author Vivek Pandey
  */
 @Capability(BLUE_PIPELINE)
-public abstract class BluePipeline extends Resource {
+public abstract class BluePipeline extends Resource implements BluePipelineItem, BlueRunnableItem, BlueManagedSource {
     public static final String ORGANIZATION="organization";
     public static final String NAME="name";
     public static final String DISPLAY_NAME="displayName";

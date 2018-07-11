@@ -90,33 +90,4 @@ export class CredentialsApi {
 
         return this._fetch(requestUrl, { fetchOptions });
     }
-
-    saveSystemSSHCredential(id, description) {
-        const requestUrl = getCredentialsUrl(this.organization);
-
-        const requestBody = {
-            credentials: {
-                $class: 'com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey',
-                id,
-                description,
-                scope: SCOPE,
-                domain: DOMAIN,
-                username: null,
-                passphrase: null,
-                privateKeySource: {
-                    'stapler-class': 'com.cloudbees.jenkins.plugins.sshcredentials.impl.BasicSSHUserPrivateKey$UsersPrivateKeySource',
-                },
-            },
-        };
-
-        const fetchOptions = {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(requestBody),
-        };
-
-        return this._fetch(requestUrl, { fetchOptions });
-    }
 }
