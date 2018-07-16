@@ -62,6 +62,9 @@ public class PipelineActivityStatePreloader extends RESTFetchPreloader {
             // saving the frontend the overhead of requesting them.
 
             Container<BlueRun> activitiesContainer = pipeline.getRuns();
+            if(activitiesContainer==null){
+                return null;
+            }
             Iterator<BlueRun> activitiesIterator = activitiesContainer.iterator(0, DEFAULT_LIMIT);
             JSONArray activities = new JSONArray();
 
