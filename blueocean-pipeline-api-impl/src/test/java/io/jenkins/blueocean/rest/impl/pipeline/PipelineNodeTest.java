@@ -64,6 +64,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
     @BeforeClass
     public static void setupStatic() throws Exception {
         System.setProperty("NODE-DUMP-ENABLED", "true");//tests node dump code path, also helps debug test failure
+        Unirest.setTimeouts( 10000, 600000000 );
     }
 
     @Test
@@ -2367,17 +2368,19 @@ public class PipelineNodeTest extends PipelineBaseTest {
         WorkflowJob p = createWorkflowJobWithJenkinsfile( getClass(), "parallelStagesGroupsAndStages.jenkinsfile");
         Slave s = j.createOnlineSlave();
         s.setLabelString( "foo" );
-        s.setNumExecutors(4);
-        s.getNodeProperties().add(new EnvironmentVariablesNodeProperty( new EnvironmentVariablesNodeProperty.Entry( "ONAGENT", "true"),new EnvironmentVariablesNodeProperty.Entry("WHICH_AGENT", "second")));
+        s.setNumExecutors(2);
 
         // Run until completed
         WorkflowRun run = p.scheduleBuild2( 0).waitForStart();
         j.waitForCompletion( run );
 
-        Unirest.setTimeouts( 10000, 600000000 );
-        List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
+        PipelineNodeGraphVisitor pipelineNodeGraphVisitor = new PipelineNodeGraphVisitor( run );
 
-        assertEquals(5, nodes.size());
+        List<FlowNodeWrapper> wrappers = pipelineNodeGraphVisitor.getPipelineNodes();
+        assertEquals(7, wrappers.size());
+
+        List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
+        assertEquals(7, nodes.size());
     }
 
 
@@ -2398,6 +2401,26 @@ public class PipelineNodeTest extends PipelineBaseTest {
         assertEquals(7, nodes.size());
     }
 
+    @Test
+    @Issue("JENKINS-49050")
+    public void parallelStagesNonNested() throws Exception {
+        WorkflowJob p = createWorkflowJobWithJenkinsfile( getClass(), "parallelStagesNonNested.jenkinsfile");
+        Slave s = j.createOnlineSlave();
+        s.setLabelString( "foo" );
+        s.setNumExecutors(2);
+
+        // Run until completed
+        WorkflowRun run = p.scheduleBuild2( 0).waitForStart();
+        j.waitForCompletion( run );
+
+        PipelineNodeGraphVisitor pipelineNodeGraphVisitor = new PipelineNodeGraphVisitor( run );
+
+        List<FlowNodeWrapper> wrappers = pipelineNodeGraphVisitor.getPipelineNodes();
+        assertEquals(3, wrappers.size());
+
+        List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
+        assertEquals(3, nodes.size());
+    }
 
     @Test
     public void pipelineLogError() throws Exception {

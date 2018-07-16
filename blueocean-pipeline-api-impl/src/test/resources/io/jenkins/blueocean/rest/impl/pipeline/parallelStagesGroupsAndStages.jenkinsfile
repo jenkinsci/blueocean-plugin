@@ -2,28 +2,32 @@
 pipeline {
     agent any
     stages {
-        stage("foo") {
+        stage("top") {
             parallel {
                 stage("first") {
-                    steps {
-                        echo "First stage"
+                    stages {
+                        stage("first-inner-first") {
+                            steps {
+                                echo "stage first-inner-first"
+                            }
+                        }
+                        stage("first-inner-second") {
+                            steps {
+                                echo "stage first-inner-second"
+                            }
+                        }
                     }
                 }
                 stage("second") {
                     stages {
                         stage("second-inner-first") {
                             steps {
-                                echo "Second stage"
+                                echo "stage second-inner-first"
                             }
                         }
                         stage("second-inner-second") {
-                            when {
-                                expression {
-                                    return false
-                                }
-                            }
                             steps {
-                                echo "WE SHOULD NEVER GET HERE"
+                                echo "stage second-inner-second"
                             }
                         }
                     }

@@ -1,8 +1,7 @@
-
 pipeline {
     agent any
     stages {
-        stage("foo") {
+        stage("top") {
             stages {
                 stage("first") {
                     stages {
