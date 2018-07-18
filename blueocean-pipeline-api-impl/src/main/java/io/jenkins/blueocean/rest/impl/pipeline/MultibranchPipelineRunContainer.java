@@ -86,7 +86,11 @@ public class MultibranchPipelineRunContainer extends BlueRunContainer{
         }
 
         for (final BluePipeline b : branches) {
-            Iterator<BlueRun> it = b.getRuns().iterator(0, MAX_MBP_RUNS_ROWS);
+            BlueRunContainer blueRunContainer = b.getRuns();
+            if(blueRunContainer==null){
+                continue;
+            }
+            Iterator<BlueRun> it = blueRunContainer.iterator(0, MAX_MBP_RUNS_ROWS);
             int count = 0;
             Utils.skip(it, start);
             while (it.hasNext() && count++ < limit) {
@@ -136,7 +140,11 @@ public class MultibranchPipelineRunContainer extends BlueRunContainer{
             if (!retries[i]) {
                 continue;
             }
-            Iterator<BlueRun> it = b.getRuns().iterator(startIndexes[i], limits[i]);
+            BlueRunContainer blueRunContainer = b.getRuns();
+            if(blueRunContainer==null){
+                continue;
+            }
+            Iterator<BlueRun> it = blueRunContainer.iterator(startIndexes[i], limits[i]);
             int lcount = 0;
             while (it.hasNext() && count < remainingCount) {
                 lcount++;

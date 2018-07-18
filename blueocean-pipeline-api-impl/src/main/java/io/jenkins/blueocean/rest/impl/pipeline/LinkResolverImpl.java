@@ -10,6 +10,7 @@ import io.jenkins.blueocean.rest.model.BluePipeline;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import io.jenkins.blueocean.rest.model.BlueRunContainer;
 import io.jenkins.blueocean.rest.model.Resource;
 import org.jenkinsci.plugins.workflow.cps.nodes.StepAtomNode;
 import org.jenkinsci.plugins.workflow.graph.FlowNode;
@@ -67,7 +68,8 @@ public class LinkResolverImpl extends LinkResolver {
         Resource resource = BluePipelineFactory.resolve(run.getParent());
         if(resource instanceof BluePipeline){
             BluePipeline pipeline = (BluePipeline) resource;
-            return pipeline.getRuns().get(run.getId());
+            BlueRunContainer blueRunContainer = pipeline.getRuns();
+            return blueRunContainer == null ? null : blueRunContainer.get(run.getId());
         }
         return null;
     }

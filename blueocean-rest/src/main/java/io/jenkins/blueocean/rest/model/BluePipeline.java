@@ -8,6 +8,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.json.JsonBody;
 import org.kohsuke.stapler.verb.PUT;
 
+import javax.annotation.CheckForNull;
 import javax.annotation.Nonnull;
 import java.util.Collection;
 import java.util.List;
@@ -112,8 +113,7 @@ public abstract class BluePipeline extends Resource implements BluePipelineItem,
      * @return Gives Runs in this pipeline
      */
     @Navigable
-    public abstract BlueRunContainer getRuns();
-
+    public abstract @CheckForNull BlueRunContainer getRuns();
 
     /**
      *
