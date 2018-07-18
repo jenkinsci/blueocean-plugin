@@ -15,6 +15,8 @@ import hudson.model.queue.QueueTaskFuture;
 import hudson.slaves.EnvironmentVariablesNodeProperty;
 import hudson.util.RunList;
 import io.jenkins.blueocean.listeners.NodeDownstreamBuildAction;
+import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import jenkins.branch.BranchSource;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
@@ -2377,7 +2379,10 @@ public class PipelineNodeTest extends PipelineBaseTest {
         PipelineNodeGraphVisitor pipelineNodeGraphVisitor = new PipelineNodeGraphVisitor( run );
 
         List<FlowNodeWrapper> wrappers = pipelineNodeGraphVisitor.getPipelineNodes();
-        assertEquals(7, wrappers.size());
+
+        List<BluePipelineNode> bluePipelineNodes = pipelineNodeGraphVisitor.getPipelineNodes( new Link( "href") );
+
+        assertEquals(5, wrappers.size());
 
         List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
         assertEquals(7, nodes.size());

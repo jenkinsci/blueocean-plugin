@@ -11,11 +11,11 @@ pipeline {
                                 echo "stage first-inner-first"
                             }
                         }
-                        stage("first-inner-second") {
+                        /*stage("first-inner-second") {
                             steps {
                                 echo "stage first-inner-second"
                             }
-                        }
+                        }*/
                     }
                 }
                 stage("second") {
@@ -25,11 +25,11 @@ pipeline {
                                 echo "stage second-inner-first"
                             }
                         }
-                        stage("second-inner-second") {
+                        /*stage("second-inner-second") {
                             steps {
                                 echo "stage second-inner-second"
                             }
-                        }
+                        }*/
                     }
                 }
             }

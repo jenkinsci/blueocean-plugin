@@ -6,6 +6,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import org.apache.commons.lang.StringUtils;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
@@ -239,9 +240,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         accumulatePipelineActions(chunk.getFirstNode());
         stage.setPipelineActions(drainPipelineActions());
         nodes.push(stage);
-        if(nestedStage) {
-            nestedStages.add(stage.getNode());
-        }
+//        if(nestedStage) {
+//            nestedStages.add(stage.getNode());
+//        }
         nodeMap.put(stage.getId(), stage);
         if(!skippedStage && !parallelBranches.isEmpty()){
             Iterator<FlowNodeWrapper> branches = parallelBranches.descendingIterator();
@@ -348,9 +349,19 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
             //if edges only 1 and type stage same display name and check id only this parent and child
             //    --> remove stage!!!
-
+            if(p.edges.size()==1){
+                FlowNodeWrapper child = p.edges.get( 0 );
+                if(StringUtils.equals(child.getDisplayName(),p.getDisplayName())
+                    && child.getType() == FlowNodeWrapper.NodeType.STAGE
+                    && child.getParents().size() == 1
+                    && StringUtils.equals(child.getParents().get(0).getId(), p.getId())){
+                    // so we remove the node with STAGE as type as it's a duplicate of the parallel on
+                    nodes.remove( child );
+                }
+            }
             nodes.push(p);
             nodeMap.put(p.getId(), p);
+
         }
 
         //reset parallelEnd node for next parallel block
@@ -396,9 +407,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             }
         }
         parallelBranchEndNodes.add(branchEndNode);
-        if (!parallelBranchStartNodes.isEmpty()) {
-            parallelBranchStartNodes.pop();
-        }
+//        if (!parallelBranchStartNodes.isEmpty()) {
+//            parallelBranchStartNodes.pop();
+//        }
     }
 
     @Override
