@@ -12,6 +12,7 @@ import CreatePipelineLink from './CreatePipelineLink';
 import PipelineRowItem from './PipelineRowItem';
 import { DashboardPlaceholder } from './placeholder/DashboardPlaceholder';
 import updateGetParam from '../util/UpdateGetParam';
+import { DashboardCards } from '../favorites/components/DashboardCards';
 
 const translate = i18nTranslator('blueocean-dashboard');
 
@@ -158,7 +159,7 @@ export class Pipelines extends Component {
                 <main>
                     <article>
                         {!this.getSearchText() && (
-                            <Extensions.Renderer extensionPoint="jenkins.pipeline.list.top" store={this.context.store} router={this.context.router} />
+                            <DashboardCards router={this.context.router} />
                         )}
                         {showEmptyState && <DashboardPlaceholder t={translate} />}
                         {!this.pager.pending &&

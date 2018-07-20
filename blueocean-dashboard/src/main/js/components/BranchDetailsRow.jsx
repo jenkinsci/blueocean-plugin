@@ -7,7 +7,7 @@ import { observer } from 'mobx-react';
 import RunMessageCell from './RunMessageCell';
 import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import RunHistoryButton from './RunHistoryButton';
-
+import { FavoritePipeline } from '../favorites/components/FavoritePipeline';
 const { sortByOrdinal } = Extensions.Utils;
 
 function noRun(branch, openRunDetails, t, store, columns) {
@@ -15,7 +15,7 @@ function noRun(branch, openRunDetails, t, store, columns) {
     const statusIndicator = <LiveStatusIndicator result="NOT_BUILT" />;
     const actions = [
         <RunButton className="icon-button" runnable={branch} onNavigation={openRunDetails} />,
-        <Extensions.Renderer extensionPoint="jenkins.pipeline.branches.list.action" filter={sortByOrdinal} pipeline={branch} store={store} {...t} />,
+        <FavoritePipeline filter={sortByOrdinal} pipeline={branch} {...t} />,
     ];
 
     return <BranchDetailsRowRenderer columns={columns} branchName={cleanBranchName} statusIndicator={statusIndicator} actions={actions} />;
@@ -125,11 +125,9 @@ export class BranchDetailsRow extends Component {
             <div className="actions-container">
                 <RunButton className="icon-button" runnable={branch} latestRun={branch.latestRun} onNavigation={openRunDetails} />
                 <RunHistoryButton pipeline={pipeline} branchName={branch.name} t={t} />
-                <Extensions.Renderer
-                    extensionPoint="jenkins.pipeline.branches.list.action"
+                <FavoritePipeline
                     filter={sortByOrdinal}
                     pipeline={branch}
-                    store={this.context.store}
                     {...t}
                 />
             </div>
