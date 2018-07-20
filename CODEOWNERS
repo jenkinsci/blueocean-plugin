@@ -3,7 +3,7 @@
 # See: https://github.com/blog/2392-introducing-code-owners for details
 
 # We need to keep tight control on dependencies
-pom.xml    @vivek @michaelneale @kzantow
+pom.xml    @vivek @michaelneale @kzantow @jennbriden
 
 # Jenkins design language is used outside of blue ocean repo, so want to watch changes closely for approval
 jenkins-design-language/*   @kzantow @scherler
