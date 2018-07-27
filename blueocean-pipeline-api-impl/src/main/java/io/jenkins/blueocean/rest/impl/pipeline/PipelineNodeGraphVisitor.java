@@ -8,6 +8,7 @@ import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import org.apache.commons.lang3.StringUtils;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
@@ -49,6 +50,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Stack;
+import java.util.stream.Collectors;
 
 /**
  * @author Vivek Pandey
@@ -354,10 +356,15 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                     parallelBranches.push(branch);
                     continue;
                 }
+                // if name is different it's not a dummy 'duplicate' stage with the same name so let's add it to the graph
+                if(!StringUtils.equals( flowNodeWrapper.getDisplayName(), branch.getDisplayName())){
+                    branch.addEdge(flowNodeWrapper);
+                    flowNodeWrapper.addParent(branch);
+                    nodes.add(flowNodeWrapper);
+                }
                 flowNodeWrapper = stack.pop();
                 // here we rebuild parent/edge relation
                 branch.addEdge(flowNodeWrapper);
-                //flowNodeWrapper.getParents().clear();
                 flowNodeWrapper.addParent(branch);
                 nodes.add(flowNodeWrapper);
                 stack.stream().forEach(nodeWrapper->{
@@ -373,12 +380,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
 
         FlowNodeWrapper[] sortedBranches = parallelBranches.toArray(new FlowNodeWrapper[parallelBranches.size()]);
-        Arrays.sort(sortedBranches, new Comparator<FlowNodeWrapper>() {
-            @Override
-            public int compare(FlowNodeWrapper o1, FlowNodeWrapper o2) {
-                return o1.getDisplayName().compareTo(o2.getDisplayName());
-            }
-        });
+        Arrays.sort(sortedBranches, Comparator.comparing(FlowNodeWrapper::getDisplayName));
 
         parallelBranches.clear();
         for(int i=0; i< sortedBranches.length; i++){
@@ -501,16 +503,9 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
     @Override
     public List<BluePipelineNode> getPipelineNodes(final Link parent) {
-        List<BluePipelineNode> nodes = new ArrayList<>();
-        for(FlowNodeWrapper n: this.nodes){
-            nodes.add(new PipelineNodeImpl(n,new Reachable() {
-                @Override
-                public Link getLink() {
-                    return parent;
-                }
-            }, run));
-        }
-        return nodes;
+        return this.nodes.stream()
+            .map( n -> new PipelineNodeImpl(n, () ->  parent, run))
+            .collect( Collectors.toList() );
     }
 
     @Override
@@ -522,24 +517,21 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
         DepthFirstScanner depthFirstScanner = new DepthFirstScanner();
         //If blocked scope, get the end node
-        FlowNode n = depthFirstScanner.findFirstMatch(execution.getCurrentHeads(), new Predicate<FlowNode>() {
-            @Override
-            public boolean apply(@Nullable FlowNode input) {
-                return (input!= null && input.getId().equals(nodeId) &&
-                    (PipelineNodeUtil.isStage(input) || PipelineNodeUtil.isParallelBranch(input)));
-            }
-        });
+        FlowNode n = depthFirstScanner
+                        .findFirstMatch(execution.getCurrentHeads(),
+                            input -> (input!= null
+                                    && input.getId().equals(nodeId)
+                                    && (PipelineNodeUtil.isStage(input) || PipelineNodeUtil.isParallelBranch(input))));
 
         if(n == null){ //if no node found or the node is not stage or parallel we return empty steps
             return Collections.emptyList();
         }
         PipelineStepVisitor visitor = new PipelineStepVisitor(run, n);
         ForkScanner.visitSimpleChunks(execution.getCurrentHeads(), visitor, new StageChunkFinder());
-        List<BluePipelineStep> steps = new ArrayList<>();
-        for(FlowNodeWrapper node: visitor.getSteps()){
-            steps.add(new PipelineStepImpl(node, parent));
-        }
-        return steps;
+        return visitor.getSteps()
+            .stream()
+            .map( node -> new PipelineStepImpl(node, parent))
+            .collect( Collectors.toList() );
     }
 
     @Override
@@ -550,11 +542,10 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
         PipelineStepVisitor visitor = new PipelineStepVisitor(run, null);
         ForkScanner.visitSimpleChunks(execution.getCurrentHeads(), visitor, new StageChunkFinder());
-        List<BluePipelineStep> steps = new ArrayList<>();
-        for(FlowNodeWrapper node: visitor.getSteps()){
-            steps.add(new PipelineStepImpl(node, parent));
-        }
-        return steps;
+        return visitor.getSteps()
+            .stream()
+            .map( node -> new PipelineStepImpl(node, parent))
+            .collect( Collectors.toList() );
     }
 
     @Override
@@ -643,12 +634,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }
         List<BluePipelineNode> newNodes = new ArrayList<>();
         for(FlowNodeWrapper n: currentNodes){
-            newNodes.add(new PipelineNodeImpl(n,new Reachable() {
-                @Override
-                public Link getLink() {
-                    return parent;
-                }
-            },run));
+            newNodes.add(new PipelineNodeImpl(n,() -> parent,run));
         }
         return newNodes;
     }

@@ -489,12 +489,12 @@ public class PipelineNodeTest extends PipelineBaseTest {
         List<FlowNode> stages = getStages(builder);
         List<FlowNode> parallels = getParallelNodes(builder);
 
-        Assert.assertEquals(4, stages.size());
+        Assert.assertEquals(5, stages.size());
         Assert.assertEquals(3, parallels.size());
 
         //TODO: complete test
         List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
-        Assert.assertEquals(7, resp.size());
+        Assert.assertEquals(8, resp.size());
 
         String testStageId=null;
 
@@ -514,29 +514,34 @@ public class PipelineNodeTest extends PipelineBaseTest {
                 Assert.assertEquals(1, edges.size());
                 Assert.assertEquals(rn.get("result"), "SUCCESS");
                 Assert.assertEquals(rn.get("state"), "FINISHED");
-            }else if(rn.get("displayName").equals("test")){
+            }else if(rn.get("displayName").equals("Packaging")){
                 Assert.assertEquals(2, i);
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("test")){
+                Assert.assertEquals(3, i);
                 testStageId = (String) rn.get("id");
                 Assert.assertEquals(3, edges.size());
                 Assert.assertEquals(rn.get("result"), "SUCCESS");
                 Assert.assertEquals(rn.get("state"), "FINISHED");
             }else if(rn.get("displayName").equals("firstBranch")){
-                Assert.assertEquals(3, i);
-                Assert.assertEquals(1, edges.size());
-                Assert.assertEquals(rn.get("result"), "SUCCESS");
-                Assert.assertEquals(rn.get("state"), "FINISHED");
-            }else if(rn.get("displayName").equals("secondBranch")){
                 Assert.assertEquals(4, i);
                 Assert.assertEquals(1, edges.size());
                 Assert.assertEquals(rn.get("result"), "SUCCESS");
                 Assert.assertEquals(rn.get("state"), "FINISHED");
-            }else if(rn.get("displayName").equals("thirdBranch")){
+            }else if(rn.get("displayName").equals("secondBranch")){
                 Assert.assertEquals(5, i);
                 Assert.assertEquals(1, edges.size());
                 Assert.assertEquals(rn.get("result"), "SUCCESS");
                 Assert.assertEquals(rn.get("state"), "FINISHED");
-            }else if(rn.get("displayName").equals("deploy")){
+            }else if(rn.get("displayName").equals("thirdBranch")){
                 Assert.assertEquals(6, i);
+                Assert.assertEquals(1, edges.size());
+                Assert.assertEquals(rn.get("result"), "SUCCESS");
+                Assert.assertEquals(rn.get("state"), "FINISHED");
+            }else if(rn.get("displayName").equals("deploy")){
+                Assert.assertEquals(7, i);
                 Assert.assertEquals(0, edges.size());
                 Assert.assertEquals(rn.get("result"), "SUCCESS");
                 Assert.assertEquals(rn.get("state"), "FINISHED");
@@ -2507,12 +2512,13 @@ public class PipelineNodeTest extends PipelineBaseTest {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
         job1.setDefinition(new CpsFlowDefinition(script, false));
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
-        j.assertBuildStatus(Result.SUCCESS, b1);
+        WorkflowRun run = j.waitForCompletion( b1 );
+        j.assertBuildStatus(Result.SUCCESS, run);
 
-        List<Map> resp = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
+        PipelineNodeGraphVisitor pipelineNodeGraphVisitor = new PipelineNodeGraphVisitor( run );
+        List<FlowNodeWrapper> wrappers = pipelineNodeGraphVisitor.getPipelineNodes();
 
-        Assert.assertEquals(3, resp.size());
-
+        Assert.assertEquals(7, wrappers.size());
     }
 
     @Test
@@ -2554,11 +2560,18 @@ public class PipelineNodeTest extends PipelineBaseTest {
         WorkflowJob job1 = j.jenkins.createProject(WorkflowJob.class, "pipeline1");
         job1.setDefinition(new CpsFlowDefinition(script, false));
         WorkflowRun b1 = job1.scheduleBuild2(0).get();
-        j.assertBuildStatus(Result.SUCCESS, b1);
+        WorkflowRun run = j.waitForCompletion( b1 );
+        j.assertBuildStatus(Result.SUCCESS, run);
+
+        PipelineNodeGraphVisitor pipelineNodeGraphVisitor = new PipelineNodeGraphVisitor( run );
+
+        List<FlowNodeWrapper> wrappers = pipelineNodeGraphVisitor.getPipelineNodes();
+
+        Assert.assertEquals(12, wrappers.size());
 
         List<Map> nodes = get("/organizations/jenkins/pipelines/pipeline1/runs/1/nodes/", List.class);
 
-        Assert.assertEquals(6, nodes.size());
+        Assert.assertEquals(12, nodes.size());
 
         for(int i=0;i<nodes.size(); i++){
             Map n = nodes.get(i);
@@ -2578,18 +2591,18 @@ public class PipelineNodeTest extends PipelineBaseTest {
             }
             if(i==2){
                 assertEquals("branch1", n.get("displayName"));
-                assertEquals(1, edges.size());
-                assertEquals(nodes.get(5).get("id"), edges.get(0).get("id"));
+                assertEquals(2, edges.size());
+                assertEquals(nodes.get(6).get("id"), edges.get(0).get("id"));
             }
             if(i==3){
                 assertEquals("branch2", n.get("displayName"));
-                assertEquals(1, edges.size());
-                assertEquals(nodes.get(5).get("id"), edges.get(0).get("id"));
+                assertEquals(2, edges.size());
+                assertEquals(nodes.get(10).get("id"), edges.get(0).get("id"));
             }
             if(i==4){
                 assertEquals("branch3", n.get("displayName"));
-                assertEquals(1, edges.size());
-                assertEquals(nodes.get(5).get("id"), edges.get(0).get("id"));
+                assertEquals(2, edges.size());
+                assertEquals(nodes.get(8).get("id"), edges.get(0).get("id"));
             }
             if(i==5){
                 assertEquals("stage2", n.get("displayName"));
