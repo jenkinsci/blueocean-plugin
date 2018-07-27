@@ -200,7 +200,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         if(!nestedStages.empty()){
             nestedStages.pop(); //we throw away nested stages
             if(!nestedStages.empty()){ //there is still a nested stage, return
-                return;
+                //return;
             }
         }
 
@@ -348,7 +348,10 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                 // we don't want the first one as it's a duplicate of the parallel parent but with stage type so rid of it
                 FlowNodeWrapper flowNodeWrapper = stack.pop();
                 if(stack.isEmpty()){
-                    branch.addEdge(flowNodeWrapper);
+                    if(nextStage!=null) {
+                        branch.addEdge(nextStage);
+                    }
+                    parallelBranches.push(branch);
                     continue;
                 }
                 flowNodeWrapper = stack.pop();

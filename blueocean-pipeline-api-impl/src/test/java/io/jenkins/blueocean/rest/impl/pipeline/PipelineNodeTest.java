@@ -2411,10 +2411,11 @@ public class PipelineNodeTest extends PipelineBaseTest {
         WorkflowRun run = p.scheduleBuild2( 0).waitForStart();
         j.waitForCompletion( run );
 
-        Unirest.setTimeouts( 10000, 600000000 );
-        List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
+        PipelineNodeGraphVisitor pipelineNodeGraphVisitor = new PipelineNodeGraphVisitor( run );
 
-        assertEquals(7, nodes.size());
+        List<FlowNodeWrapper> wrappers = pipelineNodeGraphVisitor.getPipelineNodes();
+
+        assertEquals(7, wrappers.size());
     }
 
     @Test
