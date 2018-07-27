@@ -2380,9 +2380,20 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         List<FlowNodeWrapper> wrappers = pipelineNodeGraphVisitor.getPipelineNodes();
 
+        FlowNodeWrapper flowNodeWrapper = wrappers.get( 0 );
+        assertEquals( "top", flowNodeWrapper.getDisplayName() );
+        assertEquals( 2, flowNodeWrapper.edges.size() );
+
+        flowNodeWrapper = wrappers.get( 1 );
+        assertEquals( "first", flowNodeWrapper.getDisplayName() );
+        assertEquals( 1, flowNodeWrapper.edges.size() );
+        assertEquals( 1, flowNodeWrapper.getParents().size() );
+
+        assertEquals( "first-inner-first", flowNodeWrapper.edges.get( 0 ).getDisplayName() );
+
         List<BluePipelineNode> bluePipelineNodes = pipelineNodeGraphVisitor.getPipelineNodes( new Link( "href") );
 
-        assertEquals(5, wrappers.size());
+        assertEquals(7, wrappers.size());
 
         List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
         assertEquals(7, nodes.size());
