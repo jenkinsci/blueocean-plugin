@@ -1,9 +1,7 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
-import com.google.common.base.Predicate;
 import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Action;
-import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.hal.Link;
 import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
@@ -159,7 +157,6 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             && !PipelineNodeUtil.isSyntheticStage(((StepEndNode) endNode).getStartNode()) //skip synthetic stages
             && PipelineNodeUtil.isStage(((StepEndNode) endNode).getStartNode())) {
 
-
             //XXX: There seems to be bug in eventing, chunkEnd is sent twice for the same FlowNode
             //     Lets peek and if the last one is same as this endNode then skip adding it
             FlowNode node=null;
@@ -194,16 +191,13 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
         boolean parallelNestedStages = false;
 
-        // its stage inside parallel, we skip it and clear nest stages collected inside parallel
+        // it's nested stages inside parallel so let's collect them later
         if(parallelEnd != null){
             parallelNestedStages = true;
         }
 
         if(!nestedStages.empty()){
-            nestedStages.pop(); //we throw away nested stages
-            if(!nestedStages.empty()){ //there is still a nested stage, return
-                //return;
-            }
+            nestedStages.pop(); //we throw away first nested stage
         }
 
         TimingInfo times = null;
