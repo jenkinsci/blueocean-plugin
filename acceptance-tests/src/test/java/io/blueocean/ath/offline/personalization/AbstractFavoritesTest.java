@@ -76,6 +76,6 @@ abstract public class AbstractFavoritesTest implements WebDriverMixin {
     @After
     public void tearDown() throws IOException {
         // wipe out all jobs to avoid causing issues w/ SearchTest
-   //     jobApi.deleteFolder(FOLDER);
+        jobApi.deleteFolder(FOLDER);
     }
 }

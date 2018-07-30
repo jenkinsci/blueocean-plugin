@@ -111,7 +111,7 @@ public class FavoritesDashboardPage extends DashboardPage {
     private WebElement getPipelineListFavorite(String jobName) {
         return wait.until(driver -> {
             WebElement pipelineListItem = getPipelineListItem(jobName);
-            System.out.println("waiting for stuff");
+         
             return pipelineListItem.findElement(By.cssSelector(".Checkbox.Favorite > label"));
         });
     }
