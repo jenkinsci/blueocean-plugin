@@ -7,6 +7,7 @@ import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import io.jenkins.blueocean.rest.model.BluePipelineStep;
 import io.jenkins.blueocean.rest.model.BlueRun;
 import org.apache.commons.lang3.StringUtils;
+import org.jenkinsci.plugins.pipeline.modeldefinition.actions.ExecutionModelAction;
 import org.jenkinsci.plugins.workflow.actions.LabelAction;
 import org.jenkinsci.plugins.workflow.actions.NotExecutedNodeAction;
 import org.jenkinsci.plugins.workflow.actions.TimingAction;
@@ -94,11 +95,14 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
     private final static String PARALLEL_SYNTHETIC_STAGE_NAME = "Parallel";
 
+    private final boolean declarative;
+
     public PipelineNodeGraphVisitor(WorkflowRun run) {
         this.run = run;
         this.inputAction = run.getAction(InputAction.class);
         this.pipelineActions = new HashSet<>();
         this.pendingActionsForBranches = new HashMap<>();
+        declarative = run.getAction(ExecutionModelAction.class) != null;
         FlowExecution execution = run.getExecution();
         if(execution!=null) {
             try {
@@ -193,11 +197,19 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
 
         // it's nested stages inside parallel so let's collect them later
         if(parallelEnd != null){
+            // nested stages not supported in scripted pipeline.
+            if(!isDeclarative()){
+                return;
+            }
             parallelNestedStages = true;
         }
 
         if(!nestedStages.empty()){
             nestedStages.pop(); //we throw away first nested stage
+            // nested stages not supported in scripted pipeline.
+            if(!nestedStages.isEmpty()&&!isDeclarative()){
+                return;
+            }
         }
 
         TimingInfo times = null;
@@ -727,6 +739,10 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             synStage.addEdge(p);
         }
         return synStage;
+    }
+
+    public boolean isDeclarative() {
+        return declarative;
     }
 
     /**
