@@ -47,6 +47,7 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl.PARAMETERS_ELEMENT;
@@ -2395,6 +2396,49 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
         assertEquals(7, nodes.size());
+    }
+
+    @Test
+    @Issue("JENKINS-49050")
+    public void sequentialParallelStages() throws Exception {
+        WorkflowJob p = createWorkflowJobWithJenkinsfile( getClass(), "sequentialParallel.jenkinsfile");
+        Slave s = j.createOnlineSlave();
+        s.setNumExecutors(2);
+
+        // Run until completed
+        WorkflowRun run = p.scheduleBuild2( 0).waitForStart();
+        j.waitForCompletion( run );
+
+        PipelineNodeGraphVisitor pipelineNodeGraphVisitor = new PipelineNodeGraphVisitor( run );
+        assertTrue( pipelineNodeGraphVisitor.isDeclarative() );
+
+        List<FlowNodeWrapper> wrappers = pipelineNodeGraphVisitor.getPipelineNodes();
+
+        assertEquals(8, wrappers.size());
+
+        Optional<FlowNodeWrapper> optionalFlowNodeWrapper =
+            wrappers.stream().filter( nodeWrapper -> nodeWrapper.getDisplayName().equals( "first-sequential-stage" ) )
+                .findFirst();
+
+        assertTrue( optionalFlowNodeWrapper.isPresent() );
+
+        String parentId = optionalFlowNodeWrapper.get().getFirstParent().getId();
+
+        optionalFlowNodeWrapper =
+            wrappers.stream().filter( nodeWrapper -> nodeWrapper.getId().equals( parentId ) )
+                .findFirst();
+
+        assertTrue( optionalFlowNodeWrapper.isPresent() );
+        assertEquals( "multiple-stages", optionalFlowNodeWrapper.get().getDisplayName() );
+        assertEquals( 1, optionalFlowNodeWrapper.get().edges.size() );
+
+        optionalFlowNodeWrapper.get().edges.stream()
+            .filter( nodeWrapper -> nodeWrapper.getDisplayName().equals( "first-sequential-stage" ) )
+            .findFirst();
+        assertTrue( optionalFlowNodeWrapper.isPresent() );
+
+        List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
+        assertEquals(8, nodes.size());
     }
 
 
