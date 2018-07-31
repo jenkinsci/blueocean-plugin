@@ -21,7 +21,7 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
     private final WorkflowRun run;
     private final Map<String, BluePipelineNode> nodeMap = new HashMap<>();
 
-    List<BluePipelineNode> nodes = new ArrayList<>();
+    private final List<BluePipelineNode> nodes;
     private final Link self;
 
     public PipelineNodeContainerImpl(WorkflowRun run, Link parentLink) {

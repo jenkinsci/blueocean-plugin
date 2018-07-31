@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.LogManager;
+import java.util.stream.Collectors;
 
 import static io.jenkins.blueocean.auth.jwt.JwtToken.X_BLUEOCEAN_JWT;
 import static org.junit.Assert.fail;
@@ -344,15 +345,12 @@ public abstract class PipelineBaseTest{
     }
 
     protected List<FlowNode> getStages(NodeGraphBuilder builder){
-        List<FlowNode> nodes = new ArrayList<>();
-        for(FlowNodeWrapper node: builder.getPipelineNodes()){
-            if(node.type == FlowNodeWrapper.NodeType.STAGE){
-                nodes.add(node.getNode());
-            }
-        }
-
-        return nodes;
+        return builder.getPipelineNodes().stream()
+            .filter( nodeWrapper -> nodeWrapper.type == FlowNodeWrapper.NodeType.STAGE )
+            .map( nodeWrapper -> nodeWrapper.getNode() )
+            .collect( Collectors.toList() );
     }
+
     protected List<FlowNode> getAllSteps(WorkflowRun run){
         PipelineStepVisitor visitor = new PipelineStepVisitor(run, null);
         ForkScanner.visitSimpleChunks(run.getExecution().getCurrentHeads(), visitor, new StageChunkFinder());
@@ -363,25 +361,18 @@ public abstract class PipelineBaseTest{
         return steps;
     }
     protected List<FlowNode> getStagesAndParallels(NodeGraphBuilder builder){
-        List<FlowNode> nodes = new ArrayList<>();
-        for(FlowNodeWrapper node: builder.getPipelineNodes()){
-            if(node.type == FlowNodeWrapper.NodeType.STAGE || node.type == FlowNodeWrapper.NodeType.PARALLEL){
-                nodes.add(node.getNode());
-            }
-        }
+        return builder.getPipelineNodes().stream()
+            .filter( nodeWrapper -> nodeWrapper.type == FlowNodeWrapper.NodeType.PARALLEL || nodeWrapper.type == FlowNodeWrapper.NodeType.STAGE)
+            .map( nodeWrapper -> nodeWrapper.getNode() )
+            .collect( Collectors.toList() );
 
-        return nodes;
     }
 
     protected List<FlowNode> getParallelNodes(NodeGraphBuilder builder){
-        List<FlowNode> nodes = new ArrayList<>();
-        for(FlowNodeWrapper node: builder.getPipelineNodes()){
-            if(node.type == FlowNodeWrapper.NodeType.PARALLEL){
-                nodes.add(node.getNode());
-            }
-        }
-
-        return nodes;
+        return builder.getPipelineNodes().stream()
+            .filter( nodeWrapper -> nodeWrapper.type == FlowNodeWrapper.NodeType.PARALLEL )
+            .map( nodeWrapper -> nodeWrapper.getNode() )
+            .collect( Collectors.toList() );
     }
 
     protected String getHrefFromLinks(Map resp, String link){

@@ -19,6 +19,7 @@ import javax.annotation.Nullable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 
 /**
  * @author Vivek Pandey
@@ -43,7 +44,7 @@ public class FlowNodeWrapper {
     private Collection<Action> pipelineActions;
 
 
-    public FlowNodeWrapper(@Nonnull FlowNode node, @Nonnull NodeRunStatus status, @Nonnull TimingInfo timingInfo, @Nonnull  WorkflowRun run) {
+    public FlowNodeWrapper(@Nonnull FlowNode node, @Nonnull NodeRunStatus status, @Nonnull TimingInfo timingInfo, @Nonnull WorkflowRun run) {
         this.node = node;
         this.status = status;
         this.timingInfo = timingInfo;
@@ -158,6 +159,11 @@ public class FlowNodeWrapper {
     @Override
     public int hashCode() {
         return node.hashCode();
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getName() + "[id=" + node.getId() + ",displayName=" + this.displayName + ",type=" + this.type + "]";
     }
 
     boolean hasBlockError(){
