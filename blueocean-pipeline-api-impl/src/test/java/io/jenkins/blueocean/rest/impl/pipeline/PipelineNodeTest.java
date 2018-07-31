@@ -2420,6 +2420,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
             wrappers.stream().filter( nodeWrapper -> nodeWrapper.getDisplayName().equals( "first-sequential-stage" ) )
                 .findFirst();
 
+        // we ensure "multiple-stages" is parent of "first-sequential-stage"
         assertTrue( optionalFlowNodeWrapper.isPresent() );
 
         String parentId = optionalFlowNodeWrapper.get().getFirstParent().getId();
@@ -2440,6 +2441,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
         assertEquals(8, nodes.size());
 
+        // ensure no issue getting steps for each node
         for(Map<String,String> node:nodes){
             String id = node.get( "id" );
             List<Map> steps =
