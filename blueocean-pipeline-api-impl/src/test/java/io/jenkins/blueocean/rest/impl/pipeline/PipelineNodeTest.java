@@ -2439,6 +2439,14 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
         assertEquals(8, nodes.size());
+
+        for(Map<String,String> node:nodes){
+            String id = node.get( "id" );
+            List<Map> steps =
+                get( "/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/" + id +"/steps/", List.class );
+            assertFalse( steps.get( 0 ).isEmpty() );
+        }
+
     }
 
 

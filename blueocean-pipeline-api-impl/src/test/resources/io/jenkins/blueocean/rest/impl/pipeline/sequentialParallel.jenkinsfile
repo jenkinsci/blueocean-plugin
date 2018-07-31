@@ -3,14 +3,14 @@ pipeline {
   stages {
     stage('first-solo') {
       steps {
-        sh 'echo \'dummy text\''
+        sh 'echo \'dummy text first-solo\''
       }
     }
     stage('parent') {
         parallel {
             stage('single-stage') {
               steps {
-                sh 'echo \'dummy text\''
+                sh 'echo \'dummy text single-stage\''
               }
             }
 
@@ -18,12 +18,12 @@ pipeline {
                 stages {
                     stage('first-sequential-stage') {
                       steps {
-                        sh 'echo \'dummy text\''
+                        sh 'echo \'dummy text first-sequential-stage\''
                       }
                     }
                     stage('second-sequential-stage') {
                       steps {
-                        sh 'echo \'dummy text\''
+                        sh 'echo \'dummy text second-sequential-stage\''
                       }
                     }
                 }
@@ -31,14 +31,14 @@ pipeline {
 
             stage('other-single-stage') {
               steps {
-                sh 'echo \'dummy text\''
+                sh 'echo \'dummy text other-single-stage\''
               }
             }
         }
     }
     stage('second-solo') {
       steps {
-        sh 'echo \'dummy text\''
+        sh 'echo \'dummy text second-solo\''
       }
     }
   }
