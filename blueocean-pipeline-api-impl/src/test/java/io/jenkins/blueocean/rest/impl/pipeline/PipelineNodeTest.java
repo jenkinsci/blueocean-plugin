@@ -2423,7 +2423,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
         // we ensure "multiple-stages" is parent of "first-sequential-stage"
         assertTrue( optionalFlowNodeWrapper.isPresent() );
 
-        String parentId = optionalFlowNodeWrapper.get().getFirstParent().getId();
+        final String parentId = optionalFlowNodeWrapper.get().getFirstParent().getId();
 
         optionalFlowNodeWrapper =
             wrappers.stream().filter( nodeWrapper -> nodeWrapper.getId().equals( parentId ) )
@@ -2437,6 +2437,23 @@ public class PipelineNodeTest extends PipelineBaseTest {
             .filter( nodeWrapper -> nodeWrapper.getDisplayName().equals( "first-sequential-stage" ) )
             .findFirst();
         assertTrue( optionalFlowNodeWrapper.isPresent() );
+
+
+        optionalFlowNodeWrapper =
+            wrappers.stream().filter( nodeWrapper -> nodeWrapper.getDisplayName().equals( "other-single-stage" ) )
+                .findFirst();
+        assertTrue( optionalFlowNodeWrapper.isPresent() );
+
+        final String otherParentId = optionalFlowNodeWrapper.get().getFirstParent().getId();
+
+        optionalFlowNodeWrapper =
+            wrappers.stream().filter( nodeWrapper -> nodeWrapper.getId().equals( otherParentId ) )
+                .findFirst();
+
+        assertTrue( optionalFlowNodeWrapper.isPresent() );
+        assertEquals( "parent", optionalFlowNodeWrapper.get().getDisplayName() );
+        assertEquals( 3, optionalFlowNodeWrapper.get().edges.size() );
+
 
         List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
         assertEquals(8, nodes.size());
