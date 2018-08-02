@@ -80,6 +80,12 @@ public abstract class BluePipelineNode extends BluePipelineStep {
     public abstract boolean isRestartable();
 
     /**
+     * @return the id of the first parent
+     */
+    @Exported
+    public abstract String getFirstParent();
+
+    /**
      *
      * @param request To restart the content must be simple json body with a field <code>restart</code> will value <code>true</code>
      * @return the response content will be {@link BlueRun}

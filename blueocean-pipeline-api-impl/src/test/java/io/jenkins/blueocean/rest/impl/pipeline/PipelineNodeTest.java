@@ -2458,6 +2458,20 @@ public class PipelineNodeTest extends PipelineBaseTest {
         List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
         assertEquals(8, nodes.size());
 
+
+        Optional<Map> firstSeqStage = nodes.stream()
+            .filter( map -> map.get( "displayName" )
+                .equals( "first-sequential-stage" ) ).findFirst();
+
+        assertTrue( firstSeqStage.isPresent() );
+        String firstParentId = (String) firstSeqStage.get().get( "firstParent" );
+
+        Optional<Map> parentStage = nodes.stream()
+            .filter( map -> map.get( "id" )
+                .equals( firstParentId ) ).findFirst();
+        assertTrue( parentStage.isPresent() );
+        assertEquals( "multiple-stages", parentStage.get().get( "displayName" ) );
+
         // ensure no issue getting steps for each node
         for(Map<String,String> node:nodes){
             String id = node.get( "id" );
@@ -2465,6 +2479,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
                 get( "/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/" + id +"/steps/", List.class );
             assertFalse( steps.get( 0 ).isEmpty() );
         }
+
+
 
     }
 
