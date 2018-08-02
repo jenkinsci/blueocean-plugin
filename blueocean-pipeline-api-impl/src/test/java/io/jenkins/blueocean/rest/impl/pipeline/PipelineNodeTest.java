@@ -2422,6 +2422,8 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         // we ensure "multiple-stages" is parent of "first-sequential-stage"
         assertTrue( optionalFlowNodeWrapper.isPresent() );
+        assertEquals( 1, optionalFlowNodeWrapper.get().edges.size() );
+        assertEquals( "second-sequential-stage", optionalFlowNodeWrapper.get().edges.get( 0 ).getDisplayName() );
 
         final String parentId = optionalFlowNodeWrapper.get().getFirstParent().getId();
 

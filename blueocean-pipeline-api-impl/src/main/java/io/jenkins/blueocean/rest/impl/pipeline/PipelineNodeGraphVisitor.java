@@ -272,7 +272,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                     stack.add(stage);
                 }
             }
-            if(nextStage != null) {
+            if(nextStage != null&&!parallelNestedStages) {
                 nextStage.addParent(stage);
                 stage.addEdge(nextStage);
             }
@@ -353,7 +353,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             }
 
             branch.setPipelineActions(branchActions);
-            // do we have nested sequential stages for this parallel branch?
+            // do we have sequential stages for this parallel branch?
             Stack<FlowNodeWrapper> stack = stackPerEnd.get(endNode.getId());
             if(stack!=null&&!stack.isEmpty()){
                 // yes so we can rebuild the graph here
