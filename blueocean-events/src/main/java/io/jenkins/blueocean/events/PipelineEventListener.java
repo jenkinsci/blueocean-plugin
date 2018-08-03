@@ -8,7 +8,6 @@ import io.jenkins.blueocean.rest.impl.pipeline.PipelineInputStepListener;
 import io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeUtil;
 import java.io.IOException;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.WeakHashMap;
@@ -52,8 +51,8 @@ public class PipelineEventListener implements GraphListener {
 
     private static final Logger LOGGER = Logger.getLogger(PipelineEventListener.class.getName());
 
-    private final Map<FlowExecution, String> currentStageName = Collections.synchronizedMap(new WeakHashMap<>());
-    private final Map<FlowExecution, String> currentStageId = Collections.synchronizedMap(new WeakHashMap<>());
+    private final Map<FlowExecution, String> currentStageName = new WeakHashMap<>();
+    private final Map<FlowExecution, String> currentStageId = new WeakHashMap<>();
 
     @Override
     public void onNewHead(FlowNode flowNode) {
