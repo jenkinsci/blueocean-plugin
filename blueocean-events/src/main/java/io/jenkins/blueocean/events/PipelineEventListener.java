@@ -1,5 +1,7 @@
 package io.jenkins.blueocean.events;
 
+import com.google.common.cache.Cache;
+import com.google.common.cache.CacheBuilder;
 import com.google.common.collect.Lists;
 import hudson.Extension;
 import hudson.model.Queue;
@@ -9,8 +11,8 @@ import io.jenkins.blueocean.rest.impl.pipeline.PipelineNodeUtil;
 import java.io.IOException;
 import java.util.Collection;
 import java.util.List;
-import java.util.Map;
-import java.util.WeakHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.annotation.CheckForNull;
@@ -51,8 +53,18 @@ public class PipelineEventListener implements GraphListener {
 
     private static final Logger LOGGER = Logger.getLogger(PipelineEventListener.class.getName());
 
-    private final Map<FlowExecution, String> currentStageName = new WeakHashMap<>();
-    private final Map<FlowExecution, String> currentStageId = new WeakHashMap<>();
+    private final Cache<FlowExecution, String> currentStageNameCache = CacheBuilder.newBuilder()
+                                                                    .weakKeys()
+                                                                    .build();
+    private final Cache<FlowExecution, String> currentStageIdCache = CacheBuilder.newBuilder()
+                                                                    .weakKeys()
+                                                                    .build();
+
+
+    private final ConcurrentMap<FlowExecution, String> currentStageName = currentStageNameCache.asMap();
+
+    private final ConcurrentMap<FlowExecution, String> currentStageId = currentStageIdCache.asMap();
+
 
     @Override
     public void onNewHead(FlowNode flowNode) {
