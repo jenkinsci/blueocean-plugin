@@ -377,11 +377,20 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                 branch.addEdge(flowNodeWrapper);
                 flowNodeWrapper.addParent(branch);
                 nodes.add(flowNodeWrapper);
-                stack.stream().forEach(nodeWrapper->{
+                while(!stack.isEmpty()){
+                    FlowNodeWrapper nodeWrapper = stack.pop();
                     nodes.peekLast().addEdge(nodeWrapper);
                     nodeWrapper.addParent(nodes.peekLast());
                     nodes.add( nodeWrapper );
-                });
+                    if(stack.isEmpty()&&nextStage!=null){
+                        nodeWrapper.addEdge(nextStage);
+                    }
+                }
+//                stack.stream().forEach(nodeWrapper->{
+//                    nodes.peekLast().addEdge(nodeWrapper);
+//                    nodeWrapper.addParent(nodes.peekLast());
+//                    nodes.add( nodeWrapper );
+//                });
             }
             else if(nextStage!=null) {
                 branch.addEdge(nextStage);

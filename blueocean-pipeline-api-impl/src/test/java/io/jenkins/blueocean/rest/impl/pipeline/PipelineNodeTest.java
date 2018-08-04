@@ -2414,7 +2414,7 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         List<FlowNodeWrapper> wrappers = pipelineNodeGraphVisitor.getPipelineNodes();
 
-        assertEquals(8, wrappers.size());
+        assertEquals(9, wrappers.size());
 
         Optional<FlowNodeWrapper> optionalFlowNodeWrapper =
             wrappers.stream().filter( nodeWrapper -> nodeWrapper.getDisplayName().equals( "first-sequential-stage" ) )
@@ -2456,9 +2456,24 @@ public class PipelineNodeTest extends PipelineBaseTest {
         assertEquals( "parent", optionalFlowNodeWrapper.get().getDisplayName() );
         assertEquals( 3, optionalFlowNodeWrapper.get().edges.size() );
 
+        optionalFlowNodeWrapper =
+            wrappers.stream().filter( nodeWrapper -> nodeWrapper.getDisplayName().equals( "second-sequential-stage" ) )
+                .findFirst();
+        assertTrue( optionalFlowNodeWrapper.isPresent() );
+
+        assertEquals(1, optionalFlowNodeWrapper.get().edges.size() );
+        assertEquals( "third-sequential-stage", optionalFlowNodeWrapper.get().edges.get( 0 ).getDisplayName() );
+
+        optionalFlowNodeWrapper =
+            wrappers.stream().filter( nodeWrapper -> nodeWrapper.getDisplayName().equals( "third-sequential-stage" ) )
+                .findFirst();
+        assertTrue( optionalFlowNodeWrapper.isPresent() );
+
+        assertEquals(1, optionalFlowNodeWrapper.get().edges.size() );
+        assertEquals( "second-solo", optionalFlowNodeWrapper.get().edges.get( 0 ).getDisplayName() );
 
         List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
-        assertEquals(8, nodes.size());
+        assertEquals(9, nodes.size());
 
 
         Optional<Map> firstSeqStage = nodes.stream()
@@ -2481,9 +2496,6 @@ public class PipelineNodeTest extends PipelineBaseTest {
                 get( "/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/" + id +"/steps/", List.class );
             assertFalse( steps.get( 0 ).isEmpty() );
         }
-
-
-
     }
 
 

@@ -26,6 +26,11 @@ pipeline {
                         sh 'echo \'dummy text second-sequential-stage\''
                       }
                     }
+                    stage('third-sequential-stage') {
+                      steps {
+                        sh 'echo \'dummy text third-sequential-stage\''
+                      }
+                    }
                 }
             }
 
