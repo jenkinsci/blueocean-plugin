@@ -9,6 +9,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.kohsuke.stapler.export.ExportedBean;
 import org.kohsuke.stapler.verb.POST;
 
+import javax.annotation.CheckForNull;
 import java.util.List;
 
 import static io.jenkins.blueocean.rest.model.KnownCapabilities.BLUE_PIPELINE_NODE;
@@ -83,7 +84,7 @@ public abstract class BluePipelineNode extends BluePipelineStep {
      * @return the id of the first parent
      */
     @Exported
-    public abstract String getFirstParent();
+    public @CheckForNull abstract String getFirstParent();
 
     /**
      *
