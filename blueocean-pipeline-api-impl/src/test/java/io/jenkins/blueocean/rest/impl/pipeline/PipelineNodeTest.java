@@ -47,6 +47,7 @@ import java.net.URL;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl.PARAMETERS_ELEMENT;
@@ -2395,6 +2396,106 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
         assertEquals(7, nodes.size());
+    }
+
+    @Test
+    @Issue("JENKINS-49050")
+    public void sequentialParallelStages() throws Exception {
+        WorkflowJob p = createWorkflowJobWithJenkinsfile( getClass(), "sequentialParallel.jenkinsfile");
+        Slave s = j.createOnlineSlave();
+        s.setNumExecutors(2);
+
+        // Run until completed
+        WorkflowRun run = p.scheduleBuild2( 0).waitForStart();
+        j.waitForCompletion( run );
+
+        PipelineNodeGraphVisitor pipelineNodeGraphVisitor = new PipelineNodeGraphVisitor( run );
+        assertTrue( pipelineNodeGraphVisitor.isDeclarative() );
+
+        List<FlowNodeWrapper> wrappers = pipelineNodeGraphVisitor.getPipelineNodes();
+
+        assertEquals(9, wrappers.size());
+
+        Optional<FlowNodeWrapper> optionalFlowNodeWrapper =
+            wrappers.stream().filter( nodeWrapper -> nodeWrapper.getDisplayName().equals( "first-sequential-stage" ) )
+                .findFirst();
+
+        // we ensure "multiple-stages" is parent of "first-sequential-stage"
+        assertTrue( optionalFlowNodeWrapper.isPresent() );
+        assertEquals( 1, optionalFlowNodeWrapper.get().edges.size() );
+        assertEquals( "second-sequential-stage", optionalFlowNodeWrapper.get().edges.get( 0 ).getDisplayName() );
+
+        final String parentId = optionalFlowNodeWrapper.get().getFirstParent().getId();
+
+        optionalFlowNodeWrapper =
+            wrappers.stream().filter( nodeWrapper -> nodeWrapper.getId().equals( parentId ) )
+                .findFirst();
+
+        assertTrue( optionalFlowNodeWrapper.isPresent() );
+        assertEquals( "multiple-stages", optionalFlowNodeWrapper.get().getDisplayName() );
+        assertEquals( 1, optionalFlowNodeWrapper.get().edges.size() );
+
+        optionalFlowNodeWrapper.get().edges.stream()
+            .filter( nodeWrapper -> nodeWrapper.getDisplayName().equals( "first-sequential-stage" ) )
+            .findFirst();
+        assertTrue( optionalFlowNodeWrapper.isPresent() );
+
+
+        optionalFlowNodeWrapper =
+            wrappers.stream().filter( nodeWrapper -> nodeWrapper.getDisplayName().equals( "other-single-stage" ) )
+                .findFirst();
+        assertTrue( optionalFlowNodeWrapper.isPresent() );
+
+        final String otherParentId = optionalFlowNodeWrapper.get().getFirstParent().getId();
+
+        optionalFlowNodeWrapper =
+            wrappers.stream().filter( nodeWrapper -> nodeWrapper.getId().equals( otherParentId ) )
+                .findFirst();
+
+        assertTrue( optionalFlowNodeWrapper.isPresent() );
+        assertEquals( "parent", optionalFlowNodeWrapper.get().getDisplayName() );
+        assertEquals( 3, optionalFlowNodeWrapper.get().edges.size() );
+
+        optionalFlowNodeWrapper =
+            wrappers.stream().filter( nodeWrapper -> nodeWrapper.getDisplayName().equals( "second-sequential-stage" ) )
+                .findFirst();
+        assertTrue( optionalFlowNodeWrapper.isPresent() );
+
+        assertEquals(1, optionalFlowNodeWrapper.get().edges.size() );
+        assertEquals( "third-sequential-stage", optionalFlowNodeWrapper.get().edges.get( 0 ).getDisplayName() );
+
+        optionalFlowNodeWrapper =
+            wrappers.stream().filter( nodeWrapper -> nodeWrapper.getDisplayName().equals( "third-sequential-stage" ) )
+                .findFirst();
+        assertTrue( optionalFlowNodeWrapper.isPresent() );
+
+        assertEquals(1, optionalFlowNodeWrapper.get().edges.size() );
+        assertEquals( "second-solo", optionalFlowNodeWrapper.get().edges.get( 0 ).getDisplayName() );
+
+        List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
+        assertEquals(9, nodes.size());
+
+
+        Optional<Map> firstSeqStage = nodes.stream()
+            .filter( map -> map.get( "displayName" )
+                .equals( "first-sequential-stage" ) ).findFirst();
+
+        assertTrue( firstSeqStage.isPresent() );
+        String firstParentId = (String) firstSeqStage.get().get( "firstParent" );
+
+        Optional<Map> parentStage = nodes.stream()
+            .filter( map -> map.get( "id" )
+                .equals( firstParentId ) ).findFirst();
+        assertTrue( parentStage.isPresent() );
+        assertEquals( "multiple-stages", parentStage.get().get( "displayName" ) );
+
+        // ensure no issue getting steps for each node
+        for(Map<String,String> node:nodes){
+            String id = node.get( "id" );
+            List<Map> steps =
+                get( "/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/" + id +"/steps/", List.class );
+            assertFalse( steps.get( 0 ).isEmpty() );
+        }
     }
 
 

@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Action;
 import hudson.model.Queue;
 import io.jenkins.blueocean.commons.JsonConverter;
@@ -34,13 +35,16 @@ import org.kohsuke.stapler.export.Exported;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.CheckForNull;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of {@link BluePipelineNode}.
@@ -91,6 +95,12 @@ public class PipelineNodeImpl extends BluePipelineNode {
     @Override
     public BlueRun.BlueRunState getStateObj() {
         return status.getState();
+    }
+
+    @Override
+    @SuppressFBWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
+    public @CheckForNull String getFirstParent() {
+        return node.getFirstParent() == null ? null : node.getFirstParent().getId();
     }
 
     @Override
@@ -174,9 +184,9 @@ public class PipelineNodeImpl extends BluePipelineNode {
     public boolean isRestartable() {
         RestartDeclarativePipelineAction restartDeclarativePipelineAction =
             this.run.getAction( RestartDeclarativePipelineAction.class );
-        if ( restartDeclarativePipelineAction != null ) {
+        if (restartDeclarativePipelineAction != null) {
             List<String> restartableStages = restartDeclarativePipelineAction.getRestartableStages();
-            if ( restartableStages != null ) {
+            if (restartableStages != null) {
                 return restartableStages.contains(this.getDisplayName())
                     && this.getStateObj() == BlueRun.BlueRunState.FINISHED;
             }
@@ -254,13 +264,9 @@ public class PipelineNodeImpl extends BluePipelineNode {
     }
 
     private List<Edge> buildEdges(List<FlowNodeWrapper> nodes) {
-        List<Edge> edges = new ArrayList<>();
-        if (!nodes.isEmpty()) {
-            for (FlowNodeWrapper edge : nodes) {
-                edges.add(new EdgeImpl(edge));
-            }
-        }
-        return edges;
+        return nodes.isEmpty()? Collections.emptyList():
+            nodes.stream().map( nodeWrapper -> new EdgeImpl( nodeWrapper ) ).collect( Collectors.toList() );
+
     }
 
     FlowNodeWrapper getFlowNodeWrapper() {

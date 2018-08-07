@@ -260,15 +260,19 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             }
         }else{
             if(parallelNestedStages) {
-                String endId = parallelBranchEndNodes.peek().getId();
-                Stack<FlowNodeWrapper> stack = stackPerEnd.get(endId);
-                if(stack==null){
-                    stack=new Stack<>();
-                    stackPerEnd.put(endId, stack);
+                if(parallelBranchEndNodes.isEmpty()){
+                    logger.debug("skip parsing stage {} but parallelBranchEndNodes is empty", stage);
+                } else {
+                    String endId = parallelBranchEndNodes.peek().getId();
+                    Stack<FlowNodeWrapper> stack = stackPerEnd.get(endId);
+                    if(stack==null){
+                        stack=new Stack<>();
+                        stackPerEnd.put(endId, stack);
+                    }
+                    stack.add(stage);
                 }
-                stack.add(stage);
             }
-            if(nextStage != null) {
+            if(nextStage != null&&!parallelNestedStages) {
                 nextStage.addParent(stage);
                 stage.addEdge(nextStage);
             }
@@ -349,7 +353,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
             }
 
             branch.setPipelineActions(branchActions);
-            // do we have nested sequential stages for this parallel branch?
+            // do we have sequential stages for this parallel branch?
             Stack<FlowNodeWrapper> stack = stackPerEnd.get(endNode.getId());
             if(stack!=null&&!stack.isEmpty()){
                 // yes so we can rebuild the graph here
@@ -373,11 +377,15 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                 branch.addEdge(flowNodeWrapper);
                 flowNodeWrapper.addParent(branch);
                 nodes.add(flowNodeWrapper);
-                stack.stream().forEach(nodeWrapper->{
+                while(!stack.isEmpty()){
+                    FlowNodeWrapper nodeWrapper = stack.pop();
                     nodes.peekLast().addEdge(nodeWrapper);
                     nodeWrapper.addParent(nodes.peekLast());
                     nodes.add( nodeWrapper );
-                });
+                    if(stack.isEmpty()&&nextStage!=null){
+                        nodeWrapper.addEdge(nextStage);
+                    }
+                }
             }
             else if(nextStage!=null) {
                 branch.addEdge(nextStage);
