@@ -75,8 +75,11 @@ export class LogConsole extends Component {
     componentWillReceiveProps(nextProps) {
         // eslint-disable-line
         logger.debug('newProps isArray', Array.isArray(nextProps.logArray));
+        if (nextProps.logArray === undefined)
+            return;
+
         // We need a shallow copy of the ObservableArray to "cast" it down to normal array
-        const newArray = nextProps.logArray !== undefined && nextProps.logArray.slice();
+        const newArray = nextProps.logArray.slice();
         const oldArray = this.props.logArray !== undefined && this.props.logArray.slice();
         // if have a new logArray, simply add it to the queue and wait for next tick
         this.queuedLines = this.queuedLines.concat(newArray.slice(oldArray.length));
