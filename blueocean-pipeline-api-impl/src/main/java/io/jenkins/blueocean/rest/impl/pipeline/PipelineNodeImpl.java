@@ -1,5 +1,6 @@
 package io.jenkins.blueocean.rest.impl.pipeline;
 
+import edu.umd.cs.findbugs.annotations.SuppressFBWarnings;
 import hudson.model.Action;
 import hudson.model.Queue;
 import io.jenkins.blueocean.commons.JsonConverter;
@@ -97,6 +98,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
     }
 
     @Override
+    @SuppressFBWarnings(value = "NP_NULL_ON_SOME_PATH_FROM_RETURN_VALUE")
     public @CheckForNull String getFirstParent() {
         return node.getFirstParent() == null ? null : node.getFirstParent().getId();
     }
