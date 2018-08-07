@@ -81,7 +81,7 @@ public abstract class BluePipelineNode extends BluePipelineStep {
     public abstract boolean isRestartable();
 
     /**
-     * @return the id of the first parent
+     * @return the id of the first immediate parent
      */
     @Exported
     public @CheckForNull abstract String getFirstParent();
