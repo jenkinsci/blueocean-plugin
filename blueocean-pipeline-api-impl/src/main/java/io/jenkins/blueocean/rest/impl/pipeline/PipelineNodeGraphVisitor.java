@@ -261,7 +261,7 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
         }else{
             if(parallelNestedStages) {
                 if(parallelBranchEndNodes.isEmpty()){
-                    logger.warn("skip parsing stage {} but parallelBranchEndNodes is empty", stage);
+                    logger.debug("skip parsing stage {} but parallelBranchEndNodes is empty", stage);
                 } else {
                     String endId = parallelBranchEndNodes.peek().getId();
                     Stack<FlowNodeWrapper> stack = stackPerEnd.get(endId);
@@ -386,11 +386,6 @@ public class PipelineNodeGraphVisitor extends StandardChunkVisitor implements No
                         nodeWrapper.addEdge(nextStage);
                     }
                 }
-//                stack.stream().forEach(nodeWrapper->{
-//                    nodes.peekLast().addEdge(nodeWrapper);
-//                    nodeWrapper.addParent(nodes.peekLast());
-//                    nodes.add( nodeWrapper );
-//                });
             }
             else if(nextStage!=null) {
                 branch.addEdge(nextStage);
