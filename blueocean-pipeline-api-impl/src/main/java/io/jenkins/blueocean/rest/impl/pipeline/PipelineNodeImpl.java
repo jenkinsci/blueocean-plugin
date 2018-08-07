@@ -34,6 +34,7 @@ import org.kohsuke.stapler.export.Exported;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.annotation.CheckForNull;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -96,7 +97,7 @@ public class PipelineNodeImpl extends BluePipelineNode {
     }
 
     @Override
-    public String getFirstParent() {
+    public @CheckForNull String getFirstParent() {
         return node.getFirstParent() == null ? null : node.getFirstParent().getId();
     }
 
