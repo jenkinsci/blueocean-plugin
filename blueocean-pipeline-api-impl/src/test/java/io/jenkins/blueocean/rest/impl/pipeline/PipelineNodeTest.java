@@ -2498,6 +2498,33 @@ public class PipelineNodeTest extends PipelineBaseTest {
         }
     }
 
+    @Test
+    @Issue("JENKINS-49779")
+    public void sequentialParallelStagesWithPost() throws Exception {
+        WorkflowJob p = createWorkflowJobWithJenkinsfile( getClass(), "sequentialParallelWithPost.jenkinsfile");
+        Slave s = j.createOnlineSlave();
+        s.setNumExecutors(2);
+
+        // Run until completed
+        j.buildAndAssertSuccess(p);
+
+        List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
+        assertEquals(9, nodes.size());
+
+
+        Optional<Map> thirdSeqStage = nodes.stream()
+            .filter( map -> map.get( "displayName" )
+                .equals( "third-sequential-stage" ) ).findFirst();
+
+        assertTrue( thirdSeqStage.isPresent() );
+
+        List<Map> steps = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/" + thirdSeqStage.get().get("id") + "/steps/", List.class);
+
+        assertEquals(2, steps.size());
+        assertEquals("echo 'dummy text third-sequential-stage'", steps.get(0).get("displayDescription"));
+        assertEquals("echo 'dummy text post multiple-stages'", steps.get(1).get("displayDescription"));
+    }
+
 
     @Test
     public void nestedStagesGroups() throws Exception {
