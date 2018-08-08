@@ -219,7 +219,7 @@ function createSmallLabels(columns: Array<NodeColumn>) {
         for (const row of column.rows) {
             for (const node of row) {
                 // We add small labels to parallel nodes only so skip others
-                if (!node.stage || node.stage.type !== 'PARALLEL') {
+                if (!node.stage || (node.stage.type !== 'PARALLEL' && node.stage.isSequential !== true)) {
                     continue;
                 }
                 const label: LabelInfo = {

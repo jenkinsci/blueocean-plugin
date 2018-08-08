@@ -572,7 +572,7 @@ export class PipelineGraph extends Component {
      */
     stageIsSelected(stage?: StageInfo) {
         const { selectedStage } = this.state;
-        return selectedStage && selectedStage === stage;
+        return selectedStage && stage && selectedStage.id === stage.id;
     }
 
     /**
@@ -585,16 +585,18 @@ export class PipelineGraph extends Component {
 
             if (children && selectedStage) {
                 for (const childStage of children) {
-                    let testee = childStage;
-                    while (testee) {
-                        if (testee === selectedStage) {
+                    let currentStage = childStage;
+
+                    while (currentStage) {
+                        if (currentStage.id === selectedStage.id) {
                             return true;
                         }
-                        testee = testee.nextSibling;
+                        currentStage = currentStage.nextSibling;
                     }
                 }
             }
         }
+
         return false;
     }
 
