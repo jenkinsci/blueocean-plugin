@@ -741,6 +741,13 @@
             </exclusions>
         </dependency>
 
+        <!-- used in blueocean-pipeline-editor test -->
+        <dependency>
+            <groupId>org.jenkins-ci.plugins</groupId>
+            <artifactId>ant</artifactId>
+            <version>1.8</version>
+        </dependency>
+
         <!-- Test dependencies -->
         <dependency>
             <groupId>org.hamcrest</groupId>

@@ -131,6 +131,9 @@ public class PipelineMetadataServiceTest {
 
         // Verify that we *do* have advanced steps that are explicitly whitelisted in.
         assertThat(steps, hasItem(stepWithName("catchError")));
+
+        // Verify that we have a Symbol-provided SimpleBuildWrapper
+        assertThat(steps, hasItem(stepWithName("withAnt")));
     }
 
     private Matcher<? super ExportedPipelineStep> stepWithName(String stepName) {

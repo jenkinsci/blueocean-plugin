@@ -46,6 +46,7 @@ public class ExportedPipelineStep extends ExportedPipelineFunction {
     /**
      * Indicates this step wraps a block of other steps
      */
+    @Override
     @Exported
     public boolean getIsBlockContainer() {
         return descriptor.takesImplicitBlockArgument();
