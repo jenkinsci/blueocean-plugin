@@ -354,4 +354,142 @@ describe('Pipeline Syntax Converter', () => {
         assert(out.pipeline.stages[0].parallel[1].name == 'stage 2', "Bad parallel conversion");
     });
 
+    it('converts from JSON: SimpleBuildWrapper with named parameter', () => {
+        const p = {"pipeline": {
+                "stages": [{"name": "with wrapper",
+                    "branches": [{
+                        "name": "default","steps": [{
+                            "name": "withAnt","arguments": [
+                                {"key": "installation","value": {"isLiteral": true,"value": "default"}}],
+                            "children": [{"name": "echo","arguments":
+                                    {"isLiteral": true,"value": "hello"}}]}]}]}],
+                "agent": {"isLiteral": true,"value": "any"}}};
+        const internal = convertJsonToInternalModel(p);
+        const containerStep = internal.children[0].steps[0];
+        assert(containerStep.name == 'withAnt', "Incorrect step function");
+        // 'script' is the required parameter
+        assert(containerStep.children.length == 1, "No children for nested step");
+    });
+
+    it('converts from JSON: SimpleBuildWrapper with single required unnamed parameter', () => {
+        const p = {"pipeline": {
+                "stages": [{"name": "with wrapper",
+                    "branches": [{
+                        "name": "default","steps": [{
+                            "name": "withSonarQubeEnv","arguments": [
+                                {"isLiteral": true,"value": "default"}],
+                            "children": [{"name": "echo","arguments":
+                                    {"isLiteral": true,"value": "hello"}}]}]}]}],
+                "agent": {"isLiteral": true,"value": "any"}}};
+        const internal = convertJsonToInternalModel(p);
+        const containerStep = internal.children[0].steps[0];
+        assert(containerStep.name == 'withSonarQubeEnv', "Incorrect step function");
+        assert(containerStep.data.installationName.value == 'default', "Incorrect arguments value");
+        // 'script' is the required parameter
+        assert(containerStep.children.length == 1, "No children for nested step");
+    });
+
+    it('converts from JSON: SimpleBuildWrapper with no required parameters', () => {
+        const p = {"pipeline": {
+                "stages": [{"name": "with wrapper",
+                    "branches": [{
+                        "name": "default","steps": [{
+                            "name": "withAnt","arguments": [],
+                            "children": [{"name": "echo","arguments":
+                                    {"isLiteral": true,"value": "hello"}}]}]}]}],
+                "agent": {"isLiteral": true,"value": "any"}}};
+        const internal = convertJsonToInternalModel(p);
+        const containerStep = internal.children[0].steps[0];
+        assert(containerStep.name == 'withAnt', "Incorrect step function");
+        // 'script' is the required parameter
+        assert(containerStep.children.length == 1, "No children for nested step");
+    });
+
+    it('converts to JSON: SimpleBuildWrapper', () => {
+        const internal: Pipeline = {
+            children: [
+                {
+                    name: "with wrapper",
+                    steps: [
+                        {
+                            name: 'withAnt',
+                            data: {
+                                installation: {
+                                    isLiteral: true,
+                                    value: 'default',
+                                },
+                            },
+                            isContainer: true,
+                            children: [{
+                                name: "echo",
+                                data: {
+                                    message: {
+                                        isLiteral: true,
+                                        value: "hello"
+                                    }
+                                }
+                            }]
+                        }
+                    ]
+                },
+            ]
+        };
+        const out = convertInternalModelToJson(internal);
+        assert(out.pipeline.
+            stages[0].
+            branches[0].
+            steps[0].
+            arguments[0].
+            key == 'installation', "Incorrect conversion to JSON: expected installation as key");
+        assert(out.pipeline.
+            stages[0].
+            branches[0].
+            steps[0].
+            children[0].
+            name == 'echo', "Incorrect conversion to JSON: expected echo as nested step");
+    });
+
+    it('converts to JSON: SimpleBuildWrapper with unnamed parameter', () => {
+        const internal: Pipeline = {
+            children: [
+                {
+                    name: "with wrapper",
+                    steps: [
+                        {
+                            name: 'withSonarQubeEnv',
+                            data: {
+                                installationName: {
+                                    isLiteral: true,
+                                    value: 'default',
+                                },
+                            },
+                            isContainer: true,
+                            children: [{
+                                name: "echo",
+                                data: {
+                                    message: {
+                                        isLiteral: true,
+                                        value: "hello"
+                                    }
+                                }
+                            }]
+                        }
+                    ]
+                },
+            ]
+        };
+        const out = convertInternalModelToJson(internal);
+        assert(out.pipeline.
+            stages[0].
+            branches[0].
+            steps[0].
+            arguments[0].
+            key == 'installationName', "Incorrect conversion to JSON: expected installationName as key");
+        assert(out.pipeline.
+            stages[0].
+            branches[0].
+            steps[0].
+            children[0].
+            name == 'echo', "Incorrect conversion to JSON: expected echo as nested step");
+    });
 });
