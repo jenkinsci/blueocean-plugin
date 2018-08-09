@@ -94,8 +94,8 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
 function buildSequentialStages(originalNodes, convertedNodes, sequentialNodeKey, currentNode) {
     const nextSequentialNodeId = originalNodes[sequentialNodeKey].edges[0] ? originalNodes[sequentialNodeKey].edges[0].id : '';
 
+    currentNode.isSequential = true;
     if (nextSequentialNodeId) {
-        currentNode.isSequential = true;
         if (originalNodes[sequentialNodeKey].edges.length && originalNodes[nextSequentialNodeId].firstParent == currentNode.id) {
             currentNode.nextSibling = convertedNodes[nextSequentialNodeId];
 
@@ -150,7 +150,9 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
     // Follow the graph and build our results
     let currentNode = firstNode;
     while (currentNode) {
-        results.push(currentNode);
+        if (!currentNode.isSequential) {
+            results.push(currentNode);
+        }
 
         let nextNode = null;
         const originalNode = originalNodeForId[currentNode.id];
@@ -184,7 +186,9 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
                         if (originalNodeForId[key].firstParent === branchNode.id) {
                             currentNode.children[0] = convertedNodeForId[key];
 
-                            buildSequentialStages(originalNodeForId, convertedNodeForId, key, currentNode.children[0]);
+                            if (originalNodeForId[key].edges[0]) {
+                                buildSequentialStages(originalNodeForId, convertedNodeForId, key, currentNode.children[0]);
+                            }
                         }
                     });
 
