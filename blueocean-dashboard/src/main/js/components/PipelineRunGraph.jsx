@@ -92,13 +92,15 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
 }
 
 function buildSequentialStages(originalNodes, convertedNodes, sequentialNodeKey, currentNode) {
-    const nextSequentialNodeId = originalNodes[sequentialNodeKey].edges[0].id;
+    const nextSequentialNodeId = originalNodes[sequentialNodeKey].edges[0] ? originalNodes[sequentialNodeKey].edges[0].id : '';
 
-    currentNode.isSequential = true;
-    if (originalNodes[sequentialNodeKey].edges.length && originalNodes[nextSequentialNodeId].firstParent == currentNode.id) {
-        currentNode.nextSibling = convertedNodes[nextSequentialNodeId];
+    if (nextSequentialNodeId) {
+        currentNode.isSequential = true;
+        if (originalNodes[sequentialNodeKey].edges.length && originalNodes[nextSequentialNodeId].firstParent == currentNode.id) {
+            currentNode.nextSibling = convertedNodes[nextSequentialNodeId];
 
-        buildSequentialStages(originalNodes, convertedNodes, currentNode.nextSibling.id, currentNode.nextSibling);
+            buildSequentialStages(originalNodes, convertedNodes, currentNode.nextSibling.id, currentNode.nextSibling);
+        }
     }
 }
 
@@ -267,7 +269,6 @@ export default class PipelineRunGraph extends Component {
         }
 
         const id = this.props.selectedStage.id;
-
         let selectedStage = null;
 
         // Find selected stage by id
