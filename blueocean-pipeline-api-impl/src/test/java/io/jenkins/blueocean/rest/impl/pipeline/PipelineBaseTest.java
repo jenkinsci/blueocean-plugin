@@ -96,10 +96,10 @@ public abstract class PipelineBaseTest{
                         value = "{}";
                     }
                     T r =  JsonConverter.om.readValue(value, valueType);
-                    LOGGER.info("Response:\n"+JsonConverter.om.writeValueAsString(r));
+                    LOGGER.debug("Response:\n"+JsonConverter.om.writeValueAsString(r));
                     return r;
                 } catch (IOException e) {
-                    LOGGER.info("Failed to parse JSON: "+value+". "+e.getMessage());
+                    LOGGER.error("Failed to parse JSON: "+value+". "+e.getMessage());
                     throw new RuntimeException(e);
                 }
             }
@@ -107,7 +107,7 @@ public abstract class PipelineBaseTest{
             public String writeValue(Object value) {
                 try {
                     String str = JsonConverter.om.writeValueAsString(value);
-                    LOGGER.info("Request:\n"+str);
+                    LOGGER.debug("Request:\n"+str);
                     return str;
                 } catch (JsonProcessingException e) {
                     throw new RuntimeException(e);

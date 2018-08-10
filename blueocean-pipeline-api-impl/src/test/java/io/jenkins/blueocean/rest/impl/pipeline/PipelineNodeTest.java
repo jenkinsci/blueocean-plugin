@@ -13,14 +13,13 @@ import hudson.model.Slave;
 import hudson.model.queue.QueueTaskFuture;
 import hudson.util.RunList;
 import io.jenkins.blueocean.listeners.NodeDownstreamBuildAction;
-import io.jenkins.blueocean.rest.hal.Link;
-import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import jenkins.branch.BranchSource;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
 import jenkins.plugins.git.GitSampleRepoRule;
 import jenkins.scm.api.SCMSource;
 import net.sf.json.JSONObject;
+import org.apache.commons.lang3.StringUtils;
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -44,11 +43,14 @@ import org.jvnet.hudson.test.Issue;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl.PARAMETERS_ELEMENT;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -2396,6 +2398,36 @@ public class PipelineNodeTest extends PipelineBaseTest {
 
         List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() + "/runs/1/nodes/", List.class);
         assertEquals(7, nodes.size());
+    }
+
+    @Test
+    public void sequentialParallelStagesLongRun() throws Exception {
+        WorkflowJob p = createWorkflowJobWithJenkinsfile( getClass(), "sequential_parallel_stages_long_run_time.jenkinsfile" );
+        Slave s = j.createOnlineSlave();
+        s.setNumExecutors(3);
+        WorkflowRun run = p.scheduleBuild2( 0).waitForStart();
+        j.waitForCompletion( run );
+
+        run = p.scheduleBuild2( 0).waitForStart();
+        while(run.isBuilding()){
+            List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() //
+                                       + "/runs/" + run.getId() + "/nodes/", List.class);
+            for (Map node : nodes){
+                if( StringUtils.isEmpty((String)node.get( "firstParent" ))
+                    && Arrays.asList("first-sequential-stage", "second-sequential-stage", "third-sequential-stage")
+                    .contains(node.get( "displayName" ))){
+                    LOGGER.error( "node {} has getFirstParent null", node);
+                    fail( "node with getFirstParent null:" + node );
+                }
+            }
+             LOGGER.debug( "nodes size {}", nodes.size() );
+             if(nodes.size()>9){
+                 LOGGER.info( "nodes > 9 {}", nodes);
+                 fail( "nodes > 9:"+ nodes);
+             }
+            Thread.sleep( 100 );
+        }
+
     }
 
     @Test
