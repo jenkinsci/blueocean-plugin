@@ -4,6 +4,8 @@ import { logging } from '@jenkins-cd/blueocean-core-js';
 import { prefixIfNeeded } from '../../urls/prefixIfNeeded';
 import { KaraokeApi } from '../../index';
 
+import { convertJenkinsNodeGraph } from '../../../PipelineRunGraph';
+
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.Pager.Pipeline');
 
 /**
@@ -111,7 +113,9 @@ export class PipelinePager {
                     } else {
                         // Actually we should only come here on a not running job
                         logger.debug('Actually we should only come here on a not running job');
-                        const lastNode = logData.data.model[logData.data.model.length - 1];
+                        const convertedNodes = convertJenkinsNodeGraph(logData.data.model, result.isFinished, 0);
+                        const lastNode = logData.data.model.filter(node => node.id === convertedNodes[convertedNodes.length - 1].id)[0];
+
                         this.currentNode = lastNode;
                     }
                     this.currentStepsUrl = prefixIfNeeded(this.currentNode._links.steps.href);

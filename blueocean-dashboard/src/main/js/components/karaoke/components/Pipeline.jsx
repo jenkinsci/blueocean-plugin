@@ -323,12 +323,16 @@ export default class Pipeline extends Component {
                 let nodeRestartId = this.pager.currentNode.restartable ? this.pager.currentNode.id : '';
                 let nodeRestartTitle = this.pager.currentNode.restartable ? title : '';
 
-                if (this.pager.currentNode.restartable == false && this.pager.currentNode.type == 'PARALLEL') {
-                    const currentNodeParent = this.pager.nodes.data.model.filter(node => node.id == this.pager.currentNode.parent)[0];
+                if (this.pager.currentNode.restartable == false) {
+                    let currentNodeParent = this.pager.nodes.data.model.filter(node => node.id == this.pager.currentNode.firstParent)[0];
 
-                    if (currentNodeParent.restartable) {
-                        nodeRestartId = currentNodeParent.id;
-                        nodeRestartTitle = currentNodeParent.title;
+                    while (currentNodeParent) {
+                        if (currentNodeParent && currentNodeParent.restartable) {
+                            nodeRestartId = currentNodeParent.id;
+                            nodeRestartTitle = currentNodeParent.title;
+                            break;
+                        }
+                        currentNodeParent = this.pager.nodes.data.model.filter(node => node.id == currentNodeParent.firstParent)[0];
                     }
                 }
 

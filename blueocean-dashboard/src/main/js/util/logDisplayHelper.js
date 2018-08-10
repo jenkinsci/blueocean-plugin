@@ -66,6 +66,7 @@ export const getNodesInformation = nodes => {
             logUrl: hasLogs ? logActions[0]._links.self.href : undefined,
             isParallel,
             parent,
+            firstParent: item.firstParent || undefined,
             isRunning,
             isCompleted,
             computedResult,

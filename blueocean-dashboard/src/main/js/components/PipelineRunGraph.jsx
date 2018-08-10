@@ -91,6 +91,19 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
     return converted;
 }
 
+function buildSequentialStages(originalNodes, convertedNodes, sequentialNodeKey, currentNode) {
+    const nextSequentialNodeId = originalNodes[sequentialNodeKey].edges[0] ? originalNodes[sequentialNodeKey].edges[0].id : '';
+
+    currentNode.isSequential = true;
+    if (nextSequentialNodeId) {
+        if (originalNodes[sequentialNodeKey].edges.length && originalNodes[nextSequentialNodeId].firstParent == currentNode.id) {
+            currentNode.nextSibling = convertedNodes[nextSequentialNodeId];
+
+            buildSequentialStages(originalNodes, convertedNodes, currentNode.nextSibling.id, currentNode.nextSibling);
+        }
+    }
+}
+
 /**
  * Convert the graph results of a run as reported by Jenkins into the  model required by the PipelineGraph component
  *
@@ -109,7 +122,6 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
     const edgeCountToNode = {}; // id => int
     // const edgeCountFromNode = {}; // id => int
     let firstNode = undefined;
-
     // Convert the basic details of nodes, and index them by id
     jenkinsGraph.forEach(jenkinsNode => {
         const convertedNode = convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis);
@@ -138,7 +150,9 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
     // Follow the graph and build our results
     let currentNode = firstNode;
     while (currentNode) {
-        results.push(currentNode);
+        if (!currentNode.isSequential) {
+            results.push(currentNode);
+        }
 
         let nextNode = null;
         const originalNode = originalNodeForId[currentNode.id];
@@ -150,6 +164,7 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
 
         if (edges.length === 1 && parallelNodes.length === 0) {
             // Single following (sibling) node
+
             nextNode = convertedNodeForId[edges[0].id];
         } else if (parallelNodes.length > 0) {
             // Multiple following nodes are child nodes (parallel branch) not siblings
@@ -165,6 +180,18 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
 
                 for (const branchNode of branchNodes) {
                     const branchNodeEdges = originalNodeForId[branchNode.id].edges || [];
+
+                    Object.keys(convertedNodeForId).map((key, index) => {
+                        //Check if this stage contains sequential stages and if so, replace it with the first one in the sequence
+                        if (originalNodeForId[key].firstParent === branchNode.id) {
+                            currentNode.children[0] = convertedNodeForId[key];
+
+                            if (originalNodeForId[key].edges[0]) {
+                                buildSequentialStages(originalNodeForId, convertedNodeForId, key, currentNode.children[0]);
+                            }
+                        }
+                    });
+
                     if (branchNodeEdges.length > 0) {
                         // Should only be 0 at end of pipeline or bad input data
                         const followingNode = convertedNodeForId[branchNodeEdges[0].id];
@@ -246,7 +273,6 @@ export default class PipelineRunGraph extends Component {
         }
 
         const id = this.props.selectedStage.id;
-
         let selectedStage = null;
 
         // Find selected stage by id
@@ -255,9 +281,15 @@ export default class PipelineRunGraph extends Component {
                 selectedStage = topStage;
             } else {
                 for (const child of topStage.children) {
-                    if (child.id === id) {
-                        selectedStage = child;
-                        break;
+                    let currentStage = child;
+
+                    while (currentStage) {
+                        if (currentStage.id === id) {
+                            selectedStage = currentStage;
+                            break;
+                        }
+
+                        currentStage = currentStage.nextSibling;
                     }
                 }
             }
