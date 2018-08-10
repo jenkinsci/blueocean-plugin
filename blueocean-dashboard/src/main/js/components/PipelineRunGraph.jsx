@@ -96,7 +96,11 @@ function buildSequentialStages(originalNodes, convertedNodes, sequentialNodeKey,
 
     currentNode.isSequential = true;
     if (nextSequentialNodeId) {
-        if (originalNodes[sequentialNodeKey].edges.length && originalNodes[nextSequentialNodeId].firstParent == currentNode.id) {
+        if (
+            originalNodes[sequentialNodeKey].edges.length &&
+            originalNodes[nextSequentialNodeId] &&
+            originalNodes[nextSequentialNodeId].firstParent == currentNode.id
+        ) {
             currentNode.nextSibling = convertedNodes[nextSequentialNodeId];
 
             buildSequentialStages(originalNodes, convertedNodes, currentNode.nextSibling.id, currentNode.nextSibling);
