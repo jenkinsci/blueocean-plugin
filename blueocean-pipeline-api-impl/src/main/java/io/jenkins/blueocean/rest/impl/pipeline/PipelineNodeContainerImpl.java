@@ -64,4 +64,12 @@ public class PipelineNodeContainerImpl extends BluePipelineNodeContainer {
     public Link getLink() {
         return self;
     }
+
+    /**
+     * for test purpose
+     * @return
+     */
+    protected List<BluePipelineNode> getNodes(){
+        return nodes;
+    }
 }

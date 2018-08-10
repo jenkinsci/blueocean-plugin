@@ -273,4 +273,9 @@ public class PipelineNodeImpl extends BluePipelineNode {
         return node;
     }
 
+    @Override
+    public String toString()
+    {
+        return "PipelineNodeImpl{" + "node=" + node + ", edges=" + edges + ", status=" + status + '}';
+    }
 }

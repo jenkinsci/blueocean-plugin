@@ -13,6 +13,8 @@ import hudson.model.Slave;
 import hudson.model.queue.QueueTaskFuture;
 import hudson.util.RunList;
 import io.jenkins.blueocean.listeners.NodeDownstreamBuildAction;
+import io.jenkins.blueocean.rest.hal.Link;
+import io.jenkins.blueocean.rest.model.BluePipelineNode;
 import jenkins.branch.BranchSource;
 import jenkins.model.Jenkins;
 import jenkins.plugins.git.GitSCMSource;
@@ -51,6 +53,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.stream.Collectors;
 
 import static io.jenkins.blueocean.rest.impl.pipeline.PipelineStepImpl.PARAMETERS_ELEMENT;
 import static org.hamcrest.CoreMatchers.hasItem;
@@ -2408,27 +2411,46 @@ public class PipelineNodeTest extends PipelineBaseTest {
         WorkflowRun run = p.scheduleBuild2( 0).waitForStart();
         j.waitForCompletion( run );
 
+        List<String> watchedStages = Arrays.asList("first-sequential-stage", "second-sequential-stage", "third-sequential-stage");
+
         run = p.scheduleBuild2( 0).waitForStart();
         while(run.isBuilding()){
-            List<Map> nodes = get("/organizations/jenkins/pipelines/" + p.getName() //
-                                       + "/runs/" + run.getId() + "/nodes/", List.class);
-            for (Map node : nodes){
-                if( StringUtils.isEmpty((String)node.get( "firstParent" ))
-                    && Arrays.asList("first-sequential-stage", "second-sequential-stage", "third-sequential-stage")
-                    .contains(node.get( "displayName" ))){
+            PipelineNodeContainerImpl pipelineNodeContainer = new PipelineNodeContainerImpl(run, new Link( "foo" ) );
+
+            List<BluePipelineNode> nodes = pipelineNodeContainer.getNodes();
+            for (BluePipelineNode node : nodes){
+                if( StringUtils.isEmpty(node.getFirstParent())
+                    && watchedStages.contains(node.getDisplayName())){
                     LOGGER.error( "node {} has getFirstParent null", node);
                     fail( "node with getFirstParent null:" + node );
                 }
+                // we try to find edges with id for a non existing node in the list
+                List<BluePipelineNode.Edge> emptyEdges =
+                    node.getEdges().stream().filter( edge ->
+                         !nodes.stream()
+                            .filter( bluePipelineNode -> bluePipelineNode.getId().equals( edge.getId() ) )
+                            .findFirst().isPresent()
+
+                ).collect( Collectors.toList() );
+                if(!emptyEdges.isEmpty()) {
+                    // TODO remove this weird if but it's only to have breakpoint in IDE
+                    assertTrue( "edges with unknown nodes" + nodes, !emptyEdges.isEmpty() );
+                }
             }
-             LOGGER.debug( "nodes size {}", nodes.size() );
-             if(nodes.size()>9){
-                 LOGGER.info( "nodes > 9 {}", nodes);
-                 fail( "nodes > 9:"+ nodes);
-             }
+
+
+            LOGGER.debug( "nodes size {}", nodes.size() );
+            if(nodes.size()!=9){
+                LOGGER.info( "nodes != 9 {}", nodes);
+                fail( "nodes != 9:"+ nodes);
+            }
+
             Thread.sleep( 100 );
         }
 
     }
+
+
 
     @Test
     @Issue("JENKINS-49050")
