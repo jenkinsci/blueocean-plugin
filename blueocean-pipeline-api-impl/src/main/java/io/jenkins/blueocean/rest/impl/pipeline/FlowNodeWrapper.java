@@ -125,7 +125,7 @@ public class FlowNodeWrapper {
     }
 
     public void addParents(Collection<FlowNodeWrapper> parents){
-        parents.addAll(parents);
+        this.parents.addAll(parents);
     }
 
     public @CheckForNull FlowNodeWrapper getFirstParent(){
