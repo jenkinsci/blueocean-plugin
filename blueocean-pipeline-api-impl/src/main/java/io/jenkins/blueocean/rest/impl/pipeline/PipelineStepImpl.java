@@ -164,10 +164,9 @@ public class PipelineStepImpl extends BluePipelineStep {
             return null;
         }
         msg = msg + "\n";
-        ByteBuffer byteBuffer = new ByteBuffer();
-        try {
+
+        try (ByteBuffer byteBuffer = new ByteBuffer();) {
             byteBuffer.write(msg.getBytes("UTF-8"));
-            byteBuffer.close();
             return new LogResource(new AnnotatedLargeText(byteBuffer, Charset.forName("UTF-8"),true, null));
         } catch (IOException e) {
             throw new ServiceException.UnexpectedErrorException(e.getMessage());
