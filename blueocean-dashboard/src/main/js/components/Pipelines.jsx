@@ -18,13 +18,8 @@ const translate = i18nTranslator('blueocean-dashboard');
 
 @observer
 export class Pipelines extends Component {
-    state = {
-        actionExtensionCount: 0,
-    };
-
     componentWillMount() {
         this.setState({ searchText: this.getSearchText() });
-        this._countExtensions();
     }
 
     componentDidMount() {
@@ -58,16 +53,6 @@ export class Pipelines extends Component {
         this.context.router.push(`${this.props.location.pathname}${updateGetParam('search', '', this.props.location.query)}`);
     };
 
-    // Figure out how many extensions we have for the action buttons column so we can size it appropriately
-    _countExtensions() {
-        Extensions.store.getExtensions('jenkins.pipeline.list.action', extensions => {
-            const count = extensions && typeof extensions.length === 'number' ? extensions.length : 0;
-            if (count !== this.state.actionExtensionCount) {
-                this.setState({ actionExtensionCount: count });
-            }
-        });
-    }
-
     handleKeyDownEvent = event => {
         if (
             document.activeElement !== this.getSearchInput() &&
@@ -88,7 +73,6 @@ export class Pipelines extends Component {
 
     render() {
         const { organization } = this.context.params;
-        const { actionExtensionCount } = this.state;
         const organizationName = organization || AppConfig.getOrganizationName();
         const organizationDisplayName = organization === AppConfig.getOrganizationName() ? AppConfig.getOrganizationDisplayName() : organization;
 
@@ -111,7 +95,7 @@ export class Pipelines extends Component {
             JTable.column(70, labelHealth),
             JTable.column(70, labelBranches),
             JTable.column(70, labelPullReqs),
-            JTable.column(actionExtensionCount * 24, ''),
+            JTable.column(24, ''),
         ];
 
         const pipelineRows =
@@ -158,9 +142,7 @@ export class Pipelines extends Component {
                 </ContentPageHeader>
                 <main>
                     <article>
-                        {!this.getSearchText() && (
-                            <DashboardCards router={this.context.router} />
-                        )}
+                        {!this.getSearchText() && <DashboardCards router={this.context.router} />}
                         {showEmptyState && <DashboardPlaceholder t={translate} />}
                         {!this.pager.pending &&
                             !pipelines.length &&
