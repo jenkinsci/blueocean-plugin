@@ -83,7 +83,6 @@ node() {
         stage('Cleanup') {
           sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-selenium.sh"
           sh "${env.WORKSPACE}/acceptance-tests/runner/scripts/stop-bitbucket-server.sh"
-          sendhipchat()
           deleteDir()
         }
       }
@@ -91,24 +90,3 @@ node() {
   }
 }
 
-
-def sendhipchat() {
-  res = currentBuild.result
-  if(currentBuild.result == null) {
-    res = "SUCCESS"
-  }
-  message = "${env.JOB_NAME} #${env.BUILD_NUMBER}, status: ${res} (<a href='${env.RUN_DISPLAY_URL}'>Open</a>)"
-  color = null
-  if(currentBuild.result == "UNSTABLE") {
-      color = "YELLOW"
-  } else if(currentBuild.result == "SUCCESS" || currentBuild.result == null){
-      color = "GREEN"
-  } else if(currentBuild.result == "FAILURE") {
-      color = "RED"
-  } else if(currentBuild.result == "ABORTED") {
-      color = "GRAY"
-  }
-  if(color != null) {
-      hipchatSend message: message, color: color
-  }
-}
