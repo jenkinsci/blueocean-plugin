@@ -125,9 +125,12 @@ export class BranchDetailsRow extends Component {
             <div className="actions-container">
                 <RunButton className="icon-button" runnable={branch} latestRun={branch.latestRun} onNavigation={openRunDetails} />
                 <RunHistoryButton pipeline={pipeline} branchName={branch.name} t={t} />
-                <FavoritePipeline
+                <FavoritePipeline filter={sortByOrdinal} pipeline={branch} {...t} />
+                <Extensions.Renderer
+                    extensionPoint="jenkins.pipeline.branches.list.action"
                     filter={sortByOrdinal}
                     pipeline={branch}
+                    store={this.context.store}
                     {...t}
                 />
             </div>
