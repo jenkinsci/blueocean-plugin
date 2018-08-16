@@ -121,8 +121,10 @@ export class PipelinePager {
                             lastConvertedNode = lastConvertedNode.children[lastConvertedNode.children.length - 1];
 
                             //if the node has siblings, select the last sibling
-                            while (lastConvertedNode.nextSibling) {
+                            let counter = 0;
+                            while (lastConvertedNode.nextSibling && counter < logData.data.model.length) {
                                 lastConvertedNode = lastConvertedNode.nextSibling;
+                                counter++;
                             }
                         }
 
