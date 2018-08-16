@@ -77,7 +77,7 @@ BranchDetailsRowRenderer.propTypes = {
 @observer
 export class BranchDetailsRow extends Component {
     // The number of hardcoded actions not provided by extensions
-    static actionItemsCount = 2;
+    static actionItemsCount = 3;
 
     render() {
         const { data: branch, pipeline, t, locale, columns } = this.props;
