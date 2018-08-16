@@ -92,7 +92,8 @@ function convertJenkinsNodeDetails(jenkinsNode, isCompleted, skewMillis = 0) {
 }
 
 function buildSequentialStages(originalNodes, convertedNodes, sequentialNodeKey, currentNode) {
-    const nextSequentialNodeId = originalNodes[sequentialNodeKey].edges[0] ? originalNodes[sequentialNodeKey].edges[0].id : '';
+    const nextSequentialNodeId =
+        originalNodes[sequentialNodeKey].edges.length && originalNodes[sequentialNodeKey].edges[0] ? originalNodes[sequentialNodeKey].edges[0].id : '';
 
     currentNode.isSequential = true;
     if (nextSequentialNodeId) {
@@ -188,10 +189,18 @@ export function convertJenkinsNodeGraph(jenkinsGraph, isCompleted, skewMillis) {
                     Object.keys(convertedNodeForId).map((key, index) => {
                         //Check if this stage contains sequential stages and if so, replace it with the first one in the sequence
                         if (originalNodeForId[key].firstParent === branchNode.id) {
-                            currentNode.children[0] = convertedNodeForId[key];
+                            for (var i = 0; i < currentNode.children.length; i++) {
+                                if (currentNode.children[i].id === branchNode.id) {
+                                    currentNode.children[i] = convertedNodeForId[key];
+                                    if (originalNodeForId[key].edges.length && originalNodeForId[key].edges[0]) {
+                                        buildSequentialStages(originalNodeForId, convertedNodeForId, key, currentNode.children[i]);
+                                    } else {
+                                        //this happens if the sequential stage group only has one stage
+                                        currentNode.children[i].isSequential = true;
+                                    }
 
-                            if (originalNodeForId[key].edges[0]) {
-                                buildSequentialStages(originalNodeForId, convertedNodeForId, key, currentNode.children[0]);
+                                    break;
+                                }
                             }
                         }
                     });
