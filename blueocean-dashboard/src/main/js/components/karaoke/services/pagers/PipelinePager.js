@@ -114,8 +114,21 @@ export class PipelinePager {
                         // Actually we should only come here on a not running job
                         logger.debug('Actually we should only come here on a not running job');
                         const convertedNodes = convertJenkinsNodeGraph(logData.data.model, result.isFinished, 0);
-                        const lastNode = logData.data.model.filter(node => node.id === convertedNodes[convertedNodes.length - 1].id)[0];
+                        let lastConvertedNode = convertedNodes[convertedNodes.length - 1];
 
+                        //select the last child if the node has any children
+                        if (lastConvertedNode.children.length) {
+                            lastConvertedNode = lastConvertedNode.children[lastConvertedNode.children.length - 1];
+
+                            //if the node has siblings, select the last sibling
+                            let counter = 0;
+                            while (lastConvertedNode.nextSibling && counter < logData.data.model.length) {
+                                lastConvertedNode = lastConvertedNode.nextSibling;
+                                counter++;
+                            }
+                        }
+
+                        const lastNode = logData.data.model.filter(node => node.id === lastConvertedNode.id)[0];
                         this.currentNode = lastNode;
                     }
                     this.currentStepsUrl = prefixIfNeeded(this.currentNode._links.steps.href);
