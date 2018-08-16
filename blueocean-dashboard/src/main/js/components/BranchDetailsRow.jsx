@@ -16,6 +16,7 @@ function noRun(branch, openRunDetails, t, store, columns) {
     const actions = [
         <RunButton className="icon-button" runnable={branch} onNavigation={openRunDetails} />,
         <FavoritePipeline filter={sortByOrdinal} pipeline={branch} {...t} />,
+        <Extensions.Renderer extensionPoint="jenkins.pipeline.branches.list.action" filter={sortByOrdinal} pipeline={branch} store={store} {...t} />,
     ];
 
     return <BranchDetailsRowRenderer columns={columns} branchName={cleanBranchName} statusIndicator={statusIndicator} actions={actions} />;
