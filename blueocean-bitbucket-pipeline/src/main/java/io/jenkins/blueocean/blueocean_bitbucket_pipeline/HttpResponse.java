@@ -38,25 +38,27 @@ public class HttpResponse {
             if(getStatus() >= 300){
                 ErrorMessage errorMessage = new ErrorMessage(getStatus(), getStatusLine());
                 if (StringUtils.isEmpty(errorMessage.message)) {
-                    String message = "";
+                    String message;;
                     List<ErrorMessage.Error> errors = new ArrayList<>();
                     try {
                         JSONObject jsonResponse = JSONObject.fromObject(IOUtils.toString(entity.getContent()));
                         JSONArray arr = jsonResponse.getJSONArray("errors");
+                        StringBuilder messageBuilder = new StringBuilder();
                         for (int i = 0; i < arr.size(); i++) {
                             JSONObject err = arr.getJSONObject(i);
                             if (i > 0) {
-                                message += ", ";
+                                messageBuilder.append(", ");
                             }
-                            message += err.getString("message");
+                            messageBuilder.append(err.getString("message"));
 
-                            String details = "";
+                            StringBuilder details = new StringBuilder();
                             JSONArray errorDetails = err.getJSONArray("details");
                             for (int detailIdx = 0; detailIdx < errorDetails.size(); detailIdx++) {
-                                details += errorDetails.getString(detailIdx) + "\n";
+                                details.append(errorDetails.getString(detailIdx)).append("\n");
                             }
-                            errors.add(new ErrorMessage.Error("", err.getString("exceptionName"), details));
+                            errors.add(new ErrorMessage.Error("", err.getString("exceptionName"), details.toString()));
                         }
+                        message = messageBuilder.toString();
                     } catch(Exception e) {
                         logger.error("An error occurred getting BitBucket API error content", e);
                         message = "An unknown error was reported from the BitBucket server";
