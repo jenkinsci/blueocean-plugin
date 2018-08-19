@@ -85,6 +85,16 @@ class SaveDialog extends React.Component {
                 errorMessage = err.responseBody.message;
             }
         }
+        if (err.responseBody && err.responseBody.errors && err.responseBody.errors.length) {
+            errorMessage = (
+                <div>
+                    <div><strong>{errorMessage}</strong></div>
+                    {err.responseBody.errors.map(e =>
+                        <div><em>{e.code}</em>: {e.message}</div>
+                    )}
+                </div>
+            );
+        }
         this.setState({ saving: false, errorMessage });
     }
 
