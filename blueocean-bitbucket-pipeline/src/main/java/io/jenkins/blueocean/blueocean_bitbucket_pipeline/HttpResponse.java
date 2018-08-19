@@ -37,7 +37,8 @@ public class HttpResponse {
             HttpEntity entity = response.getEntity();
             if(getStatus() >= 300){
                 ErrorMessage errorMessage = new ErrorMessage(getStatus(), getStatusLine());
-                if (StringUtils.isEmpty(errorMessage.message)) {
+                // WireMock returns "Bad Request" for the status message; it's also pretty nondescript
+                if (StringUtils.isEmpty(errorMessage.message) || "Bad Request".equals(errorMessage.message)) {
                     String message;;
                     List<ErrorMessage.Error> errors = new ArrayList<>();
                     try {
