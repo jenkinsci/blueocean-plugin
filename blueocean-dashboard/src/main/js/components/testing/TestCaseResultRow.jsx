@@ -21,7 +21,7 @@ export default class TestCaseResultRow extends Component {
 
     render() {
         const { testCase, translation, locale = 'en' } = this.props;
-        const duration = TimeDuration.format(testCase.duration, translation, locale);
+        const duration = TimeDuration.format(testCase.duration * 1000, translation, locale);
         const showTestCase = testCase.errorStackTrace || testCase.errorDetails || testCase.hasStdLog;
         let statusIndicator = null;
         switch (testCase.status) {
