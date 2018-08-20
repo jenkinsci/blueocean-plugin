@@ -152,16 +152,15 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
         StaplerRequest staplerRequest = mockStapler();
         MultiBranchProject mbp = mockMbp(credentialId);
 
-        // /rest/api/1.0/projects/PROJ/repos/with-jenkinsfile/browse/Jenkinsfile
         GitContent content = new GitContent.Builder().autoCreateBranch(true).base64Data("bm9kZXsKICBlY2hvICdoZWxsbyB3b3JsZCEnCn0K")
-            .branch("master").message("new commit").owner("TESTP").path("Jenkinsfile").repo("pipeline-demo-test").build();
+            .branch("master").message("new commit").owner("TESTP").path("SomeFile").repo("pipeline-demo-test").build();
 
         when(staplerRequest.bindJSON(Mockito.eq(BitbucketScmSaveFileRequest.class), Mockito.any(JSONObject.class))).thenReturn(new BitbucketScmSaveFileRequest(content));
 
         String request = "{\n" +
             "  \"content\" : {\n" +
             "    \"message\" : \"new commit\",\n" +
-            "    \"path\" : \"Jenkinsfile\",\n" +
+            "    \"path\" : \"SomeFile\",\n" +
             "    \"branch\" : \"master\",\n" +
             "    \"repo\" : \"pipeline-demo-test\",\n" +
             "    \"base64Data\" : " + "\"bm9kZXsKICBlY2hvICdoZWxsbyB3b3JsZCEnCn0K\"" +
@@ -172,14 +171,13 @@ public class BitbucketServerScmContentProviderTest extends BbServerWireMock {
 
         try {
             // Should get mocked response from:
-            // bitbucket_rest_api_10_projects_proj_repos_with-jenkinsfile_browse_jenkinsfile-7269cd83-1af6-4134-9161-82360d678dcc.json
-            new BitbucketServerScmContentProvider()
-                .saveContent(staplerRequest, mbp);
+            // bitbucket_rest_api_10_projects_testp_repos_pipeline-demo-test_browse_somefile-7269cd83-1af6-4134-9161-82360d678dcc.json
+            new BitbucketServerScmContentProvider().saveContent(staplerRequest, mbp);
         } catch (ServiceException e) {
-            assertEquals("File editing canceled for 'Jenkinsfile' on 'master'.", e.getMessage());
+            assertEquals("File editing canceled for 'SomeFile' on 'master'.", e.getMessage());
             return;
         }
-        fail("Should have failed with message: File editing canceled for 'Jenkinsfile' on 'master'.");
+        fail("Should have failed with message: File editing canceled for 'SomeFile' on 'master'.");
     }
 
     @Test
