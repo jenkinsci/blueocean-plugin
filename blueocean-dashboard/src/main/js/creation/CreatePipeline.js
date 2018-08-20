@@ -78,7 +78,6 @@ export default class CreatePipeline extends React.Component {
                                     <h1>{t('creation.core.intro.scm_provider')}</h1>
 
                                     <CreatePipelineScmListRenderer
-                                        extensionPoint="jenkins.pipeline.create.scm.provider"
                                         onSelection={provider => this._onSelection(provider)}
                                         selectedProvider={this.state.selectedProvider}
                                     />
