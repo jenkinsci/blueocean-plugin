@@ -11,6 +11,7 @@ import hudson.model.ParameterValue;
 import hudson.model.ParametersAction;
 import hudson.model.ParametersDefinitionProperty;
 import hudson.model.Queue;
+import hudson.model.Run;
 import hudson.model.queue.ScheduleResult;
 import hudson.util.RunList;
 import io.jenkins.blueocean.commons.ServiceException;
@@ -33,6 +34,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Optional;
 
 /**
  * @author Vivek Pandey
@@ -56,14 +58,9 @@ public class RunContainerImpl extends BlueRunContainer {
     public BlueRun get(String name) {
         RunList<? extends hudson.model.Run> runList = job.getBuilds();
 
-        hudson.model.Run run = null;
+        hudson.model.Run run;
         if (name != null) {
-            for (hudson.model.Run r : runList) {
-                if (r.getId().equals(name)) {
-                    run = r;
-                    break;
-                }
-            }
+            run = findRun( runList, name );
             if( run == null)
             {
                 int number;
@@ -84,6 +81,8 @@ public class RunContainerImpl extends BlueRunContainer {
                     }
                 }
 
+                // JENKINS-53175 so we try again as the build has maybe from out of the queue and running now or has been running
+                run = findRun( runList, name );
                 if ( run == null )
                 {
                     throw new NotFoundException(
@@ -94,6 +93,16 @@ public class RunContainerImpl extends BlueRunContainer {
             run = runList.getLastBuild();
         }
         return BlueRunFactory.getRun(run, pipeline);
+    }
+
+    private Run findRun(RunList<? extends hudson.model.Run> runList, String runId){
+        Optional<? extends hudson.model.Run> optionalRun = runList.stream()
+            .filter( arun -> arun.getId().equals( runId ) )
+            .findFirst();
+        if(optionalRun.isPresent()){
+            return optionalRun.get();
+        }
+        return null;
     }
 
     @Override
