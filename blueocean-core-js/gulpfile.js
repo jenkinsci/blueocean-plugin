@@ -14,6 +14,7 @@ const rename = require('gulp-rename');
 const copy = require('gulp-copy');
 const fs = require('fs');
 const ts = require('gulp-typescript');
+const jest = require('gulp-jest').default;
 const tsProject = ts.createProject('./tsconfig.json');
 const eslint = require('gulp-eslint');
 
@@ -113,41 +114,21 @@ gulp.task('validate', ['lint', 'test'], () => {
     }
 });
 
-var builder = require('@jenkins-cd/js-builder');
-
-builder.defineTask('lint', () => gulp.src([process.cwd()+"/src/**/*.{js,jsx}", process.cwd()+"/test/**/*.{js,jsx}"])
-    .pipe(eslint(process.cwd()+'/../.eslintrc'))
-    .pipe(eslint.format())
-    .pipe(eslint.results(function (results) {
-        if (results.errorCount > 0 || results.warningCount > 0) {
-            gutil.log(gutil.colors.magenta('Oops, there are some eslint errors/warnings:'));
-            if (results.warningCount > 0) {
-                gutil.log(gutil.colors.magenta('\tWarnings: ' + results.warningCount));
-            }
-            if (results.errorCount > 0) {
-                gutil.log(gutil.colors.red('\tErrors:   ' + results.errorCount));
-                process.exit(1);
-            }
-        }})))
-builder.src([config.ts.destBundle, 'less']);
-
-//
-// Create the main bundle.
-//
-
-builder
-    .bundle('target/tstemp/js/index.js', 'blueocean-core-js.js')
-    .onStartup('./target/tstemp/js/bundleStartup.js')
-    .inDir('target/classes/io/jenkins/blueocean')
-    .less('src/less/blueocean-core-js.less')
-    .import('react@any', {
-        aliases: ['react/lib/React'], // in case a module requires react through the back door
-    })
-    .import('react-dom@any')
-    .import('react-router@any')
-    .export('@jenkins-cd/js-extensions')
-    .export('@jenkins-cd/logging')
-    .export('mobx');
-
-//megaultrahax
-gulp.tasks['js_bundle_blueocean-core-js_bundle_1'].dep = ['compile-typescript-bundle'];
+gulp.task('test', () => {
+    return gulp.src('test').pipe(jest({ "collectCoverageFrom": [
+        "src/js/**/*.{js,jsx}"
+      ],
+      "testMatch":['**/?(*-)(spec|test).js?(x)'],
+      "transform": {
+        "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js",
+        "^.+\\.jsx?$": "babel-jest"
+      },
+      "moduleFileExtensions": [
+        "ts",
+        "tsx",
+        "js",
+        "jsx",
+        "json",
+        "node"
+      ]}))
+})

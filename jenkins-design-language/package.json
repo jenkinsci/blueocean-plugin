@@ -1,7 +1,7 @@
 {
   "name": "@jenkins-cd/design-language",
   "jdlName": "jenkins-design-language",
-  "version": "0.0.163",
+  "version": "0.0.164",
   "description": "Styles, assets, and React classes for Jenkins Design Language",
   "main": "dist/js/components/index.js",
   "scripts": {
@@ -46,8 +46,6 @@
   },
   "dependencies": {
     "@jenkins-cd/blueocean-material-icons": "0.0.7",
-    "@jenkins-cd/js-modules": "0.0.10",
-    "@jenkins-cd/js-extensions": "0.0.44",
     "linkifyjs": "2.1.4",
     "lodash.debounce": "4.0.8",
     "moment": "2.19.3",
@@ -58,8 +56,6 @@
     "react-router": "2.8.1"
   },
   "devDependencies": {
-    "@jenkins-cd/js-builder": "0.0.63",
-    "@jenkins-cd/js-builder-jest": "0.0.4",
     "@kadira/storybook": "2.35.3",
     "babel-eslint": "7.0.0",
     "babel-polyfill": "6.16.0",
@@ -74,12 +70,13 @@
     "eslint": "2.13.1",
     "eslint-plugin-react": "4.3.0",
     "flow-bin": "0.33.0",
-    "gulp": "3.9.1",
+    "gulp": "^3.9.1",
     "gulp-babel": "6.1.2",
     "gulp-clean": "0.3.2",
     "gulp-concat": "2.6.0",
     "gulp-copy": "0.0.2",
     "gulp-eslint": "3.0.1",
+    "gulp-jest": "^4.0.2",
     "gulp-less": "3.1.0",
     "gulp-rename": "1.2.2",
     "gulp-sourcemaps": "2.1.1",
@@ -87,6 +84,7 @@
     "gulp-typescript": "4.0.1",
     "harp": "0.24.0",
     "jest": "19.0.2",
+    "jest-cli": "^23.5.0",
     "less": "2.7.2",
     "normalize.css": "5.0.0",
     "octicons": "4.4.0",

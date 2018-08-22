@@ -18,6 +18,7 @@ const copy = require('gulp-copy');
 const svgmin = require('gulp-svgmin');
 const lint = require('gulp-eslint');
 const ts = require('gulp-typescript');
+const jest = require('gulp-jest').default;
 const tsProject = ts.createProject('./tsconfig.json');
 // Options, src/dest folders, etc
 
@@ -168,34 +169,21 @@ gulp.task("validate", () => {
     }
 });
 
-var builder = require('@jenkins-cd/js-builder');
-
-builder.src([
-    'src/js',
-    'less',
-    'dist' // for icons & fonts; NOTE: would be nice to find another way to do this as files in dist creates issues for jest & eslint
-]);
-
-builder.tests(config.test.sources);
-
-// redefine 'lint' to check only react and test sources (avoid dist)
-builder.defineTask("lint", () => (
-    gulp.src([config.react.sources, config.test.sources])
-        .pipe(lint())
-        .pipe(lint.format())
-        .pipe(lint.failAfterError())
-));
-
-
-//
-// Create the main bundle.
-//
-builder.bundle('src/js/components/index.js', 'jenkins-design-language.js')
-    .inDir('target/classes/io/jenkins/blueocean')
-    .less('less/jenkins-design-language.less')
-    .export('moment')
-    .export('moment-duration-format')
-    .export('react')
-    .export('react-dom')
-    .export('react-router')
-    .export('react-addons-css-transition-group');
+gulp.task('test', () => {
+    return gulp.src('test').pipe(jest({ "collectCoverageFrom": [
+        "src/js/**/*.{js,jsx}"
+      ],
+      "testMatch":['**/?(*-)(spec|test).js?(x)'],
+      "transform": {
+        "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js",
+        "^.+\\.jsx?$": "babel-jest"
+      },
+      "moduleFileExtensions": [
+        "ts",
+        "tsx",
+        "js",
+        "jsx",
+        "json",
+        "node"
+      ]}))
+})

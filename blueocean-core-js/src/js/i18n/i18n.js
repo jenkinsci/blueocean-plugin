@@ -1,6 +1,5 @@
 import i18next from 'i18next';
 import LngDetector from 'i18next-browser-languagedetector';
-import { store } from '@jenkins-cd/js-extensions';
 import XHR from 'i18next-xhr-backend';
 
 import { UrlConfig } from '../urlconfig';
@@ -25,7 +24,7 @@ const prefix = UrlConfig.getJenkinsRootURL() || '';
 const FALLBACK_LANG = '';
 
 function newPluginXHR(pluginName) {
-    let pluginVersion = store.getPluginVersion(pluginName);
+   // let pluginVersion = store.getPluginVersion(pluginName);
 
     if (!pluginVersion) {
         // if we do not have a version we may have an alias to resolve a resourceBUndle

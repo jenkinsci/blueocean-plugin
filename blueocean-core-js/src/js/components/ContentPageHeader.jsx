@@ -1,6 +1,5 @@
 import React, { PropTypes } from 'react';
 import { BasicHeader, TopNav, PageTabs, HeaderDetails } from '@jenkins-cd/design-language';
-import Extensions from '@jenkins-cd/js-extensions';
 
 import { BlueLogo } from './BlueLogo';
 
@@ -22,9 +21,7 @@ export const SiteHeader = props => {
     return (
         <BasicHeader className="ContentPageHeader">
             <TopNav>
-                <Extensions.Renderer extensionPoint="jenkins.header.logo">
-                    <BlueLogo />
-                </Extensions.Renderer>
+                <BlueLogo />
                 <div className="u-flex-grow" />
                 {topNavLinks}
                 {userComponents}

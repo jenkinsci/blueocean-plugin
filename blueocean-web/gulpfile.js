@@ -1,64 +1,121 @@
-//
-// See https://github.com/jenkinsci/js-builder
-//
+'use strict';
 
-process.env.SKIP_BLUE_IMPORTS = 'YES';
+const gulp = require('gulp');
+const gutil = require('gulp-util');
+const sourcemaps = require('gulp-sourcemaps');
+const babel = require('gulp-babel');
+const less = require('gulp-less');
+const rename = require('gulp-rename');
+const copy = require('gulp-copy');
+const fs = require('fs');
+const ts = require('gulp-typescript');
+const jest = require('gulp-jest').default;
+const tsProject = ts.createProject('./tsconfig.json');
 
-var gi = require('giti');
-var fs = require('fs');
 
-var builder = require('@jenkins-cd/js-builder');
+// Options, src/dest folders, etc
 
-// create a dummy revisionInfo so developmentFooter will not fail
-const revisionInfo = '// Do not edit, it is generated and will be on each build.\nexport default {};';
+const config = {
+    react: {
+        sources: ['src/main/**/*.{js,jsx}', '!**/__mocks__/**'],
+        dest: 'dist',
+    },
+    ts: {
+        sources: ['src/main/**/*.{ts,tsx}'],
+        dest: 'dist',
+    },
+    less: {
+        sources: 'src/main/less/extensions.less',
+        watch: 'src/main/less/**/*.{less,css}',
+        dest: 'dist/assets/css',
+    },
+    copy: {
+        less_assets: {
+            sources: 'src/main/less/**/*.svg',
+            dest: 'dist/assets/css',
+        },
+    },
+};
 
-// Create the dir path. This gets executed by mvn before the
-// Java src is compiled, so it's not already created for
-// the revisionInfo stuff below to work without write failures.
-builder.paths.mkdirp('target/classes/io/jenkins/blueocean');
-builder.paths.mkdirp('target/classes/org/jenkins/ui/jsmodules/blueocean-web');
+// Watch all
 
-fs.writeFile('target/classes/io/jenkins/blueocean/revisionInfo.js', revisionInfo, err => {
-  if (err) throw err;
+gulp.task('watch', ['build'], () => {
+    gulp.watch(config.react.sources, ['compile-react']);
+    gulp.watch(config.less.watch, ['less']);
 });
-gi(function (err, result) {
-    if (err) return console.log(err);
-    result.timestamp = new Date().toISOString();
-    const revisionInfo = '/* eslint-disable */\n// Do not edit, it is generated and will be on each build.\nexport default ' + JSON.stringify(result);
-    fs.writeFile('target/classes/io/jenkins/blueocean/revisionInfo.js', revisionInfo, err => {
-        if (err) {
-          return console.log(err);
+
+// Default to all
+
+gulp.task('default', ['validate']);
+
+// Build all
+
+gulp.task('build', ['compile-typescript', 'compile-react', 'less', 'copy']);
+
+// Compile react sources
+
+gulp.task('compile-react', () =>
+    gulp
+        .src(config.react.sources)
+        .pipe(sourcemaps.init())
+        .pipe(babel(config.react.babel))
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest(config.react.dest))
+);
+
+gulp.task('compile-typescript', () =>
+    gulp
+        .src(config.ts.sources)
+        .pipe(tsProject())
+        .pipe(gulp.dest(config.ts.dest))
+);
+
+gulp.task('copy-src', () => gulp.src('src/js/**/*').pipe(gulp.dest(config.ts.destBundle + '/js')));
+
+gulp.task('less', () =>
+    gulp
+        .src(config.less.sources)
+        .pipe(sourcemaps.init())
+        .pipe(less())
+        .pipe(rename('blueocean-dashboard.css'))
+        .pipe(sourcemaps.write('.'))
+        .pipe(gulp.dest(config.less.dest))
+);
+
+gulp.task('copy', ['copy-less-assets']);
+
+gulp.task('copy-less-assets', () => gulp.src(config.copy.less_assets.sources).pipe(copy(config.copy.less_assets.dest, { prefix: 2 })));
+
+
+// Validate contents
+gulp.task('validate', ['lint', 'test'], () => {
+    const paths = [config.react.dest];
+
+    for (const path of paths) {
+        try {
+            fs.statSync(path);
+        } catch (err) {
+            gutil.log('Error occurred during validation; see stack trace for details');
+            throw err;
         }
-        console.log("The file was saved!\n" + revisionInfo);
-    });
+    }
 });
-// Explicitly setting the src paths in order to allow the rebundle task to
-// watch for changes in the JDL (js, css, icons etc).
-// See https://github.com/jenkinsci/js-builder#setting-src-and-test-spec-paths
-builder.src([
-    'src/main/js',
-    'src/main/less']);
 
-//
-// Create the main "App" bundle.
-// generateNoImportsBundle makes it easier to test with zombie.
-//
-builder.bundle('src/main/js/blueocean.js')
-    .inDir('target/classes/io/jenkins/blueocean')
-    .less('src/main/less/blueocean.less')
-    .onStartup('./src/main/js/init')
-    .export('redux')
-    .export('mobx-react')
-    .export("immutable")
-	.export("keymirror")
-    .export("react-redux")
-    .export("redux-thunk")
-    .import('react@any', {
-        aliases: ['react/lib/React'] // in case a module requires react through the back door
-    })
-    .import('react-dom@any')
-    .import('mobx@any')
-    .import("@jenkins-cd/js-extensions@any")
-    .import("@jenkins-cd/blueocean-core-js@any")
-    .import('@jenkins-cd/design-language@any')
-    .generateNoImportsBundle();
+gulp.task('test', () => {
+    return gulp.src('src/test/js').pipe(jest({ "collectCoverageFrom": [
+        "src/test/js/**/*.{js,jsx}"
+      ],
+      "testMatch":['**/?(*-)(spec|test).js?(x)'],
+      "transform": {
+        "^.+\\.tsx?$": "<rootDir>/node_modules/ts-jest/preprocessor.js",
+        "^.+\\.jsx?$": "babel-jest"
+      },
+      "moduleFileExtensions": [
+        "ts",
+        "tsx",
+        "js",
+        "jsx",
+        "json",
+        "node"
+      ]}))
+})
