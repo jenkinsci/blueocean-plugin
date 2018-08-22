@@ -28,6 +28,8 @@ import net.sf.json.JSONArray;
 import net.sf.json.JSONObject;
 import org.apache.commons.io.IOUtils;
 import org.kohsuke.stapler.StaplerRequest;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
@@ -40,6 +42,8 @@ import java.util.Optional;
  * @author Vivek Pandey
  */
 public class RunContainerImpl extends BlueRunContainer {
+
+    private static Logger LOGGER = LoggerFactory.getLogger( RunContainerImpl.class );
 
     private final Job job;
     private final BluePipeline pipeline;
@@ -86,8 +90,13 @@ public class RunContainerImpl extends BlueRunContainer {
                 run = findRun( runList, number );
                 if ( run == null )
                 {
-                    throw new NotFoundException(
-                        String.format( "Run %s not found in organization %s and pipeline %s", runId, pipeline.getOrganizationName(), job.getName() ) );
+                    run = job.getBuildByNumber( number );
+                    if ( run == null )
+                    {
+                        LOGGER.warn( "Cannot find run with number: {}, runId: {}, name: {} in list: {}", number, runId, job.getName(), runList );
+                        throw new NotFoundException(
+                            String.format( "Run %s not found in organization %s and pipeline %s", runId, pipeline.getOrganizationName(), job.getName() ) );
+                    }
                 }
             }
         } else {
