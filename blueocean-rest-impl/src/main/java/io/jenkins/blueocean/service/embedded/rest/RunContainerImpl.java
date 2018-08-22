@@ -64,24 +64,31 @@ public class RunContainerImpl extends BlueRunContainer {
                     break;
                 }
             }
-
-            int number;
-            try {
-                number = Integer.parseInt(name);
-            } catch (NumberFormatException e) {
-                throw new NotFoundException(String.format("Run %s not found in organization %s and pipeline %s",
-                    name, pipeline.getOrganizationName(), job.getName()));
-            }
-            for (BlueQueueItem item : QueueUtil.getQueuedItems(pipeline.getOrganization(), job)) {
-                if (item.getExpectedBuildNumber() == number) {
-                    return item.toRun();
+            if( run == null)
+            {
+                int number;
+                try
+                {
+                    number = Integer.parseInt( name );
                 }
-            }
+                catch ( NumberFormatException e )
+                {
+                    throw new NotFoundException(
+                        String.format( "Run %s not found in organization %s and pipeline %s", name, pipeline.getOrganizationName(), job.getName() ) );
+                }
+                for ( BlueQueueItem item : QueueUtil.getQueuedItems( pipeline.getOrganization(), job ) )
+                {
+                    if ( item.getExpectedBuildNumber() == number )
+                    {
+                        return item.toRun();
+                    }
+                }
 
-            if (run == null) {
-                throw new NotFoundException(
-                    String.format("Run %s not found in organization %s and pipeline %s",
-                        name, pipeline.getOrganizationName(), job.getName()));
+                if ( run == null )
+                {
+                    throw new NotFoundException(
+                        String.format( "Run %s not found in organization %s and pipeline %s", name, pipeline.getOrganizationName(), job.getName() ) );
+                }
             }
         } else {
             run = runList.getLastBuild();

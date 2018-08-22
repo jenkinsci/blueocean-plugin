@@ -7,6 +7,8 @@ import io.jenkins.blueocean.rest.Reachable;
 import io.jenkins.blueocean.rest.factory.organization.OrganizationFactory;
 import io.jenkins.blueocean.rest.model.BlueOrganization;
 import io.jenkins.blueocean.rest.model.BlueRun;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Factory that gives instance of {@link BlueRun}
@@ -14,6 +16,8 @@ import io.jenkins.blueocean.rest.model.BlueRun;
  * @author Vivek Pandey
  */
 public abstract class BlueRunFactory implements ExtensionPoint {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger( BlueRunFactory.class );
 
     /**
      * Gives instance of {@link BlueRun} that this factory knows about
@@ -40,6 +44,7 @@ public abstract class BlueRunFactory implements ExtensionPoint {
                 return blueRun;
             }
         }
+        LOGGER.info( "cannot find BlueRun for id: {} run: {}", r.getId(), r);
         return null;
     }
 }
