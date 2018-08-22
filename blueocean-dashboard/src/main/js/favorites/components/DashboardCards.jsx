@@ -11,7 +11,7 @@ import favoritesSseListener from '../model/FavoritesSseListener';
 
 import { PipelineCard } from './PipelineCard';
 
-const t = i18nTranslator('blueocean-personalization');
+const t = i18nTranslator('blueocean-dashboard');
 
 function CardStack(props) {
     const { children, message } = props;

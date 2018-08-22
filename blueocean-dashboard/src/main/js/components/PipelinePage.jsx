@@ -8,6 +8,7 @@ import { UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import { documentTitle } from './DocumentTitle';
 import { observer } from 'mobx-react';
 import { observable, action } from 'mobx';
+import { FavoritePipelineHeader } from '../favorites/components/FavoritePipelineHeader';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.PipelinePage');
 
@@ -108,7 +109,7 @@ export class PipelinePage extends Component {
                         <ExpandablePath path={fullDisplayName} hideFirst className="dark-theme" iconSize={20} />
                     </Link>
                 </h1>
-                <Extensions.Renderer extensionPoint="jenkins.pipeline.detail.header.action" store={this.context.store} pipeline={pipeline} />
+                <FavoritePipelineHeader pipeline={pipeline} />
                 {classicConfigLink(pipeline)}
             </ContentPageHeader>
         ) : (

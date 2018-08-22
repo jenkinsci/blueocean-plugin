@@ -1,11 +1,6 @@
 package io.blueocean.ath.offline.personalization;
 
-import io.blueocean.ath.ATHJUnitRunner;
-import io.blueocean.ath.BaseUrl;
-import io.blueocean.ath.GitRepositoryRule;
-import io.blueocean.ath.Login;
-import io.blueocean.ath.ResourceResolver;
-import io.blueocean.ath.WebDriverMixin;
+import io.blueocean.ath.*;
 import io.blueocean.ath.api.classic.ClassicJobApi;
 import io.blueocean.ath.factory.ClassicPipelineFactory;
 import io.blueocean.ath.factory.FreestyleJobFactory;
@@ -52,6 +47,9 @@ abstract public class AbstractFavoritesTest implements WebDriverMixin {
     @Inject
     FavoritesDashboardPage dashboardPage;
 
+    @Inject
+    JenkinsUser user;
+
     protected ResourceResolver resources;
 
     abstract protected Logger getLogger();
@@ -64,13 +62,13 @@ abstract public class AbstractFavoritesTest implements WebDriverMixin {
     public void setUp() throws IOException {
         resources = new ResourceResolver(getClass());
 
-        String user = "alice";
+
         getLogger().info(String.format("deleting any existing favorites for %s", user));
 
         httpRequest()
             .Delete("/users/{user}/favorites/")
-            .urlPart("user", user)
-            .auth(user, user)
+            .urlPart("user", user.username)
+            .auth(user.username, user.password)
             .status(204)
             .as(Void.class);
     }
