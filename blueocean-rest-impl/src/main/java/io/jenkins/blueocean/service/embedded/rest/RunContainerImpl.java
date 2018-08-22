@@ -55,24 +55,24 @@ public class RunContainerImpl extends BlueRunContainer {
     }
 
     @Override
-    public BlueRun get(String name) {
+    public BlueRun get(String runId) {
         RunList<? extends hudson.model.Run> runList = job.getBuilds();
-
         hudson.model.Run run;
-        if (name != null) {
-            run = findRun( runList, name );
+        if (runId != null) {
+            int number;
+            try
+            {
+                number = Integer.parseInt( runId );
+            }
+            catch ( NumberFormatException e )
+            {
+                throw new NotFoundException(
+                    String.format( "Run %s not found in organization %s and pipeline %s", runId, pipeline.getOrganizationName(), job.getName() ) );
+            }
+            run = findRun( runList, number );
             if( run == null)
             {
-                int number;
-                try
-                {
-                    number = Integer.parseInt( name );
-                }
-                catch ( NumberFormatException e )
-                {
-                    throw new NotFoundException(
-                        String.format( "Run %s not found in organization %s and pipeline %s", name, pipeline.getOrganizationName(), job.getName() ) );
-                }
+
                 for ( BlueQueueItem item : QueueUtil.getQueuedItems( pipeline.getOrganization(), job ) )
                 {
                     if ( item.getExpectedBuildNumber() == number )
@@ -83,11 +83,11 @@ public class RunContainerImpl extends BlueRunContainer {
 
                 // JENKINS-53175 so we try again as the build has maybe from out of the queue and running now or has been running
                 runList = job.getBuilds();
-                run = findRun( runList, name );
+                run = findRun( runList, number );
                 if ( run == null )
                 {
                     throw new NotFoundException(
-                        String.format( "Run %s not found in organization %s and pipeline %s", name, pipeline.getOrganizationName(), job.getName() ) );
+                        String.format( "Run %s not found in organization %s and pipeline %s", runId, pipeline.getOrganizationName(), job.getName() ) );
                 }
             }
         } else {
@@ -96,9 +96,9 @@ public class RunContainerImpl extends BlueRunContainer {
         return BlueRunFactory.getRun(run, pipeline);
     }
 
-    private Run findRun(RunList<? extends hudson.model.Run> runList, String runId){
+    private Run findRun(RunList<? extends hudson.model.Run> runList, int runId){
         Optional<? extends hudson.model.Run> optionalRun = runList.stream()
-            .filter( arun -> arun.getId().equals( runId ) )
+            .filter( run -> run.getNumber() == runId )
             .findFirst();
         if(optionalRun.isPresent()){
             return optionalRun.get();
