@@ -82,6 +82,7 @@ public class RunContainerImpl extends BlueRunContainer {
                 }
 
                 // JENKINS-53175 so we try again as the build has maybe from out of the queue and running now or has been running
+                runList = job.getBuilds();
                 run = findRun( runList, name );
                 if ( run == null )
                 {
