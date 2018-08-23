@@ -2,6 +2,7 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
+import hudson.model.BuildableItem;
 import hudson.model.Cause;
 import hudson.model.CauseAction;
 import hudson.model.Item;
@@ -61,7 +62,7 @@ public class RunContainerImpl extends BlueRunContainer {
     @Override
     public BlueRun get(String runId) {
         RunList<? extends hudson.model.Run> runList = job.getBuilds();
-        hudson.model.Run run;
+        Run run;
         if (runId != null) {
             int number;
             try
@@ -76,14 +77,8 @@ public class RunContainerImpl extends BlueRunContainer {
             run = findRun( runList, number );
             if( run == null)
             {
-
-                for ( BlueQueueItem item : QueueUtil.getQueuedItems( pipeline.getOrganization(), job ) )
-                {
-                    if ( item.getExpectedBuildNumber() == number )
-                    {
-                        return item.toRun();
-                    }
-                }
+                BlueRun blueRun = findBlueQueueItem( QueueUtil.getQueuedItems( pipeline.getOrganization(), job ), number);
+                if(blueRun != null) return blueRun;
 
                 // JENKINS-53175 so we try again as the build has maybe from out of the queue and running now or has been running
                 runList = job.getBuilds();
@@ -93,7 +88,18 @@ public class RunContainerImpl extends BlueRunContainer {
                     run = job.getBuildByNumber( number );
                     if ( run == null )
                     {
-                        LOGGER.warn( "Cannot find run with number: {}, runId: {}, name: {} in list: {}", number, runId, job.getName(), runList );
+                        // still so try again the queue...
+                        List<BlueQueueItem> blueQueueItems = QueueUtil.getQueuedItems( pipeline.getOrganization(), job );
+                        blueRun = findBlueQueueItem( blueQueueItems, number );
+                        if(blueRun != null) return blueRun;
+                        // so definitely no luck so log that and return null
+                        LOGGER.warn( "Cannot find run with number: {}, runId: {}, job.name: {} in runList: {}, queueList: {}, jenkinsQueue: {}", //
+                                     number,
+                                     runId,
+                                     job.getName(),
+                                     runList,
+                                     blueQueueItems,
+                                     (job instanceof BuildableItem) ? Jenkins.get().getQueue().getItems(((BuildableItem)job)):null);
                         throw new NotFoundException(
                             String.format( "Run %s not found in organization %s and pipeline %s", runId, pipeline.getOrganizationName(), job.getName() ) );
                     }
@@ -111,6 +117,18 @@ public class RunContainerImpl extends BlueRunContainer {
             .findFirst();
         if(optionalRun.isPresent()){
             return optionalRun.get();
+        }
+        return null;
+    }
+
+    private BlueRun findBlueQueueItem(List<BlueQueueItem> queueItems, int number)
+    {
+        for ( BlueQueueItem item : QueueUtil.getQueuedItems( pipeline.getOrganization(), job ) )
+        {
+            if ( item.getExpectedBuildNumber() == number )
+            {
+                return item.toRun();
+            }
         }
         return null;
     }

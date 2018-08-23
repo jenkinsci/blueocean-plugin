@@ -114,4 +114,11 @@ public class QueueItemImpl extends BlueQueueItem {
     public Links getLinks() {
         return super.getLinks().add("parent",   parent);
     }
+
+    @Override
+    public String toString()
+    {
+        return "QueueItemImpl{" + "item.id=" + item.getId() + ", expectedBuildNumber=" + expectedBuildNumber + ", organization.displayName="
+            + organization.getDisplayName() + '}';
+    }
 }
