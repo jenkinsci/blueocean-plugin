@@ -33,11 +33,11 @@ public class LogResource{
         this.appenderLogReader = logAppender.getLog();
     }
 
-    public void doIndex(StaplerRequest req, StaplerResponse rsp, @Header("Accept") AcceptHeader accept){
-        writeLog(req,rsp,accept);
+    public void doIndex(StaplerRequest req, StaplerResponse rsp){
+        writeLog(req,rsp);
     }
 
-    private void writeLog(StaplerRequest req, StaplerResponse rsp, AcceptHeader accept) {
+    private void writeLog(StaplerRequest req, StaplerResponse rsp) {
         try {
             String download = req.getParameter("download");
 
