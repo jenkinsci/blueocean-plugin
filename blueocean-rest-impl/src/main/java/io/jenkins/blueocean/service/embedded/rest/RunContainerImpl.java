@@ -94,21 +94,20 @@ public class RunContainerImpl extends BlueRunContainer {
                         if(blueRun != null) return blueRun;
                         if(!job.isBuilding() && !job.isInQueue())
                         {
-//                            // let's try a last time with sleep
-//                            try
-//                            {
-//                                Thread.sleep( 100 );
-//                            }
-//                            catch ( InterruptedException e )
-//                            {
-//                                e.printStackTrace();
-//                            }
+                            // let's try a last time with sleep (olamy: dohhhh seriously)
+                            try
+                            {
+                                Thread.sleep( 100 );
+                            }
+                            catch ( InterruptedException e )
+                            {
+                                //no op
+                            }
                             runList = job.getBuilds();
                             run = findRun( runList, number );
-                            LOGGER.info( "try to find a last time as job not building neither in the queue {}, runList: {}", number, runList );
                             if (run == null)
                             {
-                                // so definitely no luck so log that and return null
+                                // so definitely no luck.... so log that and return null
                                 LOGGER.warn(
                                     "Cannot find run with number: {}, runId: {}, job.name: {} in runList: {}, queueList: {}, jenkinsQueue: {}, job.isBuilding {}, job.isInQueue {}",
                                     //
@@ -130,11 +129,12 @@ public class RunContainerImpl extends BlueRunContainer {
     }
 
     private Run findRun(RunList<? extends hudson.model.Run> runList, int runId){
-        Optional<? extends hudson.model.Run> optionalRun = runList.stream()
-            .filter( run -> run.getNumber() == runId )
-            .findFirst();
-        if(optionalRun.isPresent()){
-            return optionalRun.get();
+        for(Run run : runList)
+        {
+            if(run.getNumber() == runId)
+            {
+                return run;
+            }
         }
         return null;
     }
