@@ -94,7 +94,15 @@ public class RunContainerImpl extends BlueRunContainer {
                         if(blueRun != null) return blueRun;
                         if(!job.isBuilding() && !job.isInQueue())
                         {
-                            // let's try a last time
+                            // let's try a last time with sleep
+                            try
+                            {
+                                Thread.sleep( 100 );
+                            }
+                            catch ( InterruptedException e )
+                            {
+                                e.printStackTrace();
+                            }
                             runList = job.getBuilds();
                             run = findRun( runList, number );
                             LOGGER.info( "try to find a last time as job not building neither in the queue {}, runList: {}", number, runList );
