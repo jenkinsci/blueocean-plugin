@@ -92,19 +92,26 @@ public class RunContainerImpl extends BlueRunContainer {
                         List<BlueQueueItem> blueQueueItems = QueueUtil.getQueuedItems( pipeline.getOrganization(), job );
                         blueRun = findBlueQueueItem( blueQueueItems, number );
                         if(blueRun != null) return blueRun;
-                        // so definitely no luck so log that and return null
-                        LOGGER.warn( "Cannot find run with number: {}, runId: {}, job.name: {} in runList: {}, queueList: {}, jenkinsQueue: {}, job.isBuilding {}, job.isInQueue {}", //
-                                     number,
-                                     runId,
-                                     job.getName(),
-                                     runList,
-                                     blueQueueItems,
-                                     (job instanceof BuildableItem) ? Jenkins.get().getQueue().getItems(((BuildableItem)job)):null,
-                                     job.isBuilding(),
-                                     job.isInQueue());
+                        if(!job.isBuilding() && !job.isInQueue())
+                        {
+                            // let's try a last time
+                            runList = job.getBuilds();
+                            run = findRun( runList, number );
+                            LOGGER.info( "try to find a last time as job not building neither in the queue {}, runList: {}", number, runList );
+                            if (run == null)
+                            {
+                                // so definitely no luck so log that and return null
+                                LOGGER.warn(
+                                    "Cannot find run with number: {}, runId: {}, job.name: {} in runList: {}, queueList: {}, jenkinsQueue: {}, job.isBuilding {}, job.isInQueue {}",
+                                    //
+                                    number, runId, job.getName(), runList, blueQueueItems, ( job instanceof BuildableItem ) ? Jenkins.get().getQueue().getItems(
+                                        ( (BuildableItem) job ) ) : null, job.isBuilding(), job.isInQueue() );
 
-                        throw new NotFoundException(
-                            String.format( "Run %s not found in organization %s and pipeline %s", runId, pipeline.getOrganizationName(), job.getName() ) );
+                                throw new NotFoundException(
+                                    String.format( "Run %s not found in organization %s and pipeline %s", runId,
+                                                   pipeline.getOrganizationName(), job.getName() ) );
+                            }
+                        }
                     }
                 }
             }
