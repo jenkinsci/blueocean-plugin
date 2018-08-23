@@ -93,13 +93,16 @@ public class RunContainerImpl extends BlueRunContainer {
                         blueRun = findBlueQueueItem( blueQueueItems, number );
                         if(blueRun != null) return blueRun;
                         // so definitely no luck so log that and return null
-                        LOGGER.warn( "Cannot find run with number: {}, runId: {}, job.name: {} in runList: {}, queueList: {}, jenkinsQueue: {}", //
+                        LOGGER.warn( "Cannot find run with number: {}, runId: {}, job.name: {} in runList: {}, queueList: {}, jenkinsQueue: {}, job.isBuilding {}, job.isInQueue {}", //
                                      number,
                                      runId,
                                      job.getName(),
                                      runList,
                                      blueQueueItems,
-                                     (job instanceof BuildableItem) ? Jenkins.get().getQueue().getItems(((BuildableItem)job)):null);
+                                     (job instanceof BuildableItem) ? Jenkins.get().getQueue().getItems(((BuildableItem)job)):null,
+                                     job.isBuilding(),
+                                     job.isInQueue());
+
                         throw new NotFoundException(
                             String.format( "Run %s not found in organization %s and pipeline %s", runId, pipeline.getOrganizationName(), job.getName() ) );
                     }
