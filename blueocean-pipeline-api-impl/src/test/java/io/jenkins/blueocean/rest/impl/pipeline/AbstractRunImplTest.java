@@ -21,6 +21,7 @@ import jenkins.plugins.git.GitSCMSource;
 import jenkins.plugins.git.GitSampleRepoRule;
 import jenkins.scm.api.SCMSource;
 import jenkins.util.SystemProperties;
+import static org.hamcrest.Matchers.*;
 import org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition;
 import org.jenkinsci.plugins.workflow.job.WorkflowJob;
 import org.jenkinsci.plugins.workflow.job.WorkflowRun;
@@ -296,7 +297,14 @@ public class AbstractRunImplTest extends PipelineBaseTest {
 
         Assert.assertEquals("QUEUED", latestRun.get("state"));
         Assert.assertEquals("1", latestRun.get("id"));
-        Assert.assertEquals("Jenkins doesn’t have label test", latestRun.get("causeOfBlockage"));
+
+        // Jenkins 2.125 introduced quotes around these labels - see commit 91ddc6. This came
+        // just after the current Jenkins LTS, which is version 2.121.1. So this assert now
+        // tests for the new quoted version, and the old non-quoted version.
+        Assert.assertThat((String)latestRun.get("causeOfBlockage"), anyOf(
+            equalTo("\u2018Jenkins\u2019 doesn’t have label \u2018test\u2019"),
+            equalTo("Jenkins doesn’t have label test")
+        ));
 
         j.createOnlineSlave(Label.get("test"));
 
