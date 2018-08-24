@@ -235,7 +235,7 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
 
     @Override
     public BlueTestSummary getBlueTestSummary() {
-        BlueTestSummary blueTestSummary;
+        BlueTestSummary blueTestSummary = null;
         if (getStateObj() == BlueRunState.FINISHED) {
             try {
                 blueTestSummary =  TEST_SUMMARY.get(run.getExternalizableId(),  () -> {
@@ -248,20 +248,16 @@ public abstract class AbstractRunImpl<T extends Run> extends BlueRun {
                 ).orNull();
             } catch (ExecutionException e) {
                 LOGGER.error("Could not load test summary from cache", e);
-                return null;
             }
         } else {
             blueTestSummary =  BlueTestResultFactory.resolve(run, this).summary;
-            if (blueTestSummary == null) {
-                // Just use an empty one while we wait
-                blueTestSummary = new BlueTestSummary(0,0,0,0,0,0,0,this.getLink());
-            }
         }
 
         // .../runs/123/blueTestSummary
         if (blueTestSummary == null)
         {
-            return null;
+            // Just use an empty one while we wait to avoid 404
+            return new BlueTestSummary(0,0,0,0,0,0,0,this.getLink());
         }
         Link link = this.getLink().rel("blueTestSummary");
         blueTestSummary.setLink( link );
