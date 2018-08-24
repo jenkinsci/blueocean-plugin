@@ -34,6 +34,9 @@ import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
 import java.io.IOException;
+import java.lang.management.ManagementFactory;
+import java.lang.management.ThreadInfo;
+import java.lang.management.ThreadMXBean;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -94,26 +97,26 @@ public class RunContainerImpl extends BlueRunContainer {
                         if(blueRun != null) return blueRun;
                         if(!job.isBuilding() && !job.isInQueue())
                         {
-                            // let's try a last time with sleep (olamy: dohhhh seriously)
-                            try
-                            {
-                                Thread.sleep( 100 );
-                            }
-                            catch ( InterruptedException e )
-                            {
-                                //no op
-                            }
+//                            // let's try a last time with sleep (olamy: dohhhh seriously)
+//                            try
+//                            {
+//                                Thread.sleep( 100 );
+//                            }
+//                            catch ( InterruptedException e )
+//                            {
+//                                //no op
+//                            }
                             runList = job.getBuilds();
                             run = findRun( runList, number );
                             if (run == null)
                             {
+                                generateThreadDump();
                                 // so definitely no luck.... so log that and return null
                                 LOGGER.warn(
                                     "Cannot find run with number: {}, runId: {}, job.name: {} in runList: {}, queueList: {}, jenkinsQueue: {}, job.isBuilding {}, job.isInQueue {}",
                                     //
                                     number, runId, job.getName(), runList, blueQueueItems, ( job instanceof BuildableItem ) ? Jenkins.get().getQueue().getItems(
                                         ( (BuildableItem) job ) ) : null, job.isBuilding(), job.isInQueue() );
-
                                 throw new NotFoundException(
                                     String.format( "Run %s not found in organization %s and pipeline %s", runId,
                                                    pipeline.getOrganizationName(), job.getName() ) );
@@ -126,6 +129,38 @@ public class RunContainerImpl extends BlueRunContainer {
             run = runList.getLastBuild();
         }
         return BlueRunFactory.getRun(run, pipeline);
+    }
+
+    private void generateThreadDump() {
+//        StringBuilder dump = new StringBuilder( );
+//        ThreadMXBean threadMXBean = ManagementFactory.getThreadMXBean();
+//        ThreadInfo[] threadInfos = threadMXBean.getThreadInfo( threadMXBean.getAllThreadIds(), 100 );
+//        for(ThreadInfo threadInfo : threadInfos)
+//        {
+//            dump.append('"');
+//            dump.append(threadInfo.getThreadName());
+//            dump.append("\" ");
+//            final Thread.State state = threadInfo.getThreadState();
+//            dump.append("\n   java.lang.Thread.State: ");
+//            dump.append(state);
+//            final StackTraceElement[] stackTraceElements = threadInfo.getStackTrace();
+//            for (final StackTraceElement stackTraceElement : stackTraceElements) {
+//                dump.append("\n        at ");
+//                dump.append(stackTraceElement);
+//            }
+//            dump.append("\n\n");
+//        }
+
+        ThreadInfo[]  threadInfos = ManagementFactory.getThreadMXBean()
+            .dumpAllThreads(true,
+                            true);
+        StringBuilder dump        = new StringBuilder();
+        dump.append(String.format("%n"));
+        for (ThreadInfo threadInfo : threadInfos) {
+            dump.append(threadInfo);
+        }
+
+        LOGGER.info( dump.toString() );
     }
 
     private Run findRun(RunList<? extends hudson.model.Run> runList, int runId){
