@@ -2,8 +2,6 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.console.AnnotatedLargeText;
 import io.jenkins.blueocean.commons.ServiceException;
-import org.kohsuke.stapler.AcceptHeader;
-import org.kohsuke.stapler.Header;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.framework.io.CharSpool;
@@ -33,11 +31,11 @@ public class LogResource{
         this.appenderLogReader = logAppender.getLog();
     }
 
-    public void doIndex(StaplerRequest req, StaplerResponse rsp, @Header("Accept") AcceptHeader accept){
-        writeLog(req,rsp,accept);
+    public void doIndex(StaplerRequest req, StaplerResponse rsp){
+        writeLog(req,rsp);
     }
 
-    private void writeLog(StaplerRequest req, StaplerResponse rsp, AcceptHeader accept) {
+    private void writeLog(StaplerRequest req, StaplerResponse rsp) {
         try {
             String download = req.getParameter("download");
 
