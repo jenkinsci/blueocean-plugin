@@ -2,8 +2,6 @@ package io.jenkins.blueocean.service.embedded.rest;
 
 import hudson.console.AnnotatedLargeText;
 import io.jenkins.blueocean.commons.ServiceException;
-import org.kohsuke.stapler.AcceptHeader;
-import org.kohsuke.stapler.Header;
 import org.kohsuke.stapler.StaplerRequest;
 import org.kohsuke.stapler.StaplerResponse;
 import org.kohsuke.stapler.framework.io.CharSpool;
