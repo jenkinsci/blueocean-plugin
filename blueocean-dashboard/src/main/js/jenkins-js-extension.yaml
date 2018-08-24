@@ -6,18 +6,3 @@ extensions:
     extensionPoint: jenkins.blueocean.top.pipelines
   - component: PipelineRoutes
     extensionPoint: jenkins.main.routes
-  - component: components/PipelineRunGraph
-    extensionPoint: jenkins.pipeline.run.result
-# Karaoke
-  - component: components/karaoke/components/FreeStyle
-    extensionPoint: jenkins.pipeline.karaoke.freestyle.provider
-    dataType: hudson.model.FreeStyleBuild
-  - component: components/karaoke/components/Pipeline
-    extensionPoint: jenkins.pipeline.karaoke.pipeline.provider
-    dataType: org.jenkinsci.plugins.workflow.job.WorkflowRun
-# Credentials Picker
-  - component: credentials/CredentialsPicker
-    extensionPoint: jenkins.credentials.selection
-# Trends
-  - component: components/trends/StageDurationChart
-    extensionPoint: jenkins.pipeline.trends
