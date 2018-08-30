@@ -14,9 +14,6 @@
         "strictNullChecks": true,
         "suppressImplicitAnyIndexErrors": true,
 		"noUnusedLocals": true,
-		"types": [
-			"bluebird-global"
-		],
 		"lib": [
 			"dom",
 			"es2018"

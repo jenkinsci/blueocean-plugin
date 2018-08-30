@@ -18,18 +18,16 @@ import {
     loadingIndicator,
     LoginButton,
 } from '@jenkins-cd/blueocean-core-js';
-import Extensions from '@jenkins-cd/js-extensions';
 
 import { Provider, configureStore, combineReducers } from './redux';
 import rootReducer, { ACTION_TYPES } from './redux/router';
 import Config from './config';
 import { ToastDrawer } from './components/ToastDrawer';
 import { BackendConnectFailure } from './components/BackendConnectFailure';
-import { DevelopmentFooter } from './DevelopmentFooter';
 import { useStrict } from 'mobx';
 import { Icon } from '@jenkins-cd/design-language';
 import ErrorUtils from './ErrorUtils';
-
+import { PipelineRoutes } from '@jenkins-cd/blueocean-dashboard';
 useStrict(true);
 
 const LOGGER = logging.logger('io.jenkins.blueocean.web.routing');
@@ -76,11 +74,11 @@ class App extends Component {
         });
 
         const topNavLinks = [
-            <Extensions.Renderer extensionPoint="jenkins.blueocean.top.pipelines" />,
-            <Extensions.Renderer extensionPoint="jenkins.blueocean.top.links" />,
-            <Extensions.Renderer extensionPoint="jenkins.blueocean.top.admin">
+           // <Extensions.Renderer extensionPoint="jenkins.blueocean.top.pipelines" />,
+            //<Extensions.Renderer extensionPoint="jenkins.blueocean.top.links" />,
+           // <Extensions.Renderer extensionPoint="jenkins.blueocean.top.admin">
                 <AdminLink t={translate} />
-            </Extensions.Renderer>,
+            //</Extensions.Renderer>,
         ];
 
         let classicUrl = UrlConfig.getJenkinsRootURL() + UrlBuilder.toClassicJobPage(window.location.pathname);
@@ -94,16 +92,16 @@ class App extends Component {
         }
 
         const userComponents = [
-            <Extensions.Renderer extensionPoint="jenkins.blueocean.top.go.classic">
+          //  <Extensions.Renderer extensionPoint="jenkins.blueocean.top.go.classic">
                 <div className="user-component icon" title={translate('go.to.classic', { defaultValue: 'Go to classic' })}>
                     <a className="main_exit_to_app" href={classicUrl}>
                         <Icon icon="ActionExitToApp" />
                     </a>
-                </div>
-            </Extensions.Renderer>,
-            <Extensions.Renderer extensionPoint="jenkins.blueocean.top.login">
+                </div>,
+          //  </Extensions.Renderer>,
+          //  <Extensions.Renderer extensionPoint="jenkins.blueocean.top.login">
                 <LoginButton className="user-component button-bar layout-small inverse" translate={translate} />
-            </Extensions.Renderer>,
+          //  </Extensions.Renderer>,
         ];
 
         const homeURL = config.getAppURLBase();
@@ -115,8 +113,7 @@ class App extends Component {
                 <main className="Site-content">{this.props.children /* Set by react-router */}</main>
                 <footer className="Site-footer">
                     {/* FIXME: jenkins.logo.top is being used to force CSS loading */}
-                    <Extensions.Renderer extensionPoint="jenkins.logo.top" />
-                    <DevelopmentFooter />
+               
                 </footer>
                 <ToastDrawer />
                 <BackendConnectFailure />
@@ -231,10 +228,9 @@ function startApp(routes, stores) {
     );
 }
 
-Extensions.store.getExtensions(['jenkins.main.routes', 'jenkins.main.stores'], (routes = [], stores = []) => {
-    loadingIndicator.setDarkBackground();
-    startApp(routes, stores);
-});
+loadingIndicator.setDarkBackground();
+startApp([<PipelineRoutes />], undefined);
+
 
 // Enable page reload.
 require('./reload');

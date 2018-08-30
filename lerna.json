@@ -2,7 +2,8 @@
   "packages": [
     "jenkins-design-language",
     "blueocean-core-js",
-    "blueocean-dashboard"
+    "blueocean-dashboard",
+    "blueocean-web"
   ],
   "version": "0.0.0"
 }
