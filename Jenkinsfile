@@ -42,7 +42,7 @@ node() {
           }
           junit '**/target/surefire-reports/TEST-*.xml'
           junit '**/target/jest-reports/*.xml'
-          jacoco execPattern: '**/target/jacoco.exec', classPattern : '**/target/classes', sourcePattern: '**/src/main/java'
+          jacoco execPattern: '**/target/jacoco.exec', classPattern : '**/target/classes', sourcePattern: '**/src/main/java', exclusionPattern: 'src/test*'
           archive '*/target/code-coverage/**/*'
           archive '*/target/*.hpi'
           archive '*/target/jest-coverage/**/*'
