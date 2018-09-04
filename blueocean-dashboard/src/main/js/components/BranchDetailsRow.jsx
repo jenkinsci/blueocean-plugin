@@ -2,6 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { CommitId, ReadableDate, WeatherIcon, TableRow, TableCell } from '@jenkins-cd/design-language';
 import { LiveStatusIndicator, RunButton } from '@jenkins-cd/blueocean-core-js';
 import Extensions from '@jenkins-cd/js-extensions';
+import { PipelineEditorLink } from '@jenkins-cd/blueocean-pipeline-editor';
 import { observer } from 'mobx-react';
 
 import RunMessageCell from './RunMessageCell';
@@ -15,6 +16,9 @@ function noRun(branch, openRunDetails, t, store, columns) {
     const statusIndicator = <LiveStatusIndicator result="NOT_BUILT" />;
     const actions = [
         <RunButton className="icon-button" runnable={branch} onNavigation={openRunDetails} />,
+        <div className="jenkins-pipeline-branches-list-action">
+            <PipelineEditorLink pipeline={branch} store={this.context.store} {...t} />
+        </div>,
         <Extensions.Renderer extensionPoint="jenkins.pipeline.branches.list.action" filter={sortByOrdinal} pipeline={branch} store={store} {...t} />,
     ];
 
@@ -77,7 +81,7 @@ BranchDetailsRowRenderer.propTypes = {
 @observer
 export class BranchDetailsRow extends Component {
     // The number of hardcoded actions not provided by extensions
-    static actionItemsCount = 2;
+    static actionItemsCount = 3;
 
     render() {
         const { data: branch, pipeline, t, locale, columns } = this.props;
@@ -125,6 +129,9 @@ export class BranchDetailsRow extends Component {
             <div className="actions-container">
                 <RunButton className="icon-button" runnable={branch} latestRun={branch.latestRun} onNavigation={openRunDetails} />
                 <RunHistoryButton pipeline={pipeline} branchName={branch.name} t={t} />
+                <div className="jenkins-pipeline-branches-list-action">
+                    <PipelineEditorLink pipeline={branch} {...t} />
+                </div>
                 <Extensions.Renderer
                     extensionPoint="jenkins.pipeline.branches.list.action"
                     filter={sortByOrdinal}
