@@ -55,7 +55,7 @@
           "integrity": "sha1-FXLEw7ctneOx0PhrGZZLovGgvxY=",
           "requires": {
             "envify": "3.4.1",
-            "js-yaml": "3.11.0"
+            "js-yaml": "^3.6.0"
           }
         }
       }
@@ -66,9 +66,9 @@
       "integrity": "sha1-1Hs5dAlpvncTfvW8zuccfm6Rgw0="
     },
     "@jenkins-cd/blueocean-pipeline-editor": {
-      "version": "0.0.1",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-pipeline-editor/-/blueocean-pipeline-editor-0.0.1.tgz",
-      "integrity": "sha512-5r4B6MbgqBH1w2/454c1OGbE3Ifuq3GhlWOUcxkWi8tdhUQLRKD+NvCTi5cjP2Y3xUc+UTborm0gT0xOfdddFw==",
+      "version": "0.0.3",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-pipeline-editor/-/blueocean-pipeline-editor-0.0.3.tgz",
+      "integrity": "sha512-iEUkRkEc8nuYJkZmQYToRE+5iKGxne4aAlGEnoVJ5A4c+kpp1zp+CBu/3HDK6J2UpnHlbbV4ybYDzf5erht9gA==",
       "requires": {
         "@jenkins-cd/blueocean-core-js": "0.0.171",
         "@jenkins-cd/design-language": "0.0.162",
@@ -15408,6 +15408,14 @@
         "semver": "^5.1.0",
         "through2": "^2.0.0",
         "tsconfig": "^5.0.3"
+      },
+      "dependencies": {
+        "semver": {
+          "version": "5.5.1",
+          "resolved": "https://registry.npmjs.org/semver/-/semver-5.5.1.tgz",
+          "integrity": "sha512-PqpAxfrEhlSUWge8dwIp4tZnQ25DIOthpiaHNIthsjEFQD6EvqUKUDM7L8O2rShkFccYo1VjJR0coWfNkCubRw==",
+          "dev": true
+        }
       }
     },
     "tty-browserify": {

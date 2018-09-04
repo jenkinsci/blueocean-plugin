@@ -66,9 +66,9 @@
       "integrity": "sha1-1Hs5dAlpvncTfvW8zuccfm6Rgw0="
     },
     "@jenkins-cd/blueocean-pipeline-editor": {
-      "version": "0.0.2",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-pipeline-editor/-/blueocean-pipeline-editor-0.0.2.tgz",
-      "integrity": "sha512-bebkWCADdBYb23RbfrhIkWWm8GmXH8eERkHP/mi6EcMGXleBL+kz/5Q2XYXamEmvZWTPBDGK1NbQnsQtbi1Bcg==",
+      "version": "0.0.3",
+      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-pipeline-editor/-/blueocean-pipeline-editor-0.0.3.tgz",
+      "integrity": "sha512-iEUkRkEc8nuYJkZmQYToRE+5iKGxne4aAlGEnoVJ5A4c+kpp1zp+CBu/3HDK6J2UpnHlbbV4ybYDzf5erht9gA==",
       "requires": {
         "@jenkins-cd/blueocean-core-js": "0.0.171",
         "@jenkins-cd/design-language": "0.0.162",
