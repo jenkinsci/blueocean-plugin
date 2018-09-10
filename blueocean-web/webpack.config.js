@@ -5,6 +5,7 @@ module.exports = {
     mode: 'development',
     entry: './src/main/js/blueocean.js',
   output: {   
+    pathinfo: false,
       path: path.resolve(__dirname, 'dist'),
   filename: 'blueocean.bundle.js'
   },
@@ -16,7 +17,12 @@ module.exports = {
         }, 
         {
             test: /\.tsx?$/,
-            use: 'ts-loader'
+            use: {
+                loader: 'ts-loader',
+            options: {
+                transpileOnly: true
+            }
+        }
         }
     ]
   },
