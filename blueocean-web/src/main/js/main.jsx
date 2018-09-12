@@ -34,14 +34,7 @@ const LOGGER = logging.logger('io.jenkins.blueocean.web.routing');
 
 let config; // Holder for various app-wide state
 
-//const translate = i18nTranslator('blueocean-web');
-const translate = (varName, defaultValueObj) => {
-    if (defaultValueObj && defaultValueObj.defaultValue) {
-        return defaultValueObj.defaultValue;
-    }
-
-    return varName;
-};
+const translate = i18nTranslator('blueocean-web');
 
 // Show link when only when someone is logged in...unless security is not configured,
 // then show it anyway.

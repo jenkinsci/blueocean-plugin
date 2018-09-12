@@ -24,7 +24,7 @@ const prefix = UrlConfig.getJenkinsRootURL() || '';
 const FALLBACK_LANG = '';
 
 function newPluginXHR(pluginName) {
-   // let pluginVersion = store.getPluginVersion(pluginName);
+    // let pluginVersion = store.getPluginVersion(pluginName);
 
     if (!pluginVersion) {
         // if we do not have a version we may have an alias to resolve a resourceBUndle
@@ -136,6 +136,14 @@ function buildCacheKey(pluginName, namespace = toDefaultNamespace(pluginName)) {
  * @return An i18n Translator instance.
  */
 export function i18nTranslator(pluginName, namespace, onLoad) {
+    return function translate(key, params) {
+        if (params && params.defaultValue) {
+            return params.defaultValue;
+        }
+
+        return key;
+    };
+
     assertPluginNameDefined(pluginName);
 
     const translatorCacheKey = buildCacheKey(pluginName, namespace);
