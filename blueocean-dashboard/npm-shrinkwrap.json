@@ -126,6 +126,11 @@
         "react-router": "2.8.1"
       },
       "dependencies": {
+        "@jenkins-cd/blueocean-material-icons": {
+          "version": "0.0.6",
+          "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-material-icons/-/blueocean-material-icons-0.0.6.tgz",
+          "integrity": "sha1-1Hs5dAlpvncTfvW8zuccfm6Rgw0="
+        },
         "@jenkins-cd/design-language": {
           "version": "0.0.161",
           "resolved": "https://registry.npmjs.org/@jenkins-cd/design-language/-/design-language-0.0.161.tgz",
@@ -153,11 +158,6 @@
           }
         }
       }
-    },
-    "@jenkins-cd/blueocean-material-icons": {
-      "version": "0.0.6",
-      "resolved": "https://registry.npmjs.org/@jenkins-cd/blueocean-material-icons/-/blueocean-material-icons-0.0.6.tgz",
-      "integrity": "sha1-1Hs5dAlpvncTfvW8zuccfm6Rgw0="
     },
     "@jenkins-cd/design-language": {
       "version": "0.0.162",
