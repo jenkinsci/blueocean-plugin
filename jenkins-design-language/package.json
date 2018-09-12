@@ -10,7 +10,7 @@
     "flow": "flow",
     "lint": "gulp lint",
     "gulp": "gulp build",
-    "mvnbuild": "gulp lint build bundle",
+    "mvnbuild": "gulp build",
     "mvnbuild:fast": "gulp bundle",
     "mvntest": "gulp test",
     "bundle:watch": "gulp bundle:watch",

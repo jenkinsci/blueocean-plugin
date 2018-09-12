@@ -34,7 +34,14 @@ const LOGGER = logging.logger('io.jenkins.blueocean.web.routing');
 
 let config; // Holder for various app-wide state
 
-const translate = i18nTranslator('blueocean-web');
+//const translate = i18nTranslator('blueocean-web');
+const translate = (varName, defaultValueObj) => {
+    if (defaultValueObj && defaultValueObj.defaultValue) {
+        return defaultValueObj.defaultValue;
+    }
+
+    return varName;
+};
 
 // Show link when only when someone is logged in...unless security is not configured,
 // then show it anyway.
@@ -74,10 +81,10 @@ class App extends Component {
         });
 
         const topNavLinks = [
-           // <Extensions.Renderer extensionPoint="jenkins.blueocean.top.pipelines" />,
+            // <Extensions.Renderer extensionPoint="jenkins.blueocean.top.pipelines" />,
             //<Extensions.Renderer extensionPoint="jenkins.blueocean.top.links" />,
-           // <Extensions.Renderer extensionPoint="jenkins.blueocean.top.admin">
-                <AdminLink t={translate} />
+            // <Extensions.Renderer extensionPoint="jenkins.blueocean.top.admin">
+            <AdminLink t={translate} />,
             //</Extensions.Renderer>,
         ];
 
@@ -92,16 +99,16 @@ class App extends Component {
         }
 
         const userComponents = [
-          //  <Extensions.Renderer extensionPoint="jenkins.blueocean.top.go.classic">
-                <div className="user-component icon" title={translate('go.to.classic', { defaultValue: 'Go to classic' })}>
-                    <a className="main_exit_to_app" href={classicUrl}>
-                        <Icon icon="ActionExitToApp" />
-                    </a>
-                </div>,
-          //  </Extensions.Renderer>,
-          //  <Extensions.Renderer extensionPoint="jenkins.blueocean.top.login">
-                <LoginButton className="user-component button-bar layout-small inverse" translate={translate} />
-          //  </Extensions.Renderer>,
+            //  <Extensions.Renderer extensionPoint="jenkins.blueocean.top.go.classic">
+            <div className="user-component icon" title={translate('go.to.classic', { defaultValue: 'Go to classic' })}>
+                <a className="main_exit_to_app" href={classicUrl}>
+                    <Icon icon="ActionExitToApp" />
+                </a>
+            </div>,
+            //  </Extensions.Renderer>,
+            //  <Extensions.Renderer extensionPoint="jenkins.blueocean.top.login">
+            <LoginButton className="user-component button-bar layout-small inverse" translate={translate} />,
+            //  </Extensions.Renderer>,
         ];
 
         const homeURL = config.getAppURLBase();
@@ -111,10 +118,7 @@ class App extends Component {
                 <SiteHeader homeURL={homeURL} topNavLinks={topNavLinks} userComponents={userComponents} />
 
                 <main className="Site-content">{this.props.children /* Set by react-router */}</main>
-                <footer className="Site-footer">
-                    {/* FIXME: jenkins.logo.top is being used to force CSS loading */}
-               
-                </footer>
+                <footer className="Site-footer">{/* FIXME: jenkins.logo.top is being used to force CSS loading */}</footer>
                 <ToastDrawer />
                 <BackendConnectFailure />
             </div>
@@ -188,7 +192,7 @@ function startApp(routes, stores) {
 
     // get all ExtensionPoints related to redux-stores
     let store;
-    if (stores.length === 0) {
+    if (!stores || stores.length === 0) {
         // if we do not have any stores we only add the location store
         store = configureStore(combineReducers(rootReducer));
     } else {
@@ -230,7 +234,6 @@ function startApp(routes, stores) {
 
 loadingIndicator.setDarkBackground();
 startApp([<PipelineRoutes />], undefined);
-
 
 // Enable page reload.
 require('./reload');

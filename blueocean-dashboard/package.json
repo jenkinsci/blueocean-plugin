@@ -19,7 +19,7 @@
     "test:fast": "gulp test:fast",
     "test:debug": "node --debug-brk ./node_modules/.bin/gulp test:debug",
     "test:watch": "gulp test:debug",
-    "bundle": "gulp bundle",
+    "bundle": "gulp build",
     "bundle:watch": "gulp bundle:watch",
     "mvnbuild": "gulp lint bundle",
     "mvnbuild:fast": "gulp bundle",

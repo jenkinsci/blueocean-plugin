@@ -3,7 +3,15 @@ import { Fullscreen } from './Fullscreen';
 import { Link } from 'react-router';
 import { i18nTranslator } from './i18n/i18n';
 
-const translate = i18nTranslator('blueocean-web');
+//const translate = i18nTranslator('blueocean-web');
+
+const translate = (varName, defaultValueObj) => {
+    if (defaultValueObj && defaultValueObj.defaultValue) {
+        return defaultValueObj.defaultValue;
+    }
+
+    return varName;
+};
 
 /**
  * Simple component to render a fullscreen 404 page
