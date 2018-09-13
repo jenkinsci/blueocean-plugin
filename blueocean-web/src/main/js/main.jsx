@@ -19,6 +19,7 @@ import {
     LoginButton,
 } from '@jenkins-cd/blueocean-core-js';
 
+import { EditorPage } from '@jenkins-cd/blueocean-pipeline-editor';
 import { Provider, configureStore, combineReducers } from './redux';
 import rootReducer, { ACTION_TYPES } from './redux/router';
 import Config from './config';
@@ -138,6 +139,7 @@ function makeRoutes(routes) {
         PipelineRoutes,
         // FIXME: Not sure best how to set this up without the hardcoded IndexRedirect :-/
         <IndexRedirect to="/pipelines" />,
+        <Route path="/organizations/:organization/pipeline-editor/(:pipeline/)(:branch/)" component={EditorPage} />,
         <Route path="*" component={NotFound} />,
     ];
 
