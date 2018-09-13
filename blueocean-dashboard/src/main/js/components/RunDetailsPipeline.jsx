@@ -3,7 +3,8 @@ import { logging } from '@jenkins-cd/blueocean-core-js';
 import { observer } from 'mobx-react';
 import Extensions from '@jenkins-cd/js-extensions';
 import { Augmenter } from './karaoke/services/Augmenter';
-
+import FreeStyle from './karaoke/components/FreeStyle';
+import Pipeline from './karaoke/components/Pipeline';
 import { KaraokeConfig } from './karaoke';
 
 const logger = logging.logger('io.jenkins.blueocean.dashboard.karaoke.RunDetailsPipeline');
@@ -91,9 +92,9 @@ export class RunDetailsPipeline extends Component {
         let provider;
         const stepScrollAreaClass = `step-scroll-area ${this.augmenter.karaoke ? 'follow-along-on' : 'follow-along-off'}`;
         if (this.augmenter.isFreeStyle) {
-            provider = <Extensions.Renderer extensionPoint="jenkins.pipeline.karaoke.freestyle.provider" {...commonProps} />;
+            provider = <FreeStyle {...commonProps} />;
         } else if (!this.classicLog && this.augmenter.isPipeline) {
-            provider = <Extensions.Renderer extensionPoint="jenkins.pipeline.karaoke.pipeline.provider" {...commonProps} />;
+            provider = <Pipeline {...commonProps} />;
         }
 
         return <div className={stepScrollAreaClass}>{provider}</div>;
