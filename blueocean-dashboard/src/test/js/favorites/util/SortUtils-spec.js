@@ -3,7 +3,7 @@
  */
 import { assert } from 'chai';
 
-import { extractStatus as status, sortByStatusByRecent } from '../../../main/js/util/SortUtils';
+import { extractStatus as status, sortByStatusByRecent } from '../../../../main/js/favorites/util/SortUtils';
 
 const org = (favorite) => favorite.item.organization;
 const fullName = (favorite) => favorite.item.fullName;

@@ -4,7 +4,7 @@ import { cleanSlashes } from '../util/UrlUtils';
 import { FavoritesSortHelper } from '../util/SortUtils';
 import { blueocean } from '@jenkins-cd/blueocean-core-js/dist/js/scopes';
 
-const t = i18nTranslator('blueocean-personalization');
+const t = i18nTranslator('blueocean-dashboard');
 const sortHelper = new FavoritesSortHelper();
 
 const defaultBranchName = 'master';

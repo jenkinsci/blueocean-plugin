@@ -129,7 +129,6 @@
     <module>blueocean-pipeline-api-impl</module>
     <module>blueocean-events</module>
     <module>blueocean-dashboard</module>
-    <module>blueocean-personalization</module>
     <module>blueocean-config</module>
     <module>blueocean</module>
     <module>blueocean-jwt</module>
@@ -238,12 +237,6 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>blueocean-dashboard</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>blueocean-personalization</artifactId>
             <version>${project.version}</version>
         </dependency>
 

@@ -4,7 +4,7 @@
 import { assert } from 'chai';
 import { Fetch } from '@jenkins-cd/blueocean-core-js';
 
-import store from '../../../main/js/model/FavoriteStore';
+import store from '../../../../main/js/favorites/model/FavoriteStore';
 
 const _links = { self: { href: 'asdf' } };
 

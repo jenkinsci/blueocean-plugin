@@ -4,6 +4,7 @@ import Extensions from '@jenkins-cd/js-extensions';
 import { capable, UrlConfig, UrlBuilder } from '@jenkins-cd/blueocean-core-js';
 import { MATRIX_PIPELINE } from '../Capabilities';
 import { Icon } from '@jenkins-cd/design-language';
+import { FavoritePipeline } from '../favorites/components/FavoritePipeline';
 
 // Generate classic URL to redirect matrix-style / multiconfig jobs.
 function generateRedirectURL(pipeline) {
@@ -107,7 +108,7 @@ export class PipelineRowItem extends Component {
                 <TableCell {...multiBranchLinkProps}>{multiBranchLabel}</TableCell>
                 <TableCell {...pullRequestsLinkProps}>{pullRequestsLabel}</TableCell>
                 <TableCell className="TableCell--actions">
-                    <Extensions.Renderer extensionPoint="jenkins.pipeline.list.action" store={this.context.store} pipeline={this.props.pipeline} />
+                    <FavoritePipeline pipeline={this.props.pipeline} />
                 </TableCell>
             </TableRow>
         );
